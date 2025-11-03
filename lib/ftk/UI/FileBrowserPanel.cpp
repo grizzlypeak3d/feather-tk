@@ -231,7 +231,6 @@ namespace ftk
     void FileBrowserRecent::setRecentFilesModel(const std::shared_ptr<RecentFilesModel>& value)
     {
         FTK_P();
-        p.recentObserver.reset();
         p.recentFilesModel = value;
         if (p.recentFilesModel)
         {
@@ -240,21 +239,25 @@ namespace ftk
                 [this](const std::vector<std::filesystem::path>& paths)
                 {
                     _p->recent.clear();
-                    for (const auto& path : paths)
+                    for (auto i = paths.rbegin(); i != paths.rend(); ++i)
                     {
-                        auto tmp = path;
+                        auto tmp = *i;
                         if (!std::filesystem::is_directory(tmp))
                         {
                             tmp = tmp.parent_path();
                         }
-                        const auto i = std::find(_p->recent.begin(), _p->recent.end(), tmp);
-                        if (i == _p->recent.end())
+                        const auto j = std::find(_p->recent.begin(), _p->recent.end(), tmp);
+                        if (j == _p->recent.end())
                         {
                             _p->recent.push_back(tmp);
                         }
                     }
                     _widgetUpdate();
                 });
+        }
+        else
+        {
+            p.recentObserver.reset();
         }
     }
 
