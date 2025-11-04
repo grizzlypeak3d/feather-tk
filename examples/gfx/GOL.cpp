@@ -63,7 +63,7 @@ namespace gfx
             if (value)
             {
                 _timer->start(
-                    std::chrono::milliseconds(1000 / 60),
+                    std::chrono::milliseconds(1000 / 24),
                     [this]
                     {
                         _tick();
