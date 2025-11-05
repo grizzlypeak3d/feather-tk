@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Build Status](https://github.com/darbyjohnston/feather-tk/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/darbyjohnston/feather-tk/actions/workflows/ci-workflow.yml)
-[![codecov](https://codecov.io/gh/codecov/example-cpp11-cmake/branch/master/graph/badge.svg)](https://codecov.io/gh/darbyjohnston/feather-tk)
+[![Build Status](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml)
+[![codecov](https://codecov.io/gh/codecov/example-cpp11-cmake/branch/master/graph/badge.svg)](https://codecov.io/gh/grizzlypeak3d/feather-tk)
 
 # ![feather-tk Icon](etc/Icons/feather_tk_32.svg) feather-tk
 
@@ -8,7 +8,7 @@ Feather-tk is a lightweight toolkit for building cross-platform C++ applications
 
 Projects using feather-tk:
 * https://github.com/darbyjohnston/DJV
-* https://github.com/darbyjohnston/tlRender
+* https://github.com/grizzlypeak3d/tlRender
 * https://github.com/OpenTimelineIO/toucan
 
 Example image viewer showing menus, toolbars, and persistent settings:
@@ -119,7 +119,7 @@ sudo dnf install libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel
 
 Clone the repository:
 ```
-git clone https://github.com/darbyjohnston/feather-tk.git
+git clone https://github.com/grizzlypeak3d/feather-tk.git
 ```
 
 Run the super build script:
@@ -141,7 +141,7 @@ Dependencies:
 
 Clone the repository:
 ```
-git clone https://github.com/darbyjohnston/feather-tk.git
+git clone https://github.com/grizzlypeak3d/feather-tk.git
 ```
 
 Run the super build script:
@@ -172,7 +172,7 @@ This can be found in the Start menu, in the "Visual Studio 2022" folder.
 
 Clone the repository:
 ```
-git clone https://github.com/darbyjohnston/feather-tk.git
+git clone https://github.com/grizzlypeak3d/feather-tk.git
 ```
 
 Run the super build script:
