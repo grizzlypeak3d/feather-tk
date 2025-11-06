@@ -7,7 +7,7 @@
 Feather-tk is a lightweight toolkit for building cross-platform C++ applications.
 
 Projects using feather-tk:
-* https://github.com/darbyjohnston/DJV
+* https://github.com/grizzlypeak3d/DJV
 * https://github.com/grizzlypeak3d/tlRender
 * https://github.com/OpenTimelineIO/toucan
 
