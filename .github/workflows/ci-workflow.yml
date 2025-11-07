@@ -45,13 +45,6 @@ jobs:
         cd build-Debug
         sh ../feather-tk/etc/Linux/lcov.sh
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        files: ${{ github.workspace }}/build-Debug/coverage_filtered.info
-        fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}
-
   linux-gles2-build:
     runs-on: ubuntu-latest
 
