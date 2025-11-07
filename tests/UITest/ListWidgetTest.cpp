@@ -36,8 +36,7 @@ namespace ftk
                     argv,
                     "ListWidgetTest",
                     "List widget test.");
-                auto window = Window::create(context, "ListWidgetTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "ListWidgetTest");
                 window->show();
                 app->tick();
                 _test(context, app, window, ButtonGroupType::Click);

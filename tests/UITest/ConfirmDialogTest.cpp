@@ -39,8 +39,7 @@ namespace ftk
                     argv,
                     "ConfirmDialogTest",
                     "Confirmation dialog test.");
-                auto window = Window::create(context, "ConfirmDialogTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "ConfirmDialogTest");
                 window->show();
                 app->tick();
 

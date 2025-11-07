@@ -34,7 +34,7 @@ namespace ftk
         const std::shared_ptr<App>& app,
         const Size2I& size)
     {
-        Window::_init(context, app->getName(), size);
+        Window::_init(context, app, app->getName(), size);
         FTK_P();
 
         setIcon(context->getSystem<IconSystem>()->get("feather_tk_512", 1.F));
@@ -151,8 +151,6 @@ namespace ftk
                 FTK_P();
                 p.menus["Window"]->setChecked(p.tooltipsAction, value);
             });
-
-        app->addWindow(std::dynamic_pointer_cast<Window>(shared_from_this()));
     }
 
     MainWindow::MainWindow() :

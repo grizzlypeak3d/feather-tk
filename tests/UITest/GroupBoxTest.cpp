@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "GroupBoxTest",
                     "Group box test.");
-                auto window = Window::create(context, "GroupBoxTest");
+                auto window = Window::create(context, app, "GroupBoxTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

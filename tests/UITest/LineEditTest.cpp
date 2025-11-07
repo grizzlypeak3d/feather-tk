@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "LineEditTest",
                     "Line edit test.");
-                auto window = Window::create(context, "LineEditTest");
+                auto window = Window::create(context, app, "LineEditTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

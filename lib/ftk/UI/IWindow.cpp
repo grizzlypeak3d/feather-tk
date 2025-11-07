@@ -3,14 +3,27 @@
 
 #include <ftk/UI/IWindow.h>
 
+#include <ftk/UI/App.h>
 #include <ftk/UI/IDialog.h>
 #include <ftk/UI/IPopup.h>
 #include <ftk/UI/Tooltip.h>
+
+#include <ftk/GL/GL.h>
+#include <ftk/GL/OffscreenBuffer.h>
 
 namespace ftk
 {
     struct IWindow::Private
     {
+        std::weak_ptr<App> app;
+        std::string title;
+        Size2I windowSize;
+        Size2I minSize;
+        Size2I frameBufferSize;
+        std::shared_ptr<ObservableValue<bool> > fullScreen;
+        std::shared_ptr<ObservableValue<bool> > floatOnTop;
+        std::shared_ptr<ObservableValue<ImageType> > bufferType;
+        std::shared_ptr<ObservableValue<float> > displayScale;
         std::function<void(void)> closeCallback;
 
         bool inside = false;
@@ -45,11 +58,22 @@ namespace ftk
 
     void IWindow::_init(
         const std::shared_ptr<Context>& context,
-        const std::string& objectName,
-        const std::shared_ptr<IWidget>& parent)
+        const std::shared_ptr<App>& app,
+        const std::string& title)
     {
-        IWidget::_init(context, objectName, parent);
+        IWidget::_init(context, "ftk::IWindow", nullptr);
+        FTK_P();
+
+        p.app = app;
+        p.title = title;
+        p.fullScreen = ObservableValue<bool>::create(false);
+        p.floatOnTop = ObservableValue<bool>::create(false);
+        p.bufferType = ObservableValue<ImageType>::create(gl::offscreenColorDefault);
+        p.displayScale = ObservableValue<float>::create(1.F);
+
         setBackgroundRole(ColorRole::Window);
+
+        app->_addWindow(std::dynamic_pointer_cast<IWindow>(shared_from_this()));
     }
 
     IWindow::IWindow() :
@@ -58,6 +82,122 @@ namespace ftk
 
     IWindow::~IWindow()
     {}
+
+    std::shared_ptr<App> IWindow::getApp() const
+    {
+        return _p->app.lock();
+    }
+
+    const std::string& IWindow::getTitle() const
+    {
+        return _p->title;
+    }
+
+    void IWindow::setTitle(const std::string& value)
+    {
+        _p->title = value;
+    }
+
+    const Size2I& IWindow::getSize() const
+    {
+        return _p->windowSize;
+    }
+
+    void IWindow::setSize(const Size2I& value)
+    {
+        _p->windowSize = value;
+    }
+
+    Size2I IWindow::getMinSize() const
+    {
+        return _p->minSize;
+    }
+
+    void IWindow::setMinSize(const Size2I& value)
+    {
+        _p->minSize = value;
+    }
+
+    bool IWindow::isFullScreen() const
+    {
+        return _p->fullScreen->get();
+    }
+
+    std::shared_ptr<IObservableValue<bool> > IWindow::observeFullScreen() const
+    {
+        return _p->fullScreen;
+    }
+
+    void IWindow::setFullScreen(bool value)
+    {
+        _p->fullScreen->setIfChanged(value);
+    }
+
+    bool IWindow::isFloatOnTop() const
+    {
+        return _p->floatOnTop->get();
+    }
+
+    std::shared_ptr<IObservableValue<bool> > IWindow::observeFloatOnTop() const
+    {
+        return _p->floatOnTop;
+    }
+
+    void IWindow::setFloatOnTop(bool value)
+    {
+        _p->floatOnTop->setIfChanged(value);
+    }
+
+    const Size2I& IWindow::getFrameBufferSize() const
+    {
+        return _p->frameBufferSize;
+    }
+
+    ImageType IWindow::getFrameBufferType() const
+    {
+        return _p->bufferType->get();
+    }
+
+    std::shared_ptr<IObservableValue<ImageType> > IWindow::observeFrameBufferType() const
+    {
+        return _p->bufferType;
+    }
+
+    void IWindow::setFrameBufferType(ImageType value)
+    {
+        if (_p->bufferType->setIfChanged(value))
+        {
+            setDrawUpdate();
+        }
+    }
+
+    float IWindow::getDisplayScale() const
+    {
+        return _p->displayScale->get();
+    }
+
+    std::shared_ptr<IObservableValue<float> > IWindow::observeDisplayScale() const
+    {
+        return _p->displayScale;
+    }
+
+    void IWindow::setDisplayScale(float value)
+    {
+        FTK_P();
+        if (p.displayScale->setIfChanged(value))
+        {
+            setSizeUpdate();
+            setDrawUpdate();
+        }
+    }
+
+    float IWindow::getContentScale() const
+    {
+        FTK_P();
+        return p.windowSize.w > 0 ?
+            (p.frameBufferSize.w / static_cast<float>(p.windowSize.w)) :
+            0.F;
+    }
 
     std::shared_ptr<IWidget> IWindow::getKeyFocus() const
     {
@@ -172,7 +312,10 @@ namespace ftk
     void IWindow::close()
     {
         FTK_P();
-        hide();
+        if (auto app = p.app.lock())
+        {
+            app->_removeWindow(std::dynamic_pointer_cast<IWindow>(shared_from_this()));
+        }
         if (p.closeCallback)
         {
             p.closeCallback();
@@ -298,6 +441,17 @@ namespace ftk
                     p.dndCursor->getHeight()),
                 Color4F(1.F, 1.F, 1.F));
         }
+    }
+
+    void IWindow::_sizeUpdate(
+        const Size2I& windowSize,
+        const Size2I& frameBufferSize)
+    {
+        FTK_P();
+        p.windowSize = windowSize;
+        p.frameBufferSize = frameBufferSize;
+        setSizeUpdate();
+        setDrawUpdate();
     }
 
     bool IWindow::_hasSizeUpdate(const std::shared_ptr<IWidget>& widget) const

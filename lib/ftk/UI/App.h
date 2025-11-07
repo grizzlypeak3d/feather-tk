@@ -17,9 +17,9 @@ namespace ftk
 {
     class FontSystem;
     class IWidget;
+    class IWindow;
     class IconSystem;
     class TickEvent;
-    class Window;
 
     //! Monitor information.
     struct MonitorInfo
@@ -98,14 +98,8 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineArg> >& = {},
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
-        //! Add a window.
-        void addWindow(const std::shared_ptr<Window>&);
-
-        //! Remove a window.
-        void removeWindow(const std::shared_ptr<Window>&);
-
         //! Get the windows.
-        const std::list<std::shared_ptr<Window> >& getWindows() const;
+        const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
         //! Observe the monitors.
         std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
@@ -173,6 +167,9 @@ namespace ftk
         void run() override;
 
     protected:
+        void _addWindow(const std::shared_ptr<IWindow>&);
+        void _removeWindow(const std::shared_ptr<IWindow>&);
+
         virtual void _tick() {}
 
     private:
@@ -186,6 +183,8 @@ namespace ftk
         void _styleUpdate();
 
         void _log();
+
+        friend class IWindow;
 
         FTK_PRIVATE();
     };

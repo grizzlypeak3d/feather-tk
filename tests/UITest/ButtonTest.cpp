@@ -41,10 +41,9 @@ namespace ftk
                     argv,
                     "ButtonTest",
                     "Button test.");
-                auto window = Window::create(context, "ButtonTest");
+                auto window = Window::create(context, app, "ButtonTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 
@@ -75,7 +74,7 @@ namespace ftk
 
         void ButtonTest::_test(
             const std::shared_ptr<App>& app,
-            const std::shared_ptr<Window>& window,
+            const std::shared_ptr<IWindow>& window,
             const std::shared_ptr<VerticalLayout>& layout,
             const std::shared_ptr<IButton>& button)
         {

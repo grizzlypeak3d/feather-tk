@@ -68,6 +68,3 @@ window = DialogsWindow(context, app, ftk.Size2I(1280, 960))
 
 # Run the application.
 app.run()
-
-# \bug Need to manually reset the window.
-window = None

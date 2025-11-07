@@ -29,7 +29,7 @@ namespace ftk
         private:
             void _test(
                 const std::shared_ptr<App>&,
-                const std::shared_ptr<Window>&,
+                const std::shared_ptr<IWindow>&,
                 const std::shared_ptr<VerticalLayout>&,
                 const std::shared_ptr<IButton>&);
         };

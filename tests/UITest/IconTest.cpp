@@ -40,10 +40,9 @@ namespace ftk
                     argv,
                     "IconTest",
                     "Icon test.");
-                auto window = Window::create(context, "IconTest");
+                auto window = Window::create(context, app, "IconTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

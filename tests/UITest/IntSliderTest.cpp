@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "IntSliderTest",
                     "Integer slider test.");
-                auto window = Window::create(context, "IntSliderTest");
+                auto window = Window::create(context, app, "IntSliderTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

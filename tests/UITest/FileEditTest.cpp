@@ -40,10 +40,9 @@ namespace ftk
                     argv,
                     "FileEditTest",
                     "File edit test.");
-                auto window = Window::create(context, "FileEditTest");
+                auto window = Window::create(context, app, "FileEditTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

@@ -41,10 +41,9 @@ namespace ftk
                     argv,
                     "ColorWidgetTest",
                     "Color widget test.");
-                auto window = Window::create(context, "ColorWidgetTest");
+                auto window = Window::create(context, app, "ColorWidgetTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

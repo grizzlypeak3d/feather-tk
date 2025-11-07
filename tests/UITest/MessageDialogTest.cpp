@@ -39,8 +39,7 @@ namespace ftk
                     argv,
                     "MessageDialogTest",
                     "Message dialog test.");
-                auto window = Window::create(context, "MessageDialogTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "MessageDialogTest");
                 window->show();
                 app->tick();
             }

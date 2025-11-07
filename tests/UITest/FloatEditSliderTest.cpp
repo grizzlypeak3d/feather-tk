@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "FloatEditSliderTest",
                     "Float edit slider test.");
-                auto window = Window::create(context, "FloatEditSliderTest");
+                auto window = Window::create(context, app, "FloatEditSliderTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

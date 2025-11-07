@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "DoubleEditTest",
                     "Double edit test.");
-                auto window = Window::create(context, "DoubleEditTest");
+                auto window = Window::create(context, app, "DoubleEditTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

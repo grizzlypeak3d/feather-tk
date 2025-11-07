@@ -40,10 +40,9 @@ namespace ftk
                     argv,
                     "ButtonGroupTest",
                     "Button group test.");
-                auto window = Window::create(context, "ButtonGroupTest");
+                auto window = Window::create(context, app, "ButtonGroupTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

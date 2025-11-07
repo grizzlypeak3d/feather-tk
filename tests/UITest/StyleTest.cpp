@@ -53,11 +53,10 @@ namespace ftk
                     argv,
                     "StyleTest",
                     "Style test.");
-                auto window = Window::create(context, "StyleTest");
+                auto window = Window::create(context, app, "StyleTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 auto button = PushButton::create(context, "Button", layout);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

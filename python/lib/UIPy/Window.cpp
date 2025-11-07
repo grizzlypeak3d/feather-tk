@@ -18,11 +18,12 @@ namespace ftk
     public:
         static std::shared_ptr<PyWindow> create(
             const std::shared_ptr<Context>& context,
+            const std::shared_ptr<App>& app,
             const std::string& name,
             const Size2I& size)
         {
             auto out = std::shared_ptr<PyWindow>(new PyWindow);
-            out->_init(context, name, size);
+            out->_init(context, app, name, size);
             return out;
         }
 
@@ -43,22 +44,8 @@ namespace ftk
             .def(
                 py::init(&Window::create, &PyWindow::create),
                 py::arg("context"),
+                py::arg("app"),
                 py::arg("name"),
-                py::arg("size"))
-            .def_property_readonly("windowID", &Window::getID)
-            .def_property("title", &Window::getTitle, &Window::setTitle)
-            .def_property("size", &Window::getSize, &Window::setSize)
-            .def_property("minSize", &Window::getMinSize, &Window::setMinSize)
-            .def_property("fullScreen", &Window::isFullScreen, &Window::setFullScreen)
-            .def("observeFullScreen", &Window::observeFullScreen)
-            .def_property_readonly("getScreen", &Window::getScreen)
-            .def_property("floatOnTop", &Window::isFloatOnTop, &Window::setFloatOnTop)
-            .def("observeFloatOnTop", &Window::observeFloatOnTop)
-            .def_property_readonly("frameBufferSize", &Window::getFrameBufferSize)
-            .def_property("frameBufferType", &Window::getFrameBufferType, &Window::setFrameBufferType)
-            .def("observeFrameBufferType", &Window::observeFrameBufferType)
-            .def_property_readonly("contentScale", &Window::getContentScale)
-            .def_property("displayScale", &Window::getDisplayScale, &Window::setDisplayScale)
-            .def("observeDisplayScale", &Window::observeDisplayScale);
+                py::arg("size"));
     }
 }

@@ -45,10 +45,9 @@ namespace ftk
                     r = app->getExit();
                     if (0 == r)
                     {
-                        auto window = Window::create(context, "ftk::ui_test::App");
+                        auto window = Window::create(context, app, "ftk::ui_test::App");
                         auto layout = VerticalLayout::create(context, window);
                         auto button = PushButton::create(context, "Button", layout);
-                        app->addWindow(window);
                         FTK_ASSERT(app->getWindows().front() == window);
                         window->show();
                         window->setSize(Size2I(1920, 1080));
@@ -61,8 +60,7 @@ namespace ftk
 
                         app->run();
                         app->exit();
-                        window->hide();
-                        app->removeWindow(window);
+                        window->close();
                     }
                 }
                 catch (const std::exception&)

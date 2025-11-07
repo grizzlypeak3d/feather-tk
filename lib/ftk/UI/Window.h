@@ -13,6 +13,7 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
+            const std::shared_ptr<App>&,
             const std::string& title,
             const Size2I&);
 
@@ -24,76 +25,17 @@ namespace ftk
         //! Create a new window.
         static std::shared_ptr<Window> create(
             const std::shared_ptr<Context>&,
+            const std::shared_ptr<App>&,
             const std::string& title,
             const Size2I& = Size2I(1280, 960));
 
-        //! Get the window ID.
-        uint32_t getID() const;
-
-        //! Get the window title.
-        std::string getTitle() const;
-
-        //! Set the window title.
-        void setTitle(const std::string&);
-
-        //! Get the window size.
-        const Size2I& getSize() const;
-
-        //! Set the window size.
-        void setSize(const Size2I&);
-
-        //! Get the window minimum size.
-        Size2I getMinSize() const;
-
-        //! Set the window minimum size.
-        void setMinSize(const Size2I&);
-
-        //! Get whether the window is full screen.
-        bool isFullScreen() const;
-
-        //! Observe whether the window is full screen.
-        std::shared_ptr<IObservableValue<bool> > observeFullScreen() const;
-
-        //! Set whether the window is full screen.
-        void setFullScreen(bool);
-
-        //! Get which screen the window is on.
-        int getScreen() const;
-
-        //! Get whether the window is floating on top.
-        bool isFloatOnTop() const;
-
-        //! Observe whether the window is floating on top.
-        std::shared_ptr<IObservableValue<bool> > observeFloatOnTop() const;
-
-        //! Set whether the window is floating on top.
-        void setFloatOnTop(bool);
-
-        //! Get the window frame buffer size.
-        const Size2I& getFrameBufferSize() const;
-
-        //! Get the frame buffer type.
-        ImageType getFrameBufferType() const;
-
-        //! Observe the frame buffer type.
-        std::shared_ptr<IObservableValue<ImageType> > observeFrameBufferType() const;
-
-        //! Set the frame buffer type.
-        void setFrameBufferType(ImageType);
-
-        //! Get the content scale.
-        float getContentScale() const;
-
-        //! Get the display scale.
-        float getDisplayScale() const;
-
-        //! Observe the display scale.
-        std::shared_ptr<IObservableValue<float> > observeDisplayScale() const;
-
-        //! Set the display scale. A value of zero will set the display scale
-        //! automatically.
-        void setDisplayScale(float);
-
+        uint32_t getID() const override;
+        int getScreen() const override;
+        void setTitle(const std::string&) override;
+        void setSize(const Size2I&) override;
+        void setMinSize(const Size2I&) override;
+        void setFullScreen(bool) override;
+        void setFloatOnTop(bool) override;
         void setIcon(const std::shared_ptr<Image>&) override;
         std::shared_ptr<Image> screenshot(const Box2I& = Box2I(0, 0, -1, -1)) override;
 
@@ -105,16 +47,13 @@ namespace ftk
     protected:
         virtual std::shared_ptr<IRender> _createRender(const std::shared_ptr<LogSystem>&);
 
-        void _refresh();
-        void _sizeUpdate();
-
-        virtual void _update(
-            const std::shared_ptr<FontSystem>&,
-            const std::shared_ptr<IconSystem>&,
-            const std::shared_ptr<Style>&);
-
         void _makeCurrent();
         void _clearCurrent();
+
+        void _update(
+            const std::shared_ptr<FontSystem>&,
+            const std::shared_ptr<IconSystem>&,
+            const std::shared_ptr<Style>&) override;
 
     private:
         friend class App;

@@ -51,8 +51,7 @@ namespace ftk
                     argv,
                     "MDIWidgetTest",
                     "MDI widget test.");
-                auto window = Window::create(context, "MDIWidgetTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "MDIWidgetTest");
                 window->show();
                 app->tick();
 

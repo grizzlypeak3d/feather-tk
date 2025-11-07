@@ -47,10 +47,9 @@ namespace ftk
                     argv,
                     "TabWidgetTest",
                     "Tab widget test.");
-                auto window = Window::create(context, "TabWidgetTest");
+                auto window = Window::create(context, app, "TabWidgetTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 
@@ -96,10 +95,9 @@ namespace ftk
                     argv,
                     "TabWidgetTest",
                     "Tab widget test.");
-                auto window = Window::create(context, "TabWidgetTest");
+                auto window = Window::create(context, app, "TabWidgetTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

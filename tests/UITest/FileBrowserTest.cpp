@@ -55,8 +55,7 @@ namespace ftk
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, "FileBrowserTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
@@ -79,8 +78,7 @@ namespace ftk
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, "FileBrowserTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
@@ -125,8 +123,7 @@ namespace ftk
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, "FileBrowserTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
@@ -171,8 +168,7 @@ namespace ftk
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, "FileBrowserTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 

@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "IntEditTest",
                     "Integer edit test.");
-                auto window = Window::create(context, "IntEditTest");
+                auto window = Window::create(context, app, "IntEditTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

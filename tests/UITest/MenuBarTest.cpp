@@ -40,10 +40,9 @@ namespace ftk
                     argv,
                     "MenuBarTest",
                     "Menu bar test.");
-                auto window = Window::create(context, "MenuBarTest");
+                auto window = Window::create(context, app, "MenuBarTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

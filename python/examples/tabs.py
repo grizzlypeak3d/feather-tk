@@ -30,6 +30,3 @@ for i in range(0, 10):
 
 # Run the application.
 app.run()
-
-# \bug Need to manually reset the window.
-window = None

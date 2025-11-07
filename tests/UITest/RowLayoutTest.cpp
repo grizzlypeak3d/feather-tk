@@ -37,8 +37,7 @@ namespace ftk
                     argv,
                     "RowLayoutTest",
                     "Row layout test.");
-                auto window = Window::create(context, "RowLayoutTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "RowLayoutTest");
                 window->show();
                 app->tick();
 

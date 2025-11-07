@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "LabelTest",
                     "Label test.");
-                auto window = Window::create(context, "LabelTest");
+                auto window = Window::create(context, app, "LabelTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

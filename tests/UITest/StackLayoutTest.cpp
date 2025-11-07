@@ -40,8 +40,7 @@ namespace ftk
                     argv,
                     "StackLayoutTest",
                     "Stack layout test.");
-                auto window = Window::create(context, "StackLayoutTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "StackLayoutTest");
                 window->show();
                 app->tick();
 

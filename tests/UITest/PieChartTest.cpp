@@ -46,10 +46,9 @@ namespace ftk
                     argv,
                     "PieChartTest",
                     "Pie chart test.");
-                auto window = Window::create(context, "PieChartTest");
+                auto window = Window::create(context, app, "PieChartTest");
                 auto layout = HorizontalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

@@ -77,9 +77,6 @@ window.setWidget(label)
 # Run the application.
 app.run()
 
-# \bug Need to manually reset the window.
-window = None
-
 ```
 
 

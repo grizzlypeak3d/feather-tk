@@ -32,13 +32,6 @@ namespace ftk
     {
         std::weak_ptr<Context> context;
 
-        Size2I size;
-        Size2I frameBufferSize;
-        std::shared_ptr<ObservableValue<bool> > fullScreen;
-        std::shared_ptr<ObservableValue<bool> > floatOnTop;
-        std::shared_ptr<ObservableValue<ImageType> > bufferType;
-        std::shared_ptr<ObservableValue<float> > displayScale;
-        bool refresh = true;
         int modifiers = 0;
         std::shared_ptr<gl::Window> window;
 
@@ -51,19 +44,14 @@ namespace ftk
 
     void Window::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::string& title,
         const Size2I& size)
     {
-        IWindow::_init(context, title, nullptr);
+        IWindow::_init(context, app, title);
         FTK_P();
 
         p.context = context;
-
-        p.size = size;
-        p.fullScreen = ObservableValue<bool>::create(false);
-        p.floatOnTop = ObservableValue<bool>::create(false);
-        p.bufferType = ObservableValue<ImageType>::create(gl::offscreenColorDefault);
-        p.displayScale = ObservableValue<float>::create(1.F);
 
         p.window = gl::Window::create(
             context,
@@ -72,8 +60,6 @@ namespace ftk
             static_cast<int>(gl::WindowOptions::DoubleBuffer));
 
         p.render = _createRender(context->getLogSystem());
-
-        _sizeUpdate();
 
         setVisible(false);
     }
@@ -92,11 +78,12 @@ namespace ftk
 
     std::shared_ptr<Window> Window::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::string& title,
         const Size2I& size)
     {
         auto out = std::shared_ptr<Window>(new Window);
-        out->_init(context, title, size);
+        out->_init(context, app, title, size);
         return out;
     }
 
@@ -105,128 +92,39 @@ namespace ftk
         return _p->window->getID();
     }
 
-    std::string Window::getTitle() const
-    {
-        return _p->window->getTitle();
-    }
-
-    void Window::setTitle(const std::string& value)
-    {
-        _p->window->setTitle(value);
-    }
-
-    const Size2I& Window::getSize() const
-    {
-        return _p->size;
-    }
-
-    void Window::setSize(const Size2I& value)
-    {
-        FTK_P();
-        if (value == p.size)
-            return;
-        p.size = value;
-        p.window->setSize(value);
-    }
-
-    Size2I Window::getMinSize() const
-    {
-        return _p->window->getMinSize();
-    }
-
-    void Window::setMinSize(const Size2I& value)
-    {
-        _p->window->setMinSize(value);
-    }
-
-    bool Window::isFullScreen() const
-    {
-        return _p->window->isFullScreen();
-    }
-
-    std::shared_ptr<IObservableValue<bool> > Window::observeFullScreen() const
-    {
-        return _p->fullScreen;
-    }
-
-    void Window::setFullScreen(bool value)
-    {
-        _p->window->setFullScreen(value);
-    }
-
     int Window::getScreen() const
     {
         return _p->window->getScreen();
     }
 
-    bool Window::isFloatOnTop() const
+    void Window::setTitle(const std::string& value)
     {
-        return _p->floatOnTop->get();
+        IWindow::setTitle(value);
+        _p->window->setTitle(value);
     }
 
-    std::shared_ptr<IObservableValue<bool> > Window::observeFloatOnTop() const
+    void Window::setSize(const Size2I& value)
     {
-        return _p->floatOnTop;
+        IWindow::setSize(value);
+        _p->window->setSize(value);
+    }
+
+    void Window::setMinSize(const Size2I& value)
+    {
+        IWindow::setMinSize(value);
+        _p->window->setMinSize(value);
+    }
+
+    void Window::setFullScreen(bool value)
+    {
+        IWindow::setFullScreen(value);
+        _p->window->setFullScreen(value);
     }
 
     void Window::setFloatOnTop(bool value)
     {
-        FTK_P();
-        if (p.floatOnTop->setIfChanged(value))
-        {
-            p.window->setFloatOnTop(value);
-        }
-    }
-
-    const Size2I& Window::getFrameBufferSize() const
-    {
-        return _p->frameBufferSize;
-    }
-
-    ImageType Window::getFrameBufferType() const
-    {
-        return _p->bufferType->get();
-    }
-
-    std::shared_ptr<IObservableValue<ImageType> > Window::observeFrameBufferType() const
-    {
-        return _p->bufferType;
-    }
-
-    void Window::setFrameBufferType(ImageType value)
-    {
-        if (_p->bufferType->setIfChanged(value))
-        {
-            setDrawUpdate();
-        }
-    }
-
-    float Window::getContentScale() const
-    {
-        FTK_P();
-        return p.size.w > 0 ?
-            (p.frameBufferSize.w / static_cast<float>(p.size.w)) :
-            0.F;
-    }
-
-    float Window::getDisplayScale() const
-    {
-        return _p->displayScale->get();
-    }
-
-    std::shared_ptr<IObservableValue<float> > Window::observeDisplayScale() const
-    {
-        return _p->displayScale;
-    }
-
-    void Window::setDisplayScale(float value)
-    {
-        FTK_P();
-        if (p.displayScale->setIfChanged(value))
-        {
-            setSizeUpdate();
-            setDrawUpdate();
-        }
+        IWindow::setFloatOnTop(value);
+        _p->window->setFloatOnTop(value);
     }
 
     void Window::setIcon(const std::shared_ptr<Image>& icon)
@@ -313,41 +211,27 @@ namespace ftk
         return gl::Render::create(logSystem);
     }
     
-    void Window::_refresh()
-    {
-        setDrawUpdate();
-        _p->refresh = true;
-    }
-
-    void Window::_sizeUpdate()
-    {
-        FTK_P();
-        if (SDL_Window* sdlWindow = SDL_GetWindowFromID(p.window->getID()))
-        {
-            SDL_GetWindowSize(sdlWindow, &p.size.w, &p.size.h);
-            SDL_GL_GetDrawableSize(sdlWindow, &p.frameBufferSize.w, &p.frameBufferSize.h);
-        }
-        setSizeUpdate();
-        setDrawUpdate();
-    }
-
     void Window::_update(
         const std::shared_ptr<FontSystem>& fontSystem,
         const std::shared_ptr<IconSystem>& iconSystem,
         const std::shared_ptr<Style>& style)
     {
         FTK_P();
+
+        const Size2I& frameBufferSize = getFrameBufferSize();
+        const float displayScale = getDisplayScale();
+
         const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
         if (sizeUpdate)
         {
             SizeHintEvent sizeHintEvent(
                 fontSystem,
                 iconSystem,
-                p.displayScale->get(),
+                displayScale,
                 style);
             _sizeHintEventRecursive(shared_from_this(), sizeHintEvent);
 
-            setGeometry(Box2I(V2I(), p.frameBufferSize));
+            setGeometry(Box2I(V2I(), frameBufferSize));
 
             _clipEventRecursive(
                 shared_from_this(),
@@ -356,31 +240,31 @@ namespace ftk
         }
 
         const bool drawUpdate = _hasDrawUpdate(shared_from_this());
-        if (p.refresh || drawUpdate || sizeUpdate)
+        if (drawUpdate || sizeUpdate)
         {
             p.window->makeCurrent();
 
             gl::OffscreenBufferOptions bufferOptions;
-            bufferOptions.color = p.bufferType->get();
-            if (gl::doCreate(p.buffer, p.frameBufferSize, bufferOptions))
+            bufferOptions.color = getFrameBufferType();
+            if (gl::doCreate(p.buffer, frameBufferSize, bufferOptions))
             {
-                p.buffer = gl::OffscreenBuffer::create(p.frameBufferSize, bufferOptions);
+                p.buffer = gl::OffscreenBuffer::create(frameBufferSize, bufferOptions);
             }
 
             if (p.buffer && (drawUpdate || sizeUpdate))
             {
                 gl::OffscreenBufferBinding bufferBinding(p.buffer);
-                p.render->begin(p.frameBufferSize);
+                p.render->begin(frameBufferSize);
                 p.render->setClipRectEnabled(true);
                 DrawEvent drawEvent(
                     fontSystem,
                     iconSystem,
-                    p.displayScale->get(),
+                    displayScale,
                     style,
                     p.render);
                 _drawEventRecursive(
                     shared_from_this(),
-                    Box2I(V2I(), p.frameBufferSize),
+                    Box2I(V2I(), frameBufferSize),
                     drawEvent);
                 p.render->setClipRectEnabled(false);
                 p.render->end();
@@ -395,12 +279,12 @@ namespace ftk
                 glBlitFramebuffer(
                     0,
                     0,
-                    p.frameBufferSize.w,
-                    p.frameBufferSize.h,
+                    frameBufferSize.w,
+                    frameBufferSize.h,
                     0,
                     0,
-                    p.frameBufferSize.w,
-                    p.frameBufferSize.h,
+                    frameBufferSize.w,
+                    frameBufferSize.h,
                     GL_COLOR_BUFFER_BIT,
                     GL_LINEAR);
             }
@@ -463,9 +347,9 @@ namespace ftk
                     "transform.mvp",
                     ortho(
                         0.F,
-                        static_cast<float>(p.frameBufferSize.w),
+                        static_cast<float>(frameBufferSize.w),
                         0.F,
-                        static_cast<float>(p.frameBufferSize.h),
+                        static_cast<float>(frameBufferSize.h),
                         -1.F,
                         1.F));
                 p.shader->setUniform("textureSampler", 0);
@@ -476,8 +360,8 @@ namespace ftk
                 auto mesh = ftk::mesh(Box2I(
                     0,
                     0,
-                    p.frameBufferSize.w,
-                    p.frameBufferSize.h));
+                    frameBufferSize.w,
+                    frameBufferSize.h));
                 auto vboData = gl::convert(
                     mesh,
                     gl::VBOType::Pos2_F32_UV_U16,
@@ -491,8 +375,6 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
             p.window->swap();
-
-            p.refresh = false;
         }
     }
 

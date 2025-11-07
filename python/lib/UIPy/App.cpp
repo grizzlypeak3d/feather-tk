@@ -35,8 +35,6 @@ namespace ftk
                 py::arg("summary"),
                 py::arg("cmdLineArgs") = std::vector<std::shared_ptr<ICmdLineArg> >(),
                 py::arg("cmdLineOptions") = std::vector<std::shared_ptr<ICmdLineOption> >())
-            .def("addWindow", &App::addWindow, py::arg("window"))
-            .def("removeWindow", &App::removeWindow, py::arg("window"))
             .def("getWindows", &App::getWindows)
             .def("getFontSystem", &App::getFontSystem)
             .def("getIconSystem", &App::getIconSystem)

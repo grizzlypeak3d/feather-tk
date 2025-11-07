@@ -38,8 +38,7 @@ namespace ftk
                     argv,
                     "ProgressDialogTest",
                     "Progress dialog test.");
-                auto window = Window::create(context, "ProgressDialogTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "ProgressDialogTest");
                 window->show();
                 app->tick();
             }

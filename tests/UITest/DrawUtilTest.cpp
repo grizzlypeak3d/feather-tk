@@ -83,8 +83,7 @@ namespace ftk
                     argv,
                     "DrawUtilTest",
                     "Draw utilities test.");
-                auto window = Window::create(context, "DrawUtilTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "DrawUtilTest");
                 window->show();
                 app->tick();
 

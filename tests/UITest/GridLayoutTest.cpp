@@ -40,8 +40,7 @@ namespace ftk
                     argv,
                     "GridLayoutTest",
                     "Grid layout test.");
-                auto window = Window::create(context, "GridLayoutTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "GridLayoutTest");
                 window->show();
                 app->tick();
 

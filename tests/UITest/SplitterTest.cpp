@@ -37,8 +37,7 @@ namespace ftk
                     argv,
                     "SplitterTest",
                     "Splitter test.");
-                auto window = Window::create(context, "SplitterTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "SplitterTest");
                 window->show();
                 app->tick();
                 _test(context, app, window, Orientation::Horizontal);

@@ -39,10 +39,9 @@ namespace ftk
                     argv,
                     "ComboBoxTest",
                     "Combo box test.");
-                auto window = Window::create(context, "ComboBoxTest");
+                auto window = Window::create(context, app, "ComboBoxTest");
                 auto layout = VerticalLayout::create(context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                app->addWindow(window);
                 window->show();
                 app->tick();
 

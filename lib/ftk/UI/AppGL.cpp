@@ -103,8 +103,8 @@ namespace ftk
         std::shared_ptr<ObservableValue<float> > displayScale;
         std::shared_ptr<ObservableValue<bool> > tooltipsEnabled;
         bool running = true;
-        std::list<std::shared_ptr<Window> > windows;
-        std::weak_ptr<Window> activeWindow;
+        std::list<std::shared_ptr<IWindow> > windows;
+        std::weak_ptr<IWindow> activeWindow;
         std::vector<std::string> dropFiles;
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
@@ -251,29 +251,7 @@ namespace ftk
         return out;
     }
 
-    void App::addWindow(const std::shared_ptr<Window>& window)
-    {
-        FTK_P();
-        const auto i = std::find(p.windows.begin(), p.windows.end(), window);
-        if (i == p.windows.end())
-        {
-            window->setDisplayScale(p.displayScale->get());
-            window->setTooltipsEnabled(p.tooltipsEnabled->get());
-            p.windows.push_back(window);
-        }
-    }
-
-    void App::removeWindow(const std::shared_ptr<Window>& window)
-    {
-        FTK_P();
-        const auto i = std::find(p.windows.begin(), p.windows.end(), window);
-        if (i != p.windows.end())
-        {
-            p.windows.erase(i);
-        }
-    }
-
-    const std::list<std::shared_ptr<Window> >& App::getWindows() const
+    const std::list<std::shared_ptr<IWindow> >& App::getWindows() const
     {
         return _p->windows;
     }
@@ -586,15 +564,18 @@ namespace ftk
     {
         FTK_P();
         auto t0 = std::chrono::steady_clock::now();
+
+        // Make sure one of the windows is visible.
         bool visible = false;
         for (const auto& window : p.windows)
         {
             visible |= window->isVisible(false);
         }
-        if (!p.windows.empty() && !visible)
+        if (!visible && !p.windows.empty())
         {
             p.windows.front()->show();
         }
+
         while (p.running && !p.windows.empty())
         {
             auto logSystem = _context->getSystem<LogSystem>();
@@ -607,79 +588,53 @@ namespace ftk
                     logSystem->print("ftk::App", "SDL_DISPLAYEVENT");
                     _monitorsUpdate();
                     break;
+
                 case SDL_WINDOWEVENT:
-                    switch (event.window.event)
+                {
+                    const auto i = std::find_if(
+                        p.windows.begin(),
+                        p.windows.end(),
+                        [&event](const std::shared_ptr<IWindow>& window)
+                        {
+                            return window->getID() == event.window.windowID;
+                        });
+                    if (i != p.windows.end())
                     {
-                    case SDL_WINDOWEVENT_SHOWN:
-                        for (const auto& window : p.windows)
+                        switch (event.window.event)
                         {
-                            if (window->getID() == event.window.windowID)
+                        case SDL_WINDOWEVENT_SHOWN:
+                            (*i)->setVisible(true);
+                            break;
+                        case SDL_WINDOWEVENT_HIDDEN:
+                            (*i)->setVisible(false);
+                            break;
+                        case SDL_WINDOWEVENT_EXPOSED:
+                        case SDL_WINDOWEVENT_SIZE_CHANGED:
+                            if (SDL_Window* sdlWindow = SDL_GetWindowFromID((*i)->getID()))
                             {
-                                window->setVisible(true);
-                                break;
+                                Size2I windowSize;
+                                Size2I frameBufferSize;
+                                SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
+                                SDL_GL_GetDrawableSize(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+                                (*i)->_sizeUpdate(windowSize, frameBufferSize);
                             }
+                            break;
+                        case SDL_WINDOWEVENT_ENTER:
+                            (*i)->_cursorEnter(true);
+                            p.activeWindow = *i;
+                            break;
+                        case SDL_WINDOWEVENT_LEAVE:
+                            (*i)->_cursorEnter(false);
+                            p.activeWindow.reset();
+                            break;
+                        case SDL_WINDOWEVENT_CLOSE:
+                            (*i)->close();
+                            break;
+                        default: break;
                         }
-                        break;
-                    case SDL_WINDOWEVENT_HIDDEN:
-                        for (const auto& window : p.windows)
-                        {
-                            if (window->getID() == event.window.windowID)
-                            {
-                                window->setVisible(false);
-                                break;
-                            }
-                        }
-                        break;
-                    case SDL_WINDOWEVENT_EXPOSED:
-                        for (const auto& window : p.windows)
-                        {
-                            if (window->getID() == event.window.windowID)
-                            {
-                                window->_refresh();
-                                break;
-                            }
-                        }
-                        break;
-                    case SDL_WINDOWEVENT_SIZE_CHANGED:
-                        for (const auto& window : p.windows)
-                        {
-                            if (window->getID() == event.window.windowID)
-                            {
-                                window->_sizeUpdate();
-                                break;
-                            }
-                        }
-                        break;
-                    case SDL_WINDOWEVENT_ENTER:
-                        for (const auto& window : p.windows)
-                        {
-                            if (window->getID() == event.window.windowID)
-                            {
-                                window->_cursorEnter(true);
-                                p.activeWindow = window;
-                                break;
-                            }
-                        }
-                        break;
-                    case SDL_WINDOWEVENT_LEAVE:
-                        if (auto window = p.activeWindow.lock())
-                        {
-                            window->_cursorEnter(false);
-                        }
-                        p.activeWindow.reset();
-                        break;
-                    case SDL_WINDOWEVENT_CLOSE:
-                        for (const auto& window : p.windows)
-                        {
-                            if (window->getID() == event.window.windowID)
-                            {
-                                window->close();
-                                break;
-                            }
-                        }
-                        break;
                     }
                     break;
+                }
 
                 case SDL_MOUSEMOTION:
                     if (auto window = p.activeWindow.lock())
@@ -690,6 +645,7 @@ namespace ftk
                             event.motion.y * contentScale));
                     }
                     break;
+
                 case SDL_MOUSEBUTTONDOWN:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -699,6 +655,7 @@ namespace ftk
                             fromSDL(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
+
                 case SDL_MOUSEBUTTONUP:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -708,6 +665,7 @@ namespace ftk
                             fromSDL(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
+
                 case SDL_MOUSEWHEEL:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -728,6 +686,7 @@ namespace ftk
                             fromSDL(event.key.keysym.mod));
                     }
                     break;
+
                 case SDL_KEYUP:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -737,6 +696,7 @@ namespace ftk
                             fromSDL(event.key.keysym.mod));
                     }
                     break;
+
                 case SDL_TEXTINPUT:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -755,10 +715,12 @@ namespace ftk
                     logSystem->print("ftk::App", Format("SDL_DROPFILE: {0}").arg(event.drop.file));
                     p.dropFiles.push_back(event.drop.file);
                     break;
+
                 case SDL_DROPBEGIN:
                     logSystem->print("ftk::App", "SDL_DROPBEGIN");
                     p.dropFiles.clear();
                     break;
+
                 case SDL_DROPCOMPLETE:
                 {
                     logSystem->print("ftk::App", "SDL_DROPCOMPLETE");
@@ -807,18 +769,32 @@ namespace ftk
             }
             t0 = t1;
 
-            size_t visibleWindows = 0;
-            for (const auto& window : p.windows)
-            {
-                if (window->isVisible(false))
-                {
-                    ++visibleWindows;
-                }
-            }
-            if (p.cmdLine.exit->found() || 0 == visibleWindows)
+            if (p.cmdLine.exit->found())
             {
                 break;
             }
+        }
+    }
+
+    void App::_addWindow(const std::shared_ptr<IWindow>& window)
+    {
+        FTK_P();
+        const auto i = std::find(p.windows.begin(), p.windows.end(), window);
+        if (i == p.windows.end())
+        {
+            window->setDisplayScale(p.displayScale->get());
+            window->setTooltipsEnabled(p.tooltipsEnabled->get());
+            p.windows.push_back(window);
+        }
+    }
+
+    void App::_removeWindow(const std::shared_ptr<IWindow>& window)
+    {
+        FTK_P();
+        const auto i = std::find(p.windows.begin(), p.windows.end(), window);
+        if (i != p.windows.end())
+        {
+            p.windows.erase(i);
         }
     }
 

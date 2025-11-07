@@ -37,8 +37,7 @@ namespace ftk
                     argv,
                     "ScrollWidgetTest",
                     "Scroll widget test.");
-                auto window = Window::create(context, "ScrollWidgetTest");
-                app->addWindow(window);
+                auto window = Window::create(context, app, "ScrollWidgetTest");
                 window->show();
                 app->tick();
                 _test(context, app, window, ScrollType::Both);

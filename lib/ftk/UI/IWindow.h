@@ -7,37 +7,107 @@
 
 namespace ftk
 {
+    class App;
+
     //! Base class for windows.
     class IWindow : public IWidget
     {
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::string& objectName,
-            const std::shared_ptr<IWidget>& parent);
+            const std::shared_ptr<App>&,
+            const std::string& title);
 
         IWindow();
 
     public:
         virtual ~IWindow() = 0;
 
-        //! Get the widget with key focus.
+        //! Get the application.
+        std::shared_ptr<App> getApp() const;
+
+        //! Get the window ID.
+        virtual uint32_t getID() const = 0;
+
+        //! Get which screen the window is on.
+        virtual int getScreen() const = 0;
+
+        //! Window Title
+        ///@{
+
+        const std::string& getTitle() const;
+        virtual void setTitle(const std::string&);
+
+        ///@}
+
+        //! Window Size
+        ///@{
+
+        const Size2I& getSize() const;
+        virtual void setSize(const Size2I&);
+
+        Size2I getMinSize() const;
+        virtual void setMinSize(const Size2I&);
+
+        ///@}
+
+        //! Fullscreen
+        ///@{
+
+        bool isFullScreen() const;
+        std::shared_ptr<IObservableValue<bool> > observeFullScreen() const;
+        virtual void setFullScreen(bool);
+
+        ///@}
+
+        //! Float On Top
+        ///@{
+
+        bool isFloatOnTop() const;
+        std::shared_ptr<IObservableValue<bool> > observeFloatOnTop() const;
+        virtual void setFloatOnTop(bool);
+
+        ///@}
+
+        //! Frame Buffer
+        ///@{
+
+        const Size2I& getFrameBufferSize() const;
+
+        ImageType getFrameBufferType() const;
+        std::shared_ptr<IObservableValue<ImageType> > observeFrameBufferType() const;
+        void setFrameBufferType(ImageType);
+
+        ///@}
+
+        //! Display Scale
+        ///@{
+
+        float getDisplayScale() const;
+        std::shared_ptr<IObservableValue<float> > observeDisplayScale() const;
+        void setDisplayScale(float);
+
+        float getContentScale() const;
+
+        ///@}
+
+        //! Key Focus
+        ///@{
+
         std::shared_ptr<IWidget> getKeyFocus() const;
-
-        //! Set the widget with key focus.
         void setKeyFocus(const std::shared_ptr<IWidget>&);
-
-        //! Get the next widget to focus.
         std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
-
-        //! Get the previous widget to focus.
         std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
 
-        //! Get whether tooltips are enabled.
-        bool getTooltipsEnabled() const;
+        ///@}
 
-        //! Set whether tooltips are enabled.
+        //! Tooltips
+        ///@{
+
+        bool getTooltipsEnabled() const;
         void setTooltipsEnabled(bool);
+
+        ///@}
 
         //! Set the window icon.
         //! 
@@ -65,6 +135,14 @@ namespace ftk
         void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
+        virtual void _sizeUpdate(
+            const Size2I& windowSize, 
+            const Size2I& frameBufferSize);
+        virtual void _update(
+            const std::shared_ptr<FontSystem>&,
+            const std::shared_ptr<IconSystem>&,
+            const std::shared_ptr<Style>&) = 0;
+
         bool _hasSizeUpdate(const std::shared_ptr<IWidget>&) const;
         void _sizeHintEventRecursive(
             const std::shared_ptr<IWidget>&,
