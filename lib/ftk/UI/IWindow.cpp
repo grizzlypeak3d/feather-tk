@@ -73,7 +73,10 @@ namespace ftk
 
         setBackgroundRole(ColorRole::Window);
 
-        app->_addWindow(std::dynamic_pointer_cast<IWindow>(shared_from_this()));
+        if (app)
+        {
+            app->_addWindow(std::dynamic_pointer_cast<IWindow>(shared_from_this()));
+        }
     }
 
     IWindow::IWindow() :
