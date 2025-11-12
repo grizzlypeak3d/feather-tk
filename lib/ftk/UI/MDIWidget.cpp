@@ -20,13 +20,13 @@ namespace ftk
     FTK_ENUM_IMPL(
         MDIResize,
         "North",
-        "NorthEast",
+        "North East",
         "East",
-        "SouthEast",
+        "South East",
         "South",
-        "SouthWest",
+        "South West",
         "West",
-        "NorthWest");
+        "North West");
 
     struct MDIWidget::Private
     {

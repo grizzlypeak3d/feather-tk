@@ -36,7 +36,13 @@ namespace textedit
         void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
     private:
-        std::map<std::string, std::shared_ptr<ftk::Label> > _labels;
+        void _textUpdate();
+
+        int _lineCount = 0;
+        int _currentLine = 0;
+        int _currentColumn = 0;
+
+        std::shared_ptr<ftk::Label> _linesLabel;
         std::shared_ptr<ftk::HorizontalLayout> _layout;
 
         std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;

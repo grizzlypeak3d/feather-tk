@@ -22,9 +22,9 @@ namespace ftk
 
     FTK_ENUM_IMPL(
         InputVideoLevels,
-        "FromFile",
-        "FullRange",
-        "LegalRange");
+        "From File",
+        "Full Range",
+        "Legal Range");
 
     FTK_ENUM_IMPL(
         AlphaBlend,

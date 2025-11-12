@@ -18,16 +18,16 @@ namespace ftk
     {
         FTK_ENUM_IMPL(
             VBOType,
-            "Pos2_F32",
-            "Pos2_F32_UV_U16",
-            "Pos2_F32_Color_F32",
-            "Pos3_F32",
-            "Pos3_F32_UV_U16",
-            "Pos3_F32_UV_U16_Normal_U10",
-            "Pos3_F32_UV_U16_Normal_U10_Color_U8",
-            "Pos3_F32_UV_F32_Normal_F32",
-            "Pos3_F32_UV_F32_Normal_F32_Color_F32",
-            "Pos3_F32_Color_U8");
+            "Pos2 F32",
+            "Pos2 F32 UV U16",
+            "Pos2 F32 Color F32",
+            "Pos3 F32",
+            "Pos3 F32 UV U16",
+            "Pos3 F32 UV U16 Normal U10",
+            "Pos3 F32 UV U16 Normal U10 Color U8",
+            "Pos3 F32 UV F32 Normal F32",
+            "Pos3 F32 UV F32 Normal F32 Color F32",
+            "Pos3 F32 Color U8");
 
         namespace
         {

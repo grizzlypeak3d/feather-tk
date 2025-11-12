@@ -57,7 +57,7 @@ namespace textedit
                 setDisplayScale(value.displayScale);
             });
 
-        // Open command line arguments.
+        // Open command line arguments or create a new document.
         std::vector<std::filesystem::path> paths;
         for (const std::string& path : _cmdLine.paths->getList())
         {
@@ -66,6 +66,10 @@ namespace textedit
         if (!paths.empty())
         {
             open(paths);
+        }
+        else
+        {
+            _documentModel->add(Document::create(context));
         }
     }
 

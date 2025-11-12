@@ -32,8 +32,7 @@
     std::string getLabel(ENUM); \
     std::string to_string(ENUM); \
     void from_string(const std::string&, ENUM&); \
-    std::ostream& operator << (std::ostream&, ENUM); \
-    std::istream& operator >> (std::istream&, ENUM&)
+    std::ostream& operator << (std::ostream&, ENUM)
 
 //! Implementation macro for enum utilities.
 //! 
@@ -70,27 +69,8 @@
         return getLabel(value); \
     } \
     \
-    void from_string(const std::string& s, ENUM& value) \
+    void from_string(const std::string& s, ENUM& out) \
     { \
-        try \
-        { \
-            std::stringstream ss(s); \
-            ss >> value; \
-        } \
-        catch (const std::exception&) \
-        {} \
-    } \
-    \
-    std::ostream& operator << (std::ostream& os, ENUM in) \
-    { \
-        os << get##ENUM##Labels()[static_cast<std::size_t>(in)]; \
-        return os; \
-    } \
-    \
-    std::istream& operator >> (std::istream& is, ENUM& out) \
-    { \
-        std::string s; \
-        is >> s; \
         const auto labels = get##ENUM##Labels(); \
         const auto i = std::find_if( \
             labels.begin(), \
@@ -99,10 +79,14 @@
             { \
                 return ftk::compare(s, value, ftk::CaseCompare::Insensitive); \
             }); \
-        if (i == labels.end()) \
+        if (i != labels.end()) \
         { \
-            throw ftk::ParseError(); \
+            out = static_cast<ENUM>(i - labels.begin()); \
         } \
-        out = static_cast<ENUM>(i - labels.begin()); \
-        return is; \
+    } \
+    \
+    std::ostream& operator << (std::ostream& os, ENUM in) \
+    { \
+        os << get##ENUM##Labels()[static_cast<std::size_t>(in)]; \
+        return os; \
     }

@@ -15,34 +15,34 @@ namespace ftk
     FTK_ENUM_IMPL(
         ImageType,
         "None",
-        "L_U8",
-        "L_U16",
-        "L_U32",
-        "L_F16",
-        "L_F32",
-        "LA_U8",
-        "LA_U16",
-        "LA_U32",
-        "LA_F16",
-        "LA_F32",
-        "RGB_U8",
-        "RGB_U10",
-        "RGB_U16",
-        "RGB_U32",
-        "RGB_F16",
-        "RGB_F32",
-        "RGBA_U8",
-        "RGBA_U16",
-        "RGBA_U32",
-        "RGBA_F16",
-        "RGBA_F32",
-        "YUV_420P_U8",
-        "YUV_422P_U8",
-        "YUV_444P_U8",
-        "YUV_420P_U16",
-        "YUV_422P_U16",
-        "YUV_444P_U16",
-        "ARGB_4444_Premult");
+        "L U8",
+        "L U16",
+        "L U32",
+        "L F16",
+        "L F32",
+        "LA U8",
+        "LA U16",
+        "LA U32",
+        "LA F16",
+        "LA F32",
+        "RGB U8",
+        "RGB U10",
+        "RGB U16",
+        "RGB U32",
+        "RGB F16",
+        "RGB F32",
+        "RGBA U8",
+        "RGBA U16",
+        "RGBA U32",
+        "RGBA F16",
+        "RGBA F32",
+        "YUV 420P U8",
+        "YUV 422P U8",
+        "YUV 444P U8",
+        "YUV 420P U16",
+        "YUV 422P U16",
+        "YUV 444P U16",
+        "ARGB 4444 Premult");
 
     int getChannelCount(ImageType value)
     {
@@ -114,8 +114,8 @@ namespace ftk
 
     FTK_ENUM_IMPL(
         VideoLevels,
-        "FullRange",
-        "LegalRange");
+        "Full Range",
+        "Legal Range");
 
     size_t ImageInfo::getByteCount() const
     {

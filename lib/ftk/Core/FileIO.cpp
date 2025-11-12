@@ -17,13 +17,13 @@ namespace ftk
         FileMode,
         "Read",
         "Write",
-        "ReadWrite",
+        "Read Write",
         "Append");
 
     FTK_ENUM_IMPL(
         FileRead,
         "Normal",
-        "MemoryMapped");
+        "Memory Mapped");
 
     std::shared_ptr<FileIO> FileIO::create(
         const std::filesystem::path& path,

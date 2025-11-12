@@ -20,25 +20,15 @@ namespace textedit
     {
         IWidget::_init(context, "examples::textedit::StatusBar", parent);
 
-        // Create the lines labels.
-        _labels["Lines"] = Label::create(context, "Lines:");
-        _labels["Lines2"] = Label::create(context);
-        _labels["Lines2"]->setFontRole(FontRole::Mono);
-
-        // Create the cursor labels.
-        _labels["Cursor"] = Label::create(context, "Cursor:");
-        _labels["Cursor2"] = Label::create(context);
-        _labels["Cursor2"]->setFontRole(FontRole::Mono);
+        // Create the labels.
+        _linesLabel = Label::create(context);
 
         // Layout the widgets.
         _layout = HorizontalLayout::create(context, shared_from_this());
         _layout->setMarginRole(SizeRole::MarginInside);
         _layout->setSpacingRole(SizeRole::SpacingSmall);
         _layout->addSpacer(Stretch::Expanding);
-        _labels["Lines"]->setParent(_layout);
-        _labels["Lines2"]->setParent(_layout);
-        _labels["Cursor"]->setParent(_layout);
-        _labels["Cursor2"]->setParent(_layout);
+        _linesLabel->setParent(_layout);
 
         // Observe the current document and update the widgets.
         std::weak_ptr<App> appWeak(app);
@@ -52,23 +42,25 @@ namespace textedit
                         doc->getModel()->observeText(),
                         [this](const std::vector<std::string>& lines)
                         {
-                            _labels["Lines2"]->setText(Format("{0}").
-                                arg(lines.size()));
+                            _lineCount = lines.size();
+                            _textUpdate();
                         });
                     _cursorObserver = ValueObserver<TextEditPos>::create(
                         doc->getModel()->observeCursor(),
                         [this](const TextEditPos& value)
                         {
-                            _labels["Cursor2"]->setText(Format("{0}, {1}").
-                                arg(value.line + 1, 4).
-                                arg(value.chr + 1, 2));
+                            _currentLine = value.line + 1;
+                            _currentColumn = value.chr + 1;
+                            _textUpdate();
                         });
                 }
                 else
                 {
+                    _lineCount = 0;
+                    _currentLine = 0;
+                    _currentColumn = 0;
                     _textObserver.reset();
-                    _labels["Lines2"]->setText(std::string());
-                    _labels["Cursor2"]->setText(std::string());
+                    _textUpdate();
                 }
             });
     }
@@ -95,5 +87,13 @@ namespace textedit
     void StatusBar::sizeHintEvent(const SizeHintEvent& event)
     {
         _setSizeHint(_layout->getSizeHint());
+    }
+
+    void StatusBar::_textUpdate()
+    {
+        _linesLabel->setText(Format("Line: {0} Column: {1} Line count: {2}").
+            arg(_currentLine).
+            arg(_currentColumn).
+            arg(_lineCount));
     }
 }

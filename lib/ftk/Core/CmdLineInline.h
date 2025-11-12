@@ -249,8 +249,7 @@ namespace ftk
         bool out = false;
         if (it != args.end())
         {
-            std::stringstream ss(*it);
-            ss >> value;
+            from_string(*it, value);
             it = args.erase(it);
             out = true;
         }

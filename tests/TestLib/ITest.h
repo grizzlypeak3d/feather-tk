@@ -48,10 +48,14 @@ namespace ftk
     } \
     { \
         const ENUM v = ENUM::First; \
+        const std::string s = to_string(v); \
+        ENUM v2 = ENUM::First; \
+        from_string(s, v2); \
+        FTK_ASSERT(v == v2); \
+    } \
+    { \
+        const ENUM v = ENUM::First; \
         std::stringstream ss; \
         ss << v; \
-        ENUM v2; \
-        ss >> v2; \
-        FTK_ASSERT(v == v2); \
     }
 
