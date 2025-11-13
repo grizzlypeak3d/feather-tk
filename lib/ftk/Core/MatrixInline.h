@@ -518,19 +518,4 @@ namespace ftk
         }
         return os;
     }
-        
-    template<int R, int C, typename T>
-    inline std::istream& operator >> (std::istream& is, Matrix<R, C, T>& m)
-    {
-        for (int r = 0; r < R; ++r)
-        {
-            for (int c = 0; c < C; ++c)
-            {
-                T v;
-                is >> v;
-                m.set(r, c, v);
-            }
-        }
-        return is;
-    }
 }

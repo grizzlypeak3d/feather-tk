@@ -142,8 +142,6 @@ namespace ftk
 
     template<int R, int C, typename T>
     std::ostream& operator << (std::ostream&, const Matrix<R, C, T>&);
-    template<int R, int C, typename T>
-    std::istream& operator >> (std::istream&, Matrix<R, C, T>&);
 
     ///@}
 }

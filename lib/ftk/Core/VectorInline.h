@@ -402,22 +402,7 @@ namespace ftk
     template<int C, typename T>
     inline std::ostream& operator << (std::ostream& os, const Vector<C, T>& v)
     {
-        int c = 0;
-        for (; c < C - 1; ++c)
-        {
-            os << v[c] << " ";
-        }
-        os << v[c];
+        os << to_string(v);
         return os;
-    }
-        
-    template<int C, typename T>
-    inline std::istream& operator >> (std::istream& is, Vector<C, T>& v)
-    {
-        for (int c = 0; c < C; ++c)
-        {
-            is >> v[c];
-        }
-        return is;
     }
 }

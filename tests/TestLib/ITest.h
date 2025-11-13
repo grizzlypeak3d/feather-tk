@@ -50,7 +50,7 @@ namespace ftk
         const ENUM v = ENUM::First; \
         const std::string s = to_string(v); \
         ENUM v2 = ENUM::First; \
-        from_string(s, v2); \
+        FTK_ASSERT(from_string(s, v2)); \
         FTK_ASSERT(v == v2); \
     } \
     { \

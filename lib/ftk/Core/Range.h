@@ -66,8 +66,6 @@ namespace ftk
 
     template<typename T>
     std::ostream& operator << (std::ostream&, const Range<T>&);
-    template<typename T>
-    std::istream& operator >> (std::istream&, Range<T>&);
 
     ///@}
 

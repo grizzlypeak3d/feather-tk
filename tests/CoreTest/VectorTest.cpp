@@ -191,6 +191,34 @@ namespace ftk
         {
             {
                 const V2I v(1, 2);
+                const std::string tmp = to_string(v);
+                V2I v1;
+                FTK_ASSERT(from_string(tmp, v1));
+                FTK_ASSERT(v == v1);
+            }
+            {
+                const V2F v(1.F, 2.F);
+                const std::string tmp = to_string(v);
+                V2F v1;
+                FTK_ASSERT(from_string(tmp, v1));
+                FTK_ASSERT(v == v1);
+            }
+            {
+                const V3F v(1.F, 2.F, 3.F);
+                const std::string tmp = to_string(v);
+                V3F v1;
+                FTK_ASSERT(from_string(tmp, v1));
+                FTK_ASSERT(v == v1);
+            }
+            {
+                const V4F v(1.F, 2.F, 3.F, 4.F);
+                const std::string tmp = to_string(v);
+                V4F v1;
+                FTK_ASSERT(from_string(tmp, v1));
+                FTK_ASSERT(v == v1);
+            }
+            {
+                const V2I v(1, 2);
                 nlohmann::json json;
                 to_json(json, v);
                 V2I v2;
@@ -225,33 +253,21 @@ namespace ftk
                 const V2I v(1, 2);
                 std::stringstream ss;
                 ss << v;
-                V2I v1;
-                ss >> v1;
-                FTK_ASSERT(v == v1);
             }
             {
                 const V2F v(1.F, 2.F);
                 std::stringstream ss;
                 ss << v;
-                V2F v1;
-                ss >> v1;
-                FTK_ASSERT(v == v1);
             }
             {
                 const V3F v(1.F, 2.F, 3.F);
                 std::stringstream ss;
                 ss << v;
-                V3F v1;
-                ss >> v1;
-                FTK_ASSERT(v == v1);
             }
             {
                 const V4F v(1.F, 2.F, 3.F, 4.F);
                 std::stringstream ss;
                 ss << v;
-                V4F v1;
-                ss >> v1;
-                FTK_ASSERT(v == v1);
             }
         }
     }

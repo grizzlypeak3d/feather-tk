@@ -83,15 +83,4 @@ namespace ftk
         os << v.min() << " " << v.max();
         return os;
     }
-
-    template<typename T>
-    inline std::istream& operator >> (std::istream& is, Range<T>& v)
-    {
-        T min(0);
-        T max(0);
-        is >> min;
-        is >> max;
-        v = Range<T>(min, max);
-        return is;
-    }
 }

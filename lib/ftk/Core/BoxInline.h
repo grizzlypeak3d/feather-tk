@@ -423,15 +423,7 @@ namespace ftk
     template<int C, typename T>
     inline std::ostream& operator << (std::ostream& os, const Box<C, T>& v)
     {
-        os << v.min << " " << v.max;
+        os << to_string(v);
         return os;
-    }
-        
-    template<int C, typename T>
-    inline std::istream& operator >> (std::istream& is, Box<C, T>& v)
-    {
-        is >> v.min;
-        is >> v.max;
-        return is;
     }
 }

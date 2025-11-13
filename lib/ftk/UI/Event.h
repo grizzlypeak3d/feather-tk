@@ -115,7 +115,7 @@ namespace ftk
     std::string to_string(KeyModifier);
 
     //! Convert from a string.
-    void from_string(const std::string&, KeyModifier&);
+    bool from_string(const std::string&, KeyModifier&);
 
     //! Check for the given key modifier.
     bool checkKeyModifier(KeyModifier, int modifiers);

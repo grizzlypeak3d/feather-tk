@@ -108,33 +108,21 @@ namespace ftk
                 const RangeI r(1, 2);
                 std::stringstream ss;
                 ss << r;
-                RangeI r1;
-                ss >> r1;
-                FTK_ASSERT(r == r1);
             }
             {
                 const RangeSizeT r(1, 2);
                 std::stringstream ss;
                 ss << r;
-                RangeSizeT r1;
-                ss >> r1;
-                FTK_ASSERT(r == r1);
             }
             {
                 const RangeF r(1.F, 2.F);
                 std::stringstream ss;
                 ss << r;
-                RangeF r1;
-                ss >> r1;
-                FTK_ASSERT(r == r1);
             }
             {
                 const RangeD r(1.0, 2.0);
                 std::stringstream ss;
                 ss << r;
-                RangeD r1;
-                ss >> r1;
-                FTK_ASSERT(r == r1);
             }
         }
     }

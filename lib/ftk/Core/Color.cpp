@@ -3,6 +3,10 @@
 
 #include <ftk/Core/Color.h>
 
+#include <ftk/Core/String.h>
+
+#include <sstream>
+
 namespace ftk
 {
     M44F brightness(const V3F& value)
@@ -153,6 +157,87 @@ namespace ftk
             break;
         default: break;
         }
+    }
+
+    std::string to_string(const Color1F& value)
+    {
+        std::stringstream ss;
+        ss << value.l;
+        return ss.str();
+    }
+
+    std::string to_string(const Color2F& value)
+    {
+        std::stringstream ss;
+        ss << value.l << " " << value.a;
+        return ss.str();
+    }
+
+    std::string to_string(const Color3F& value)
+    {
+        std::stringstream ss;
+        ss << value.r << " " << value.g << " " << value.b;
+        return ss.str();
+    }
+
+    std::string to_string(const Color4F& value)
+    {
+        std::stringstream ss;
+        ss << value.r << " " << value.g << " " << value.b << " " << value.a;
+        return ss.str();
+    }
+
+    bool from_string(const std::string& s, Color1F& value)
+    {
+        bool out = false;
+        if (!s.empty())
+        {
+            value.l = std::atof(s.c_str());
+            out = true;
+        }
+        return out;
+    }
+
+    bool from_string(const std::string& s, Color2F& value)
+    {
+        bool out = false;
+        const auto pieces = split(s, ' ');
+        if (2 == pieces.size())
+        {
+            value.l = std::atof(pieces[0].c_str());
+            value.a = std::atof(pieces[1].c_str());
+            out = true;
+        }
+        return out;
+    }
+
+    bool from_string(const std::string& s, Color3F& value)
+    {
+        bool out = false;
+        const auto pieces = split(s, ' ');
+        if (3 == pieces.size())
+        {
+            value.r = std::atof(pieces[0].c_str());
+            value.g = std::atof(pieces[1].c_str());
+            value.b = std::atof(pieces[2].c_str());
+            out = true;
+        }
+        return out;
+    }
+
+    bool from_string(const std::string& s, Color4F& value)
+    {
+        bool out = false;
+        const auto pieces = split(s, ' ');
+        if (4 == pieces.size())
+        {
+            value.r = std::atof(pieces[0].c_str());
+            value.g = std::atof(pieces[1].c_str());
+            value.b = std::atof(pieces[2].c_str());
+            value.a = std::atof(pieces[3].c_str());
+            out = true;
+        }
+        return out;
     }
 
     void to_json(nlohmann::json& json, const Color1F& value)

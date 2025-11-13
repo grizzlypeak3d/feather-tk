@@ -166,17 +166,11 @@ namespace ftk
                 const M33F m;
                 std::stringstream ss;
                 ss << m;
-                M33F m1;
-                ss >> m1;
-                FTK_ASSERT(m == m1);
             }
             {
                 const M44F m;
                 std::stringstream ss;
                 ss << m;
-                M44F m1;
-                ss >> m1;
-                FTK_ASSERT(m == m1);
             }
         }
     }

@@ -181,6 +181,27 @@ namespace ftk
         {
             {
                 const Box2I b(1, 2, 3, 4);
+                const std::string tmp = to_string(b);
+                Box2I b1;
+                FTK_ASSERT(from_string(tmp, b1));
+                FTK_ASSERT(b == b1);
+            }
+            {
+                const Box2F b(1.F, 2.F, 3.F, 4.F);
+                const std::string tmp = to_string(b);
+                Box2F b1;
+                FTK_ASSERT(from_string(tmp, b1));
+                FTK_ASSERT(b == b1);
+            }
+            {
+                const Box3F b(1.F, 2.F, 3.F, 4.F, 5.F, 6.F);
+                const std::string tmp = to_string(b);
+                Box3F b1;
+                FTK_ASSERT(from_string(tmp, b1));
+                FTK_ASSERT(b == b1);
+            }
+            {
+                const Box2I b(1, 2, 3, 4);
                 nlohmann::json json;
                 to_json(json, b);
                 Box2I b2;
@@ -207,25 +228,16 @@ namespace ftk
                 const Box2I b(1, 2, 3, 4);
                 std::stringstream ss;
                 ss << b;
-                Box2I b1;
-                ss >> b1;
-                FTK_ASSERT(b == b1);
             }
             {
                 const Box2F b(1.F, 2.F, 3.F, 4.F);
                 std::stringstream ss;
                 ss << b;
-                Box2F b1;
-                ss >> b1;
-                FTK_ASSERT(b == b1);
             }
             {
                 const Box3F b(1.F, 2.F, 3.F, 4.F, 5.F, 6.F);
                 std::stringstream ss;
                 ss << b;
-                Box3F b1;
-                ss >> b1;
-                FTK_ASSERT(b == b1);
             }
         }
     }

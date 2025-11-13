@@ -141,6 +141,16 @@ namespace ftk
     //! Round vector components.
     Vector<2, float> ceil(const Vector<2, float>&);
 
+    std::string to_string(const V2I&);
+    std::string to_string(const V2F&);
+    std::string to_string(const V3F&);
+    std::string to_string(const V4F&);
+
+    bool from_string(const std::string&, V2I&);
+    bool from_string(const std::string&, V2F&);
+    bool from_string(const std::string&, V3F&);
+    bool from_string(const std::string&, V4F&);
+
     void to_json(nlohmann::json&, const V2I&);
     void to_json(nlohmann::json&, const V2F&);
     void to_json(nlohmann::json&, const V3F&);
@@ -175,8 +185,6 @@ namespace ftk
 
     template<int C, typename T>
     std::ostream& operator << (std::ostream&, const Vector<C, T>&);
-    template<int C, typename T>
-    std::istream& operator >> (std::istream&, Vector<C, T>&);
 
     ///@}
 }

@@ -186,6 +186,34 @@ namespace ftk
         {
             {
                 const Color1F c(.5F);
+                const std::string tmp = to_string(c);
+                Color1F c1;
+                FTK_ASSERT(from_string(tmp, c1));
+                FTK_ASSERT(c == c1);
+            }
+            {
+                const Color2F c(.5F, 1.F);
+                const std::string tmp = to_string(c);
+                Color2F c1;
+                FTK_ASSERT(from_string(tmp, c1));
+                FTK_ASSERT(c == c1);
+            }
+            {
+                const Color3F c(.25F, .5F, .75F);
+                const std::string tmp = to_string(c);
+                Color3F c1;
+                FTK_ASSERT(from_string(tmp, c1));
+                FTK_ASSERT(c == c1);
+            }
+            {
+                const Color4F c(.25F, .5F, .75F, 1.F);
+                const std::string tmp = to_string(c);
+                Color4F c1;
+                FTK_ASSERT(from_string(tmp, c1));
+                FTK_ASSERT(c == c1);
+            }
+            {
+                const Color1F c(.5F);
                 nlohmann::json json;
                 to_json(json, c);
                 Color1F c2;
@@ -220,33 +248,21 @@ namespace ftk
                 const Color1F c(.5F);
                 std::stringstream ss;
                 ss << c;
-                Color1F c1;
-                ss >> c1;
-                FTK_ASSERT(c == c1);
             }
             {
                 const Color2F c(.5F, 1.F);
                 std::stringstream ss;
                 ss << c;
-                Color2F c1;
-                ss >> c1;
-                FTK_ASSERT(c == c1);
             }
             {
                 const Color3F c(.25F, .5F, .75F);
                 std::stringstream ss;
                 ss << c;
-                Color3F c1;
-                ss >> c1;
-                FTK_ASSERT(c == c1);
             }
             {
                 const Color4F c(.25F, .5F, .75F, 1.F);
                 std::stringstream ss;
                 ss << c;
-                Color4F c1;
-                ss >> c1;
-                FTK_ASSERT(c == c1);
             }
         }
     }

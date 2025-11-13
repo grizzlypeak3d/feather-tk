@@ -158,6 +158,16 @@ namespace ftk
     //! Convert HSV to RGB.
     void hsvToRGB(const float in[3], float out[3]);
 
+    std::string to_string(const Color1F&);
+    std::string to_string(const Color2F&);
+    std::string to_string(const Color3F&);
+    std::string to_string(const Color4F&);
+
+    bool from_string(const std::string&, Color1F&);
+    bool from_string(const std::string&, Color2F&);
+    bool from_string(const std::string&, Color3F&);
+    bool from_string(const std::string&, Color4F&);
+
     void to_json(nlohmann::json&, const Color1F&);
     void to_json(nlohmann::json&, const Color2F&);
     void to_json(nlohmann::json&, const Color3F&);
@@ -175,8 +185,6 @@ namespace ftk
                 
     template<int C, typename T>
     std::ostream& operator << (std::ostream&, const Color<C, T>&);
-    template<int C, typename T>
-    std::istream& operator >> (std::istream&, Color<C, T>&);
 
     ///@}
 }

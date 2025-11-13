@@ -104,6 +104,14 @@ namespace ftk
     template<typename T>
     constexpr Size<2, T> margin(const Size<2, T>&, T x, T y);
 
+    std::string to_string(const Size2I&);
+    std::string to_string(const Size2F&);
+    std::string to_string(const Size3F&);
+
+    bool from_string(const std::string&, Size2I&);
+    bool from_string(const std::string&, Size2F&);
+    bool from_string(const std::string&, Size3F&);
+
     void to_json(nlohmann::json&, const Size2I&);
     void to_json(nlohmann::json&, const Size2F&);
     void to_json(nlohmann::json&, const Size3F&);
@@ -128,8 +136,6 @@ namespace ftk
         
     template<int C, typename T>
     std::ostream& operator << (std::ostream&, const Size<C, T>&);
-    template<int C, typename T>
-    std::istream& operator >> (std::istream&, Size<C, T>&);
 
     ///@}
 }

@@ -92,16 +92,19 @@ namespace ftk
         return keyModifierLabels[value];
     }
 
-    void from_string(const std::string& s, KeyModifier& value)
+    bool from_string(const std::string& s, KeyModifier& value)
     {
+        bool out = false;
         for (auto i = keyModifierLabels.begin(); i != keyModifierLabels.end(); ++i)
         {
             if (compare(s, i->second, CaseCompare::Insensitive))
             {
                 value = i->first;
+                out = true;
                 break;
             }
         }
+        return out;
     }
 
     bool checkKeyModifier(KeyModifier modifier, int modifiers)

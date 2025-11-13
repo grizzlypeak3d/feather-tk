@@ -147,6 +147,14 @@ namespace ftk
     //! Convert box types.
     constexpr Box<2, float> convert(const Box<2, int>&);
 
+    std::string to_string(const Box2I&);
+    std::string to_string(const Box2F&);
+    std::string to_string(const Box3F&);
+
+    bool from_string(const std::string&, Box2I&);
+    bool from_string(const std::string&, Box2F&);
+    bool from_string(const std::string&, Box3F&);
+
     void to_json(nlohmann::json&, const Box2I&);
     void to_json(nlohmann::json&, const Box2F&);
     void to_json(nlohmann::json&, const Box3F&);
@@ -167,8 +175,6 @@ namespace ftk
 
     template<int C, typename T>
     std::ostream& operator << (std::ostream&, const Box<C, T>&);
-    template<int C, typename T>
-    std::istream& operator >> (std::istream&, Box<C, T>&);
 
     ///@}
 }

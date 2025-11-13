@@ -31,7 +31,7 @@
     std::vector<std::string> get##ENUM##Labels(); \
     std::string getLabel(ENUM); \
     std::string to_string(ENUM); \
-    void from_string(const std::string&, ENUM&); \
+    bool from_string(const std::string&, ENUM&); \
     std::ostream& operator << (std::ostream&, ENUM)
 
 //! Implementation macro for enum utilities.
@@ -69,8 +69,9 @@
         return getLabel(value); \
     } \
     \
-    void from_string(const std::string& s, ENUM& out) \
+    bool from_string(const std::string& s, ENUM& value) \
     { \
+        bool out = false; \
         const auto labels = get##ENUM##Labels(); \
         const auto i = std::find_if( \
             labels.begin(), \
@@ -81,8 +82,10 @@
             }); \
         if (i != labels.end()) \
         { \
-            out = static_cast<ENUM>(i - labels.begin()); \
+            value = static_cast<ENUM>(i - labels.begin()); \
+            out = true; \
         } \
+        return out; \
     } \
     \
     std::ostream& operator << (std::ostream& os, ENUM in) \
