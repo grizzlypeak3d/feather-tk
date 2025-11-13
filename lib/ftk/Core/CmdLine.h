@@ -197,6 +197,7 @@ namespace ftk
     bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, bool&);
     bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, int&);
     bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, float&);
+    bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, double&);
     template<typename T>
     bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, T&);
 }

@@ -97,4 +97,16 @@ namespace ftk
         }
         return out;
     }
+
+    bool cmdLineParse(std::vector<std::string>& args, std::vector<std::string>::iterator& it, double& value)
+    {
+        bool out = false;
+        if (it != args.end())
+        {
+            value = std::atof(it->c_str());
+            it = args.erase(it);
+            out = true;
+        }
+        return out;
+    }
 }
