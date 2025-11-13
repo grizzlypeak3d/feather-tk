@@ -6,7 +6,7 @@ if(POLICY CMP0135)
 endif()
 
 set(ftk_VERSION_MAJOR "0")
-set(ftk_VERSION_MINOR "5")
+set(ftk_VERSION_MINOR "6")
 set(ftk_VERSION_PATCH "0")
 set(ftk_VERSION ${ftk_VERSION_MAJOR}.${ftk_VERSION_MINOR}.${ftk_VERSION_PATCH})
 add_definitions(-Dftk_VERSION_MAJOR=${ftk_VERSION_MAJOR})
