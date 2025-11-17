@@ -17,6 +17,7 @@ namespace ftk
         bool scrollBarsVisible = true;
         bool scrollBarsAutoHide = true;
         bool scrollEventsEnabled = true;
+        int lineStep = 10;
         bool border = true;
         SizeRole marginRole = SizeRole::None;
 
@@ -219,6 +220,16 @@ namespace ftk
         _p->scrollEventsEnabled = value;
     }
 
+    int ScrollWidget::getLineStep() const
+    {
+        return _p->lineStep;
+    }
+
+    void ScrollWidget::setLineStep(int value)
+    {
+        _p->lineStep = value;
+    }
+
     SizeRole ScrollWidget::getMarginRole() const
     {
         return _p->marginRole;
@@ -322,7 +333,12 @@ namespace ftk
         {
             event.accept = true;
             V2I scrollPos = getScrollPos();
-            scrollPos.y -= event.value.y * _getLineStep();
+            int lineStep = p.lineStep;
+            if (p.size.displayScale.has_value())
+            {
+                lineStep *= p.size.displayScale.value();
+            }
+            scrollPos.y -= event.value.y * lineStep;
             setScrollPos(scrollPos);
         }
     }
@@ -363,13 +379,6 @@ namespace ftk
     {
         IWidget::keyReleaseEvent(event);
         event.accept = true;
-    }
-
-    int ScrollWidget::_getLineStep() const
-    {
-        FTK_P();
-        const Size2I scrollAreaSize = p.scrollArea->getGeometry().size();
-        return scrollAreaSize.h / 10.F;
     }
 
     int ScrollWidget::_getPageStep() const

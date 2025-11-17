@@ -78,6 +78,12 @@ namespace ftk
         //! Set whether scroll events are enabled.
         void setScrollEventsEnabled(bool);
 
+        //! Get the line step.
+        int getLineStep() const;
+
+        //! Set the line step.
+        void setLineStep(int);
+
         //! Get the margin role.
         SizeRole getMarginRole() const;
 
@@ -104,7 +110,6 @@ namespace ftk
         void keyReleaseEvent(KeyEvent&) override;
 
     private:
-        int _getLineStep() const;
         int _getPageStep() const;
 
         void _scrollBarsUpdate();
