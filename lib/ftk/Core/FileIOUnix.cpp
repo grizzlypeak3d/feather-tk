@@ -3,9 +3,9 @@
 
 #include <ftk/Core/FileIO.h>
 
-#include <ftk/Core/File.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Memory.h>
+#include <ftk/Core/Path.h>
 
 #include <filesystem>
 
