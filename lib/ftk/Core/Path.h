@@ -56,8 +56,11 @@ namespace ftk
     //! * padding: 4
     //! * extension: .exr
     //! * request: ?user=foo;password=bar
+    //! * file name: render.0001.exr
     class Path
     {
+       void _init(const std::string&);
+
     public:
         Path() = default;
         explicit Path(const std::string&);
@@ -66,6 +69,7 @@ namespace ftk
         ///@{
 
         const std::string& get() const;
+        bool isEmpty() const;
 
         bool hasProtocol() const;
         bool hasDir() const;
@@ -82,6 +86,8 @@ namespace ftk
         std::string getExt() const;
         std::string getRequest() const;
 
+        std::string getFileName() const;
+
         ///@}
 
         //! \name File Sequences
@@ -91,10 +97,10 @@ namespace ftk
         void setFrames(const FrameRange&);
 
         //! Get a path with a frame number.
-        std::string getPath(int64_t frame) const;
+        std::string getFrame(int64_t frame, bool dir = true) const;
 
-        //! Get a file name with a frame number.
-        std::string getFileName(int64_t frame) const;
+        //! Get the frame range string.
+        std::string getFrameRange() const;
 
         //! Get whether a path is part of this sequence.
         bool seq(const Path&) const;

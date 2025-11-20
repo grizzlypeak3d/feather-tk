@@ -12,7 +12,7 @@
 #include <ftk/UI/StackLayout.h>
 #include <ftk/UI/ToolButton.h>
 
-#include <ftk/Core/File.h>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {

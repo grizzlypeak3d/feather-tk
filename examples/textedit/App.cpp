@@ -219,11 +219,11 @@ namespace textedit
                 auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();
                 fileBrowserSystem->open(
                     _mainWindow,
-                    [this, doc](const std::filesystem::path& path)
+                    [this, doc](const Path& path)
                     {
                         try
                         {
-                            doc->saveAs(path);
+                            doc->saveAs(std::filesystem::u8path(path.get()));
                         }
                         catch (const std::exception& e)
                         {
@@ -259,11 +259,11 @@ namespace textedit
             auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();
             fileBrowserSystem->open(
                 _mainWindow,
-                [this, doc](const std::filesystem::path& path)
+                [this, doc](const Path& path)
                 {
                     try
                     {
-                        doc->saveAs(path);
+                        doc->saveAs(std::filesystem::u8path(path.get()));
                     }
                     catch (const std::exception& e)
                     {

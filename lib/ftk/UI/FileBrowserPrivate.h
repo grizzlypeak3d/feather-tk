@@ -181,7 +181,7 @@ namespace ftk
 
     struct FileBrowserInfo
     {
-        std::filesystem::path           path;
+        Path                            path;
         bool                            isDir = false;
         size_t                          size  = 0;
         std::filesystem::file_time_type time;
@@ -209,9 +209,9 @@ namespace ftk
 
         void reload();
 
-        void setCallback(const std::function<void(const std::filesystem::path&)>&);
+        void setCallback(const std::function<void(const Path&)>&);
 
-        void setSelectCallback(const std::function<void(const std::filesystem::path&)>&);
+        void setSelectCallback(const std::function<void(const Path&)>&);
 
         void setSearch(const std::string&);
 

@@ -30,6 +30,12 @@ namespace ftk
     }
 
     template<typename T>
+    constexpr bool Range<T>::equal() const
+    {
+        return _min == _max;
+    }
+
+    template<typename T>
     constexpr bool Range<T>::operator == (const Range<T>& value) const
     {
         return _min == value._min && _max == value._max;

@@ -5,7 +5,7 @@
 
 #include <ftk/UI/FileBrowser.h>
 
-#include <filesystem>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {
@@ -40,13 +40,13 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the path.
-        const std::filesystem::path& getPath() const;
+        const Path& getPath() const;
 
         //! Set the path.
-        void setPath(const std::filesystem::path&);
+        void setPath(const Path&);
 
         //! Set the callback.
-        void setCallback(const std::function<void(const std::filesystem::path&)>&);
+        void setCallback(const std::function<void(const Path&)>&);
 
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;

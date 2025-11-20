@@ -49,11 +49,11 @@ namespace ftk
         std::shared_ptr<Splitter> splitter;
         std::shared_ptr<VerticalLayout> layout;
 
-        std::function<void(const std::filesystem::path&)> callback;
+        std::function<void(const Path&)> callback;
         std::function<void(void)> cancelCallback;
 
         std::shared_ptr<ValueObserver<int> > currentObserver;
-        std::shared_ptr<ValueObserver<std::filesystem::path> > pathObserver;
+        std::shared_ptr<ValueObserver<Path> > pathObserver;
         std::shared_ptr<ValueObserver<bool> > forwardObserver;
         std::shared_ptr<ValueObserver<bool> > backObserver;
         std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
@@ -63,7 +63,7 @@ namespace ftk
     void FileBrowserWidget::_init(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::filesystem::path& fileName,
+        const Path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
@@ -121,7 +121,7 @@ namespace ftk
         p.viewScrollWidget->setVStretch(Stretch::Expanding);
 
         p.fileEdit = LineEdit::create(context);
-        p.fileEdit->setText(fileName.u8string());
+        p.fileEdit->setText(path.get());
 
         p.searchBox = SearchBox::create(context);
         p.searchBox->setTooltip("Filter");
@@ -193,11 +193,11 @@ namespace ftk
             [this]
             {
                 FTK_P();
-                const std::filesystem::path path(p.model->getPath());
+                const std::filesystem::path path = std::filesystem::u8path(p.model->getPath().get());
                 const std::filesystem::path parentPath(path.parent_path());
                 if (parentPath != path)
                 {
-                    p.model->setPath(parentPath.u8string());
+                    p.model->setPath(Path(parentPath.u8string()));
                 }
             });
 
@@ -222,7 +222,7 @@ namespace ftk
         p.pathWidget->setCallback(
             [this](const std::filesystem::path& value)
             {
-                _p->model->setPath(value);
+                _p->model->setPath(Path(value.u8string()));
             });
         p.pathWidget->setEditCallback(
             [this](bool value)
@@ -234,27 +234,25 @@ namespace ftk
             });
 
         p.view->setCallback(
-            [this](const std::filesystem::path& value)
+            [this](const Path& value)
             {
                 FTK_P();
                 if (p.recentFilesModel)
                 {
-                    p.recentFilesModel->addRecent(value);
+                    p.recentFilesModel->addRecent(value.get());
                 }
                 if (p.callback)
                 {
-                    std::filesystem::path tmp = value;
-                    tmp.replace_filename(std::filesystem::u8path(p.fileEdit->getText()));
-                    p.callback(tmp);
+                    p.callback(value);
                 }
             });
         p.view->setSelectCallback(
-            [this](const std::filesystem::path& value)
+            [this](const Path& value)
             {
                 FTK_P();
-                if (!value.empty())
+                if (!value.isEmpty())
                 {
-                    p.fileEdit->setText(value.filename().u8string());
+                    p.fileEdit->setText(value.getFileName());
                 }
             });
 
@@ -327,12 +325,12 @@ namespace ftk
                 }
             });
 
-        p.pathObserver = ValueObserver<std::filesystem::path>::create(
+        p.pathObserver = ValueObserver<Path>::create(
             model->observePath(),
-            [this](const std::filesystem::path& value)
+            [this](const Path& value)
             {
                 FTK_P();
-                p.pathWidget->setPath(value);
+                p.pathWidget->setPath(std::filesystem::u8path(value.get()));
                 p.viewScrollWidget->setScrollPos(V2I());
             });
 
@@ -375,13 +373,13 @@ namespace ftk
     std::shared_ptr<FileBrowserWidget> FileBrowserWidget::create(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::filesystem::path& fileName,
+        const Path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<FileBrowserWidget>(new FileBrowserWidget);
-        out->_init(context, title, fileName, mode, model, parent);
+        out->_init(context, title, path, mode, model, parent);
         return out;
     }
 
@@ -390,7 +388,7 @@ namespace ftk
         _p->titleLabel->setText(value);
     }
 
-    void FileBrowserWidget::setCallback(const std::function<void(const std::filesystem::path&)>& value)
+    void FileBrowserWidget::setCallback(const std::function<void(const Path&)>& value)
     {
         _p->callback = value;
     }
@@ -432,27 +430,29 @@ namespace ftk
     void FileBrowserWidget::_accept(const std::string& text)
     {
         FTK_P();
-        std::filesystem::path path;
+        Path path;
         switch (p.mode)
         {
         case FileBrowserMode::File:
             if (!text.empty())
             {
-                path = p.model->getPath() / std::filesystem::u8path(text);
+                path = Path((std::filesystem::u8path(p.model->getPath().get()) /
+                    std::filesystem::u8path(text)).u8string());
             }
             break;
         case FileBrowserMode::Dir:
             path = p.model->getPath();
             if (!text.empty())
             {
-                path = path / std::filesystem::u8path(text);
+                path = Path((std::filesystem::u8path(path.get()) /
+                    std::filesystem::u8path(text)).u8string());
             }
             break;
         default: break;
         }
-        if (!path.empty() && p.recentFilesModel)
+        if (!path.isEmpty() && p.recentFilesModel)
         {
-            p.recentFilesModel->addRecent(path);
+            p.recentFilesModel->addRecent(path.get());
         }
         if (p.callback)
         {

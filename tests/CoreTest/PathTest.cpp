@@ -197,17 +197,18 @@ namespace ftk
                 FTK_ASSERT(r == p.getFrames());
             }
             {
-                std::string tmp = Path("render.exr").getPath(2);
+                std::string tmp = Path("render.exr").getFrame(100);
                 FTK_ASSERT(tmp == "render.exr");
-                tmp = Path("render.1.exr").getPath(2);
-                FTK_ASSERT(tmp == "render.2.exr");
-                tmp = Path("render.0001.exr").getPath(2);
-                FTK_ASSERT(tmp == "render.0002.exr");
-                tmp = Path("/tmp/render.0001.exr").getFileName(2);
-                FTK_ASSERT(tmp == "render.0002.exr");
+                tmp = Path("render.1.exr").getFrame(100);
+                FTK_ASSERT(tmp == "render.100.exr");
+                tmp = Path("render.0001.exr").getFrame(100);
+                FTK_ASSERT(tmp == "render.0100.exr");
+                tmp = Path("/tmp/render.0001.exr").getFrame(100, false);
+                FTK_ASSERT(tmp == "render.0100.exr");
             }
             {
                 Path p("render.1.exr");
+                FTK_ASSERT("render.1.exr" == p.getFrameRange());
                 const Path p2("render.100.exr");
                 const Path p3("render.exr");
                 FTK_ASSERT(p.seq(p2));
@@ -216,6 +217,7 @@ namespace ftk
                 FTK_ASSERT(FrameRange(1, 100) == p.getFrames());
                 FTK_ASSERT(!p.addSeq(p3));
                 FTK_ASSERT(FrameRange(1, 100) == p.getFrames());
+                FTK_ASSERT("render.1-100.exr" == p.getFrameRange());
             }
             {
                 const Path p("render.1.exr");

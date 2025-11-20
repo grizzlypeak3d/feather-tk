@@ -5,8 +5,8 @@
 
 #include <ftk/UI/DrawUtil.h>
 
-#include <ftk/Core/File.h>
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Path.h>
 #include <ftk/Core/String.h>
 
 #include <filesystem>
@@ -35,10 +35,10 @@ namespace ftk
         std::vector<FileBrowserInfo> info;
         std::shared_ptr<ObservableValue<int> > current;
         std::vector<FileBrowserItem> items;
-        std::function<void(const std::filesystem::path&)> callback;
-        std::function<void(const std::filesystem::path&)> selectCallback;
+        std::function<void(const Path&)> callback;
+        std::function<void(const Path&)> selectCallback;
 
-        std::shared_ptr<ValueObserver<std::filesystem::path> > pathObserver;
+        std::shared_ptr<ValueObserver<Path> > pathObserver;
         std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
         std::shared_ptr<ValueObserver<std::string> > extensionObserver;
 
@@ -85,9 +85,9 @@ namespace ftk
         p.model = model;
         p.current = ObservableValue<int>::create(-1);
 
-        p.pathObserver = ValueObserver<std::filesystem::path>::create(
+        p.pathObserver = ValueObserver<Path>::create(
             model->observePath(),
-            [this](const std::filesystem::path&)
+            [this](const Path&)
             {
                 _directoryUpdate();
             });
@@ -130,12 +130,12 @@ namespace ftk
         _directoryUpdate();
     }
 
-    void FileBrowserView::setCallback(const std::function<void(const std::filesystem::path&)>& value)
+    void FileBrowserView::setCallback(const std::function<void(const Path&)>& value)
     {
         _p->callback = value;
     }
 
-    void FileBrowserView::setSelectCallback(const std::function<void(const std::filesystem::path&)>& value)
+    void FileBrowserView::setSelectCallback(const std::function<void(const Path&)>& value)
     {
         _p->selectCallback = value;
     }
@@ -199,7 +199,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(FontRole::Mono, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             const int imageHeight = p.directoryImage ?
                 p.directoryImage->getHeight() :
@@ -483,7 +483,7 @@ namespace ftk
     {
         void list(
             FileBrowserMode mode,
-            const std::filesystem::path& path,
+            const Path& path,
             const FileBrowserOptions& options,
             const std::string& extension,
             const std::string& search,
@@ -491,22 +491,22 @@ namespace ftk
         {
             try
             {
-                for (const auto& i : std::filesystem::directory_iterator(path))
+                for (const auto& i : std::filesystem::directory_iterator(path.get()))
                 {
-                    const std::filesystem::path& path = i.path();
-                    const std::string fileName = path.filename().u8string();
+                    const Path path(i.path().u8string());
+                    const std::string fileName = i.path().filename().u8string();
 
                     bool keep = true;
                     if (keep && !options.hidden && isDotFile(fileName))
                     {
                         keep = false;
                     }
-                    const bool isDir = std::filesystem::is_directory(path);
+                    const bool isDir = std::filesystem::is_directory(i.path());
                     if (keep && !isDir && !extension.empty())
                     {
                         keep = compare(
                             extension,
-                            path.extension().u8string(),
+                            path.getExt(),
                             CaseCompare::Insensitive);
                     }
                     if (keep && !search.empty())
@@ -523,11 +523,30 @@ namespace ftk
 
                     if (keep)
                     {
-                        out.push_back({
-                            path,
-                            isDir,
-                            isDir ? 0 : std::filesystem::file_size(path),
-                            std::filesystem::last_write_time(path) });
+                        bool seq = false;
+                        if (options.seq && !isDir)
+                        {
+                            for (auto& j : out)
+                            {
+                                if (j.path.addSeq(path))
+                                {
+                                    seq = true;
+                                    j.size += std::filesystem::file_size(i.path());
+                                    j.time = std::max(
+                                        j.time,
+                                        std::filesystem::last_write_time(i.path()));
+                                    break;
+                                }
+                            }
+                        }
+                        if (!seq)
+                        {
+                            out.push_back({
+                                path,
+                                isDir,
+                                isDir ? 0 : std::filesystem::file_size(i.path()),
+                                std::filesystem::last_write_time(i.path()) });
+                        }
                     }
                 }
             }
@@ -540,13 +559,13 @@ namespace ftk
             case FileBrowserSort::Name:
                 sort = [](const FileBrowserInfo& a, const FileBrowserInfo& b)
                     {
-                        return a.path.filename() < b.path.filename();
+                        return a.path.getFileName() < b.path.getFileName();
                     };
                 break;
             case FileBrowserSort::Extension:
                 sort = [](const FileBrowserInfo& a, const FileBrowserInfo& b)
                     {
-                        return a.path.extension() < b.path.extension();
+                        return a.path.getExt() < b.path.getExt();
                     };
                 break;
             case FileBrowserSort::Size:
@@ -604,12 +623,19 @@ namespace ftk
                 FileBrowserItem item;
 
                 // File name.
-                std::string text = info.path.filename().u8string();
+                std::string text = info.path.getFileName();
                 item.text.push_back(text);
+
+                // Frame range.
+                if (info.path.hasNum() &&
+                    !info.path.getFrames().equal())
+                {
+                    item.text.push_back(Format("{0}").arg(info.path.getFrameRange(), 8 + 1 + 8));
+                }
 
                 // File extension.
                 text = !info.isDir ?
-                    info.path.extension().u8string() :
+                    Format("{0}").arg(info.path.getExt(), 6) :
                     std::string();
                 item.text.push_back(text);
 
@@ -619,17 +645,17 @@ namespace ftk
                     if (info.size < megabyte)
                     {
                         text = Format("{0}KB").
-                            arg(info.size / static_cast<float>(kilobyte), 2);
+                            arg(info.size / static_cast<float>(kilobyte), 2, 6);
                     }
                     else if (info.size < gigabyte)
                     {
                         text = Format("{0}MB").
-                            arg(info.size / static_cast<float>(megabyte), 2);
+                            arg(info.size / static_cast<float>(megabyte), 2, 6);
                     }
                     else
                     {
                         text = Format("{0}GB").
-                            arg(info.size / static_cast<float>(gigabyte), 2);
+                            arg(info.size / static_cast<float>(gigabyte), 2, 6);
                     }
                     item.text.push_back(text);
                 }
@@ -645,7 +671,7 @@ namespace ftk
         p.current->setIfChanged(-1);
         if (p.selectCallback)
         {
-            p.selectCallback(std::filesystem::path());
+            p.selectCallback(Path());
         }
 
         setSizeUpdate();
@@ -659,7 +685,7 @@ namespace ftk
         const int tmp = !p.info.empty() ?
             clamp(index, 0, static_cast<int>(p.info.size()) - 1) :
             -1;
-        std::filesystem::path path;
+        Path path;
         if (tmp != -1)
         {
             path = p.info[tmp].path;

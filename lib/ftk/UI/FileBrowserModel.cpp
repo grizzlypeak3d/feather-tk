@@ -7,9 +7,9 @@ namespace ftk
 {
     struct FileBrowserModel::Private
     {
-        std::vector<std::filesystem::path> paths;
+        std::vector<Path> paths;
         int currentPath = -1;
-        std::shared_ptr<ObservableValue<std::filesystem::path> > path;
+        std::shared_ptr<ObservableValue<Path> > path;
         std::shared_ptr<ObservableValue<bool> > hasForward;
         std::shared_ptr<ObservableValue<bool> > hasBack;
         std::shared_ptr<ObservableValue<FileBrowserOptions> > options;
@@ -21,10 +21,10 @@ namespace ftk
         _p(new Private)
     {
         FTK_P();
-        const std::filesystem::path path = std::filesystem::current_path();
+        const Path path(std::filesystem::current_path().u8string());
         p.paths.push_back(path);
         p.currentPath = 0;
-        p.path = ObservableValue<std::filesystem::path>::create(path);
+        p.path = ObservableValue<Path>::create(path);
         p.hasForward = ObservableValue<bool>::create(false);
         p.hasBack = ObservableValue<bool>::create(false);
         p.options = ObservableValue<FileBrowserOptions>::create();
@@ -40,17 +40,17 @@ namespace ftk
         return std::shared_ptr<FileBrowserModel>(new FileBrowserModel(context));
     }
 
-    const std::filesystem::path& FileBrowserModel::getPath() const
+    const Path& FileBrowserModel::getPath() const
     {
         return _p->path->get();
     }
 
-    std::shared_ptr<IObservableValue<std::filesystem::path> > FileBrowserModel::observePath() const
+    std::shared_ptr<IObservableValue<Path> > FileBrowserModel::observePath() const
     {
         return _p->path;
     }
 
-    void FileBrowserModel::setPath(const std::filesystem::path& value)
+    void FileBrowserModel::setPath(const Path& value)
     {
         FTK_P();
         while (p.currentPath < static_cast<int>(p.paths.size()) - 1)

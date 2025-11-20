@@ -24,6 +24,8 @@ namespace ftk
         constexpr T min() const;
         constexpr T max() const;
 
+        constexpr bool equal() const;
+
         constexpr bool operator == (const Range<T>&) const;
         constexpr bool operator != (const Range<T>&) const;
         constexpr bool operator < (const Range<T>&) const;

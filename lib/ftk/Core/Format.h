@@ -29,7 +29,7 @@ namespace ftk
         //! object is returned so that you can chain calls together.
         ///@{
 
-        Format& arg(const std::string&);
+        Format& arg(const std::string&, int width = 0);
         Format& arg(int, int width = 0, char pad = ' ');
         Format& arg(int8_t, int width = 0, char pad = ' ');
         Format& arg(uint8_t, int width = 0, char pad = ' ');

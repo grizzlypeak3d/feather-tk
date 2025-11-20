@@ -51,9 +51,10 @@ namespace ftk
         return ss.str();
     }
 
-    Path::Path(const std::string& value) :
-        _path(value)
+    void Path::_init(const std::string& value)
     {
+        _path = value;
+
         // Find the request.
         size_t size = _path.size();
         size_t requestPos = std::string::npos;
@@ -185,6 +186,11 @@ namespace ftk
                 protocolDirSize,
                 size - protocolDirSize);
         }
+    }
+
+    Path::Path(const std::string& value)
+    {
+        _init(value);
     }
 
     void Path::setFrames(const FrameRange& value)

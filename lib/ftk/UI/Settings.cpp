@@ -4,10 +4,10 @@
 #include <ftk/UI/Settings.h>
 
 #include <ftk/Core/Context.h>
-#include <ftk/Core/File.h>
 #include <ftk/Core/FileIO.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
+#include <ftk/Core/Path.h>
 #include <ftk/Core/String.h>
 
 #include <map>

@@ -84,7 +84,7 @@ namespace ftk
 
                 auto model = FileBrowserModel::create(context);
                 auto view = FileBrowserView::create(context, FileBrowserMode::File, model, window);
-                std::filesystem::path path = std::filesystem::current_path();
+                Path path(std::filesystem::current_path().u8string());
                 model->setPath(path);
                 model->setPath(path);
                 FTK_ASSERT(path == model->getPath());
@@ -95,7 +95,7 @@ namespace ftk
                 model->setOptions(options);
                 FTK_ASSERT(options == model->getOptions());
                 view->setCallback(
-                    [&path](const std::filesystem::path& value)
+                    [&path](const Path& value)
                     {
                         path = value;
                     });
@@ -127,7 +127,7 @@ namespace ftk
                 window->show();
                 app->tick();
 
-                std::filesystem::path path = std::filesystem::current_path();
+                Path path(std::filesystem::current_path().u8string());
                 auto model = FileBrowserModel::create(context);
                 auto fileBrowserWidget = FileBrowserWidget::create(
                     context,
@@ -144,7 +144,7 @@ namespace ftk
                 auto recentFilesModel = RecentFilesModel::create(context);
                 fileBrowserWidget->setRecentFilesModel(recentFilesModel);
                 fileBrowserWidget->setCallback(
-                    [&path](const std::filesystem::path& value)
+                    [&path](const Path& value)
                     {
                         path = value;
                     });
@@ -172,7 +172,7 @@ namespace ftk
                 window->show();
                 app->tick();
 
-                std::filesystem::path path = std::filesystem::current_path();
+                Path path(std::filesystem::current_path().u8string());
                 auto model = FileBrowserModel::create(context);
                 auto fileBrowser = FileBrowser::create(
                     context,
@@ -188,7 +188,7 @@ namespace ftk
                 fileBrowser->setRecentFilesModel(recentFilesModel);
                 FTK_ASSERT(recentFilesModel == fileBrowser->getRecentFilesModel());
                 fileBrowser->setCallback(
-                    [&path](const std::filesystem::path& value)
+                    [&path](const Path& value)
                     {
                         path = value;
                     });

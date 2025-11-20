@@ -47,12 +47,12 @@ namespace ftk
                 app->tick();
 
                 auto edit = FileEdit::create(context, layout);
-                std::filesystem::path path = std::filesystem::current_path();
+                Path path(std::filesystem::current_path().u8string());
                 edit->setPath(path);
                 edit->setPath(path);
                 FTK_ASSERT(path == edit->getPath());
                 edit->setCallback(
-                    [&path](const std::filesystem::path& value)
+                    [&path](const Path& value)
                     {
                         path = value;
                     });

@@ -6,6 +6,7 @@
 #include <ftk/UI/IDialog.h>
 
 #include <ftk/Core/ISystem.h>
+#include <ftk/Core/Path.h>
 
 #include <filesystem>
 
@@ -47,6 +48,7 @@ namespace ftk
         bool                        pathEdit    = false;
         FileBrowserSort             sort        = FileBrowserSort::Name;
         bool                        reverseSort = false;
+        bool                        seq         = true;
         bool                        hidden      = false;
         std::map<std::string, bool> bellows =
         {
@@ -74,13 +76,13 @@ namespace ftk
             const std::shared_ptr<Context>&);
 
         //! Get the current path.
-        const std::filesystem::path& getPath() const;
+        const Path& getPath() const;
 
         //! Observe the current path.
-        std::shared_ptr<IObservableValue<std::filesystem::path> > observePath() const;
+        std::shared_ptr<IObservableValue<Path> > observePath() const;
 
         //! Set the current path.
-        void setPath(const std::filesystem::path&);
+        void setPath(const Path&);
 
         //! Go forward to the next path.
         void forward();
@@ -132,7 +134,7 @@ namespace ftk
         void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const std::filesystem::path&,
+            const Path&,
             FileBrowserMode,
             const std::shared_ptr<FileBrowserModel>& model,
             const std::shared_ptr<IWidget>& parent);
@@ -146,7 +148,7 @@ namespace ftk
         static std::shared_ptr<FileBrowserWidget> create(
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
-            const std::filesystem::path& fileName = std::filesystem::path(),
+            const Path& = Path(),
             FileBrowserMode = FileBrowserMode::File,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -155,7 +157,7 @@ namespace ftk
         void setTitle(const std::string&);
 
         //! Set the callback.
-        void setCallback(const std::function<void(const std::filesystem::path&)>&);
+        void setCallback(const std::function<void(const Path&)>&);
 
         //! Set the cancel callback.
         void setCancelCallback(const std::function<void(void)>&);
@@ -188,7 +190,7 @@ namespace ftk
         void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const std::filesystem::path&,
+            const Path&,
             FileBrowserMode,
             const std::shared_ptr<FileBrowserModel>& model,
             const std::shared_ptr<IWidget>& parent);
@@ -202,7 +204,7 @@ namespace ftk
         static std::shared_ptr<FileBrowser> create(
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
-            const std::filesystem::path& fileName = std::filesystem::path(),
+            const Path& = Path(),
             FileBrowserMode = FileBrowserMode::File,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -211,7 +213,7 @@ namespace ftk
         void setTitle(const std::string&);
 
         //! Set the callback.
-        void setCallback(const std::function<void(const std::filesystem::path&)>&);
+        void setCallback(const std::function<void(const Path&)>&);
 
         //! Get the file browser model.
         const std::shared_ptr<FileBrowserModel>& getModel() const;
@@ -242,9 +244,9 @@ namespace ftk
         //! Open the file browser.
         void open(
             const std::shared_ptr<IWindow>&,
-            const std::function<void(const std::filesystem::path&)>&,
+            const std::function<void(const Path&)>&,
             const std::string& title = "Open",
-            const std::filesystem::path& fileName = std::filesystem::path(),
+            const Path& = Path(),
             FileBrowserMode = FileBrowserMode::File);
 
         //! Get whether the native file dialog is used.

@@ -30,7 +30,7 @@ namespace ftk
         _text(value)
     {}
 
-    Format& Format::arg(const std::string& value)
+    Format& Format::arg(const std::string& value, int width)
     {
         try
         {
@@ -65,7 +65,12 @@ namespace ftk
             }
             if (matches.size() > 0)
             {
-                _text.replace(matches.begin()->second.pos, matches.begin()->second.length, value);
+                std::string tmp = value;
+                if (tmp.size() < width)
+                {
+                    tmp = std::string(width - tmp.size(), ' ') + tmp;
+                }
+                _text.replace(matches.begin()->second.pos, matches.begin()->second.length, tmp);
             }
             else
             {

@@ -12,13 +12,13 @@ namespace ftk
     struct FileEdit::Private
     {
         FileBrowserMode mode = FileBrowserMode::File;
-        std::filesystem::path path;
+        Path path;
 
         std::shared_ptr<LineEdit> lineEdit;
         std::shared_ptr<ToolButton> browseButton;
         std::shared_ptr<HorizontalLayout> layout;
 
-        std::function<void(const std::filesystem::path&)> callback;
+        std::function<void(const Path&)> callback;
     };
 
     void FileEdit::_init(
@@ -50,7 +50,7 @@ namespace ftk
         p.lineEdit->setTextCallback(
             [this](const std::string& value)
             {
-                _p->path = value;
+                _p->path = Path(value);
                 if (_p->callback)
                 {
                     _p->callback(_p->path);
@@ -95,22 +95,22 @@ namespace ftk
         return out;
     }
 
-    const std::filesystem::path& FileEdit::getPath() const
+    const Path& FileEdit::getPath() const
     {
         return _p->path;
     }
 
-    void FileEdit::setPath(const std::filesystem::path& value)
+    void FileEdit::setPath(const Path& value)
     {
         FTK_P();
         if (value == p.path)
             return;
         p.path = value;
-        p.lineEdit->setText(value.u8string());
+        p.lineEdit->setText(value.get());
         _widgetUpdate();
     }
 
-    void FileEdit::setCallback(const std::function<void(const std::filesystem::path&)>& value)
+    void FileEdit::setCallback(const std::function<void(const Path&)>& value)
     {
         _p->callback = value;
     }
@@ -135,11 +135,11 @@ namespace ftk
             {
                 fileBrowserSystem->open(
                     getWindow(),
-                    [this](const std::filesystem::path& value)
+                    [this](const Path& value)
                     {
                         FTK_P();
                         p.path = value;
-                        p.lineEdit->setText(p.path.u8string());
+                        p.lineEdit->setText(p.path.get());
                         _widgetUpdate();
                         if (p.callback)
                         {
@@ -147,7 +147,7 @@ namespace ftk
                         }
                     },
                     "File Browser",
-                    std::filesystem::u8path(p.lineEdit->getText()),
+                    p.path,
                     p.mode);
             }
         }

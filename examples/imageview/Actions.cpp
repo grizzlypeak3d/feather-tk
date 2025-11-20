@@ -75,11 +75,11 @@ namespace imageview
                 auto fileBrowserSystem = app->getContext()->getSystem<FileBrowserSystem>();
                 fileBrowserSystem->open(
                     app->getMainWindow(),
-                    [appWeak](const std::filesystem::path& value)
+                    [appWeak](const Path& value)
                     {
                         if (auto app = appWeak.lock())
                         {
-                            app->open(value);
+                            app->open(std::filesystem::u8path(value.get()));
                         }
                     });
             });

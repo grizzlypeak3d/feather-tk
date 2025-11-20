@@ -5,7 +5,7 @@
 
 #include <ftk/UI/RecentFilesModel.h>
 
-#include <ftk/Core/File.h>
+#include <ftk/Core/Path.h>
 
 #if defined(FTK_NFD)
 #include <nfd.hpp>
@@ -56,9 +56,9 @@ namespace ftk
 
     void FileBrowserSystem::open(
         const std::shared_ptr<IWindow>& window,
-        const std::function<void(const std::filesystem::path&)>& callback,
+        const std::function<void(const Path&)>& callback,
         const std::string& title,
-        const std::filesystem::path& fileName,
+        const Path& path,
         FileBrowserMode mode)
     {
         FTK_P();
@@ -95,7 +95,7 @@ namespace ftk
                     p.fileBrowser = FileBrowser::create(
                         context,
                         title,
-                        fileName,
+                        path,
                         mode,
                         p.model);
                 }
@@ -103,7 +103,7 @@ namespace ftk
                 p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
                 p.fileBrowser->open(window);
                 p.fileBrowser->setCallback(
-                    [this, callback](const std::filesystem::path& value)
+                    [this, callback](const Path& value)
                     {
                         callback(value);
                         _p->fileBrowser->close();

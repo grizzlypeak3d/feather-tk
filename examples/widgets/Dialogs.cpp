@@ -103,9 +103,9 @@ namespace widgets
 
         // File browsers.
         auto fileEdit = FileEdit::create(context, layout);
-        fileEdit->setPath("File Browser");
+        fileEdit->setPath(Path("File Browser"));
         auto dirEdit = FileEdit::create(context, FileBrowserMode::Dir, layout);
-        dirEdit->setPath("Directory Browser");
+        dirEdit->setPath(Path("Directory Browser"));
     }
 
     Dialogs::~Dialogs()

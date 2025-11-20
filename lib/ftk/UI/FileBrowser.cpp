@@ -31,6 +31,7 @@ namespace ftk
             pathEdit == other.pathEdit &&
             sort == other.sort &&
             reverseSort == other.reverseSort &&
+            seq == other.seq &&
             hidden == other.hidden &&
             bellows == other.bellows;
     }
@@ -48,7 +49,7 @@ namespace ftk
     void FileBrowser::_init(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::filesystem::path& fileName,
+        const Path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
@@ -59,7 +60,7 @@ namespace ftk
         p.widget = FileBrowserWidget::create(
             context,
             title,
-            fileName,
+            path,
             mode,
             model,
             shared_from_this());
@@ -81,13 +82,13 @@ namespace ftk
     std::shared_ptr<FileBrowser> FileBrowser::create(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::filesystem::path& fileName,
+        const Path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<FileBrowser>(new FileBrowser);
-        out->_init(context, title, fileName, mode, model, parent);
+        out->_init(context, title, path, mode, model, parent);
         return out;
     }
 
@@ -96,7 +97,7 @@ namespace ftk
         _p->widget->setTitle(value);
     }
 
-    void FileBrowser::setCallback(const std::function<void(const std::filesystem::path&)>& value)
+    void FileBrowser::setCallback(const std::function<void(const Path&)>& value)
     {
         _p->widget->setCallback(value);
     }
@@ -122,6 +123,7 @@ namespace ftk
         json["PathEdit"] = value.pathEdit;
         json["Sort"] = to_string(value.sort);
         json["ReverseSort"] = value.reverseSort;
+        json["Sequence"] = value.seq;
         json["Hidden"] = value.hidden;
         for (const auto& i : value.bellows)
         {
@@ -135,6 +137,7 @@ namespace ftk
         json.at("PathEdit").get_to(value.pathEdit);
         from_string(json.at("Sort").get<std::string>(), value.sort);
         json.at("ReverseSort").get_to(value.reverseSort);
+        json.at("Seq").get_to(value.seq);
         json.at("Hidden").get_to(value.hidden);
         for (auto i = json.at("Bellows").begin(); i != json.at("Bellows").end(); ++i)
         {

@@ -12,7 +12,7 @@
 #include <ftk/UI/RecentFilesModel.h>
 #include <ftk/UI/RowLayout.h>
 
-#include <ftk/Core/File.h>
+#include <ftk/Core/Path.h>
 
 #include <filesystem>
 
@@ -49,7 +49,7 @@ namespace ftk
                 FTK_P();
                 if (index >= 0 && index < p.drives.size())
                 {
-                    model->setPath(p.drives[index]);
+                    model->setPath(Path(p.drives[index].u8string()));
                 }
             });
 
@@ -125,7 +125,7 @@ namespace ftk
                 FTK_P();
                 if (index >= 0 && index < p.shortcuts.size())
                 {
-                    model->setPath(p.shortcuts[index]);
+                    model->setPath(Path(p.shortcuts[index].u8string()));
                 }
             });
     }
@@ -206,7 +206,7 @@ namespace ftk
                 FTK_P();
                 if (index >= 0 && index < p.recent.size())
                 {
-                    model->setPath(p.recent[index]);
+                    model->setPath(Path(p.recent[index].u8string()));
                 }
             });
     }
@@ -295,6 +295,7 @@ namespace ftk
     struct FileBrowserSettings::Private
     {
         FileBrowserOptions options;
+        std::shared_ptr<ftk::CheckBox> seqCheckBox;
         std::shared_ptr<ftk::CheckBox> hiddenCheckBox;
         std::shared_ptr<FormLayout> layout;
         std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
@@ -308,12 +309,24 @@ namespace ftk
         IWidget::_init(context, "ftk::FileBrowserSettings", parent);
         FTK_P();
 
+        p.seqCheckBox = ftk::CheckBox::create(context);
+        p.seqCheckBox->setHStretch(ftk::Stretch::Expanding);
+
         p.hiddenCheckBox = ftk::CheckBox::create(context);
         p.hiddenCheckBox->setHStretch(ftk::Stretch::Expanding);
 
         p.layout = FormLayout::create(context, shared_from_this());
         p.layout->setMarginRole(ftk::SizeRole::MarginSmall);
+        p.layout->addRow("File sequences:", p.seqCheckBox);
         p.layout->addRow("Show hidden:", p.hiddenCheckBox);
+
+        p.seqCheckBox->setCheckedCallback(
+            [model](bool value)
+            {
+                FileBrowserOptions options = model->getOptions();
+                options.seq = value;
+                model->setOptions(options);
+            });
 
         p.hiddenCheckBox->setCheckedCallback(
             [model](bool value)
@@ -327,6 +340,7 @@ namespace ftk
             model->observeOptions(),
             [this](const FileBrowserOptions& value)
             {
+                _p->seqCheckBox->setChecked(value.seq);
                 _p->hiddenCheckBox->setChecked(value.hidden);
             });
     }

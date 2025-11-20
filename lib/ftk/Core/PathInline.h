@@ -13,6 +13,11 @@ namespace ftk
         return _path;
     }
 
+    inline bool Path::isEmpty() const
+    {
+        return _path.empty();
+    }
+
     inline bool Path::hasProtocol() const
     {
         return _protocol.first != std::string::npos && _protocol.second != std::string::npos;
@@ -90,23 +95,30 @@ namespace ftk
             std::string();
     }
 
+    inline std::string Path::getFileName() const
+    {
+        return getBase() + getNum() + getExt();
+    }
+
     inline const FrameRange& Path::getFrames() const
     {
         return _frames;
     }
 
-    inline std::string Path::getPath(int64_t frame) const
+    inline std::string Path::getFrame(int64_t frame, bool dir) const
     {
         return _num.first != std::string::npos && _num.second != std::string::npos ?
-            (getDir() + getBase() + toString(frame, _pad) + getExt()) :
-            (getDir() + getBase() + getExt());
+            ((dir ? getDir() : std::string()) + getBase() + toString(frame, _pad) + getExt()) :
+            ((dir ? getDir() : std::string()) + getBase() + getExt());
     }
 
-    inline std::string Path::getFileName(int64_t frame) const
+    inline std::string Path::getFrameRange() const
     {
-        return _num.first != std::string::npos && _num.second != std::string::npos ?
-            (getBase() + toString(frame, _pad) + getExt()) :
-            (getBase() + getExt());
+        return hasNum() ?
+            _frames.min() != _frames.max() ?
+                toString(_frames.min(), _pad) + "-" + toString(_frames.max(), _pad) :
+                toString(_frames.min(), _pad) :
+            std::string();
     }
 
     inline bool Path::seq(const Path& other) const

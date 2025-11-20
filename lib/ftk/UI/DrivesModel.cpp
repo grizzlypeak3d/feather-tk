@@ -3,7 +3,7 @@
 
 #include <ftk/UI/DrivesModel.h>
 
-#include <ftk/Core/File.h>
+#include <ftk/Core/Path.h>
 #include <ftk/Core/Time.h>
 #include <ftk/Core/Timer.h>
 
