@@ -332,13 +332,21 @@ namespace ftk
         if (p.scrollEventsEnabled)
         {
             event.accept = true;
-            V2I scrollPos = getScrollPos();
             int lineStep = p.lineStep;
             if (p.size.displayScale.has_value())
             {
                 lineStep *= p.size.displayScale.value();
             }
-            scrollPos.y -= event.value.y * lineStep;
+            V2I scrollPos = getScrollPos();
+            switch (p.scrollArea->getScrollType())
+            {
+            case ScrollType::Horizontal:
+                scrollPos.x -= event.value.y * lineStep;
+                break;
+            default:
+                scrollPos.y -= event.value.y * lineStep;
+                break;
+            }
             setScrollPos(scrollPos);
         }
     }
