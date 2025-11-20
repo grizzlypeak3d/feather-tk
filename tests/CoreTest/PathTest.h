@@ -9,15 +9,15 @@ namespace ftk
 {
     namespace core_test
     {
-        class FileTest : public test::ITest
+        class PathTest : public test::ITest
         {
         protected:
-            FileTest(const std::shared_ptr<Context>&);
+            PathTest(const std::shared_ptr<Context>&);
 
         public:
-            virtual ~FileTest();
+            virtual ~PathTest();
 
-            static std::shared_ptr<FileTest> create(
+            static std::shared_ptr<PathTest> create(
                 const std::shared_ptr<Context>&);
 
             void run() override;
@@ -27,6 +27,7 @@ namespace ftk
             void _split();
             void _drives();
             void _userPaths();
+            void _path();
         };
     }
 }

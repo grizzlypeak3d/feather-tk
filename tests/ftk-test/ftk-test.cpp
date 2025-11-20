@@ -75,7 +75,6 @@
 #include <CoreTest/CommandTest.h>
 #include <CoreTest/ErrorTest.h>
 #include <CoreTest/FileIOTest.h>
-#include <CoreTest/FileTest.h>
 #include <CoreTest/FontSystemTest.h>
 #include <CoreTest/FormatTest.h>
 #include <CoreTest/ImageIOTest.h>
@@ -89,6 +88,7 @@
 #include <CoreTest/OSTest.h>
 #include <CoreTest/ObservableTest.h>
 #include <CoreTest/PNGTest.h>
+#include <CoreTest/PathTest.h>
 #include <CoreTest/RandomTest.h>
 #include <CoreTest/RangeTest.h>
 #include <CoreTest/RenderOptionsTest.h>
@@ -159,7 +159,6 @@ namespace ftk
             p.tests.push_back(core_test::CommandTest::create(context));
             p.tests.push_back(core_test::ErrorTest::create(context));
             p.tests.push_back(core_test::FileIOTest::create(context));
-            p.tests.push_back(core_test::FileTest::create(context));
             p.tests.push_back(core_test::FontSystemTest::create(context));
             p.tests.push_back(core_test::FormatTest::create(context));
             p.tests.push_back(core_test::ImageIOTest::create(context));
@@ -173,6 +172,7 @@ namespace ftk
             p.tests.push_back(core_test::OSTest::create(context));
             p.tests.push_back(core_test::ObservableTest::create(context));
             p.tests.push_back(core_test::PNGTest::create(context));
+            p.tests.push_back(core_test::PathTest::create(context));
             p.tests.push_back(core_test::RandomTest::create(context));
             p.tests.push_back(core_test::RangeTest::create(context));
             p.tests.push_back(core_test::RenderOptionsTest::create(context));

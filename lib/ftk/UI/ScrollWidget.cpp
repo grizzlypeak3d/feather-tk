@@ -17,7 +17,7 @@ namespace ftk
         bool scrollBarsVisible = true;
         bool scrollBarsAutoHide = true;
         bool scrollEventsEnabled = true;
-        int lineStep = 10;
+        int lineStep = 20;
         bool border = true;
         SizeRole marginRole = SizeRole::None;
 

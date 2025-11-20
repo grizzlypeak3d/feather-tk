@@ -7,7 +7,6 @@ set(HEADERS
     CmdLineTest.h
     ErrorTest.h
     FileIOTest.h
-    FileTest.h
     FontSystemTest.h
     FormatTest.h
     ImageIOTest.h
@@ -21,6 +20,7 @@ set(HEADERS
     OSTest.h
     ObservableTest.h
     PNGTest.h
+    PathTest.h
     RandomTest.h
     RangeTest.h
     RenderOptionsTest.h
@@ -42,7 +42,6 @@ set(SOURCE
     CommandTest.cpp
     ErrorTest.cpp
     FileIOTest.cpp
-    FileTest.cpp
     FontSystemTest.cpp
     FormatTest.cpp
     ImageIOTest.cpp
@@ -56,6 +55,7 @@ set(SOURCE
     OSTest.cpp
     ObservableTest.cpp
     PNGTest.cpp
+    PathTest.cpp
     RandomTest.cpp
     RangeTest.cpp
     RenderOptionsTest.cpp

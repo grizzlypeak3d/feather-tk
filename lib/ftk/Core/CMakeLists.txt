@@ -13,7 +13,6 @@ set(HEADERS
     Error.h
     FileIO.h
     FileIOInline.h
-    File.h
     FontSystem.h
     FontSystemInline.h
     Format.h
@@ -46,6 +45,8 @@ set(HEADERS
     ObservableValue.h
     ObservableValueInline.h
     PNG.h
+    Path.h
+    PathInline.h
     Random.h
     RandomInline.h
     Range.h
@@ -72,7 +73,6 @@ set(SOURCE
     Color.cpp
     Context.cpp
     Error.cpp
-    File.cpp
     FileIO.cpp
     FontSystem.cpp
     Format.cpp
@@ -90,6 +90,7 @@ set(SOURCE
     PNG.cpp
     PNGRead.cpp
     PNGWrite.cpp
+    Path.cpp
     OS.cpp
     Random.cpp
     Range.cpp
@@ -104,14 +105,14 @@ if(WIN32)
     list(APPEND SOURCE
         ErrorWin32.cpp
         FileIOWin32.cpp
-        FileWin32.cpp
         OSWin32.cpp
+        PathWin32.cpp
         TimeWin32.cpp)
 else()
     list(APPEND SOURCE
         FileIOUnix.cpp
-        FileUnix.cpp
         OSUnix.cpp
+        PathUnix.cpp
         TimeUnix.cpp)
 endif()
 
