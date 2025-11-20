@@ -19,6 +19,7 @@ set(HEADERS
     ObservableMapInline.h
     ObservableValue.h
     ObservableValueInline.h
+    Path.h
     Random.h
     Range.h
     Size.h
@@ -43,6 +44,7 @@ set(SOURCE
     ObservableList.cpp
     ObservableMap.cpp
     ObservableValue.cpp
+    Path.cpp
     Random.cpp
     Range.cpp
     Size.cpp

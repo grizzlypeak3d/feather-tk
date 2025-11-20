@@ -18,6 +18,7 @@
 #include <CorePy/ObservableMap.h>
 #include <CorePy/ObservableValue.h>
 #include <CorePy/OS.h>
+#include <CorePy/Path.h>
 #include <CorePy/Random.h>
 #include <CorePy/Range.h>
 #include <CorePy/Size.h>
@@ -51,6 +52,7 @@ namespace ftk
         observableMap(m);
         observableValue(m);
         os(m);
+        path(m);
         random(m);
         range(m);
         size(m);

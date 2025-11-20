@@ -34,11 +34,11 @@ namespace ftk
             .def_property("path",
                 [](const std::shared_ptr<FileEdit>& w)
                 {
-                    return w->getPath().u8string();
+                    return w->getPath().get();
                 },
                 [](const std::shared_ptr<FileEdit>& w, const std::string& s)
                 {
-                    w->setPath(s);
+                    w->setPath(Path(s));
                 })
             .def("setCallback", &FileEdit::setCallback);
     }
