@@ -623,7 +623,9 @@ namespace ftk
                 FileBrowserItem item;
 
                 // File name.
-                std::string text = info.path.getFileName();
+                std::string text = !info.path.getFrames().equal() ?
+                    info.path.getFrame(info.path.getFrames().min(), false) :
+                    info.path.getFileName();
                 item.text.push_back(text);
 
                 // Frame range.
@@ -635,7 +637,7 @@ namespace ftk
 
                 // File extension.
                 text = !info.isDir ?
-                    Format("{0}").arg(info.path.getExt(), 6) :
+                    Format("{0}").arg(info.path.getExt(), 6).str() :
                     std::string();
                 item.text.push_back(text);
 
