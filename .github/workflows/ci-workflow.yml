@@ -36,8 +36,7 @@ jobs:
     - name: Run tests
       run: |
         cd build-Debug
-        xvfb-run tests/ftk-test/ftk-test PathTest
-        #xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
+        xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
       if: env.FTK_GCOV == 'ON'
