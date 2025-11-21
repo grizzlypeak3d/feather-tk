@@ -249,6 +249,9 @@ namespace ftk
             }
             const auto dirEntries = dirList(dir);
             FTK_ASSERT(3 == dirEntries.size());
+            _print("List 0: " + dirEntries[0].path.getFileName());
+            _print("List 1: " + dirEntries[1].path.getFileName());
+            _print("List 2: " + dirEntries[2].path.getFileName());
             FTK_ASSERT("render.0.exr" == dirEntries[0].path.getFileName());
             FTK_ASSERT(0 == dirEntries[0].path.getFrames().min());
             FTK_ASSERT(9 == dirEntries[0].path.getFrames().max());
