@@ -51,10 +51,89 @@ namespace ftk
         return ss.str();
     }
 
-    void Path::_init(const std::string& value)
+    Path::Path(const std::string& value) :
+        _path(value)
     {
-        _path = value;
+        _parse();
+    }
 
+    void Path::setProtocol(const std::string& value)
+    {
+        _path = value + getDir() + getBase() + getNum() + getExt() + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setDir(const std::string& value)
+    {
+        _path = getProtocol() + value + getBase() + getNum() + getExt() + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setBase(const std::string& value)
+    {
+        _path = getProtocol() + getDir() + value + getNum() + getExt() + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setNum(const std::string& value)
+    {
+        _path = getProtocol() + getDir() + getBase() + value + getExt() + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setExt(const std::string& value)
+    {
+        _path = getProtocol() + getDir() + getBase() + getNum() + value + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setRequest(const std::string& value)
+    {
+        _path = getProtocol() + getDir() + getBase() + getNum() + getExt() + value;
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setFileName(const std::string& value)
+    {
+        _path = getProtocol() + getDir() + value + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
+    void Path::setFrames(const FrameRange& value)
+    {
+        _frames = value;
+    }
+
+    bool Path::addSeq(const Path& other)
+    {
+        bool out = seq(other);
+        if (out)
+        {
+            _frames = expand(_frames, other._frames);
+            _pad = std::max(_pad, other._pad);
+        }
+        return out;
+    }
+
+    const std::string Path::numbers = "0123456789#";
+    const std::string Path::pathSeparators = "/\\";
+
+    void Path::_parse()
+    {
         // Find the request.
         size_t size = _path.size();
         size_t requestPos = std::string::npos;
@@ -188,30 +267,6 @@ namespace ftk
         }
     }
 
-    Path::Path(const std::string& value)
-    {
-        _init(value);
-    }
-
-    void Path::setFrames(const FrameRange& value)
-    {
-        _frames = value;
-    }
-
-    bool Path::addSeq(const Path& other)
-    {
-        bool out = seq(other);
-        if (out)
-        {
-            _frames = expand(_frames, other._frames);
-            _pad = std::max(_pad, other._pad);
-        }
-        return out;
-    }
-
-    const std::string Path::numbers = "0123456789#";
-    const std::string Path::pathSeparators = "/\\";
-
     FTK_ENUM_IMPL(
         DirListSort,
         "Name",
@@ -263,6 +318,7 @@ namespace ftk
                 const Path path(i.path().u8string());
                 const std::string fileName = i.path().filename().u8string();
 
+                // Apply filters.
                 bool keep = true;
                 if (keep && !options.hidden && isDotFile(fileName))
                 {
@@ -290,6 +346,7 @@ namespace ftk
 
                 if (keep)
                 {
+                    // Check for sequences.
                     bool seq = false;
                     if (options.seq && !isDir)
                     {
@@ -308,8 +365,10 @@ namespace ftk
                             }
                         }
                     }
+
                     if (!seq)
                     {
+                        // Add the entry.
                         out.push_back({
                             path,
                             isDir,
@@ -322,6 +381,17 @@ namespace ftk
         catch (const std::exception&)
         {}
 
+        // Seq sequence numbers to their first frame.
+        for (auto& i : out)
+        {
+            const auto& frames = i.path.getFrames();
+            if (!frames.equal())
+            {
+                i.path.setNum(toString(frames.min(), i.path.getPad()));
+            }
+        }
+
+        // Sort the entries.
         std::function<int(const DirEntry& a, const DirEntry& b)> sort;
         switch (options.sort)
         {
@@ -362,6 +432,8 @@ namespace ftk
                 std::sort(out.begin(), out.end(), sort);
             }
         }
+
+        // Sort the directories.
         std::stable_sort(
             out.begin(),
             out.end(),
@@ -379,6 +451,8 @@ namespace ftk
         size_t seqMaxDigits)
     {
         bool out = false;
+
+        // Find matching sequence files.
         bool init = true;
         const Path tmp(stdpath.u8string());
         for (const auto& i : std::filesystem::directory_iterator(stdpath.parent_path()))
@@ -398,6 +472,14 @@ namespace ftk
                 path.addSeq(entry);
             }
         }
+
+        // Set the sequence number to the first frame.
+        const auto& frames = path.getFrames();
+        if (out && !frames.equal())
+        {
+            path.setNum(toString(frames.min(), path.getPad()));
+        }
+
         return out;
     }
 

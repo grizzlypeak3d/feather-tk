@@ -230,6 +230,21 @@ namespace ftk
                 FTK_ASSERT("1-100" == p.getFrameRange());
             }
             {
+                Path p("render.1.exr");
+                p.setProtocol("file://");
+                FTK_ASSERT("file://render.1.exr" == p.get());
+                p.setDir("/tmp/");
+                FTK_ASSERT("file:///tmp/render.1.exr" == p.get());
+                p.setBase("lighting");
+                FTK_ASSERT("file:///tmp/lighting1.exr" == p.get());
+                p.setNum("0100");
+                FTK_ASSERT("file:///tmp/lighting0100.exr" == p.get());
+                p.setExt(".tiff");
+                FTK_ASSERT("file:///tmp/lighting0100.tiff" == p.get());
+                p.setRequest("?user=foo;password=bar");
+                FTK_ASSERT("file:///tmp/lighting0100.tiff?user=foo;password=bar" == p.get());
+            }
+            {
                 const Path p("render.1.exr");
                 const Path p2("render.100.exr");
                 FTK_ASSERT(p == p);

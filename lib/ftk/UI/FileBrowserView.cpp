@@ -501,10 +501,7 @@ namespace ftk
                 FileBrowserItem item;
 
                 // File name.
-                std::string text = !dirEntry.path.getFrames().equal() ?
-                    dirEntry.path.getFrame(dirEntry.path.getFrames().min(), false) :
-                    dirEntry.path.getFileName();
-                item.text.push_back(text);
+                item.text.push_back(dirEntry.path.getFileName());
 
                 // Frame range.
                 if (dirEntry.path.hasNum() &&
@@ -515,14 +512,14 @@ namespace ftk
                 }
 
                 // File extension.
-                text = !dirEntry.isDir ?
+                item.text.push_back(!dirEntry.isDir ?
                     Format("{0}").arg(dirEntry.path.getExt(), 6).str() :
-                    std::string();
-                item.text.push_back(text);
+                    std::string());
 
                 // File size.
                 if (!dirEntry.isDir)
                 {
+                    std::string text;
                     if (dirEntry.size < megabyte)
                     {
                         text = Format("{0}KB").

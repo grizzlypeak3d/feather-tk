@@ -59,8 +59,6 @@ namespace ftk
     //! * file name: render.0001.exr
     class Path
     {
-       void _init(const std::string&);
-
     public:
         Path() = default;
         explicit Path(const std::string&);
@@ -85,8 +83,15 @@ namespace ftk
         int getPad() const;
         std::string getExt() const;
         std::string getRequest() const;
-
         std::string getFileName() const;
+
+        void setProtocol(const std::string&);
+        void setDir(const std::string&);
+        void setBase(const std::string&);
+        void setNum(const std::string&);
+        void setExt(const std::string&);
+        void setRequest(const std::string&);
+        void setFileName(const std::string&);
 
         ///@}
 
@@ -122,6 +127,8 @@ namespace ftk
         bool operator != (const Path&) const;
 
     private:
+        void _parse();
+
         std::string _path;
         std::pair<size_t, size_t> _protocol = { std::string::npos, std::string::npos };
         std::pair<size_t, size_t> _dir = { std::string::npos, std::string::npos };
