@@ -157,6 +157,7 @@ namespace ftk
                     { "/tmp/render.1.exr", "", "/tmp/", "render.", "1", 0, ".exr", "" },
                     { "/tmp/render.0001.exr", "", "/tmp/", "render.", "0001", 4, ".exr", "" },
                     { "/tmp/render0001.exr", "", "/tmp/", "render", "0001", 4, ".exr", "" },
+                    { "/tmp/render-0001.exr", "", "/tmp/", "render", "-0001", 4, ".exr", "" },
                     { ".", "", "", ".", "", 0, "", "" },
                     { "..", "", "", "..", "", 0, "", "" },
                     { "/.", "", "/", ".", "", 0, "", "" },
@@ -166,10 +167,13 @@ namespace ftk
                     { "/tmp/.dotdir/.dotfile", "", "/tmp/.dotdir/", ".dotfile", "", 0, "", "" },
                     { "0", "", "", "", "0", 1, "", "" },
                     { "0001", "", "", "", "0001", 4, "", "" },
+                    { "-0001", "", "", "", "-0001", 4, "", "" },
                     { "####", "", "", "", "####", 4, "", "" },
                     { "/tmp/0001", "", "/tmp/", "", "0001", 4, "", "" },
+                    { "/tmp/-0001", "", "/tmp/", "", "-0001", 4, "", "" },
                     { "/tmp/####", "", "/tmp/", "", "####", 4, "", "" },
                     { "/tmp/0001.exr", "", "/tmp/", "", "0001", 4, ".exr", "" },
+                    { "/tmp/-0001.exr", "", "/tmp/", "", "-0001", 4, ".exr", "" },
                     { "/tmp/####.exr", "", "/tmp/", "", "####", 4, ".exr", "" },
                     { "0001.exr", "", "", "", "0001", 4, ".exr", "" },
                     { "####.exr", "", "", "", "####", 4, ".exr", "" },
@@ -215,6 +219,14 @@ namespace ftk
                 FTK_ASSERT(tmp == "render.0100.exr");
                 tmp = Path("/tmp/render.0001.exr").getFrame(100, false);
                 FTK_ASSERT(tmp == "render.0100.exr");
+            }
+            {
+                PathOptions options;
+                Path path("render.0000000001.exr", options);
+                FTK_ASSERT(!path.hasNum());
+                options.seqNegative = false;
+                path = Path("render-0001.exr", options);
+                FTK_ASSERT("0001" == path.getNum());
             }
             {
                 Path p("render.1.exr");

@@ -8,6 +8,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <set>
 #include <vector>
 
 namespace ftk
@@ -43,6 +44,16 @@ namespace ftk
     //! Convert a frame number to a string.
     std::string toString(int64_t frame, int pad = 0);
 
+    //! File path options.
+    struct PathOptions
+    {
+        bool   seqNegative  = true;
+        size_t seqMaxDigits = 9;
+
+        bool operator == (const PathOptions&) const;
+        bool operator != (const PathOptions&) const;
+    };
+    
     //! File path.
     //! 
     //! Example: file:///tmp/render.0001.exr?user=foo;password=bar
@@ -58,7 +69,15 @@ namespace ftk
     {
     public:
         Path() = default;
-        explicit Path(const std::string&);
+        explicit Path(const std::string&, const PathOptions& = PathOptions());
+
+        //! \name Path Options
+        ///@{
+
+        const PathOptions& getOptions();
+        void setOptions(const PathOptions&);
+
+        ///@}
 
         //! \name Path Components
         ///@{
@@ -125,9 +144,10 @@ namespace ftk
         bool operator != (const Path&) const;
 
     private:
-        void _parse();
+        void _parse(const PathOptions&);
 
         std::string _path;
+        PathOptions _options;
         std::pair<size_t, size_t> _protocol = { std::string::npos, std::string::npos };
         std::pair<size_t, size_t> _dir = { std::string::npos, std::string::npos };
         std::pair<size_t, size_t> _base = { std::string::npos, std::string::npos };
@@ -154,14 +174,16 @@ namespace ftk
     //! Directory list options.
     struct DirListOptions
     {
-        DirListSort sort         = DirListSort::Name;
-        bool        sortReverse  = false;
-        std::string filter;
-        bool        filterFiles  = false;
-        std::string filterExt;
-        bool        seq          = true;
-        size_t      seqMaxDigits = 9;
-        bool        hidden       = false;
+        DirListSort           sort         = DirListSort::Name;
+        bool                  sortReverse  = false;
+        std::string           filter;
+        bool                  filterFiles  = false;
+        std::string           filterExt;
+        bool                  seq          = true;
+        std::set<std::string> seqExts;
+        bool                  seqNegative  = true;
+        size_t                seqMaxDigits = 9;
+        bool                  hidden       = false;
 
         bool operator == (const DirListOptions&) const;
         bool operator != (const DirListOptions&) const;
@@ -191,8 +213,10 @@ namespace ftk
         Path&,
         size_t seqMaxDigits = 9);
 
+    void to_json(nlohmann::json&, const PathOptions&);
     void to_json(nlohmann::json&, const DirListOptions&);
 
+    void from_json(const nlohmann::json&, PathOptions&);
     void from_json(const nlohmann::json&, DirListOptions&);
 
     ///@}

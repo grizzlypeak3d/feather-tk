@@ -51,17 +51,41 @@ namespace ftk
         return ss.str();
     }
 
-    Path::Path(const std::string& value) :
-        _path(value)
+    bool PathOptions::operator == (const PathOptions& other) const
     {
-        _parse();
+        return
+            seqNegative == other.seqNegative &&
+            seqMaxDigits == other.seqMaxDigits;
+    }
+
+    bool PathOptions::operator != (const PathOptions& other) const
+    {
+        return !(*this == other);
+    }
+
+    Path::Path(const std::string& value, const PathOptions& options) :
+        _path(value),
+        _options(options)
+    {
+        _parse(options);
+    }
+
+    const PathOptions& Path::getOptions()
+    {
+        return _options;
+    }
+
+    void Path::setOptions(const PathOptions& value)
+    {
+        _options = value;
+        _parse(_options);
     }
 
     void Path::setProtocol(const std::string& value)
     {
         _path = value + getDir() + getBase() + getNum() + getExt() + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -69,7 +93,7 @@ namespace ftk
     {
         _path = getProtocol() + value + getBase() + getNum() + getExt() + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -77,7 +101,7 @@ namespace ftk
     {
         _path = getProtocol() + getDir() + value + getNum() + getExt() + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -85,7 +109,7 @@ namespace ftk
     {
         _path = getProtocol() + getDir() + getBase() + value + getExt() + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -99,7 +123,7 @@ namespace ftk
         }
         _path = getProtocol() + getDir() + getBase() + num + getExt() + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -107,7 +131,7 @@ namespace ftk
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + value + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -115,7 +139,7 @@ namespace ftk
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + getExt() + value;
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -123,7 +147,7 @@ namespace ftk
     {
         _path = getProtocol() + getDir() + value + getRequest();
         const RangeI64 tmp = _frames;
-        _parse();
+        _parse(_options);
         _frames = tmp;
     }
 
@@ -146,7 +170,7 @@ namespace ftk
     const std::string Path::numbers = "0123456789#";
     const std::string Path::pathSeparators = "/\\";
 
-    void Path::_parse()
+    void Path::_parse(const PathOptions& options)
     {
         // Find the request.
         size_t size = _path.size();
@@ -258,14 +282,37 @@ namespace ftk
                     break;
                 }
             }
+            if (numPos != std::string::npos &&
+                size - numPos > options.seqMaxDigits)
+            {
+                numPos = std::string::npos;
+            }
+            if (options.seqNegative &&
+                numPos != std::string::npos &&
+                numPos > protocolDirSize &&
+                '-' == _path[numPos - 1])
+            {
+                --numPos;
+            }
         }
         if (numPos != std::string::npos)
         {
             const size_t sizeTmp = size - numPos;
             _num = std::pair<size_t, size_t>(numPos, sizeTmp);
-            if ('0' == _path[numPos] || '#' == _path[numPos])
+            if ('0' == _path[numPos])
             {
                 _pad = sizeTmp;
+            }
+            else if ('#' == _path[numPos])
+            {
+                _pad = sizeTmp;
+            }
+            if (options.seqNegative &&
+                '-' == _path[numPos] &&
+                numPos < size - 1 &&
+                '0' == _path[numPos + 1])
+            {
+                _pad = sizeTmp - 1;
             }
             const int64_t frame = std::atoi(getNum().c_str());
             _frames = RangeI64(frame, frame);
@@ -297,6 +344,8 @@ namespace ftk
             filterFiles == other.filterFiles &&
             filterExt == other.filterExt &&
             seq == other.seq &&
+            seqExts == other.seqExts &&
+            seqNegative == other.seqNegative &&
             seqMaxDigits == other.seqMaxDigits &&
             hidden == other.hidden;
     }
@@ -325,11 +374,14 @@ namespace ftk
         const DirListOptions& options)
     {
         std::vector<DirEntry> out;
+        PathOptions pathOptions;
+        pathOptions.seqNegative = options.seqNegative;
+        pathOptions.seqMaxDigits = options.seqMaxDigits;
         try
         {
             for (const auto& i : std::filesystem::directory_iterator(path))
             {
-                const Path path(i.path().u8string());
+                const Path path(i.path().u8string(), pathOptions);
                 const std::string fileName = i.path().filename().u8string();
 
                 // Apply filters.
@@ -362,13 +414,16 @@ namespace ftk
                 {
                     // Check for sequences.
                     bool seq = false;
-                    if (options.seq && !isDir)
+                    bool seqExt = true;
+                    if (!options.seqExts.empty())
+                    {
+                        seqExt = options.seqExts.find(toLower(path.getExt())) != options.seqExts.end();
+                    }
+                    if (options.seq && seqExt && !isDir)
                     {
                         for (auto& j : out)
                         {
-                            if (path.getNum().size() <= options.seqMaxDigits &&
-                                j.path.getNum().size() <= options.seqMaxDigits &&
-                                j.path.addSeq(path))
+                            if (j.path.addSeq(path))
                             {
                                 seq = true;
                                 j.size += std::filesystem::file_size(i.path());
@@ -497,6 +552,12 @@ namespace ftk
         return out;
     }
 
+    void to_json(nlohmann::json& json, const PathOptions& value)
+    {
+        json["SeqNegative"] = value.seqNegative;
+        json["SeqMaxDigits"] = value.seqMaxDigits;
+    }
+
     void to_json(nlohmann::json& json, const DirListOptions& value)
     {
         json["Sort"] = to_string(value.sort);
@@ -505,8 +566,16 @@ namespace ftk
         json["FilterFiles"] = value.filterFiles;
         json["FilterExt"] = value.filterExt;
         json["Seq"] = value.seq;
+        json["SeqExts"] = value.seqExts;
+        json["SeqNegative"] = value.seqNegative;
         json["SeqMaxDigits"] = value.seqMaxDigits;
         json["Hidden"] = value.hidden;
+    }
+
+    void from_json(const nlohmann::json& json, PathOptions& value)
+    {
+        json.at("SeqNegative").get_to(value.seqNegative);
+        json.at("SeqMaxDigits").get_to(value.seqMaxDigits);
     }
 
     void from_json(const nlohmann::json& json, DirListOptions& value)
@@ -517,6 +586,8 @@ namespace ftk
         json.at("FilterFiles").get_to(value.filterFiles);
         json.at("FilterExt").get_to(value.filterExt);
         json.at("Seq").get_to(value.seq);
+        json.at("SeqExts").get_to(value.seqExts);
+        json.at("SeqNegative").get_to(value.seqNegative);
         json.at("SeqMaxDigits").get_to(value.seqMaxDigits);
         json.at("Hidden").get_to(value.hidden);
     }
