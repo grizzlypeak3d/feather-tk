@@ -40,15 +40,15 @@ namespace ftk
                 &FileBrowserModel::setOptions)
             .def("observeOptions", &FileBrowserModel::observeOptions)
             .def_property(
-                "extensions",
-                &FileBrowserModel::getExtensions,
-                &FileBrowserModel::setExtensions)
-            .def("observeExtensions", &FileBrowserModel::observeExtensions)
+                "exts",
+                &FileBrowserModel::getExts,
+                &FileBrowserModel::setExts)
+            .def("observeExts", &FileBrowserModel::observeExts)
             .def_property(
-                "extension",
-                &FileBrowserModel::getExtension,
-                &FileBrowserModel::setExtension)
-            .def("observeExtension", &FileBrowserModel::observeExtension);
+                "ext",
+                &FileBrowserModel::getExt,
+                &FileBrowserModel::setExt)
+            .def("observeExt", &FileBrowserModel::observeExt);
 
         py::class_<FileBrowserSystem, ISystem, std::shared_ptr<FileBrowserSystem> >(m, "FileBrowserSystem")
             .def(
