@@ -32,16 +32,10 @@ namespace ftk
                 
         void FileBrowserTest::run()
         {
-            _enums();
             _shortcuts();
             _view();
             _widget();
             _dialog();
-        }
-
-        void FileBrowserTest::_enums()
-        {
-            FTK_TEST_ENUM(FileBrowserSort);
         }
 
         void FileBrowserTest::_shortcuts()
@@ -84,29 +78,28 @@ namespace ftk
 
                 auto model = FileBrowserModel::create(context);
                 auto view = FileBrowserView::create(context, FileBrowserMode::File, model, window);
-                Path path(std::filesystem::current_path().u8string());
+                auto path = std::filesystem::current_path();
                 model->setPath(path);
                 model->setPath(path);
                 FTK_ASSERT(path == model->getPath());
                 view->reload();
                 FileBrowserOptions options;
-                options.reverseSort = true;
+                options.dirList.sortReverse = true;
                 model->setOptions(options);
                 model->setOptions(options);
                 FTK_ASSERT(options == model->getOptions());
                 view->setCallback(
-                    [&path](const Path& value)
+                    [](const Path&)
                     {
-                        path = value;
                     });
 
-                options.sort = FileBrowserSort::Extension;
+                options.dirList.sort = DirListSort::Extension;
                 model->setOptions(options);
                 app->tick();
-                options.sort = FileBrowserSort::Size;
+                options.dirList.sort = DirListSort::Size;
                 model->setOptions(options);
                 app->tick();
-                options.sort = FileBrowserSort::Time;
+                options.dirList.sort = DirListSort::Time;
                 model->setOptions(options);
                 app->tick();
             }
@@ -127,7 +120,7 @@ namespace ftk
                 window->show();
                 app->tick();
 
-                Path path(std::filesystem::current_path().u8string());
+                auto path = std::filesystem::current_path();
                 auto model = FileBrowserModel::create(context);
                 auto fileBrowserWidget = FileBrowserWidget::create(
                     context,
@@ -137,16 +130,15 @@ namespace ftk
                     model,
                     window);
                 FileBrowserOptions options;
-                options.reverseSort = true;
+                options.dirList.sortReverse = true;
                 model->setOptions(options);
                 model->setOptions(options);
                 FTK_ASSERT(options == model->getOptions());
                 auto recentFilesModel = RecentFilesModel::create(context);
                 fileBrowserWidget->setRecentFilesModel(recentFilesModel);
                 fileBrowserWidget->setCallback(
-                    [&path](const Path& value)
+                    [](const Path&)
                     {
-                        path = value;
                     });
                 bool cancel = false;
                 fileBrowserWidget->setCancelCallback(
@@ -172,7 +164,7 @@ namespace ftk
                 window->show();
                 app->tick();
 
-                Path path(std::filesystem::current_path().u8string());
+                auto path = std::filesystem::current_path();
                 auto model = FileBrowserModel::create(context);
                 auto fileBrowser = FileBrowser::create(
                     context,
@@ -181,16 +173,15 @@ namespace ftk
                     FileBrowserMode::File,
                     model);
                 FileBrowserOptions options;
-                options.reverseSort = true;
+                options.dirList.sortReverse = true;
                 model->setOptions(options);
                 FTK_ASSERT(model->getOptions() == options);
                 auto recentFilesModel = RecentFilesModel::create(context);
                 fileBrowser->setRecentFilesModel(recentFilesModel);
                 FTK_ASSERT(recentFilesModel == fileBrowser->getRecentFilesModel());
                 fileBrowser->setCallback(
-                    [&path](const Path& value)
+                    [](const Path&)
                     {
-                        path = value;
                     });
                 bool close = false;
                 fileBrowser->setCloseCallback(

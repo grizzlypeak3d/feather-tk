@@ -28,29 +28,13 @@ namespace ftk
     };
     FTK_ENUM(FileBrowserMode);
 
-    //! File browser directory sorting.
-    enum class FileBrowserSort
-    {
-        Name,
-        Extension,
-        Size,
-        Time,
-
-        Count,
-        First = Name
-    };
-    FTK_ENUM(FileBrowserSort);
-
     //! File browser options.
     struct FileBrowserOptions
     {
-        bool                        panel       = true;
-        bool                        pathEdit    = false;
-        FileBrowserSort             sort        = FileBrowserSort::Name;
-        bool                        reverseSort = false;
-        bool                        seq         = true;
-        bool                        hidden      = false;
-        std::map<std::string, bool> bellows =
+        DirListOptions              dirList;
+        bool                        panel    = true;
+        bool                        pathEdit = false;
+        std::map<std::string, bool> bellows  =
         {
             { "Drives",    true },
             { "Shortcuts", true },
@@ -76,13 +60,13 @@ namespace ftk
             const std::shared_ptr<Context>&);
 
         //! Get the current path.
-        const Path& getPath() const;
+        const std::filesystem::path& getPath() const;
 
         //! Observe the current path.
-        std::shared_ptr<IObservableValue<Path> > observePath() const;
+        std::shared_ptr<IObservableValue<std::filesystem::path> > observePath() const;
 
         //! Set the current path.
-        void setPath(const Path&);
+        void setPath(const std::filesystem::path&);
 
         //! Go forward to the next path.
         void forward();
@@ -106,22 +90,22 @@ namespace ftk
         void setOptions(const FileBrowserOptions&);
 
         //! Get the extensions.
-        const std::vector<std::string>& getExtensions() const;
+        const std::vector<std::string>& getExts() const;
 
         //! Observe the extensions.
-        std::shared_ptr<IObservableList<std::string> > observeExtensions() const;
+        std::shared_ptr<IObservableList<std::string> > observeExts() const;
 
         //! Set the extensions.
-        void setExtensions(const std::vector<std::string>&);
+        void setExts(const std::vector<std::string>&);
 
         //! Get the current extension.
-        const std::string& getExtension() const;
+        const std::string& getExt() const;
 
         //! Observe the current extension.
-        std::shared_ptr<IObservableValue<std::string> > observeExtension() const;
+        std::shared_ptr<IObservableValue<std::string> > observeExt() const;
 
         //! Set the current extension.
-        void setExtension(const std::string&);
+        void setExt(const std::string&);
 
     private:
         FTK_PRIVATE();
@@ -134,7 +118,7 @@ namespace ftk
         void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const Path&,
+            const std::filesystem::path&,
             FileBrowserMode,
             const std::shared_ptr<FileBrowserModel>& model,
             const std::shared_ptr<IWidget>& parent);
@@ -148,7 +132,7 @@ namespace ftk
         static std::shared_ptr<FileBrowserWidget> create(
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
-            const Path& = Path(),
+            const std::filesystem::path& = std::filesystem::path(),
             FileBrowserMode = FileBrowserMode::File,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -178,7 +162,7 @@ namespace ftk
         void _accept(const std::string&);
 
         void _optionsUpdate();
-        void _extensionsUpdate();
+        void _extsUpdate();
 
         FTK_PRIVATE();
     };
@@ -190,7 +174,7 @@ namespace ftk
         void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const Path&,
+            const std::filesystem::path&,
             FileBrowserMode,
             const std::shared_ptr<FileBrowserModel>& model,
             const std::shared_ptr<IWidget>& parent);
@@ -204,7 +188,7 @@ namespace ftk
         static std::shared_ptr<FileBrowser> create(
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
-            const Path& = Path(),
+            const std::filesystem::path& = std::filesystem::path(),
             FileBrowserMode = FileBrowserMode::File,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -246,7 +230,7 @@ namespace ftk
             const std::shared_ptr<IWindow>&,
             const std::function<void(const Path&)>&,
             const std::string& title = "Open",
-            const Path& = Path(),
+            const std::filesystem::path& = std::filesystem::path(),
             FileBrowserMode = FileBrowserMode::File);
 
         //! Get whether the native file dialog is used.

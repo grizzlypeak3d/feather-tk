@@ -58,7 +58,7 @@ namespace ftk
         const std::shared_ptr<IWindow>& window,
         const std::function<void(const Path&)>& callback,
         const std::string& title,
-        const Path& path,
+        const std::filesystem::path& path,
         FileBrowserMode mode)
     {
         FTK_P();

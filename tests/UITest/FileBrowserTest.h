@@ -23,7 +23,6 @@ namespace ftk
             void run() override;
 
         private:
-            void _enums();
             void _shortcuts();
             void _view();
             void _widget();

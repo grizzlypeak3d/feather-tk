@@ -17,22 +17,12 @@ namespace ftk
         "File",
         "Dir");
 
-    FTK_ENUM_IMPL(
-        FileBrowserSort,
-        "Name",
-        "Extension",
-        "Size",
-        "Time");
-
     bool FileBrowserOptions::operator == (const FileBrowserOptions& other) const
     {
         return
+            dirList == other.dirList &&
             panel == other.panel &&
             pathEdit == other.pathEdit &&
-            sort == other.sort &&
-            reverseSort == other.reverseSort &&
-            seq == other.seq &&
-            hidden == other.hidden &&
             bellows == other.bellows;
     }
 
@@ -49,7 +39,7 @@ namespace ftk
     void FileBrowser::_init(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const Path& path,
+        const std::filesystem::path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
@@ -82,7 +72,7 @@ namespace ftk
     std::shared_ptr<FileBrowser> FileBrowser::create(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const Path& path,
+        const std::filesystem::path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
@@ -119,12 +109,9 @@ namespace ftk
 
     void to_json(nlohmann::json& json, const FileBrowserOptions& value)
     {
+        json["DirList"] = value.dirList;
         json["Panel"] = value.panel;
         json["PathEdit"] = value.pathEdit;
-        json["Sort"] = to_string(value.sort);
-        json["ReverseSort"] = value.reverseSort;
-        json["Sequence"] = value.seq;
-        json["Hidden"] = value.hidden;
         for (const auto& i : value.bellows)
         {
             json["Bellows"][i.first] = i.second;
@@ -133,12 +120,9 @@ namespace ftk
 
     void from_json(const nlohmann::json& json, FileBrowserOptions& value)
     {
+        json.at("DirList").get_to(value.dirList);
         json.at("Panel").get_to(value.panel);
         json.at("PathEdit").get_to(value.pathEdit);
-        from_string(json.at("Sort").get<std::string>(), value.sort);
-        json.at("ReverseSort").get_to(value.reverseSort);
-        json.at("Seq").get_to(value.seq);
-        json.at("Hidden").get_to(value.hidden);
         for (auto i = json.at("Bellows").begin(); i != json.at("Bellows").end(); ++i)
         {
             if (i->is_boolean())

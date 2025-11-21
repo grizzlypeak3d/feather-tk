@@ -124,7 +124,7 @@ namespace ftk
     inline bool Path::seq(const Path& other) const
     {
         return
-            hasNum() &&
+            (hasNum() || "#" == getNum()) &&
             other.hasNum() &&
             _dir == other._dir &&
             _base == other._base &&

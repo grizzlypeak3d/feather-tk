@@ -41,7 +41,7 @@ namespace ftk
         std::shared_ptr<ScrollWidget> viewScrollWidget;
         std::shared_ptr<LineEdit> fileEdit;
         std::shared_ptr<SearchBox> searchBox;
-        std::shared_ptr<ComboBox> extensionsComboBox;
+        std::shared_ptr<ComboBox> extsComboBox;
         std::shared_ptr<ComboBox> sortComboBox;
         std::shared_ptr<ToolButton> reverseSortButton;
         std::shared_ptr<PushButton> okButton;
@@ -53,17 +53,17 @@ namespace ftk
         std::function<void(void)> cancelCallback;
 
         std::shared_ptr<ValueObserver<int> > currentObserver;
-        std::shared_ptr<ValueObserver<Path> > pathObserver;
+        std::shared_ptr<ValueObserver<std::filesystem::path> > pathObserver;
         std::shared_ptr<ValueObserver<bool> > forwardObserver;
         std::shared_ptr<ValueObserver<bool> > backObserver;
         std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
-        std::shared_ptr<ListObserver<std::string> > extensionsObserver;
+        std::shared_ptr<ListObserver<std::string> > extsObserver;
     };
 
     void FileBrowserWidget::_init(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const Path& path,
+        const std::filesystem::path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
@@ -121,16 +121,16 @@ namespace ftk
         p.viewScrollWidget->setVStretch(Stretch::Expanding);
 
         p.fileEdit = LineEdit::create(context);
-        p.fileEdit->setText(path.get());
+        p.fileEdit->setText(path.u8string());
 
         p.searchBox = SearchBox::create(context);
         p.searchBox->setTooltip("Filter");
 
-        p.extensionsComboBox = ComboBox::create(context);
-        p.extensionsComboBox->setTooltip("Filter by extension");
-        p.extensionsComboBox->setVisible(FileBrowserMode::File == mode);
+        p.extsComboBox = ComboBox::create(context);
+        p.extsComboBox->setTooltip("Filter by extension");
+        p.extsComboBox->setVisible(FileBrowserMode::File == mode);
 
-        p.sortComboBox = ComboBox::create(context, getFileBrowserSortLabels());
+        p.sortComboBox = ComboBox::create(context, getDirListSortLabels());
         p.sortComboBox->setTooltip("Sorting");
 
         p.reverseSortButton = ToolButton::create(context);
@@ -170,7 +170,7 @@ namespace ftk
         hLayout = HorizontalLayout::create(context, vLayout);
         hLayout->setSpacingRole(SizeRole::SpacingSmall);
         p.searchBox->setParent(hLayout);
-        p.extensionsComboBox->setParent(hLayout);
+        p.extsComboBox->setParent(hLayout);
         p.sortComboBox->setParent(hLayout);
         p.reverseSortButton->setParent(hLayout);
         hLayout->addSpacer(SizeRole::None, Stretch::Expanding);
@@ -178,7 +178,7 @@ namespace ftk
         p.cancelButton->setParent(hLayout);
 
         _optionsUpdate();
-        _extensionsUpdate();
+        _extsUpdate();
 
         p.panelButton->setCheckedCallback(
             [this](bool value)
@@ -193,11 +193,11 @@ namespace ftk
             [this]
             {
                 FTK_P();
-                const std::filesystem::path path = std::filesystem::u8path(p.model->getPath().get());
+                const std::filesystem::path path = p.model->getPath();
                 const std::filesystem::path parentPath(path.parent_path());
                 if (parentPath != path)
                 {
-                    p.model->setPath(Path(parentPath.u8string()));
+                    p.model->setPath(parentPath);
                 }
             });
 
@@ -222,7 +222,7 @@ namespace ftk
         p.pathWidget->setCallback(
             [this](const std::filesystem::path& value)
             {
-                _p->model->setPath(Path(value.u8string()));
+                _p->model->setPath(value);
             });
         p.pathWidget->setEditCallback(
             [this](bool value)
@@ -268,15 +268,15 @@ namespace ftk
                 _p->view->setSearch(value);
             });
 
-        p.extensionsComboBox->setIndexCallback(
+        p.extsComboBox->setIndexCallback(
             [this](int value)
             {
                 FTK_P();
-                const std::vector<std::string>& extensions = p.model->getExtensions();
-                if (value >= 0 && value <= extensions.size())
+                const std::vector<std::string>& exts = p.model->getExts();
+                if (value >= 0 && value <= exts.size())
                 {
-                    const std::string extension = value > 0 ? extensions[value - 1] : "";
-                    p.model->setExtension(extension);
+                    const std::string ext = value > 0 ? exts[value - 1] : "";
+                    p.model->setExt(ext);
                 }
             });
 
@@ -285,7 +285,7 @@ namespace ftk
             {
                 FTK_P();
                 FileBrowserOptions options = p.model->getOptions();
-                options.sort = static_cast<FileBrowserSort>(value);
+                options.dirList.sort = static_cast<DirListSort>(value);
                 p.model->setOptions(options);
             });
 
@@ -294,7 +294,7 @@ namespace ftk
             {
                 FTK_P();
                 FileBrowserOptions options = p.model->getOptions();
-                options.reverseSort = value;
+                options.dirList.sortReverse = value;
                 p.model->setOptions(options);
             });
 
@@ -325,12 +325,12 @@ namespace ftk
                 }
             });
 
-        p.pathObserver = ValueObserver<Path>::create(
+        p.pathObserver = ValueObserver<std::filesystem::path>::create(
             model->observePath(),
-            [this](const Path& value)
+            [this](const std::filesystem::path& value)
             {
                 FTK_P();
-                p.pathWidget->setPath(std::filesystem::u8path(value.get()));
+                p.pathWidget->setPath(value);
                 p.viewScrollWidget->setScrollPos(V2I());
             });
 
@@ -355,11 +355,11 @@ namespace ftk
                 _optionsUpdate();
             });
 
-        p.extensionsObserver = ListObserver<std::string>::create(
-            model->observeExtensions(),
+        p.extsObserver = ListObserver<std::string>::create(
+            model->observeExts(),
             [this](const std::vector<std::string>&)
             {
-                _extensionsUpdate();
+                _extsUpdate();
             });
     }
 
@@ -373,7 +373,7 @@ namespace ftk
     std::shared_ptr<FileBrowserWidget> FileBrowserWidget::create(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const Path& path,
+        const std::filesystem::path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
@@ -436,12 +436,12 @@ namespace ftk
         case FileBrowserMode::File:
             if (!text.empty())
             {
-                path = Path((std::filesystem::u8path(p.model->getPath().get()) /
+                path = Path((p.model->getPath() /
                     std::filesystem::u8path(text)).u8string());
             }
             break;
         case FileBrowserMode::Dir:
-            path = p.model->getPath();
+            path = Path(p.model->getPath().u8string());
             if (!text.empty())
             {
                 path = Path((std::filesystem::u8path(path.get()) /
@@ -471,30 +471,30 @@ namespace ftk
 
         p.panelScrollWidget->setVisible(options.panel);
 
-        p.sortComboBox->setCurrentIndex(static_cast<int>(options.sort));
-        p.reverseSortButton->setChecked(options.reverseSort);
+        p.sortComboBox->setCurrentIndex(static_cast<int>(options.dirList.sort));
+        p.reverseSortButton->setChecked(options.dirList.sortReverse);
     }
 
-    void FileBrowserWidget::_extensionsUpdate()
+    void FileBrowserWidget::_extsUpdate()
     {
         FTK_P();
-        const std::vector<std::string>& extensions = p.model->getExtensions();
-        const std::string& extension = p.model->getExtension();
+        const std::vector<std::string>& exts = p.model->getExts();
+        const std::string& ext = p.model->getExt();
 
-        std::vector<std::string> extensionsLabels;
-        extensionsLabels.push_back("*.*");
-        for (const auto& ext : extensions)
+        std::vector<std::string> extsLabels;
+        extsLabels.push_back("*.*");
+        for (const auto& ext : exts)
         {
-            extensionsLabels.push_back("*" + ext);
+            extsLabels.push_back("*" + ext);
         }
-        p.extensionsComboBox->setItems(extensionsLabels);
+        p.extsComboBox->setItems(extsLabels);
         const auto i = std::find(
-            extensions.begin(),
-            extensions.end(),
-            extension);
-        if (i != extensions.end())
+            exts.begin(),
+            exts.end(),
+            ext);
+        if (i != exts.end())
         {
-            p.extensionsComboBox->setCurrentIndex(i - extensions.begin() + 1);
+            p.extsComboBox->setCurrentIndex(i - exts.begin() + 1);
         }
     }
 }

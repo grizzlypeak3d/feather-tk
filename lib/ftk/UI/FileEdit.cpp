@@ -147,7 +147,7 @@ namespace ftk
                         }
                     },
                     "File Browser",
-                    p.path,
+                    std::filesystem::u8path(p.path.get()),
                     p.mode);
             }
         }

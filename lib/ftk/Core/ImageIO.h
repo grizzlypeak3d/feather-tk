@@ -66,14 +66,14 @@ namespace ftk
         protected:
             IImagePlugin(
                 const std::string& name,
-                const std::vector<std::string>& extensions);
+                const std::vector<std::string>& exts);
 
         public:
             virtual ~IImagePlugin() = 0;
 
             const std::string& getName() const;
 
-            const std::vector<std::string>& getExtensions() const;
+            const std::vector<std::string>& getExts() const;
             
             virtual bool canRead(
                 const std::filesystem::path&,
@@ -100,7 +100,7 @@ namespace ftk
                 
         private:
             std::string _name;
-            std::vector<std::string> _extensions;
+            std::vector<std::string> _exts;
         };
         
         //! Image I/O system.

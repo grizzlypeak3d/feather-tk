@@ -62,8 +62,8 @@ namespace textedit
             "/FileBrowser/Options",
             _fileBrowserSystem->getModel()->getOptions());
         _settings->set(
-            "/FileBrowser/Extension",
-            _fileBrowserSystem->getModel()->getExtension());
+            "/FileBrowser/Ext",
+            _fileBrowserSystem->getModel()->getExt());
 
         _settings->setT("/TextEdit", _textEditOptions->get());
         _settings->setT("/TextEditModel", _textEditModelOptions->get());

@@ -32,15 +32,15 @@ namespace ftk
         FileBrowserMode mode = FileBrowserMode::File;
         std::shared_ptr<FileBrowserModel> model;
         std::string search;
-        std::vector<FileBrowserInfo> info;
+        std::vector<DirEntry> dirEntries;
         std::shared_ptr<ObservableValue<int> > current;
         std::vector<FileBrowserItem> items;
         std::function<void(const Path&)> callback;
         std::function<void(const Path&)> selectCallback;
 
-        std::shared_ptr<ValueObserver<Path> > pathObserver;
+        std::shared_ptr<ValueObserver<std::filesystem::path> > pathObserver;
         std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
-        std::shared_ptr<ValueObserver<std::string> > extensionObserver;
+        std::shared_ptr<ValueObserver<std::string> > extObserver;
 
         float iconScale = 1.F;
         std::shared_ptr<Image> directoryImage;
@@ -85,9 +85,9 @@ namespace ftk
         p.model = model;
         p.current = ObservableValue<int>::create(-1);
 
-        p.pathObserver = ValueObserver<Path>::create(
+        p.pathObserver = ValueObserver<std::filesystem::path>::create(
             model->observePath(),
-            [this](const Path&)
+            [this](const std::filesystem::path&)
             {
                 _directoryUpdate();
             });
@@ -99,8 +99,8 @@ namespace ftk
                 _directoryUpdate();
             });
 
-        p.extensionObserver = ValueObserver<std::string>::create(
-            model->observeExtension(),
+        p.extObserver = ValueObserver<std::string>::create(
+            model->observeExt(),
             [this](const std::string&)
             {
                 _directoryUpdate();
@@ -204,10 +204,10 @@ namespace ftk
             const int imageHeight = p.directoryImage ?
                 p.directoryImage->getHeight() :
                 (p.fileImage ? p.fileImage->getHeight() : 0);
-            for (size_t i = 0; i < p.info.size() && i < p.items.size(); ++i)
+            for (size_t i = 0; i < p.dirEntries.size() && i < p.items.size(); ++i)
             {
                 auto& item = p.items[i];
-                item.icon = p.info[i].isDir ? p.directoryImage : p.fileImage;
+                item.icon = p.dirEntries[i].isDir ? p.directoryImage : p.fileImage;
                 item.size = item.icon ? item.icon->getSize() : Size2I();
                 item.textSizes.clear();
                 for (const auto& text : item.text)
@@ -430,7 +430,7 @@ namespace ftk
             case Key::End:
                 event.accept = true;
                 takeKeyFocus();
-                _setCurrent(static_cast<int>(p.info.size()) - 1);
+                _setCurrent(static_cast<int>(p.dirEntries.size()) - 1);
                 break;
             case Key::Return:
                 event.accept = true;
@@ -479,192 +479,71 @@ namespace ftk
         return out;
     }
 
-    namespace
-    {
-        void list(
-            FileBrowserMode mode,
-            const Path& path,
-            const FileBrowserOptions& options,
-            const std::string& extension,
-            const std::string& search,
-            std::vector<FileBrowserInfo>& out)
-        {
-            try
-            {
-                for (const auto& i : std::filesystem::directory_iterator(path.get()))
-                {
-                    const Path path(i.path().u8string());
-                    const std::string fileName = i.path().filename().u8string();
-
-                    bool keep = true;
-                    if (keep && !options.hidden && isDotFile(fileName))
-                    {
-                        keep = false;
-                    }
-                    const bool isDir = std::filesystem::is_directory(i.path());
-                    if (keep && !isDir && !extension.empty())
-                    {
-                        keep = compare(
-                            extension,
-                            path.getExt(),
-                            CaseCompare::Insensitive);
-                    }
-                    if (keep && !search.empty())
-                    {
-                        keep = contains(
-                            fileName,
-                            search,
-                            CaseCompare::Insensitive);
-                    }
-                    if (keep && FileBrowserMode::Dir == mode && !isDir)
-                    {
-                        keep = false;
-                    }
-
-                    if (keep)
-                    {
-                        bool seq = false;
-                        if (options.seq && !isDir)
-                        {
-                            for (auto& j : out)
-                            {
-                                if (j.path.addSeq(path))
-                                {
-                                    seq = true;
-                                    j.size += std::filesystem::file_size(i.path());
-                                    j.time = std::max(
-                                        j.time,
-                                        std::filesystem::last_write_time(i.path()));
-                                    break;
-                                }
-                            }
-                        }
-                        if (!seq)
-                        {
-                            out.push_back({
-                                path,
-                                isDir,
-                                isDir ? 0 : std::filesystem::file_size(i.path()),
-                                std::filesystem::last_write_time(i.path()) });
-                        }
-                    }
-                }
-            }
-            catch (const std::exception&)
-            {}
-
-            std::function<int(const FileBrowserInfo& a, const FileBrowserInfo& b)> sort;
-            switch (options.sort)
-            {
-            case FileBrowserSort::Name:
-                sort = [](const FileBrowserInfo& a, const FileBrowserInfo& b)
-                    {
-                        return a.path.getFileName() < b.path.getFileName();
-                    };
-                break;
-            case FileBrowserSort::Extension:
-                sort = [](const FileBrowserInfo& a, const FileBrowserInfo& b)
-                    {
-                        return a.path.getExt() < b.path.getExt();
-                    };
-                break;
-            case FileBrowserSort::Size:
-                sort = [](const FileBrowserInfo& a, const FileBrowserInfo& b)
-                    {
-                        return a.size < b.size;
-                    };
-                break;
-            case FileBrowserSort::Time:
-                sort = [](const FileBrowserInfo& a, const FileBrowserInfo& b)
-                    {
-                        return a.time < b.time;
-                    };
-                break;
-            default: break;
-            }
-            if (sort)
-            {
-                if (options.reverseSort)
-                {
-                    std::sort(out.rbegin(), out.rend(), sort);
-                }
-                else
-                {
-                    std::sort(out.begin(), out.end(), sort);
-                }
-            }
-            std::stable_sort(
-                out.begin(),
-                out.end(),
-                [](const FileBrowserInfo& a, const FileBrowserInfo& b)
-                {
-                    return a.isDir > b.isDir;
-                });
-        }
-    }
-
     void FileBrowserView::_directoryUpdate()
     {
         FTK_P();
-        p.info.clear();
+
+        p.dirEntries.clear();
         p.items.clear();
-        list(
-            p.mode,
-            p.model->getPath(),
-            p.model->getOptions(),
-            p.model->getExtension(),
-            p.search,
-            p.info);
+
+        const auto& options = p.model->getOptions();
+        auto dirListOptions = options.dirList;
+        dirListOptions.filter = p.search;
+        dirListOptions.filterFiles = FileBrowserMode::Dir == p.mode;
+        dirListOptions.filterExt = p.model->getExt();
+        p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+
         if (auto context = getContext())
         {
-            for (size_t i = 0; i < p.info.size(); ++i)
+            for (size_t i = 0; i < p.dirEntries.size(); ++i)
             {
-                const FileBrowserInfo& info = p.info[i];
+                const DirEntry& dirEntry = p.dirEntries[i];
                 FileBrowserItem item;
 
                 // File name.
-                std::string text = !info.path.getFrames().equal() ?
-                    info.path.getFrame(info.path.getFrames().min(), false) :
-                    info.path.getFileName();
+                std::string text = !dirEntry.path.getFrames().equal() ?
+                    dirEntry.path.getFrame(dirEntry.path.getFrames().min(), false) :
+                    dirEntry.path.getFileName();
                 item.text.push_back(text);
 
                 // Frame range.
-                if (info.path.hasNum() &&
-                    !info.path.getFrames().equal())
+                if (dirEntry.path.hasNum() &&
+                    !dirEntry.path.getFrames().equal())
                 {
-                    item.text.push_back(Format("{0}").arg(info.path.getFrameRange(), 8 + 1 + 8));
+                    item.text.push_back(Format("{0}").
+                        arg(dirEntry.path.getFrameRange(), 8 + 1 + 8));
                 }
 
                 // File extension.
-                text = !info.isDir ?
-                    Format("{0}").arg(info.path.getExt(), 6).str() :
+                text = !dirEntry.isDir ?
+                    Format("{0}").arg(dirEntry.path.getExt(), 6).str() :
                     std::string();
                 item.text.push_back(text);
 
                 // File size.
-                if (!info.isDir)
+                if (!dirEntry.isDir)
                 {
-                    if (info.size < megabyte)
+                    if (dirEntry.size < megabyte)
                     {
                         text = Format("{0}KB").
-                            arg(info.size / static_cast<float>(kilobyte), 2, 6);
+                            arg(dirEntry.size / static_cast<float>(kilobyte), 2, 6);
                     }
-                    else if (info.size < gigabyte)
+                    else if (dirEntry.size < gigabyte)
                     {
                         text = Format("{0}MB").
-                            arg(info.size / static_cast<float>(megabyte), 2, 6);
+                            arg(dirEntry.size / static_cast<float>(megabyte), 2, 6);
                     }
                     else
                     {
                         text = Format("{0}GB").
-                            arg(info.size / static_cast<float>(gigabyte), 2, 6);
+                            arg(dirEntry.size / static_cast<float>(gigabyte), 2, 6);
                     }
                     item.text.push_back(text);
                 }
 
                 // File last modification time.
                 // \todo std::format is available in C++20.
-                //text = std::format("{}", info.time);
+                //text = std::format("{}", dirEntry.time);
 
                 p.items.push_back(item);
             }
@@ -684,13 +563,13 @@ namespace ftk
     void FileBrowserView::_setCurrent(int index)
     {
         FTK_P();
-        const int tmp = !p.info.empty() ?
-            clamp(index, 0, static_cast<int>(p.info.size()) - 1) :
+        const int tmp = !p.dirEntries.empty() ?
+            clamp(index, 0, static_cast<int>(p.dirEntries.size()) - 1) :
             -1;
         Path path;
         if (tmp != -1)
         {
-            path = p.info[tmp].path;
+            path = p.dirEntries[tmp].path;
         }
         if (p.current->setIfChanged(tmp))
         {
@@ -706,25 +585,25 @@ namespace ftk
     {
         FTK_P();
         takeKeyFocus();
-        if (index >= 0 && index < p.info.size())
+        if (index >= 0 && index < p.dirEntries.size())
         {
-            const FileBrowserInfo info = p.info[index];
+            const DirEntry& dirEntry = p.dirEntries[index];
             switch (p.mode)
             {
             case FileBrowserMode::File:
-                if (!info.isDir && p.callback)
+                if (!dirEntry.isDir && p.callback)
                 {
-                    p.callback(info.path);
+                    p.callback(dirEntry.path);
                 }
-                else if (info.isDir)
+                else if (dirEntry.isDir)
                 {
-                    p.model->setPath(info.path);
+                    p.model->setPath(std::filesystem::u8path(dirEntry.path.get()));
                 }
                 break;
             case FileBrowserMode::Dir:
-                if (info.isDir)
+                if (dirEntry.isDir)
                 {
-                    p.model->setPath(info.path);
+                    p.model->setPath(std::filesystem::u8path(dirEntry.path.get()));
                 }
                 break;
             default: break;

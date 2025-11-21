@@ -30,10 +30,10 @@ namespace objview
         _settings->getT("/FileBrowser/Options", fileBrowserOptions);
         _fileBrowserSystem = context->getSystem<FileBrowserSystem>();
         _fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
-        _fileBrowserSystem->getModel()->setExtensions({ ".obj" });
-        std::string extension = ".obj";
-        _settings->get("/FileBrowser/Extension", extension);
-        _fileBrowserSystem->getModel()->setExtension(extension);
+        _fileBrowserSystem->getModel()->setExts({ ".obj" });
+        std::string ext = ".obj";
+        _settings->get("/FileBrowser/Ext", ext);
+        _fileBrowserSystem->getModel()->setExt(ext);
 
         WindowSettings window;
         _settings->getT("/Window", window);
@@ -62,8 +62,8 @@ namespace objview
             "/FileBrowser/Options",
             _fileBrowserSystem->getModel()->getOptions());
         _settings->set(
-            "/FileBrowser/Extension",
-            _fileBrowserSystem->getModel()->getExtension());
+            "/FileBrowser/Ext",
+            _fileBrowserSystem->getModel()->getExt());
 
         _settings->setT("/Window", _window->get());
         _settings->setT("/Render", _render->get());

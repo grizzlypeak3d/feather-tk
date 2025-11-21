@@ -4,6 +4,7 @@
 #include <CoreTest/PathTest.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/FileIO.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
 
@@ -26,11 +27,20 @@ namespace ftk
         
         void PathTest::run()
         {
+            _enums();
             _util();
             _split();
             _drives();
             _userPaths();
             _path();
+            _dirList();
+            _expandSeq();
+        }
+
+        void PathTest::_enums()
+        {
+            FTK_TEST_ENUM(UserPath);
+            FTK_TEST_ENUM(DirListSort);
         }
 
         void PathTest::_util()
@@ -225,6 +235,49 @@ namespace ftk
                 FTK_ASSERT(p == p);
                 FTK_ASSERT(p != p2);
             }
+        }
+
+        void PathTest::_dirList()
+        {
+            std::filesystem::path dir("PathTest1");
+            std::filesystem::create_directory(dir);
+            FileIO::create(dir / "render.exr", FileMode::Write);
+            FileIO::create(dir / "render.100.png", FileMode::Write);
+            for (int i = 0; i < 10; ++i)
+            {
+                FileIO::create(dir / Format("render.{0}.exr").arg(i).str(), FileMode::Write);
+            }
+            const auto dirEntries = dirList(dir);
+            FTK_ASSERT(3 == dirEntries.size());
+            FTK_ASSERT("render.0.exr" == dirEntries[0].path.getFileName());
+            FTK_ASSERT(0 == dirEntries[0].path.getFrames().min());
+            FTK_ASSERT(9 == dirEntries[0].path.getFrames().max());
+            FTK_ASSERT("render.100.png" == dirEntries[1].path.getFileName());
+            FTK_ASSERT(100 == dirEntries[1].path.getFrames().min());
+            FTK_ASSERT("render.exr" == dirEntries[2].path.getFileName());
+        }
+
+        void PathTest::_expandSeq()
+        {
+            std::filesystem::path dir("PathTest2");
+            std::filesystem::create_directory(dir);
+            FileIO::create(dir / "render.exr", FileMode::Write);
+            FileIO::create(dir / "render.100.png", FileMode::Write);
+            for (int i = 0; i < 10; ++i)
+            {
+                FileIO::create(dir / Format("render.{0}.exr").arg(i).str(), FileMode::Write);
+            }
+            Path path;
+            FTK_ASSERT(expandSeq(dir / "render.0.exr", path));
+            FTK_ASSERT(0 == path.getFrames().min());
+            FTK_ASSERT(9 == path.getFrames().max());
+            FTK_ASSERT(expandSeq(dir / "render.#.exr", path));
+            FTK_ASSERT(0 == path.getFrames().min());
+            FTK_ASSERT(9 == path.getFrames().max());
+            FTK_ASSERT(expandSeq(dir / "render.0.png", path));
+            FTK_ASSERT(100 == path.getFrames().min());
+            FTK_ASSERT(100 == path.getFrames().max());
+            FTK_ASSERT(!expandSeq(dir / "render.0.tiff", path));
         }
     }
 }

@@ -49,7 +49,7 @@ namespace ftk
                 FTK_P();
                 if (index >= 0 && index < p.drives.size())
                 {
-                    model->setPath(Path(p.drives[index].u8string()));
+                    model->setPath(p.drives[index]);
                 }
             });
 
@@ -125,7 +125,7 @@ namespace ftk
                 FTK_P();
                 if (index >= 0 && index < p.shortcuts.size())
                 {
-                    model->setPath(Path(p.shortcuts[index].u8string()));
+                    model->setPath(p.shortcuts[index]);
                 }
             });
     }
@@ -206,7 +206,7 @@ namespace ftk
                 FTK_P();
                 if (index >= 0 && index < p.recent.size())
                 {
-                    model->setPath(Path(p.recent[index].u8string()));
+                    model->setPath(p.recent[index]);
                 }
             });
     }
@@ -324,7 +324,7 @@ namespace ftk
             [model](bool value)
             {
                 FileBrowserOptions options = model->getOptions();
-                options.seq = value;
+                options.dirList.seq = value;
                 model->setOptions(options);
             });
 
@@ -332,7 +332,7 @@ namespace ftk
             [model](bool value)
             {
                 FileBrowserOptions options = model->getOptions();
-                options.hidden = value;
+                options.dirList.hidden = value;
                 model->setOptions(options);
             });
 
@@ -340,8 +340,8 @@ namespace ftk
             model->observeOptions(),
             [this](const FileBrowserOptions& value)
             {
-                _p->seqCheckBox->setChecked(value.seq);
-                _p->hiddenCheckBox->setChecked(value.hidden);
+                _p->seqCheckBox->setChecked(value.dirList.seq);
+                _p->hiddenCheckBox->setChecked(value.dirList.hidden);
             });
     }
 
@@ -376,7 +376,7 @@ namespace ftk
     void FileBrowserSettings::_widgetUpdate()
     {
         FTK_P();
-        p.hiddenCheckBox->setChecked(p.options.hidden);
+        p.hiddenCheckBox->setChecked(p.options.dirList.hidden);
     }
 
     struct FileBrowserPanel::Private

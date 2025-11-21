@@ -23,11 +23,14 @@ namespace ftk
             void run() override;
 
         private:
+            void _enums();
             void _util();
             void _split();
             void _drives();
             void _userPaths();
             void _path();
+            void _dirList();
+            void _expandSeq();
         };
     }
 }

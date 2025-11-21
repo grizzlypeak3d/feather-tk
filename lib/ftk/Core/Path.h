@@ -133,6 +133,59 @@ namespace ftk
         FrameRange _frames;
     };
 
+    //! Directory list sorting.
+    enum class DirListSort
+    {
+        Name,
+        Extension,
+        Size,
+        Time,
+
+        Count,
+        First = Name
+    };
+    FTK_ENUM(DirListSort);
+
+    //! Directory list options.
+    struct DirListOptions
+    {
+        DirListSort sort            = DirListSort::Name;
+        bool        sortReverse     = false;
+        std::string filter;
+        bool        filterFiles     = false;
+        std::string filterExt;
+        bool        seq             = true;
+        bool        hidden          = false;
+
+        bool operator == (const DirListOptions&) const;
+        bool operator != (const DirListOptions&) const;
+    };
+
+    //! Directory list entry.
+    struct DirEntry
+    {
+        Path                            path;
+        bool                            isDir = false;
+        size_t                          size = 0;
+        std::filesystem::file_time_type time;
+
+        bool operator == (const DirEntry&) const;
+        bool operator != (const DirEntry&) const;
+    };
+
+    //! List directory contents.
+    std::vector<DirEntry> dirList(
+        const std::filesystem::path&,
+        const DirListOptions& = DirListOptions());
+
+    //! Expand a file sequence. This function will search the directory for
+    //! other frames that match the given frame.
+    bool expandSeq(const std::filesystem::path&, Path&);
+
+    void to_json(nlohmann::json&, const DirListOptions&);
+
+    void from_json(const nlohmann::json&, DirListOptions&);
+
     ///@}
 }
 

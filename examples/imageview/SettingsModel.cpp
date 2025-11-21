@@ -33,20 +33,20 @@ namespace imageview
         _fileBrowserSystem = context->getSystem<FileBrowserSystem>();
         _fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
         auto ioSystem = context->getSystem<ImageIO>();
-        std::vector<std::string> extensions;
+        std::vector<std::string> exts;
         for (const auto& plugin : ioSystem->getPlugins())
         {
-            const std::vector<std::string>& extensions2 = plugin->getExtensions();
-            extensions.insert(extensions.end(), extensions2.begin(), extensions2.end());
+            const std::vector<std::string>& exts2 = plugin->getExts();
+            exts.insert(exts.end(), exts2.begin(), exts2.end());
         }
-        _fileBrowserSystem->getModel()->setExtensions(extensions);
-        std::string extension;
-        if (!extensions.empty())
+        _fileBrowserSystem->getModel()->setExts(exts);
+        std::string ext;
+        if (!exts.empty())
         {
-            extension = extensions.front();
+            ext = exts.front();
         }
-        _settings->get("/FileBrowser/Extension", extension);
-        _fileBrowserSystem->getModel()->setExtension(extension);
+        _settings->get("/FileBrowser/Ext", ext);
+        _fileBrowserSystem->getModel()->setExt(ext);
 
         WindowSettings window;
         _settings->getT("/Window", window);
@@ -71,8 +71,8 @@ namespace imageview
             "/FileBrowser/Options",
             _fileBrowserSystem->getModel()->getOptions());
         _settings->set(
-            "/FileBrowser/Extension",
-            _fileBrowserSystem->getModel()->getExtension());
+            "/FileBrowser/Ext",
+            _fileBrowserSystem->getModel()->getExt());
 
         _settings->setT("/Window", _window->get());
         _settings->setT("/Style", _style->get());

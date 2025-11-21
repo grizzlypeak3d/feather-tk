@@ -86,7 +86,7 @@ namespace objview
             {
                 auto app = appWeak.lock();
                 auto fileBrowserSystem = app->getContext()->getSystem<FileBrowserSystem>();
-                fileBrowserSystem->getModel()->setExtensions({ ".obj" });
+                fileBrowserSystem->getModel()->setExts({ ".obj" });
                 fileBrowserSystem->open(
                     app->getMainWindow(),
                     [appWeak](const Path& value)

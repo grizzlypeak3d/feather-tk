@@ -179,14 +179,6 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    struct FileBrowserInfo
-    {
-        Path                            path;
-        bool                            isDir = false;
-        size_t                          size  = 0;
-        std::filesystem::file_time_type time;
-    };
-
     class FileBrowserView : public IMouseWidget
     {
     protected:

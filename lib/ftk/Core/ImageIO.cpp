@@ -40,9 +40,9 @@ namespace ftk
 
     IImagePlugin::IImagePlugin(
         const std::string& name,
-        const std::vector<std::string>& extensions) :
+        const std::vector<std::string>& exts) :
         _name(name),
-        _extensions(extensions)
+        _exts(exts)
     {}
 
     IImagePlugin::~IImagePlugin()
@@ -53,9 +53,9 @@ namespace ftk
         return _name;
     }
 
-    const std::vector<std::string>& IImagePlugin::getExtensions() const
+    const std::vector<std::string>& IImagePlugin::getExts() const
     {
-        return _extensions;
+        return _exts;
     }
 
     bool IImagePlugin::canRead(
@@ -63,13 +63,10 @@ namespace ftk
         const ImageIOOptions&)
     {
         bool out = false;
-        const std::string extension = path.extension().u8string();
-        for (const auto& extension2 : _extensions)
+        const std::string ext = path.extension().u8string();
+        for (const auto& ext2 : _exts)
         {
-            if (compare(
-                extension,
-                extension2,
-                CaseCompare::Insensitive))
+            if (compare(ext, ext2, CaseCompare::Insensitive))
             {
                 out = true;
                 break;
@@ -99,13 +96,10 @@ namespace ftk
         const ImageIOOptions&)
     {
         bool out = false;
-        const std::string extension = path.extension().u8string();
-        for (const auto& extension2 : _extensions)
+        const std::string ext = path.extension().u8string();
+        for (const auto& ext2 : _exts)
         {
-            if (compare(
-                extension,
-                extension2,
-                CaseCompare::Insensitive))
+            if (compare(ext, ext2, CaseCompare::Insensitive))
             {
                 out = true;
                 break;
