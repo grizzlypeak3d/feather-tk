@@ -95,9 +95,11 @@ namespace ftk
             std::string();
     }
 
-    inline std::string Path::getFileName() const
+    inline std::string Path::getFileName(bool dir) const
     {
-        return getBase() + getNum() + getExt();
+        return dir ?
+            getDir() + getBase() + getNum() + getExt() :
+            getBase() + getNum() + getExt();
     }
 
     inline const RangeI64& Path::getFrames() const

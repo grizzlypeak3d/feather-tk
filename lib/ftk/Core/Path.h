@@ -99,7 +99,7 @@ namespace ftk
         int getPad() const;
         std::string getExt() const;
         std::string getRequest() const;
-        std::string getFileName() const;
+        std::string getFileName(bool dir = false) const;
 
         void setProtocol(const std::string&);
         void setDir(const std::string&);
