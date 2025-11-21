@@ -36,7 +36,6 @@ jobs:
     - name: Run tests
       run: |
         cd build-Debug
-        xvfb-run ctest --verbose -C Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
@@ -78,7 +77,6 @@ jobs:
     - name: Run tests
       run: |
         cd build-Debug
-        xvfb-run ctest --verbose -C Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   macos-15-intel-build:
@@ -121,7 +119,6 @@ jobs:
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         cd build-Debug
-        ctest --verbose -C Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   macos-build:
@@ -164,7 +161,6 @@ jobs:
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         cd build-Debug
-        ctest --verbose -C Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   windows-build:
@@ -204,6 +200,5 @@ jobs:
       shell: cmd
       run: |
         cd build-Debug
-        ctest --verbose -C Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
