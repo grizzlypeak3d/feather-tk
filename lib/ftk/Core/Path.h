@@ -132,6 +132,13 @@ namespace ftk
 
         ///@}
 
+        //! \name Utility
+        ///@{
+
+        bool hasExt(const std::set<std::string>&) const;
+
+        ///@}
+
         //! \name Constants
         ///@{
 
@@ -211,7 +218,8 @@ namespace ftk
     bool expandSeq(
         const std::filesystem::path&,
         Path&,
-        size_t seqMaxDigits = 9);
+        const std::set<std::string>& seqExts = {},
+        const PathOptions& = PathOptions());
 
     void to_json(nlohmann::json&, const PathOptions&);
     void to_json(nlohmann::json&, const DirListOptions&);

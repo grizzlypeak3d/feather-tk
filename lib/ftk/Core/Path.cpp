@@ -167,6 +167,11 @@ namespace ftk
         return out;
     }
 
+    bool Path::hasExt(const std::set<std::string>& exts) const
+    {
+        return !exts.empty() ? exts.find(toLower(getExt())) != exts.end() : true;
+    }
+
     const std::string Path::numbers = "0123456789#";
     const std::string Path::pathSeparators = "/\\";
 
@@ -414,12 +419,7 @@ namespace ftk
                 {
                     // Check for sequences.
                     bool seq = false;
-                    bool seqExt = true;
-                    if (!options.seqExts.empty())
-                    {
-                        seqExt = options.seqExts.find(toLower(path.getExt())) != options.seqExts.end();
-                    }
-                    if (options.seq && seqExt && !isDir)
+                    if (!isDir && options.seq && path.hasExt(options.seqExts))
                     {
                         for (auto& j : out)
                         {
@@ -517,7 +517,8 @@ namespace ftk
     bool expandSeq(
         const std::filesystem::path& stdpath,
         Path& path,
-        size_t seqMaxDigits)
+        const std::set<std::string>& seqExts,
+        const PathOptions& pathOptions)
     {
         bool out = false;
 
@@ -526,10 +527,11 @@ namespace ftk
         const Path tmp(stdpath.u8string());
         for (const auto& i : std::filesystem::directory_iterator(stdpath.parent_path()))
         {
-            const Path entry(i.path().u8string());
-            if (init)
+            const Path entry(i.path().u8string(), pathOptions);
+            const bool isDir = std::filesystem::is_directory(i.path());
+            if (init && !isDir && entry.hasExt(seqExts))
             {
-                out = entry.getNum().size() < seqMaxDigits && tmp.seq(entry);
+                out = tmp.seq(entry);
                 if (out)
                 {
                     init = false;
