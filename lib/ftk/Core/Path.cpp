@@ -228,6 +228,7 @@ namespace ftk
             filterFiles == other.filterFiles &&
             filterExt == other.filterExt &&
             seq == other.seq &&
+            seqMaxDigits == other.seqMaxDigits &&
             hidden == other.hidden;
     }
 
@@ -294,7 +295,9 @@ namespace ftk
                     {
                         for (auto& j : out)
                         {
-                            if (j.path.addSeq(path))
+                            if (path.getNum().size() <= options.seqMaxDigits &&
+                                j.path.getNum().size() <= options.seqMaxDigits &&
+                                j.path.addSeq(path))
                             {
                                 seq = true;
                                 j.size += std::filesystem::file_size(i.path());
@@ -370,7 +373,10 @@ namespace ftk
         return out;
     }
 
-    bool expandSeq(const std::filesystem::path& stdpath, Path& path)
+    bool expandSeq(
+        const std::filesystem::path& stdpath,
+        Path& path,
+        size_t seqMaxDigits)
     {
         bool out = false;
         bool init = true;
@@ -380,7 +386,7 @@ namespace ftk
             const Path entry(i.path().u8string());
             if (init)
             {
-                out = tmp.seq(entry);
+                out = entry.getNum().size() < seqMaxDigits && tmp.seq(entry);
                 if (out)
                 {
                     init = false;
@@ -403,6 +409,7 @@ namespace ftk
         json["FilterFiles"] = value.filterFiles;
         json["FilterExt"] = value.filterExt;
         json["Seq"] = value.seq;
+        json["SeqMaxDigits"] = value.seqMaxDigits;
         json["Hidden"] = value.hidden;
     }
 
@@ -414,6 +421,7 @@ namespace ftk
         json.at("FilterFiles").get_to(value.filterFiles);
         json.at("FilterExt").get_to(value.filterExt);
         json.at("Seq").get_to(value.seq);
+        json.at("SeqMaxDigits").get_to(value.seqMaxDigits);
         json.at("Hidden").get_to(value.hidden);
     }
 }

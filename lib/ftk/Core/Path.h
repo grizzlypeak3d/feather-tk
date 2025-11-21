@@ -149,13 +149,14 @@ namespace ftk
     //! Directory list options.
     struct DirListOptions
     {
-        DirListSort sort            = DirListSort::Name;
-        bool        sortReverse     = false;
+        DirListSort sort         = DirListSort::Name;
+        bool        sortReverse  = false;
         std::string filter;
-        bool        filterFiles     = false;
+        bool        filterFiles  = false;
         std::string filterExt;
-        bool        seq             = true;
-        bool        hidden          = false;
+        bool        seq          = true;
+        size_t      seqMaxDigits = 9;
+        bool        hidden       = false;
 
         bool operator == (const DirListOptions&) const;
         bool operator != (const DirListOptions&) const;
@@ -180,7 +181,10 @@ namespace ftk
 
     //! Expand a file sequence. This function will search the directory for
     //! other frames that match the given frame.
-    bool expandSeq(const std::filesystem::path&, Path&);
+    bool expandSeq(
+        const std::filesystem::path&,
+        Path&,
+        size_t seqMaxDigits = 9);
 
     void to_json(nlohmann::json&, const DirListOptions&);
 
