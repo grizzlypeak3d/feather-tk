@@ -79,7 +79,7 @@ namespace ftk
             }
             if (outPath)
             {
-                callback(outPath);
+                callback(Path(std::string(outPath)));
                 NFD::FreePath(outPath);
             }
         }
