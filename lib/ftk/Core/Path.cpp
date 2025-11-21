@@ -60,7 +60,7 @@ namespace ftk
     void Path::setProtocol(const std::string& value)
     {
         _path = value + getDir() + getBase() + getNum() + getExt() + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -68,7 +68,7 @@ namespace ftk
     void Path::setDir(const std::string& value)
     {
         _path = getProtocol() + value + getBase() + getNum() + getExt() + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -76,7 +76,7 @@ namespace ftk
     void Path::setBase(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getNum() + getExt() + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -84,7 +84,7 @@ namespace ftk
     void Path::setNum(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + value + getExt() + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -98,7 +98,7 @@ namespace ftk
             num = toString(std::atoi(num.c_str()), _pad);
         }
         _path = getProtocol() + getDir() + getBase() + num + getExt() + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -106,7 +106,7 @@ namespace ftk
     void Path::setExt(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + value + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -114,7 +114,7 @@ namespace ftk
     void Path::setRequest(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + getExt() + value;
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
@@ -122,12 +122,12 @@ namespace ftk
     void Path::setFileName(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getRequest();
-        const FrameRange tmp = _frames;
+        const RangeI64 tmp = _frames;
         _parse();
         _frames = tmp;
     }
 
-    void Path::setFrames(const FrameRange& value)
+    void Path::setFrames(const RangeI64& value)
     {
         _frames = value;
     }
@@ -268,7 +268,7 @@ namespace ftk
                 _pad = sizeTmp;
             }
             const int64_t frame = std::atoi(getNum().c_str());
-            _frames = FrameRange(frame, frame);
+            _frames = RangeI64(frame, frame);
             size -= sizeTmp;
         }
 

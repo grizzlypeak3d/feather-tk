@@ -18,15 +18,23 @@ namespace ftk
     void path(py::module_& m)
     {
         m.def("isDotFile", &isDotFile);
-        m.def("split", &split);
-        m.def("getDrives", &getDrives);
+        m.def("split", [](const std::string& path) { return split(std::filesystem::u8path(path)); });
+        m.def("getDrives", []
+            {
+                std::vector<std::string> out;
+                for (const auto& i : getDrives())
+                {
+                    out.push_back(i.u8string());
+                }
+                return out;
+            });
 
         py::enum_<UserPath>(m, "UserPath")
             .value("Home", UserPath::Home)
             .value("Desktop", UserPath::Desktop)
             .value("Documents", UserPath::Documents)
             .value("Downloads", UserPath::Downloads);
-        m.def("getUserPath", &getUserPath);
+        m.def("getUserPath", [](UserPath value) { return getUserPath(value).u8string(); });
 
         m.def(
             "toString",
@@ -37,7 +45,7 @@ namespace ftk
         py::class_<Path>(m, "Path")
             .def(py::init<>())
             .def(py::init<std::string>())
-            .def_property_readonly("get", &Path::get)
+            .def("get", &Path::get)
             .def_property_readonly("isEmpty", &Path::isEmpty)
             .def_property_readonly("hasProtocol", &Path::hasProtocol)
             .def_property_readonly("hasDir", &Path::hasDir)
@@ -90,15 +98,21 @@ namespace ftk
 
         m.def(
             "dirList",
-            &dirList,
+            [](const std::string& path, const DirListOptions& options)
+            {
+                return dirList(std::filesystem::u8path(path), options);
+            },
             py::arg("path"),
             py::arg("options") = DirListOptions());
 
         m.def(
             "expandSeq",
-            &expandSeq,
+            [](const std::string& inPath, Path& outPath, int seqMaxDigits)
+            {
+                return expandSeq(std::filesystem::u8path(inPath), outPath, seqMaxDigits);
+            },
             py::arg("inPath"),
             py::arg("outPath"),
-            py::arg("options") = DirListOptions());
+            py::arg("seqMaxDigits") = 9);
     }
 }

@@ -36,6 +36,7 @@ namespace ftk
     };
 
     typedef Range<int> RangeI;
+    typedef Range<int64_t> RangeI64;
     typedef Range<std::size_t> RangeSizeT;
     typedef Range<float> RangeF;
     typedef Range<double> RangeD;
@@ -57,11 +58,13 @@ namespace ftk
     Range<T> expand(const Range<T>&, const Range<T>&);
 
     void to_json(nlohmann::json&, const RangeI&);
+    void to_json(nlohmann::json&, const RangeI64&);
     void to_json(nlohmann::json&, const RangeSizeT&);
     void to_json(nlohmann::json&, const RangeF&);
     void to_json(nlohmann::json&, const RangeD&);
 
     void from_json(const nlohmann::json&, RangeI&);
+    void from_json(const nlohmann::json&, RangeI64&);
     void from_json(const nlohmann::json&, RangeSizeT&);
     void from_json(const nlohmann::json&, RangeF&);
     void from_json(const nlohmann::json&, RangeD&);

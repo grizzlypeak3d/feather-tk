@@ -100,7 +100,7 @@ namespace ftk
         return getBase() + getNum() + getExt();
     }
 
-    inline const FrameRange& Path::getFrames() const
+    inline const RangeI64& Path::getFrames() const
     {
         return _frames;
     }

@@ -43,9 +43,6 @@ namespace ftk
     //! Convert a frame number to a string.
     std::string toString(int64_t frame, int pad = 0);
 
-    //! Frame range.
-    typedef Range<int64_t> FrameRange;
-
     //! File path.
     //! 
     //! Example: file:///tmp/render.0001.exr?user=foo;password=bar
@@ -99,8 +96,8 @@ namespace ftk
         //! \name File Sequences
         ///@{
 
-        const FrameRange& getFrames() const;
-        void setFrames(const FrameRange&);
+        const RangeI64& getFrames() const;
+        void setFrames(const RangeI64&);
 
         //! Get a path with a frame number.
         std::string getFrame(int64_t frame, bool dir = true) const;
@@ -138,7 +135,7 @@ namespace ftk
         int _pad = 0;
         std::pair<size_t, size_t> _ext = { std::string::npos, std::string::npos };
         std::pair<size_t, size_t> _request = { std::string::npos, std::string::npos };
-        FrameRange _frames;
+        RangeI64 _frames;
     };
 
     //! Directory list sorting.

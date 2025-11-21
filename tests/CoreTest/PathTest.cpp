@@ -202,7 +202,7 @@ namespace ftk
             }
             {
                 Path p("render.1.exr");
-                FrameRange r(1, 100);
+                RangeI64 r(1, 100);
                 p.setFrames(r);
                 FTK_ASSERT(r == p.getFrames());
             }
@@ -224,9 +224,9 @@ namespace ftk
                 FTK_ASSERT(p.seq(p2));
                 FTK_ASSERT(!p.seq(p3));
                 FTK_ASSERT(p.addSeq(p2));
-                FTK_ASSERT(FrameRange(1, 100) == p.getFrames());
+                FTK_ASSERT(RangeI64(1, 100) == p.getFrames());
                 FTK_ASSERT(!p.addSeq(p3));
-                FTK_ASSERT(FrameRange(1, 100) == p.getFrames());
+                FTK_ASSERT(RangeI64(1, 100) == p.getFrames());
                 FTK_ASSERT("1-100" == p.getFrameRange());
             }
             {

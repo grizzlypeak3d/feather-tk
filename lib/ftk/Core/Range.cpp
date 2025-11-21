@@ -10,6 +10,11 @@ namespace ftk
         json = { value.min(), value.max() };
     }
 
+    void to_json(nlohmann::json& json, const RangeI64& value)
+    {
+        json = { value.min(), value.max() };
+    }
+
     void to_json(nlohmann::json& json, const RangeSizeT& value)
     {
         json = { value.min(), value.max() };
@@ -28,6 +33,11 @@ namespace ftk
     void from_json(const nlohmann::json& json, RangeI& value)
     {
         value = RangeI(json.at(0).get<int>(), json.at(1).get<int>());
+    }
+
+    void from_json(const nlohmann::json& json, RangeI64& value)
+    {
+        value = RangeI64(json.at(0).get<int>(), json.at(1).get<int>());
     }
 
     void from_json(const nlohmann::json& json, RangeSizeT& value)

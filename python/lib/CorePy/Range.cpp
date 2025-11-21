@@ -22,6 +22,14 @@ namespace ftk
             .def(pybind11::self == pybind11::self)
             .def(pybind11::self != pybind11::self);
 
+        py::class_<RangeI64>(m, "RangeI64")
+            .def(py::init<>())
+            .def(py::init<int64_t, int64_t>())
+            .def_property_readonly("min", &RangeI64::min)
+            .def_property_readonly("max", &RangeI64::max)
+            .def(pybind11::self == pybind11::self)
+            .def(pybind11::self != pybind11::self);
+
         py::class_<RangeF>(m, "RangeF")
             .def(py::init<>())
             .def(py::init<float, float>())
