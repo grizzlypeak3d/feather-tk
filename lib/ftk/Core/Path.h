@@ -89,6 +89,7 @@ namespace ftk
         void setDir(const std::string&);
         void setBase(const std::string&);
         void setNum(const std::string&);
+        void setPad(int);
         void setExt(const std::string&);
         void setRequest(const std::string&);
         void setFileName(const std::string&);

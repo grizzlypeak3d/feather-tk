@@ -239,10 +239,12 @@ namespace ftk
                 FTK_ASSERT("file:///tmp/lighting1.exr" == p.get());
                 p.setNum("0100");
                 FTK_ASSERT("file:///tmp/lighting0100.exr" == p.get());
+                p.setPad(6);
+                FTK_ASSERT("file:///tmp/lighting000100.exr" == p.get());
                 p.setExt(".tiff");
-                FTK_ASSERT("file:///tmp/lighting0100.tiff" == p.get());
+                FTK_ASSERT("file:///tmp/lighting000100.tiff" == p.get());
                 p.setRequest("?user=foo;password=bar");
-                FTK_ASSERT("file:///tmp/lighting0100.tiff?user=foo;password=bar" == p.get());
+                FTK_ASSERT("file:///tmp/lighting000100.tiff?user=foo;password=bar" == p.get());
             }
             {
                 const Path p("render.1.exr");

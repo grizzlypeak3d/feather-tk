@@ -89,6 +89,20 @@ namespace ftk
         _frames = tmp;
     }
 
+    void Path::setPad(int value)
+    {
+        _pad = value;
+        std::string num = getNum();
+        if (!num.empty())
+        {
+            num = toString(std::atoi(num.c_str()), _pad);
+        }
+        _path = getProtocol() + getDir() + getBase() + num + getExt() + getRequest();
+        const FrameRange tmp = _frames;
+        _parse();
+        _frames = tmp;
+    }
+
     void Path::setExt(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + value + getRequest();
