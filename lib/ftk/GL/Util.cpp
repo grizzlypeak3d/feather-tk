@@ -39,7 +39,7 @@ namespace ftk
 
         unsigned int getReadPixelsFormat(ImageType value)
         {
-            const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> data =
             {
                 GL_NONE,
 
@@ -102,7 +102,7 @@ namespace ftk
 
         unsigned int getReadPixelsType(ImageType value)
         {
-            const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> data =
             {
                 GL_NONE,
 

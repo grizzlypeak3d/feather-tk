@@ -50,7 +50,7 @@ namespace ftk
 
         std::size_t getByteCount(VBOType value)
         {
-            const std::array<size_t, static_cast<size_t>(VBOType::Count)> data =
+            static const std::array<size_t, static_cast<size_t>(VBOType::Count)> data =
             {
                 2 * sizeof(float),
                 2 * sizeof(float) + 2 * sizeof(uint16_t),

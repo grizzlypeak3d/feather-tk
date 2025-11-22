@@ -27,7 +27,7 @@ namespace ftk
     FTK_ENUM(Font);
 
     //! Get a built-in font.
-    std::string getFont(Font);
+    const std::string& getFont(Font);
 
     //! Font information.
     struct FontInfo

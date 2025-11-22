@@ -20,7 +20,7 @@ namespace ftk
     {
         unsigned int getTextureFormat(ImageType value)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
             {
                 GL_NONE,
 
@@ -99,7 +99,7 @@ namespace ftk
 
         unsigned int getTextureInternalFormat(ImageType type)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
             {
                 GL_NONE,
 
@@ -178,7 +178,7 @@ namespace ftk
 
         unsigned int getTextureType(ImageType value)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
             {
                 GL_NONE,
 
@@ -269,7 +269,7 @@ namespace ftk
 
         unsigned int getTextureFilter(ImageFilter value)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageFilter::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(ImageFilter::Count)> data =
             {
                 GL_NEAREST,
                 GL_LINEAR

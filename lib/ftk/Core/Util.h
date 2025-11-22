@@ -28,8 +28,8 @@
 //! * vector
 #define FTK_ENUM(ENUM) \
     std::vector<ENUM> get##ENUM##Enums(); \
-    std::vector<std::string> get##ENUM##Labels(); \
-    std::string getLabel(ENUM); \
+    const std::vector<std::string>& get##ENUM##Labels(); \
+    const std::string& getLabel(ENUM); \
     std::string to_string(ENUM); \
     bool from_string(const std::string&, ENUM&); \
     std::ostream& operator << (std::ostream&, ENUM)
@@ -53,14 +53,15 @@
         return out; \
     } \
     \
-    std::vector<std::string> get##ENUM##Labels() \
+    const std::vector<std::string>& get##ENUM##Labels() \
     { \
-        return { __VA_ARGS__ }; \
+        static std::vector<std::string> data = { __VA_ARGS__ }; \
+        return data; \
     } \
     \
-    std::string getLabel(ENUM value) \
+    const std::string& getLabel(ENUM value) \
     { \
-        const std::array<std::string, static_cast<std::size_t>(ENUM::Count)> data = { __VA_ARGS__ }; \
+        static const std::array<std::string, static_cast<std::size_t>(ENUM::Count)> data = { __VA_ARGS__ }; \
         return data[static_cast<std::size_t>(value)]; \
     } \
     \
@@ -72,7 +73,7 @@
     bool from_string(const std::string& s, ENUM& value) \
     { \
         bool out = false; \
-        const auto labels = get##ENUM##Labels(); \
+        const auto& labels = get##ENUM##Labels(); \
         const auto i = std::find_if( \
             labels.begin(), \
             labels.end(), \
