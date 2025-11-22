@@ -168,13 +168,14 @@ namespace ftk
 
         std::string _path;
         PathOptions _options;
-        std::pair<size_t, size_t> _protocol = { std::string::npos, std::string::npos };
-        std::pair<size_t, size_t> _dir = { std::string::npos, std::string::npos };
-        std::pair<size_t, size_t> _base = { std::string::npos, std::string::npos };
-        std::pair<size_t, size_t> _num = { std::string::npos, std::string::npos };
+        static const std::pair<size_t, size_t> _invalid;
+        std::pair<size_t, size_t> _protocol = _invalid;
+        std::pair<size_t, size_t> _dir = _invalid;
+        std::pair<size_t, size_t> _base = _invalid;
+        std::pair<size_t, size_t> _num = _invalid;
         int _pad = 0;
-        std::pair<size_t, size_t> _ext = { std::string::npos, std::string::npos };
-        std::pair<size_t, size_t> _request = { std::string::npos, std::string::npos };
+        std::pair<size_t, size_t> _ext = _invalid;
+        std::pair<size_t, size_t> _request = _invalid;
         RangeI64 _frames;
     };
 

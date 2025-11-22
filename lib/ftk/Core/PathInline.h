@@ -20,58 +20,58 @@ namespace ftk
 
     inline bool Path::hasProtocol() const
     {
-        return _protocol.first != std::string::npos && _protocol.second != std::string::npos;
+        return _protocol != _invalid;
     }
 
     inline bool Path::hasDir() const
     {
-        return _dir.first != std::string::npos && _dir.second != std::string::npos;
+        return _dir != _invalid;
     }
 
     inline bool Path::hasBase() const
     {
-        return _base.first != std::string::npos && _base.second != std::string::npos;
+        return _base != _invalid;
     }
 
     inline bool Path::hasNum() const
     {
-        return _num.first != std::string::npos && _num.second != std::string::npos;
+        return _num != _invalid;
     }
 
     inline bool Path::hasExt() const
     {
-        return _ext.first != std::string::npos && _ext.second != std::string::npos;
+        return _ext != _invalid;
     }
 
     inline bool Path::hasRequest() const
     {
-        return _request.first != std::string::npos && _request.second != std::string::npos;
+        return _request != _invalid;
     }
 
     inline std::string Path::getProtocol() const
     {
-        return _protocol.first != std::string::npos && _protocol.second != std::string::npos ?
+        return _protocol != _invalid ?
             _path.substr(_protocol.first, _protocol.second) :
             std::string();
     }
 
     inline std::string Path::getDir() const
     {
-        return _dir.first != std::string::npos && _dir.second != std::string::npos ?
+        return _dir != _invalid ?
             _path.substr(_dir.first, _dir.second) :
             std::string();
     }
 
     inline std::string Path::getBase() const
     {
-        return _base.first != std::string::npos && _base.second != std::string::npos ?
+        return _base != _invalid ?
             _path.substr(_base.first, _base.second) :
             std::string();
     }
 
     inline std::string Path::getNum() const
     {
-        return _num.first != std::string::npos && _num.second != std::string::npos ?
+        return _num != _invalid ?
             _path.substr(_num.first, _num.second) :
             std::string();
     }
@@ -83,14 +83,14 @@ namespace ftk
 
     inline std::string Path::getExt() const
     {
-        return _ext.first != std::string::npos && _ext.second != std::string::npos ?
+        return _ext != _invalid ?
             _path.substr(_ext.first, _ext.second) :
             std::string();
     }
 
     inline std::string Path::getRequest() const
     {
-        return _request.first != std::string::npos && _request.second != std::string::npos ?
+        return _request != _invalid ?
             _path.substr(_request.first, _request.second) :
             std::string();
     }
@@ -109,7 +109,7 @@ namespace ftk
 
     inline std::string Path::getFrame(int64_t frame, bool dir) const
     {
-        return _num.first != std::string::npos && _num.second != std::string::npos ?
+        return _num != _invalid ?
             ((dir ? getDir() : std::string()) + getBase() + toString(frame, _pad) + getExt()) :
             ((dir ? getDir() : std::string()) + getBase() + getExt());
     }
