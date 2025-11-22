@@ -192,7 +192,7 @@ namespace ftk
         bool                  sortReverse  = false;
         std::string           filter;
         bool                  filterFiles  = false;
-        std::string           filterExt;
+        std::set<std::string> filterExt;
         bool                  seq          = true;
         std::set<std::string> seqExts;
         bool                  seqNegative  = true;

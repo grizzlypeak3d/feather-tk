@@ -490,7 +490,7 @@ namespace ftk
         auto dirListOptions = options.dirList;
         dirListOptions.filter = p.search;
         dirListOptions.filterFiles = FileBrowserMode::Dir == p.mode;
-        dirListOptions.filterExt = p.model->getExt();
+        dirListOptions.filterExt.insert(p.model->getExt());
         p.dirEntries = dirList(p.model->getPath(), dirListOptions);
 
         if (auto context = getContext())

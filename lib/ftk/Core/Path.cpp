@@ -448,10 +448,8 @@ namespace ftk
                 const bool isDir = std::filesystem::is_directory(i.path());
                 if (keep && !isDir && !options.filterExt.empty())
                 {
-                    keep = compare(
-                        options.filterExt,
-                        path.getExt(),
-                        CaseCompare::Insensitive);
+                    keep = options.filterExt.find(toLower(path.getExt())) !=
+                        options.filterExt.end();
                 }
                 if (keep && !options.filter.empty())
                 {
