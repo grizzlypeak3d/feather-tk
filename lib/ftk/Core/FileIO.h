@@ -39,16 +39,16 @@ namespace ftk
     FTK_ENUM(FileRead);
 
     //! In-memory file.
-    struct InMemoryFile
+    struct InMemFile
     {
-        InMemoryFile() = default;
-        InMemoryFile(const uint8_t*, size_t size);
+        InMemFile() = default;
+        InMemFile(const uint8_t*, size_t size);
 
         const uint8_t* p = nullptr;
         size_t size = 0;
 
-        bool operator == (const InMemoryFile&) const;
-        bool operator != (const InMemoryFile&) const;
+        bool operator == (const InMemFile&) const;
+        bool operator != (const InMemFile&) const;
     };
 
     //! Seek modes.
@@ -89,12 +89,12 @@ namespace ftk
         //! Create a read-only file I/O object from memory.
         static std::shared_ptr<FileIO> create(
             const std::filesystem::path&,
-            const InMemoryFile&);
+            const InMemFile&);
 
         //! Create a read-only file I/O object from memory.
         static std::shared_ptr<FileIO> create(
             const std::string&,
-            const InMemoryFile&);
+            const InMemFile&);
 
         //! Get whether the file is open.
         bool isOpen() const;

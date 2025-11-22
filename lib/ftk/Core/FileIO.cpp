@@ -45,7 +45,7 @@ namespace ftk
 
     std::shared_ptr<FileIO> FileIO::create(
         const std::string& path,
-        const InMemoryFile& memory)
+        const InMemFile& memory)
     {
         return create(std::filesystem::u8path(path), memory);
     }

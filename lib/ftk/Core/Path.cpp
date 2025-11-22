@@ -92,8 +92,20 @@ namespace ftk
         return !(*this == other);
     }
 
-    Path::Path(const std::string& value, const PathOptions& options) :
+    Path::Path(
+        const std::string& value,
+        const PathOptions& options) :
         _path(value),
+        _options(options)
+    {
+        _parse(options);
+    }
+
+    Path::Path(
+        const std::string& dir,
+        const std::string& fileName,
+        const PathOptions& options) :
+        _path(appendSeparator(dir) + fileName),
         _options(options)
     {
         _parse(options);

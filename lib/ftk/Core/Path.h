@@ -72,7 +72,13 @@ namespace ftk
     {
     public:
         Path() = default;
-        explicit Path(const std::string&, const PathOptions& = PathOptions());
+        explicit Path(
+            const std::string&,
+            const PathOptions& = PathOptions());
+        Path(
+            const std::string& dir,
+            const std::string& fileName,
+            const PathOptions& = PathOptions());
 
         //! \name Path Options
         ///@{
