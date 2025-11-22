@@ -78,6 +78,7 @@ namespace ftk
             .def("getFrameRange", &Path::getFrameRange)
             .def("seq", &Path::seq, py::arg("path"))
             .def("addSeq", &Path::addSeq, py::arg("path"))
+            .def_property_readonly("isAbs", &Path::isAbs)
             .def("testExt", &Path::testExt)
             .def_readonly_static("numbers", &Path::numbers)
             .def_readonly_static("pathSeparators", &Path::pathSeparators)

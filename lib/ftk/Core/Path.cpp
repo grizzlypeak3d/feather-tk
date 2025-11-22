@@ -167,6 +167,27 @@ namespace ftk
         return out;
     }
 
+    bool Path::isAbs() const
+    {
+        bool out = false;
+        if (hasDir())
+        {
+            const std::string dir = getDir();
+            if (pathSeparators.find_first_of(dir[0]) != std::string::npos)
+            {
+                out = true;
+            }
+            else if (dir.size() > 1 &&
+                dir[0] >= 'A' &&
+                dir[0] <= 'Z' &&
+                ':' == dir[1])
+            {
+                out = true;
+            }
+        }
+        return out;
+    }
+
     bool Path::testExt(const std::set<std::string>& exts) const
     {
         return !exts.empty() ? exts.find(toLower(getExt())) != exts.end() : true;

@@ -259,6 +259,11 @@ namespace ftk
                 FTK_ASSERT("file:///tmp/lighting000100.tiff?user=foo;password=bar" == p.get());
             }
             {
+                FTK_ASSERT(!Path("render.exr").isAbs());
+                FTK_ASSERT(Path("/tmp/render.exr").isAbs());
+                FTK_ASSERT(Path("C:/tmp/render.exr").isAbs());
+            }
+            {
                 const Path p("render.1.exr");
                 const Path p2("render.100.exr");
                 FTK_ASSERT(p == p);

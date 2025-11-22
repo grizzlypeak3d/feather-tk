@@ -135,6 +135,10 @@ namespace ftk
         //! \name Utility
         ///@{
 
+        //! Get whether the path is absolute.
+        bool isAbs() const;
+
+        //! Test whether this extension matches one in the given set.
         bool testExt(const std::set<std::string>&) const;
 
         ///@}
