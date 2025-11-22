@@ -225,7 +225,6 @@ namespace ftk
     bool expandSeq(
         const std::filesystem::path&,
         Path&,
-        const std::set<std::string>& seqExts = std::set<std::string>(),
         const PathOptions& = PathOptions());
 
     void to_json(nlohmann::json&, const PathOptions&);

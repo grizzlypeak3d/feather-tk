@@ -123,20 +123,9 @@ namespace ftk
 
         m.def(
             "expandSeq",
-            [](const std::string& inPath,
-                Path& outPath,
-                const std::vector<std::string>& seqExts,
-                const PathOptions& pathOptions)
-            {
-                return expandSeq(
-                    std::filesystem::u8path(inPath),
-                    outPath,
-                    std::set<std::string>(seqExts.begin(), seqExts.end()),
-                    pathOptions);
-            },
+            &expandSeq,
             py::arg("inPath"),
             py::arg("outPath"),
-            py::arg("seqExts") = std::set<std::string>(),
             py::arg("pathOptions") = PathOptions());
     }
 }

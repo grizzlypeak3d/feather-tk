@@ -565,7 +565,6 @@ namespace ftk
     bool expandSeq(
         const std::filesystem::path& stdpath,
         Path& path,
-        const std::set<std::string>& seqExts,
         const PathOptions& pathOptions)
     {
         bool out = false;
@@ -577,7 +576,7 @@ namespace ftk
         {
             const Path entry(i.path().u8string(), pathOptions);
             const bool isDir = std::filesystem::is_directory(i.path());
-            if (init && !isDir && entry.testExt(seqExts))
+            if (init && !isDir)
             {
                 out = tmp.seq(entry);
                 if (out)

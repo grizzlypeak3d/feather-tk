@@ -332,7 +332,6 @@ namespace ftk
             FTK_ASSERT(100 == path.getFrames().min());
             FTK_ASSERT(102 == path.getFrames().max());
             FTK_ASSERT(!expandSeq(dir / "render.0.tiff", path));
-            FTK_ASSERT(!expandSeq(dir / "render.0.png", path, { ".exr" }));
         }
     }
 }
