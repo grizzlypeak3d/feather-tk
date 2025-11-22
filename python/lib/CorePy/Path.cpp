@@ -61,10 +61,12 @@ namespace ftk
             .def_property("ext", &Path::getExt, &Path::setExt)
             .def_property("request", &Path::getRequest, &Path::setRequest)
             .def_property("fileName", &Path::getFileName, &Path::setFileName)
+            .def("getFileName", &Path::getFileName, py::arg("dir"))
             .def_property("frames", &Path::getFrames, &Path::setFrames)
             .def("getFrameRange", &Path::getFrameRange)
             .def("seq", &Path::seq, py::arg("path"))
             .def("addSeq", &Path::addSeq, py::arg("path"))
+            .def("testExt", &Path::testExt)
             .def_readonly_static("numbers", &Path::numbers)
             .def_readonly_static("pathSeparators", &Path::pathSeparators)
             .def(pybind11::self == pybind11::self)
@@ -107,12 +109,20 @@ namespace ftk
 
         m.def(
             "expandSeq",
-            [](const std::string& inPath, Path& outPath, int seqMaxDigits)
+            [](const std::string& inPath,
+                Path& outPath,
+                const std::vector<std::string>& seqExts,
+                const PathOptions& pathOptions)
             {
-                return expandSeq(std::filesystem::u8path(inPath), outPath, seqMaxDigits);
+                return expandSeq(
+                    std::filesystem::u8path(inPath),
+                    outPath,
+                    std::set<std::string>(seqExts.begin(), seqExts.end()),
+                    pathOptions);
             },
             py::arg("inPath"),
             py::arg("outPath"),
-            py::arg("seqMaxDigits") = 9);
+            py::arg("seqExts") = std::set<std::string>(),
+            py::arg("pathOptions") = PathOptions());
     }
 }

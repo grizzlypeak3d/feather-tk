@@ -167,7 +167,7 @@ namespace ftk
         return out;
     }
 
-    bool Path::hasExt(const std::set<std::string>& exts) const
+    bool Path::testExt(const std::set<std::string>& exts) const
     {
         return !exts.empty() ? exts.find(toLower(getExt())) != exts.end() : true;
     }
@@ -419,7 +419,7 @@ namespace ftk
                 {
                     // Check for sequences.
                     bool seq = false;
-                    if (!isDir && options.seq && path.hasExt(options.seqExts))
+                    if (!isDir && options.seq && path.testExt(options.seqExts))
                     {
                         for (auto& j : out)
                         {
@@ -529,7 +529,7 @@ namespace ftk
         {
             const Path entry(i.path().u8string(), pathOptions);
             const bool isDir = std::filesystem::is_directory(i.path());
-            if (init && !isDir && entry.hasExt(seqExts))
+            if (init && !isDir && entry.testExt(seqExts))
             {
                 out = tmp.seq(entry);
                 if (out)
