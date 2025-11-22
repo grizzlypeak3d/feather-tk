@@ -25,7 +25,6 @@ namespace ftk
         private:
             void _enums();
             void _util();
-            void _split();
             void _drives();
             void _userPaths();
             void _path();

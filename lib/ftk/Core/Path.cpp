@@ -32,6 +32,35 @@ namespace ftk
         return std::vector<std::string>(out.begin(), out.end());
     }
 
+    std::string appendSeparator(const std::string& value)
+    {
+        std::string out = value;
+        auto pos = out.find_first_of('/');
+        if (pos != std::string::npos)
+        {
+            if (!out.empty() && out.back() != '/')
+            {
+                out.push_back('/');
+            }
+        }
+        else
+        {
+            pos = out.find_first_of('\\');
+            if (pos != std::string::npos)
+            {
+                if (!out.empty() && out.back() != '\\')
+                {
+                    out.push_back('\\');
+                }
+            }
+            else
+            {
+                out.push_back('/');
+            }
+        }
+        return out;
+    }
+
     FTK_ENUM_IMPL(
         UserPath,
         "Home",

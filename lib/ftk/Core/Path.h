@@ -22,6 +22,9 @@ namespace ftk
     //! Split a path.
     std::vector<std::string> split(std::filesystem::path);
 
+    //! Append a path separator.
+    std::string appendSeparator(const std::string&);
+
     //! Get the list of file system drives.
     std::vector<std::filesystem::path> getDrives();
 

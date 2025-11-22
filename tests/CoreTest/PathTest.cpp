@@ -29,7 +29,6 @@ namespace ftk
         {
             _enums();
             _util();
-            _split();
             _drives();
             _userPaths();
             _path();
@@ -45,15 +44,13 @@ namespace ftk
 
         void PathTest::_util()
         {
-            FTK_ASSERT(!isDotFile(""));
-            FTK_ASSERT(!isDotFile("login"));
-            FTK_ASSERT(isDotFile(".login"));
-            FTK_ASSERT(isDotFile("."));
-            FTK_ASSERT(isDotFile(".."));
-        }
-
-        void PathTest::_split()
-        {
+            {
+                FTK_ASSERT(!isDotFile(""));
+                FTK_ASSERT(!isDotFile("login"));
+                FTK_ASSERT(isDotFile(".login"));
+                FTK_ASSERT(isDotFile("."));
+                FTK_ASSERT(isDotFile(".."));
+            }
             {
                 const std::vector<std::string> pieces = split("");
                 FTK_ASSERT(pieces.empty());
@@ -97,7 +94,6 @@ namespace ftk
                 FTK_ASSERT("b" == pieces[1]);
                 FTK_ASSERT("c" == pieces[2]);
             }
-#if defined(_WINDOWS)
             {
                 const std::vector<std::string> pieces = split("c:");
                 FTK_ASSERT(1 == pieces.size());
@@ -114,7 +110,11 @@ namespace ftk
                 FTK_ASSERT("c:\\" == pieces[0]);
                 FTK_ASSERT("a" == pieces[1]);
             }
-#endif // _WINDOWS
+            {
+                FTK_ASSERT(appendSeparator("tmp") == "tmp/");
+                FTK_ASSERT(appendSeparator("/tmp") == "/tmp/");
+                FTK_ASSERT(appendSeparator("\\tmp") == "\\tmp\\");
+            }
         }
 
         void PathTest::_drives()
