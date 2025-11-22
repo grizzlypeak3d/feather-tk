@@ -94,6 +94,7 @@ namespace ftk
                 FTK_ASSERT("b" == pieces[1]);
                 FTK_ASSERT("c" == pieces[2]);
             }
+#if defined(_WINDOWS)
             {
                 const std::vector<std::string> pieces = split("c:");
                 FTK_ASSERT(1 == pieces.size());
@@ -110,6 +111,7 @@ namespace ftk
                 FTK_ASSERT("c:\\" == pieces[0]);
                 FTK_ASSERT("a" == pieces[1]);
             }
+#endif // _WINDOWS
             {
                 FTK_ASSERT(appendSeparator("tmp") == "tmp/");
                 FTK_ASSERT(appendSeparator("/tmp") == "/tmp/");
