@@ -215,10 +215,10 @@ namespace ftk
                 FTK_ASSERT(tmp == "render.exr");
                 tmp = Path("render.1.exr").getFrame(100);
                 FTK_ASSERT(tmp == "render.100.exr");
-                tmp = Path("render.0001.exr").getFrame(100);
+                tmp = Path("/tmp/render.0001.exr").getFrame(100);
                 FTK_ASSERT(tmp == "render.0100.exr");
-                tmp = Path("/tmp/render.0001.exr").getFrame(100, false);
-                FTK_ASSERT(tmp == "render.0100.exr");
+                tmp = Path("/tmp/render.0001.exr").getFrame(100, true);
+                FTK_ASSERT(tmp == "/tmp/render.0100.exr");
             }
             {
                 PathOptions options;

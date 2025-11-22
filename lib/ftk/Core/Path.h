@@ -118,8 +118,8 @@ namespace ftk
         const RangeI64& getFrames() const;
         void setFrames(const RangeI64&);
 
-        //! Get a path with a frame number.
-        std::string getFrame(int64_t frame, bool dir = true) const;
+        //! Get a file name with the given frame number.
+        std::string getFrame(int64_t frame, bool dir = false) const;
 
         //! Get the frame range string.
         std::string getFrameRange() const;

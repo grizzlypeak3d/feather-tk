@@ -66,9 +66,15 @@ namespace ftk
             .def_property("pad", &Path::getPad, &Path::setPad)
             .def_property("ext", &Path::getExt, &Path::setExt)
             .def_property("request", &Path::getRequest, &Path::setRequest)
-            .def_property("fileName", &Path::getFileName, &Path::setFileName)
-            .def("getFileName", &Path::getFileName, py::arg("dir"))
+            .def_property(
+                "fileName",
+                [](const Path& path) { return path.getFileName(); },
+                &Path::setFileName)
+            .def(
+                "getFileName",
+                [](const Path& path, bool dir) { return path.getFileName(dir); })
             .def_property("frames", &Path::getFrames, &Path::setFrames)
+            .def("getFrame", &Path::getFrame, py::arg("frame"), py::arg("dir") = false)
             .def("getFrameRange", &Path::getFrameRange)
             .def("seq", &Path::seq, py::arg("path"))
             .def("addSeq", &Path::addSeq, py::arg("path"))
