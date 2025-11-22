@@ -381,8 +381,11 @@ namespace ftk
             {
                 _pad = sizeTmp - 1;
             }
-            const int64_t frame = std::atoi(getNum().c_str());
-            _frames = RangeI64(frame, frame);
+            if (_path[numPos] != '#')
+            {
+                const int64_t frame = std::atoi(getNum().c_str());
+                _frames = RangeI64(frame, frame);
+            }
             size -= sizeTmp;
         }
 
