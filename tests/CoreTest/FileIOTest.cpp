@@ -68,11 +68,11 @@ namespace ftk
                     fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     const size_t size = fileIO->getSize();
                     FTK_ASSERT(11 == size);
-                    if (FileRead::MemoryMapped == fileRead)
+                    if (FileRead::MMap == fileRead)
                     {
-                        FTK_ASSERT(fileIO->getMemoryStart());
-                        FTK_ASSERT(fileIO->getMemoryEnd());
-                        FTK_ASSERT(fileIO->getMemoryP());
+                        FTK_ASSERT(fileIO->getMemStart());
+                        FTK_ASSERT(fileIO->getMemEnd());
+                        FTK_ASSERT(fileIO->getMemP());
                     }
                     std::string contents;
                     while (!fileIO->isEOF())

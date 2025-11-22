@@ -23,14 +23,14 @@ namespace ftk
         enum class ErrorType
         {
             Open,
-            MemoryMap,
+            MMap,
             Close,
-            CloseMemoryMap,
+            CloseMMap,
             Read,
-            ReadMemoryMap,
+            ReadMMap,
             Write,
             Seek,
-            SeekMemoryMap
+            SeekMMap
         };
 
         std::string getErrorString()
@@ -57,19 +57,19 @@ namespace ftk
             case ErrorType::Open:
                 out = Format("Cannot open file \"{0}\"").arg(path);
                 break;
-            case ErrorType::MemoryMap:
+            case ErrorType::MMap:
                 out = Format("Cannot memory map file \"{0}\"").arg(path);
                 break;
             case ErrorType::Close:
                 out = Format("Cannot close file \"{0}\"").arg(path);
                 break;
-            case ErrorType::CloseMemoryMap:
+            case ErrorType::CloseMMap:
                 out = Format("Cannot unmap file \"{0}\"").arg(path);
                 break;
             case ErrorType::Read:
                 out = Format("Cannot read file \"{0}\"").arg(path);
                 break;
-            case ErrorType::ReadMemoryMap:
+            case ErrorType::ReadMMap:
                 out = Format("Cannot read memory mapped file \"{0}\"").arg(path);
                 break;
             case ErrorType::Write:
@@ -78,7 +78,7 @@ namespace ftk
             case ErrorType::Seek:
                 out = Format("Cannot seek file \"{0}\"").arg(path);
                 break;
-            case ErrorType::SeekMemoryMap:
+            case ErrorType::SeekMMap:
                 out = Format("Cannot seek memory mapped file \"{0}\"").arg(path);
                 break;
             default: break;
@@ -104,9 +104,9 @@ namespace ftk
         bool                  endianConversion = false;
         int                   f = -1;
         void*                 mMap = reinterpret_cast<void*>(-1);
-        const uint8_t*        memoryStart = nullptr;
-        const uint8_t*        memoryEnd = nullptr;
-        const uint8_t*        memoryP = nullptr;
+        const uint8_t*        memStart = nullptr;
+        const uint8_t*        memEnd = nullptr;
+        const uint8_t*        memP = nullptr;
     };
 
     FileIO::FileIO() :
@@ -120,22 +120,22 @@ namespace ftk
     
     std::shared_ptr<FileIO> FileIO::create(
         const std::filesystem::path& path,
-        const InMemoryFile& memory)
+        const InMemFile& mem)
     {
         auto out = std::shared_ptr<FileIO>(new FileIO);
         out->_p->path = path;
         out->_p->mode = FileMode::Read;
         out->_p->readType = FileRead::Normal;
-        out->_p->size = memory.size;
-        out->_p->memoryStart = memory.p;
-        out->_p->memoryEnd = memory.p + memory.size;
-        out->_p->memoryP = memory.p;
+        out->_p->size = mem.size;
+        out->_p->memStart = mem.p;
+        out->_p->memEnd = mem.p + mem.size;
+        out->_p->memP = mem.p;
         return out;
     }
     
     bool FileIO::isOpen() const
     {
-        return _p->f != -1 || _p->memoryStart;
+        return _p->f != -1 || _p->memStart;
     }
 
     const std::filesystem::path& FileIO::getPath() const
@@ -158,19 +158,19 @@ namespace ftk
         _p->seek(in, mode);
     }
 
-    const uint8_t* FileIO::getMemoryStart() const
+    const uint8_t* FileIO::getMemStart() const
     {
-        return _p->memoryStart;
+        return _p->memStart;
     }
 
-    const uint8_t* FileIO::getMemoryEnd() const
+    const uint8_t* FileIO::getMemEnd() const
     {
-        return _p->memoryEnd;
+        return _p->memEnd;
     }
 
-    const uint8_t* FileIO::getMemoryP() const
+    const uint8_t* FileIO::getMemP() const
     {
-        return _p->memoryP;
+        return _p->memP;
     }
 
     bool FileIO::hasEndianConversion() const
@@ -187,7 +187,7 @@ namespace ftk
     {
         FTK_P();
         bool out = false;
-        if (!p.memoryStart)
+        if (!p.memStart)
         {
             out |= -1 == p.f;
         }
@@ -199,7 +199,7 @@ namespace ftk
     {
         FTK_P();
         
-        if (!p.memoryStart && -1 == p.f)
+        if (!p.memStart && -1 == p.f)
         {
             throw std::runtime_error(
                 getErrorMessage(ErrorType::Read, p.path.u8string()));
@@ -209,23 +209,23 @@ namespace ftk
         {
         case FileMode::Read:
         {
-            if (p.memoryStart)
+            if (p.memStart)
             {
-                const uint8_t* memoryP = p.memoryP + size * wordSize;
-                if (memoryP > p.memoryEnd)
+                const uint8_t* memP = p.memP + size * wordSize;
+                if (memP > p.memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::ReadMemoryMap, p.path.u8string()));
+                        getErrorMessage(ErrorType::ReadMMap, p.path.u8string()));
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
-                    endian(p.memoryP, in, size, wordSize);
+                    endian(p.memP, in, size, wordSize);
                 }
                 else
                 {
-                    memcpy(in, p.memoryP, size * wordSize);
+                    memcpy(in, p.memP, size * wordSize);
                 }
-                p.memoryP = memoryP;
+                p.memP = memP;
             }
             else
             {
@@ -344,7 +344,7 @@ namespace ftk
         p.size     = std::filesystem::file_size(path);
         
         // Memory mapping.
-        if (FileRead::MemoryMapped == p.readType &&
+        if (FileRead::MMap == p.readType &&
             FileMode::Read == p.mode &&
             p.size > 0)
         {
@@ -353,11 +353,11 @@ namespace ftk
             if (p.mMap == (void*)-1)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::MemoryMap, path.u8string(), getErrorString()));
+                    getErrorMessage(ErrorType::MMap, path.u8string(), getErrorString()));
             }
-            p.memoryStart = reinterpret_cast<const uint8_t*>(p.mMap);
-            p.memoryEnd   = p.memoryStart + p.size;
-            p.memoryP     = p.memoryStart;
+            p.memStart = reinterpret_cast<const uint8_t*>(p.mMap);
+            p.memEnd   = p.memStart + p.size;
+            p.memP     = p.memStart;
         }
     }
 
@@ -375,13 +375,13 @@ namespace ftk
                 out = false;
                 if (error)
                 {
-                    *error = getErrorMessage(ErrorType::CloseMemoryMap, p.path.u8string(), getErrorString());
+                    *error = getErrorMessage(ErrorType::CloseMMap, p.path.u8string(), getErrorString());
                 }
             }
             p.mMap = (void*)-1;
         }
-        p.memoryStart = nullptr;
-        p.memoryEnd   = nullptr;
+        p.memStart = nullptr;
+        p.memEnd   = nullptr;
 
         if (p.f != -1)
         {
@@ -407,32 +407,32 @@ namespace ftk
 
     void FileIO::Private::seek(size_t value, SeekMode seekMode)
     {
-        if (FileMode::Read == mode && memoryStart)
+        if (FileMode::Read == mode && memStart)
         {
             switch (seekMode)
             {
             case SeekMode::Set:
-                memoryP = reinterpret_cast<const uint8_t*>(memoryStart) + value;
-                if (memoryP > memoryEnd)
+                memP = reinterpret_cast<const uint8_t*>(memStart) + value;
+                if (memP > memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMemoryMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
                 }
                 break;
             case SeekMode::Forward:
-                memoryP += value;
-                if (memoryP > memoryEnd)
+                memP += value;
+                if (memP > memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMemoryMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
                 }
                 break;
             case SeekMode::Reverse:
-                memoryP -= value;
-                if (memoryP < memoryStart)
+                memP -= value;
+                if (memP < memStart)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMemoryMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
                 }
                 break;
             default: break;

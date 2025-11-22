@@ -31,7 +31,7 @@ namespace ftk
     enum class FileRead
     {
         Normal,
-        MemoryMapped,
+        MMap,
 
         Count,
         First = Normal
@@ -78,13 +78,13 @@ namespace ftk
         static std::shared_ptr<FileIO> create(
             const std::filesystem::path&,
             FileMode,
-            FileRead = FileRead::MemoryMapped);
+            FileRead = FileRead::MMap);
 
         //! Create a new file I/O object.
         static std::shared_ptr<FileIO> create(
             const std::string&,
             FileMode,
-            FileRead = FileRead::MemoryMapped);
+            FileRead = FileRead::MMap);
 
         //! Create a read-only file I/O object from memory.
         static std::shared_ptr<FileIO> create(
@@ -167,14 +167,14 @@ namespace ftk
         //! \name Memory Mapping
         ///@{
 
-        //! Get a pointer to the start of the memory-map.
-        const uint8_t* getMemoryStart() const;
+        //! Get a pointer to the start of the file memory.
+        const uint8_t* getMemStart() const;
 
-        //! Get a pointer to the end of the memory-map.
-        const uint8_t* getMemoryEnd() const;
+        //! Get a pointer to the end of the file memory.
+        const uint8_t* getMemEnd() const;
 
-        //! Get the current memory-map position.
-        const uint8_t* getMemoryP() const;
+        //! Get the current file memory position.
+        const uint8_t* getMemP() const;
 
         ///@}
 

@@ -163,9 +163,9 @@ namespace ftk
     std::string read(const std::shared_ptr<FileIO>& io)
     {
         std::string out;
-        if (const uint8_t* p = io->getMemoryP())
+        if (const uint8_t* p = io->getMemP())
         {
-            const uint8_t* end = io->getMemoryEnd();
+            const uint8_t* end = io->getMemEnd();
             out = std::string(reinterpret_cast<const char*>(p), end - p);
         }
         else
