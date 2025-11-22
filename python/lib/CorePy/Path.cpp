@@ -42,6 +42,12 @@ namespace ftk
             py::arg("frame"),
             py::arg("pad") = 0);
 
+        py::class_<PathOptions>(m, "PathOptions")
+            .def_readwrite("seqNegative", &PathOptions::seqNegative)
+            .def_readwrite("seqMaxDigits", &PathOptions::seqMaxDigits)
+            .def(pybind11::self == pybind11::self)
+            .def(pybind11::self != pybind11::self);
+
         py::class_<Path>(m, "Path")
             .def(py::init<>())
             .def(py::init<std::string>())
@@ -85,6 +91,7 @@ namespace ftk
             .def_readwrite("filterFiles", &DirListOptions::filterFiles)
             .def_readwrite("filterExt", &DirListOptions::filterExt)
             .def_readwrite("seq", &DirListOptions::seq)
+            .def_readwrite("seqNegative", &DirListOptions::seqNegative)
             .def_readwrite("seqMaxDigits", &DirListOptions::seqMaxDigits)
             .def_readwrite("hidden", &DirListOptions::hidden)
             .def(pybind11::self == pybind11::self)
