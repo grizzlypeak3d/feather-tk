@@ -110,16 +110,16 @@ namespace ftk
 
     std::shared_ptr<FileIO> FileIO::create(
         const std::filesystem::path& path,
-        const InMemFile& mem)
+        const MemFile& memFile)
     {
         auto out = std::shared_ptr<FileIO>(new FileIO);
         out->_p->path = path;
         out->_p->mode = FileMode::Read;
         out->_p->readType = FileRead::Normal;
-        out->_p->size = mem.size;
-        out->_p->memStart = mem.p;
-        out->_p->memEnd = mem.p + mem.size;
-        out->_p->memP = mem.p;
+        out->_p->size = memFile.size;
+        out->_p->memStart = memFile.p;
+        out->_p->memEnd = memFile.p + memFile.size;
+        out->_p->memP = memFile.p;
         return out;
     }
 

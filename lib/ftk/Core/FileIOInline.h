@@ -3,19 +3,19 @@
 
 namespace ftk
 {
-    inline InMemFile::InMemFile(const uint8_t* p, size_t size) :
+    inline MemFile::MemFile(const uint8_t* p, size_t size) :
         p(p),
         size(size)
     {}
 
-    inline bool InMemFile::operator == (const InMemFile& other) const
+    inline bool MemFile::operator == (const MemFile& other) const
     {
         return
             p == other.p &&
             size == other.size;
     }
 
-    inline bool InMemFile::operator != (const InMemFile& other) const
+    inline bool MemFile::operator != (const MemFile& other) const
     {
         return !(*this == other);
     }

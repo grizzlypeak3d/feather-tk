@@ -18,7 +18,7 @@ namespace ftk
         public:
             ImageReader(
                 const std::filesystem::path&,
-                const InMemFile*,
+                const MemFile*,
                 const ImageIOOptions&);
                 
             virtual ~ImageReader();
@@ -60,7 +60,7 @@ namespace ftk
                 const ImageIOOptions& = ImageIOOptions()) override;
             std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
-                const InMemFile&,
+                const MemFile&,
                 const ImageIOOptions& = ImageIOOptions()) override;
             bool canWrite(
                 const std::filesystem::path&,

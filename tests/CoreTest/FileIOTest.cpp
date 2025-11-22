@@ -92,8 +92,8 @@ namespace ftk
                     FTK_ASSERT(fileIO->isEOF());
                     fileIO.reset();
 
-                    InMemFile memRead((uint8_t*)contents.data(), contents.size());
-                    fileIO = FileIO::create(path, memRead);
+                    MemFile memFile((uint8_t*)contents.data(), contents.size());
+                    fileIO = FileIO::create(path, memFile);
                     std::string contents2;
                     while (!fileIO->isEOF())
                     {
@@ -299,10 +299,10 @@ namespace ftk
         {
             {
                 std::string contents = "Hello world";
-                InMemFile a((uint8_t*)contents.data(), contents.size());
-                InMemFile b((uint8_t*)contents.data(), contents.size());
+                MemFile a((uint8_t*)contents.data(), contents.size());
+                MemFile b((uint8_t*)contents.data(), contents.size());
                 FTK_ASSERT(a == b);
-                b = InMemFile();
+                b = MemFile();
                 FTK_ASSERT(a != b);
             }
         }

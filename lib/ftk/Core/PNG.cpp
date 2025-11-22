@@ -26,11 +26,11 @@ namespace ftk
 
         std::shared_ptr<IImageReader> ImagePlugin::read(
             const std::filesystem::path& path,
-            const InMemFile& memory,
+            const MemFile& memFile,
             const ImageIOOptions& options)
         {
             return std::shared_ptr<ImageReader>(
-                new ImageReader(path, &memory, options));
+                new ImageReader(path, &memFile, options));
         }
 
         bool ImagePlugin::canWrite(

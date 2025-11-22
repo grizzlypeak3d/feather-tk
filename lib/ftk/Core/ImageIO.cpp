@@ -21,7 +21,7 @@ namespace ftk
 
     IImageReader::IImageReader(
         const std::filesystem::path& path,
-        const InMemFile*,
+        const MemFile*,
         const ImageIOOptions&) :
         _path(path)
     {}
@@ -84,7 +84,7 @@ namespace ftk
 
     std::shared_ptr<IImageReader> IImagePlugin::read(
         const std::filesystem::path&,
-        const InMemFile&,
+        const MemFile&,
         const ImageIOOptions&)
     {
         return nullptr;
@@ -158,7 +158,7 @@ namespace ftk
 
     std::shared_ptr<IImageReader> ImageIO::read(
         const std::filesystem::path& path,
-        const InMemFile& memory,
+        const MemFile& memFile,
         const ImageIOOptions& options)
     {
         std::shared_ptr<IImageReader> out;
@@ -166,7 +166,7 @@ namespace ftk
         {
             if (plugin->canRead(path, options))
             {
-                out = plugin->read(path, memory, options);
+                out = plugin->read(path, memFile, options);
                 break;
             }
         }

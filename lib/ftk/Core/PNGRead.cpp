@@ -18,19 +18,19 @@ namespace ftk
             void memoryRead(png_structp png_ptr, png_bytep outBytes, png_size_t byteCountToRead)
             {
                 png_voidp io_ptr = png_get_io_ptr(png_ptr);
-                InMemFile* memory = static_cast<InMemFile*>(io_ptr);
-                if (byteCountToRead > memory->size)
+                MemFile* memFile = static_cast<MemFile*>(io_ptr);
+                if (byteCountToRead > memFile->size)
                 {
                     png_error(png_ptr, "Cannot read");
                 }
-                memcpy(outBytes, memory->p, byteCountToRead);
-                memory->p += byteCountToRead;
-                memory->size -= byteCountToRead;
+                memcpy(outBytes, memFile->p, byteCountToRead);
+                memFile->p += byteCountToRead;
+                memFile->size -= byteCountToRead;
             }
 
             bool open(
                 FILE* f,
-                InMemFile* memory,
+                MemFile* memFile,
                 png_structp png,
                 png_infop* pngInfo,
                 png_infop* pngInfoEnd,
@@ -58,15 +58,15 @@ namespace ftk
 
                 uint8_t tmp[8];
                 memset(tmp, 0, 8);
-                if (memory->p)
+                if (memFile->p)
                 {
-                    if (memory->size < 8)
+                    if (memFile->size < 8)
                     {
                         return false;
                     }
-                    memcpy(tmp, memory->p, 8);
-                    memory->p += 8;
-                    memory->size -= 8;
+                    memcpy(tmp, memFile->p, 8);
+                    memFile->p += 8;
+                    memFile->size -= 8;
                 }
                 else
                 {
@@ -81,9 +81,9 @@ namespace ftk
                     return false;
                 }
 
-                if (memory->p)
+                if (memFile->p)
                 {
-                    png_set_read_fn(png, memory, memoryRead);
+                    png_set_read_fn(png, memFile, memoryRead);
                 }
                 else
                 {
@@ -155,7 +155,7 @@ namespace ftk
             png_infop   pngInfo = nullptr;
             png_infop   pngInfoEnd = nullptr;
             FILE*       f = nullptr;
-            InMemFile   memory;
+            MemFile     memFile;
             ErrorStruct error;
             size_t      scanlineSize = 0;
             ImageInfo   info;
@@ -163,9 +163,9 @@ namespace ftk
 
         ImageReader::ImageReader(
             const std::filesystem::path& path,
-            const InMemFile* memory,
+            const MemFile* memFile,
             const ImageIOOptions& options) :
-            IImageReader(path, memory, options),
+            IImageReader(path, memFile, options),
             _p(new Private)
         {
             FTK_P();
@@ -175,10 +175,10 @@ namespace ftk
                 pngErrorFunc,
                 pngWarningFunc);
 
-            if (memory)
+            if (memFile)
             {
-                p.memory.p = memory->p;
-                p.memory.size = memory->size;
+                p.memFile.p = memFile->p;
+                p.memFile.size = memFile->size;
             }
             else
             {
@@ -202,7 +202,7 @@ namespace ftk
             uint8_t bitDepth = 0;
             if (!open(
                 p.f,
-                &p.memory,
+                &p.memFile,
                 p.png,
                 &p.pngInfo,
                 &p.pngInfoEnd,
