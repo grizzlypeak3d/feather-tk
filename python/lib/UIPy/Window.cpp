@@ -13,7 +13,7 @@ namespace py = pybind11;
 
 namespace ftk
 {
-    class PyWindow : public Window
+    /*class PyWindow : public Window
     {
     public:
         static std::shared_ptr<PyWindow> create(
@@ -36,13 +36,14 @@ namespace ftk
                 drawRect,
                 event);
         }
-    };
+    };*/
 
     void window(py::module_& m)
     {
-        py::class_<Window, IWindow, std::shared_ptr<Window>, PyWindow>(m, "Window")
+        //py::class_<Window, IWindow, std::shared_ptr<Window>, PyWindow>(m, "Window")
+        py::class_<Window, IWindow, std::shared_ptr<Window> >(m, "Window")
             .def(
-                py::init(&Window::create, &PyWindow::create),
+                py::init(&Window::create),
                 py::arg("context"),
                 py::arg("app"),
                 py::arg("name"),
