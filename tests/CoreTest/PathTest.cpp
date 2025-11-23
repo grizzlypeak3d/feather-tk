@@ -232,16 +232,30 @@ namespace ftk
             }
             {
                 Path p("render.1.exr");
+                FTK_ASSERT(!p.isSeq());
                 FTK_ASSERT("1" == p.getFrameRange());
                 const Path p2("render.100.exr");
                 const Path p3("render.exr");
                 FTK_ASSERT(p.seq(p2));
                 FTK_ASSERT(!p.seq(p3));
                 FTK_ASSERT(p.addSeq(p2));
+                FTK_ASSERT(p.isSeq());
                 FTK_ASSERT(RangeI64(1, 100) == p.getFrames());
                 FTK_ASSERT(!p.addSeq(p3));
                 FTK_ASSERT(RangeI64(1, 100) == p.getFrames());
                 FTK_ASSERT("1-100" == p.getFrameRange());
+            }
+            {
+                Path p("render.#.exr");
+                FTK_ASSERT(!p.isSeq());
+                FTK_ASSERT(p.hasSeqWildcard());
+                const Path p2("render.1.exr");
+                const Path p3("render.100.exr");
+                FTK_ASSERT(p.addSeq(p2));
+                FTK_ASSERT(p.addSeq(p3));
+                FTK_ASSERT(p.isSeq());
+                FTK_ASSERT(!p.hasSeqWildcard());
+                FTK_ASSERT("render.1.exr" == p.get());
             }
             {
                 Path p("render.1.exr");
@@ -292,11 +306,12 @@ namespace ftk
             _print("List 1: " + dirEntries[1].path.getFileName());
             _print("List 2: " + dirEntries[2].path.getFileName());
             FTK_ASSERT("render.0.exr" == dirEntries[0].path.getFileName());
-            FTK_ASSERT(0 == dirEntries[0].path.getFrames().min());
-            FTK_ASSERT(9 == dirEntries[0].path.getFrames().max());
+            FTK_ASSERT(dirEntries[0].path.getFrames().has_value());
+            FTK_ASSERT(0 == dirEntries[0].path.getFrames().value().min());
+            FTK_ASSERT(9 == dirEntries[0].path.getFrames().value().max());
             FTK_ASSERT("render.100.png" == dirEntries[1].path.getFileName());
-            FTK_ASSERT(100 == dirEntries[1].path.getFrames().min());
-            FTK_ASSERT(102 == dirEntries[1].path.getFrames().max());
+            FTK_ASSERT(100 == dirEntries[1].path.getFrames().value().min());
+            FTK_ASSERT(102 == dirEntries[1].path.getFrames().value().max());
             FTK_ASSERT("render.exr" == dirEntries[2].path.getFileName());
 
             DirListOptions options;
@@ -325,14 +340,14 @@ namespace ftk
             }
             Path path;
             FTK_ASSERT(expandSeq(dir / "render.0.exr", path));
-            FTK_ASSERT(0 == path.getFrames().min());
-            FTK_ASSERT(9 == path.getFrames().max());
+            FTK_ASSERT(0 == path.getFrames().value().min());
+            FTK_ASSERT(9 == path.getFrames().value().max());
             FTK_ASSERT(expandSeq(dir / "render.#.exr", path));
-            FTK_ASSERT(0 == path.getFrames().min());
-            FTK_ASSERT(9 == path.getFrames().max());
+            FTK_ASSERT(0 == path.getFrames().value().min());
+            FTK_ASSERT(9 == path.getFrames().value().max());
             FTK_ASSERT(expandSeq(dir / "render.0.png", path));
-            FTK_ASSERT(100 == path.getFrames().min());
-            FTK_ASSERT(102 == path.getFrames().max());
+            FTK_ASSERT(100 == path.getFrames().value().min());
+            FTK_ASSERT(102 == path.getFrames().value().max());
             FTK_ASSERT(!expandSeq(dir / "render.0.tiff", path));
         }
     }

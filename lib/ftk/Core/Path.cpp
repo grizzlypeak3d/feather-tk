@@ -125,7 +125,7 @@ namespace ftk
     void Path::setProtocol(const std::string& value)
     {
         _path = value + getDir() + getBase() + getNum() + getExt() + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -133,7 +133,7 @@ namespace ftk
     void Path::setDir(const std::string& value)
     {
         _path = getProtocol() + value + getBase() + getNum() + getExt() + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -141,7 +141,7 @@ namespace ftk
     void Path::setBase(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getNum() + getExt() + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -149,7 +149,7 @@ namespace ftk
     void Path::setNum(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + value + getExt() + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -163,7 +163,7 @@ namespace ftk
             num = toString(std::atoi(num.c_str()), _pad);
         }
         _path = getProtocol() + getDir() + getBase() + num + getExt() + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -171,7 +171,7 @@ namespace ftk
     void Path::setExt(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + value + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -179,7 +179,7 @@ namespace ftk
     void Path::setRequest(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + getExt() + value;
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -187,7 +187,7 @@ namespace ftk
     void Path::setFileName(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getRequest();
-        const RangeI64 tmp = _frames;
+        const std::optional<RangeI64> tmp = _frames;
         _parse(_options);
         _frames = tmp;
     }
@@ -202,8 +202,19 @@ namespace ftk
         bool out = seq(other);
         if (out)
         {
-            _frames = expand(_frames, other._frames);
-            _pad = std::max(_pad, other._pad);
+            const std::optional<RangeI64> frames = _frames.has_value() && other._frames.has_value() ?
+                expand(_frames.value(), other._frames.value()) :
+                other._frames;
+            const int pad = std::max(_pad, other._pad);
+            if (frames != _frames || pad != _pad || hasSeqWildcard())
+            {
+                _frames = frames;
+                _pad = pad;
+                if (_frames.has_value())
+                {
+                    setNum(toString(_frames.value().min(), _pad));
+                }
+            }
         }
         return out;
     }
@@ -515,16 +526,6 @@ namespace ftk
         catch (const std::exception&)
         {}
 
-        // Seq sequence numbers to their first frame.
-        for (auto& i : out)
-        {
-            const auto& frames = i.path.getFrames();
-            if (!frames.equal())
-            {
-                i.path.setNum(toString(frames.min(), i.path.getPad()));
-            }
-        }
-
         // Sort the entries.
         std::function<int(const DirEntry& a, const DirEntry& b)> sort;
         switch (options.sort)
@@ -606,13 +607,6 @@ namespace ftk
             {
                 path.addSeq(entry);
             }
-        }
-
-        // Set the sequence number to the first frame.
-        const auto& frames = path.getFrames();
-        if (out && !frames.equal())
-        {
-            path.setNum(toString(frames.min(), path.getPad()));
         }
 
         return out;

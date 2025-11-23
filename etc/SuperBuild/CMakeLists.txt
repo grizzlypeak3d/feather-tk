@@ -32,7 +32,7 @@ set(ftk_IGNORE_PREFIX_PATH ${ftk_IGNORE_PREFIX_PATH_DEFAULT} CACHE STRING "Ignor
 set(ftk_TOOLS_INSTALL "bin" CACHE STRING "Destination where tools will be installed")
 
 #-------------------------------------------------------------------------------
-# Configuration
+# Internal configuration
 
 list(PREPEND CMAKE_MODULE_PATH
     ${PROJECT_SOURCE_DIR}/../../cmake/Modules

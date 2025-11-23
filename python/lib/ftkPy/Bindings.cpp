@@ -10,7 +10,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(ftkPy, m)
 {
-    m.doc() = "A lightweight toolkit for building cross-platform applications.";
+    m.doc() = "Feather-tk is a lightweight toolkit for building cross-platform C++ applications.";
     ftk::coreBind(m);
     ftk::uiBind(m);
 }

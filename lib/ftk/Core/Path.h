@@ -8,7 +8,9 @@
 
 #include <filesystem>
 #include <iostream>
+#include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
 namespace ftk
@@ -124,8 +126,14 @@ namespace ftk
         //! \name File Sequences
         ///@{
 
-        const RangeI64& getFrames() const;
+        const std::optional<RangeI64>& getFrames() const;
         void setFrames(const RangeI64&);
+
+        //! Get whether this is a sequence.
+        bool isSeq() const;
+
+        //! Get whether this has a sequence wildcard ('#').
+        bool hasSeqWildcard() const;
 
         //! Get a file name with the given frame number.
         std::string getFrame(int64_t frame, bool dir = false) const;
@@ -176,7 +184,7 @@ namespace ftk
         int _pad = 0;
         std::pair<size_t, size_t> _ext = _invalid;
         std::pair<size_t, size_t> _request = _invalid;
-        RangeI64 _frames;
+        std::optional<RangeI64> _frames;
     };
 
     //! Directory list sorting.

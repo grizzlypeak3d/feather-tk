@@ -508,8 +508,8 @@ namespace ftk
                 item.text.push_back(dirEntry.path.getFileName());
 
                 // Frame range.
-                if (dirEntry.path.hasNum() &&
-                    !dirEntry.path.getFrames().equal())
+                if (dirEntry.path.getFrames().has_value() &&
+                    !dirEntry.path.getFrames().value().equal())
                 {
                     item.text.push_back(Format("{0}").
                         arg(dirEntry.path.getFrameRange(), 8 + 1 + 8));

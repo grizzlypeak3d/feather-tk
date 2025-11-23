@@ -75,6 +75,7 @@ namespace ftk
                 "getFileName",
                 [](const Path& path, bool dir) { return path.getFileName(dir); })
             .def_property("frames", &Path::getFrames, &Path::setFrames)
+            .def_property_readonly("isSeq", &Path::isSeq)
             .def("getFrame", &Path::getFrame, py::arg("frame"), py::arg("dir") = false)
             .def("getFrameRange", &Path::getFrameRange)
             .def("seq", &Path::seq, py::arg("path"))

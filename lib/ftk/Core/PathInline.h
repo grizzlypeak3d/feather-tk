@@ -102,9 +102,19 @@ namespace ftk
             getBase() + getNum() + getExt();
     }
 
-    inline const RangeI64& Path::getFrames() const
+    inline const std::optional<RangeI64>& Path::getFrames() const
     {
         return _frames;
+    }
+
+    inline bool Path::isSeq() const
+    {
+        return hasNum() && _frames.has_value() && !_frames.value().equal();
+    }
+
+    inline bool Path::hasSeqWildcard() const
+    {
+        return "#" == getNum();
     }
 
     inline std::string Path::getFrame(int64_t frame, bool dir) const
@@ -116,10 +126,10 @@ namespace ftk
 
     inline std::string Path::getFrameRange() const
     {
-        return hasNum() ?
-            _frames.min() != _frames.max() ?
-                toString(_frames.min(), _pad) + "-" + toString(_frames.max(), _pad) :
-                toString(_frames.min(), _pad) :
+        return _frames.has_value() ?
+            !_frames.value().equal() ?
+                toString(_frames.value().min(), _pad) + "-" + toString(_frames.value().max(), _pad) :
+                toString(_frames.value().min(), _pad) :
             std::string();
     }
 
