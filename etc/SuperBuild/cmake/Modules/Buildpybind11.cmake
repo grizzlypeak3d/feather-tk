@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 set(pybind11_GIT_REPOSITORY "https://github.com/pybind/pybind11.git")
-set(pybind11_GIT_TAG "v2.13.6")
+set(pybind11_GIT_TAG "v3.0.1")
 
 set(pybind11_ARGS
     ${ftk_DEPS_ARGS}
