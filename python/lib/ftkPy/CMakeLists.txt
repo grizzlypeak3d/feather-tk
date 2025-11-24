@@ -1,5 +1,5 @@
 pybind11_add_module(ftkPy Bindings.cpp)
-target_link_libraries(ftkPy PUBLIC ftkUIPy ftkCorePy)
+target_link_libraries(ftkPy PRIVATE ftkUIPy ftkCorePy)
 set_target_properties(ftkPy PROPERTIES FOLDER python/lib)
 set_target_properties(ftkPy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

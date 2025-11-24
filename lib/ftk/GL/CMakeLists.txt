@@ -34,7 +34,7 @@ elseif ("${ftk_API}" STREQUAL "GLES_2")
 endif()
 
 add_library(ftkGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
-target_link_libraries(ftkGL ftkCore ftkglad SDL2::SDL2)
+target_link_libraries(ftkGL ftkCore ftkglad SDL2::SDL2-static)
 set_target_properties(ftkGL PROPERTIES FOLDER lib)
 set_target_properties(ftkGL PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

@@ -18,7 +18,21 @@ namespace ftk
 {
     namespace gl
     {
-        
+        namespace
+        {
+            void logOutput(void *userData, int category, SDL_LogPriority priority, const char *message)
+            {
+                if (userData)
+                {
+                    if (auto context = ((System*)userData)->getContext().lock())
+                    {
+                        auto logSystem = context->getLogSystem();
+                        logSystem->print("SDL", message, LogType::Message);
+                    }
+                }
+            }
+        }
+
         struct System::Private
         {
         };
@@ -31,7 +45,7 @@ namespace ftk
 
             // Initialize SDL.
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
-            if (SDL_Init(SDL_INIT_VIDEO) < 0)
+            if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
             {
                 throw std::runtime_error(Format("Cannot initialize SDL: {0}").
                     arg(SDL_GetError()));
@@ -41,10 +55,12 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
                     arg(SDL_GetError()));
             }
+            //SDL_LogSetOutputFunction(logOutput, this);
         }
 
         System::~System()
         {
+            //SDL_LogSetOutputFunction(nullptr, nullptr);
             SDL_Quit();
         }
 
