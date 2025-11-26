@@ -22,7 +22,6 @@ project(
 #-------------------------------------------------------------------------------
 # Options
 
-set(ftk_UI_LIB ON CACHE BOOL "Build the user interface library")
 set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
 set(ftk_nfd_DEFAULT OFF)
 if(WIN32 OR APPLE)
@@ -88,10 +87,6 @@ else()
     set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 endif()
 
-if(ftk_UI_LIB)
-    add_definitions(-DFTK_UI_LIB)
-endif()
-
 if(CMAKE_BUILD_TYPE MATCHES "^Debug$")
     add_definitions(-DFTK_ASSERT)
 endif()
@@ -129,42 +124,36 @@ find_package(PNG REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(lunasvg REQUIRED)
 
-if(ftk_UI_LIB)
-    if ("${ftk_API}" STREQUAL "GL_4_1")
-        include_directories(${PROJECT_SOURCE_DIR}/deps/glad_GL_4_1)
-    elseif ("${ftk_API}" STREQUAL "GL_4_1_Debug")
-        include_directories(${PROJECT_SOURCE_DIR}/deps/glad_GL_4_1_Debug)
-    elseif ("${ftk_API}" STREQUAL "GLES_2")
-        include_directories(${PROJECT_SOURCE_DIR}/deps/glad_GLES_2)
-    endif()
-    if ("${ftk_API}" STREQUAL "GL_4_1" OR
-        "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-        "${ftk_API}" STREQUAL "GLES_2")
-        find_package(OpenGL REQUIRED)
-        find_package(SDL2 REQUIRED)
-        add_subdirectory(deps/glad_${ftk_API})
-    endif()
-    add_definitions(-DFTK_API_${ftk_API})
-    if(${ftk_API} STREQUAL "GL_4_1_Debug")
-        add_definitions(-DFTK_API_GL_4_1)
-    endif()
+if ("${ftk_API}" STREQUAL "GL_4_1")
+    include_directories(${PROJECT_SOURCE_DIR}/deps/glad_GL_4_1)
+elseif ("${ftk_API}" STREQUAL "GL_4_1_Debug")
+    include_directories(${PROJECT_SOURCE_DIR}/deps/glad_GL_4_1_Debug)
+elseif ("${ftk_API}" STREQUAL "GLES_2")
+    include_directories(${PROJECT_SOURCE_DIR}/deps/glad_GLES_2)
+endif()
+if ("${ftk_API}" STREQUAL "GL_4_1" OR
+    "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
+    "${ftk_API}" STREQUAL "GLES_2")
+    find_package(OpenGL REQUIRED)
+    find_package(SDL2 REQUIRED)
+    add_subdirectory(deps/glad_${ftk_API})
+endif()
+add_definitions(-DFTK_API_${ftk_API})
+if(${ftk_API} STREQUAL "GL_4_1_Debug")
+    add_definitions(-DFTK_API_GL_4_1)
+endif()
 
-    if(ftk_nfd)
-        find_package(nfd)
-        if(nfd_FOUND)
-            add_definitions(-DFTK_NFD)
-        endif()
+if(ftk_nfd)
+    find_package(nfd)
+    if(nfd_FOUND)
+        add_definitions(-DFTK_NFD)
     endif()
+endif()
 
-    if(ftk_PYTHON)
-        include_directories(python/lib)
-        if(ftk_TESTS)
-            include_directories(python/tests)
-        endif()
-        add_definitions(-DFTK_PYTHON)
-        find_package(Python3 REQUIRED Interpreter Development)
-        find_package(pybind11 REQUIRED)
-    endif()
+if(ftk_PYTHON)
+    add_definitions(-DFTK_PYTHON)
+    find_package(Python3 REQUIRED Interpreter Development)
+    find_package(pybind11 REQUIRED)
 endif()
 
 #-------------------------------------------------------------------------------
@@ -172,13 +161,10 @@ endif()
 
 add_subdirectory(bin/ftk-resource)
 add_subdirectory(lib/ftk)
-if(ftk_UI_LIB AND ftk_PYTHON)
-    add_subdirectory(python)
-endif()
 if(ftk_TESTS)
     add_subdirectory(tests)
 endif()
-if(ftk_UI_LIB AND ftk_EXAMPLES)
+if(ftk_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
@@ -193,11 +179,9 @@ if(ftk_BUILD STREQUAL "SuperBuild")
     install(
         FILES cmake/Modules/FindPNG.cmake
         DESTINATION share/ftk)
-    if(ftk_UI_LIB)
-        install(
-            FILES cmake/Modules/Findnfd.cmake
-            DESTINATION share/ftk)
-    endif()
+    install(
+        FILES cmake/Modules/Findnfd.cmake
+        DESTINATION share/ftk)
 endif()
 include(CMakePackageConfigHelpers)
 set(INCLUDE_INSTALL_DIR include)

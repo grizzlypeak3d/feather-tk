@@ -3,7 +3,6 @@
 
 #include "ftk-test.h"
 
-#if defined(FTK_UI_LIB)
 #include <UITest/ActionTest.h>
 #include <UITest/AppTest.h>
 #include <UITest/BellowsTest.h>
@@ -65,7 +64,6 @@
 #include <GLTest/UtilTest.h>
 #include <GLTest/WindowTest.h>
 #endif // FTK_API_GL_4_1
-#endif // FTK_UI_LIB
 
 #include <CoreTest/AppTest.h>
 #include <CoreTest/BoxPackTest.h>
@@ -102,13 +100,11 @@
 
 #include <TestLib/ITest.h>
 
-#if defined(FTK_UI_LIB)
 #include <ftk/UI/Init.h>
 
 #if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
 #include <ftk/GL/Init.h>
 #endif // FTK_API_GL_4_1
-#endif // FTK_UI_LIB
 
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Context.h>
@@ -144,12 +140,10 @@ namespace ftk
                 "Test application",
                 { p.testName });
             p.startTime = std::chrono::steady_clock::now();                
-#if defined(FTK_UI_LIB)
 #if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
             gl::init(context);
 #endif // FTK_API_GL_4_1
             uiInit(context);
-#endif // FTK_UI_LIB
 
             p.tests.push_back(core_test::AppTest::create(context));
             p.tests.push_back(core_test::BoxPackTest::create(context));
@@ -184,7 +178,6 @@ namespace ftk
             p.tests.push_back(core_test::TimerTest::create(context));
             p.tests.push_back(core_test::VectorTest::create(context));
 
-#if defined(FTK_UI_LIB)
 #if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
             p.tests.push_back(gl_test::MeshTest::create(context));
             p.tests.push_back(gl_test::OffscreenBufferTest::create(context));
@@ -197,6 +190,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
             p.tests.push_back(ui_test::ActionTest::create(context));
+            p.tests.push_back(ui_test::AppTest::create(context));
             p.tests.push_back(ui_test::BellowsTest::create(context));
             p.tests.push_back(ui_test::ButtonTest::create(context));
             p.tests.push_back(ui_test::ButtonGroupTest::create(context));
@@ -245,9 +239,6 @@ namespace ftk
             p.tests.push_back(ui_test::TabWidgetTest::create(context));
             p.tests.push_back(ui_test::TextEditModelTest::create(context));
             p.tests.push_back(ui_test::WidgetOptionsTest::create(context));
-
-            p.tests.push_back(ui_test::AppTest::create(context));
-#endif // FTK_UI_LIB
         }
 
         App::App() :

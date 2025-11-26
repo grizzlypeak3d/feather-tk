@@ -1,7 +1,0 @@
-add_subdirectory(lib)
-if(ftk_TESTS)
-    add_subdirectory(tests)
-endif()
-if(ftk_EXAMPLES)
-    add_subdirectory(examples)
-endif()
