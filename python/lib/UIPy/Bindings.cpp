@@ -13,6 +13,7 @@
 #include <UIPy/ColorWidget.h>
 #include <UIPy/ConfirmDialog.h>
 #include <UIPy/DialogSystem.h>
+#include <UIPy/Divider.h>
 #include <UIPy/DoubleEdit.h>
 #include <UIPy/DoubleEditSlider.h>
 #include <UIPy/DoubleModel.h>
@@ -106,6 +107,7 @@ namespace ftk
         colorWidget(m);
         confirmDialog(m);
         dialogSystem(m);
+        divider(m);
         doubleEdit(m);
         doubleEditSlider(m);
         doubleModel(m);

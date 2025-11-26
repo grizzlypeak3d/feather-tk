@@ -10,6 +10,7 @@ set(HEADERS
     ColorWidget.h
     ConfirmDialog.h
     DialogSystem.h
+    Divider.h
     DoubleEdit.h
     DoubleEditSlider.h
     DoubleModel.h
@@ -72,6 +73,7 @@ set(SOURCE
     ColorWidget.cpp
     ConfirmDialog.cpp
     DialogSystem.cpp
+    Divider.cpp
     DoubleEdit.cpp
     DoubleEditSlider.cpp
     DoubleModel.cpp
