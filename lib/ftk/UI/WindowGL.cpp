@@ -9,7 +9,7 @@
 
 #include <ftk/GL/GL.h>
 #include <ftk/GL/OffscreenBuffer.h>
-#include <ftk/GL/Render.h>
+#include <ftk/GL/System.h>
 #include <ftk/GL/Window.h>
 #if defined(FTK_API_GLES_2)
 #include <ftk/GL/Mesh.h>
@@ -59,7 +59,7 @@ namespace ftk
             size,
             static_cast<int>(gl::WindowOptions::DoubleBuffer));
 
-        p.render = _createRender(context->getLogSystem());
+        p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(context->getLogSystem());
 
         setVisible(false);
     }
@@ -204,11 +204,6 @@ namespace ftk
     void Window::drawEvent(const Box2I& drawRect, const DrawEvent& event)
     {
         IWindow::drawEvent(drawRect, event);
-    }
-
-    std::shared_ptr<IRender> Window::_createRender(const std::shared_ptr<LogSystem>& logSystem)
-    {
-        return gl::Render::create(logSystem);
     }
     
     void Window::_update(

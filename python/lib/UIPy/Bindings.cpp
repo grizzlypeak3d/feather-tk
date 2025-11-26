@@ -3,6 +3,7 @@
 
 #include <UIPy/Bindings.h>
 
+#include <UIPy/Action.h>
 #include <UIPy/App.h>
 #include <UIPy/Bellows.h>
 #include <UIPy/ButtonGroup.h>
@@ -94,6 +95,7 @@ namespace ftk
         settings(m);
         window(m);
 
+        action(m);
         app(m);
         bellows(m);
         buttonGroup(m);

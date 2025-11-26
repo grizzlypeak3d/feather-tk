@@ -161,16 +161,15 @@ namespace ftk
         //! Exit the application.
         virtual void exit();
 
-        //! Tick the event loop.
-        void tick();
+        //! Tick the event loop. If this method is overridden the base method
+        //! should be called.
+        virtual void tick();
 
         void run() override;
 
     protected:
         void _addWindow(const std::shared_ptr<IWindow>&);
         void _removeWindow(const std::shared_ptr<IWindow>&);
-
-        virtual void _tick() {}
 
     private:
         void _tickRecursive(

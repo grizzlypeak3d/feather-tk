@@ -14,15 +14,29 @@ namespace py = pybind11;
 
 namespace ftk
 {
+    class PyMainWindow : public MainWindow
+    {
+    public:
+        static std::shared_ptr<PyMainWindow> create(
+            const std::shared_ptr<Context>& context,
+            const std::shared_ptr<App>& app,
+            const Size2I& size)
+        {
+            auto out = std::shared_ptr<PyMainWindow>(new PyMainWindow);
+            out->_init(context, app, size);
+            return out;
+        }
+    };
+
     void mainWindow(py::module_& m)
     {
-        py::class_<MainWindow, Window, std::shared_ptr<MainWindow> >(m, "MainWindow")
+        py::class_<MainWindow, Window, std::shared_ptr<MainWindow>, PyMainWindow >(m, "MainWindow")
             .def(
-                py::init(&MainWindow::create),
+                py::init(&PyMainWindow::create),
                 py::arg("context"),
                 py::arg("app"),
-                py::arg("size"))
-            .def("getMenuBar", &MainWindow::getMenuBar)
+                py::arg("size") = Size2I(1280, 960))
+            .def_property("menuBar", &MainWindow::getMenuBar, &MainWindow::setMenuBar)
             .def("setWidget", &MainWindow::setWidget);
     }
 }

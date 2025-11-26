@@ -1,4 +1,5 @@
 set(HEADERS
+    Action.h
     App.h
     Bellows.h
     Bindings.h
@@ -59,6 +60,7 @@ set(HEADERS
     Window.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
+    Action.cpp
     App.cpp
     Bellows.cpp
     Bindings.cpp

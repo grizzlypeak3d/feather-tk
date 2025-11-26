@@ -127,6 +127,13 @@ namespace ftk
 
             FTK_PRIVATE();
         };
+
+        //! OpenGL render factory.
+        class RenderFactory : public IRenderFactory
+        {
+        public:
+            std::shared_ptr<IRender> createRender(const std::shared_ptr<LogSystem>& logSystem) override;
+        };
         
         ///@}
     }

@@ -7,6 +7,8 @@
 
 namespace ftk
 {
+    class IRenderFactory;
+
     namespace gl
     {
         //! OpenGL system.
@@ -21,6 +23,12 @@ namespace ftk
             //! Create a new system.
             static std::shared_ptr<System> create(const std::shared_ptr<Context>&);
         
+            //! Get the render factory.
+            const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
+
+            //! Set the render factory.
+            void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
+
         private:
             FTK_PRIVATE();
         };

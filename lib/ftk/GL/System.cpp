@@ -4,6 +4,7 @@
 #include <ftk/GL/System.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Render.h>
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
@@ -35,6 +36,7 @@ namespace ftk
 
         struct System::Private
         {
+            std::shared_ptr<IRenderFactory> renderFactory;
         };
         
         System::System(const std::shared_ptr<Context>& context) :
@@ -56,6 +58,9 @@ namespace ftk
                     arg(SDL_GetError()));
             }
             //SDL_LogSetOutputFunction(logOutput, this);
+
+            // Create default render factory.
+            p.renderFactory = std::make_shared<RenderFactory>();
         }
 
         System::~System()
@@ -67,6 +72,16 @@ namespace ftk
         std::shared_ptr<System> System::create(const std::shared_ptr<Context>& context)
         {
             return std::shared_ptr<System>(new System(context));
+        }
+
+        const std::shared_ptr<IRenderFactory>& System::getRenderFactory() const
+        {
+            return _p->renderFactory;
+        }
+
+        void System::setRenderFactory(const std::shared_ptr<IRenderFactory>& value)
+        {
+            _p->renderFactory = value;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace py = pybind11;
 
 namespace ftk
 {
-    /*class PyIWindow : public IWindow
+    class PyIWindow : public IWindow
     {
     public:
         virtual void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
@@ -24,12 +24,12 @@ namespace ftk
                 drawRect,
                 event);
         }
-    };*/
+    };
 
     void iWindow(py::module_& m)
     {
-        //py::class_<IWindow, IWidget, std::shared_ptr<IWindow>, PyIWindow>(m, "IWindow")
-        py::class_<IWindow, IWidget, std::shared_ptr<IWindow> >(m, "IWindow")
+        //py::class_<IWindow, IWidget, std::shared_ptr<IWindow> >(m, "IWindow")
+        py::class_<IWindow, IWidget, std::shared_ptr<IWindow>, PyIWindow>(m, "IWindow")
             .def_property_readonly("windowID", &IWindow::getID)
             .def_property_readonly("screen", &IWindow::getScreen)
             .def_property("title", &IWindow::getTitle, &IWindow::setTitle)

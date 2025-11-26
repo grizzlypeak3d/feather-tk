@@ -45,8 +45,6 @@ namespace ftk
         void drawEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
-        virtual std::shared_ptr<IRender> _createRender(const std::shared_ptr<LogSystem>&);
-
         void _makeCurrent();
         void _clearCurrent();
 

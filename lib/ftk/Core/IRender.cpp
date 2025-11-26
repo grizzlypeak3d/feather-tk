@@ -77,4 +77,7 @@ namespace ftk
             color,
             options);
     }
+
+    IRenderFactory::~IRenderFactory()
+    {}
 }

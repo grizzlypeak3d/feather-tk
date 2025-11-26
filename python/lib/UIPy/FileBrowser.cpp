@@ -10,6 +10,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 namespace py = pybind11;
 
@@ -54,7 +55,8 @@ namespace ftk
             .def(
                 py::init(&FileBrowserSystem::create),
                 py::arg("context"))
-            .def("open", &FileBrowserSystem::open,
+            .def("open",
+                &FileBrowserSystem::open,
                 py::arg("window"),
                 py::arg("callback"),
                 py::arg("title") = "Open",

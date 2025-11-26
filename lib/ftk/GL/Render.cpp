@@ -558,6 +558,11 @@ namespace ftk
                         arg(average.glyphCount));
             }
         }
+
+        std::shared_ptr<IRender> RenderFactory::createRender(const std::shared_ptr<LogSystem>& logSystem)
+        {
+            return Render::create(logSystem);
+        }
     }
 }
 

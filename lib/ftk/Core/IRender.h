@@ -180,6 +180,17 @@ namespace ftk
     protected:
         std::weak_ptr<LogSystem> _logSystem;
     };
+
+    //! Base class for render factories.
+    class IRenderFactory
+    {
+    public:
+        virtual ~IRenderFactory() = 0;
+
+        //! Create a new renderer.
+        virtual std::shared_ptr<IRender> createRender(const std::shared_ptr<LogSystem>&) = 0;
+    };
         
     ///@}
 }
+

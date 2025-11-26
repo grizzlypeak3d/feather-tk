@@ -382,7 +382,6 @@ namespace ftk
         FTK_P();
 
         _context->tick();
-        _tick();
 
         for (const auto& window : p.windows)
         {
