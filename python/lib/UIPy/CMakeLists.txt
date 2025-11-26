@@ -52,6 +52,7 @@ set(HEADERS
     ScrollArea.h
     ScrollWidget.h
     Settings.h
+    Splitter.h
     Style.h
     TabBar.h
     TabWidget.h
@@ -113,6 +114,7 @@ set(SOURCE
     ScrollArea.cpp
     ScrollWidget.cpp
     Settings.cpp
+    Splitter.cpp
     Style.cpp
     TabBar.cpp
     TabWidget.cpp

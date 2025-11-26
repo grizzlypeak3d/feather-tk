@@ -17,12 +17,7 @@ namespace ftk
     void iSystem(py::module_& m)
     {
         py::class_<ISystem, std::shared_ptr<ISystem> >(m, "ISystem")
-            .def_property_readonly(
-                "context",
-                [](std::shared_ptr<ISystem>& self)
-                {
-                    return self->getContext().lock();
-                })
+            .def_property_readonly("context", &ISystem::getContext)
             .def_property_readonly("name", &ISystem::getName)
             .def("tick", &ISystem::tick)
             .def_property_readonly("tickTime", &ISystem::getTickTime);

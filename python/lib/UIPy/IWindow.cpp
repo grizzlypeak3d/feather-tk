@@ -3,6 +3,7 @@
 
 #include <UIPy/IWindow.h>
 
+#include <ftk/UI/App.h>
 #include <ftk/UI/IWindow.h>
 
 #include <pybind11/pybind11.h>
@@ -30,6 +31,7 @@ namespace ftk
     {
         //py::class_<IWindow, IWidget, std::shared_ptr<IWindow> >(m, "IWindow")
         py::class_<IWindow, IWidget, std::shared_ptr<IWindow>, PyIWindow>(m, "IWindow")
+            .def_property_readonly("app", &IWindow::getApp)
             .def_property_readonly("windowID", &IWindow::getID)
             .def_property_readonly("screen", &IWindow::getScreen)
             .def_property("title", &IWindow::getTitle, &IWindow::setTitle)

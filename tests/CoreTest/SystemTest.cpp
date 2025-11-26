@@ -60,7 +60,7 @@ namespace ftk
             ITest(context, "ftk::core_test::SystemTest")
         {
             auto system = System1::create(context);
-            FTK_ASSERT(system->getContext().lock());
+            FTK_ASSERT(system->getContext());
             FTK_ASSERT(!system->getName().empty());
             context->addSystem(system);
             context->addSystem(System2::create(context));

@@ -25,7 +25,7 @@ namespace ftk
             {
                 if (userData)
                 {
-                    if (auto context = ((System*)userData)->getContext().lock())
+                    if (auto context = ((System*)userData)->getContext())
                     {
                         auto logSystem = context->getLogSystem();
                         logSystem->print("SDL", message, LogType::Message);
@@ -36,6 +36,7 @@ namespace ftk
 
         struct System::Private
         {
+            std::weak_ptr<LogSystem> logSystem;
             std::shared_ptr<IRenderFactory> renderFactory;
         };
         
@@ -46,6 +47,9 @@ namespace ftk
             FTK_P();
 
             // Initialize SDL.
+            auto logSystem = context->getLogSystem();
+            logSystem->print("ftk::gl::System", "Init SDL video and events...");
+            p.logSystem = logSystem;
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
             if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
             {
@@ -57,7 +61,7 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
                     arg(SDL_GetError()));
             }
-            //SDL_LogSetOutputFunction(logOutput, this);
+            SDL_LogSetOutputFunction(logOutput, this);
 
             // Create default render factory.
             p.renderFactory = std::make_shared<RenderFactory>();
@@ -65,7 +69,12 @@ namespace ftk
 
         System::~System()
         {
-            //SDL_LogSetOutputFunction(nullptr, nullptr);
+            FTK_P();
+            if (auto logSystem = p.logSystem.lock())
+            {
+                logSystem->print("ftk::gl::System", "Quit SDL...");
+            }
+            SDL_LogSetOutputFunction(nullptr, nullptr);
             SDL_Quit();
         }
 

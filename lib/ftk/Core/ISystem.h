@@ -27,7 +27,7 @@ namespace ftk
         virtual ~ISystem() = 0;
 
         //! Get the context.
-        const std::weak_ptr<Context>& getContext() const;
+        std::shared_ptr<Context> getContext() const;
 
         //! Get the system name.
         const std::string& getName() const;

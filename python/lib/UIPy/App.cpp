@@ -11,6 +11,7 @@
 #include <ftk/Core/Context.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/operators.h>
 #include <pybind11/stl.h>
 
 using namespace pybind11::literals;
@@ -45,6 +46,15 @@ namespace ftk
 
     void app(py::module_& m)
     {
+        py::class_<MonitorInfo>(m, "MonitorInfo")
+            .def_readwrite("name", &MonitorInfo::name)
+            .def_readwrite("size", &MonitorInfo::size)
+            .def_readwrite("refreshRate", &MonitorInfo::refreshRate)
+            .def_readwrite("dpi", &MonitorInfo::dpi)
+            .def_readwrite("bounds", &MonitorInfo::bounds)
+            .def(pybind11::self == pybind11::self)
+            .def(pybind11::self != pybind11::self);
+
         //py::class_<App, IApp, std::shared_ptr<App> >(m, "App")
         py::class_<App, IApp, std::shared_ptr<App>, PyApp>(m, "App")
             .def(
@@ -61,10 +71,20 @@ namespace ftk
                 py::arg("summary"),
                 py::arg("cmdLineArgs") = std::vector<std::shared_ptr<ICmdLineArg> >(),
                 py::arg("cmdLineOptions") = std::vector<std::shared_ptr<ICmdLineOption> >())
-            .def("getWindows", &App::getWindows)
-            .def("getFontSystem", &App::getFontSystem)
-            .def("getIconSystem", &App::getIconSystem)
-            .def("getStyle", &App::getStyle)
+            .def_property_readonly("windows", &App::getWindows)
+            .def("observeMonitors", &App::observeMonitors)
+            .def_property_readonly("fontSystem", &App::getFontSystem)
+            .def_property_readonly("iconSystem", &App::getIconSystem)
+            .def_property_readonly("style", &App::getStyle)
+            .def_property("colorStyle", &App::getColorStyle, &App::setColorStyle)
+            .def("observeColorStyle", &App::observeColorStyle)
+            .def_property("customColorRoles", &App::getCustomColorRoles, &App::setCustomColorRoles)
+            .def("observeCustomColorRoles", &App::observeCustomColorRoles)
+            .def_property_readonly("defaultDisplayScale", &App::getDefaultDisplayScale)
+            .def_property("displayScale", &App::getDisplayScale, &App::setDisplayScale)
+            .def("observeDisplayScale", &App::observeDisplayScale)
+            .def_property("tooltipsEnabled", &App::areTooltipsEnabled, &App::setTooltipsEnabled)
+            .def("observeTooltipsEnabled", &App::observeTooltipsEnabled)
             .def("exit", &App::exit)
             .def("tick", &App::tick);
     }

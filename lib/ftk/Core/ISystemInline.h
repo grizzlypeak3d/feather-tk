@@ -3,9 +3,9 @@
 
 namespace ftk
 {
-    inline const std::weak_ptr<Context>& ISystem::getContext() const
+    inline std::shared_ptr<Context> ISystem::getContext() const
     {
-        return _context;
+        return _context.lock();
     }
 
     inline const std::string& ISystem::getName() const

@@ -55,6 +55,7 @@
 #include <UIPy/ScrollArea.h>
 #include <UIPy/ScrollWidget.h>
 #include <UIPy/Settings.h>
+#include <UIPy/Splitter.h>
 #include <UIPy/Style.h>
 #include <UIPy/TabBar.h>
 #include <UIPy/TabWidget.h>
@@ -137,6 +138,7 @@ namespace ftk
         rowLayout(m);
         scrollArea(m);
         scrollWidget(m);
+        splitter(m);
         tabBar(m);
         tabWidget(m);
         toolButton(m);

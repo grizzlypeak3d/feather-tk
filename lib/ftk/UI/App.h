@@ -27,9 +27,7 @@ namespace ftk
         std::string name;
         Size2I      size;
         int         refreshRate = 0;
-        float       dDpi = 0.F;
-        float       hDpi = 0.F;
-        float       vDpi = 0.F;
+        V2F         dpi;
         Box2I       bounds;
 
         bool operator == (const MonitorInfo&) const;

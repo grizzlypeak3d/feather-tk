@@ -37,9 +37,7 @@ namespace ftk
             name == other.name &&
             size == other.size &&
             refreshRate == other.refreshRate &&
-            dDpi == other.dDpi &&
-            hDpi == other.hDpi &&
-            vDpi == other.vDpi &&
+            dpi == other.dpi &&
             bounds == other.bounds;
     }
 
@@ -831,7 +829,8 @@ namespace ftk
             monitor.size.w = sdlDisplayMode.w;
             monitor.size.h = sdlDisplayMode.h;
             monitor.refreshRate = sdlDisplayMode.refresh_rate;
-            SDL_GetDisplayDPI(i, &monitor.dDpi, &monitor.hDpi, &monitor.vDpi);
+            float dDpi = 0.F;
+            SDL_GetDisplayDPI(i, &dDpi, &monitor.dpi.x, &monitor.dpi.y);
             SDL_Rect sdlRect;
             SDL_GetDisplayBounds(i, &sdlRect);
             monitor.bounds = Box2I(sdlRect.x, sdlRect.y, sdlRect.w, sdlRect.h);
@@ -845,7 +844,7 @@ namespace ftk
             lines.push_back(Format("Monitor: {0}").arg(monitors[i].name));
             lines.push_back(Format("    Size: {0}").arg(monitors[i].size));
             lines.push_back(Format("    Referesh rate: {0}").arg(monitors[i].refreshRate));
-            lines.push_back(Format("    DPI: {0}").arg(monitors[i].hDpi));
+            lines.push_back(Format("    DPI: {0}").arg(monitors[i].dpi.x));
             lines.push_back(Format("    Bounds: {0}").arg(monitors[i].bounds));
         }
         if (!lines.empty())
