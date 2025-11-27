@@ -208,7 +208,7 @@ namespace widgets
         {
             event.accept = true;
             auto widget = data->getWidget();
-            if (widget->getParent().lock() != _layout)
+            if (widget->getParent() != _layout)
             {
                 widget->setParent(_layout);
             }

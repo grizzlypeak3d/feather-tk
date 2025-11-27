@@ -42,7 +42,7 @@ namespace ftk
         while (widget)
         {
             names.push_back(widget->getObjectName());
-            widget = widget->getParent().lock();
+            widget = widget->getParent();
         }
         std::reverse(names.begin(), names.end());
         return join(names, '/');

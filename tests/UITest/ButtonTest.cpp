@@ -78,7 +78,7 @@ namespace ftk
             const std::shared_ptr<VerticalLayout>& layout,
             const std::shared_ptr<IButton>& button)
         {
-            FTK_ASSERT(button->getParent().lock());
+            FTK_ASSERT(button->getParent());
             FTK_ASSERT(button->getParentT<Window>());
             FTK_ASSERT(button->getWindow());
 

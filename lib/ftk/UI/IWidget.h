@@ -44,7 +44,7 @@ namespace ftk
         ///@{
 
         //! Get the parent widget.
-        const std::weak_ptr<IWidget>& getParent() const;
+        std::shared_ptr<IWidget> getParent() const;
 
         //! Set the parent widget.
         void setParent(const std::shared_ptr<IWidget>&);

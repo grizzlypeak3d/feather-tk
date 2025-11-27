@@ -13,9 +13,9 @@ namespace ftk
         return _objectName;
     }
 
-    inline const std::weak_ptr<IWidget>& IWidget::getParent() const
+    inline std::shared_ptr<IWidget> IWidget::getParent() const
     {
-        return _parent;
+        return _parent.lock();
     }
 
     inline const std::list<std::shared_ptr<IWidget> >& IWidget::getChildren() const

@@ -562,7 +562,7 @@ namespace ftk
                     {
                         break;
                     }
-                    widget = widget->getParent().lock();
+                    widget = widget->getParent();
                 }
             }
 
@@ -617,7 +617,7 @@ namespace ftk
                 {
                     break;
                 }
-                widget = widget->getParent().lock();
+                widget = widget->getParent();
             }
         }
     }
