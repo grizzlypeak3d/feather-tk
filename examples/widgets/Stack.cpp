@@ -92,6 +92,6 @@ namespace widgets
 
     void Stack::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_scrollWidget->getSizeHint());
+        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

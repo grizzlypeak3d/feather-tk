@@ -120,7 +120,7 @@ namespace ftk
             sizeHint.h = std::max(sizeHint.h, _iconImage->getHeight());
         }
         sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void ComboBoxButton::clipEvent(const Box2I& clipRect, bool clipped)

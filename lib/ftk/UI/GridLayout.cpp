@@ -304,7 +304,7 @@ namespace ftk
         sizeHint.w += p.size.margin * 2;
         sizeHint.h += p.size.margin * 2;
 
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void GridLayout::drawEvent(const Box2I& drawRect, const DrawEvent& event)

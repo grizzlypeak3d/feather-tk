@@ -86,7 +86,7 @@ namespace textedit
 
     void StatusBar::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 
     void StatusBar::_textUpdate()

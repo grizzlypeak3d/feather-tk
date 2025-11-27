@@ -143,7 +143,7 @@ namespace ftk
 
     void MenuBar::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void MenuBar::keyFocusEvent(bool value)

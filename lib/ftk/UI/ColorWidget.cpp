@@ -312,7 +312,7 @@ namespace ftk
 
     void ColorWidget::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void ColorWidget::_modeUpdate()

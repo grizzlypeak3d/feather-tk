@@ -159,6 +159,6 @@ namespace widgets
 
     void Popups::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_scrollWidget->getSizeHint());
+        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

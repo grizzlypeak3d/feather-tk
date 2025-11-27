@@ -236,7 +236,7 @@ namespace ftk
 
         Size2I sizeHint(p.size.textSize);
         sizeHint = margin(sizeHint, p.size.hMargin, p.size.vMargin);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void Label::clipEvent(const Box2I& clipRect, bool clipped)

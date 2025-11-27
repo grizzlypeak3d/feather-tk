@@ -268,7 +268,7 @@ namespace ftk
             sizeHint.h = std::max(sizeHint.h, p.subMenuImage->getHeight());
         }
         sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void MenuButton::clipEvent(const Box2I& clipRect, bool clipped)

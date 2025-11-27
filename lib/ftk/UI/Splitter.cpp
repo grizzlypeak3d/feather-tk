@@ -226,7 +226,7 @@ namespace ftk
             default: break;
             }
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void Splitter::drawEvent(

@@ -229,7 +229,7 @@ namespace ftk
 
     void DoubleEdit::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void DoubleEdit::scrollEvent(ScrollEvent& event)
@@ -376,7 +376,7 @@ namespace ftk
 
     void DoubleResetButton::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->resetButton->getSizeHint());
+        setSizeHint(_p->resetButton->getSizeHint());
     }
 
     void DoubleResetButton::_widgetUpdate()

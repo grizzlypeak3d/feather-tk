@@ -93,7 +93,7 @@ namespace ftk
 
     void FileBrowserDrives::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->listWidget->getSizeHint());
+        setSizeHint(_p->listWidget->getSizeHint());
     }
 
     struct FileBrowserShortcuts::Private
@@ -155,7 +155,7 @@ namespace ftk
 
     void FileBrowserShortcuts::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->listWidget->getSizeHint());
+        setSizeHint(_p->listWidget->getSizeHint());
     }
 
     void FileBrowserShortcuts::_widgetUpdate()
@@ -269,7 +269,7 @@ namespace ftk
 
     void FileBrowserRecent::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->listWidget->getSizeHint());
+        setSizeHint(_p->listWidget->getSizeHint());
     }
 
     void FileBrowserRecent::_widgetUpdate()
@@ -370,7 +370,7 @@ namespace ftk
 
     void FileBrowserSettings::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileBrowserSettings::_widgetUpdate()
@@ -472,6 +472,6 @@ namespace ftk
 
     void FileBrowserPanel::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 }

@@ -63,6 +63,6 @@ namespace widgets
 
     void Images::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_scrollWidget->getSizeHint());
+        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

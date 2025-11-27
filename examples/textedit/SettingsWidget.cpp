@@ -212,6 +212,6 @@ namespace textedit
 
     void SettingsWidget::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 }

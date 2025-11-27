@@ -141,7 +141,7 @@ namespace ftk
             sizeHint,
             p.size.margin + p.size.pad + p.size.keyFocus,
             p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void PushButton::clipEvent(const Box2I& clipRect, bool clipped)

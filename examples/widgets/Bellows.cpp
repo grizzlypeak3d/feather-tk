@@ -96,6 +96,6 @@ namespace widgets
 
     void Bellows::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_scrollWidget->getSizeHint());
+        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

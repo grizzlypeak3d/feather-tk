@@ -167,6 +167,6 @@ namespace ftk
 
     void IntEditSlider::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 }

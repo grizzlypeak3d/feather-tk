@@ -147,7 +147,7 @@ namespace ftk
         const int sa = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale);
         Size2I sizeHint = _layout->getSizeHint();
         sizeHint.w = std::max(sizeHint.w, sa * 2);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     struct ConfirmDialog::Private

@@ -132,6 +132,9 @@ namespace ftk
         //! Set the size.
         void setSize(const Size2I&);
 
+        //! Set the size hint.
+        void setSizeHint(const Size2I&);
+
         ///@}
 
         //! Visibility
@@ -295,8 +298,6 @@ namespace ftk
         virtual void dropEvent(DragAndDropEvent&);
 
         ///@}
-
-        void _setSizeHint(const Size2I&);
 
     private:
         std::weak_ptr<Context> _context;

@@ -163,6 +163,6 @@ namespace textedit
 
     void DocumentTabs::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_tabWidget->getSizeHint());
+        setSizeHint(_tabWidget->getSizeHint());
     }
 }

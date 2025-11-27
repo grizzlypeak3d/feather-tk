@@ -124,7 +124,7 @@ namespace imageview
         {
             sizeHint = _image->getSize() * _zoom->get();
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void ImageView::drawEvent(const Box2I& drawRect, const DrawEvent& event)

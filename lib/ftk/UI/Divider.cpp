@@ -62,6 +62,6 @@ namespace ftk
             p.size.displayScale = event.displayScale;
             p.size.size = event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
-        _setSizeHint(Size2I(p.size.size, p.size.size));
+        setSizeHint(Size2I(p.size.size, p.size.size));
     }
 }

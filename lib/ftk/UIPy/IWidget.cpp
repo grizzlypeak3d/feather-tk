@@ -100,6 +100,7 @@ namespace ftk
                 .def_property_readonly("geometry", &IWidget::getGeometry)
                 .def("setPos", &IWidget::setPos)
                 .def("setSize", &IWidget::setSize)
+                .def("setSizeHint", &IWidget::setSizeHint, py::arg("sizeHint"))
 
                 .def(
                     "isVisible",
@@ -156,9 +157,7 @@ namespace ftk
                 .def("dragEnterEvent", &IWidget::dragEnterEvent, py::arg("event"))
                 .def("dragLeaveEvent", &IWidget::dragLeaveEvent, py::arg("event"))
                 .def("dragMoveEvent", &IWidget::dragMoveEvent, py::arg("event"))
-                .def("dropEvent", &IWidget::dropEvent, py::arg("event"))
-                
-                .def("setSizeHint", &IWidget::_setSizeHint, py::arg("sizeHint"));
+                .def("dropEvent", &IWidget::dropEvent, py::arg("event"));
         }
     }
 }

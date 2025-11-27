@@ -230,7 +230,7 @@ namespace ftk
 
     void ListItemsWidget::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void ListItemsWidget::keyFocusEvent(bool value)

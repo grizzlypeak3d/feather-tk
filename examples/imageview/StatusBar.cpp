@@ -74,6 +74,6 @@ namespace imageview
 
     void StatusBar::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 }

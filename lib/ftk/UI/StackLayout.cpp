@@ -187,7 +187,7 @@ namespace ftk
         }
         sizeHint.w += p.size.margin * 2;
         sizeHint.h += p.size.margin * 2;
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void StackLayout::_widgetUpdate()

@@ -217,7 +217,7 @@ namespace ftk
 
     void FloatEdit::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FloatEdit::scrollEvent(ScrollEvent& event)
@@ -364,7 +364,7 @@ namespace ftk
 
     void FloatResetButton::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->resetButton->getSizeHint());
+        setSizeHint(_p->resetButton->getSizeHint());
     }
 
     void FloatResetButton::_widgetUpdate()

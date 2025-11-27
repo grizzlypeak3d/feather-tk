@@ -129,7 +129,7 @@ namespace ftk
         }
 
         const int d = p.size.fontMetrics.lineHeight * p.sizeMult;
-        _setSizeHint(Size2I(d, d));
+        setSizeHint(Size2I(d, d));
     }
 
     void PieChart::clipEvent(const Box2I& clipRect, bool clipped)

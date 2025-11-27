@@ -197,7 +197,7 @@ namespace ftk
 
         Size2I sizeHint(p.size.size, p.size.fontMetrics.lineHeight);
         sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void DoubleSlider::clipEvent(const Box2I& clipRect, bool clipped)

@@ -120,7 +120,7 @@ namespace ftk
             break;
         default: break;
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void ScrollBar::drawEvent(

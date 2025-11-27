@@ -86,6 +86,6 @@ namespace ftk
 
     void ToolBar::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 }

@@ -315,7 +315,7 @@ namespace ftk
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
         p.size.gridSize = p.gridSize * static_cast<int>(event.displayScale);
-        _setSizeHint(p.canvasSize * static_cast<int>(event.displayScale));
+        setSizeHint(p.canvasSize * static_cast<int>(event.displayScale));
     }
 
     void MDICanvas::drawEvent(const Box2I& drawRect, const DrawEvent& event)

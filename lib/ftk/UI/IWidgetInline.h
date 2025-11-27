@@ -80,6 +80,11 @@ namespace ftk
         return _geometry;
     }
 
+    inline void IWidget::setSizeHint(const Size2I& value)
+    {
+        _sizeHint = value;
+    }
+
     inline bool IWidget::isVisible(bool andParentsVisible) const
     {
         bool out = _visible;
@@ -133,10 +138,5 @@ namespace ftk
     inline const std::string& IWidget::getTooltip() const
     {
         return _tooltip;
-    }
-
-    inline void IWidget::_setSizeHint(const Size2I& value)
-    {
-        _sizeHint = value;
     }
 }

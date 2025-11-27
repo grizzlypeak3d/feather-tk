@@ -156,7 +156,7 @@ namespace ftk
         sizeHint = margin(sizeHint, p.size.margin + p.size.border);
         sizeHint.w = std::max(sizeHint.w, p.size.textSize.w);
         sizeHint.h += p.size.fontMetrics.lineHeight + p.size.spacing;
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void GroupBox::clipEvent(const Box2I& clipRect, bool clipped)

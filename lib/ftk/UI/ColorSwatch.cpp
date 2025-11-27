@@ -138,7 +138,7 @@ namespace ftk
             p.draw.reset();
         }
 
-        _setSizeHint(Size2I(p.size.size, p.size.size));
+        setSizeHint(Size2I(p.size.size, p.size.size));
     }
 
     void ColorSwatch::clipEvent(const Box2I& clipRect, bool clipped)

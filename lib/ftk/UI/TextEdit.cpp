@@ -204,7 +204,7 @@ namespace ftk
             p.draw.reset();
         }
 
-        _setSizeHint(margin(_p->scrollWidget->getSizeHint(), std::max(p.size.margin, p.size.keyFocus)));
+        setSizeHint(margin(_p->scrollWidget->getSizeHint(), std::max(p.size.margin, p.size.keyFocus)));
     }
 
     void TextEdit::drawEvent(

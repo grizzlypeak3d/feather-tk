@@ -52,7 +52,7 @@ namespace imageview
 
     void ToolBar::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 
     void ToolBar::_createFileToolBar(

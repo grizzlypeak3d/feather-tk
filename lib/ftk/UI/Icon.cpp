@@ -119,7 +119,7 @@ namespace ftk
             sizeHint.w = p.iconImage->getWidth();
             sizeHint.h = p.iconImage->getHeight();
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void Icon::drawEvent(

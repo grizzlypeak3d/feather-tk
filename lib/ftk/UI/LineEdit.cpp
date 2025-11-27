@@ -355,7 +355,7 @@ namespace ftk
             sizeHint,
             p.size.margin * 2 + p.size.keyFocus,
             p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void LineEdit::clipEvent(const Box2I& clipRect, bool clipped)

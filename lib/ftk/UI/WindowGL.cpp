@@ -198,7 +198,7 @@ namespace ftk
             sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
             sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
     
     void Window::drawEvent(const Box2I& drawRect, const DrawEvent& event)

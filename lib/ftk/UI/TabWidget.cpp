@@ -250,7 +250,7 @@ namespace ftk
 
     void TabWidget::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void TabWidget::_widgetUpdate()

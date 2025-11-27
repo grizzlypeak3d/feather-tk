@@ -228,7 +228,7 @@ namespace ftk
             sizeHint.w = std::max(sizeHint.w, item.size.w);
             sizeHint.h += item.size.h;
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void FileBrowserView::drawEvent(

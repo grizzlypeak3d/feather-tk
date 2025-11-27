@@ -302,7 +302,7 @@ namespace ftk
         {
             sizeHint = margin(sizeHint, std::max(p.size.margin, p.size.border));
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void ScrollWidget::drawEvent(

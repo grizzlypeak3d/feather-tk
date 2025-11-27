@@ -64,7 +64,7 @@ namespace widgets
     {
         IMouseWidget::sizeHintEvent(event);
         _dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
-        _setSizeHint(_label->getSizeHint());
+        setSizeHint(_label->getSizeHint());
     }
 
     void DragWidget::drawEvent(
@@ -160,7 +160,7 @@ namespace widgets
     void ContainerWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         _handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 
     void ContainerWidget::drawOverlayEvent(
@@ -308,6 +308,6 @@ namespace widgets
 
     void DnD::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 }

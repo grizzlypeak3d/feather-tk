@@ -247,7 +247,7 @@ namespace ftk
         Size2I sizeHint = p.layout->getSizeHint() + p.size.border * 2;
         sizeHint.w += margin * 2;
         sizeHint.h += p.size.handle + margin;
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void MDIWidget::clipEvent(const Box2I& clipRect, bool clipped)

@@ -74,7 +74,7 @@ namespace ftk
             const auto& children = getChildren();
             if (!children.empty())
             {
-                _setSizeHint(children.front()->getSizeHint());
+                setSizeHint(children.front()->getSizeHint());
             }
         }
     }

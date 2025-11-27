@@ -237,7 +237,7 @@ namespace ftk
         {
             sizeHint = margin(sizeHint, p.size.keyFocus);
         }
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void ToolButton::clipEvent(const Box2I& clipRect, bool clipped)

@@ -84,7 +84,7 @@ namespace ftk
             {
                 IMouseWidget::sizeHintEvent(event);
                 _dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
-                _setSizeHint(Size2I(100, 100));
+                setSizeHint(Size2I(100, 100));
             }
 
             void DragAndDropWidget::mouseMoveEvent(MouseMoveEvent& event)

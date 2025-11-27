@@ -158,7 +158,7 @@ namespace ftk
 
     void FileBrowserPath::sizeHintEvent(const SizeHintEvent& value)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileBrowserPath::_widgetUpdate()

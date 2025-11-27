@@ -202,7 +202,7 @@ namespace ftk
 
     void IntEdit::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void IntEdit::scrollEvent(ScrollEvent& event)
@@ -349,7 +349,7 @@ namespace ftk
 
     void IntResetButton::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->resetButton->getSizeHint());
+        setSizeHint(_p->resetButton->getSizeHint());
     }
 
     void IntResetButton::_widgetUpdate()

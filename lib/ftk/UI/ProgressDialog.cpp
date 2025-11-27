@@ -106,7 +106,7 @@ namespace ftk
         const FontInfo fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
         const FontMetrics fontMetrics = event.fontSystem->getMetrics(fontInfo);
         _size.height = fontMetrics.lineHeight * .75F;
-        _setSizeHint(Size2I(
+        setSizeHint(Size2I(
             _size.width + _size.border * 2,
             _size.height + _size.border * 2));
     }
@@ -319,7 +319,7 @@ namespace ftk
     void ProgressDialogWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
-        _setSizeHint(_layout->getSizeHint());
+        setSizeHint(_layout->getSizeHint());
     }
 
     struct ProgressDialog::Private

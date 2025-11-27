@@ -424,7 +424,7 @@ namespace ftk
     void FileBrowserWidget::sizeHintEvent(const SizeHintEvent& value)
     {
         IMouseWidget::sizeHintEvent(value);
-        _setSizeHint(_p->layout->getSizeHint());
+        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileBrowserWidget::_accept(const std::string& text)

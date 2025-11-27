@@ -146,7 +146,7 @@ namespace ftk
             sizeHint.h = p.image->getHeight();
         }
         sizeHint = sizeHint + p.size.margin * 2;
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void SvgWidget::drawEvent(

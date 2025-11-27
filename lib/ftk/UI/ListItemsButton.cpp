@@ -109,7 +109,7 @@ namespace ftk
             p.size.textSize.w + p.size.pad * 2,
             p.size.fontMetrics.lineHeight);
         sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void ListItemButton::clipEvent(const Box2I& clipRect, bool clipped)

@@ -291,7 +291,7 @@ namespace ftk
             }
         }
 
-        _setSizeHint(margin(p.size.textSize.value(), p.size.margin));
+        setSizeHint(margin(p.size.textSize.value(), p.size.margin));
     }
 
     void TextEditWidget::drawEvent(

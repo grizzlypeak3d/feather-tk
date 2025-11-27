@@ -58,7 +58,7 @@ namespace ftk
         }
         sizeHint.w += p.size.margin * 2;
         sizeHint.h += p.size.margin * 2;
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void IncButton::drawEvent(
@@ -153,7 +153,7 @@ namespace ftk
     {
         const Size2I incSizeHint = _incButton->getSizeHint();
         const Size2I decSizeHint = _decButton->getSizeHint();
-        _setSizeHint(Size2I(
+        setSizeHint(Size2I(
             std::max(incSizeHint.w, decSizeHint.w),
             incSizeHint.h + decSizeHint.h));
     }

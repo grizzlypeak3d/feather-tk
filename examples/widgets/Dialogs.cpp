@@ -126,6 +126,6 @@ namespace widgets
 
     void Dialogs::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_scrollWidget->getSizeHint());
+        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

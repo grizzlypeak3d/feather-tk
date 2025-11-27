@@ -120,7 +120,7 @@ namespace ftk
 
     void ListWidget::sizeHintEvent(const SizeHintEvent& event)
     {
-        _setSizeHint(_p->scrollWidget->getSizeHint());
+        setSizeHint(_p->scrollWidget->getSizeHint());
     }
 
     void ListWidget::_scrollUpdate(int value)

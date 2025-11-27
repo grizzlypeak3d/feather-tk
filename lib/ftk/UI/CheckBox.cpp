@@ -138,7 +138,7 @@ namespace ftk
         sizeHint.w += p.size.textSize.w + p.size.pad * 2;
         sizeHint.h = p.size.fontMetrics.lineHeight;
         sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        _setSizeHint(sizeHint);
+        setSizeHint(sizeHint);
     }
 
     void CheckBox::clipEvent(const Box2I& clipRect, bool clipped)
