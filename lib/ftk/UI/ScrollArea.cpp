@@ -123,21 +123,21 @@ namespace ftk
         FTK_P();
         const Size2I size = getGeometry().size();
         V2I scrollPos = p.scrollPos;
+        if (value.max.x > scrollPos.x + size.w)
+        {
+            scrollPos.x = value.max.x - size.w - 1;
+        }
         if (value.min.x < scrollPos.x)
         {
             scrollPos.x = value.min.x;
         }
-        else if (value.max.x > scrollPos.x + size.w)
+        if (value.max.y > scrollPos.y + size.h)
         {
-            scrollPos.x = value.max.x - size.w - 1;
+            scrollPos.y = value.max.y - size.h + 1;
         }
         if (value.min.y < scrollPos.y)
         {
             scrollPos.y = value.min.y;
-        }
-        else if (value.max.y > scrollPos.y + size.h)
-        {
-            scrollPos.y = value.max.y - size.h + 1;
         }
         setScrollPos(scrollPos, false);
     }
