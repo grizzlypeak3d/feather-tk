@@ -18,6 +18,34 @@ namespace ftk
         class PyIWidget : public IWidget
         {
         public:
+            static std::shared_ptr<PyIWidget> create(
+                const std::shared_ptr<Context>& context,
+                const std::string& objectName,
+                const std::shared_ptr<IWidget>& parent = nullptr)
+            {
+                auto out = std::shared_ptr<PyIWidget>(new PyIWidget);
+                out->_init(context, objectName, parent);
+                return out;
+            }
+            
+            virtual void setGeometry(const Box2I& value) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWidget,
+                    setGeometry,
+                    value);
+            }
+            
+            virtual void sizeHintEvent(const SizeHintEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWidget,
+                    sizeHintEvent,
+                    event);
+            }
+            
             virtual void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
                 PYBIND11_OVERRIDE(
@@ -32,6 +60,14 @@ namespace ftk
         void iWidget(py::module_& m)
         {
             py::class_<IWidget, std::shared_ptr<IWidget>, PyIWidget>(m, "IWidget")
+                .def(
+                    py::init(&PyIWidget::create),
+                    py::arg("context"),
+                    py::arg("objectName"),
+                    py::arg("parent") = nullptr)
+
+                .def_property_readonly("context", &IWidget::getContext)
+
                 .def_property("objectName", &IWidget::getObjectName, &IWidget::setObjectName)
                 .def_property_readonly("objectPath", &IWidget::getObjectPath)
                 .def_property("backgroundColor", &IWidget::getBackgroundRole, &IWidget::setBackgroundRole)
@@ -60,7 +96,8 @@ namespace ftk
                     &IWidget::setAlign,
                     py::arg("horizontal"),
                     py::arg("vertical"))
-                .def_property("geometry", &IWidget::getGeometry, &IWidget::setGeometry)
+                .def("setGeometry", &IWidget::setGeometry)
+                .def_property_readonly("geometry", &IWidget::getGeometry)
                 .def("setPos", &IWidget::setPos)
                 .def("setSize", &IWidget::setSize)
 
@@ -120,8 +157,8 @@ namespace ftk
                 .def("dragLeaveEvent", &IWidget::dragLeaveEvent, py::arg("event"))
                 .def("dragMoveEvent", &IWidget::dragMoveEvent, py::arg("event"))
                 .def("dropEvent", &IWidget::dropEvent, py::arg("event"))
-
-                .def_property_readonly("context", &IWidget::getContext);
+                
+                .def("setSizeHint", &IWidget::_setSizeHint, py::arg("sizeHint"));
         }
     }
 }

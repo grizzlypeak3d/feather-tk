@@ -104,6 +104,8 @@ namespace ftk
                 .def("observeCheckable", &Action::observeCheckable)
                 .def("observeChecked", &Action::observeChecked)
                 .def("doCheckedCallback", &Action::doCheckedCallback)
+                .def_property("enabled", &Action::isEnabled, &Action::setEnabled)
+                .def("observeEnabled", &Action::observeEnabled)
                 .def_property("tooltip", &Action::getTooltip, &Action::setTooltip)
                 .def("observeTooltip", &Action::observeTooltip);
         }

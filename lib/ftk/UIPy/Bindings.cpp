@@ -59,6 +59,7 @@
 #include <ftk/UIPy/Splitter.h>
 #include <ftk/UIPy/Style.h>
 #include <ftk/UIPy/TabBar.h>
+#include <ftk/UIPy/ToolBar.h>
 #include <ftk/UIPy/TabWidget.h>
 #include <ftk/UIPy/ToolButton.h>
 #include <ftk/UIPy/WidgetOptions.h>
@@ -144,6 +145,7 @@ namespace ftk
             scrollWidget(m);
             splitter(m);
             tabBar(m);
+            toolBar(m);
             tabWidget(m);
             toolButton(m);
         }

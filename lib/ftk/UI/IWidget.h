@@ -296,7 +296,6 @@ namespace ftk
 
         ///@}
 
-    protected:
         void _setSizeHint(const Size2I&);
 
     private:
