@@ -13,5 +13,6 @@ export FTK_PYTHON=OFF
 export FTK_TESTS=ON
 export FTK_EXAMPLES=ON
 export FTK_GCOV=OFF
+export BUILD_SHARED_LIBS=OFF
 
 sh feather-tk/etc/Linux/linux-build-gha.sh $BUILD_TYPE

@@ -13,6 +13,7 @@ jobs:
       FTK_TESTS: ON
       FTK_EXAMPLES: ON
       FTK_GCOV: ON
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -54,6 +55,7 @@ jobs:
       FTK_TESTS: ON
       FTK_EXAMPLES: ON
       FTK_GCOV: OFF
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -89,6 +91,7 @@ jobs:
       FTK_TESTS: ON
       FTK_EXAMPLES: OFF
       FTK_GCOV: OFF
+      BUILD_SHARED_LIBS: OFF
       CMAKE_OSX_DEPLOYMENT_TARGET: 10.15
       CMAKE_OSX_ARCHITECTURES: x86_64
 
@@ -131,6 +134,7 @@ jobs:
       FTK_TESTS: ON
       FTK_EXAMPLES: OFF
       FTK_GCOV: OFF
+      BUILD_SHARED_LIBS: OFF
       CMAKE_OSX_DEPLOYMENT_TARGET: 14
       CMAKE_OSX_ARCHITECTURES: arm64
 
@@ -173,6 +177,7 @@ jobs:
       FTK_TESTS: ON
       FTK_EXAMPLES: OFF
       FTK_GCOV: OFF
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4

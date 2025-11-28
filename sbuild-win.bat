@@ -7,5 +7,6 @@ set FTK_PYTHON=OFF
 set FTK_TESTS=ON
 set FTK_EXAMPLES=ON
 set FTK_GCOV=OFF
+set BUILD_SHARED_LIBS=OFF
 
 feather-tk\etc\Windows\windows-build-gha.bat %BUILD_TYPE%
