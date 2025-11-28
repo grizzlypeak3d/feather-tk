@@ -3,6 +3,7 @@ set(HEADERS
     Box.h
     Bindings.h
     CmdLine.h
+    CmdLineInline.h
     Color.h
     Context.h
     FontSystem.h

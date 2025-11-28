@@ -19,6 +19,7 @@ namespace ftk
             observableList<float>(m, "F");
             observableList<double>(m, "D");
             observableList<bool>(m, "Bool");
+            observableList<std::string>(m, "String");
         }
     }
 }
