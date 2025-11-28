@@ -32,6 +32,8 @@ namespace ftk
                     py::arg("context"),
                     py::arg("path"),
                     py::arg("reset") = false)
+                .def_property_readonly("path", &Settings::getPath)
+                .def("save", &Settings::save)
                 .def("contains", &Settings::contains, py::arg("key"))
                 .def("get", py::overload_cast<const std::string&, bool&>(&Settings::get), py::arg("key"), py::arg("value"))
                 .def("get", py::overload_cast<const std::string&, int64_t&>(&Settings::get), py::arg("key"), py::arg("value"))
