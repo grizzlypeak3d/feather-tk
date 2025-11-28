@@ -251,6 +251,28 @@ namespace ftk
         return out;
     }
 
+    bool Settings::get(const std::string& key, std::vector<std::string>& value)
+    {
+        FTK_P();
+        bool out = false;
+        value.clear();
+        try
+        {
+            auto i = p.settings.at(nlohmann::json::json_pointer(key));
+            for (auto j = i.begin(); j != i.end(); ++j)
+            {
+                if (j->is_string())
+                {
+                    value.push_back(*j);
+                    out = true;
+                }
+            }
+        }
+        catch (const std::exception&)
+        {}
+        return out;
+    }
+
     void Settings::set(const std::string& key, const nlohmann::json& value)
     {
         try
@@ -326,6 +348,21 @@ namespace ftk
         try
         {
             _p->settings[nlohmann::json::json_pointer(key)] = value;
+        }
+        catch (const std::exception&)
+        {}
+    }
+
+    void Settings::set(const std::string& key, const std::vector<std::string>& value)
+    {
+        try
+        {
+            nlohmann::json json;
+            for (const auto& i : value)
+            {
+                json.push_back(i);
+            }
+            _p->settings[nlohmann::json::json_pointer(key)] = json;
         }
         catch (const std::exception&)
         {}

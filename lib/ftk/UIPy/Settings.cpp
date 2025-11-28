@@ -39,10 +39,12 @@ namespace ftk
                 .def("get", py::overload_cast<const std::string&, int64_t&>(&Settings::get), py::arg("key"), py::arg("value"))
                 .def("get", py::overload_cast<const std::string&, double&>(&Settings::get), py::arg("key"), py::arg("value"))
                 .def("get", py::overload_cast<const std::string&, std::string&>(&Settings::get), py::arg("key"), py::arg("value"))
+                .def("get", py::overload_cast<const std::string&, std::vector<std::string>&>(&Settings::get), py::arg("key"), py::arg("value"))
                 .def("set", py::overload_cast<const std::string&, bool>(&Settings::set), py::arg("key"), py::arg("value"))
                 .def("set", py::overload_cast<const std::string&, int64_t>(&Settings::set), py::arg("key"), py::arg("value"))
                 .def("set", py::overload_cast<const std::string&, double>(&Settings::set), py::arg("key"), py::arg("value"))
-                .def("set", py::overload_cast<const std::string&, const std::string&>(&Settings::set), py::arg("key"), py::arg("value"));
+                .def("set", py::overload_cast<const std::string&, const std::string&>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("set", py::overload_cast<const std::string&, const std::vector<std::string>&>(&Settings::set), py::arg("key"), py::arg("value"));
         }
     }
 }

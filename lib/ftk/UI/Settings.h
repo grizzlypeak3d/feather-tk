@@ -58,6 +58,7 @@ namespace ftk
         bool get(const std::string& key, double&);
         bool get(const std::string& key, size_t&);
         bool get(const std::string& key, std::string&);
+        bool get(const std::string& key, std::vector<std::string>&);
 
         template<typename T>
         bool getT(const std::string& key, T&) const;
@@ -76,6 +77,7 @@ namespace ftk
         void set(const std::string& key, double);
         void set(const std::string& key, size_t);
         void set(const std::string& key, const std::string&);
+        void set(const std::string& key, const std::vector<std::string>&);
 
         template<typename T>
         void setT(const std::string& key, const T&);
