@@ -147,6 +147,9 @@ namespace ftk
         uiInit(context);
         gl::init(context);
 
+        auto logSystem = _context->getSystem<LogSystem>();
+        logSystem->print("ftk::App", "Create app...");
+
         p.monitors = ObservableList<MonitorInfo>::create();
         p.fontSystem = context->getSystem<FontSystem>();
         p.iconSystem = context->getSystem<IconSystem>();
@@ -161,7 +164,6 @@ namespace ftk
         float dDpi = 0.F;
         float hDpi = 0.F;
         float vDpi = 0.F;
-        auto logSystem = _context->getSystem<LogSystem>();
         if (0 == SDL_GetDisplayDPI(0, &dDpi, &hDpi, &vDpi))
         {
             logSystem->print(
@@ -206,7 +208,10 @@ namespace ftk
     {}
 
     App::~App()
-    {}
+    {
+        auto logSystem = _context->getSystem<LogSystem>();
+        logSystem->print("ftk::App", "Destroy app...");
+    }
 
     std::shared_ptr<App> App::create(
         const std::shared_ptr<Context>& context,

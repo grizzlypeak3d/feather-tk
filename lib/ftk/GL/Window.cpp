@@ -155,11 +155,12 @@ namespace ftk
                 logSystem->print(
                     "ftk::gl::Window",
                     Format(
-                        "New window:\n"
-                        "    Size: {0}\n"
-                        "    OpenGL vendor: {1}\n"
-                        "    OpenGL renderer: {2}\n"
-                        "    OpenGL version: {3}").
+                        "New window {0}:\n"
+                        "    Size: {1}\n"
+                        "    OpenGL vendor: {2}\n"
+                        "    OpenGL renderer: {3}\n"
+                        "    OpenGL version: {4}").
+                    arg(this).
                     arg(size).
                     arg(glVendor).
                     arg(glRenderer).
@@ -175,6 +176,12 @@ namespace ftk
         Window::~Window()
         {
             FTK_P();
+            if (auto logSystem = p.logSystem.lock())
+            {
+                logSystem->print(
+                    "ftk::gl::Window",
+                    Format("Destroy window {0}...").arg(this));
+            }
             if (p.sdlGLContext)
             {
                 SDL_GL_DeleteContext(p.sdlGLContext);
