@@ -19,11 +19,11 @@ namespace ftk
         void iApp(py::module_& m)
         {
             py::class_<IApp, std::shared_ptr<IApp> >(m, "IApp")
-                .def("getExeName", &IApp::getExeName)
-                .def("getExit", &IApp::getExit)
-                .def("getContext", &IApp::getContext)
-                .def("getName", &IApp::getName)
-                .def("getSummary", &IApp::getSummary)
+                .def_property_readonly("exeName", &IApp::getExeName)
+                .def_property_readonly("exitValue", &IApp::getExit)
+                .def_property_readonly("context", &IApp::getContext)
+                .def_property_readonly("name", &IApp::getName)
+                .def_property_readonly("summary", &IApp::getSummary)
                 .def("run", &IApp::run);
         }
     }

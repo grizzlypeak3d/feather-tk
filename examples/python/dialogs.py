@@ -57,8 +57,8 @@ class DialogsWindow(ftk.MainWindow):
 # Create the context and application.
 context = ftk.Context()
 app = ftk.App(context, sys.argv, "dialogs", "Dialogs example")
-if app.getExit() != 0:
-    sys.exit(1)
+if app.exitValue != 0:
+    sys.exit(app.exitValue)
 
 # Disable the native file dialog.
 context.getSystemByName("ftk::FileBrowserSystem").nativeFileDialog = False

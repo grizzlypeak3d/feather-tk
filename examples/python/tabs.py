@@ -8,8 +8,8 @@ import sys
 # Create the context and application.
 context = ftk.Context()
 app = ftk.App(context, sys.argv, "tabs", "Tabs example")
-if app.getExit() != 0:
-    sys.exit(1)
+if app.exitValue != 0:
+    sys.exit(app.exitValue)
 
 # Create a window.
 window = ftk.MainWindow(context, app, ftk.Size2I(1280, 960))

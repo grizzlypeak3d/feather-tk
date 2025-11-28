@@ -8,8 +8,8 @@ import sys
 # Create the context and application.
 context = ftk.Context()
 app = ftk.App(context, sys.argv, "MDI", "MDI example")
-if app.getExit() != 0:
-    sys.exit(app.getExit())
+if app.exitValue != 0:
+    sys.exit(app.exitValue)
 
 # Create a window.
 size = ftk.Size2I(1280, 960)
