@@ -7,7 +7,7 @@ cmake ^
     -B sbuild-%BUILD_TYPE% ^
     -Dftk_API=%FTK_API% ^
     -Dftk_nfd=%FTK_NFD% ^
-    -Dftk_PYTHON=%FTK_PYTHON%
+    -Dftk_PYTHON=%FTK_PYTHON% ^
     -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%CD%/install-%BUILD_TYPE% ^
