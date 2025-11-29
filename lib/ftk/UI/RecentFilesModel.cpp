@@ -78,7 +78,11 @@ namespace ftk
     void RecentFilesModel::setRecent(const std::vector<std::filesystem::path>& value)
     {
         FTK_P();
-        auto recent = value;
+        std::vector<std::filesystem::path> recent;
+        for (const auto& path : value)
+        {
+            recent.push_back(std::filesystem::absolute(path));
+        }
         while (recent.size() > p.recentMax->get())
         {
             recent.erase(recent.begin());
@@ -89,11 +93,12 @@ namespace ftk
     void RecentFilesModel::addRecent(const std::filesystem::path& value)
     {
         FTK_P();
+        const std::filesystem::path abs = std::filesystem::absolute(value);
         auto recent = p.recent->get();
         auto i = recent.begin();
         while (i != recent.end())
         {
-            if (*i == value)
+            if (*i == abs)
             {
                 i = recent.erase(i);
             }
@@ -102,7 +107,7 @@ namespace ftk
                 ++i;
             }
         }
-        recent.push_back(value);
+        recent.push_back(abs);
         while (recent.size() > p.recentMax->get())
         {
             recent.erase(recent.begin());
