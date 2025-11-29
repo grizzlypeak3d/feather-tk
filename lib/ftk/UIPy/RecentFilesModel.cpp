@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/RecentFilesModel.h>
 
+#include <ftk/CorePy/ObservableValue.h>
+
 #include <ftk/UI/RecentFilesModel.h>
 
 #include <ftk/Core/Context.h>
@@ -20,6 +22,8 @@ namespace ftk
     {
         void recentFilesModel(py::module_& m)
         {
+            observableValue<std::filesystem::path>(m, "Path");
+
             py::class_<RecentFilesModel, std::shared_ptr<RecentFilesModel> >(m, "RecentFilesModel")
                 .def(
                     py::init(&RecentFilesModel::create),
