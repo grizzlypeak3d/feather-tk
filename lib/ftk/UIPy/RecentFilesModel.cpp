@@ -3,6 +3,7 @@
 
 #include <ftk/UIPy/RecentFilesModel.h>
 
+#include <ftk/CorePy/ObservableList.h>
 #include <ftk/CorePy/ObservableValue.h>
 
 #include <ftk/UI/RecentFilesModel.h>
@@ -23,6 +24,7 @@ namespace ftk
         void recentFilesModel(py::module_& m)
         {
             observableValue<std::filesystem::path>(m, "Path");
+            observableList<std::filesystem::path>(m, "Path");
 
             py::class_<RecentFilesModel, std::shared_ptr<RecentFilesModel> >(m, "RecentFilesModel")
                 .def(
@@ -32,12 +34,12 @@ namespace ftk
                     "recentMax",
                     &RecentFilesModel::getRecentMax,
                     &RecentFilesModel::setRecentMax)
-                .def("observeRecentMax", &RecentFilesModel::observeRecentMax)
+                .def_property_readonly("observeRecentMax", &RecentFilesModel::observeRecentMax)
                 .def_property(
                     "recent",
                     &RecentFilesModel::getRecent,
                     &RecentFilesModel::setRecent)
-                .def("observeRecent", &RecentFilesModel::observeRecent)
+                .def_property_readonly("observeRecent", &RecentFilesModel::observeRecent)
                 .def("addRecent", &RecentFilesModel::addRecent);
         }
     }
