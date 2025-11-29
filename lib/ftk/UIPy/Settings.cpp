@@ -35,16 +35,41 @@ namespace ftk
                 .def_property_readonly("path", &Settings::getPath)
                 .def("save", &Settings::save)
                 .def("contains", &Settings::contains, py::arg("key"))
-                .def("get", py::overload_cast<const std::string&, bool&>(&Settings::get), py::arg("key"), py::arg("value"))
-                .def("get", py::overload_cast<const std::string&, int64_t&>(&Settings::get), py::arg("key"), py::arg("value"))
-                .def("get", py::overload_cast<const std::string&, double&>(&Settings::get), py::arg("key"), py::arg("value"))
-                .def("get", py::overload_cast<const std::string&, std::string&>(&Settings::get), py::arg("key"), py::arg("value"))
-                .def("get", py::overload_cast<const std::string&, std::vector<std::string>&>(&Settings::get), py::arg("key"), py::arg("value"))
-                .def("set", py::overload_cast<const std::string&, bool>(&Settings::set), py::arg("key"), py::arg("value"))
-                .def("set", py::overload_cast<const std::string&, int64_t>(&Settings::set), py::arg("key"), py::arg("value"))
-                .def("set", py::overload_cast<const std::string&, double>(&Settings::set), py::arg("key"), py::arg("value"))
-                .def("set", py::overload_cast<const std::string&, const std::string&>(&Settings::set), py::arg("key"), py::arg("value"))
-                .def("set", py::overload_cast<const std::string&, const std::vector<std::string>&>(&Settings::set), py::arg("key"), py::arg("value"));
+                .def("getBool",
+                    [](Settings& settings, const std::string& key)
+                    {
+                        bool value = false;
+                        return py::make_tuple(settings.get(key, value), value);
+                    })
+                .def("getI",
+                    [](Settings& settings, const std::string& key)
+                    {
+                        int64_t value = 0;
+                        return py::make_tuple(settings.get(key, value), value);
+                    })
+                .def("getD",
+                    [](Settings& settings, const std::string& key)
+                    {
+                        double value = 0.0;
+                        return py::make_tuple(settings.get(key, value), value);
+                    })
+                .def("getString",
+                    [](Settings& settings, const std::string& key)
+                    {
+                        std::string value;
+                        return py::make_tuple(settings.get(key, value), value);
+                    })
+                .def("getStringList",
+                    [](Settings& settings, const std::string& key)
+                    {
+                        std::vector<std::string> value;
+                        return py::make_tuple(settings.get(key, value), value);
+                    })
+                .def("setBool", py::overload_cast<const std::string&, bool>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setI", py::overload_cast<const std::string&, int64_t>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setD", py::overload_cast<const std::string&, double>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setString", py::overload_cast<const std::string&, const std::string&>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setStringList", py::overload_cast<const std::string&, const std::vector<std::string>&>(&Settings::set), py::arg("key"), py::arg("value"));
         }
     }
 }
