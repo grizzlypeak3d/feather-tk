@@ -37,8 +37,24 @@ namespace ftk
                 .def_property_readonly("observeRecentMax", &RecentFilesModel::observeRecentMax)
                 .def_property(
                     "recent",
-                    &RecentFilesModel::getRecent,
-                    &RecentFilesModel::setRecent)
+                    [](RecentFilesModel& model)
+                    {
+                        std::vector<std::string> out;
+                        for (const auto& recent : model.getRecent())
+                        {
+                            out.push_back(recent.u8string());
+                        }
+                        return out;
+                    },
+                    [](RecentFilesModel& model, const std::vector<std::string>& value)
+                    {
+                        std::vector<std::filesystem::path> paths;
+                        for (const auto& i : value)
+                        {
+                            paths.push_back(std::filesystem::u8path(i));
+                        }
+                        model.setRecent(paths);
+                    })
                 .def_property_readonly("observeRecent", &RecentFilesModel::observeRecent)
                 .def("addRecent", &RecentFilesModel::addRecent);
         }
