@@ -36,3 +36,8 @@ for name in context.getSystemByName("ftk::IconSystem").names:
 
 # Run the application.
 app.run()
+
+# Clean up.
+window = None
+app = None
+

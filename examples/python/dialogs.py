@@ -4,6 +4,7 @@
 import ftkPy as ftk
 
 import sys
+import weakref
 
 class DialogsWindow(ftk.MainWindow):
     def __init__(self, context, app, size):
@@ -16,13 +17,14 @@ class DialogsWindow(ftk.MainWindow):
 
         # Message dialog.
         button = ftk.PushButton(context, "Message Dialog", layout)
+        windowWeak = weakref.ref(self.window)
         button.setClickedCallback(
-            lambda: context.getSystemByName("ftk::DialogSystem").message("Message", "Hello world!", window))
+            lambda: context.getSystemByName("ftk::DialogSystem").message("Message", "Hello world!", windowWeak()))
 
         # Confirmation dialog.
         button = ftk.PushButton(context, "Confirmation Dialog", layout)
         button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").
-            confirm("Confirm", "Hello world?", window, lambda ok: print("Hellow world:", ok)))
+            confirm("Confirm", "Hello world?", windowWeak(), lambda ok: print("Hellow world:", ok)))
 
         # Progress dialog.
         self.progressTimer = ftk.Timer(context)
@@ -37,7 +39,7 @@ class DialogsWindow(ftk.MainWindow):
         dirEdit.path = "Directory Browser"
 
     def _progressDialog(self):
-        self.progressDialog = ftk.ProgressDialog(self.context, "Progress", "In progress:", self)
+        self.progressDialog = ftk.ProgressDialog(self.context, "Progress", "In progress:", self.window)
         self.progressDialog.setCloseCallback(self._progressDialogClose)
         self.progressDialog.show()
         self.progressTimer.start(0.5, self._progressTimerCallback)
@@ -68,3 +70,7 @@ window = DialogsWindow(context, app, ftk.Size2I(1280, 960))
 
 # Run the application.
 app.run()
+
+# Clean up.
+window = None
+app = None

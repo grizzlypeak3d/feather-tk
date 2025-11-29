@@ -40,3 +40,8 @@ for i in range(0, 10):
 
 # Run the application.
 app.run()
+
+# Clean up.
+window = None
+app = None
+
