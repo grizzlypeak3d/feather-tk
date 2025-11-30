@@ -65,11 +65,22 @@ namespace ftk
                         std::vector<std::string> value;
                         return py::make_tuple(settings.get(key, value), value);
                     })
+                .def("getJSON",
+                    [](Settings& settings, const std::string& key)
+                    {
+                        nlohmann::json json;
+                        return py::make_tuple(settings.get(key, json), json.dump());
+                    })
                 .def("setBool", py::overload_cast<const std::string&, bool>(&Settings::set), py::arg("key"), py::arg("value"))
                 .def("setI", py::overload_cast<const std::string&, int64_t>(&Settings::set), py::arg("key"), py::arg("value"))
                 .def("setD", py::overload_cast<const std::string&, double>(&Settings::set), py::arg("key"), py::arg("value"))
                 .def("setString", py::overload_cast<const std::string&, const std::string&>(&Settings::set), py::arg("key"), py::arg("value"))
-                .def("setStringList", py::overload_cast<const std::string&, const std::vector<std::string>&>(&Settings::set), py::arg("key"), py::arg("value"));
+                .def("setStringList", py::overload_cast<const std::string&, const std::vector<std::string>&>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setJSON",
+                    [](Settings& settings, const std::string& key, const std::string& value)
+                    {
+                        settings.set(key, nlohmann::json(value));
+                    });
         }
     }
 }
