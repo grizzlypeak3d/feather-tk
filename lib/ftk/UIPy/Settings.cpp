@@ -79,7 +79,7 @@ namespace ftk
                 .def("setJSON",
                     [](Settings& settings, const std::string& key, const std::string& value)
                     {
-                        settings.set(key, nlohmann::json(value));
+                        settings.set(key, nlohmann::json().parse(value));
                     });
         }
     }
