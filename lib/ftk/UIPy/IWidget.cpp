@@ -106,6 +106,7 @@ namespace ftk
                     "isVisible",
                     &IWidget::isVisible,
                     py::arg("andParentsVisible") = true)
+                .def("setVisible", &IWidget::setVisible)
                 .def("show", &IWidget::show)
                 .def("hide", &IWidget::hide)
                 .def_property_readonly("clipped", &IWidget::isClipped)
