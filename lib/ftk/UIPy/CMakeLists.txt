@@ -22,6 +22,7 @@ set(HEADERS
     FloatEditSlider.h
     FloatModel.h
     FloatSlider.h
+    FormLayout.h
     GridLayout.h
     GroupBox.h
     IButton.h
@@ -54,6 +55,7 @@ set(HEADERS
     ScrollWidget.h
     Settings.h
     Splitter.h
+    StackLayout.h
     Style.h
     TabBar.h
     TabWidget.h
@@ -86,6 +88,7 @@ set(SOURCE
     FloatModel.cpp
     FloatSlider.cpp
     FileEdit.cpp
+    FormLayout.cpp
     GridLayout.cpp
     GroupBox.cpp
     IButton.cpp
@@ -118,6 +121,7 @@ set(SOURCE
     ScrollWidget.cpp
     Settings.cpp
     Splitter.cpp
+    StackLayout.cpp
     Style.cpp
     TabBar.cpp
     TabWidget.cpp

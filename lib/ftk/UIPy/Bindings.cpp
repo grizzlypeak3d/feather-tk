@@ -25,6 +25,7 @@
 #include <ftk/UIPy/FloatEditSlider.h>
 #include <ftk/UIPy/FloatModel.h>
 #include <ftk/UIPy/FloatSlider.h>
+#include <ftk/UIPy/FormLayout.h>
 #include <ftk/UIPy/GridLayout.h>
 #include <ftk/UIPy/GroupBox.h>
 #include <ftk/UIPy/IButton.h>
@@ -57,6 +58,7 @@
 #include <ftk/UIPy/ScrollWidget.h>
 #include <ftk/UIPy/Settings.h>
 #include <ftk/UIPy/Splitter.h>
+#include <ftk/UIPy/StackLayout.h>
 #include <ftk/UIPy/Style.h>
 #include <ftk/UIPy/TabBar.h>
 #include <ftk/UIPy/ToolBar.h>
@@ -121,6 +123,7 @@ namespace ftk
             floatEditSlider(m);
             floatModel(m);
             floatSlider(m);
+            formLayout(m);
             gridLayout(m);
             groupBox(m);
             icon(m);
@@ -144,6 +147,7 @@ namespace ftk
             scrollArea(m);
             scrollWidget(m);
             splitter(m);
+            stackLayout(m);
             tabBar(m);
             toolBar(m);
             tabWidget(m);
