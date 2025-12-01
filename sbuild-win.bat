@@ -1,6 +1,7 @@
 set BUILD_TYPE=%1
 IF "%BUILD_TYPE%"=="" set BUILD_TYPE=Release
 
+set JOBS=4
 set FTK_API=GL_4_1
 set FTK_NFD=OFF
 set FTK_PYTHON=OFF

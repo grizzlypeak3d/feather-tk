@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      JOBS: 4
       FTK_API: GL_4_1
       FTK_NFD: OFF
       FTK_PYTHON: ON
@@ -49,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      JOBS: 4
       FTK_API: GLES_2
       FTK_NFD: OFF
       FTK_PYTHON: ON
@@ -85,6 +87,7 @@ jobs:
     runs-on: macos-15-intel
 
     env:
+      JOBS: 4
       FTK_API: GL_4_1
       FTK_NFD: OFF
       FTK_PYTHON: ON
@@ -128,6 +131,7 @@ jobs:
     runs-on: macos-latest
 
     env:
+      JOBS: 4
       FTK_API: GL_4_1
       FTK_NFD: OFF
       FTK_PYTHON: ON
@@ -171,6 +175,7 @@ jobs:
     runs-on: windows-latest
 
     env:
+      JOBS: 4
       FTK_API: GL_4_1
       FTK_NFD: OFF
       FTK_PYTHON: ON
