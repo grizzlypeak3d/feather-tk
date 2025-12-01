@@ -3,6 +3,8 @@
 
 #include <ftk/CorePy/LogSystem.h>
 
+#include <ftk/CorePy/ObservableValue.h>
+
 #include <ftk/Core/Context.h>
 #include <ftk/Core/LogSystem.h>
 
@@ -37,6 +39,8 @@ namespace ftk
                     })
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            observableValue<LogItem>(m, "LogItem");
 
             py::class_<LogSystem, ISystem, std::shared_ptr<LogSystem> >(m, "LogSystem")
                 .def(
