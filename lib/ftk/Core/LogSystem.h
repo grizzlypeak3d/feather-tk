@@ -24,10 +24,10 @@ namespace ftk
     //! Log item.
     struct LogItem
     {
-        float time = 0.F;
+        float       time    = 0.F;
         std::string prefix;
         std::string message;
-        LogType type = LogType::Message;
+        LogType     type    = LogType::Message;
 
         bool operator == (const LogItem&) const;
         bool operator != (const LogItem&) const;

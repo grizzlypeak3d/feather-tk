@@ -11,6 +11,7 @@ set(HEADERS
     IRender.h
     ISystem.h
     Image.h
+    LogSystem.h
     Memory.h
     OS.h
     Observable.h
@@ -39,6 +40,7 @@ set(SOURCE
     IRender.cpp
     ISystem.cpp
     Image.cpp
+    LogSystem.cpp
     Memory.cpp
     OS.cpp
     Observable.cpp

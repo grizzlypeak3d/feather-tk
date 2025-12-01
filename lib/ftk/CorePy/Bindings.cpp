@@ -12,6 +12,7 @@
 #include <ftk/CorePy/IRender.h>
 #include <ftk/CorePy/ISystem.h>
 #include <ftk/CorePy/Image.h>
+#include <ftk/CorePy/LogSystem.h>
 #include <ftk/CorePy/Memory.h>
 #include <ftk/CorePy/Observable.h>
 #include <ftk/CorePy/ObservableList.h>
@@ -48,6 +49,7 @@ namespace ftk
             iApp(m);
             iRender(m);
             image(m);
+            logSystem(m);
             memory(m);
             observable(m);
             observableList(m);
