@@ -30,7 +30,7 @@ namespace ftk
                     float seconds,
                     const std::function<void(void)>& callback)
                     {
-                        timer->start(std::chrono::microseconds(long(seconds * 1000.0)), callback);
+                        timer->start(std::chrono::milliseconds(long(seconds * 1000.0)), callback);
                     })
                 .def("stop", &Timer::stop)
                 .def_property_readonly("active", &Timer::isActive)
