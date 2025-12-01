@@ -15,7 +15,7 @@ namespace ftk
     {
         void observableMap(py::module_& m)
         {
-            observableMap<std::string, int>(m, "StringI");
+            observableMap<std::string, int>(m, "StringInt");
         }
     }
 }

@@ -10,16 +10,16 @@ namespace ftk
         template<typename T, typename U>
         inline void observableMap(pybind11::module_& m, const std::string& type)
         {
-            std::string name = "MapObserver" + type;
+            std::string name = type + "MapObserver";
             pybind11::class_<MapObserver<T, U>, std::shared_ptr<MapObserver<T, U> > >(m, name.c_str())
                 .def(
                     pybind11::init(&MapObserver<T, U>::create),
                     pybind11::arg("observableMap"),
                     pybind11::arg("callback"),
                     pybind11::arg("action") = ObserverAction::Trigger);
-            name = "IObservableMap" + type;
+            name = "IObservable" + type + "Map";
             pybind11::class_<IObservableMap<T, U>, std::shared_ptr<IObservableMap<T, U> > >(m, name.c_str());
-            name = "ObservableMap" + type;
+            name = "Observable" + type + "Map";
             pybind11::class_<ObservableMap<T, U>, IObservableMap<T, U>, std::shared_ptr<ObservableMap<T, U> > >(m, name.c_str())
                 .def(pybind11::init(pybind11::overload_cast<const std::map<T, U>&>(&ObservableMap<T, U>::create)))
                 .def("setAlways", &ObservableMap<T, U>::setAlways)

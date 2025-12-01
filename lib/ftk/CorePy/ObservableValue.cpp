@@ -15,9 +15,9 @@ namespace ftk
     {
         void observableValue(py::module_& m)
         {
-            observableValue<int>(m, "I");
-            observableValue<float>(m, "F");
-            observableValue<double>(m, "D");
+            observableValue<int>(m, "Int");
+            observableValue<float>(m, "Float");
+            observableValue<double>(m, "Double");
             observableValue<bool>(m, "Bool");
             observableValue<std::string>(m, "String");
         }

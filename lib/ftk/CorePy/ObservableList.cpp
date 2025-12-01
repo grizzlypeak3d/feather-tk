@@ -15,9 +15,9 @@ namespace ftk
     {
         void observableList(py::module_& m)
         {
-            observableList<int>(m, "I");
-            observableList<float>(m, "F");
-            observableList<double>(m, "D");
+            observableList<int>(m, "Int");
+            observableList<float>(m, "Float");
+            observableList<double>(m, "Double");
             observableList<bool>(m, "Bool");
             observableList<std::string>(m, "String");
         }
