@@ -38,12 +38,11 @@ set(HEADERS
     Noise.h
     OS.h
     Observable.h
+    ObservableInline.h
     ObservableList.h
     ObservableListInline.h
     ObservableMap.h
     ObservableMapInline.h
-    ObservableValue.h
-    ObservableValueInline.h
     PNG.h
     Path.h
     PathInline.h

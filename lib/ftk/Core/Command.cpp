@@ -12,16 +12,16 @@ namespace ftk
     {
         std::vector<std::shared_ptr<ICommand> > commands;
         int64_t currentIndex = -1;
-        std::shared_ptr<ObservableValue<bool> > hasUndo;
-        std::shared_ptr<ObservableValue<bool> > hasRedo;
+        std::shared_ptr<Observable<bool> > hasUndo;
+        std::shared_ptr<Observable<bool> > hasRedo;
     };
 
     CommandStack::CommandStack() :
         _p(new Private)
     {
         FTK_P();
-        p.hasUndo = ObservableValue<bool>::create(false);
-        p.hasRedo = ObservableValue<bool>::create(false);
+        p.hasUndo = Observable<bool>::create(false);
+        p.hasRedo = Observable<bool>::create(false);
     }
 
     CommandStack::~CommandStack()
@@ -46,12 +46,12 @@ namespace ftk
         p.hasUndo->setIfChanged(true);
     }
 
-    std::shared_ptr<IObservableValue<bool> > CommandStack::observeHasUndo() const
+    std::shared_ptr<IObservable<bool> > CommandStack::observeHasUndo() const
     {
         return _p->hasUndo;
     }
 
-    std::shared_ptr<IObservableValue<bool> > CommandStack::observeHasRedo() const
+    std::shared_ptr<IObservable<bool> > CommandStack::observeHasRedo() const
     {
         return _p->hasRedo;
     }

@@ -95,11 +95,11 @@ namespace ftk
         std::shared_ptr<FontSystem> fontSystem;
         std::shared_ptr<IconSystem> iconSystem;
         std::shared_ptr<Style> style;
-        std::shared_ptr<ObservableValue<ColorStyle> > colorStyle;
+        std::shared_ptr<Observable<ColorStyle> > colorStyle;
         std::shared_ptr<ObservableMap<ColorRole, Color4F> > customColorRoles;
         float defaultDisplayScale = 1.F;
-        std::shared_ptr<ObservableValue<float> > displayScale;
-        std::shared_ptr<ObservableValue<bool> > tooltipsEnabled;
+        std::shared_ptr<Observable<float> > displayScale;
+        std::shared_ptr<Observable<bool> > tooltipsEnabled;
         bool running = true;
         std::list<std::shared_ptr<IWindow> > windows;
         std::weak_ptr<IWindow> activeWindow;
@@ -154,7 +154,7 @@ namespace ftk
         p.fontSystem = context->getSystem<FontSystem>();
         p.iconSystem = context->getSystem<IconSystem>();
         p.style = Style::create(context);
-        p.colorStyle = ObservableValue<ColorStyle>::create(ColorStyle::Dark);
+        p.colorStyle = Observable<ColorStyle>::create(ColorStyle::Dark);
         if (p.cmdLine.colorStyle->hasValue())
         {
             p.colorStyle->setIfChanged(p.cmdLine.colorStyle->getValue());
@@ -182,9 +182,9 @@ namespace ftk
         logSystem->print(
             "ftk::App",
             Format("Display scale: {0}").arg(p.defaultDisplayScale));
-        p.displayScale = ObservableValue<float>::create(p.defaultDisplayScale);
+        p.displayScale = Observable<float>::create(p.defaultDisplayScale);
 
-        p.tooltipsEnabled = ObservableValue<bool>::create(true);
+        p.tooltipsEnabled = Observable<bool>::create(true);
 
         _monitorsUpdate();
         _styleUpdate();
@@ -284,7 +284,7 @@ namespace ftk
         return _p->colorStyle->get();
     }
 
-    std::shared_ptr<IObservableValue<ColorStyle> > App::observeColorStyle() const
+    std::shared_ptr<IObservable<ColorStyle> > App::observeColorStyle() const
     {
         return _p->colorStyle;
     }
@@ -335,7 +335,7 @@ namespace ftk
         return _p->displayScale->get();
     }
 
-    std::shared_ptr<IObservableValue<float> > App::observeDisplayScale() const
+    std::shared_ptr<IObservable<float> > App::observeDisplayScale() const
     {
         return _p->displayScale;
     }
@@ -360,7 +360,7 @@ namespace ftk
         return _p->tooltipsEnabled->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > App::observeTooltipsEnabled() const
+    std::shared_ptr<IObservable<bool> > App::observeTooltipsEnabled() const
     {
         return _p->tooltipsEnabled;
     }

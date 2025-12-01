@@ -35,19 +35,19 @@ namespace ftk
                 float value = 0.F;
                 RangeF range;
                 bool hasDefaultValue = false;
-                auto valueObserver = ValueObserver<float>::create(
+                auto valueObserver = Observer<float>::create(
                     model->observeValue(),
                     [&value](float v)
                     {
                         value = v;
                     });
-                auto rangeObserver = ValueObserver<RangeF>::create(
+                auto rangeObserver = Observer<RangeF>::create(
                     model->observeRange(),
                     [&range](const RangeF& r)
                     {
                         range = r;
                     });
-                auto defaultValueObserver = ValueObserver<bool>::create(
+                auto defaultObserver = Observer<bool>::create(
                     model->observeHasDefaultValue(),
                     [&hasDefaultValue](bool value)
                     {

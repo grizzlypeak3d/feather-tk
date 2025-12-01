@@ -46,6 +46,6 @@ namespace objview
         std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
         std::shared_ptr<ftk::VerticalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<StyleSettings> > _styleSettingsObserver;
+        std::shared_ptr<ftk::Observer<StyleSettings> > _styleSettingsObserver;
     };
 }

@@ -6,8 +6,8 @@
 namespace ftk
 {
     template<typename T>
-    inline void ValueObserver<T>::_init(
-        const std::shared_ptr<IObservableValue<T> >& value,
+    inline void Observer<T>::_init(
+        const std::shared_ptr<IObservable<T> >& value,
         const std::function<void(const T&)>& callback,
         ObserverAction action)
     {
@@ -15,7 +15,7 @@ namespace ftk
         _callback = callback;
         if (auto value = _value.lock())
         {
-            value->_add(ValueObserver<T>::shared_from_this());
+            value->_add(Observer<T>::shared_from_this());
             if (ObserverAction::Trigger == action)
             {
                 _callback(value->get());
@@ -24,7 +24,7 @@ namespace ftk
     }
 
     template<typename T>
-    inline ValueObserver<T>::~ValueObserver()
+    inline Observer<T>::~Observer()
     {
         if (auto value = _value.lock())
         {
@@ -33,40 +33,40 @@ namespace ftk
     }
 
     template<typename T>
-    inline std::shared_ptr<ValueObserver<T> > ValueObserver<T>::create(
-        const std::shared_ptr<IObservableValue<T> >& value,
+    inline std::shared_ptr<Observer<T> > Observer<T>::create(
+        const std::shared_ptr<IObservable<T> >& value,
         const std::function<void(const T&)>& callback,
         ObserverAction action)
     {
-        std::shared_ptr<ValueObserver<T> > out(new ValueObserver<T>);
+        std::shared_ptr<Observer<T> > out(new Observer<T>);
         out->_init(value, callback, action);
         return out;
     }
 
     template<typename T>
-    inline void ValueObserver<T>::doCallback(const T& value)
+    inline void Observer<T>::doCallback(const T& value)
     {
         _callback(value);
     }
 
     template<typename T>
-    inline IObservableValue<T>::~IObservableValue()
+    inline IObservable<T>::~IObservable()
     {}
 
     template<typename T>
-    inline std::size_t IObservableValue<T>::getObserversCount() const
+    inline std::size_t IObservable<T>::getObserversCount() const
     {
         return _observers.size();
     }
 
     template<typename T>
-    inline void IObservableValue<T>::_add(const std::weak_ptr<ValueObserver<T> >& observer)
+    inline void IObservable<T>::_add(const std::weak_ptr<Observer<T> >& observer)
     {
         _observers.push_back(observer);
     }
 
     template<typename T>
-    inline void IObservableValue<T>::_removeExpired()
+    inline void IObservable<T>::_removeExpired()
     {
         auto i = _observers.begin();
         while (i != _observers.end())
@@ -83,27 +83,27 @@ namespace ftk
     }
 
     template<typename T>
-    inline ObservableValue<T>::ObservableValue(const T& value) :
+    inline Observable<T>::Observable(const T& value) :
         _value(value)
     {}
 
     template<typename T>
-    inline std::shared_ptr<ObservableValue<T> > ObservableValue<T>::create()
+    inline std::shared_ptr<Observable<T> > Observable<T>::create()
     {
-        return std::shared_ptr<ObservableValue<T> >(new ObservableValue<T>);
+        return std::shared_ptr<Observable<T> >(new Observable<T>);
     }
 
     template<typename T>
-    inline std::shared_ptr<ObservableValue<T> > ObservableValue<T>::create(const T& value)
+    inline std::shared_ptr<Observable<T> > Observable<T>::create(const T& value)
     {
-        return std::shared_ptr<ObservableValue<T> >(new ObservableValue<T>(value));
+        return std::shared_ptr<Observable<T> >(new Observable<T>(value));
     }
 
     template<typename T>
-    inline void ObservableValue<T>::setAlways(const T& value)
+    inline void Observable<T>::setAlways(const T& value)
     {
         _value = value;
-        for (const auto& i : IObservableValue<T>::_observers)
+        for (const auto& i : IObservable<T>::_observers)
         {
             if (auto observer = i.lock())
             {
@@ -113,12 +113,12 @@ namespace ftk
     }
 
     template<typename T>
-    inline bool ObservableValue<T>::setIfChanged(const T& value)
+    inline bool Observable<T>::setIfChanged(const T& value)
     {
         if (value == _value)
             return false;
         _value = value;
-        for (const auto& i : IObservableValue<T>::_observers)
+        for (const auto& i : IObservable<T>::_observers)
         {
             if (auto observer = i.lock())
             {
@@ -129,7 +129,7 @@ namespace ftk
     }
 
     template<typename T>
-    inline const T& ObservableValue<T>::get() const
+    inline const T& Observable<T>::get() const
     {
         return _value;
     }

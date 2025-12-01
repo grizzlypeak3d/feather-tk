@@ -26,7 +26,7 @@ namespace imageview
         _actionsUpdate();
 
         // Observe the current document to update the state of the actions.
-        _currentObserver = ValueObserver<std::shared_ptr<IDocument> >::create(
+        _currentObserver = Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this](const std::shared_ptr<IDocument>& doc)
             {
@@ -138,7 +138,7 @@ namespace imageview
             });
         _actions["Edit/Settings"]->setTooltip("Toggle the settings");
 
-        _windowSettingsObserver = ValueObserver<WindowSettings>::create(
+        _windowSettingsObserver = Observer<WindowSettings>::create(
             app->getSettingsModel()->observeWindow(),
             [this](const WindowSettings& value)
             {
@@ -166,7 +166,7 @@ namespace imageview
             });
         _actions["Window/FullScreen"]->setTooltip("Toggle full screen mode");
 
-        _fullScreenObserver = ValueObserver<bool>::create(
+        _fullScreenObserver = Observer<bool>::create(
             mainWindow->observeFullScreen(),
             [this](bool value)
             {
@@ -306,13 +306,13 @@ namespace imageview
             });
         _actions["View/Alpha"]->setTooltip("View the alpha channel");
 
-        _viewObserver = ValueObserver<std::shared_ptr<ImageView> >::create(
+        _viewObserver = Observer<std::shared_ptr<ImageView> >::create(
             mainWindow->observeCurrentView(),
             [this](const std::shared_ptr<ImageView>& view)
             {
                 if (view)
                 {
-                    _channelDisplayObserver = ValueObserver<ChannelDisplay>::create(
+                    _channelDisplayObserver = Observer<ChannelDisplay>::create(
                         view->observeChannelDisplay(),
                         [this](ChannelDisplay value)
                         {

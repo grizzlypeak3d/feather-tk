@@ -65,13 +65,13 @@ namespace ftk
                 auto commandStack = CommandStack::create();
                 bool hasUndo = false;
                 bool hasRedo = false;
-                auto undoObserver = ValueObserver<bool>::create(
+                auto undoObserver = Observer<bool>::create(
                     commandStack->observeHasUndo(),
                     [&hasUndo](bool value)
                     {
                         hasUndo = value;
                     });
-                auto redoObserver = ValueObserver<bool>::create(
+                auto redoObserver = Observer<bool>::create(
                     commandStack->observeHasRedo(),
                     [&hasRedo](bool value)
                     {

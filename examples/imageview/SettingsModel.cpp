@@ -50,12 +50,12 @@ namespace imageview
 
         WindowSettings window;
         _settings->getT("/Window", window);
-        _window = ObservableValue<WindowSettings>::create(window);
+        _window = Observable<WindowSettings>::create(window);
 
         StyleSettings style;
         style.displayScale = defaultDisplayScale;
         _settings->getT("/Style", style);
-        _style = ObservableValue<StyleSettings>::create(style);
+        _style = Observable<StyleSettings>::create(style);
     }
 
     SettingsModel::~SettingsModel()
@@ -102,7 +102,7 @@ namespace imageview
         return _window->get();
     }
 
-    std::shared_ptr<IObservableValue<WindowSettings> > SettingsModel::observeWindow() const
+    std::shared_ptr<IObservable<WindowSettings> > SettingsModel::observeWindow() const
     {
         return _window;
     }
@@ -117,7 +117,7 @@ namespace imageview
         return _style->get();
     }
 
-    std::shared_ptr<IObservableValue<StyleSettings> > SettingsModel::observeStyle() const
+    std::shared_ptr<IObservable<StyleSettings> > SettingsModel::observeStyle() const
     {
         return _style;
     }

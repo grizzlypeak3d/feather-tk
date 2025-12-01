@@ -24,9 +24,9 @@ namespace ftk
         std::shared_ptr<IWidget> centralWidget;
         std::shared_ptr<VerticalLayout> layout;
 
-        std::shared_ptr<ValueObserver<float> > displayScaleObserver;
-        std::shared_ptr<ValueObserver<ColorStyle> > colorStyleObserver;
-        std::shared_ptr<ValueObserver<bool> > tooltipsObserver;
+        std::shared_ptr<Observer<float> > displayScaleObserver;
+        std::shared_ptr<Observer<ColorStyle> > colorStyleObserver;
+        std::shared_ptr<Observer<bool> > tooltipsObserver;
     };
 
     void MainWindow::_init(
@@ -118,7 +118,7 @@ namespace ftk
         p.menuBar->setParent(p.layout);
         p.menuBarDivider->setParent(p.layout);
 
-        p.colorStyleObserver = ValueObserver<ColorStyle>::create(
+        p.colorStyleObserver = Observer<ColorStyle>::create(
             app->observeColorStyle(),
             [this](ColorStyle value)
             {
@@ -131,7 +131,7 @@ namespace ftk
                 }
             });
 
-        p.displayScaleObserver = ValueObserver<float>::create(
+        p.displayScaleObserver = Observer<float>::create(
             app->observeDisplayScale(),
             [this](float value)
             {
@@ -144,7 +144,7 @@ namespace ftk
                 }
             });
 
-        p.tooltipsObserver = ValueObserver<bool>::create(
+        p.tooltipsObserver = Observer<bool>::create(
             app->observeTooltipsEnabled(),
             [this](bool value)
             {

@@ -298,7 +298,7 @@ namespace ftk
         std::shared_ptr<ftk::CheckBox> seqCheckBox;
         std::shared_ptr<ftk::CheckBox> hiddenCheckBox;
         std::shared_ptr<FormLayout> layout;
-        std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
+        std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
     };
 
     void FileBrowserSettings::_init(
@@ -336,7 +336,7 @@ namespace ftk
                 model->setOptions(options);
             });
 
-        p.optionsObserver = ValueObserver<FileBrowserOptions>::create(
+        p.optionsObserver = Observer<FileBrowserOptions>::create(
             model->observeOptions(),
             [this](const FileBrowserOptions& value)
             {
@@ -387,7 +387,7 @@ namespace ftk
         std::shared_ptr<FileBrowserSettings> settingsWidget;
         std::map<std::string, std::shared_ptr<Bellows> > bellows;
         std::shared_ptr<VerticalLayout> layout;
-        std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
+        std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
     };
 
     void FileBrowserPanel::_init(
@@ -426,7 +426,7 @@ namespace ftk
                 });
         }
 
-        p.optionsObserver = ValueObserver<FileBrowserOptions>::create(
+        p.optionsObserver = Observer<FileBrowserOptions>::create(
             model->observeOptions(),
             [this](const FileBrowserOptions& value)
             {

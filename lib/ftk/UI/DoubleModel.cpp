@@ -9,21 +9,21 @@ namespace ftk
 {
     struct DoubleModel::Private
     {
-        std::shared_ptr<ObservableValue<double> > value;
-        std::shared_ptr<ObservableValue<RangeD> > range;
+        std::shared_ptr<Observable<double> > value;
+        std::shared_ptr<Observable<RangeD> > range;
         double step = 0.1;
         double largeStep = 1.0;
-        std::shared_ptr<ObservableValue<bool> > hasDefaultValue;
-        std::shared_ptr<ObservableValue<double> > defaultValue;
+        std::shared_ptr<Observable<bool> > hasDefaultValue;
+        std::shared_ptr<Observable<double> > defaultValue;
     };
 
     void DoubleModel::_init(const std::shared_ptr<Context>&)
     {
         FTK_P();
-        p.value = ObservableValue<double>::create(0.0);
-        p.range = ObservableValue<RangeD>::create(RangeD(0.0, 1.0));
-        p.hasDefaultValue = ObservableValue<bool>::create(false);
-        p.defaultValue = ObservableValue<double>::create(0.0);
+        p.value = Observable<double>::create(0.0);
+        p.range = Observable<RangeD>::create(RangeD(0.0, 1.0));
+        p.hasDefaultValue = Observable<bool>::create(false);
+        p.defaultValue = Observable<double>::create(0.0);
     }
 
     DoubleModel::DoubleModel() :
@@ -46,7 +46,7 @@ namespace ftk
         return _p->value->get();
     }
 
-    std::shared_ptr<IObservableValue<double> > DoubleModel::observeValue() const
+    std::shared_ptr<IObservable<double> > DoubleModel::observeValue() const
     {
         return _p->value;
     }
@@ -64,7 +64,7 @@ namespace ftk
         return _p->range->get();
     }
 
-    std::shared_ptr<IObservableValue<RangeD> > DoubleModel::observeRange() const
+    std::shared_ptr<IObservable<RangeD> > DoubleModel::observeRange() const
     {
         return _p->range;
     }
@@ -127,7 +127,7 @@ namespace ftk
         return _p->hasDefaultValue->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > DoubleModel::observeHasDefaultValue() const
+    std::shared_ptr<IObservable<bool> > DoubleModel::observeHasDefaultValue() const
     {
         return _p->hasDefaultValue;
     }
@@ -137,7 +137,7 @@ namespace ftk
         return _p->defaultValue->get();
     }
 
-    std::shared_ptr<IObservableValue<double> > DoubleModel::observeDefaultValue() const
+    std::shared_ptr<IObservable<double> > DoubleModel::observeDefaultValue() const
     {
         return _p->defaultValue;
     }

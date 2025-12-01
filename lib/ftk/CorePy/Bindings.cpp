@@ -17,7 +17,6 @@
 #include <ftk/CorePy/Observable.h>
 #include <ftk/CorePy/ObservableList.h>
 #include <ftk/CorePy/ObservableMap.h>
-#include <ftk/CorePy/ObservableValue.h>
 #include <ftk/CorePy/OS.h>
 #include <ftk/CorePy/Path.h>
 #include <ftk/CorePy/Random.h>
@@ -43,7 +42,6 @@ namespace ftk
             observable(m);
             observableList(m);
             observableMap(m);
-            observableValue(m);
 
             box(m);
             cmdLine(m);

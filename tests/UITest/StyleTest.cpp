@@ -62,7 +62,7 @@ namespace ftk
 
                 auto style = app->getStyle();
                 int changed = 0;
-                auto observer = ValueObserver<bool>::create(
+                auto observer = Observer<bool>::create(
                     style->observeChanged(),
                     [&changed](bool)
                     {

@@ -82,6 +82,6 @@ namespace textedit
         std::shared_ptr<MainWindow> _mainWindow;
         std::weak_ptr<ftk::ConfirmDialog> _confirmDialog;
 
-        std::shared_ptr<ftk::ValueObserver<StyleSettings> > _styleSettingsObserver;
+        std::shared_ptr<ftk::Observer<StyleSettings> > _styleSettingsObserver;
     };
 }

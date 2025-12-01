@@ -23,8 +23,8 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(double)> callback;
-        std::shared_ptr<ValueObserver<double> > valueObserver;
-        std::shared_ptr<ValueObserver<RangeD> > rangeObserver;
+        std::shared_ptr<Observer<double> > valueObserver;
+        std::shared_ptr<Observer<RangeD> > rangeObserver;
     };
 
     void DoubleEdit::_init(
@@ -73,7 +73,7 @@ namespace ftk
                 _p->model->decrementStep();
             });
 
-        p.valueObserver = ValueObserver<double>::create(
+        p.valueObserver = Observer<double>::create(
             p.model->observeValue(),
             [this](double value)
             {
@@ -84,7 +84,7 @@ namespace ftk
                 }
             });
 
-        p.rangeObserver = ValueObserver<RangeD>::create(
+        p.rangeObserver = Observer<RangeD>::create(
             p.model->observeRange(),
             [this](const RangeD& value)
             {
@@ -304,9 +304,9 @@ namespace ftk
 
         std::shared_ptr<ToolButton> resetButton;
 
-        std::shared_ptr<ValueObserver<double> > valueObserver;
-        std::shared_ptr<ValueObserver<bool> > hasDefaultObserver;
-        std::shared_ptr<ValueObserver<double> > defaultValueObserver;
+        std::shared_ptr<Observer<double> > valueObserver;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
+        std::shared_ptr<Observer<double> > defaultObserver;
     };
 
     void DoubleResetButton::_init(
@@ -329,21 +329,21 @@ namespace ftk
                 _p->model->setDefaultValue();
             });
 
-        p.valueObserver = ValueObserver<double>::create(
+        p.valueObserver = Observer<double>::create(
             p.model->observeValue(),
             [this](double)
             {
                 _widgetUpdate();
             });
 
-        p.hasDefaultObserver = ValueObserver<bool>::create(
+        p.hasDefaultObserver = Observer<bool>::create(
             p.model->observeHasDefaultValue(),
             [this](bool)
             {
                 _widgetUpdate();
             });
 
-        p.defaultValueObserver = ValueObserver<double>::create(
+        p.defaultObserver = Observer<double>::create(
             p.model->observeDefaultValue(),
             [this](double)
             {

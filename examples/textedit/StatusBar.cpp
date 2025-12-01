@@ -32,7 +32,7 @@ namespace textedit
 
         // Observe the current document and update the widgets.
         std::weak_ptr<App> appWeak(app);
-        _currentObserver = ftk::ValueObserver<std::shared_ptr<IDocument> >::create(
+        _currentObserver = ftk::Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this, appWeak](const std::shared_ptr<IDocument>& idoc)
             {
@@ -45,7 +45,7 @@ namespace textedit
                             _lineCount = lines.size();
                             _textUpdate();
                         });
-                    _cursorObserver = ValueObserver<TextEditPos>::create(
+                    _cursorObserver = Observer<TextEditPos>::create(
                         doc->getModel()->observeCursor(),
                         [this](const TextEditPos& value)
                         {

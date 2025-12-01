@@ -15,12 +15,11 @@ set(HEADERS
     Memory.h
     OS.h
     Observable.h
+    ObservableInline.h
     ObservableList.h
     ObservableListInline.h
     ObservableMap.h
     ObservableMapInline.h
-    ObservableValue.h
-    ObservableValueInline.h
     Path.h
     Random.h
     Range.h
@@ -46,7 +45,6 @@ set(SOURCE
     Observable.cpp
     ObservableList.cpp
     ObservableMap.cpp
-    ObservableValue.cpp
     Path.cpp
     Random.cpp
     Range.cpp

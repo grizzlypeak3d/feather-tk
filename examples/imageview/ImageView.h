@@ -38,7 +38,7 @@ namespace imageview
         ///@{
 
         float getZoom() const;
-        std::shared_ptr<ftk::IObservableValue<float> > observeZoom() const;
+        std::shared_ptr<ftk::IObservable<float> > observeZoom() const;
         void setZoom(float);
         void frame();
         void zoomReset();
@@ -51,7 +51,7 @@ namespace imageview
         ///@{
 
         ftk::ChannelDisplay getChannelDisplay() const;
-        std::shared_ptr<ftk::IObservableValue<ftk::ChannelDisplay> > observeChannelDisplay() const;
+        std::shared_ptr<ftk::IObservable<ftk::ChannelDisplay> > observeChannelDisplay() const;
         void setChannelDisplay(ftk::ChannelDisplay);
 
         ///@}
@@ -62,8 +62,8 @@ namespace imageview
 
     private:
         std::shared_ptr<ftk::Image> _image;
-        std::shared_ptr<ftk::ObservableValue<float> > _zoom;
+        std::shared_ptr<ftk::Observable<float> > _zoom;
         bool _frameInit = true;
-        std::shared_ptr<ftk::ObservableValue<ftk::ChannelDisplay> > _channelDisplay;
+        std::shared_ptr<ftk::Observable<ftk::ChannelDisplay> > _channelDisplay;
     };
 }

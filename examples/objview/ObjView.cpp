@@ -42,7 +42,7 @@ namespace objview
         _hudWidget->setDistance(_distance);
 
         // Observe the object rotation and update the render.
-        _rotationObserver = ValueObserver<V3F>::create(
+        _rotationObserver = Observer<V3F>::create(
             doc->observeRotation(),
             [this](const V3F& value)
             {
@@ -54,7 +54,7 @@ namespace objview
             });
 
         // Observe the render settings and update the render.
-        _renderSettingsObserver = ValueObserver<RenderSettings>::create(
+        _renderSettingsObserver = Observer<RenderSettings>::create(
             app->getSettingsModel()->observeRender(),
             [this](const RenderSettings& value)
             {

@@ -38,6 +38,6 @@ namespace imageview
         std::map<std::string, std::shared_ptr<ftk::Label> > _labels;
         std::shared_ptr<ftk::HorizontalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
     };
 }

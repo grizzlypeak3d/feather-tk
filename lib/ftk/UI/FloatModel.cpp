@@ -9,21 +9,21 @@ namespace ftk
 {
     struct FloatModel::Private
     {
-        std::shared_ptr<ObservableValue<float> > value;
-        std::shared_ptr<ObservableValue<RangeF> > range;
+        std::shared_ptr<Observable<float> > value;
+        std::shared_ptr<Observable<RangeF> > range;
         float step = .1F;
         float largeStep = 1.F;
-        std::shared_ptr<ObservableValue<bool> > hasDefaultValue;
-        std::shared_ptr<ObservableValue<float> > defaultValue;
+        std::shared_ptr<Observable<bool> > hasDefaultValue;
+        std::shared_ptr<Observable<float> > defaultValue;
     };
 
     void FloatModel::_init(const std::shared_ptr<Context>&)
     {
         FTK_P();
-        p.value = ObservableValue<float>::create(0.F);
-        p.range = ObservableValue<RangeF>::create(RangeF(0.F, 1.F));
-        p.hasDefaultValue = ObservableValue<bool>::create(false);
-        p.defaultValue = ObservableValue<float>::create(0.F);
+        p.value = Observable<float>::create(0.F);
+        p.range = Observable<RangeF>::create(RangeF(0.F, 1.F));
+        p.hasDefaultValue = Observable<bool>::create(false);
+        p.defaultValue = Observable<float>::create(0.F);
     }
 
     FloatModel::FloatModel() :
@@ -46,7 +46,7 @@ namespace ftk
         return _p->value->get();
     }
 
-    std::shared_ptr<IObservableValue<float> > FloatModel::observeValue() const
+    std::shared_ptr<IObservable<float> > FloatModel::observeValue() const
     {
         return _p->value;
     }
@@ -64,7 +64,7 @@ namespace ftk
         return _p->range->get();
     }
 
-    std::shared_ptr<IObservableValue<RangeF> > FloatModel::observeRange() const
+    std::shared_ptr<IObservable<RangeF> > FloatModel::observeRange() const
     {
         return _p->range;
     }
@@ -127,7 +127,7 @@ namespace ftk
         return _p->hasDefaultValue->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > FloatModel::observeHasDefaultValue() const
+    std::shared_ptr<IObservable<bool> > FloatModel::observeHasDefaultValue() const
     {
         return _p->hasDefaultValue;
     }
@@ -137,7 +137,7 @@ namespace ftk
         return _p->defaultValue->get();
     }
 
-    std::shared_ptr<IObservableValue<float> > FloatModel::observeDefaultValue() const
+    std::shared_ptr<IObservable<float> > FloatModel::observeDefaultValue() const
     {
         return _p->defaultValue;
     }

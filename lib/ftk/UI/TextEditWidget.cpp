@@ -44,8 +44,8 @@ namespace ftk
         SizeData size;
 
         std::shared_ptr<ListObserver<std::string> > textObserver;
-        std::shared_ptr<ValueObserver<TextEditPos> > cursorObserver;
-        std::shared_ptr<ValueObserver<TextEditSelection> > selectionObserver;
+        std::shared_ptr<Observer<TextEditPos> > cursorObserver;
+        std::shared_ptr<Observer<TextEditSelection> > selectionObserver;
     };
 
     void TextEditWidget::_init(
@@ -77,7 +77,7 @@ namespace ftk
                 setDrawUpdate();
             });
 
-        p.cursorObserver = ValueObserver<TextEditPos>::create(
+        p.cursorObserver = Observer<TextEditPos>::create(
             p.model->observeCursor(),
             [this](const TextEditPos&)
             {
@@ -85,7 +85,7 @@ namespace ftk
                 setDrawUpdate();
             });
 
-        p.selectionObserver = ValueObserver<TextEditSelection>::create(
+        p.selectionObserver = Observer<TextEditSelection>::create(
             p.model->observeSelection(),
             [this](const TextEditSelection& value)
             {

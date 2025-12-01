@@ -58,10 +58,10 @@ namespace textedit
         std::map<std::string, std::shared_ptr<ftk::Action> > _actions;
 
         std::weak_ptr<ftk::IDocument> _current;
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;
-        std::shared_ptr<ftk::ValueObserver<bool> > _changedObserver;
-        std::shared_ptr<ftk::ValueObserver<ftk::TextEditSelection> > _selectionObserver;
-        std::shared_ptr<ftk::ValueObserver<WindowSettings> > _windowSettingsObserver;
-        std::shared_ptr<ftk::ValueObserver<bool> > _fullScreenObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
+        std::shared_ptr<ftk::Observer<bool> > _changedObserver;
+        std::shared_ptr<ftk::Observer<ftk::TextEditSelection> > _selectionObserver;
+        std::shared_ptr<ftk::Observer<WindowSettings> > _windowSettingsObserver;
+        std::shared_ptr<ftk::Observer<bool> > _fullScreenObserver;
     };
 }

@@ -55,7 +55,7 @@ namespace ftk
         ///@{
 
         bool isFullScreen() const;
-        std::shared_ptr<IObservableValue<bool> > observeFullScreen() const;
+        std::shared_ptr<IObservable<bool> > observeFullScreen() const;
         virtual void setFullScreen(bool);
 
         ///@}
@@ -64,7 +64,7 @@ namespace ftk
         ///@{
 
         bool isFloatOnTop() const;
-        std::shared_ptr<IObservableValue<bool> > observeFloatOnTop() const;
+        std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
         virtual void setFloatOnTop(bool);
 
         ///@}
@@ -75,7 +75,7 @@ namespace ftk
         const Size2I& getFrameBufferSize() const;
 
         ImageType getFrameBufferType() const;
-        std::shared_ptr<IObservableValue<ImageType> > observeFrameBufferType() const;
+        std::shared_ptr<IObservable<ImageType> > observeFrameBufferType() const;
         void setFrameBufferType(ImageType);
 
         ///@}
@@ -84,7 +84,7 @@ namespace ftk
         ///@{
 
         float getDisplayScale() const;
-        std::shared_ptr<IObservableValue<float> > observeDisplayScale() const;
+        std::shared_ptr<IObservable<float> > observeDisplayScale() const;
         void setDisplayScale(float);
 
         float getContentScale() const;

@@ -22,7 +22,7 @@ namespace objview
         _tabWidget = TabWidget::create(context, shared_from_this());
         _tabWidget->setTabsClosable(true);
 
-        _currentView = ObservableValue<std::shared_ptr<ObjView> >::create();
+        _currentView = Observable<std::shared_ptr<ObjView> >::create();
 
         // Set tab callbacks.
         auto appWeak = std::weak_ptr<App>(app);
@@ -40,7 +40,7 @@ namespace objview
             });
 
         // Observe when documents are added.
-        _addObserver = ftk::ValueObserver<std::weak_ptr<IDocument> >::create(
+        _addObserver = ftk::Observer<std::weak_ptr<IDocument> >::create(
             app->getDocumentModel()->observeAdd(),
             [this, appWeak](const std::weak_ptr<IDocument>& idoc)
             {
@@ -57,7 +57,7 @@ namespace objview
             });
 
         // Observe when documents are closed.
-        _closeObserver = ftk::ValueObserver<std::weak_ptr<IDocument> >::create(
+        _closeObserver = ftk::Observer<std::weak_ptr<IDocument> >::create(
             app->getDocumentModel()->observeClose(),
             [this](const std::weak_ptr<IDocument>& idoc)
             {
@@ -74,7 +74,7 @@ namespace objview
             });
 
         // Observe when all the documents are closed.
-        _clearObserver = ftk::ValueObserver<bool>::create(
+        _clearObserver = ftk::Observer<bool>::create(
             app->getDocumentModel()->observeCloseAll(),
             [this](bool value)
             {
@@ -86,7 +86,7 @@ namespace objview
             });
 
         // Observe the current document and update the current view.
-        _currentObserver = ftk::ValueObserver<std::shared_ptr<IDocument> >::create(
+        _currentObserver = ftk::Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this](const std::shared_ptr<IDocument>& doc)
             {
@@ -95,7 +95,7 @@ namespace objview
             });
 
         // Observe the current document and update the current tab.
-        _currentIndexObserver = ftk::ValueObserver<int>::create(
+        _currentIndexObserver = ftk::Observer<int>::create(
             app->getDocumentModel()->observeCurrentIndex(),
             [this](int index)
             {
@@ -121,7 +121,7 @@ namespace objview
         return _currentView->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<std::shared_ptr<ObjView> > > DocumentTabs::observeCurrentView() const
+    std::shared_ptr<ftk::IObservable<std::shared_ptr<ObjView> > > DocumentTabs::observeCurrentView() const
     {
         return _currentView;
     }

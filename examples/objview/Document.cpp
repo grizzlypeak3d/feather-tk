@@ -15,7 +15,7 @@ namespace objview
     {
         _path = path;
         _mesh = read(path);
-        _rotation = ObservableValue<ftk::V3F>::create();
+        _rotation = Observable<ftk::V3F>::create();
     }
 
     Document::~Document()
@@ -55,7 +55,7 @@ namespace objview
         return _rotation->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<V3F> > Document::observeRotation() const
+    std::shared_ptr<ftk::IObservable<V3F> > Document::observeRotation() const
     {
         return _rotation;
     }

@@ -33,20 +33,20 @@ namespace textedit
 
         TextEditOptions textEditOptions;
         _settings->getT("/TextEdit", textEditOptions);
-        _textEditOptions = ObservableValue<TextEditOptions>::create(textEditOptions);
+        _textEditOptions = Observable<TextEditOptions>::create(textEditOptions);
 
         TextEditModelOptions textEditModelOptions;
         _settings->getT("/TextEditModel", textEditModelOptions);
-        _textEditModelOptions = ObservableValue<TextEditModelOptions>::create(textEditModelOptions);
+        _textEditModelOptions = Observable<TextEditModelOptions>::create(textEditModelOptions);
 
         WindowSettings window;
         _settings->getT("/Window", window);
-        _window = ObservableValue<WindowSettings>::create(window);
+        _window = Observable<WindowSettings>::create(window);
 
         StyleSettings style;
         style.displayScale = defaultDisplayScale;
         _settings->getT("/Style", style);
-        _style = ObservableValue<StyleSettings>::create(style);
+        _style = Observable<StyleSettings>::create(style);
     }
 
     SettingsModel::~SettingsModel()
@@ -95,7 +95,7 @@ namespace textedit
         return _textEditOptions->get();
     }
 
-    std::shared_ptr<IObservableValue<TextEditOptions> > SettingsModel::observeTextEditOptions() const
+    std::shared_ptr<IObservable<TextEditOptions> > SettingsModel::observeTextEditOptions() const
     {
         return _textEditOptions;
     }
@@ -110,7 +110,7 @@ namespace textedit
         return _textEditModelOptions->get();
     }
 
-    std::shared_ptr<IObservableValue<TextEditModelOptions> > SettingsModel::observeTextEditModelOptions() const
+    std::shared_ptr<IObservable<TextEditModelOptions> > SettingsModel::observeTextEditModelOptions() const
     {
         return _textEditModelOptions;
     }
@@ -125,7 +125,7 @@ namespace textedit
         return _window->get();
     }
 
-    std::shared_ptr<IObservableValue<WindowSettings> > SettingsModel::observeWindow() const
+    std::shared_ptr<IObservable<WindowSettings> > SettingsModel::observeWindow() const
     {
         return _window;
     }
@@ -140,7 +140,7 @@ namespace textedit
         return _style->get();
     }
 
-    std::shared_ptr<IObservableValue<StyleSettings> > SettingsModel::observeStyle() const
+    std::shared_ptr<IObservable<StyleSettings> > SettingsModel::observeStyle() const
     {
         return _style;
     }

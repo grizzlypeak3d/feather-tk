@@ -24,20 +24,20 @@ namespace textedit
         _actionsUpdate();
 
         // Observe the current document to update the state of the actions.
-        _currentObserver = ValueObserver<std::shared_ptr<IDocument> >::create(
+        _currentObserver = Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this](const std::shared_ptr<IDocument>& idoc)
             {
                 _current = idoc;
                 if (auto doc = std::dynamic_pointer_cast<Document>(idoc))
                 {
-                    _changedObserver = ValueObserver<bool>::create(
+                    _changedObserver = Observer<bool>::create(
                         doc->observeChanged(),
                         [this](bool)
                         {
                             _actionsUpdate();
                         });
-                    _selectionObserver = ValueObserver<TextEditSelection>::create(
+                    _selectionObserver = Observer<TextEditSelection>::create(
                         doc->getModel()->observeSelection(),
                         [this](const TextEditSelection&)
                         {
@@ -297,7 +297,7 @@ namespace textedit
             });
         _actions["Edit/Settings"]->setTooltip("Toggle the settings");
 
-        _windowSettingsObserver = ValueObserver<WindowSettings>::create(
+        _windowSettingsObserver = Observer<WindowSettings>::create(
             app->getSettingsModel()->observeWindow(),
             [this](const WindowSettings& value)
             {
@@ -325,7 +325,7 @@ namespace textedit
             });
         _actions["Window/FullScreen"]->setTooltip("Toggle full screen mode");
 
-        _fullScreenObserver = ValueObserver<bool>::create(
+        _fullScreenObserver = Observer<bool>::create(
             mainWindow->observeFullScreen(),
             [this](bool value)
             {

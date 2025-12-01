@@ -20,8 +20,8 @@ namespace ftk
         std::shared_ptr<IncButtons> incButtons;
         std::shared_ptr<HorizontalLayout> layout;
         std::function<void(int)> callback;
-        std::shared_ptr<ValueObserver<int> > valueObserver;
-        std::shared_ptr<ValueObserver<RangeI> > rangeObserver;
+        std::shared_ptr<Observer<int> > valueObserver;
+        std::shared_ptr<Observer<RangeI> > rangeObserver;
     };
 
     void IntEdit::_init(
@@ -70,7 +70,7 @@ namespace ftk
                 _p->model->decrementStep();
             });
 
-        p.valueObserver = ValueObserver<int>::create(
+        p.valueObserver = Observer<int>::create(
             p.model->observeValue(),
             [this](int value)
             {
@@ -81,7 +81,7 @@ namespace ftk
                 }
             });
 
-        p.rangeObserver = ValueObserver<RangeI>::create(
+        p.rangeObserver = Observer<RangeI>::create(
             p.model->observeRange(),
             [this](const RangeI& value)
             {
@@ -277,9 +277,9 @@ namespace ftk
 
         std::shared_ptr<ToolButton> resetButton;
 
-        std::shared_ptr<ValueObserver<int> > valueObserver;
-        std::shared_ptr<ValueObserver<bool> > hasDefaultObserver;
-        std::shared_ptr<ValueObserver<int> > defaultValueObserver;
+        std::shared_ptr<Observer<int> > valueObserver;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
+        std::shared_ptr<Observer<int> > defaultObserver;
     };
 
     void IntResetButton::_init(
@@ -302,21 +302,21 @@ namespace ftk
                 _p->model->setDefaultValue();
             });
 
-        p.valueObserver = ValueObserver<int>::create(
+        p.valueObserver = Observer<int>::create(
             p.model->observeValue(),
             [this](int)
             {
                 _widgetUpdate();
             });
 
-        p.hasDefaultObserver = ValueObserver<bool>::create(
+        p.hasDefaultObserver = Observer<bool>::create(
             p.model->observeHasDefaultValue(),
             [this](bool)
             {
                 _widgetUpdate();
             });
 
-        p.defaultValueObserver = ValueObserver<int>::create(
+        p.defaultObserver = Observer<int>::create(
             p.model->observeDefaultValue(),
             [this](int)
             {

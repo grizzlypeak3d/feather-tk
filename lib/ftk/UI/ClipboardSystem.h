@@ -4,7 +4,7 @@
 #pragma once
 
 #include <ftk/Core/ISystem.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {

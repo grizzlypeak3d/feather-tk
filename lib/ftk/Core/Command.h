@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -46,10 +46,10 @@ namespace ftk
         void clear();
 
         //! Observer whether the stack can undo a command.
-        std::shared_ptr<IObservableValue<bool> > observeHasUndo() const;
+        std::shared_ptr<IObservable<bool> > observeHasUndo() const;
 
         //! Observer whether the stack can redo a command.
-        std::shared_ptr<IObservableValue<bool> > observeHasRedo() const;
+        std::shared_ptr<IObservable<bool> > observeHasRedo() const;
 
         //! Undo a command.
         void undo();

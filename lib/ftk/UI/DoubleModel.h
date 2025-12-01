@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 #include <ftk/Core/Range.h>
 
 namespace ftk
@@ -37,7 +37,7 @@ namespace ftk
         double getValue() const;
 
         //! Observe the value.
-        std::shared_ptr<IObservableValue<double> > observeValue() const;
+        std::shared_ptr<IObservable<double> > observeValue() const;
 
         //! Set the value.
         void setValue(double);
@@ -51,7 +51,7 @@ namespace ftk
         const RangeD& getRange() const;
 
         //! Observe the range.
-        std::shared_ptr<IObservableValue<RangeD> > observeRange() const;
+        std::shared_ptr<IObservable<RangeD> > observeRange() const;
 
         //! Set the range.
         void setRange(const RangeD&);
@@ -94,10 +94,10 @@ namespace ftk
         bool hasDefaultValue() const;
 
         //! Observe whether there is a default value.
-        std::shared_ptr<IObservableValue<bool> > observeHasDefaultValue() const;
+        std::shared_ptr<IObservable<bool> > observeHasDefaultValue() const;
 
         //! Observe the default value.
-        std::shared_ptr<IObservableValue<double> > observeDefaultValue() const;
+        std::shared_ptr<IObservable<double> > observeDefaultValue() const;
 
         //! Get the default value.
         double getDefaultValue() const;

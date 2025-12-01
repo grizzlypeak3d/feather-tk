@@ -9,21 +9,21 @@ namespace ftk
 {
     struct IntModel::Private
     {
-        std::shared_ptr<ObservableValue<int> > value;
-        std::shared_ptr<ObservableValue<RangeI> > range;
+        std::shared_ptr<Observable<int> > value;
+        std::shared_ptr<Observable<RangeI> > range;
         int step = 1;
         int largeStep = 10;
-        std::shared_ptr<ObservableValue<bool> > hasDefaultValue;
-        std::shared_ptr<ObservableValue<int> > defaultValue;
+        std::shared_ptr<Observable<bool> > hasDefaultValue;
+        std::shared_ptr<Observable<int> > defaultValue;
     };
 
     void IntModel::_init(const std::shared_ptr<Context>&)
     {
         FTK_P();
-        p.value = ObservableValue<int>::create(0);
-        p.range = ObservableValue<RangeI>::create(RangeI(0, 100));
-        p.hasDefaultValue = ObservableValue<bool>::create(false);
-        p.defaultValue = ObservableValue<int>::create(0);
+        p.value = Observable<int>::create(0);
+        p.range = Observable<RangeI>::create(RangeI(0, 100));
+        p.hasDefaultValue = Observable<bool>::create(false);
+        p.defaultValue = Observable<int>::create(0);
     }
 
     IntModel::IntModel() :
@@ -46,7 +46,7 @@ namespace ftk
         return _p->value->get();
     }
 
-    std::shared_ptr<IObservableValue<int> > IntModel::observeValue() const
+    std::shared_ptr<IObservable<int> > IntModel::observeValue() const
     {
         return _p->value;
     }
@@ -64,7 +64,7 @@ namespace ftk
         return _p->range->get();
     }
 
-    std::shared_ptr<IObservableValue<RangeI> > IntModel::observeRange() const
+    std::shared_ptr<IObservable<RangeI> > IntModel::observeRange() const
     {
         return _p->range;
     }
@@ -127,7 +127,7 @@ namespace ftk
         return _p->hasDefaultValue->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > IntModel::observeHasDefaultValue() const
+    std::shared_ptr<IObservable<bool> > IntModel::observeHasDefaultValue() const
     {
         return _p->hasDefaultValue;
     }
@@ -137,7 +137,7 @@ namespace ftk
         return _p->defaultValue->get();
     }
 
-    std::shared_ptr<IObservableValue<int> > IntModel::observeDefaultValue() const
+    std::shared_ptr<IObservable<int> > IntModel::observeDefaultValue() const
     {
         return _p->defaultValue;
     }

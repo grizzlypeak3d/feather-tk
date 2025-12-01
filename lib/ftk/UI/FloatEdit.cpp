@@ -21,8 +21,8 @@ namespace ftk
         std::shared_ptr<IncButtons> incButtons;
         std::shared_ptr<HorizontalLayout> layout;
         std::function<void(float)> callback;
-        std::shared_ptr<ValueObserver<float> > valueObserver;
-        std::shared_ptr<ValueObserver<RangeF> > rangeObserver;
+        std::shared_ptr<Observer<float> > valueObserver;
+        std::shared_ptr<Observer<RangeF> > rangeObserver;
     };
 
     void FloatEdit::_init(
@@ -71,7 +71,7 @@ namespace ftk
                 _p->model->decrementStep();
             });
 
-        p.valueObserver = ValueObserver<float>::create(
+        p.valueObserver = Observer<float>::create(
             p.model->observeValue(),
             [this](float value)
             {
@@ -82,7 +82,7 @@ namespace ftk
                 }
             });
 
-        p.rangeObserver = ValueObserver<RangeF>::create(
+        p.rangeObserver = Observer<RangeF>::create(
             p.model->observeRange(),
             [this](const RangeF& value)
             {
@@ -292,9 +292,9 @@ namespace ftk
 
         std::shared_ptr<ToolButton> resetButton;
 
-        std::shared_ptr<ValueObserver<float> > valueObserver;
-        std::shared_ptr<ValueObserver<bool> > hasDefaultObserver;
-        std::shared_ptr<ValueObserver<float> > defaultValueObserver;
+        std::shared_ptr<Observer<float> > valueObserver;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
+        std::shared_ptr<Observer<float> > defaultObserver;
     };
 
     void FloatResetButton::_init(
@@ -317,21 +317,21 @@ namespace ftk
                 _p->model->setDefaultValue();
             });
 
-        p.valueObserver = ValueObserver<float>::create(
+        p.valueObserver = Observer<float>::create(
             p.model->observeValue(),
             [this](float)
             {
                 _widgetUpdate();
             });
 
-        p.hasDefaultObserver = ValueObserver<bool>::create(
+        p.hasDefaultObserver = Observer<bool>::create(
             p.model->observeHasDefaultValue(),
             [this](bool)
             {
                 _widgetUpdate();
             });
 
-        p.defaultValueObserver = ValueObserver<float>::create(
+        p.defaultObserver = Observer<float>::create(
             p.model->observeDefaultValue(),
             [this](float)
             {

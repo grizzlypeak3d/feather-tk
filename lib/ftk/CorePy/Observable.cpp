@@ -20,6 +20,12 @@ namespace ftk
             py::enum_<ObserverAction>(m, "ObserverAction")
                 .value("Trigger", ObserverAction::Trigger)
                 .value("Suppress", ObserverAction::Suppress);
+
+            observable<int>(m, "Int");
+            observable<float>(m, "Float");
+            observable<double>(m, "Double");
+            observable<bool>(m, "Bool");
+            observable<std::string>(m, "String");
         }
     }
 }

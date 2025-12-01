@@ -53,7 +53,7 @@ namespace widgets
             {
                 stackLayout->nextIndex();
             });
-        _hasNextObserver = ValueObserver<bool>::create(
+        _hasNextObserver = Observer<bool>::create(
             stackLayout->observeHasNextIndex(),
             [nextButton](bool value)
             {
@@ -66,7 +66,7 @@ namespace widgets
             {
                 stackLayout->prevIndex();
             });
-        _hasPrevObserver = ValueObserver<bool>::create(
+        _hasPrevObserver = Observer<bool>::create(
             stackLayout->observeHasPrevIndex(),
             [prevButton](bool value)
             {

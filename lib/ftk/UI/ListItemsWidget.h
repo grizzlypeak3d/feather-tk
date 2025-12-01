@@ -68,13 +68,13 @@ namespace ftk
         int getCurrent() const;
 
         //! Observe the current item.
-        std::shared_ptr<IObservableValue<int> > observeCurrent() const;
+        std::shared_ptr<IObservable<int> > observeCurrent() const;
 
         //! Set the current item.
         void setCurrent(int);
 
         //! Observe the item to scroll to.
-        std::shared_ptr<IObservableValue<int> > observeScrollTo() const;
+        std::shared_ptr<IObservable<int> > observeScrollTo() const;
 
         //! Get the search.
         const std::string& getSearch() const;

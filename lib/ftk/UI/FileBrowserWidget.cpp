@@ -52,11 +52,11 @@ namespace ftk
         std::function<void(const Path&)> callback;
         std::function<void(void)> cancelCallback;
 
-        std::shared_ptr<ValueObserver<int> > currentObserver;
-        std::shared_ptr<ValueObserver<std::filesystem::path> > pathObserver;
-        std::shared_ptr<ValueObserver<bool> > forwardObserver;
-        std::shared_ptr<ValueObserver<bool> > backObserver;
-        std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
+        std::shared_ptr<Observer<int> > currentObserver;
+        std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
+        std::shared_ptr<Observer<bool> > forwardObserver;
+        std::shared_ptr<Observer<bool> > backObserver;
+        std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
         std::shared_ptr<ListObserver<std::string> > extsObserver;
     };
 
@@ -314,7 +314,7 @@ namespace ftk
                 }
             });
 
-        p.currentObserver = ValueObserver<int>::create(
+        p.currentObserver = Observer<int>::create(
             p.view->observeCurrent(),
             [this](int value)
             {
@@ -325,7 +325,7 @@ namespace ftk
                 }
             });
 
-        p.pathObserver = ValueObserver<std::filesystem::path>::create(
+        p.pathObserver = Observer<std::filesystem::path>::create(
             model->observePath(),
             [this](const std::filesystem::path& value)
             {
@@ -334,21 +334,21 @@ namespace ftk
                 p.viewScrollWidget->setScrollPos(V2I());
             });
 
-        p.forwardObserver = ValueObserver<bool>::create(
+        p.forwardObserver = Observer<bool>::create(
             model->observeHasForward(),
             [this](bool value)
             {
                 _p->forwardButton->setEnabled(value);
             });
 
-        p.backObserver = ValueObserver<bool>::create(
+        p.backObserver = Observer<bool>::create(
             model->observeHasBack(),
             [this](bool value)
             {
                 _p->backButton->setEnabled(value);
             });
 
-        p.optionsObserver = ValueObserver<FileBrowserOptions>::create(
+        p.optionsObserver = Observer<FileBrowserOptions>::create(
             model->observeOptions(),
             [this](const FileBrowserOptions&)
             {

@@ -33,14 +33,14 @@ namespace ftk
         std::shared_ptr<FileBrowserModel> model;
         std::string search;
         std::vector<DirEntry> dirEntries;
-        std::shared_ptr<ObservableValue<int> > current;
+        std::shared_ptr<Observable<int> > current;
         std::vector<FileBrowserItem> items;
         std::function<void(const Path&)> callback;
         std::function<void(const Path&)> selectCallback;
 
-        std::shared_ptr<ValueObserver<std::filesystem::path> > pathObserver;
-        std::shared_ptr<ValueObserver<FileBrowserOptions> > optionsObserver;
-        std::shared_ptr<ValueObserver<std::string> > extObserver;
+        std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
+        std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
+        std::shared_ptr<Observer<std::string> > extObserver;
 
         float iconScale = 1.F;
         std::shared_ptr<Image> directoryImage;
@@ -83,23 +83,23 @@ namespace ftk
 
         p.mode = mode;
         p.model = model;
-        p.current = ObservableValue<int>::create(-1);
+        p.current = Observable<int>::create(-1);
 
-        p.pathObserver = ValueObserver<std::filesystem::path>::create(
+        p.pathObserver = Observer<std::filesystem::path>::create(
             model->observePath(),
             [this](const std::filesystem::path&)
             {
                 _directoryUpdate();
             });
 
-        p.optionsObserver = ValueObserver<FileBrowserOptions>::create(
+        p.optionsObserver = Observer<FileBrowserOptions>::create(
             model->observeOptions(),
             [this](const FileBrowserOptions&)
             {
                 _directoryUpdate();
             });
 
-        p.extObserver = ValueObserver<std::string>::create(
+        p.extObserver = Observer<std::string>::create(
             model->observeExt(),
             [this](const std::string&)
             {
@@ -149,7 +149,7 @@ namespace ftk
         _directoryUpdate();
     }
 
-    std::shared_ptr<IObservableValue<int> > FileBrowserView::observeCurrent() const
+    std::shared_ptr<IObservable<int> > FileBrowserView::observeCurrent() const
     {
         return _p->current;
     }

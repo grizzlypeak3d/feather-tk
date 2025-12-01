@@ -38,13 +38,13 @@ namespace ftk
         void nextIndex();
 
         //! Observe whether there is a next index.
-        std::shared_ptr<IObservableValue<bool> > observeHasNextIndex() const;
+        std::shared_ptr<IObservable<bool> > observeHasNextIndex() const;
 
         //! Go to the previous index.
         void prevIndex();
 
         //! Observe whether there is a previous index.
-        std::shared_ptr<IObservableValue<bool> > observeHasPrevIndex() const;
+        std::shared_ptr<IObservable<bool> > observeHasPrevIndex() const;
 
         //! Go to the first index.
         void firstIndex();

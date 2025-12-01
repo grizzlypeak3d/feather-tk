@@ -48,8 +48,8 @@ namespace textedit
         std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
         std::shared_ptr<ftk::VerticalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<ftk::TextEditOptions> > _textEditOptionsObserver;
-        std::shared_ptr<ftk::ValueObserver<ftk::TextEditModelOptions> > _textEditModelOptionsObserver;
-        std::shared_ptr<ftk::ValueObserver<StyleSettings> > _styleSettingsObserver;
+        std::shared_ptr<ftk::Observer<ftk::TextEditOptions> > _textEditOptionsObserver;
+        std::shared_ptr<ftk::Observer<ftk::TextEditModelOptions> > _textEditModelOptionsObserver;
+        std::shared_ptr<ftk::Observer<StyleSettings> > _styleSettingsObserver;
     };
 }

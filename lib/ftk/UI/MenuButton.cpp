@@ -22,14 +22,14 @@ namespace ftk
 
         std::function<void(bool)> enabledCallback;
 
-        std::shared_ptr<ValueObserver<std::string> > textObserver;
-        std::shared_ptr<ValueObserver<std::string> > iconObserver;
-        std::shared_ptr<ValueObserver<std::string> > checkedIconObserver;
-        std::shared_ptr<ValueObserver<Key> > shortcutObserver;
-        std::shared_ptr<ValueObserver<int> > shortcutModifiersObserver;
-        std::shared_ptr<ValueObserver<bool> > checkableObserver;
-        std::shared_ptr<ValueObserver<bool> > checkedObserver;
-        std::shared_ptr<ValueObserver<bool> > enabledObserver;
+        std::shared_ptr<Observer<std::string> > textObserver;
+        std::shared_ptr<Observer<std::string> > iconObserver;
+        std::shared_ptr<Observer<std::string> > checkedIconObserver;
+        std::shared_ptr<Observer<Key> > shortcutObserver;
+        std::shared_ptr<Observer<int> > shortcutModifiersObserver;
+        std::shared_ptr<Observer<bool> > checkableObserver;
+        std::shared_ptr<Observer<bool> > checkedObserver;
+        std::shared_ptr<Observer<bool> > enabledObserver;
 
         struct SizeData
         {
@@ -67,37 +67,37 @@ namespace ftk
 
         if (action)
         {
-            p.textObserver = ValueObserver<std::string>::create(
+            p.textObserver = Observer<std::string>::create(
                 action->observeText(),
                 [this](const std::string& value)
                 {
                     setText(value);
                 });
-            p.iconObserver = ValueObserver<std::string>::create(
+            p.iconObserver = Observer<std::string>::create(
                 action->observeIcon(),
                 [this](const std::string& value)
                 {
                     setIcon(!value.empty() ? value : "Empty");
                 });
-            p.checkedIconObserver = ValueObserver<std::string>::create(
+            p.checkedIconObserver = Observer<std::string>::create(
                 action->observeCheckedIcon(),
                 [this](const std::string& value)
                 {
                     setCheckedIcon(value);
                 });
-            p.shortcutObserver = ValueObserver<Key>::create(
+            p.shortcutObserver = Observer<Key>::create(
                 action->observeShortcut(),
                 [this](Key value)
                 {
                     setShortcut(value, _p->shortcutModifiers);
                 });
-            p.shortcutModifiersObserver = ValueObserver<int>::create(
+            p.shortcutModifiersObserver = Observer<int>::create(
                 action->observeShortcutModifiers(),
                 [this](int value)
                 {
                     setShortcut(_p->shortcut, value);
                 });
-            p.checkableObserver = ValueObserver<bool>::create(
+            p.checkableObserver = Observer<bool>::create(
                 action->observeCheckable(),
                 [this](bool value)
                 {
@@ -107,7 +107,7 @@ namespace ftk
                         setCheckedIcon("MenuChecked");
                     }
                 });
-            p.checkedObserver = ValueObserver<bool>::create(
+            p.checkedObserver = Observer<bool>::create(
                 action->observeChecked(),
                 [this](bool value)
                 {
@@ -117,7 +117,7 @@ namespace ftk
                         setCheckedIcon("MenuChecked");
                     }
                 });
-            p.enabledObserver = ValueObserver<bool>::create(
+            p.enabledObserver = Observer<bool>::create(
                 action->observeEnabled(),
                 [this](bool value)
                 {

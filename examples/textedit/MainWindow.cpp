@@ -60,7 +60,7 @@ namespace textedit
         setWidget(_layout);
 
         // Observe window settings.
-        _windowSettingsObserver = ValueObserver<WindowSettings>::create(
+        _windowSettingsObserver = Observer<WindowSettings>::create(
             _settingsModel->observeWindow(),
             [this](const WindowSettings& value)
             {

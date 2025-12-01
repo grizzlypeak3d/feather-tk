@@ -40,13 +40,13 @@ namespace textedit
         std::shared_ptr<ftk::TabWidget> _tabWidget;
         std::map<std::shared_ptr<ftk::IDocument>, std::shared_ptr<ftk::TextEdit> > _textEdits;
 
-        std::shared_ptr<ftk::ValueObserver<std::weak_ptr<ftk::IDocument> > > _addObserver;
-        std::shared_ptr<ftk::ValueObserver<std::weak_ptr<ftk::IDocument> > > _closeObserver;
-        std::shared_ptr<ftk::ValueObserver<bool> > _clearObserver;
-        std::shared_ptr<ftk::ValueObserver<int> > _currentObserver;
-        std::map<std::shared_ptr<ftk::IDocument>, std::shared_ptr<ftk::ValueObserver<std::string> > > _nameObservers;
-        std::map<std::shared_ptr<ftk::IDocument>, std::shared_ptr<ftk::ValueObserver<std::string> > > _tooltipObservers;
-        std::shared_ptr<ftk::ValueObserver<ftk::TextEditOptions> > _textEditOptionsObserver;
-        std::shared_ptr<ftk::ValueObserver<ftk::TextEditModelOptions> > _textEditModelOptionsObserver;
+        std::shared_ptr<ftk::Observer<std::weak_ptr<ftk::IDocument> > > _addObserver;
+        std::shared_ptr<ftk::Observer<std::weak_ptr<ftk::IDocument> > > _closeObserver;
+        std::shared_ptr<ftk::Observer<bool> > _clearObserver;
+        std::shared_ptr<ftk::Observer<int> > _currentObserver;
+        std::map<std::shared_ptr<ftk::IDocument>, std::shared_ptr<ftk::Observer<std::string> > > _nameObservers;
+        std::map<std::shared_ptr<ftk::IDocument>, std::shared_ptr<ftk::Observer<std::string> > > _tooltipObservers;
+        std::shared_ptr<ftk::Observer<ftk::TextEditOptions> > _textEditOptionsObserver;
+        std::shared_ptr<ftk::Observer<ftk::TextEditModelOptions> > _textEditModelOptionsObserver;
     };
 }

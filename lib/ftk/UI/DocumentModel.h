@@ -4,7 +4,7 @@
 #pragma once
 
 #include <ftk/Core/ObservableList.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -44,7 +44,7 @@ namespace ftk
         ///@{
 
         void add(const std::shared_ptr<IDocument>&);
-        std::shared_ptr<ftk::IObservableValue<std::weak_ptr<IDocument> > > observeAdd() const;
+        std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeAdd() const;
 
         ///@}
 
@@ -53,8 +53,8 @@ namespace ftk
 
         void close(int);
         void closeAll();
-        std::shared_ptr<ftk::IObservableValue<std::weak_ptr<IDocument> > > observeClose() const;
-        std::shared_ptr<ftk::IObservableValue<bool> > observeCloseAll() const;
+        std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeClose() const;
+        std::shared_ptr<ftk::IObservable<bool> > observeCloseAll() const;
 
         ///@}
 
@@ -63,18 +63,18 @@ namespace ftk
 
         std::shared_ptr<IDocument> getCurrent() const;
         int getCurrentIndex() const;
-        std::shared_ptr<ftk::IObservableValue<std::shared_ptr<IDocument> > > observeCurrent() const;
-        std::shared_ptr<ftk::IObservableValue<int> > observeCurrentIndex() const;
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<IDocument> > > observeCurrent() const;
+        std::shared_ptr<ftk::IObservable<int> > observeCurrentIndex() const;
         void setCurrentIndex(int);
 
         ///@}
 
     private:
         std::shared_ptr<ftk::ObservableList<std::shared_ptr<IDocument> > > _documents;
-        std::shared_ptr<ftk::ObservableValue<std::weak_ptr<IDocument> > > _add;
-        std::shared_ptr<ftk::ObservableValue<std::weak_ptr<IDocument> > > _close;
-        std::shared_ptr<ftk::ObservableValue<bool> > _closeAll;
-        std::shared_ptr<ftk::ObservableValue<std::shared_ptr<IDocument> > > _current;
-        std::shared_ptr<ftk::ObservableValue<int> > _currentIndex;
+        std::shared_ptr<ftk::Observable<std::weak_ptr<IDocument> > > _add;
+        std::shared_ptr<ftk::Observable<std::weak_ptr<IDocument> > > _close;
+        std::shared_ptr<ftk::Observable<bool> > _closeAll;
+        std::shared_ptr<ftk::Observable<std::shared_ptr<IDocument> > > _current;
+        std::shared_ptr<ftk::Observable<int> > _currentIndex;
     };
 }

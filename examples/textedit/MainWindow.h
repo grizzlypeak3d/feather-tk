@@ -60,6 +60,6 @@ namespace textedit
         std::shared_ptr<ftk::Splitter> _splitter;
         std::shared_ptr<ftk::VerticalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<WindowSettings> > _windowSettingsObserver;
+        std::shared_ptr<ftk::Observer<WindowSettings> > _windowSettingsObserver;
     };
 }

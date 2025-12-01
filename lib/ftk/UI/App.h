@@ -9,7 +9,7 @@
 #include <ftk/Core/IApp.h>
 #include <ftk/Core/ObservableList.h>
 #include <ftk/Core/ObservableMap.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 #include <list>
 
@@ -115,7 +115,7 @@ namespace ftk
         ColorStyle getColorStyle() const;
 
         //! Observe the color style.
-        std::shared_ptr<IObservableValue<ColorStyle> > observeColorStyle() const;
+        std::shared_ptr<IObservable<ColorStyle> > observeColorStyle() const;
 
         //! Set the color style.
         void setColorStyle(ColorStyle);
@@ -139,7 +139,7 @@ namespace ftk
         float getDisplayScale() const;
 
         //! Observe the display scale.
-        std::shared_ptr<IObservableValue<float> > observeDisplayScale() const;
+        std::shared_ptr<IObservable<float> > observeDisplayScale() const;
 
         //! Set the display scale.
         void setDisplayScale(float);
@@ -151,7 +151,7 @@ namespace ftk
         bool areTooltipsEnabled() const;
 
         //! Observe whether tooltips are enabled.
-        std::shared_ptr<IObservableValue<bool> > observeTooltipsEnabled() const;
+        std::shared_ptr<IObservable<bool> > observeTooltipsEnabled() const;
 
         //! Set whether tooltips are enabled.
         void setTooltipsEnabled(bool);

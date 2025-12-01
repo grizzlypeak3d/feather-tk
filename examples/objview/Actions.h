@@ -63,9 +63,9 @@ namespace objview
         std::map<std::string, std::shared_ptr<ftk::Action> > _actions;
         std::map<RenderMode, std::shared_ptr<ftk::Action> > _renderModeActions;
 
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;
-        std::shared_ptr<ftk::ValueObserver<WindowSettings> > _windowSettingsObserver;
-        std::shared_ptr<ftk::ValueObserver<bool> > _fullScreenObserver;
-        std::shared_ptr<ftk::ValueObserver<RenderSettings> > _renderSettingsObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
+        std::shared_ptr<ftk::Observer<WindowSettings> > _windowSettingsObserver;
+        std::shared_ptr<ftk::Observer<bool> > _fullScreenObserver;
+        std::shared_ptr<ftk::Observer<RenderSettings> > _renderSettingsObserver;
     };
 }

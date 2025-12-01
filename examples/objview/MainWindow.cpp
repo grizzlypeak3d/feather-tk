@@ -31,7 +31,7 @@ namespace objview
         _settingsModel = app->getSettingsModel();
 
         // Create observables.
-        _currentView = ObservableValue<std::shared_ptr<ObjView> >::create();
+        _currentView = Observable<std::shared_ptr<ObjView> >::create();
 
         // Create the actions.
         _actions = Actions::create(
@@ -59,7 +59,7 @@ namespace objview
         setWidget(_layout);
 
         // Observe the current view.
-        _currentViewObserver = ValueObserver<std::shared_ptr<ObjView>>::create(
+        _currentViewObserver = Observer<std::shared_ptr<ObjView>>::create(
             _tabs->observeCurrentView(),
             [this](const std::shared_ptr<ObjView>& value)
             {
@@ -67,7 +67,7 @@ namespace objview
             });
 
         // Observe window settings.
-        _windowSettingsObserver = ValueObserver<WindowSettings>::create(
+        _windowSettingsObserver = Observer<WindowSettings>::create(
             _settingsModel->observeWindow(),
             [this](const WindowSettings& value)
             {
@@ -98,7 +98,7 @@ namespace objview
         return _currentView->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<std::shared_ptr<ObjView> > > MainWindow::observeCurrentView() const
+    std::shared_ptr<ftk::IObservable<std::shared_ptr<ObjView> > > MainWindow::observeCurrentView() const
     {
         return _currentView;
     }

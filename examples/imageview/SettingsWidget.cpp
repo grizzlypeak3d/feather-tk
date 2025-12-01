@@ -98,7 +98,7 @@ namespace imageview
             });
 
         // Observe style settings and update the widgets.
-        _styleSettingsObserver = ValueObserver<StyleSettings>::create(
+        _styleSettingsObserver = Observer<StyleSettings>::create(
             app->getSettingsModel()->observeStyle(),
             [this](const StyleSettings& value)
             {

@@ -4,7 +4,7 @@
 #include <ftk/UIPy/RecentFilesModel.h>
 
 #include <ftk/CorePy/ObservableList.h>
-#include <ftk/CorePy/ObservableValue.h>
+#include <ftk/CorePy/Observable.h>
 
 #include <ftk/UI/RecentFilesModel.h>
 
@@ -23,7 +23,7 @@ namespace ftk
     {
         void recentFilesModel(py::module_& m)
         {
-            observableValue<std::filesystem::path>(m, "Path");
+            observable<std::filesystem::path>(m, "Path");
             observableList<std::filesystem::path>(m, "Path");
 
             py::class_<RecentFilesModel, std::shared_ptr<RecentFilesModel> >(m, "RecentFilesModel")

@@ -69,7 +69,7 @@ namespace ftk
         const TextEditOptions& getOptions() const;
 
         //! Observe the options.
-        std::shared_ptr<IObservableValue<TextEditOptions> > observeOptions() const;
+        std::shared_ptr<IObservable<TextEditOptions> > observeOptions() const;
 
         //! Set the options.
         void setOptions(const TextEditOptions&);

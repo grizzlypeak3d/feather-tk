@@ -6,7 +6,7 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/ObservableList.h>
 #include <ftk/Core/ObservableMap.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -34,15 +34,15 @@ namespace ftk
         
         void ObservableTest::_value()
         {
-            auto ovalue = ObservableValue<bool>::create();
-            ovalue = ObservableValue<bool>::create(false);
+            auto ovalue = Observable<bool>::create();
+            ovalue = Observable<bool>::create(false);
             FTK_ASSERT(!ovalue->get());                
             {
-                auto observer = ValueObserver<bool>::create(ovalue, [](bool) {});
+                auto observer = Observer<bool>::create(ovalue, [](bool) {});
                 FTK_ASSERT(ovalue->getObserversCount());                    
                 {
                     bool value = false;
-                    auto observer1 = ValueObserver<bool>::create(
+                    auto observer1 = Observer<bool>::create(
                         ovalue,
                         [&value](bool v)
                         {

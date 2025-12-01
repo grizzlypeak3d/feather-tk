@@ -26,7 +26,7 @@ namespace objview
         _createRenderActions(context, app, mainWindow);
 
         // Observe the current document to update the state of the actions.
-        _currentObserver = ValueObserver<std::shared_ptr<IDocument> >::create(
+        _currentObserver = Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this](const std::shared_ptr<IDocument>& doc)
             {
@@ -152,7 +152,7 @@ namespace objview
             });
         _actions["Edit/Settings"]->setTooltip("Toggle the settings");
 
-        _windowSettingsObserver = ValueObserver<WindowSettings>::create(
+        _windowSettingsObserver = Observer<WindowSettings>::create(
             app->getSettingsModel()->observeWindow(),
             [this](const WindowSettings& value)
             {
@@ -180,7 +180,7 @@ namespace objview
             });
         _actions["Window/FullScreen"]->setTooltip("Toggle full screen mode");
 
-        _fullScreenObserver = ValueObserver<bool>::create(
+        _fullScreenObserver = Observer<bool>::create(
             mainWindow->observeFullScreen(),
             [this](bool value)
             {
@@ -374,7 +374,7 @@ namespace objview
             });
         _actions["Render/Cull"]->setTooltip("Cull back-facing triangles");
 
-        _renderSettingsObserver = ValueObserver<RenderSettings>::create(
+        _renderSettingsObserver = Observer<RenderSettings>::create(
             app->getSettingsModel()->observeRender(),
             [this](const RenderSettings& value)
             {

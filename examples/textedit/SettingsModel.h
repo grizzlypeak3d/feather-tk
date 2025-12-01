@@ -41,11 +41,11 @@ namespace textedit
         ///@{
 
         const ftk::TextEditOptions& getTextEditOptions() const;
-        std::shared_ptr<ftk::IObservableValue<ftk::TextEditOptions> > observeTextEditOptions() const;
+        std::shared_ptr<ftk::IObservable<ftk::TextEditOptions> > observeTextEditOptions() const;
         void setTextEditOptions(const ftk::TextEditOptions&);
 
         const ftk::TextEditModelOptions& getTextEditModelOptions() const;
-        std::shared_ptr<ftk::IObservableValue<ftk::TextEditModelOptions> > observeTextEditModelOptions() const;
+        std::shared_ptr<ftk::IObservable<ftk::TextEditModelOptions> > observeTextEditModelOptions() const;
         void setTextEditModelOptions(const ftk::TextEditModelOptions&);
 
         ///@}
@@ -54,7 +54,7 @@ namespace textedit
         ///@{
 
         const WindowSettings& getWindow() const;
-        std::shared_ptr<ftk::IObservableValue<WindowSettings> > observeWindow() const;
+        std::shared_ptr<ftk::IObservable<WindowSettings> > observeWindow() const;
         void setWindow(const WindowSettings&);
 
         ///@}
@@ -63,7 +63,7 @@ namespace textedit
         ///@{
 
         const StyleSettings& getStyle() const;
-        std::shared_ptr<ftk::IObservableValue<StyleSettings> > observeStyle() const;
+        std::shared_ptr<ftk::IObservable<StyleSettings> > observeStyle() const;
         void setStyle(const StyleSettings&);
 
         ///@}
@@ -72,9 +72,9 @@ namespace textedit
         std::shared_ptr<ftk::Settings> _settings;
         std::vector<std::filesystem::path> _recentFiles;
         std::shared_ptr<ftk::FileBrowserSystem> _fileBrowserSystem;
-        std::shared_ptr<ftk::ObservableValue<ftk::TextEditOptions> > _textEditOptions;
-        std::shared_ptr<ftk::ObservableValue<ftk::TextEditModelOptions> > _textEditModelOptions;
-        std::shared_ptr<ftk::ObservableValue<WindowSettings> > _window;
-        std::shared_ptr<ftk::ObservableValue<StyleSettings> > _style;
+        std::shared_ptr<ftk::Observable<ftk::TextEditOptions> > _textEditOptions;
+        std::shared_ptr<ftk::Observable<ftk::TextEditModelOptions> > _textEditModelOptions;
+        std::shared_ptr<ftk::Observable<WindowSettings> > _window;
+        std::shared_ptr<ftk::Observable<StyleSettings> > _style;
     };
 }

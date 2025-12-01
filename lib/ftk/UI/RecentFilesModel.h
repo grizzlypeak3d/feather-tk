@@ -4,7 +4,7 @@
 #pragma once
 
 #include <ftk/Core/ObservableList.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 #include <filesystem>
 
@@ -36,7 +36,7 @@ namespace ftk
         size_t getRecentMax() const;
 
         //! Observe the maximum number of recent files.
-        std::shared_ptr<IObservableValue<size_t> > observeRecentMax() const;
+        std::shared_ptr<IObservable<size_t> > observeRecentMax() const;
 
         //! Set the maximum number of recent files.
         void setRecentMax(size_t);

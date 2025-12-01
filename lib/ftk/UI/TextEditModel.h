@@ -6,7 +6,7 @@
 #include <ftk/UI/Event.h>
 
 #include <ftk/Core/ObservableList.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -100,7 +100,7 @@ namespace ftk
         ///@{
 
         const TextEditPos& getCursor() const;
-        std::shared_ptr<IObservableValue<TextEditPos> > observeCursor() const;
+        std::shared_ptr<IObservable<TextEditPos> > observeCursor() const;
 
         //! Set the cursor. Setting the cursor clears the selection.
         void setCursor(const TextEditPos&);
@@ -111,7 +111,7 @@ namespace ftk
         ///@{
 
         const TextEditSelection& getSelection() const;
-        std::shared_ptr<IObservableValue<TextEditSelection> > observeSelection() const;
+        std::shared_ptr<IObservable<TextEditSelection> > observeSelection() const;
         void setSelection(const TextEditSelection&);
         void selectAll();
         void clearSelection();
@@ -150,7 +150,7 @@ namespace ftk
         ///@{
 
         const TextEditModelOptions& getOptions() const;
-        std::shared_ptr<IObservableValue<TextEditModelOptions> > observeOptions() const;
+        std::shared_ptr<IObservable<TextEditModelOptions> > observeOptions() const;
         void setOptions(const TextEditModelOptions&);
 
         ///@}

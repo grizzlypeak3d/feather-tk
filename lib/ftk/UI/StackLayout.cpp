@@ -11,8 +11,8 @@ namespace ftk
     {
         int currentIndex = 0;
         SizeRole marginRole = SizeRole::None;
-        std::shared_ptr<ObservableValue<bool> > hasNextIndex;
-        std::shared_ptr<ObservableValue<bool> > hasPrevIndex;
+        std::shared_ptr<Observable<bool> > hasNextIndex;
+        std::shared_ptr<Observable<bool> > hasPrevIndex;
 
         struct SizeData
         {
@@ -28,8 +28,8 @@ namespace ftk
     {
         IWidget::_init(context, "ftk::StackLayout", parent);
         FTK_P();
-        p.hasNextIndex = ObservableValue<bool>::create(false);
-        p.hasPrevIndex = ObservableValue<bool>::create(false);
+        p.hasNextIndex = Observable<bool>::create(false);
+        p.hasPrevIndex = Observable<bool>::create(false);
     }
 
     StackLayout::StackLayout() :
@@ -68,7 +68,7 @@ namespace ftk
         setCurrentIndex(_p->currentIndex + 1);
     }
 
-    std::shared_ptr<IObservableValue<bool> > StackLayout::observeHasNextIndex() const
+    std::shared_ptr<IObservable<bool> > StackLayout::observeHasNextIndex() const
     {
         return _p->hasNextIndex;
     }
@@ -78,7 +78,7 @@ namespace ftk
         setCurrentIndex(_p->currentIndex - 1);
     }
 
-    std::shared_ptr<IObservableValue<bool> > StackLayout::observeHasPrevIndex() const
+    std::shared_ptr<IObservable<bool> > StackLayout::observeHasPrevIndex() const
     {
         return _p->hasPrevIndex;
     }

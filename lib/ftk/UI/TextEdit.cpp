@@ -23,13 +23,13 @@ namespace ftk
 
     struct TextEdit::Private
     {
-        std::shared_ptr<ObservableValue<TextEditOptions> > options;
+        std::shared_ptr<Observable<TextEditOptions> > options;
         std::shared_ptr<TextEditModel> model;
         std::shared_ptr<TextEditWidget> widget;
         std::shared_ptr<ScrollWidget> scrollWidget;
         SizeRole marginRole = SizeRole::None;
 
-        std::shared_ptr<ValueObserver<TextEditPos> > cursorObserver;
+        std::shared_ptr<Observer<TextEditPos> > cursorObserver;
 
         struct SizeData
         {
@@ -58,7 +58,7 @@ namespace ftk
 
         setAcceptsKeyFocus(true);
 
-        p.options = ObservableValue<TextEditOptions>::create();
+        p.options = Observable<TextEditOptions>::create();
 
         p.model = model;
         if (!p.model)
@@ -79,7 +79,7 @@ namespace ftk
                 setDrawUpdate();
             });
 
-        p.cursorObserver = ValueObserver<TextEditPos>::create(
+        p.cursorObserver = Observer<TextEditPos>::create(
             p.model->observeCursor(),
             [this](const TextEditPos&)
             {
@@ -144,7 +144,7 @@ namespace ftk
         return _p->options->get();
     }
 
-    std::shared_ptr<IObservableValue<TextEditOptions> > TextEdit::observeOptions() const
+    std::shared_ptr<IObservable<TextEditOptions> > TextEdit::observeOptions() const
     {
         return _p->options;
     }

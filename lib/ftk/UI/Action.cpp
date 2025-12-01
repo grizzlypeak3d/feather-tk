@@ -7,17 +7,17 @@ namespace ftk
 {
     struct Action::Private
     {
-        std::shared_ptr<ObservableValue<std::string> > text;
-        std::shared_ptr<ObservableValue<std::string> > icon;
-        std::shared_ptr<ObservableValue<std::string> > checkedIcon;
-        std::shared_ptr<ObservableValue<Key> > shortcut;
-        std::shared_ptr<ObservableValue<int> > shortcutModifiers;
+        std::shared_ptr<Observable<std::string> > text;
+        std::shared_ptr<Observable<std::string> > icon;
+        std::shared_ptr<Observable<std::string> > checkedIcon;
+        std::shared_ptr<Observable<Key> > shortcut;
+        std::shared_ptr<Observable<int> > shortcutModifiers;
         std::function<void(void)> callback;
-        std::shared_ptr<ObservableValue<bool> > checkable;
-        std::shared_ptr<ObservableValue<bool> > checked;
+        std::shared_ptr<Observable<bool> > checkable;
+        std::shared_ptr<Observable<bool> > checked;
         std::function<void(bool)> checkedCallback;
-        std::shared_ptr<ObservableValue<bool> > enabled;
-        std::shared_ptr<ObservableValue<std::string> > tooltip;
+        std::shared_ptr<Observable<bool> > enabled;
+        std::shared_ptr<Observable<std::string> > tooltip;
     };
 
     void Action::_init(
@@ -30,17 +30,17 @@ namespace ftk
     {
         FTK_P();
 
-        p.text = ObservableValue<std::string>::create(text);
-        p.icon = ObservableValue<std::string>::create(icon);
-        p.checkedIcon = ObservableValue<std::string>::create();
-        p.shortcut = ObservableValue<Key>::create(shortcut);
-        p.shortcutModifiers = ObservableValue<int>::create(shortcutModifiers);
+        p.text = Observable<std::string>::create(text);
+        p.icon = Observable<std::string>::create(icon);
+        p.checkedIcon = Observable<std::string>::create();
+        p.shortcut = Observable<Key>::create(shortcut);
+        p.shortcutModifiers = Observable<int>::create(shortcutModifiers);
         p.callback = callback;
-        p.checkable = ObservableValue<bool>::create(bool(checkedCallback));
-        p.checked = ObservableValue<bool>::create(false);
+        p.checkable = Observable<bool>::create(bool(checkedCallback));
+        p.checked = Observable<bool>::create(false);
         p.checkedCallback = checkedCallback;
-        p.enabled = ObservableValue<bool>::create(true);
-        p.tooltip = ObservableValue<std::string>::create();
+        p.enabled = Observable<bool>::create(true);
+        p.tooltip = Observable<std::string>::create();
     }
 
     Action::Action() :
@@ -187,7 +187,7 @@ namespace ftk
         return _p->text->get();
     }
 
-    std::shared_ptr<IObservableValue<std::string> > Action::observeText() const
+    std::shared_ptr<IObservable<std::string> > Action::observeText() const
     {
         return _p->text;
     }
@@ -207,12 +207,12 @@ namespace ftk
         return _p->checkedIcon->get();
     }
 
-    std::shared_ptr<IObservableValue<std::string> > Action::observeIcon() const
+    std::shared_ptr<IObservable<std::string> > Action::observeIcon() const
     {
         return _p->icon;
     }
 
-    std::shared_ptr<IObservableValue<std::string> > Action::observeCheckedIcon() const
+    std::shared_ptr<IObservable<std::string> > Action::observeCheckedIcon() const
     {
         return _p->checkedIcon;
     }
@@ -237,12 +237,12 @@ namespace ftk
         return _p->shortcutModifiers->get();
     }
 
-    std::shared_ptr<IObservableValue<Key> > Action::observeShortcut() const
+    std::shared_ptr<IObservable<Key> > Action::observeShortcut() const
     {
         return _p->shortcut;
     }
 
-    std::shared_ptr<IObservableValue<int> > Action::observeShortcutModifiers() const
+    std::shared_ptr<IObservable<int> > Action::observeShortcutModifiers() const
     {
         return _p->shortcutModifiers;
     }
@@ -275,12 +275,12 @@ namespace ftk
         return _p->checked->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > Action::observeCheckable() const
+    std::shared_ptr<IObservable<bool> > Action::observeCheckable() const
     {
         return _p->checkable;
     }
 
-    std::shared_ptr<IObservableValue<bool> > Action::observeChecked() const
+    std::shared_ptr<IObservable<bool> > Action::observeChecked() const
     {
         return _p->checked;
     }
@@ -310,7 +310,7 @@ namespace ftk
         return _p->enabled->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > Action::observeEnabled() const
+    std::shared_ptr<IObservable<bool> > Action::observeEnabled() const
     {
         return _p->enabled;
     }
@@ -326,7 +326,7 @@ namespace ftk
         return _p->tooltip->get();
     }
 
-    std::shared_ptr<IObservableValue<std::string> > Action::observeTooltip() const
+    std::shared_ptr<IObservable<std::string> > Action::observeTooltip() const
     {
         return _p->tooltip;
     }

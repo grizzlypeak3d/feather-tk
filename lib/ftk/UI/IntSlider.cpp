@@ -13,8 +13,8 @@ namespace ftk
     {
         std::shared_ptr<IntModel> model;
         std::function<void(int)> callback;
-        std::shared_ptr<ValueObserver<int> > valueObserver;
-        std::shared_ptr<ValueObserver<RangeI> > rangeObserver;
+        std::shared_ptr<Observer<int> > valueObserver;
+        std::shared_ptr<Observer<RangeI> > rangeObserver;
 
         struct SizeData
         {
@@ -53,7 +53,7 @@ namespace ftk
 
         p.model = model;
 
-        p.valueObserver = ValueObserver<int>::create(
+        p.valueObserver = Observer<int>::create(
             p.model->observeValue(),
             [this](int value)
             {
@@ -65,7 +65,7 @@ namespace ftk
                 }
             });
 
-        p.rangeObserver = ValueObserver<RangeI>::create(
+        p.rangeObserver = Observer<RangeI>::create(
             p.model->observeRange(),
             [this](const RangeI&)
             {

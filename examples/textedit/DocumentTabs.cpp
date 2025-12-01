@@ -37,7 +37,7 @@ namespace textedit
             });
 
         // Observe when documents are added.
-        _addObserver = ftk::ValueObserver<std::weak_ptr<IDocument> >::create(
+        _addObserver = ftk::Observer<std::weak_ptr<IDocument> >::create(
             app->getDocumentModel()->observeAdd(),
             [this, appWeak](const std::weak_ptr<IDocument>& idoc)
             {
@@ -55,13 +55,13 @@ namespace textedit
                     textEdit->takeKeyFocus();
 
                     // Observe the document to update the tab text and tooltip.
-                    _nameObservers[doc] = ValueObserver<std::string>::create(
+                    _nameObservers[doc] = Observer<std::string>::create(
                         doc->observeName(),
                         [this, textEdit](const std::string& value)
                         {
                             _tabWidget->setTabText(textEdit, value);
                         });
-                    _tooltipObservers[doc] = ValueObserver<std::string>::create(
+                    _tooltipObservers[doc] = Observer<std::string>::create(
                         doc->observeTooltip(),
                         [this, textEdit](const std::string& value)
                         {
@@ -71,7 +71,7 @@ namespace textedit
             });
 
         // Observe when documents are closed.
-        _closeObserver = ftk::ValueObserver<std::weak_ptr<IDocument> >::create(
+        _closeObserver = ftk::Observer<std::weak_ptr<IDocument> >::create(
             app->getDocumentModel()->observeClose(),
             [this](const std::weak_ptr<IDocument>& idoc)
             {
@@ -100,7 +100,7 @@ namespace textedit
             });
 
         // Observe when all the documents are closed.
-        _clearObserver = ftk::ValueObserver<bool>::create(
+        _clearObserver = ftk::Observer<bool>::create(
             app->getDocumentModel()->observeCloseAll(),
             [this](bool value)
             {
@@ -114,7 +114,7 @@ namespace textedit
             });
 
         // Observe the current document and update the current tab.
-        _currentObserver = ftk::ValueObserver<int>::create(
+        _currentObserver = ftk::Observer<int>::create(
             app->getDocumentModel()->observeCurrentIndex(),
             [this, appWeak](int index)
             {
@@ -122,7 +122,7 @@ namespace textedit
             });
 
         // Observe text editor options.
-        _textEditOptionsObserver = ValueObserver<TextEditOptions>::create(
+        _textEditOptionsObserver = Observer<TextEditOptions>::create(
             app->getSettingsModel()->observeTextEditOptions(),
             [this](const TextEditOptions& value)
             {
@@ -131,7 +131,7 @@ namespace textedit
                     i.second->setOptions(value);
                 }
             });
-        _textEditModelOptionsObserver = ValueObserver<TextEditModelOptions>::create(
+        _textEditModelOptionsObserver = Observer<TextEditModelOptions>::create(
             app->getSettingsModel()->observeTextEditModelOptions(),
             [this](const TextEditModelOptions& value)
             {

@@ -63,7 +63,7 @@ namespace ftk
         const std::filesystem::path& getPath() const;
 
         //! Observe the current path.
-        std::shared_ptr<IObservableValue<std::filesystem::path> > observePath() const;
+        std::shared_ptr<IObservable<std::filesystem::path> > observePath() const;
 
         //! Set the current path.
         void setPath(const std::filesystem::path&);
@@ -72,19 +72,19 @@ namespace ftk
         void forward();
 
         //! Observe whether there is a next path.
-        std::shared_ptr<IObservableValue<bool> > observeHasForward() const;
+        std::shared_ptr<IObservable<bool> > observeHasForward() const;
 
         //! Go back to the previous path.
         void back();
 
         //! Observe whether there is a previous path.
-        std::shared_ptr<IObservableValue<bool> > observeHasBack() const;
+        std::shared_ptr<IObservable<bool> > observeHasBack() const;
 
         //! Get the options.
         const FileBrowserOptions& getOptions() const;
 
         //! Observe the options.
-        std::shared_ptr<IObservableValue<FileBrowserOptions> > observeOptions() const;
+        std::shared_ptr<IObservable<FileBrowserOptions> > observeOptions() const;
 
         //! Set the options.
         void setOptions(const FileBrowserOptions&);
@@ -102,7 +102,7 @@ namespace ftk
         const std::string& getExt() const;
 
         //! Observe the current extension.
-        std::shared_ptr<IObservableValue<std::string> > observeExt() const;
+        std::shared_ptr<IObservable<std::string> > observeExt() const;
 
         //! Set the current extension.
         void setExt(const std::string&);

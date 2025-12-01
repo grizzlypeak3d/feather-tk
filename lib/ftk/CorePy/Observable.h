@@ -9,6 +9,10 @@ namespace ftk
 {
     namespace python
     {
+        template<typename T>
+        void observable(pybind11::module_&, const std::string& type);
         void observable(pybind11::module_&);
     }
 }
+
+#include <ftk/CorePy/ObservableInline.h>

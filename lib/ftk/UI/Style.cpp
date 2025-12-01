@@ -188,7 +188,7 @@ namespace ftk
         ColorControls colorControls;
         M44F colorMatrix;
         std::map<FontRole, FontInfo> fontRoles;
-        std::shared_ptr<ObservableValue<bool> > changed;
+        std::shared_ptr<Observable<bool> > changed;
     };
 
     void Style::_init(
@@ -200,7 +200,7 @@ namespace ftk
         p.sizeRoles = getDefaultSizeRoles();
         p.colorRoles = getDefaultColorRoles();
         p.fontRoles = getDefaultFontRoles();
-        p.changed = ObservableValue<bool>::create();
+        p.changed = Observable<bool>::create();
 
         _colorUpdate();
     }
@@ -322,7 +322,7 @@ namespace ftk
         p.changed->setAlways(true);
     }
 
-    std::shared_ptr<IObservableValue<bool> > Style::observeChanged() const
+    std::shared_ptr<IObservable<bool> > Style::observeChanged() const
     {
         return _p->changed;
     }

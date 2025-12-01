@@ -45,7 +45,7 @@ namespace imageview
         ///@{
 
         const std::shared_ptr<ImageView>& getCurrentView() const;
-        std::shared_ptr<ftk::IObservableValue<std::shared_ptr<ImageView> > > observeCurrentView() const;
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<ImageView> > > observeCurrentView() const;
 
         ///@}
 
@@ -56,7 +56,7 @@ namespace imageview
 
         std::weak_ptr<App> _app;
         std::shared_ptr<SettingsModel> _settingsModel;
-        std::shared_ptr<ftk::ObservableValue<std::shared_ptr<ImageView> > > _currentView;
+        std::shared_ptr<ftk::Observable<std::shared_ptr<ImageView> > > _currentView;
 
         std::shared_ptr<Actions> _actions;
         std::shared_ptr<MenuBar> _menuBar;
@@ -67,7 +67,7 @@ namespace imageview
         std::shared_ptr<ftk::Splitter> _splitter;
         std::shared_ptr<ftk::VerticalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ImageView> > > _currentViewObserver;
-        std::shared_ptr<ftk::ValueObserver<WindowSettings> > _windowSettingsObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ImageView> > > _currentViewObserver;
+        std::shared_ptr<ftk::Observer<WindowSettings> > _windowSettingsObserver;
     };
 }

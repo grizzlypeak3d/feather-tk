@@ -11,7 +11,7 @@ namespace ftk
 {
     struct RecentFilesModel::Private
     {
-        std::shared_ptr<ObservableValue<size_t> > recentMax;
+        std::shared_ptr<Observable<size_t> > recentMax;
         std::shared_ptr<ObservableList<std::filesystem::path> > recent;
     };
 
@@ -19,7 +19,7 @@ namespace ftk
     {
         FTK_P();
 
-        p.recentMax = ObservableValue<size_t>::create(10);
+        p.recentMax = Observable<size_t>::create(10);
         p.recent = ObservableList<std::filesystem::path>::create();
     }
 
@@ -43,7 +43,7 @@ namespace ftk
         return _p->recentMax->get();
     }
 
-    std::shared_ptr<IObservableValue<size_t> > RecentFilesModel::observeRecentMax() const
+    std::shared_ptr<IObservable<size_t> > RecentFilesModel::observeRecentMax() const
     {
         return _p->recentMax;
     }

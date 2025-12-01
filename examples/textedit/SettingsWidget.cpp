@@ -149,7 +149,7 @@ namespace textedit
             });
 
         // Observe text edit options and update the widgets.
-        _textEditOptionsObserver = ValueObserver<TextEditOptions>::create(
+        _textEditOptionsObserver = Observer<TextEditOptions>::create(
             app->getSettingsModel()->observeTextEditOptions(),
             [this](const TextEditOptions& value)
             {
@@ -165,7 +165,7 @@ namespace textedit
                 _fontComboBox->setCurrentIndex(index);
                 _fontSizeEdit->setValue(value.fontInfo.size);
             });
-        _textEditModelOptionsObserver = ValueObserver<TextEditModelOptions>::create(
+        _textEditModelOptionsObserver = Observer<TextEditModelOptions>::create(
             app->getSettingsModel()->observeTextEditModelOptions(),
             [this](const TextEditModelOptions& value)
             {
@@ -173,7 +173,7 @@ namespace textedit
             });
 
         // Observe style settings and update the widgets.
-        _styleSettingsObserver = ValueObserver<StyleSettings>::create(
+        _styleSettingsObserver = Observer<StyleSettings>::create(
             app->getSettingsModel()->observeStyle(),
             [this](const StyleSettings& value)
             {

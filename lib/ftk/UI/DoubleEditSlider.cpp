@@ -20,7 +20,7 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(double)> callback;
-        std::shared_ptr<ValueObserver<double> > valueObserver;
+        std::shared_ptr<Observer<double> > valueObserver;
     };
 
     void DoubleEditSlider::_init(
@@ -48,7 +48,7 @@ namespace ftk
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
 
-        p.valueObserver = ValueObserver<double>::create(
+        p.valueObserver = Observer<double>::create(
             p.model->observeValue(),
             [this](double value)
             {

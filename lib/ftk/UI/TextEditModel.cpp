@@ -100,10 +100,10 @@ namespace ftk
     {
         std::weak_ptr<Context> context;
         std::shared_ptr<ObservableList<std::string> > text;
-        std::shared_ptr<ObservableValue<TextEditPos> > cursor;
-        std::shared_ptr<ObservableValue<TextEditSelection> > selection;
+        std::shared_ptr<Observable<TextEditPos> > cursor;
+        std::shared_ptr<Observable<TextEditSelection> > selection;
         int pageRows = 0;
-        std::shared_ptr<ObservableValue<TextEditModelOptions> > options;
+        std::shared_ptr<Observable<TextEditModelOptions> > options;
     };
 
     void TextEditModel::_init(
@@ -113,9 +113,9 @@ namespace ftk
         FTK_P();
         p.context = context;
         p.text = ObservableList<std::string>::create(!text.empty() ? text : textEditClear);
-        p.cursor = ObservableValue<TextEditPos>::create(TextEditPos(0, 0));
-        p.selection = ObservableValue<TextEditSelection>::create();
-        p.options = ObservableValue<TextEditModelOptions>::create();
+        p.cursor = Observable<TextEditPos>::create(TextEditPos(0, 0));
+        p.selection = Observable<TextEditSelection>::create();
+        p.options = Observable<TextEditModelOptions>::create();
     }
 
     TextEditModel::TextEditModel() :
@@ -164,7 +164,7 @@ namespace ftk
         return _p->cursor->get();
     }
 
-    std::shared_ptr<IObservableValue<TextEditPos> > TextEditModel::observeCursor() const
+    std::shared_ptr<IObservable<TextEditPos> > TextEditModel::observeCursor() const
     {
         return _p->cursor;
     }
@@ -189,7 +189,7 @@ namespace ftk
         return _p->selection->get();
     }
 
-    std::shared_ptr<IObservableValue<TextEditSelection> > TextEditModel::observeSelection() const
+    std::shared_ptr<IObservable<TextEditSelection> > TextEditModel::observeSelection() const
     {
         return _p->selection;
     }
@@ -439,7 +439,7 @@ namespace ftk
         return _p->options->get();
     }
 
-    std::shared_ptr<IObservableValue<TextEditModelOptions> > TextEditModel::observeOptions() const
+    std::shared_ptr<IObservable<TextEditModelOptions> > TextEditModel::observeOptions() const
     {
         return _p->options;
     }

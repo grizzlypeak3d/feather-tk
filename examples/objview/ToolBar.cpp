@@ -164,7 +164,7 @@ namespace objview
             });
 
         // Observe the current document to update the toolbars.
-        _currentObserver = ValueObserver<std::shared_ptr<IDocument> >::create(
+        _currentObserver = Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this](const std::shared_ptr<IDocument>& idoc)
             {
@@ -172,7 +172,7 @@ namespace objview
 
                 if (auto doc = std::dynamic_pointer_cast<Document>(idoc))
                 {
-                    _rotationObserver = ValueObserver<V3F>::create(
+                    _rotationObserver = Observer<V3F>::create(
                         doc->observeRotation(),
                         [this](const V3F& value)
                         {

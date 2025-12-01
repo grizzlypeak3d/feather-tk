@@ -35,7 +35,7 @@ namespace objview
         ///@{
 
         const std::shared_ptr<ObjView>& getCurrentView() const;
-        std::shared_ptr<ftk::IObservableValue<std::shared_ptr<ObjView> > > observeCurrentView() const;
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<ObjView> > > observeCurrentView() const;
 
         ///@}
 
@@ -45,12 +45,12 @@ namespace objview
     private:
         std::shared_ptr<ftk::TabWidget> _tabWidget;
         std::map<std::shared_ptr<ftk::IDocument>, std::shared_ptr<ObjView> > _views;
-        std::shared_ptr<ftk::ObservableValue<std::shared_ptr<ObjView> > > _currentView;
+        std::shared_ptr<ftk::Observable<std::shared_ptr<ObjView> > > _currentView;
 
-        std::shared_ptr<ftk::ValueObserver<std::weak_ptr<ftk::IDocument> > > _addObserver;
-        std::shared_ptr<ftk::ValueObserver<std::weak_ptr<ftk::IDocument> > > _closeObserver;
-        std::shared_ptr<ftk::ValueObserver<bool> > _clearObserver;
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;
-        std::shared_ptr<ftk::ValueObserver<int> > _currentIndexObserver;
+        std::shared_ptr<ftk::Observer<std::weak_ptr<ftk::IDocument> > > _addObserver;
+        std::shared_ptr<ftk::Observer<std::weak_ptr<ftk::IDocument> > > _closeObserver;
+        std::shared_ptr<ftk::Observer<bool> > _clearObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
+        std::shared_ptr<ftk::Observer<int> > _currentIndexObserver;
     };
 }

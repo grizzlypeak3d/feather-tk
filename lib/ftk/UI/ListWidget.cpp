@@ -13,7 +13,7 @@ namespace ftk
     {
         std::shared_ptr<ListItemsWidget> widget;
         std::shared_ptr<ScrollWidget> scrollWidget;
-        std::shared_ptr<ValueObserver<int> > scrollToObserver;
+        std::shared_ptr<Observer<int> > scrollToObserver;
     };
 
     void ListWidget::_init(
@@ -29,7 +29,7 @@ namespace ftk
         p.scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
         p.scrollWidget->setWidget(p.widget);
 
-        p.scrollToObserver = ValueObserver<int>::create(
+        p.scrollToObserver = Observer<int>::create(
             p.widget->observeScrollTo(),
             [this](int value)
             {

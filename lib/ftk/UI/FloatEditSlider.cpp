@@ -19,7 +19,7 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(float)> callback;
-        std::shared_ptr<ValueObserver<float> > valueObserver;
+        std::shared_ptr<Observer<float> > valueObserver;
     };
 
     void FloatEditSlider::_init(
@@ -47,7 +47,7 @@ namespace ftk
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
 
-        p.valueObserver = ValueObserver<float>::create(
+        p.valueObserver = Observer<float>::create(
             p.model->observeValue(),
             [this](float value)
             {

@@ -207,7 +207,7 @@ namespace ftk
 
         void setSearch(const std::string&);
 
-        std::shared_ptr<IObservableValue<int> > observeCurrent() const;
+        std::shared_ptr<IObservable<int> > observeCurrent() const;
 
         Box2I getRect(int) const;
 

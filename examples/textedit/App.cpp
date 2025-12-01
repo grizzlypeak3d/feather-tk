@@ -49,7 +49,7 @@ namespace textedit
             Size2I(1920, 1080));
 
         // Observe style settings.
-        _styleSettingsObserver = ValueObserver<StyleSettings>::create(
+        _styleSettingsObserver = Observer<StyleSettings>::create(
             _settingsModel->observeStyle(),
             [this](const StyleSettings& value)
             {

@@ -33,7 +33,7 @@ namespace ftk
 
                 size_t recentMax = 0;
                 std::vector<std::filesystem::path> recent;
-                auto recentMaxObserver = ValueObserver<size_t>::create(
+                auto recentMaxObserver = Observer<size_t>::create(
                     model->observeRecentMax(),
                     [&recentMax](size_t value)
                     {

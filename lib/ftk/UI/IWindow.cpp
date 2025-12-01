@@ -20,10 +20,10 @@ namespace ftk
         Size2I windowSize;
         Size2I minSize;
         Size2I frameBufferSize;
-        std::shared_ptr<ObservableValue<bool> > fullScreen;
-        std::shared_ptr<ObservableValue<bool> > floatOnTop;
-        std::shared_ptr<ObservableValue<ImageType> > bufferType;
-        std::shared_ptr<ObservableValue<float> > displayScale;
+        std::shared_ptr<Observable<bool> > fullScreen;
+        std::shared_ptr<Observable<bool> > floatOnTop;
+        std::shared_ptr<Observable<ImageType> > bufferType;
+        std::shared_ptr<Observable<float> > displayScale;
         std::function<void(void)> closeCallback;
 
         bool inside = false;
@@ -66,10 +66,10 @@ namespace ftk
 
         p.app = app;
         p.title = title;
-        p.fullScreen = ObservableValue<bool>::create(false);
-        p.floatOnTop = ObservableValue<bool>::create(false);
-        p.bufferType = ObservableValue<ImageType>::create(gl::offscreenColorDefault);
-        p.displayScale = ObservableValue<float>::create(1.F);
+        p.fullScreen = Observable<bool>::create(false);
+        p.floatOnTop = Observable<bool>::create(false);
+        p.bufferType = Observable<ImageType>::create(gl::offscreenColorDefault);
+        p.displayScale = Observable<float>::create(1.F);
 
         setBackgroundRole(ColorRole::Window);
 
@@ -126,7 +126,7 @@ namespace ftk
         return _p->fullScreen->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > IWindow::observeFullScreen() const
+    std::shared_ptr<IObservable<bool> > IWindow::observeFullScreen() const
     {
         return _p->fullScreen;
     }
@@ -141,7 +141,7 @@ namespace ftk
         return _p->floatOnTop->get();
     }
 
-    std::shared_ptr<IObservableValue<bool> > IWindow::observeFloatOnTop() const
+    std::shared_ptr<IObservable<bool> > IWindow::observeFloatOnTop() const
     {
         return _p->floatOnTop;
     }
@@ -161,7 +161,7 @@ namespace ftk
         return _p->bufferType->get();
     }
 
-    std::shared_ptr<IObservableValue<ImageType> > IWindow::observeFrameBufferType() const
+    std::shared_ptr<IObservable<ImageType> > IWindow::observeFrameBufferType() const
     {
         return _p->bufferType;
     }
@@ -179,7 +179,7 @@ namespace ftk
         return _p->displayScale->get();
     }
 
-    std::shared_ptr<IObservableValue<float> > IWindow::observeDisplayScale() const
+    std::shared_ptr<IObservable<float> > IWindow::observeDisplayScale() const
     {
         return _p->displayScale;
     }

@@ -124,5 +124,5 @@ void App::run()
 
     const auto now = std::chrono::steady_clock::now();
     const std::chrono::duration<float> diff = now - _startTime;
-    std::cout << "Seconds elapsed:" << diff.count() << std::endl;
+    std::cout << "Seconds elapsed:" << std::setprecision(2) << diff.count() << std::endl;
 }

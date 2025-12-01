@@ -99,7 +99,7 @@ namespace objview
 
         std::shared_ptr<HUDWidget> _hudWidget;
 
-        std::shared_ptr<ftk::ValueObserver<ftk::V3F> > _rotationObserver;
-        std::shared_ptr<ftk::ValueObserver<RenderSettings> > _renderSettingsObserver;
+        std::shared_ptr<ftk::Observer<ftk::V3F> > _rotationObserver;
+        std::shared_ptr<ftk::Observer<RenderSettings> > _renderSettingsObserver;
     };
 }

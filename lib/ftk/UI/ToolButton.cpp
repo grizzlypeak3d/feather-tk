@@ -13,12 +13,12 @@ namespace ftk
     struct ToolButton::Private
     {
         std::shared_ptr<Action> action;
-        std::shared_ptr<ValueObserver<std::string> > iconObserver;
-        std::shared_ptr<ValueObserver<std::string> > checkedIconObserver;
-        std::shared_ptr<ValueObserver<bool> > checkableObserver;
-        std::shared_ptr<ValueObserver<bool> > checkedObserver;
-        std::shared_ptr<ValueObserver<bool> > enabledObserver;
-        std::shared_ptr<ValueObserver<std::string> > tooltipObserver;
+        std::shared_ptr<Observer<std::string> > iconObserver;
+        std::shared_ptr<Observer<std::string> > checkedIconObserver;
+        std::shared_ptr<Observer<bool> > checkableObserver;
+        std::shared_ptr<Observer<bool> > checkedObserver;
+        std::shared_ptr<Observer<bool> > enabledObserver;
+        std::shared_ptr<Observer<std::string> > tooltipObserver;
 
         struct SizeData
         {
@@ -71,37 +71,37 @@ namespace ftk
                     _p->action->doCheckedCallback(value);
                 });
 
-            p.iconObserver = ValueObserver<std::string>::create(
+            p.iconObserver = Observer<std::string>::create(
                 action->observeIcon(),
                 [this](const std::string& value)
                 {
                     setIcon(value);
                 });
-            p.checkedIconObserver = ValueObserver<std::string>::create(
+            p.checkedIconObserver = Observer<std::string>::create(
                 action->observeCheckedIcon(),
                 [this](const std::string& value)
                 {
                     setCheckedIcon(value);
                 });
-            p.checkableObserver = ValueObserver<bool>::create(
+            p.checkableObserver = Observer<bool>::create(
                 action->observeCheckable(),
                 [this](bool value)
                 {
                     setCheckable(value);
                 });
-            p.checkedObserver = ValueObserver<bool>::create(
+            p.checkedObserver = Observer<bool>::create(
                 action->observeChecked(),
                 [this](bool value)
                 {
                     setChecked(value);
                 });
-            p.enabledObserver = ValueObserver<bool>::create(
+            p.enabledObserver = Observer<bool>::create(
                 action->observeEnabled(),
                 [this](bool value)
                 {
                     setEnabled(value);
                 });
-            p.tooltipObserver = ValueObserver<std::string>::create(
+            p.tooltipObserver = Observer<std::string>::create(
                 action->observeTooltip(),
                 [this](const std::string& value)
                 {

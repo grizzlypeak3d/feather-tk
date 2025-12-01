@@ -32,7 +32,7 @@ namespace imageview
         _settingsModel = app->getSettingsModel();
 
         // Create observables.
-        _currentView = ObservableValue<std::shared_ptr<ImageView> >::create();
+        _currentView = Observable<std::shared_ptr<ImageView> >::create();
 
         // Create the actions.
         _actions = Actions::create(
@@ -63,7 +63,7 @@ namespace imageview
         setWidget(_layout);
 
         // Observe the current view.
-        _currentViewObserver = ValueObserver<std::shared_ptr<ImageView>>::create(
+        _currentViewObserver = Observer<std::shared_ptr<ImageView>>::create(
             _tabs->observeCurrentView(),
             [this](const std::shared_ptr<ImageView>& value)
             {
@@ -71,7 +71,7 @@ namespace imageview
             });
 
         // Observe window settings.
-        _windowSettingsObserver = ValueObserver<WindowSettings>::create(
+        _windowSettingsObserver = Observer<WindowSettings>::create(
             _settingsModel->observeWindow(),
             [this](const WindowSettings& value)
             {
@@ -102,7 +102,7 @@ namespace imageview
         return _currentView->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<std::shared_ptr<ImageView> > > MainWindow::observeCurrentView() const
+    std::shared_ptr<ftk::IObservable<std::shared_ptr<ImageView> > > MainWindow::observeCurrentView() const
     {
         return _currentView;
     }

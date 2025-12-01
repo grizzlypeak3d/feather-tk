@@ -40,7 +40,7 @@ namespace objview
         ///@{
 
         const WindowSettings& getWindow() const;
-        std::shared_ptr<ftk::IObservableValue<WindowSettings> > observeWindow() const;
+        std::shared_ptr<ftk::IObservable<WindowSettings> > observeWindow() const;
         void setWindow(const WindowSettings&);
 
         ///@}
@@ -49,7 +49,7 @@ namespace objview
         ///@{
 
         const RenderSettings& getRender() const;
-        std::shared_ptr<ftk::IObservableValue<RenderSettings> > observeRender() const;
+        std::shared_ptr<ftk::IObservable<RenderSettings> > observeRender() const;
         void setRender(const RenderSettings&);
 
         ///@}
@@ -58,7 +58,7 @@ namespace objview
         ///@{
 
         const StyleSettings& getStyle() const;
-        std::shared_ptr<ftk::IObservableValue<StyleSettings> > observeStyle() const;
+        std::shared_ptr<ftk::IObservable<StyleSettings> > observeStyle() const;
         void setStyle(const StyleSettings&);
 
         ///@}
@@ -67,8 +67,8 @@ namespace objview
         std::shared_ptr<ftk::Settings> _settings;
         std::vector<std::filesystem::path> _recentFiles;
         std::shared_ptr<ftk::FileBrowserSystem> _fileBrowserSystem;
-        std::shared_ptr<ftk::ObservableValue<WindowSettings> > _window;
-        std::shared_ptr<ftk::ObservableValue<RenderSettings> > _render;
-        std::shared_ptr<ftk::ObservableValue<StyleSettings> > _style;
+        std::shared_ptr<ftk::Observable<WindowSettings> > _window;
+        std::shared_ptr<ftk::Observable<RenderSettings> > _render;
+        std::shared_ptr<ftk::Observable<StyleSettings> > _style;
     };
 }

@@ -60,7 +60,7 @@ namespace objview
         std::map<std::string, std::shared_ptr<ftk::ToolButton> > _buttons;
         std::shared_ptr<ftk::HorizontalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;
-        std::shared_ptr<ftk::ValueObserver<ftk::V3F> > _rotationObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
+        std::shared_ptr<ftk::Observer<ftk::V3F> > _rotationObserver;
     };
 }

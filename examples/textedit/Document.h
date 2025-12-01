@@ -35,9 +35,9 @@ namespace textedit
         ///@{
 
         const std::filesystem::path& getPath() const;
-        std::shared_ptr<ftk::IObservableValue<std::filesystem::path> > observePath() const;
-        std::shared_ptr<ftk::IObservableValue<std::string> > observeName() const;
-        std::shared_ptr<ftk::IObservableValue<std::string> > observeTooltip() const;
+        std::shared_ptr<ftk::IObservable<std::filesystem::path> > observePath() const;
+        std::shared_ptr<ftk::IObservable<std::string> > observeName() const;
+        std::shared_ptr<ftk::IObservable<std::string> > observeTooltip() const;
 
         ///@}
 
@@ -45,7 +45,7 @@ namespace textedit
         ///@{
 
         bool isChanged() const;
-        std::shared_ptr<ftk::IObservableValue<bool> > observeChanged() const;
+        std::shared_ptr<ftk::IObservable<bool> > observeChanged() const;
         void resetChanged();
 
         ///@}
@@ -62,10 +62,10 @@ namespace textedit
         void _nameUpdate();
 
         std::shared_ptr<ftk::TextEditModel> _model;
-        std::shared_ptr<ftk::ObservableValue<std::filesystem::path> > _path;
-        std::shared_ptr<ftk::ObservableValue<std::string> > _name;
-        std::shared_ptr<ftk::ObservableValue<std::string> > _tooltip;
-        std::shared_ptr<ftk::ObservableValue<bool> > _changed;
+        std::shared_ptr<ftk::Observable<std::filesystem::path> > _path;
+        std::shared_ptr<ftk::Observable<std::string> > _name;
+        std::shared_ptr<ftk::Observable<std::string> > _tooltip;
+        std::shared_ptr<ftk::Observable<bool> > _changed;
         std::shared_ptr<ftk::ListObserver<std::string> > _textObserver;
     };
 }

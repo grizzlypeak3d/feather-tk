@@ -49,7 +49,7 @@ namespace objview
         ///@{
 
         const ftk::V3F& getRotation() const;
-        std::shared_ptr<ftk::IObservableValue<ftk::V3F> > observeRotation() const;
+        std::shared_ptr<ftk::IObservable<ftk::V3F> > observeRotation() const;
         void setRotation(const ftk::V3F&);
 
         ///@}
@@ -57,6 +57,6 @@ namespace objview
     private:
         std::filesystem::path _path;
         std::shared_ptr<ftk::TriMesh3F> _mesh;
-        std::shared_ptr<ftk::ObservableValue<ftk::V3F> > _rotation;
+        std::shared_ptr<ftk::Observable<ftk::V3F> > _rotation;
     };
 }

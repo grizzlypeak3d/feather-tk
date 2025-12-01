@@ -35,8 +35,8 @@ namespace ftk
         std::shared_ptr<ButtonGroup> buttonGroup;
         std::shared_ptr<VerticalLayout> layout;
         std::function<void(int, bool)> callback;
-        std::shared_ptr<ObservableValue<int> > current;
-        std::shared_ptr<ObservableValue<int> > scrollTo;
+        std::shared_ptr<Observable<int> > current;
+        std::shared_ptr<Observable<int> > scrollTo;
         std::string search;
     };
 
@@ -85,8 +85,8 @@ namespace ftk
             break;
         }
 
-        p.current = ObservableValue<int>::create(-1);
-        p.scrollTo = ObservableValue<int>::create(-1);
+        p.current = Observable<int>::create(-1);
+        p.scrollTo = Observable<int>::create(-1);
     }
 
     ListItemsWidget::ListItemsWidget() :
@@ -163,7 +163,7 @@ namespace ftk
         return _p->current->get();
     }
 
-    std::shared_ptr<IObservableValue<int> > ListItemsWidget::observeCurrent() const
+    std::shared_ptr<IObservable<int> > ListItemsWidget::observeCurrent() const
     {
         return _p->current;
     }
@@ -181,7 +181,7 @@ namespace ftk
         }
     }
 
-    std::shared_ptr<IObservableValue<int> > ListItemsWidget::observeScrollTo() const
+    std::shared_ptr<IObservable<int> > ListItemsWidget::observeScrollTo() const
     {
         return _p->scrollTo;
     }

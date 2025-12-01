@@ -70,7 +70,7 @@ namespace ftk
                 FTK_ASSERT(cursor == model->getCursor());
 
                 TextEditPos cursor2;
-                auto observer = ValueObserver<TextEditPos>::create(
+                auto observer = Observer<TextEditPos>::create(
                     model->observeCursor(),
                     [&cursor2](const TextEditPos& value)
                     {
@@ -103,7 +103,7 @@ namespace ftk
                 FTK_ASSERT(selection == model->getSelection());
 
                 TextEditSelection selection2;
-                auto observer = ValueObserver<TextEditSelection>::create(
+                auto observer = Observer<TextEditSelection>::create(
                     model->observeSelection(),
                     [&selection2](const TextEditSelection& value)
                     {
@@ -193,14 +193,14 @@ namespace ftk
                         text2 = value;
                     });
                 TextEditPos cursor2;
-                auto cursorObserver = ValueObserver<TextEditPos>::create(
+                auto cursorObserver = Observer<TextEditPos>::create(
                     model->observeCursor(),
                     [&cursor2](const TextEditPos& value)
                     {
                         cursor2 = value;
                     });
                 TextEditSelection selection2;
-                auto selectionObserver = ValueObserver<TextEditSelection>::create(
+                auto selectionObserver = Observer<TextEditSelection>::create(
                     model->observeSelection(),
                     [&selection2](const TextEditSelection& value)
                     {
@@ -404,14 +404,14 @@ namespace ftk
                         text2 = value;
                     });
                 TextEditPos cursor2;
-                auto cursorObserver = ValueObserver<TextEditPos>::create(
+                auto cursorObserver = Observer<TextEditPos>::create(
                     model->observeCursor(),
                     [&cursor2](const TextEditPos& value)
                     {
                         cursor2 = value;
                     });
                 TextEditSelection selection2;
-                auto selectionObserver = ValueObserver<TextEditSelection>::create(
+                auto selectionObserver = Observer<TextEditSelection>::create(
                     model->observeSelection(),
                     [&selection2](const TextEditSelection& value)
                     {
@@ -617,7 +617,7 @@ namespace ftk
                         text2 = value;
                     });
                 TextEditPos cursor2;
-                auto observer = ValueObserver<TextEditPos>::create(
+                auto observer = Observer<TextEditPos>::create(
                     model->observeCursor(),
                     [&cursor2](const TextEditPos& value)
                     {

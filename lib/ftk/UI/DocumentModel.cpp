@@ -13,11 +13,11 @@ namespace ftk
     void DocumentModel::_init(const std::shared_ptr<Context>& context)
     {
         _documents = ObservableList<std::shared_ptr<IDocument> >::create();
-        _add = ObservableValue<std::weak_ptr<IDocument> >::create();
-        _close = ObservableValue<std::weak_ptr<IDocument> >::create();
-        _closeAll = ObservableValue<bool>::create(false);
-        _current = ObservableValue<std::shared_ptr<IDocument> >::create();
-        _currentIndex = ObservableValue<int>::create(-1);
+        _add = Observable<std::weak_ptr<IDocument> >::create();
+        _close = Observable<std::weak_ptr<IDocument> >::create();
+        _closeAll = Observable<bool>::create(false);
+        _current = Observable<std::shared_ptr<IDocument> >::create();
+        _currentIndex = Observable<int>::create(-1);
     }
 
     DocumentModel::~DocumentModel()
@@ -49,7 +49,7 @@ namespace ftk
         _currentIndex->setAlways(_documents->getSize() - 1);
     }
 
-    std::shared_ptr<ftk::IObservableValue<std::weak_ptr<IDocument> > > DocumentModel::observeAdd() const
+    std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > DocumentModel::observeAdd() const
     {
         return _add;
     }
@@ -88,12 +88,12 @@ namespace ftk
         _currentIndex->setIfChanged(-1);
     }
 
-    std::shared_ptr<ftk::IObservableValue<std::weak_ptr<IDocument> > > DocumentModel::observeClose() const
+    std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > DocumentModel::observeClose() const
     {
         return _close;
     }
 
-    std::shared_ptr<ftk::IObservableValue<bool> > DocumentModel::observeCloseAll() const
+    std::shared_ptr<ftk::IObservable<bool> > DocumentModel::observeCloseAll() const
     {
         return _closeAll;
     }
@@ -108,12 +108,12 @@ namespace ftk
         return _currentIndex->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<std::shared_ptr<IDocument> > > DocumentModel::observeCurrent() const
+    std::shared_ptr<ftk::IObservable<std::shared_ptr<IDocument> > > DocumentModel::observeCurrent() const
     {
         return _current;
     }
 
-    std::shared_ptr<ftk::IObservableValue<int> > DocumentModel::observeCurrentIndex() const
+    std::shared_ptr<ftk::IObservable<int> > DocumentModel::observeCurrentIndex() const
     {
         return _currentIndex;
     }

@@ -9,12 +9,12 @@ namespace ftk
     {
         std::vector<std::filesystem::path> paths;
         int currentPath = -1;
-        std::shared_ptr<ObservableValue<std::filesystem::path> > path;
-        std::shared_ptr<ObservableValue<bool> > hasForward;
-        std::shared_ptr<ObservableValue<bool> > hasBack;
-        std::shared_ptr<ObservableValue<FileBrowserOptions> > options;
+        std::shared_ptr<Observable<std::filesystem::path> > path;
+        std::shared_ptr<Observable<bool> > hasForward;
+        std::shared_ptr<Observable<bool> > hasBack;
+        std::shared_ptr<Observable<FileBrowserOptions> > options;
         std::shared_ptr<ObservableList<std::string> > exts;
-        std::shared_ptr<ObservableValue<std::string> > ext;
+        std::shared_ptr<Observable<std::string> > ext;
     };
 
     FileBrowserModel::FileBrowserModel(const std::shared_ptr<Context>&) :
@@ -24,12 +24,12 @@ namespace ftk
         const auto path = std::filesystem::current_path().u8string();
         p.paths.push_back(path);
         p.currentPath = 0;
-        p.path = ObservableValue<std::filesystem::path>::create(path);
-        p.hasForward = ObservableValue<bool>::create(false);
-        p.hasBack = ObservableValue<bool>::create(false);
-        p.options = ObservableValue<FileBrowserOptions>::create();
+        p.path = Observable<std::filesystem::path>::create(path);
+        p.hasForward = Observable<bool>::create(false);
+        p.hasBack = Observable<bool>::create(false);
+        p.options = Observable<FileBrowserOptions>::create();
         p.exts = ObservableList<std::string>::create();
-        p.ext = ObservableValue<std::string>::create();
+        p.ext = Observable<std::string>::create();
     }
 
     FileBrowserModel::~FileBrowserModel()
@@ -45,7 +45,7 @@ namespace ftk
         return _p->path->get();
     }
 
-    std::shared_ptr<IObservableValue<std::filesystem::path> > FileBrowserModel::observePath() const
+    std::shared_ptr<IObservable<std::filesystem::path> > FileBrowserModel::observePath() const
     {
         return _p->path;
     }
@@ -81,7 +81,7 @@ namespace ftk
         }
     }
 
-    std::shared_ptr<IObservableValue<bool> > FileBrowserModel::observeHasForward() const
+    std::shared_ptr<IObservable<bool> > FileBrowserModel::observeHasForward() const
     {
         return _p->hasForward;
     }
@@ -98,7 +98,7 @@ namespace ftk
         }
     }
 
-    std::shared_ptr<IObservableValue<bool> > FileBrowserModel::observeHasBack() const
+    std::shared_ptr<IObservable<bool> > FileBrowserModel::observeHasBack() const
     {
         return _p->hasBack;
     }
@@ -108,7 +108,7 @@ namespace ftk
         return _p->options->get();
     }
 
-    std::shared_ptr<IObservableValue<FileBrowserOptions> > FileBrowserModel::observeOptions() const
+    std::shared_ptr<IObservable<FileBrowserOptions> > FileBrowserModel::observeOptions() const
     {
         return _p->options;
     }
@@ -138,7 +138,7 @@ namespace ftk
         return _p->ext->get();
     }
 
-    std::shared_ptr<IObservableValue<std::string> > FileBrowserModel::observeExt() const
+    std::shared_ptr<IObservable<std::string> > FileBrowserModel::observeExt() const
     {
         return _p->ext;
     }

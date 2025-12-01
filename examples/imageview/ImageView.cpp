@@ -22,8 +22,8 @@ namespace imageview
         IWidget::_init(context, "examples::imageview::ImageView", parent);
 
         _image = doc->getImage();
-        _zoom = ObservableValue<float>::create(1.F);
-        _channelDisplay = ObservableValue<ChannelDisplay>::create(ChannelDisplay::Color);
+        _zoom = Observable<float>::create(1.F);
+        _channelDisplay = Observable<ChannelDisplay>::create(ChannelDisplay::Color);
     }
 
     ImageView::~ImageView()
@@ -45,7 +45,7 @@ namespace imageview
         return _zoom->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<float> > ImageView::observeZoom() const
+    std::shared_ptr<ftk::IObservable<float> > ImageView::observeZoom() const
     {
         return _zoom;
     }
@@ -94,7 +94,7 @@ namespace imageview
         return _channelDisplay->get();
     }
 
-    std::shared_ptr<ftk::IObservableValue<ftk::ChannelDisplay> > ImageView::observeChannelDisplay() const
+    std::shared_ptr<ftk::IObservable<ftk::ChannelDisplay> > ImageView::observeChannelDisplay() const
     {
         return _channelDisplay;
     }

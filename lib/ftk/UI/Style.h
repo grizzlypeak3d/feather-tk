@@ -6,7 +6,7 @@
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FontSystem.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -166,7 +166,7 @@ namespace ftk
         void setFontRoles(const std::map<FontRole, FontInfo>&);
 
         //! Observe style changes.
-        std::shared_ptr<IObservableValue<bool> > observeChanged() const;
+        std::shared_ptr<IObservable<bool> > observeChanged() const;
 
     private:
         void _colorUpdate();

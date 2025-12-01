@@ -45,8 +45,8 @@ namespace textedit
         std::shared_ptr<ftk::Label> _linesLabel;
         std::shared_ptr<ftk::HorizontalLayout> _layout;
 
-        std::shared_ptr<ftk::ValueObserver<std::shared_ptr<ftk::IDocument> > > _currentObserver;
+        std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
         std::shared_ptr<ftk::ListObserver<std::string> > _textObserver;
-        std::shared_ptr<ftk::ValueObserver<ftk::TextEditPos> > _cursorObserver;
+        std::shared_ptr<ftk::Observer<ftk::TextEditPos> > _cursorObserver;
     };
 }

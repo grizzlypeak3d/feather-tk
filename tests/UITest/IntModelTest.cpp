@@ -34,19 +34,19 @@ namespace ftk
                 int value = 0;
                 RangeI range;
                 bool hasDefaultValue = false;
-                auto valueObserver = ValueObserver<int>::create(
+                auto valueObserver = Observer<int>::create(
                     model->observeValue(),
                     [&value](int v)
                     {
                         value = v;
                     });
-                auto rangeObserver = ValueObserver<RangeI>::create(
+                auto rangeObserver = Observer<RangeI>::create(
                     model->observeRange(),
                     [&range](const RangeI& r)
                     {
                         range = r;
                     });
-                auto defaultValueObserver = ValueObserver<bool>::create(
+                auto defaultObserver = Observer<bool>::create(
                     model->observeHasDefaultValue(),
                     [&hasDefaultValue](bool value)
                     {
