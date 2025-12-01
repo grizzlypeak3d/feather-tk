@@ -35,62 +35,48 @@ namespace ftk
                 .def_property_readonly("path", &Settings::getPath)
                 .def("save", &Settings::save)
                 .def("contains", &Settings::contains, py::arg("key"))
-                .def_property("bool",
+                .def("getBool",
                     [](Settings& settings, const std::string& key)
                     {
                         bool value = false;
                         return py::make_tuple(settings.get(key, value), value);
-                    },
-                    [](Settings& settings, const std::string& key, bool value)
-                    {
-                        settings.set(key, value);
                     })
-                .def_property("int",
+                .def("getInt",
                     [](Settings& settings, const std::string& key)
                     {
                         int64_t value = 0;
                         return py::make_tuple(settings.get(key, value), value);
-                    },
-                    [](Settings& settings, const std::string& key, int value)
-                    {
-                        settings.set(key, value);
                     })
-                .def_property("double",
+                .def("getDouble",
                     [](Settings& settings, const std::string& key)
                     {
                         double value = 0.0;
                         return py::make_tuple(settings.get(key, value), value);
-                    },
-                    [](Settings& settings, const std::string& key, double value)
-                    {
-                        settings.set(key, value);
                     })
-                .def_property("string",
+                .def("getString",
                     [](Settings& settings, const std::string& key)
                     {
                         std::string value;
                         return py::make_tuple(settings.get(key, value), value);
-                    },
-                    [](Settings& settings, const std::string& key, const std::string& value)
-                    {
-                        settings.set(key, value);
                     })
-                .def_property("stringList",
+                .def("getStringList",
                     [](Settings& settings, const std::string& key)
                     {
                         std::vector<std::string> value;
                         return py::make_tuple(settings.get(key, value), value);
-                    },
-                    [](Settings& settings, const std::string& key, const std::vector<std::string>& value)
-                    {
-                        settings.set(key, value);
                     })
-                .def_property("json",
+                .def("getJSON",
                     [](Settings& settings, const std::string& key)
                     {
                         nlohmann::json json;
                         return py::make_tuple(settings.get(key, json), json.dump());
-                    },
+                    })
+                .def("setBool", py::overload_cast<const std::string&, bool>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setInt", py::overload_cast<const std::string&, int64_t>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setDouble", py::overload_cast<const std::string&, double>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setString", py::overload_cast<const std::string&, const std::string&>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setStringList", py::overload_cast<const std::string&, const std::vector<std::string>&>(&Settings::set), py::arg("key"), py::arg("value"))
+                .def("setJSON",
                     [](Settings& settings, const std::string& key, const std::string& value)
                     {
                         settings.set(key, nlohmann::json().parse(value));
