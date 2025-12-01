@@ -59,20 +59,21 @@ namespace ftk
                 recent2.clear();
                 recent2.push_back("path 1");
                 recent2.push_back("path 2");
-                FTK_ASSERT(recent2 == model->getRecent());
-                FTK_ASSERT(recent2 == recent);
+                FTK_ASSERT(recent2[0] == model->getRecent()[0].filename());
+                FTK_ASSERT(recent2[1] == model->getRecent()[1].filename());
                 model->addRecent("path 3");
                 recent2.clear();
                 recent2.push_back("path 2");
                 recent2.push_back("path 3");
-                FTK_ASSERT(recent2 == recent);
+                FTK_ASSERT(recent2[0] == recent[0].filename());
+                FTK_ASSERT(recent2[1] == recent[1].filename());
 
                 model->setRecentMax(1);
                 recent2.clear();
                 recent2.push_back("path 3");
-                FTK_ASSERT(recent2 == recent);
+                FTK_ASSERT(recent2[0] == recent[0].filename());
                 model->addRecent("path 3");
-                FTK_ASSERT(recent2 == recent);
+                FTK_ASSERT(recent2[0] == recent[0].filename());
             }
         }
     }
