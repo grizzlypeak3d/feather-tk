@@ -40,6 +40,10 @@ namespace ftk
         void coreBind(py::module_& m)
         {
             iSystem(m);
+            observable(m);
+            observableList(m);
+            observableMap(m);
+            observableValue(m);
 
             box(m);
             cmdLine(m);
@@ -51,10 +55,6 @@ namespace ftk
             image(m);
             logSystem(m);
             memory(m);
-            observable(m);
-            observableList(m);
-            observableMap(m);
-            observableValue(m);
             os(m);
             path(m);
             random(m);
