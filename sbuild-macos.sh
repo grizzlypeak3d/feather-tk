@@ -9,7 +9,7 @@ fi
 
 export FTK_API=GL_4_1
 export FTK_NFD=OFF
-export FTK_PYTHON=ON
+export FTK_PYTHON=OFF
 export FTK_TESTS=ON
 export FTK_EXAMPLES=ON
 export FTK_GCOV=OFF
