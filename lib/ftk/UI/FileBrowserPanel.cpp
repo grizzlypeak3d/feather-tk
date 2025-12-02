@@ -228,6 +228,11 @@ namespace ftk
         return out;
     }
 
+    const std::shared_ptr<RecentFilesModel>& FileBrowserRecent::getRecentFilesModel() const
+    {
+        return _p->recentFilesModel;
+    }
+
     void FileBrowserRecent::setRecentFilesModel(const std::shared_ptr<RecentFilesModel>& value)
     {
         FTK_P();

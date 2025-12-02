@@ -17,6 +17,7 @@ set(HEADERS
     DoubleSlider.h
     Event.h
     FileBrowser.h
+    FileBrowserWidgets.h
     FileEdit.h
     FloatEdit.h
     FloatEditSlider.h
@@ -83,6 +84,7 @@ set(SOURCE
     DoubleSlider.cpp
     Event.cpp
     FileBrowser.cpp
+    FileBrowserWidgets.cpp
     FloatEdit.cpp
     FloatEditSlider.cpp
     FloatModel.cpp

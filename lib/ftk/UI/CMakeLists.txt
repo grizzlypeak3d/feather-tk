@@ -21,6 +21,7 @@ set(HEADERS
     DrivesModel.h
     Event.h
     FileBrowser.h
+    FileBrowserWidgets.h
     FileEdit.h
     FloatEdit.h
     FloatEditSlider.h

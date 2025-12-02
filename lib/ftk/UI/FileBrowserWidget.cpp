@@ -224,12 +224,12 @@ namespace ftk
             {
                 _p->model->setPath(value);
             });
-        p.pathWidget->setEditCallback(
+        p.pathWidget->setEditableCallback(
             [this](bool value)
             {
                 FTK_P();
                 FileBrowserOptions options = p.model->getOptions();
-                options.pathEdit = value;
+                options.pathEditable = value;
                 p.model->setOptions(options);
             });
 
@@ -467,7 +467,7 @@ namespace ftk
 
         p.panelButton->setChecked(options.panel);
 
-        p.pathWidget->setEdit(options.pathEdit);
+        p.pathWidget->setEditable(options.pathEditable);
 
         p.panelScrollWidget->setVisible(options.panel);
 

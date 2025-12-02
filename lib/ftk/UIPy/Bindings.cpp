@@ -20,6 +20,7 @@
 #include <ftk/UIPy/DoubleSlider.h>
 #include <ftk/UIPy/Event.h>
 #include <ftk/UIPy/FileBrowser.h>
+#include <ftk/UIPy/FileBrowserWidgets.h>
 #include <ftk/UIPy/FileEdit.h>
 #include <ftk/UIPy/FloatEdit.h>
 #include <ftk/UIPy/FloatEditSlider.h>
@@ -118,6 +119,7 @@ namespace ftk
             doubleModel(m);
             doubleSlider(m);
             fileBrowser(m);
+            fileBrowserWidgets(m);
             fileEdit(m);
             floatEdit(m);
             floatEditSlider(m);

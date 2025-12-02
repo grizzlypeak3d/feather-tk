@@ -22,7 +22,7 @@ namespace ftk
         return
             dirList == other.dirList &&
             panel == other.panel &&
-            pathEdit == other.pathEdit &&
+            pathEditable == other.pathEditable &&
             bellows == other.bellows;
     }
 
@@ -111,7 +111,7 @@ namespace ftk
     {
         json["DirList"] = value.dirList;
         json["Panel"] = value.panel;
-        json["PathEdit"] = value.pathEdit;
+        json["PathEditable"] = value.pathEditable;
         for (const auto& i : value.bellows)
         {
             json["Bellows"][i.first] = i.second;
@@ -122,7 +122,7 @@ namespace ftk
     {
         json.at("DirList").get_to(value.dirList);
         json.at("Panel").get_to(value.panel);
-        json.at("PathEdit").get_to(value.pathEdit);
+        json.at("PathEditable").get_to(value.pathEditable);
         for (auto i = json.at("Bellows").begin(); i != json.at("Bellows").end(); ++i)
         {
             if (i->is_boolean())

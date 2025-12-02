@@ -32,9 +32,9 @@ namespace ftk
     struct FileBrowserOptions
     {
         DirListOptions              dirList;
-        bool                        panel    = true;
-        bool                        pathEdit = false;
-        std::map<std::string, bool> bellows  =
+        bool                        panel        = true;
+        bool                        pathEditable = false;
+        std::map<std::string, bool> bellows =
         {
             { "Drives",    true },
             { "Shortcuts", true },

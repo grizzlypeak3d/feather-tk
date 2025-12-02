@@ -140,6 +140,11 @@ namespace ftk
         _p->selectCallback = value;
     }
 
+    const std::string& FileBrowserView::getSearch() const
+    {
+        return _p->search;
+    }
+
     void FileBrowserView::setSearch(const std::string& value)
     {
         FTK_P();

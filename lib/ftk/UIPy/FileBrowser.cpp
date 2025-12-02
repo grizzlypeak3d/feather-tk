@@ -29,7 +29,7 @@ namespace ftk
                 .def(py::init())
                 .def_readwrite("dirList", &FileBrowserOptions::dirList)
                 .def_readwrite("panel", &FileBrowserOptions::panel)
-                .def_readwrite("pathEdit", &FileBrowserOptions::pathEdit)
+                .def_readwrite("pathEditable", &FileBrowserOptions::pathEditable)
                 .def_readwrite("bellows", &FileBrowserOptions::bellows)
                 .def("to_json",
                     [](FileBrowserOptions& self)

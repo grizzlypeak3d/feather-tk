@@ -20,9 +20,9 @@ namespace ftk
     {
         std::filesystem::path path;
         std::vector<std::string> pieces;
-        bool edit = false;
+        bool editable = false;
         std::shared_ptr<HorizontalLayout> layout;
-        std::shared_ptr<ToolButton> editButton;
+        std::shared_ptr<ToolButton> editableButton;
         std::shared_ptr<StackLayout> stackLayout;
         std::shared_ptr<HorizontalLayout> buttonsLayout;
         std::shared_ptr<ScrollWidget> buttonsScrollWidget;
@@ -30,7 +30,7 @@ namespace ftk
         std::shared_ptr<ButtonGroup> buttonGroup;
         std::shared_ptr<LineEdit> lineEdit;
         std::function<void(const std::filesystem::path&)> callback;
-        std::function<void(bool)> editCallback;
+        std::function<void(bool)> editableCallback;
     };
 
     void FileBrowserPath::_init(
@@ -46,10 +46,10 @@ namespace ftk
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.layout->setVAlign(VAlign::Center);
 
-        p.editButton = ToolButton::create(context, p.layout);
-        p.editButton->setCheckable(true);
-        p.editButton->setIcon("Edit");
-        p.editButton->setTooltip("Edit the path");
+        p.editableButton = ToolButton::create(context, p.layout);
+        p.editableButton->setCheckable(true);
+        p.editableButton->setIcon("Edit");
+        p.editableButton->setTooltip("Edit the path");
 
         p.stackLayout = StackLayout::create(context, p.layout);
         p.stackLayout->setHStretch(Stretch::Expanding);
@@ -65,13 +65,13 @@ namespace ftk
         p.lineEdit = LineEdit::create(context, p.stackLayout);
         p.lineEdit->setHStretch(Stretch::Expanding);
 
-        p.editButton->setCheckedCallback(
+        p.editableButton->setCheckedCallback(
             [this](bool value)
             {
-                setEdit(value);
-                if (_p->editCallback)
+                setEditable(value);
+                if (_p->editableCallback)
                 {
-                    _p->editCallback(value);
+                    _p->editableCallback(value);
                 }
             });
 
@@ -122,6 +122,11 @@ namespace ftk
         return out;
     }
 
+    const std::filesystem::path& FileBrowserPath::getPath() const
+    {
+        return _p->path;
+    }
+
     void FileBrowserPath::setPath(const std::filesystem::path& value)
     {
         FTK_P();
@@ -136,18 +141,23 @@ namespace ftk
         _p->callback = value;
     }
 
-    void FileBrowserPath::setEdit(bool value)
+    bool FileBrowserPath::isEditable() const
+    {
+        return _p->editable;
+    }
+
+    void FileBrowserPath::setEditable(bool value)
     {
         FTK_P();
-        if (value == p.edit)
+        if (value == p.editable)
             return;
-        p.edit = value;
+        p.editable = value;
         _widgetUpdate();
     }
 
-    void FileBrowserPath::setEditCallback(const std::function<void(bool)>& value)
+    void FileBrowserPath::setEditableCallback(const std::function<void(bool)>& value)
     {
-        _p->editCallback = value;
+        _p->editableCallback = value;
     }
 
     void FileBrowserPath::setGeometry(const Box2I& value)
@@ -164,9 +174,9 @@ namespace ftk
     void FileBrowserPath::_widgetUpdate()
     {
         FTK_P();
-        p.editButton->setChecked(p.edit);
+        p.editableButton->setChecked(p.editable);
         p.stackLayout->setCurrentWidget(
-            p.edit ?
+            p.editable ?
             std::static_pointer_cast<IWidget>(p.lineEdit) :
             std::static_pointer_cast<IWidget>(p.buttonsScrollWidget));
 
