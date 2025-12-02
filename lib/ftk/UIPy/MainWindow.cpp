@@ -28,6 +28,48 @@ namespace ftk
                 out->_init(context, app, size);
                 return out;
             }
+            
+            void setGeometry(const Box2I& value) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    setGeometry,
+                    value);
+            }
+            
+            void tickEvent(
+                bool parentsVisible,
+                bool parentsEnabled,
+                const TickEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    tickEvent,
+                    parentsVisible,
+                    parentsEnabled,
+                    event);
+            }
+            
+            void sizeHintEvent(const SizeHintEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    sizeHintEvent,
+                    event);
+            }
+            
+            void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    drawEvent,
+                    drawRect,
+                    event);
+            }
         };
 
         void mainWindow(py::module_& m)

@@ -28,8 +28,40 @@ namespace ftk
                 out->_init(context, app, name, size);
                 return out;
             }
+            
+            void setGeometry(const Box2I& value) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    Window,
+                    setGeometry,
+                    value);
+            }
+            
+            void tickEvent(
+                bool parentsVisible,
+                bool parentsEnabled,
+                const TickEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    Window,
+                    tickEvent,
+                    parentsVisible,
+                    parentsEnabled,
+                    event);
+            }
+            
+            void sizeHintEvent(const SizeHintEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    Window,
+                    sizeHintEvent,
+                    event);
+            }
 
-            virtual void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
+            void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
                 PYBIND11_OVERRIDE(
                     void,

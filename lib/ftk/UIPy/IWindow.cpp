@@ -18,7 +18,39 @@ namespace ftk
         class PyIWindow : public IWindow
         {
         public:
-            virtual void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
+            void setGeometry(const Box2I& value) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWindow,
+                    setGeometry,
+                    value);
+            }
+            
+            void tickEvent(
+                bool parentsVisible,
+                bool parentsEnabled,
+                const TickEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWindow,
+                    tickEvent,
+                    parentsVisible,
+                    parentsEnabled,
+                    event);
+            }
+            
+            void sizeHintEvent(const SizeHintEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWindow,
+                    sizeHintEvent,
+                    event);
+            }
+            
+            void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
                 PYBIND11_OVERRIDE(
                     void,
