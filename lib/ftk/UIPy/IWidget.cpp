@@ -28,7 +28,7 @@ namespace ftk
                 return out;
             }
             
-            virtual void setGeometry(const Box2I& value) override
+            void setGeometry(const Box2I& value) override
             {
                 PYBIND11_OVERRIDE(
                     void,
@@ -37,7 +37,21 @@ namespace ftk
                     value);
             }
             
-            virtual void sizeHintEvent(const SizeHintEvent& event) override
+            void tickEvent(
+                bool parentsVisible,
+                bool parentsEnabled,
+                const TickEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWidget,
+                    tickEvent,
+                    parentsVisible,
+                    parentsEnabled,
+                    event);
+            }
+            
+            void sizeHintEvent(const SizeHintEvent& event) override
             {
                 PYBIND11_OVERRIDE(
                     void,
@@ -46,7 +60,7 @@ namespace ftk
                     event);
             }
             
-            virtual void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
+            void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
                 PYBIND11_OVERRIDE(
                     void,
