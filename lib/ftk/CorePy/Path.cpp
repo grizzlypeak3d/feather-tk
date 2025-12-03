@@ -102,6 +102,7 @@ namespace ftk
                 .def_readwrite("filterFiles", &DirListOptions::filterFiles)
                 .def_readwrite("filterExt", &DirListOptions::filterExt)
                 .def_readwrite("seq", &DirListOptions::seq)
+                .def_readwrite("seqExts", &DirListOptions::seqExts)
                 .def_readwrite("seqNegative", &DirListOptions::seqNegative)
                 .def_readwrite("seqMaxDigits", &DirListOptions::seqMaxDigits)
                 .def_readwrite("hidden", &DirListOptions::hidden)
