@@ -315,7 +315,7 @@ namespace ftk
             FTK_ASSERT("render.exr" == dirEntries[2].path.getFileName());
 
             DirListOptions options;
-            options.seqExts.insert(".exr");
+            options.seqExts.push_back(".exr");
             dirEntries = dirList(dir, options);
             FTK_ASSERT(5 == dirEntries.size());
             FTK_ASSERT("render.0.exr" == dirEntries[0].path.getFileName());

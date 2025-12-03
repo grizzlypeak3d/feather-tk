@@ -240,9 +240,11 @@ namespace ftk
         return out;
     }
 
-    bool Path::testExt(const std::set<std::string>& exts) const
+    bool Path::testExt(const std::vector<std::string>& exts) const
     {
-        return !exts.empty() ? exts.find(toLower(getExt())) != exts.end() : true;
+        return !exts.empty() ?
+            std::find(exts.begin(), exts.end(), toLower(getExt())) != exts.end() :
+            true;
     }
 
     const std::string Path::numbers = "0123456789#";
@@ -476,7 +478,10 @@ namespace ftk
                 const bool isDir = std::filesystem::is_directory(i.path());
                 if (keep && !isDir && !options.filterExt.empty())
                 {
-                    keep = options.filterExt.find(toLower(path.getExt())) !=
+                    keep = std::find(
+                        options.filterExt.begin(),
+                        options.filterExt.end(),
+                        toLower(path.getExt())) !=
                         options.filterExt.end();
                 }
                 if (keep && !options.filter.empty())

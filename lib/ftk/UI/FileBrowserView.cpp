@@ -498,7 +498,7 @@ namespace ftk
         const std::string& ext = p.model->getExt();
         if (!ext.empty())
         {
-            dirListOptions.filterExt.insert(ext);
+            dirListOptions.filterExt.push_back(ext);
         }
         p.dirEntries = dirList(p.model->getPath(), dirListOptions);
 

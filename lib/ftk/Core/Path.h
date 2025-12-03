@@ -9,7 +9,6 @@
 #include <filesystem>
 #include <iostream>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -156,7 +155,7 @@ namespace ftk
         bool isAbs() const;
 
         //! Test whether this extension matches one in the given set.
-        bool testExt(const std::set<std::string>&) const;
+        bool testExt(const std::vector<std::string>&) const;
 
         ///@}
 
@@ -203,16 +202,16 @@ namespace ftk
     //! Directory list options.
     struct DirListOptions
     {
-        DirListSort           sort         = DirListSort::Name;
-        bool                  sortReverse  = false;
-        std::string           filter;
-        bool                  filterFiles  = false;
-        std::set<std::string> filterExt;
-        bool                  seq          = true;
-        std::set<std::string> seqExts;
-        bool                  seqNegative  = true;
-        size_t                seqMaxDigits = 9;
-        bool                  hidden       = false;
+        DirListSort              sort         = DirListSort::Name;
+        bool                     sortReverse  = false;
+        std::string              filter;
+        bool                     filterFiles  = false;
+        std::vector<std::string> filterExt;
+        bool                     seq          = true;
+        std::vector<std::string> seqExts;
+        bool                     seqNegative  = true;
+        size_t                   seqMaxDigits = 9;
+        bool                     hidden       = false;
 
         bool operator == (const DirListOptions&) const;
         bool operator != (const DirListOptions&) const;
