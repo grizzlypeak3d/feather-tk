@@ -91,23 +91,23 @@ namespace ftk
                     py::arg("shortcutModifiers"),
                     py::arg("checkedCallback"))
                 .def_property("text", &Action::getText, &Action::setText)
-                .def("observeText", &Action::observeText)
+                .def_property_readonly("observeText", &Action::observeText)
                 .def_property("icon", &Action::getIcon, &Action::setIcon)
-                .def("observeIcon", &Action::observeIcon)
+                .def_property_readonly("observeIcon", &Action::observeIcon)
                 .def_property("checkedIcon", &Action::getCheckedIcon, &Action::setCheckedIcon)
-                .def("observeCheckedIcon", &Action::observeCheckedIcon)
+                .def_property_readonly("observeCheckedIcon", &Action::observeCheckedIcon)
                 .def_property("shortcut", &Action::getShortcut, &Action::setShortcut)
                 .def_property("shortcutModifiers", &Action::getShortcutModifiers, &Action::setShortcutModifiers)
                 .def("doCallback", &Action::doCallback)
                 .def_property("checkable", &Action::isCheckable, &Action::setCheckable)
                 .def_property("checked", &Action::isChecked, &Action::setChecked)
-                .def("observeCheckable", &Action::observeCheckable)
-                .def("observeChecked", &Action::observeChecked)
+                .def_property_readonly("observeCheckable", &Action::observeCheckable)
+                .def_property_readonly("observeChecked", &Action::observeChecked)
                 .def("doCheckedCallback", &Action::doCheckedCallback)
                 .def_property("enabled", &Action::isEnabled, &Action::setEnabled)
-                .def("observeEnabled", &Action::observeEnabled)
+                .def_property_readonly("observeEnabled", &Action::observeEnabled)
                 .def_property("tooltip", &Action::getTooltip, &Action::setTooltip)
-                .def("observeTooltip", &Action::observeTooltip);
+                .def_property_readonly("observeTooltip", &Action::observeTooltip);
         }
     }
 }

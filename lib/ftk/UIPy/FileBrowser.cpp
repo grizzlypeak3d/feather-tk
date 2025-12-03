@@ -54,26 +54,26 @@ namespace ftk
                     "path",
                     &FileBrowserModel::getPath,
                     &FileBrowserModel::setPath)
-                .def("observePath", &FileBrowserModel::observePath)
+                .def_property_readonly("observePath", &FileBrowserModel::observePath)
                 .def("forward", &FileBrowserModel::forward)
-                .def("observeHasForward", &FileBrowserModel::observeHasForward)
+                .def_property_readonly("observeHasForward", &FileBrowserModel::observeHasForward)
                 .def("back", &FileBrowserModel::back)
-                .def("observeHasBack", &FileBrowserModel::observeHasBack)
+                .def_property_readonly("observeHasBack", &FileBrowserModel::observeHasBack)
                 .def_property(
                     "options",
                     &FileBrowserModel::getOptions,
                     &FileBrowserModel::setOptions)
-                .def("observeOptions", &FileBrowserModel::observeOptions)
+                .def_property_readonly("observeOptions", &FileBrowserModel::observeOptions)
                 .def_property(
                     "exts",
                     &FileBrowserModel::getExts,
                     &FileBrowserModel::setExts)
-                .def("observeExts", &FileBrowserModel::observeExts)
+                .def_property_readonly("observeExts", &FileBrowserModel::observeExts)
                 .def_property(
                     "ext",
                     &FileBrowserModel::getExt,
                     &FileBrowserModel::setExt)
-                .def("observeExt", &FileBrowserModel::observeExt);
+                .def_property_readonly("observeExt", &FileBrowserModel::observeExt);
 
             py::class_<FileBrowserSystem, ISystem, std::shared_ptr<FileBrowserSystem> >(m, "FileBrowserSystem")
                 .def(

@@ -82,7 +82,7 @@ namespace ftk
                     "search",
                     &FileBrowserView::getSearch,
                     &FileBrowserView::setSearch)
-                .def("observeCurrent", &FileBrowserView::observeCurrent)
+                .def_property_readonly("observeCurrent", &FileBrowserView::observeCurrent)
                 .def("getRect", &FileBrowserView::getRect);
         }
     }
