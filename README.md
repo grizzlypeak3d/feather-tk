@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Build Status](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml)
 
-# ![feather-tk Icon](etc/Icons/feather_tk_32.png) feather-tk
+# ![feather-tk Icon](etc/Icons/feather_tk_32.png)&nbsp;feather-tk
 
 Feather-tk is a lightweight toolkit for building cross-platform C++ applications.
 
