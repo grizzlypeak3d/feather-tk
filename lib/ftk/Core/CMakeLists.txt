@@ -113,6 +113,10 @@ else()
         OSUnix.cpp
         PathUnix.cpp
         TimeUnix.cpp)
+    if(APPLE)
+        list(APPEND SOURCE
+            PathMacOS.mm)
+    endif()
 endif()
 
 set(LIBS_PUBLIC ftkResource nlohmann_json::nlohmann_json)

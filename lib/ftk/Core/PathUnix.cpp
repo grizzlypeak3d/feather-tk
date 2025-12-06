@@ -3,6 +3,10 @@
 
 #include <ftk/Core/Path.h>
 
+#if defined(__APPLE__)
+#include "PathMacOSPrivate.h"
+#endif // __APPLE__
+
 #include <cstdlib>
 
 namespace ftk
@@ -28,6 +32,16 @@ namespace ftk
     std::filesystem::path getUserPath(UserPath value)
     {
         std::filesystem::path out;
+#if defined(__APPLE__)
+        switch (value)
+        {
+        case UserPath::Home:      out = getHomePath(); break;
+        case UserPath::Desktop:   out = getDesktopPath(); break;
+        case UserPath::Documents: out = getDocsPath(); break;
+        case UserPath::Downloads: out = getDownloadsPath(); break;
+        default: break;
+        }
+#else // __APPLE__
         const std::filesystem::path home = std::getenv("HOME");
         switch (value)
         {
@@ -37,6 +51,7 @@ namespace ftk
         case UserPath::Downloads: out = home / "Downloads"; break;
         default: break;
         }
+#endif // __APPLE__
         return out;
     }
 }
