@@ -129,7 +129,7 @@ sudo dnf install libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel
 ```
 Install newer compiler:
 ```
-sudo dnf install gcc-toolset-13.
+sudo dnf install gcc-toolset-13
 ```
 Enable newer compiler:
 ```
