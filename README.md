@@ -107,21 +107,21 @@ Optional dependencies:
 Dependencies:
 * CMake 3.31
 
-### Debian
+#### Debian
 
 Install system packages:
 ```
 sudo apt-get install xorg-dev libglu1-mesa-dev mesa-common-dev mesa-utils
 ```
 
-### Rocky 9
+#### Rocky 9
 
 Install system packages:
 ```
 sudo dnf install libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel mesa-libGL-devel
 ```
 
-### Rocky 8
+#### Rocky 8
 
 Install system packages:
 ```
@@ -136,7 +136,7 @@ Enable newer compiler:
 scl enable gcc-toolset-13 bash
 ```
 
-### Build
+#### Build
 
 Clone the repository:
 ```
