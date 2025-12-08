@@ -8,11 +8,12 @@ endif()
 set(ftk_VERSION_MAJOR "0")
 set(ftk_VERSION_MINOR "6")
 set(ftk_VERSION_PATCH "0")
-set(ftk_VERSION ${ftk_VERSION_MAJOR}.${ftk_VERSION_MINOR}.${ftk_VERSION_PATCH})
+set(ftk_VERSION_DEV "-dev")
+set(ftk_VERSION_FULL ${ftk_VERSION_MAJOR}.${ftk_VERSION_MINOR}.${ftk_VERSION_PATCH}${ftk_VERSION_DEV})
 add_definitions(-Dftk_VERSION_MAJOR=${ftk_VERSION_MAJOR})
 add_definitions(-Dftk_VERSION_MINOR=${ftk_VERSION_MINOR})
 add_definitions(-Dftk_VERSION_PATCH=${ftk_VERSION_PATCH})
-add_definitions(-Dftk_VERSION="${ftk_VERSION}")
+add_definitions(-Dftk_VERSION_FULL="${ftk_VERSION_FULL}")
 
 project(
     feather-tk

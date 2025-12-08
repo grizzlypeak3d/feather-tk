@@ -15,6 +15,11 @@ namespace ftk
     {
         _logSystem = LogSystem::create(shared_from_this());
         addSystem(_logSystem);
+
+        _logSystem->print(
+            "ftk::Context",
+            Format("ftk version: {0}").arg(ftk_VERSION_FULL));
+
         const auto systemInfo = getSystemInfo();
         _logSystem->print(
             "ftk::Context",
