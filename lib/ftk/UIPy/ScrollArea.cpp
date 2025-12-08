@@ -23,7 +23,7 @@ namespace ftk
                 .value("Vertical", ScrollType::Vertical)
                 .value("Both", ScrollType::Both)
                 .value("Menu", ScrollType::Menu);
-            FTK_ENUM_BIND(ScrollType);
+            FTK_ENUM_BIND(m, ScrollType);
         }
     }
 }

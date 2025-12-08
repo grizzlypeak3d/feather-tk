@@ -20,26 +20,26 @@ namespace ftk
             py::enum_<Orientation>(m, "Orientation")
                 .value("Horizontal", Orientation::Horizontal)
                 .value("Vertical", Orientation::Vertical);
-            FTK_ENUM_BIND(Orientation);
+            FTK_ENUM_BIND(m, Orientation);
 
             py::enum_<Stretch>(m, "Stretch")
                 .value("Fixed", Stretch::Fixed)
                 .value("Expanding", Stretch::Expanding);
-            FTK_ENUM_BIND(Stretch);
+            FTK_ENUM_BIND(m, Stretch);
 
             py::enum_<HAlign>(m, "HAlign")
                 .value("Fill", HAlign::Fill)
                 .value("Left", HAlign::Left)
                 .value("Center", HAlign::Center)
                 .value("Right", HAlign::Right);
-            FTK_ENUM_BIND(HAlign);
+            FTK_ENUM_BIND(m, HAlign);
 
             py::enum_<VAlign>(m, "VAlign")
                 .value("Fill", VAlign::Fill)
                 .value("Top", VAlign::Top)
                 .value("Center", VAlign::Center)
                 .value("Bottom", VAlign::Bottom);
-            FTK_ENUM_BIND(VAlign);
+            FTK_ENUM_BIND(m, VAlign);
         }
     }
 }

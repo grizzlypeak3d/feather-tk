@@ -49,7 +49,7 @@ namespace ftk
                 .value("YUV_422P_U16", ImageType::YUV_422P_U16)
                 .value("YUV_444P_U16", ImageType::YUV_444P_U16)
                 .value("ARGB_4444_Premult", ImageType::ARGB_4444_Premult);
-            FTK_ENUM_BIND(ImageType);
+            FTK_ENUM_BIND(m, ImageType);
 
             m.def("getChannelCount", &getChannelCount);
             m.def("getBitDepth", &getBitDepth);
@@ -57,12 +57,12 @@ namespace ftk
             py::enum_<VideoLevels>(m, "VideoLevels")
                 .value("FullRange", VideoLevels::FullRange)
                 .value("LegalRange", VideoLevels::LegalRange);
-            FTK_ENUM_BIND(VideoLevels);
+            FTK_ENUM_BIND(m, VideoLevels);
 
             py::enum_<YUVCoefficients>(m, "YUVCoefficients")
                 .value("REC709", YUVCoefficients::REC709)
                 .value("BT2020", YUVCoefficients::BT2020);
-            FTK_ENUM_BIND(YUVCoefficients);
+            FTK_ENUM_BIND(m, YUVCoefficients);
 
             m.def("getYUVCoefficients", &getYUVCoefficients);
 

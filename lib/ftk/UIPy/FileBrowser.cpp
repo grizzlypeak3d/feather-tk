@@ -26,7 +26,7 @@ namespace ftk
             py::enum_<FileBrowserMode>(m, "FileBrowserMode")
                 .value("File", FileBrowserMode::File)
                 .value("Dir", FileBrowserMode::Dir);
-            FTK_ENUM_BIND(FileBrowserMode);
+            FTK_ENUM_BIND(m, FileBrowserMode);
 
             py::class_<FileBrowserOptions>(m, "FileBrowserOptions")
                 .def(py::init())

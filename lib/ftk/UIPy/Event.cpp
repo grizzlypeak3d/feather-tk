@@ -211,7 +211,7 @@ namespace ftk
                 .value("Keypad_0", Key::Keypad_0)
                 .value("KeypadPeriod", Key::KeypadPeriod)
                 .value("KeypadEquals", Key::KeypadEquals);
-            FTK_ENUM_BIND(Key);
+            FTK_ENUM_BIND(m, Key);
 
             m.def(
                 "getShortcutLabel",

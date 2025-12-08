@@ -24,7 +24,7 @@ namespace ftk
                 .value("Check", ButtonGroupType::Check)
                 .value("Radio", ButtonGroupType::Radio)
                 .value("Toggle", ButtonGroupType::Toggle);
-            FTK_ENUM_BIND(ButtonGroupType);
+            FTK_ENUM_BIND(m, ButtonGroupType);
 
             py::class_<ButtonGroup, std::shared_ptr<ButtonGroup> >(m, "ButtonGroup")
                 .def(

@@ -38,7 +38,7 @@ namespace ftk
                 .value("Desktop", UserPath::Desktop)
                 .value("Documents", UserPath::Documents)
                 .value("Downloads", UserPath::Downloads);
-            FTK_ENUM_BIND(UserPath);
+            FTK_ENUM_BIND(m, UserPath);
 
             m.def("getUserPath", [](UserPath value) { return getUserPath(value).u8string(); });
 
@@ -98,7 +98,7 @@ namespace ftk
                 .value("Extension", DirListSort::Extension)
                 .value("Size", DirListSort::Size)
                 .value("Time", DirListSort::Time);
-            FTK_ENUM_BIND(DirListSort);
+            FTK_ENUM_BIND(m, DirListSort);
 
             py::class_<DirListOptions>(m, "DirListOptions")
                 .def_readwrite("sort", &DirListOptions::sort)

@@ -29,7 +29,7 @@ namespace ftk
                 .value("SouthWest", MDIResize::SouthWest)
                 .value("West", MDIResize::West)
                 .value("NorthWest", MDIResize::NorthWest);
-            FTK_ENUM_BIND(MDIResize);
+            FTK_ENUM_BIND(m, MDIResize);
 
             py::class_<MDIWidget, IWidget, std::shared_ptr<MDIWidget> >(m, "MDIWidget")
                 .def(

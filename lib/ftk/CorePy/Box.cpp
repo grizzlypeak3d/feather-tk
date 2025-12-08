@@ -8,6 +8,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 
+#include <sstream>
+
 namespace py = pybind11;
 
 namespace ftk

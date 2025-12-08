@@ -40,7 +40,7 @@ namespace ftk
                 .value("SwatchLarge", SizeRole::SwatchLarge)
                 .value("Shadow", SizeRole::Shadow)
                 .value("DragLength", SizeRole::DragLength);
-            FTK_ENUM_BIND(SizeRole);
+            FTK_ENUM_BIND(m, SizeRole);
 
             py::enum_<ColorRole>(m, "ColorRole")
                 .value("_None", ColorRole::None)
@@ -63,14 +63,14 @@ namespace ftk
                 .value("Cyan", ColorRole::Cyan)
                 .value("Magenta", ColorRole::Magenta)
                 .value("Yellow", ColorRole::Yellow);
-            FTK_ENUM_BIND(ColorRole);
+            FTK_ENUM_BIND(m, ColorRole);
 
             py::enum_<FontRole>(m, "FontRole")
                 .value("_None", FontRole::None)
                 .value("Label", FontRole::Label)
                 .value("Mono", FontRole::Mono)
                 .value("Title", FontRole::Title);
-            FTK_ENUM_BIND(FontRole);
+            FTK_ENUM_BIND(m, FontRole);
         }
     }
 }

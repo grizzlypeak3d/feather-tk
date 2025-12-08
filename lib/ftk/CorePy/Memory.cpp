@@ -26,7 +26,7 @@ namespace ftk
             py::enum_<Endian>(m, "Endian")
                 .value("MSB", Endian::MSB)
                 .value("LSB", Endian::LSB);
-            FTK_ENUM_BIND(Endian);
+            FTK_ENUM_BIND(m, Endian);
 
             m.def("getEndian", &getEndian);
             m.def("oppositeEndian", &opposite);
