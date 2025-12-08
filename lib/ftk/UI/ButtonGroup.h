@@ -16,8 +16,12 @@ namespace ftk
         Click,
         Check,
         Radio,
-        Toggle
+        Toggle,
+        
+        Count,
+        First = Click
     };
+    FTK_ENUM(ButtonGroupType);
 
     //! Button group.
     class ButtonGroup : public std::enable_shared_from_this<ButtonGroup>

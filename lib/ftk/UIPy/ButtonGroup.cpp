@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/ButtonGroup.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/UI/ButtonGroup.h>
 
 #include <pybind11/pybind11.h>
@@ -22,6 +24,7 @@ namespace ftk
                 .value("Check", ButtonGroupType::Check)
                 .value("Radio", ButtonGroupType::Radio)
                 .value("Toggle", ButtonGroupType::Toggle);
+            FTK_ENUM_BIND(ButtonGroupType);
 
             py::class_<ButtonGroup, std::shared_ptr<ButtonGroup> >(m, "ButtonGroup")
                 .def(

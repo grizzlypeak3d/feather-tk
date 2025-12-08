@@ -131,12 +131,28 @@ namespace ftk
             m.def("dot", [](const V3F& a, const V3F& b) { return dot(a, b); });
             m.def("dot", [](const V4F& a, const V4F& b) { return dot(a, b); });
 
+            m.def("cross", [](const V3F& a, const V3F& b) { return cross(a, b); });
+
             m.def("perpCW", [](const V2I& v) { return perpCW(v); });
             m.def("perpCW", [](const V2F& v) { return perpCW(v); });
             m.def("perpCCW", [](const V2I& v) { return perpCCW(v); });
             m.def("perpCCW", [](const V2F& v) { return perpCCW(v); });
 
             m.def("convert", [](const V2I& v) { return convert(v); });
+
+            m.def("round", [](const V2F& v) { return round(v); });
+            m.def("floor", [](const V2F& v) { return floor(v); });
+            m.def("ceil", [](const V2F& v) { return ceil(v); });
+            
+            m.def("to_string", [](const V2I& v) { return to_string(v); });
+            m.def("to_string", [](const V2F& v) { return to_string(v); });
+            m.def("to_string", [](const V3F& v) { return to_string(v); });
+            m.def("to_string", [](const V4F& v) { return to_string(v); });
+            
+            m.def("from_string", [](const std::string& s, V2I& v) { from_string(s, v); });
+            m.def("from_string", [](const std::string& s, V2F& v) { from_string(s, v); });
+            m.def("from_string", [](const std::string& s, V3F& v) { from_string(s, v); });
+            m.def("from_string", [](const std::string& s, V4F& v) { from_string(s, v); });
         }
     }
 }

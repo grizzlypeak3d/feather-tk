@@ -3,8 +3,18 @@
 
 #include <ftk/UI/ButtonGroup.h>
 
+#include <ftk/Core/Error.h>
+#include <ftk/Core/String.h>
+
 namespace ftk
 {
+    FTK_ENUM_IMPL(
+        ButtonGroupType,
+        "Click",
+        "Check",
+        "Radio",
+        "Toggle");
+
     struct ButtonGroup::Private
     {
         ButtonGroupType type = ButtonGroupType::Click;

@@ -96,6 +96,19 @@ namespace ftk
             m.def("area", [](const Size2F& v) { return area(v); });
 
             m.def("volume", [](const Size3F& v) { return volume(v); });
+
+            m.def("margin", [](const Size2I& a, int b) { return margin(a, b); });
+            m.def("margin", [](const Size2F& a, float b) { return margin(a, b); });
+            m.def("margin", [](const Size2I& a, int b, int c) { return margin(a, b, c); });
+            m.def("margin", [](const Size2F& a, float b, float c) { return margin(a, b, c); });
+            
+            m.def("to_string", [](const Size2I& v) { return to_string(v); });
+            m.def("to_string", [](const Size2F& v) { return to_string(v); });
+            m.def("to_string", [](const Size3F& v) { return to_string(v); });
+            
+            m.def("from_string", [](const std::string& s, Size2I& v) { from_string(s, v); });
+            m.def("from_string", [](const std::string& s, Size2F& v) { from_string(s, v); });
+            m.def("from_string", [](const std::string& s, Size3F& v) { from_string(s, v); });
         }
     }
 }

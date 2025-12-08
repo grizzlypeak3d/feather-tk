@@ -26,6 +26,7 @@ set(HEADERS
     Size.h
     String.h
     Timer.h
+    Util.h
     Vector.h)
 set(HEADERS_PRIVATE)
 set(SOURCE

@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/ScrollArea.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/UI/ScrollArea.h>
 
 #include <pybind11/pybind11.h>
@@ -21,6 +23,7 @@ namespace ftk
                 .value("Vertical", ScrollType::Vertical)
                 .value("Both", ScrollType::Both)
                 .value("Menu", ScrollType::Menu);
+            FTK_ENUM_BIND(ScrollType);
         }
     }
 }

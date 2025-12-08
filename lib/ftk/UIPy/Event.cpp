@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Event.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/UI/Event.h>
 #include <ftk/UI/IWidget.h>
 
@@ -74,7 +76,9 @@ namespace ftk
                 .value("Control", KeyModifier::Control)
                 .value("Alt", KeyModifier::Alt)
                 .value("Super", KeyModifier::Super);
+
             m.attr("commandKeyModifier") = commandKeyModifier;
+
             m.def("getKeyModifierLabel", &getKeyModifierLabel);
 
             py::class_<MouseClickEvent>(m, "MouseClickEvent")
@@ -207,6 +211,8 @@ namespace ftk
                 .value("Keypad_0", Key::Keypad_0)
                 .value("KeypadPeriod", Key::KeypadPeriod)
                 .value("KeypadEquals", Key::KeypadEquals);
+            FTK_ENUM_BIND(Key);
+
             m.def(
                 "getShortcutLabel",
                 &getShortcutLabel,

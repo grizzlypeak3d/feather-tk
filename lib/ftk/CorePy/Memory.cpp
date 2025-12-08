@@ -3,6 +3,8 @@
 
 #include <ftk/CorePy/Memory.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/Core/Memory.h>
 
 #include <pybind11/pybind11.h>
@@ -24,6 +26,7 @@ namespace ftk
             py::enum_<Endian>(m, "Endian")
                 .value("MSB", Endian::MSB)
                 .value("LSB", Endian::LSB);
+            FTK_ENUM_BIND(Endian);
 
             m.def("getEndian", &getEndian);
             m.def("oppositeEndian", &opposite);

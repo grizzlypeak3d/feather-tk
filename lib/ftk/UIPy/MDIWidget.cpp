@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/MDIWidget.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/UI/MDIWidget.h>
 
 #include <pybind11/pybind11.h>
@@ -27,6 +29,7 @@ namespace ftk
                 .value("SouthWest", MDIResize::SouthWest)
                 .value("West", MDIResize::West)
                 .value("NorthWest", MDIResize::NorthWest);
+            FTK_ENUM_BIND(MDIResize);
 
             py::class_<MDIWidget, IWidget, std::shared_ptr<MDIWidget> >(m, "MDIWidget")
                 .def(

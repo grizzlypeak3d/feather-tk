@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Style.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/UI/Style.h>
 
 #include <pybind11/pybind11.h>
@@ -38,6 +40,7 @@ namespace ftk
                 .value("SwatchLarge", SizeRole::SwatchLarge)
                 .value("Shadow", SizeRole::Shadow)
                 .value("DragLength", SizeRole::DragLength);
+            FTK_ENUM_BIND(SizeRole);
 
             py::enum_<ColorRole>(m, "ColorRole")
                 .value("_None", ColorRole::None)
@@ -60,12 +63,14 @@ namespace ftk
                 .value("Cyan", ColorRole::Cyan)
                 .value("Magenta", ColorRole::Magenta)
                 .value("Yellow", ColorRole::Yellow);
+            FTK_ENUM_BIND(ColorRole);
 
             py::enum_<FontRole>(m, "FontRole")
                 .value("_None", FontRole::None)
                 .value("Label", FontRole::Label)
                 .value("Mono", FontRole::Mono)
                 .value("Title", FontRole::Title);
+            FTK_ENUM_BIND(FontRole);
         }
     }
 }

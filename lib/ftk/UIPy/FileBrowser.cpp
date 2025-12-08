@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/FileBrowser.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/UI/FileBrowser.h>
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/RecentFilesModel.h>
@@ -24,6 +26,7 @@ namespace ftk
             py::enum_<FileBrowserMode>(m, "FileBrowserMode")
                 .value("File", FileBrowserMode::File)
                 .value("Dir", FileBrowserMode::Dir);
+            FTK_ENUM_BIND(FileBrowserMode);
 
             py::class_<FileBrowserOptions>(m, "FileBrowserOptions")
                 .def(py::init())

@@ -3,6 +3,8 @@
 
 #include <ftk/CorePy/Image.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/Core/Image.h>
 
 #include <pybind11/pybind11.h>
@@ -47,6 +49,7 @@ namespace ftk
                 .value("YUV_422P_U16", ImageType::YUV_422P_U16)
                 .value("YUV_444P_U16", ImageType::YUV_444P_U16)
                 .value("ARGB_4444_Premult", ImageType::ARGB_4444_Premult);
+            FTK_ENUM_BIND(ImageType);
 
             m.def("getChannelCount", &getChannelCount);
             m.def("getBitDepth", &getBitDepth);
@@ -54,10 +57,12 @@ namespace ftk
             py::enum_<VideoLevels>(m, "VideoLevels")
                 .value("FullRange", VideoLevels::FullRange)
                 .value("LegalRange", VideoLevels::LegalRange);
+            FTK_ENUM_BIND(VideoLevels);
 
             py::enum_<YUVCoefficients>(m, "YUVCoefficients")
                 .value("REC709", YUVCoefficients::REC709)
                 .value("BT2020", YUVCoefficients::BT2020);
+            FTK_ENUM_BIND(YUVCoefficients);
 
             m.def("getYUVCoefficients", &getYUVCoefficients);
 
@@ -82,6 +87,7 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<const Size2I&, ImageType>())
                 .def(py::init<int, int, ImageType>())
+                .def_readwrite("name", &ImageInfo::name)
                 .def_readwrite("size", &ImageInfo::size)
                 .def_readwrite("type", &ImageInfo::type)
                 .def_readwrite("pixelAspectRatio", &ImageInfo::pixelAspectRatio)

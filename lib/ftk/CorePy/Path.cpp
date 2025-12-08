@@ -3,6 +3,8 @@
 
 #include <ftk/CorePy/Color.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <ftk/Core/Path.h>
 
 #include <pybind11/pybind11.h>
@@ -36,6 +38,8 @@ namespace ftk
                 .value("Desktop", UserPath::Desktop)
                 .value("Documents", UserPath::Documents)
                 .value("Downloads", UserPath::Downloads);
+            FTK_ENUM_BIND(UserPath);
+
             m.def("getUserPath", [](UserPath value) { return getUserPath(value).u8string(); });
 
             m.def(
@@ -94,6 +98,7 @@ namespace ftk
                 .value("Extension", DirListSort::Extension)
                 .value("Size", DirListSort::Size)
                 .value("Time", DirListSort::Time);
+            FTK_ENUM_BIND(DirListSort);
 
             py::class_<DirListOptions>(m, "DirListOptions")
                 .def_readwrite("sort", &DirListOptions::sort)
