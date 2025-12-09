@@ -17,7 +17,7 @@ add_definitions(-Dftk_VERSION_FULL="${ftk_VERSION_FULL}")
 
 project(
     feather-tk
-    VERSION ${ftk_VERSION}
+    VERSION ${ftk_VERSION_MAJOR}.${ftk_VERSION_MINOR}.${ftk_VERSION_PATCH}
     LANGUAGES CXX C)
 
 #-------------------------------------------------------------------------------
