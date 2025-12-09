@@ -125,7 +125,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
 endif()
 set(LIBS_PRIVATE Freetype::Freetype PNG::PNG ZLIB::ZLIB)
 if(APPLE)
-    list(APPEND LIBS_PRIVATE "-framework Foundation")
+    list(APPEND LIBS_PRIVATE "-framework CoreServices" "-framework Foundation")
 endif()
 
 add_library(ftkCore ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})

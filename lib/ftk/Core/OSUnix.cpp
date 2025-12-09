@@ -107,7 +107,7 @@ namespace ftk
 
     void openURL(const std::string& value)
     {
-#if defined(DJV_PLATFORM_MACOS)
+#if defined(__APPLE__)
         CFURLRef url = CFURLCreateWithBytes(
             NULL,
             (UInt8*)value.c_str(),
@@ -116,13 +116,13 @@ namespace ftk
             NULL);
         LSOpenCFURLRef(url, 0);
         CFRelease(url);
-#else // DJV_PLATFORM_MACOS
+#else // __APPLE__
         std::stringstream ss;
         ss << "xdg-open" << " " << value;
         if (system(ss.str().c_str()) != 0)
         {
             throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
         }
-#endif // DJV_PLATFORM_MACOS
+#endif // __APPLE__
     }
 }
