@@ -154,7 +154,7 @@ namespace ftk
         //! Get whether the path is absolute.
         bool isAbs() const;
 
-        //! Test whether this extension matches one in the given set.
+        //! Test whether this extension matches one in the given list.
         bool testExt(const std::vector<std::string>&) const;
 
         ///@}
@@ -235,10 +235,10 @@ namespace ftk
         const DirListOptions& = DirListOptions());
 
     //! Expand a file sequence. This function will search the directory for
-    //! other frames that match the given frame.
+    //! other frames that match the given file name.
     bool expandSeq(
-        const std::filesystem::path&,
         Path&,
+        const std::vector<std::string>& seqExts = {},
         const PathOptions& = PathOptions());
 
     void to_json(nlohmann::json&, const PathOptions&);

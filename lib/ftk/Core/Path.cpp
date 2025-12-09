@@ -586,22 +586,26 @@ namespace ftk
     }
 
     bool expandSeq(
-        const std::filesystem::path& stdpath,
         Path& path,
+        const std::vector<std::string>& seqExts,
         const PathOptions& pathOptions)
     {
         bool out = false;
 
         // Find matching sequence files.
         bool init = true;
-        const Path tmp(stdpath.u8string());
+        const std::filesystem::path stdpath = std::filesystem::u8path(path.get());
         for (const auto& i : std::filesystem::directory_iterator(stdpath.parent_path()))
         {
             const Path entry(i.path().u8string(), pathOptions);
             const bool isDir = std::filesystem::is_directory(i.path());
-            if (init && !isDir)
+            const bool hasSeqExt =
+                seqExts.empty() ||
+                std::find(seqExts.begin(), seqExts.end(), toLower(entry.getExt()))
+                != seqExts.end();
+            if (init && !isDir && hasSeqExt)
             {
-                out = tmp.seq(entry);
+                out = path.seq(entry);
                 if (out)
                 {
                     init = false;
