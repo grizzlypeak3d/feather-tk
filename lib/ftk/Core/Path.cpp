@@ -585,39 +585,34 @@ namespace ftk
         return out;
     }
 
-    bool expandSeq(
-        Path& path,
-        const std::vector<std::string>& seqExts,
+    Path expandSeq(
+        const Path& path,
         const PathOptions& pathOptions)
     {
-        bool out = false;
-
-        // Find matching sequence files.
-        bool init = true;
-        const std::filesystem::path stdpath = std::filesystem::u8path(path.get());
-        for (const auto& i : std::filesystem::directory_iterator(stdpath.parent_path()))
+        Path out = path;
+        if (out.hasNum() && !out.isSeq() || out.hasSeqWildcard())
         {
-            const Path entry(i.path().u8string(), pathOptions);
-            const bool isDir = std::filesystem::is_directory(i.path());
-            const bool hasSeqExt =
-                seqExts.empty() ||
-                std::find(seqExts.begin(), seqExts.end(), toLower(entry.getExt()))
-                != seqExts.end();
-            if (init && !isDir && hasSeqExt)
+            // Find matching sequence files.
+            bool init = true;
+            const std::filesystem::path stdpath = std::filesystem::u8path(out.get());
+            for (const auto& i : std::filesystem::directory_iterator(stdpath.parent_path()))
             {
-                out = path.seq(entry);
-                if (out)
+                const Path entry(i.path().u8string(), pathOptions);
+                const bool isDir = std::filesystem::is_directory(i.path());
+                if (init && !isDir)
                 {
-                    init = false;
-                    path = entry;
+                    if (out.seq(entry))
+                    {
+                        init = false;
+                        out = entry;
+                    }
+                }
+                if (!init)
+                {
+                    out.addSeq(entry);
                 }
             }
-            if (!init)
-            {
-                path.addSeq(entry);
-            }
         }
-
         return out;
     }
 

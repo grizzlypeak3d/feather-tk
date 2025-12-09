@@ -339,28 +339,21 @@ namespace ftk
                 FileIO::create(dir / Format("render.{0}.png").arg(i).str(), FileMode::Write);
             }
 
-            Path path((dir / "render.0.exr").u8string());
-            FTK_ASSERT(expandSeq(path));
+            Path path = expandSeq(Path((dir / "render.0.exr").u8string()));
             FTK_ASSERT(0 == path.getFrames().value().min());
             FTK_ASSERT(9 == path.getFrames().value().max());
 
-            path = Path((dir / "render.#.exr").u8string());
-            FTK_ASSERT(expandSeq(path));
+            path = expandSeq(Path((dir / "render.#.exr").u8string()));
             FTK_ASSERT(0 == path.getFrames().value().min());
             FTK_ASSERT(9 == path.getFrames().value().max());
 
-            path = Path((dir / "render.0.png").u8string());
-            FTK_ASSERT(expandSeq(path));
+            path = expandSeq(Path((dir / "render.0.png").u8string()));
             FTK_ASSERT(100 == path.getFrames().value().min());
             FTK_ASSERT(102 == path.getFrames().value().max());
 
-            path = Path((dir / "render.0.png").u8string());
-            FTK_ASSERT(!expandSeq(path, { ".exr" }));
+            path = expandSeq(Path((dir / "render.0.tiff").u8string()));
             FTK_ASSERT(0 == path.getFrames().value().min());
             FTK_ASSERT(0 == path.getFrames().value().max());
-
-            path = Path((dir / "render.0.tiff").u8string());
-            FTK_ASSERT(!expandSeq(path));
         }
     }
 }

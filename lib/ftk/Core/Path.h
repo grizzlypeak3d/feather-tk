@@ -236,9 +236,8 @@ namespace ftk
 
     //! Expand a file sequence. This function will search the directory for
     //! other frames that match the given file name.
-    bool expandSeq(
-        Path&,
-        const std::vector<std::string>& seqExts = {},
+    Path expandSeq(
+        const Path&,
         const PathOptions& = PathOptions());
 
     void to_json(nlohmann::json&, const PathOptions&);
