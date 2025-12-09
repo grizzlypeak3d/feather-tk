@@ -19,7 +19,7 @@ window = ftk.MainWindow(context, app, size)
 scrollWidget = ftk.ScrollWidget(context, ftk.ScrollType.Both)
 scrollWidget.border = False
 scrollWidget.vStretch = ftk.Stretch.Expanding
-window.setWidget(scrollWidget)
+window.widget = scrollWidget
 
 # Create a MDI canvas.
 canvas = ftk.MDICanvas(context)

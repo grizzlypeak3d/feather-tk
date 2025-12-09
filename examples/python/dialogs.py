@@ -13,7 +13,7 @@ class DialogsWindow(ftk.MainWindow):
         # Create a layout.
         layout = ftk.VerticalLayout(context)
         layout.marginRole = ftk.SizeRole.Margin
-        self.setWidget(layout)
+        self.widget = layout
 
         # Message dialog.
         button = ftk.PushButton(context, "Message Dialog", layout)

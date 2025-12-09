@@ -21,7 +21,7 @@ scrollWidget = ftk.ScrollWidget(context, ftk.ScrollType.Both)
 scrollWidget.border = False
 scrollWidget.vStretch = ftk.Stretch.Expanding
 scrollWidget.widget = layout;
-window.setWidget(scrollWidget)
+window.widget = scrollWidget
 
 # Add a bellows.
 vLayout = ftk.VerticalLayout(context)

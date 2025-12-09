@@ -191,6 +191,11 @@ namespace ftk
         }
     }
 
+    const std::shared_ptr<IWidget>& MainWindow::getWidget() const
+    {
+        return _p->centralWidget;
+    }
+
     void MainWindow::setWidget(const std::shared_ptr<IWidget>& value)
     {
         FTK_P();

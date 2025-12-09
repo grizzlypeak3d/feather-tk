@@ -17,7 +17,7 @@ window = ftk.MainWindow(context, app, ftk.Size2I(1280, 960))
 # Create a tab widget.
 tabWidget = ftk.TabWidget(context)
 tabWidget.vStretch = ftk.Stretch.Expanding
-window.setWidget(tabWidget)
+window.widget = tabWidget
 
 # Add tabs.
 for i in range(0, 10):

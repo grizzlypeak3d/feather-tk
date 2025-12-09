@@ -36,6 +36,9 @@ namespace ftk
         //! Set the menu bar.
         void setMenuBar(const std::shared_ptr<MenuBar>&);
 
+        //! Get the central widget.
+        const std::shared_ptr<IWidget>& getWidget() const;
+
         //! Set the central widget.
         void setWidget(const std::shared_ptr<IWidget>&);
 

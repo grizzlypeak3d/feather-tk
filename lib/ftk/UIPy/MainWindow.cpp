@@ -81,7 +81,7 @@ namespace ftk
                     py::arg("app"),
                     py::arg("size") = Size2I(1280, 960))
                 .def_property("menuBar", &MainWindow::getMenuBar, &MainWindow::setMenuBar)
-                .def("setWidget", &MainWindow::setWidget);
+                .def_property("widget", &MainWindow::getWidget, &MainWindow::setWidget);
         }
     }
 }

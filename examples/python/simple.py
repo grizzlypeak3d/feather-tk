@@ -17,7 +17,7 @@ window = ftk.MainWindow(context, app, ftk.Size2I(1280, 960))
 label = ftk.Label(context, "Hello world")
 label.fontRole = ftk.FontRole.Title
 label.setAlign(ftk.HAlign.Center, ftk.VAlign.Center)
-window.setWidget(label)
+window.widget = label
 
 # Run the application.
 app.run()
