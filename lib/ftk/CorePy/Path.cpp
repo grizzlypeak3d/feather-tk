@@ -134,8 +134,7 @@ namespace ftk
             m.def(
                 "expandSeq",
                 &expandSeq,
-                py::arg("inPath"),
-                py::arg("outPath"),
+                py::arg("path"),
                 py::arg("pathOptions") = PathOptions());
         }
     }
