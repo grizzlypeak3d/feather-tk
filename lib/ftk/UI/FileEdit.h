@@ -15,7 +15,7 @@ namespace ftk
     ///@{
 
     //! File edit widget.
-    class FileEdit : public IWidget
+    class FTK_API_TYPE FileEdit : public IWidget
     {
     protected:
         void _init(

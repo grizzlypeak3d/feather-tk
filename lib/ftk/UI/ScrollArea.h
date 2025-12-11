@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Scroll type.
-    enum class ScrollType
+    enum class FTK_API_TYPE ScrollType
     {
         Both,
         Horizontal,
@@ -24,7 +24,7 @@ namespace ftk
     FTK_ENUM(ScrollType);
 
     //! Scroll area.
-    class ScrollArea : public IWidget
+    class FTK_API_TYPE ScrollArea : public IWidget
     {
     protected:
         void _init(

@@ -11,14 +11,14 @@ namespace ftk
     class Context;
 
     //! Base class for documents.
-    class IDocument : public std::enable_shared_from_this<IDocument>
+    class FTK_API_TYPE IDocument : public std::enable_shared_from_this<IDocument>
     {
     public:
         virtual ~IDocument() = 0;
     };
 
     //! Document model.
-    class DocumentModel : public std::enable_shared_from_this<DocumentModel>
+    class FTK_API_TYPE DocumentModel : public std::enable_shared_from_this<DocumentModel>
     {
     protected:
         void _init(const std::shared_ptr<ftk::Context>&);

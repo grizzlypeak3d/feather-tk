@@ -10,7 +10,7 @@ namespace ftk
     class App;
 
     //! Base class for windows.
-    class IWindow : public IWidget
+    class FTK_API_TYPE IWindow : public IWidget
     {
     protected:
         void _init(

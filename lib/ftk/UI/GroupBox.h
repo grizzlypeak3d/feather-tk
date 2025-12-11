@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Group box.
-    class GroupBox : public IWidget
+    class FTK_API_TYPE GroupBox : public IWidget
     {
     protected:
         void _init(

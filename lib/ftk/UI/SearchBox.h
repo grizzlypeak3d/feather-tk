@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Search box widget.
-    class SearchBox : public IWidget
+    class FTK_API_TYPE SearchBox : public IWidget
     {
     protected:
         void _init(

@@ -17,7 +17,7 @@ namespace ftk
     ///@{
         
     //! Child added event.
-    struct ChildAddEvent
+    struct FTK_API_TYPE ChildAddEvent
     {
         ChildAddEvent(const std::shared_ptr<IWidget>&);
 
@@ -25,7 +25,7 @@ namespace ftk
     };
 
     //! Child removed event.
-    struct ChildRemoveEvent
+    struct FTK_API_TYPE ChildRemoveEvent
     {
         ChildRemoveEvent(const std::shared_ptr<IWidget>&, int index);
 
@@ -34,12 +34,12 @@ namespace ftk
     };
 
     //! Tick event.
-    struct TickEvent
+    struct FTK_API_TYPE TickEvent
     {
     };
 
     //! Size hint event.
-    struct SizeHintEvent
+    struct FTK_API_TYPE SizeHintEvent
     {
         SizeHintEvent(
             const std::shared_ptr<FontSystem>&,
@@ -54,7 +54,7 @@ namespace ftk
     };
 
     //! Draw event.
-    struct DrawEvent
+    struct FTK_API_TYPE DrawEvent
     {
         DrawEvent(
             const std::shared_ptr<FontSystem>&,
@@ -71,14 +71,14 @@ namespace ftk
     };
 
     //! Drag and drop data.
-    class DragAndDropData : public std::enable_shared_from_this<DragAndDropData>
+    class FTK_API_TYPE DragAndDropData : public std::enable_shared_from_this<DragAndDropData>
     {
     public:
         virtual ~DragAndDropData() = 0;
     };
 
     //! Mouse enter event.
-    struct MouseEnterEvent
+    struct FTK_API_TYPE MouseEnterEvent
     {
         MouseEnterEvent(const V2I& pos);
 
@@ -87,7 +87,7 @@ namespace ftk
     };
 
     //! Mouse move event.
-    struct MouseMoveEvent
+    struct FTK_API_TYPE MouseMoveEvent
     {
         MouseMoveEvent(
             const V2I& pos,
@@ -102,7 +102,7 @@ namespace ftk
     };
 
     //! Keyboard modifiers.
-    enum class KeyModifier
+    enum class FTK_API_TYPE KeyModifier
     {
         None    = 0,
         Shift   = 1,
@@ -112,13 +112,13 @@ namespace ftk
     };
 
     //! Convert to a string.
-    std::string to_string(KeyModifier);
+    FTK_API std::string to_string(KeyModifier);
 
     //! Convert from a string.
-    bool from_string(const std::string&, KeyModifier&);
+    FTK_API bool from_string(const std::string&, KeyModifier&);
 
     //! Check for the given key modifier.
-    bool checkKeyModifier(KeyModifier, int modifiers);
+    FTK_API bool checkKeyModifier(KeyModifier, int modifiers);
 
     //! OS specific command key modifier.
 #if defined(__APPLE__)
@@ -128,10 +128,10 @@ namespace ftk
 #endif // __APPLE__
 
     //! Get a keyboard modifiers label.
-    std::string getKeyModifierLabel(int);
+    FTK_API std::string getKeyModifierLabel(int);
 
     //! Mouse click event.
-    struct MouseClickEvent
+    struct FTK_API_TYPE MouseClickEvent
     {
         MouseClickEvent() = default;
         MouseClickEvent(
@@ -146,7 +146,7 @@ namespace ftk
     };
 
     //! Scroll event (mouse wheel or touch pad).
-    struct ScrollEvent
+    struct FTK_API_TYPE ScrollEvent
     {
         ScrollEvent(
             const V2F& value,
@@ -160,7 +160,7 @@ namespace ftk
     };
 
     //! Keys.
-    enum class Key
+    enum class FTK_API_TYPE Key
     {
         Unknown,
 
@@ -296,10 +296,10 @@ namespace ftk
     FTK_ENUM(Key);
 
     //! Get a keyboard shortcut label.
-    std::string getShortcutLabel(Key, int modifiers = 0);
+    FTK_API std::string getShortcutLabel(Key, int modifiers = 0);
 
     //! Key event.
-    struct KeyEvent
+    struct FTK_API_TYPE KeyEvent
     {
         KeyEvent() = default;
         KeyEvent(
@@ -314,7 +314,7 @@ namespace ftk
     };
 
     //! Text event.
-    struct TextEvent
+    struct FTK_API_TYPE TextEvent
     {
         TextEvent(const std::string& text);
 
@@ -323,7 +323,7 @@ namespace ftk
     };
 
     //! Drag and drop text data.
-    class TextDragAndDropData : public DragAndDropData
+    class FTK_API_TYPE TextDragAndDropData : public DragAndDropData
     {
     public:
         TextDragAndDropData(const std::string& text);
@@ -337,7 +337,7 @@ namespace ftk
     };
 
     //! Drag and drop event.
-    struct DragAndDropEvent
+    struct FTK_API_TYPE DragAndDropEvent
     {
         DragAndDropEvent(
             const V2I&                              pos,

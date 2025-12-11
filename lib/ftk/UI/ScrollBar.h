@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Scroll bar.
-    class ScrollBar : public IMouseWidget
+    class FTK_API_TYPE ScrollBar : public IMouseWidget
     {
     protected:
         void _init(

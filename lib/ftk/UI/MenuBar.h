@@ -13,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Menu bar.
-    class MenuBar : public IWidget
+    class FTK_API_TYPE MenuBar : public IWidget
     {
     protected:
         void _init(

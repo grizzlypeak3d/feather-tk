@@ -14,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Text edit position.
-    struct TextEditPos
+    struct FTK_API_TYPE TextEditPos
     {
         TextEditPos() = default;
         TextEditPos(int line, int chr);
@@ -31,7 +31,7 @@ namespace ftk
     };
 
     //! Text edit selection.
-    struct TextEditSelection
+    struct FTK_API_TYPE TextEditSelection
     {
         TextEditSelection() = default;
         TextEditSelection(const TextEditPos&);
@@ -54,7 +54,7 @@ namespace ftk
     };
 
     //! Text edit model options.
-    struct TextEditModelOptions
+    struct FTK_API_TYPE TextEditModelOptions
     {
         int  tabSpaces = 4;
 
@@ -65,7 +65,7 @@ namespace ftk
     //! Text edit model.
     //! 
     //! \todo Implement undo/redo.
-    class TextEditModel : public std::enable_shared_from_this<TextEditModel>
+    class FTK_API_TYPE TextEditModel : public std::enable_shared_from_this<TextEditModel>
     {
     protected:
         void _init(
@@ -180,12 +180,12 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    void to_json(nlohmann::json&, const TextEditModelOptions&);
+    FTK_API void to_json(nlohmann::json&, const TextEditModelOptions&);
 
-    void from_json(const nlohmann::json&, TextEditModelOptions&);
+    FTK_API void from_json(const nlohmann::json&, TextEditModelOptions&);
 
-    std::ostream& operator << (std::ostream&, const TextEditPos&);
-    std::ostream& operator << (std::ostream&, const TextEditSelection&);
+    FTK_API std::ostream& operator << (std::ostream&, const TextEditPos&);
+    FTK_API std::ostream& operator << (std::ostream&, const TextEditSelection&);
 
     ///@}
 }

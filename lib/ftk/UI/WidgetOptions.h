@@ -12,7 +12,7 @@
 namespace ftk
 {
     //! Orientation.
-    enum class Orientation
+    enum class FTK_API_TYPE Orientation
     {
         Horizontal,
         Vertical,
@@ -23,7 +23,7 @@ namespace ftk
     FTK_ENUM(Orientation);
 
     //! Layout stretch.
-    enum class Stretch
+    enum class FTK_API_TYPE Stretch
     {
         Fixed,
         Expanding,
@@ -34,7 +34,7 @@ namespace ftk
     FTK_ENUM(Stretch);
 
     //! Horizontal alignment.
-    enum class HAlign
+    enum class FTK_API_TYPE HAlign
     {
         Fill,
         Left,
@@ -47,7 +47,7 @@ namespace ftk
     FTK_ENUM(HAlign);
 
     //! Vertical alignment.
-    enum class VAlign
+    enum class FTK_API_TYPE VAlign
     {
         Fill,
         Top,

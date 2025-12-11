@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Form layout.
-    class FormLayout : public IWidget
+    class FTK_API_TYPE FormLayout : public IWidget
     {
     protected:
         void _init(

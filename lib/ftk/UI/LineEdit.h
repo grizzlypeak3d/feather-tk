@@ -14,7 +14,7 @@ namespace ftk
     //! 
     //! \todo Scroll the view with the cursor.
     //! \todo Double click to select text.
-    class LineEdit : public IMouseWidget
+    class FTK_API_TYPE LineEdit : public IMouseWidget
     {
     protected:
         void _init(

@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value editor.
-    class DoubleEdit : public IWidget
+    class FTK_API_TYPE DoubleEdit : public IWidget
     {
     protected:
         void _init(
@@ -106,7 +106,7 @@ namespace ftk
     };
 
     //! Double precision floating point reset button.
-    class DoubleResetButton : public IWidget
+    class FTK_API_TYPE DoubleResetButton : public IWidget
     {
     protected:
         void _init(

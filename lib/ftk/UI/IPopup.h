@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Base class for popups.
-    class IPopup : public IMouseWidget
+    class FTK_API_TYPE IPopup : public IMouseWidget
     {
     protected:
         void _init(

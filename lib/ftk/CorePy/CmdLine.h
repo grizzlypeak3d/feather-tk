@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <pybind11/pybind11.h>
 
 namespace ftk
@@ -15,7 +17,8 @@ namespace ftk
         void cmdLineValueArg(pybind11::module_&, const std::string& type);
         template<typename T>
         void cmdLineListArg(pybind11::module_&, const std::string& type);
-        void cmdLine(pybind11::module_&);
+        
+        FTK_API void cmdLine(pybind11::module_&);
     }
 }
 

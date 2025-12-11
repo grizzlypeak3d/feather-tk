@@ -13,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Progress dialog.
-    class ProgressDialog : public IDialog
+    class FTK_API_TYPE ProgressDialog : public IDialog
     {
     protected:
         void _init(

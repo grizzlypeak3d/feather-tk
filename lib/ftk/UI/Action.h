@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Action.
-    class Action : public std::enable_shared_from_this<Action>
+    class FTK_API_TYPE Action : public std::enable_shared_from_this<Action>
     {
     protected:
         void _init(

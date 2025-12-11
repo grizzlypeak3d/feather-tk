@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <pybind11/pybind11.h>
 
 namespace ftk
@@ -11,7 +13,8 @@ namespace ftk
     {
         template<typename T, typename U>
         void observableMap(pybind11::module_&, const std::string& type);
-        void observableMap(pybind11::module_&);
+        
+        FTK_API void observableMap(pybind11::module_&);
     }
 }
 

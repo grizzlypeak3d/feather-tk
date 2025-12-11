@@ -15,7 +15,7 @@ namespace ftk
     ///@{
 
     //! Button for incrementing a value.
-    class IncButton : public IButton
+    class FTK_API_TYPE IncButton : public IButton
     {
     protected:
         void _init(
@@ -40,7 +40,7 @@ namespace ftk
     };
 
     //! Buttons for incrementing and decrementing a value.
-    class IncButtons : public IWidget
+    class FTK_API_TYPE IncButtons : public IWidget
     {
     protected:
         void _init(

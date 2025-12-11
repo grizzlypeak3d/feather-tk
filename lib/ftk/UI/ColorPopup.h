@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Color popup.
-    class ColorPopup : public IWidgetPopup
+    class FTK_API_TYPE ColorPopup : public IWidgetPopup
     {
     protected:
         void _init(

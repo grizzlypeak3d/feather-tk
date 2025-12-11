@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Stack layout.
-    class StackLayout : public IWidget
+    class FTK_API_TYPE StackLayout : public IWidget
     {
     protected:
         void _init(

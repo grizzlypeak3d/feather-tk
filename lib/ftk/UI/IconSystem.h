@@ -14,14 +14,14 @@ namespace ftk
     //! \name Icons
     ///@{
 
-    struct IconRequest
+    struct FTK_API_TYPE IconRequest
     {
         uint64_t id = 0;
         std::future<std::shared_ptr<Image> > future;
     };
         
     //! Icon system.
-    class IconSystem : public ISystem
+    class FTK_API_TYPE IconSystem : public ISystem
     {
         FTK_NON_COPYABLE(IconSystem);
 

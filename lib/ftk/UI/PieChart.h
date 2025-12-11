@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Pie chart data.
-    struct PieChartData
+    struct FTK_API_TYPE PieChartData
     {
         PieChartData() = default;
         PieChartData(
@@ -26,7 +26,7 @@ namespace ftk
     };
 
     //! Pie chart widget.
-    class PieChart : public IWidget
+    class FTK_API_TYPE PieChart : public IWidget
     {
     protected:
         void _init(

@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Button group type.
-    enum class ButtonGroupType
+    enum class FTK_API_TYPE ButtonGroupType
     {
         Click,
         Check,
@@ -24,7 +24,7 @@ namespace ftk
     FTK_ENUM(ButtonGroupType);
 
     //! Button group.
-    class ButtonGroup : public std::enable_shared_from_this<ButtonGroup>
+    class FTK_API_TYPE ButtonGroup : public std::enable_shared_from_this<ButtonGroup>
     {
     protected:
         void _init(

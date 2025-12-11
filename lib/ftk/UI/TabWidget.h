@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Tab widget.
-    class TabWidget : public IWidget
+    class FTK_API_TYPE TabWidget : public IWidget
     {
     protected:
         void _init(

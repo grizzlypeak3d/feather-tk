@@ -13,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Tool button.
-    class ToolButton : public IButton
+    class FTK_API_TYPE ToolButton : public IButton
     {
     protected:
         void _init(

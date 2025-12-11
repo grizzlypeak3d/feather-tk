@@ -13,17 +13,17 @@ namespace ftk
     ///@{
         
     //! Align within the given box.
-    Box2I align(
+    FTK_API Box2I align(
         const Box2I&  box,
         const Size2I& sizeHint,
         HAlign        hAlign,
         VAlign        vAlign);
 
     //! Get a format string for the given number.
-    std::string format(int);
+    FTK_API std::string format(int);
 
     //! Get a format string for the given number.
-    std::string format(float, int precision);
+    FTK_API std::string format(float, int precision);
         
     ///@}
 }

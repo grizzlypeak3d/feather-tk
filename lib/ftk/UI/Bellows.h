@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Bellows widget.
-    class Bellows : public IWidget
+    class FTK_API_TYPE Bellows : public IWidget
     {
     protected:
         void _init(

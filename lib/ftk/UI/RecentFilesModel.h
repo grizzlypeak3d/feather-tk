@@ -16,7 +16,7 @@ namespace ftk
     ///@{
 
     //! Recent files model.
-    class RecentFilesModel : public std::enable_shared_from_this<RecentFilesModel>
+    class FTK_API_TYPE RecentFilesModel : public std::enable_shared_from_this<RecentFilesModel>
     {
         FTK_NON_COPYABLE(RecentFilesModel);
 

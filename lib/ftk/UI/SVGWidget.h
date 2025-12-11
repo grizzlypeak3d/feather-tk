@@ -13,7 +13,7 @@ namespace ftk
     ///@{
         
     //! SVG widget.
-    class SvgWidget : public IWidget
+    class FTK_API_TYPE SvgWidget : public IWidget
     {
     protected:
         void _init(

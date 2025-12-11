@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Scroll widget.
-    class ScrollWidget : public IWidget
+    class FTK_API_TYPE ScrollWidget : public IWidget
     {
     protected:
         void _init(

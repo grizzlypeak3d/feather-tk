@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Integer value slider.
-    class IntSlider : public IMouseWidget
+    class FTK_API_TYPE IntSlider : public IMouseWidget
     {
     protected:
         void _init(

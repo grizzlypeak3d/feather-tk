@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Check box.
-    class CheckBox : public IButton
+    class FTK_API_TYPE CheckBox : public IButton
     {
     protected:
         void _init(

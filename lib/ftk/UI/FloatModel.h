@@ -14,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Floating point value model.
-    class FloatModel : public std::enable_shared_from_this<FloatModel>
+    class FTK_API_TYPE FloatModel : public std::enable_shared_from_this<FloatModel>
     {
         FTK_NON_COPYABLE(FloatModel);
 

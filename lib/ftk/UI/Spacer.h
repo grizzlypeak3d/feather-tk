@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Spacer widget.
-    class Spacer : public IWidget
+    class FTK_API_TYPE Spacer : public IWidget
     {
     protected:
         void _init(

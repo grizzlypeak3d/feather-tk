@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value editor and slider.
-    class DoubleEditSlider : public IWidget
+    class FTK_API_TYPE DoubleEditSlider : public IWidget
     {
     protected:
         void _init(

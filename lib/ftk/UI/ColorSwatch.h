@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Color swatch widget.
-    class ColorSwatch : public IMouseWidget
+    class FTK_API_TYPE ColorSwatch : public IMouseWidget
     {
     protected:
         void _init(

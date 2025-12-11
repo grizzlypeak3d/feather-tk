@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Icon widget.
-    class Icon : public IWidget
+    class FTK_API_TYPE Icon : public IWidget
     {
     protected:
         void _init(

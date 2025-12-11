@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Confirmation dialog.
-    class ConfirmDialog : public IDialog
+    class FTK_API_TYPE ConfirmDialog : public IDialog
     {
     protected:
         void _init(

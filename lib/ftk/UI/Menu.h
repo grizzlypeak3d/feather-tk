@@ -14,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Menu.
-    class Menu : public IMenuPopup
+    class FTK_API_TYPE Menu : public IMenuPopup
     {
     protected:
         void _init(

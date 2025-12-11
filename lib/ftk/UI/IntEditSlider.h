@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Integer value editor and slider.
-    class IntEditSlider : public IWidget
+    class FTK_API_TYPE IntEditSlider : public IWidget
     {
     protected:
         void _init(

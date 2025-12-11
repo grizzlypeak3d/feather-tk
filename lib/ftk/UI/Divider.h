@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Divider widget.
-    class Divider : public IWidget
+    class FTK_API_TYPE Divider : public IWidget
     {
     protected:
         void _init(

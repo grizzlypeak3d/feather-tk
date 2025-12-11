@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Row layout.
-    class RowLayout : public IWidget
+    class FTK_API_TYPE RowLayout : public IWidget
     {
     protected:
         void _init(
@@ -63,7 +63,7 @@ namespace ftk
     };
 
     //! Horizontal layout.
-    class HorizontalLayout : public RowLayout
+    class FTK_API_TYPE HorizontalLayout : public RowLayout
     {
     protected:
         void _init(
@@ -82,7 +82,7 @@ namespace ftk
     };
 
     //! Vertical layout.
-    class VerticalLayout : public RowLayout
+    class FTK_API_TYPE VerticalLayout : public RowLayout
     {
     protected:
         void _init(

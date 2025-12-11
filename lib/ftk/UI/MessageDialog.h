@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Message dialog.
-    class MessageDialog : public IDialog
+    class FTK_API_TYPE MessageDialog : public IDialog
     {
     protected:
         void _init(

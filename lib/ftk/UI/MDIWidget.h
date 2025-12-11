@@ -13,7 +13,7 @@ namespace ftk
     ///@{
 
     //! MDI resize directions.
-    enum class MDIResize
+    enum class FTK_API_TYPE MDIResize
     {
         None,
         North,
@@ -31,7 +31,7 @@ namespace ftk
     FTK_ENUM(MDIResize);
 
     //! MDI widget.
-    class MDIWidget : public IMouseWidget
+    class FTK_API_TYPE MDIWidget : public IMouseWidget
     {
     protected:
         void _init(

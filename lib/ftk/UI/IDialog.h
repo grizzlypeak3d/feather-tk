@@ -13,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Base class for dialog widgets.
-    class IDialog : public IPopup
+    class FTK_API_TYPE IDialog : public IPopup
     {
     protected:
         void _init(

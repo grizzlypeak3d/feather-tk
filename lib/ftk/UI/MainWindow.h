@@ -11,7 +11,7 @@ namespace ftk
     class MenuBar;
 
     //! Main window.
-    class MainWindow : public Window
+    class FTK_API_TYPE MainWindow : public Window
     {
     protected:
         void _init(

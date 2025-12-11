@@ -10,7 +10,7 @@
 namespace ftk
 {
     //! File browser path widget.
-    class FileBrowserPath : public IWidget
+    class FTK_API_TYPE FileBrowserPath : public IWidget
     {
     protected:
         void _init(
@@ -55,7 +55,7 @@ namespace ftk
     };
 
     //! File browser drives widget.
-    class FileBrowserDrives : public IWidget
+    class FTK_API_TYPE FileBrowserDrives : public IWidget
     {
     protected:
         void _init(
@@ -84,7 +84,7 @@ namespace ftk
     };
 
     //! File browser shortcuts widget.
-    class FileBrowserShortcuts : public IWidget
+    class FTK_API_TYPE FileBrowserShortcuts : public IWidget
     {
     protected:
         void _init(
@@ -113,7 +113,7 @@ namespace ftk
     };
 
     //! File browser recent paths widget.
-    class FileBrowserRecent : public IWidget
+    class FTK_API_TYPE FileBrowserRecent : public IWidget
     {
     protected:
         void _init(
@@ -148,7 +148,7 @@ namespace ftk
     };
 
     //! File browser settings widget.
-    class FileBrowserSettings : public IWidget
+    class FTK_API_TYPE FileBrowserSettings : public IWidget
     {
     protected:
         void _init(
@@ -177,7 +177,7 @@ namespace ftk
     };
 
     //! File browser view widget.
-    class FileBrowserView : public IMouseWidget
+    class FTK_API_TYPE FileBrowserView : public IMouseWidget
     {
     protected:
         void _init(

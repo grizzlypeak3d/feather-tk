@@ -14,7 +14,7 @@ namespace ftk
     ///@{
         
     //! Tool bar.
-    class ToolBar : public IWidget
+    class FTK_API_TYPE ToolBar : public IWidget
     {
     protected:
         void _init(

@@ -14,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Size roles.
-    enum class SizeRole
+    enum class FTK_API_TYPE SizeRole
     {
         None,
         Margin,
@@ -45,10 +45,10 @@ namespace ftk
     FTK_ENUM(SizeRole);
 
     //! Get the default size roles.
-    std::map<SizeRole, int> getDefaultSizeRoles();
+    FTK_API std::map<SizeRole, int> getDefaultSizeRoles();
 
     //! Color roles.
-    enum class ColorRole
+    enum class FTK_API_TYPE ColorRole
     {
         None,
 
@@ -84,13 +84,13 @@ namespace ftk
     FTK_ENUM(ColorRole);
 
     //! Get default color roles.
-    std::map<ColorRole, Color4F> getDefaultColorRoles();
+    FTK_API std::map<ColorRole, Color4F> getDefaultColorRoles();
 
     //! Get light color roles.
-    std::map<ColorRole, Color4F> getLightColorRoles();
+    FTK_API std::map<ColorRole, Color4F> getLightColorRoles();
 
     //! Color controls.
-    struct ColorControls
+    struct FTK_API_TYPE ColorControls
     {
         float brightness = 1.F;
         float contrast = 1.F;
@@ -100,7 +100,7 @@ namespace ftk
     };
 
     //! Font roles.
-    enum class FontRole
+    enum class FTK_API_TYPE FontRole
     {
         None,
         Label,
@@ -113,10 +113,10 @@ namespace ftk
     FTK_ENUM(FontRole);
 
     //! Get default font roles.
-    std::map<FontRole, FontInfo> getDefaultFontRoles();
+    FTK_API std::map<FontRole, FontInfo> getDefaultFontRoles();
 
     //! Style.
-    class Style : public std::enable_shared_from_this<Style>
+    class FTK_API_TYPE Style : public std::enable_shared_from_this<Style>
     {
         FTK_NON_COPYABLE(Style);
 
@@ -174,9 +174,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    void to_json(nlohmann::json&, const ColorControls&);
+    FTK_API void to_json(nlohmann::json&, const ColorControls&);
 
-    void from_json(const nlohmann::json&, ColorControls&);
+    FTK_API void from_json(const nlohmann::json&, ColorControls&);
 
     ///@}
 }

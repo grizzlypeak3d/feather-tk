@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! List widget.
-    class ListWidget : public IWidget
+    class FTK_API_TYPE ListWidget : public IWidget
     {
     protected:
         void _init(

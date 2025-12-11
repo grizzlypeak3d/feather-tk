@@ -10,10 +10,10 @@ namespace ftk
     //! \name Popup Widgets
     ///@{
 
-    const std::chrono::milliseconds tooltipTimeout(1000);
+    constexpr std::chrono::milliseconds tooltipTimeout(1000);
 
     //! Tooltip.
-    class Tooltip : public IPopup
+    class FTK_API_TYPE Tooltip : public IPopup
     {
     protected:
         void _init(

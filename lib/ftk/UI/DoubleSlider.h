@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value slider.
-    class DoubleSlider : public IMouseWidget
+    class FTK_API_TYPE DoubleSlider : public IMouseWidget
     {
     protected:
         void _init(

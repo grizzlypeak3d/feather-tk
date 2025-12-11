@@ -9,7 +9,7 @@
 namespace ftk
 {
     //! Clipboard system.
-    class ClipboardSystem : public ISystem
+    class FTK_API_TYPE ClipboardSystem : public ISystem
     {
     protected:
         ClipboardSystem(const std::shared_ptr<Context>&);

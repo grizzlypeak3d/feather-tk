@@ -15,12 +15,12 @@ namespace ftk
     class Context;
 
     //! Get a settings path.
-    std::filesystem::path getSettingsPath(
+    FTK_API std::filesystem::path getSettingsPath(
         const std::string& directory,
         const std::string& fileName);
 
     //! Settings.
-    class Settings : public std::enable_shared_from_this<Settings>
+    class FTK_API_TYPE Settings : public std::enable_shared_from_this<Settings>
     {
     protected:
         Settings(

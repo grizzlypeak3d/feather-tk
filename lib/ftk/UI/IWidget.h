@@ -13,7 +13,7 @@ namespace ftk
     class IWindow;
 
     //! Base class for widgets.
-    class IWidget : public std::enable_shared_from_this<IWidget>
+    class FTK_API_TYPE IWidget : public std::enable_shared_from_this<IWidget>
     {
         FTK_NON_COPYABLE(IWidget);
 

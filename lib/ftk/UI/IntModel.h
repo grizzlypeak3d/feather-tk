@@ -14,7 +14,7 @@ namespace ftk
     ///@{
         
     //! Integer value model.
-    class IntModel : public std::enable_shared_from_this<IntModel>
+    class FTK_API_TYPE IntModel : public std::enable_shared_from_this<IntModel>
     {
         FTK_NON_COPYABLE(IntModel);
 

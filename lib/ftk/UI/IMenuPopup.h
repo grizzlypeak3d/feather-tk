@@ -14,14 +14,14 @@ namespace ftk
     ///@{
 
     //! Menu popup type.
-    enum class MenuPopup
+    enum class FTK_API_TYPE MenuPopup
     {
         Menu,
         SubMenu
     };
 
     //! Base class for popup menus.
-    class IMenuPopup : public IPopup
+    class FTK_API_TYPE IMenuPopup : public IPopup
     {
     protected:
         void _init(

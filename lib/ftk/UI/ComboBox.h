@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Combo box item.
-    struct ComboBoxItem
+    struct FTK_API_TYPE ComboBoxItem
     {
         ComboBoxItem() = default;
         explicit ComboBoxItem(
@@ -26,7 +26,7 @@ namespace ftk
     };
 
     //! Combo box.
-    class ComboBox : public IMouseWidget
+    class FTK_API_TYPE ComboBox : public IMouseWidget
     {
     protected:
         void _init(

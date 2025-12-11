@@ -18,7 +18,7 @@ namespace ftk
     ///@{
 
     //! File browser mode.
-    enum class FileBrowserMode
+    enum class FTK_API_TYPE FileBrowserMode
     {
         File,
         Dir,
@@ -29,7 +29,7 @@ namespace ftk
     FTK_ENUM(FileBrowserMode);
 
     //! File browser options.
-    struct FileBrowserOptions
+    struct FTK_API_TYPE FileBrowserOptions
     {
         DirListOptions              dirList;
         bool                        panel        = true;
@@ -47,7 +47,7 @@ namespace ftk
     };
 
     //! File browser model.
-    class FileBrowserModel : public std::enable_shared_from_this<FileBrowserModel>
+    class FTK_API_TYPE FileBrowserModel : public std::enable_shared_from_this<FileBrowserModel>
     {
     public:
         FileBrowserModel(const std::shared_ptr<Context>&);
@@ -112,7 +112,7 @@ namespace ftk
     };
 
     //! File browser widget.
-    class FileBrowserWidget : public IMouseWidget
+    class FTK_API_TYPE FileBrowserWidget : public IMouseWidget
     {
     protected:
         void _init(
@@ -168,7 +168,7 @@ namespace ftk
     };
 
     //! File browser dialog.
-    class FileBrowser : public IDialog
+    class FTK_API_TYPE FileBrowser : public IDialog
     {
     protected:
         void _init(
@@ -213,7 +213,7 @@ namespace ftk
     };
 
     //! File browser system.
-    class FileBrowserSystem : public ISystem
+    class FTK_API_TYPE FileBrowserSystem : public ISystem
     {
     protected:
         FileBrowserSystem(const std::shared_ptr<Context>&);
@@ -252,9 +252,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    void to_json(nlohmann::json&, const FileBrowserOptions&);
+    FTK_API void to_json(nlohmann::json&, const FileBrowserOptions&);
 
-    void from_json(const nlohmann::json&, FileBrowserOptions&);
+    FTK_API void from_json(const nlohmann::json&, FileBrowserOptions&);
 
     ///@}
 }

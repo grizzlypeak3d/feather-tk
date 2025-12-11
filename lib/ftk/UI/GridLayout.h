@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Grid layout.
-    class GridLayout : public IWidget
+    class FTK_API_TYPE GridLayout : public IWidget
     {
     protected:
         void _init(

@@ -8,7 +8,7 @@
 namespace ftk
 {
     //! Window.
-    class Window : public IWindow
+    class FTK_API_TYPE Window : public IWindow
     {
     protected:
         void _init(

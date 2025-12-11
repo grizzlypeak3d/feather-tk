@@ -8,7 +8,7 @@
 namespace ftk
 {
     //! Base class for widgets with simple mouse interactions.
-    class IMouseWidget : public IWidget
+    class FTK_API_TYPE IMouseWidget : public IWidget
     {
         FTK_NON_COPYABLE(IMouseWidget);
 

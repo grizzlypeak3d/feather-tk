@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Base class for buttons.
-    class IButton : public IMouseWidget
+    class FTK_API_TYPE IButton : public IMouseWidget
     {
     protected:
         void _init(

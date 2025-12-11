@@ -15,7 +15,7 @@ namespace ftk
     ///@{
         
     //! File system drives model.
-    class DrivesModel : public std::enable_shared_from_this<DrivesModel>
+    class FTK_API_TYPE DrivesModel : public std::enable_shared_from_this<DrivesModel>
     {
         FTK_NON_COPYABLE(DrivesModel);
 

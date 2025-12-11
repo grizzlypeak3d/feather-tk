@@ -10,7 +10,7 @@ namespace ftk
     //! \name Color Widgets
     ///@{
 
-    enum class ColorWidgetMode
+    enum class FTK_API_TYPE ColorWidgetMode
     {
         RGB,
         HSV,
@@ -23,7 +23,7 @@ namespace ftk
     //! Color widget.
     //!
     //! \todo Add support for displaying pixel types like U8, U16, etc.?
-    class ColorWidget : public IWidget
+    class FTK_API_TYPE ColorWidget : public IWidget
     {
     protected:
         void _init(

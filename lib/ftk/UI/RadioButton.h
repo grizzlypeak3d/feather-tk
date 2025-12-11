@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Radio button.
-    class RadioButton : public IButton
+    class FTK_API_TYPE RadioButton : public IButton
     {
     protected:
         void _init(

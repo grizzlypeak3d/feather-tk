@@ -13,26 +13,26 @@ namespace ftk
     ///@{
         
     //! Create a mesh for drawing a rectangle.
-    TriMesh2F rect(
+    FTK_API TriMesh2F rect(
         const Box2I&,
         int cornerRadius = 0,
         size_t resolution = 8);
 
     //! Create a mesh for drawing a circle.
-    TriMesh2F circle(
+    FTK_API TriMesh2F circle(
         const V2I&,
         int radius,
         size_t resolution = 120);
 
     //! Create a mesh for drawing a border.
-    TriMesh2F border(
+    FTK_API TriMesh2F border(
         const Box2I&,
         int width,
         int radius = 0,
         size_t resolution = 8);
 
     //! Create a mesh for drawing a shadow.
-    TriMesh2F shadow(
+    FTK_API TriMesh2F shadow(
         const Box2I&,
         int cornerRadius,
         const float alpha = .2F,

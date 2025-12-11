@@ -13,7 +13,7 @@ namespace ftk
     //! Text label.
     //! 
     //! \todo Add text wrapping.
-    class Label : public IWidget
+    class FTK_API_TYPE Label : public IWidget
     {
     protected:
         void _init(

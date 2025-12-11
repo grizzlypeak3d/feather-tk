@@ -13,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Image widget.
-    class ImageWidget : public IWidget
+    class FTK_API_TYPE ImageWidget : public IWidget
     {
     protected:
         void _init(

@@ -11,7 +11,7 @@ namespace ftk
     ///@{
 
     //! Push button.
-    class PushButton : public IButton
+    class FTK_API_TYPE PushButton : public IButton
     {
     protected:
         void _init(

@@ -12,7 +12,7 @@ namespace ftk
     ///@{
 
     //! List item.
-    struct ListItem
+    struct FTK_API_TYPE ListItem
     {
         ListItem() = default;
         explicit ListItem(
@@ -27,7 +27,7 @@ namespace ftk
     };
 
     //! List items widget.
-    class ListItemsWidget : public IWidget
+    class FTK_API_TYPE ListItemsWidget : public IWidget
     {
     protected:
         void _init(

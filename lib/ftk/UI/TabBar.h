@@ -13,7 +13,7 @@ namespace ftk
     //! Tab bar widget.
     //! 
     //! \todo Add scrolling for the tab buttons.
-    class TabBar : public IWidget
+    class FTK_API_TYPE TabBar : public IWidget
     {
     protected:
         void _init(

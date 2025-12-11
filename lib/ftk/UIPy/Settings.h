@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <pybind11/pybind11.h>
 
 namespace ftk
 {
     namespace python
     {
-        void settings(pybind11::module_&);
+        FTK_API void settings(pybind11::module_&);
     }
 }

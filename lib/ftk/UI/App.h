@@ -22,7 +22,7 @@ namespace ftk
     class TickEvent;
 
     //! Monitor information.
-    struct MonitorInfo
+    struct FTK_API_TYPE MonitorInfo
     {
         std::string name;
         Size2I      size;
@@ -35,7 +35,7 @@ namespace ftk
     };
 
     //! Color style.
-    enum ColorStyle
+    enum class FTK_API_TYPE ColorStyle
     {
         Dark,
         Light,
@@ -47,13 +47,13 @@ namespace ftk
     FTK_ENUM(ColorStyle);
 
     //! Get custom color roles.
-    std::map<ColorRole, Color4F> getCustomColorRoles();
+    FTK_API std::map<ColorRole, Color4F> getCustomColorRoles();
 
     //! Get display scales.
-    std::vector<float> getDisplayScales();
+    FTK_API std::vector<float> getDisplayScales();
 
     //! Base class for user interface applications.
-    class App : public IApp
+    class FTK_API_TYPE App : public IApp
     {
     protected:
         void _init(

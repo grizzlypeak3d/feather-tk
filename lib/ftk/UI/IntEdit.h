@@ -12,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Integer value editor.
-    class IntEdit : public IWidget
+    class FTK_API_TYPE IntEdit : public IWidget
     {
     protected:
         void _init(
@@ -94,7 +94,7 @@ namespace ftk
     };
 
     //! Integer reset button.
-    class IntResetButton : public IWidget
+    class FTK_API_TYPE IntResetButton : public IWidget
     {
     protected:
         void _init(

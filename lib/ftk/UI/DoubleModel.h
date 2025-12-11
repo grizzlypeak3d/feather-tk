@@ -14,7 +14,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value model.
-    class DoubleModel : public std::enable_shared_from_this<DoubleModel>
+    class FTK_API_TYPE DoubleModel : public std::enable_shared_from_this<DoubleModel>
     {
         FTK_NON_COPYABLE(DoubleModel);
 

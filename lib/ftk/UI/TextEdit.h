@@ -12,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Text edit options.
-    struct TextEditOptions
+    struct FTK_API_TYPE TextEditOptions
     {
         FontInfo fontInfo          = FontInfo(getFont(Font::Mono), 12);
         float    cursorBlink       = .5F;
@@ -25,7 +25,7 @@ namespace ftk
     //! Text edit widget.
     //! 
     //! \todo Double-click to select.
-    class TextEdit : public IWidget
+    class FTK_API_TYPE TextEdit : public IWidget
     {
     protected:
         void _init(
@@ -89,9 +89,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    void to_json(nlohmann::json&, const TextEditOptions&);
+    FTK_API void to_json(nlohmann::json&, const TextEditOptions&);
 
-    void from_json(const nlohmann::json&, TextEditOptions&);
+    FTK_API void from_json(const nlohmann::json&, TextEditOptions&);
         
     ///@}
 }

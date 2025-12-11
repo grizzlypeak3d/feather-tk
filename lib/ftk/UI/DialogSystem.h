@@ -16,7 +16,7 @@ namespace ftk
     ///@{
 
     //! Dialog system.
-    class DialogSystem : public ISystem
+    class FTK_API_TYPE DialogSystem : public ISystem
     {
     protected:
         DialogSystem(const std::shared_ptr<Context>&);

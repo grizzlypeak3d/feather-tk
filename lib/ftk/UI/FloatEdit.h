@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Floating point value editor.
-    class FloatEdit : public IWidget
+    class FTK_API_TYPE FloatEdit : public IWidget
     {
     protected:
         void _init(
@@ -100,7 +100,7 @@ namespace ftk
     };
 
     //! Floating point reset button.
-    class FloatResetButton : public IWidget
+    class FTK_API_TYPE FloatResetButton : public IWidget
     {
     protected:
         void _init(
