@@ -18,19 +18,19 @@ namespace ftk
     ///@{
 
     //! Does the file name start with a dot?
-    bool isDotFile(const std::string&);
+    FTK_API bool isDotFile(const std::string&);
 
     //! Split a path.
-    std::vector<std::string> split(std::filesystem::path);
+    FTK_API std::vector<std::string> split(std::filesystem::path);
 
     //! Append a path separator.
-    std::string appendSeparator(const std::string&);
+    FTK_API std::string appendSeparator(const std::string&);
 
     //! Get the list of file system drives.
-    std::vector<std::filesystem::path> getDrives();
+    FTK_API std::vector<std::filesystem::path> getDrives();
 
     //! User paths.
-    enum class UserPath
+    enum class FTK_API_TYPE UserPath
     {
         Home,
         Desktop,
@@ -43,13 +43,13 @@ namespace ftk
     FTK_ENUM(UserPath);
 
     //! Get a user path.
-    std::filesystem::path getUserPath(UserPath);
+    FTK_API std::filesystem::path getUserPath(UserPath);
 
     //! Convert a frame number to a string.
-    std::string toString(int64_t frame, int pad = 0);
+    FTK_API std::string toString(int64_t frame, int pad = 0);
 
     //! File path options.
-    struct PathOptions
+    struct FTK_API_TYPE PathOptions
     {
         bool   seqNegative  = true;
         size_t seqMaxDigits = 9;
@@ -69,7 +69,7 @@ namespace ftk
     //! * extension: .exr
     //! * request: ?user=foo;password=bar
     //! * file name: render.0001.exr
-    class Path
+    class FTK_API_TYPE Path
     {
     public:
         Path() = default;
@@ -187,7 +187,7 @@ namespace ftk
     };
 
     //! Directory list sorting.
-    enum class DirListSort
+    enum class FTK_API_TYPE DirListSort
     {
         Name,
         Extension,
@@ -200,7 +200,7 @@ namespace ftk
     FTK_ENUM(DirListSort);
 
     //! Directory list options.
-    struct DirListOptions
+    struct FTK_API_TYPE DirListOptions
     {
         DirListSort              sort         = DirListSort::Name;
         bool                     sortReverse  = false;
@@ -218,7 +218,7 @@ namespace ftk
     };
 
     //! Directory list entry.
-    struct DirEntry
+    struct FTK_API_TYPE DirEntry
     {
         Path                            path;
         bool                            isDir = false;
@@ -230,21 +230,21 @@ namespace ftk
     };
 
     //! List directory contents.
-    std::vector<DirEntry> dirList(
+    FTK_API std::vector<DirEntry> dirList(
         const std::filesystem::path&,
         const DirListOptions& = DirListOptions());
 
     //! Expand a file sequence. This function will search the directory for
     //! other frames that match the given file name.
-    Path expandSeq(
+    FTK_API Path expandSeq(
         const Path&,
         const PathOptions& = PathOptions());
 
-    void to_json(nlohmann::json&, const PathOptions&);
-    void to_json(nlohmann::json&, const DirListOptions&);
+    FTK_API void to_json(nlohmann::json&, const PathOptions&);
+    FTK_API void to_json(nlohmann::json&, const DirListOptions&);
 
-    void from_json(const nlohmann::json&, PathOptions&);
-    void from_json(const nlohmann::json&, DirListOptions&);
+    FTK_API void from_json(const nlohmann::json&, PathOptions&);
+    FTK_API void from_json(const nlohmann::json&, DirListOptions&);
 
     ///@}
 }

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <memory>
 
 namespace ftk
@@ -13,10 +15,10 @@ namespace ftk
     namespace gl
     {
         //! Initialize the library.
-        void init(const std::shared_ptr<Context>&);
+        FTK_API void init(const std::shared_ptr<Context>&);
 
         //! Initialize GLAD.
-        void initGLAD();
+        FTK_API void initGLAD();
     }
 }
 

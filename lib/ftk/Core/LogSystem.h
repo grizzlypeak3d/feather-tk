@@ -14,7 +14,7 @@ namespace ftk
     ///@{
         
     //! Log types.
-    enum class LogType
+    enum class FTK_API_TYPE LogType
     {
         Message,
         Warning,
@@ -22,7 +22,7 @@ namespace ftk
     };
         
     //! Log item.
-    struct LogItem
+    struct FTK_API_TYPE LogItem
     {
         float       time    = 0.F;
         std::string prefix;
@@ -34,10 +34,10 @@ namespace ftk
     };
 
     //! Convert a log item to a string.
-    std::string toString(const LogItem&);
+    FTK_API std::string toString(const LogItem&);
         
     //! Log system.
-    class LogSystem : public ISystem
+    class FTK_API_TYPE LogSystem : public ISystem
     {
     protected:
         LogSystem(const std::shared_ptr<Context>&);

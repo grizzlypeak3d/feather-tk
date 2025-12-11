@@ -22,7 +22,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
         //! Offscreen buffer depth size.
-        enum class OffscreenDepth
+        enum class FTK_API_TYPE OffscreenDepth
         {
             None,
             _16,
@@ -42,7 +42,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
         //! Offscreen buffer stencil size.
-        enum class OffscreenStencil
+        enum class FTK_API_TYPE OffscreenStencil
         {
             None,
             _8,
@@ -53,7 +53,7 @@ namespace ftk
         FTK_ENUM(OffscreenStencil);
 
         //! Offscreen buffer multisampling.
-        enum class OffscreenSampling
+        enum class FTK_API_TYPE OffscreenSampling
         {
             None,
             _2,
@@ -67,7 +67,7 @@ namespace ftk
         FTK_ENUM(OffscreenSampling);
 
         //! Offscreen buffer options.
-        struct OffscreenBufferOptions
+        struct FTK_API_TYPE OffscreenBufferOptions
         {
             ImageType color = ImageType::None;
             ImageFilters colorFilters;
@@ -80,7 +80,7 @@ namespace ftk
         };
         
         //! Offscreen buffer.
-        class OffscreenBuffer : public std::enable_shared_from_this<OffscreenBuffer>
+        class FTK_API_TYPE OffscreenBuffer : public std::enable_shared_from_this<OffscreenBuffer>
         {
             FTK_NON_COPYABLE(OffscreenBuffer);
 
@@ -125,13 +125,13 @@ namespace ftk
         };
 
         //! Check whether the offscreen buffer should be created or re-created.
-        bool doCreate(
+        FTK_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
             const Size2I&,
             const OffscreenBufferOptions&);
 
         //! Offscreen buffer binding.
-        class OffscreenBufferBinding
+        class FTK_API_TYPE OffscreenBufferBinding
         {
         public:
             explicit OffscreenBufferBinding(const std::shared_ptr<OffscreenBuffer>&);

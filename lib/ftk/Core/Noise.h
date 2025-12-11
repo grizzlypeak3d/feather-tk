@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <vector>
 
 namespace ftk
@@ -14,7 +16,7 @@ namespace ftk
     //! 
     //! References:
     //! - https://mrl.cs.nyu.edu/~perlin/noise/
-    class Noise
+    class FTK_API_TYPE Noise
     {
     public:
         Noise();

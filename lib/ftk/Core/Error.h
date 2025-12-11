@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <stdexcept>
 
 namespace ftk
@@ -11,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Parse error.
-    class ParseError : public std::invalid_argument
+    class FTK_API_TYPE ParseError : public std::invalid_argument
     {
     public:
         ParseError();
@@ -19,7 +21,7 @@ namespace ftk
         
 #if defined(_WINDOWS)
     //! Get an error string from a Windows system call.
-    std::string getLastError();
+    FTK_API std::string getLastError();
 #endif // _WINDOWS
 
     ///@}

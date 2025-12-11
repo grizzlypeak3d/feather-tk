@@ -16,7 +16,7 @@ namespace ftk
     ///@{
         
     //! Set and restore the render size.
-    class RenderSizeState
+    class FTK_API_TYPE RenderSizeState
     {
     public:
         RenderSizeState(const std::shared_ptr<IRender>&);
@@ -28,7 +28,7 @@ namespace ftk
     };
 
     //! Set and restore the viewport.
-    class ViewportState
+    class FTK_API_TYPE ViewportState
     {
     public:
         ViewportState(const std::shared_ptr<IRender>&);
@@ -40,7 +40,7 @@ namespace ftk
     };
 
     //! Set and restore whether the clipping rectangle is enabled.
-    class ClipRectEnabledState
+    class FTK_API_TYPE ClipRectEnabledState
     {
     public:
         ClipRectEnabledState(const std::shared_ptr<IRender>&);
@@ -52,7 +52,7 @@ namespace ftk
     };
 
     //! Set and restore the clipping rectangle.
-    class ClipRectState
+    class FTK_API_TYPE ClipRectState
     {
     public:
         ClipRectState(const std::shared_ptr<IRender>&);
@@ -66,7 +66,7 @@ namespace ftk
     };
 
     //! Set and restore the transform.
-    class TransformState
+    class FTK_API_TYPE TransformState
     {
     public:
         TransformState(const std::shared_ptr<IRender>&);

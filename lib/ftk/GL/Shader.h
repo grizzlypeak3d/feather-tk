@@ -20,7 +20,7 @@ namespace ftk
         ///@{
         
         //! Shader.
-        class Shader : public std::enable_shared_from_this<Shader>
+        class FTK_API_TYPE Shader : public std::enable_shared_from_this<Shader>
         {
             FTK_NON_COPYABLE(Shader);
 

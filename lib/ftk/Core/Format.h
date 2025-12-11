@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
+#include <ftk/Core/Export.h>
+
 #include <cstdint>
 #include <iostream>
 #include <string>
@@ -17,7 +19,7 @@ namespace ftk
     //! std::string result = Format("Testing {2} {1} {0}").arg("one").arg("two").arg("three");
     //!
     //! Results in the string "Testing three two one".
-    class Format
+    class FTK_API_TYPE Format
     {
     public:
         Format(const std::string&);
@@ -58,7 +60,7 @@ namespace ftk
         std::string _error;
     };
         
-    std::ostream& operator << (std::ostream&, const Format&);
+    FTK_API std::ostream& operator << (std::ostream&, const Format&);
         
     ///@}
 }

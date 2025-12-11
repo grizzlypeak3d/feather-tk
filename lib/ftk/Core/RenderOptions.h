@@ -17,7 +17,7 @@ namespace ftk
     ///@{
 
     //! Render options.
-    struct RenderOptions
+    struct FTK_API_TYPE RenderOptions
     {
         //! Clear the canvas before rendering.
         bool clear = true;
@@ -44,7 +44,7 @@ namespace ftk
     };
 
     //! Line drawing options.
-    struct LineOptions
+    struct FTK_API_TYPE LineOptions
     {
         float width = 1.F;
 
@@ -53,7 +53,7 @@ namespace ftk
     };
 
     //! Channel display.
-    enum class ChannelDisplay
+    enum class FTK_API_TYPE ChannelDisplay
     {
         Color,
         Red,
@@ -67,7 +67,7 @@ namespace ftk
     FTK_ENUM(ChannelDisplay);
 
     //! Input video levels.
-    enum class InputVideoLevels
+    enum class FTK_API_TYPE InputVideoLevels
     {
         FromFile,
         FullRange,
@@ -82,7 +82,7 @@ namespace ftk
     //!
     //! References:
     //! - https://microsoft.github.io/Win2D/html/PremultipliedAlpha.htm
-    enum class AlphaBlend
+    enum class FTK_API_TYPE AlphaBlend
     {
         None,
         Straight,
@@ -94,7 +94,7 @@ namespace ftk
     FTK_ENUM(AlphaBlend);
 
     //! Image filtering.
-    enum class ImageFilter
+    enum class FTK_API_TYPE ImageFilter
     {
         Nearest,
         Linear,
@@ -105,7 +105,7 @@ namespace ftk
     FTK_ENUM(ImageFilter);
 
     //! Image filters.
-    struct ImageFilters
+    struct FTK_API_TYPE ImageFilters
     {
         ImageFilter minify  = ImageFilter::Linear;
         ImageFilter magnify = ImageFilter::Linear;
@@ -115,7 +115,7 @@ namespace ftk
     };
 
     //! Image options.
-    struct ImageOptions
+    struct FTK_API_TYPE ImageOptions
     {
         ChannelDisplay   channelDisplay = ChannelDisplay::Color;
         InputVideoLevels videoLevels    = InputVideoLevels::FromFile;
@@ -127,11 +127,11 @@ namespace ftk
         bool operator != (const ImageOptions&) const;
     };
         
-    void to_json(nlohmann::json&, const ImageFilters&);
-    void to_json(nlohmann::json&, const ImageOptions&);
+    FTK_API void to_json(nlohmann::json&, const ImageFilters&);
+    FTK_API void to_json(nlohmann::json&, const ImageOptions&);
 
-    void from_json(const nlohmann::json&, ImageFilters&);
-    void from_json(const nlohmann::json&, ImageOptions&);
+    FTK_API void from_json(const nlohmann::json&, ImageFilters&);
+    FTK_API void from_json(const nlohmann::json&, ImageOptions&);
 
     ///@}
 }

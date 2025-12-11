@@ -15,7 +15,7 @@ namespace ftk
     ///@{
         
     //! Observer actions.
-    enum class ObserverAction
+    enum class FTK_API_TYPE ObserverAction
     {
         Trigger,
         Suppress

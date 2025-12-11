@@ -11,7 +11,7 @@
 namespace ftk
 {
     //! Random numbers.
-    class Random
+    class FTK_API_TYPE Random
     {
     public:
         Random();

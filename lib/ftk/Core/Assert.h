@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 //! Project namespace
 namespace ftk
 {
@@ -10,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Assert (for convenience use the FTK_ASSERT macro).
-    void ftk_assert(const char* file, int line);
+    FTK_API void ftk_assert(const char* file, int line);
 
     ///@}
 }

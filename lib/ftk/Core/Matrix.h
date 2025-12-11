@@ -118,11 +118,11 @@ namespace ftk
     template<typename T>
     bool invert(const Matrix<4, 4, T>&, Matrix<4, 4, T>&);
 
-    void to_json(nlohmann::json&, const M33F&);
-    void to_json(nlohmann::json&, const M44F&);
+    FTK_API void to_json(nlohmann::json&, const M33F&);
+    FTK_API void to_json(nlohmann::json&, const M44F&);
 
-    void from_json(const nlohmann::json&, M33F&);
-    void from_json(const nlohmann::json&, M44F&);
+    FTK_API void from_json(const nlohmann::json&, M33F&);
+    FTK_API void from_json(const nlohmann::json&, M44F&);
 
     template<typename T>
     Matrix<3, 3, T> operator * (const Matrix<3, 3, T>&, const Matrix<3, 3, T>&);

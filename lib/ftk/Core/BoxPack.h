@@ -29,7 +29,7 @@ namespace ftk
     //!
     //! References:
     //! - http://blackpawn.com/texts/lightmaps/
-    struct BoxPackNode
+    struct FTK_API_TYPE BoxPackNode
     {
         Box2I box;
         BoxPackID id = boxPackInvalidID;
@@ -41,7 +41,7 @@ namespace ftk
     };
 
     //! Pack boxes together.
-    class BoxPack : public std::enable_shared_from_this<BoxPack>
+    class FTK_API_TYPE BoxPack : public std::enable_shared_from_this<BoxPack>
     {
         FTK_NON_COPYABLE(BoxPack);
 

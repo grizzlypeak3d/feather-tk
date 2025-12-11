@@ -21,7 +21,7 @@ namespace ftk
     ///@{
 
     //! Image types.
-    enum class ImageType
+    enum class FTK_API_TYPE ImageType
     {
         None,
 
@@ -66,13 +66,13 @@ namespace ftk
     FTK_ENUM(ImageType);
 
     //! Get the number of channels for the given image type.
-    int getChannelCount(ImageType);
+    FTK_API int getChannelCount(ImageType);
 
     //! Get the bit-depth for the given image type.
-    int getBitDepth(ImageType);
+    FTK_API int getBitDepth(ImageType);
 
     //! Video levels.
-    enum class VideoLevels
+    enum class FTK_API_TYPE VideoLevels
     {
         FullRange,
         LegalRange,
@@ -83,7 +83,7 @@ namespace ftk
     FTK_ENUM(VideoLevels);
 
     //! YUV coefficients.
-    enum class YUVCoefficients
+    enum class FTK_API_TYPE YUVCoefficients
     {
         REC709,
         BT2020,
@@ -94,10 +94,10 @@ namespace ftk
     FTK_ENUM(YUVCoefficients);
 
     //! Get YUV coefficients.
-    V4F getYUVCoefficients(YUVCoefficients);
+    FTK_API V4F getYUVCoefficients(YUVCoefficients);
 
     //! Image mirroring.
-    struct ImageMirror
+    struct FTK_API_TYPE ImageMirror
     {
         ImageMirror() = default;
         constexpr ImageMirror(bool x, bool y);
@@ -110,7 +110,7 @@ namespace ftk
     };
 
     //! Image data layout.
-    struct ImageLayout
+    struct FTK_API_TYPE ImageLayout
     {
         ImageLayout() = default;
         ImageLayout(
@@ -127,7 +127,7 @@ namespace ftk
     };
 
     //! Image information.
-    struct ImageInfo
+    struct FTK_API_TYPE ImageInfo
     {
         ImageInfo() = default;
         ImageInfo(const Size2I&, ImageType);
@@ -158,7 +158,7 @@ namespace ftk
     typedef std::map<std::string, std::string> ImageTags;
 
     //! Image.
-    class Image : public std::enable_shared_from_this<Image>
+    class FTK_API_TYPE Image : public std::enable_shared_from_this<Image>
     {
         FTK_NON_COPYABLE(Image);
 
@@ -227,9 +227,9 @@ namespace ftk
         uint8_t* _dataP = nullptr;
     };
 
-    void to_json(nlohmann::json&, const ImageMirror&);
+    FTK_API void to_json(nlohmann::json&, const ImageMirror&);
 
-    void from_json(const nlohmann::json&, ImageMirror&);
+    FTK_API void from_json(const nlohmann::json&, ImageMirror&);
 
     ///@}
 }

@@ -15,7 +15,7 @@ namespace ftk
     ///@{
         
     //! File I/O modes.
-    enum class FileMode
+    enum class FTK_API_TYPE FileMode
     {
         Read,
         Write,
@@ -28,7 +28,7 @@ namespace ftk
     FTK_ENUM(FileMode);
 
     //! File read type.
-    enum class FileRead
+    enum class FTK_API_TYPE FileRead
     {
         Normal,
         MMap,
@@ -39,7 +39,7 @@ namespace ftk
     FTK_ENUM(FileRead);
 
     //! In-memory file.
-    struct MemFile
+    struct FTK_API_TYPE MemFile
     {
         MemFile() = default;
         MemFile(const uint8_t*, size_t size);
@@ -52,7 +52,7 @@ namespace ftk
     };
 
     //! Seek modes.
-    enum class SeekMode
+    enum class FTK_API_TYPE SeekMode
     {
         Set,
         Forward,
@@ -64,7 +64,7 @@ namespace ftk
     FTK_ENUM(SeekMode);
 
     //! File I/O.
-    class FileIO : public std::enable_shared_from_this<FileIO>
+    class FTK_API_TYPE FileIO : public std::enable_shared_from_this<FileIO>
     {
         FTK_NON_COPYABLE(FileIO);
 
@@ -197,31 +197,31 @@ namespace ftk
     };
 
     //! Read the contents from a file.
-    std::string read(const std::shared_ptr<FileIO>&);
+    FTK_API std::string read(const std::shared_ptr<FileIO>&);
 
     //! Read a word from a file.
-    void readWord(const std::shared_ptr<FileIO>&, char*, size_t maxLen = cStringSize);
+    FTK_API void readWord(const std::shared_ptr<FileIO>&, char*, size_t maxLen = cStringSize);
 
     //! Read a line from a file.
-    std::string readLine(const std::shared_ptr<FileIO>&);
+    FTK_API std::string readLine(const std::shared_ptr<FileIO>&);
 
     //! Read all the lines from a file.
-    std::vector<std::string> readLines(const std::filesystem::path&);
+    FTK_API std::vector<std::string> readLines(const std::filesystem::path&);
 
     //! Read all the lines from a file.
-    std::vector<std::string> readLines(const std::string&);
+    FTK_API std::vector<std::string> readLines(const std::string&);
 
     //! Write lines to a file.
-    void writeLines(const std::filesystem::path&, const std::vector<std::string>&);
+    FTK_API void writeLines(const std::filesystem::path&, const std::vector<std::string>&);
 
     //! Write lines to a file.
-    void writeLines(const std::string&, const std::vector<std::string>&);
+    FTK_API void writeLines(const std::string&, const std::vector<std::string>&);
 
     //! Truncate a file.
-    void truncateFile(const std::filesystem::path&, size_t);
+    FTK_API void truncateFile(const std::filesystem::path&, size_t);
 
     //! Truncate a file.
-    void truncateFile(const std::string&, size_t);
+    FTK_API void truncateFile(const std::string&, size_t);
 
     ///@}
 }

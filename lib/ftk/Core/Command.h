@@ -11,7 +11,7 @@ namespace ftk
     ///@{
         
     //! Base class for commands.
-    class ICommand : public std::enable_shared_from_this<ICommand>
+    class FTK_API_TYPE ICommand : public std::enable_shared_from_this<ICommand>
     {
         FTK_NON_COPYABLE(ICommand);
 
@@ -26,7 +26,7 @@ namespace ftk
     };
 
     //! Command stack.
-    class CommandStack : public std::enable_shared_from_this<CommandStack>
+    class FTK_API_TYPE CommandStack : public std::enable_shared_from_this<CommandStack>
     {
         FTK_NON_COPYABLE(CommandStack);
 

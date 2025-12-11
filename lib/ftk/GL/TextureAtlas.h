@@ -17,7 +17,7 @@ namespace ftk
         ///@{
         
         //! Texture atlas item.
-        struct TextureAtlasItem
+        struct FTK_API_TYPE TextureAtlasItem
         {
             BoxPackID id = boxPackInvalidID;
             Size2I size;
@@ -26,7 +26,7 @@ namespace ftk
         };
 
         //! Texture atlas.
-        class TextureAtlas : public std::enable_shared_from_this<TextureAtlas>
+        class FTK_API_TYPE TextureAtlas : public std::enable_shared_from_this<TextureAtlas>
         {
             FTK_NON_COPYABLE(TextureAtlas);
 

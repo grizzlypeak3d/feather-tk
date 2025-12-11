@@ -11,6 +11,7 @@ set(HEADERS
     Context.h
     ContextInline.h
     Error.h
+    Export.h
     FileIO.h
     FileIOInline.h
     FontSystem.h
@@ -132,6 +133,11 @@ add_library(ftkCore ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 target_link_libraries(ftkCore PUBLIC ${LIBS_PUBLIC} PRIVATE ${LIBS_PRIVATE})
 set_target_properties(ftkCore PROPERTIES FOLDER lib)
 set_target_properties(ftkCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(ftkCore PUBLIC FTK_EXPORTS)
+else()
+    target_compile_definitions(ftkCore PUBLIC FTK_STATIC)
+endif()
 
 install(
     TARGETS ftkCore

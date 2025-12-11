@@ -19,7 +19,7 @@ namespace ftk
     class IObservableList;
 
     //! Invalid index.
-    static const size_t ObservableListInvalidIndex = static_cast<size_t>(-1);
+    constexpr size_t ObservableListInvalidIndex = static_cast<size_t>(-1);
 
     //! List observer.
     template<typename T>

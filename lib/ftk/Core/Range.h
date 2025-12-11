@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <nlohmann/json.hpp>
 
 #include <cstddef>
@@ -57,17 +59,17 @@ namespace ftk
     template<typename T>
     Range<T> expand(const Range<T>&, const Range<T>&);
 
-    void to_json(nlohmann::json&, const RangeI&);
-    void to_json(nlohmann::json&, const RangeI64&);
-    void to_json(nlohmann::json&, const RangeSizeT&);
-    void to_json(nlohmann::json&, const RangeF&);
-    void to_json(nlohmann::json&, const RangeD&);
+    FTK_API void to_json(nlohmann::json&, const RangeI&);
+    FTK_API void to_json(nlohmann::json&, const RangeI64&);
+    FTK_API void to_json(nlohmann::json&, const RangeSizeT&);
+    FTK_API void to_json(nlohmann::json&, const RangeF&);
+    FTK_API void to_json(nlohmann::json&, const RangeD&);
 
-    void from_json(const nlohmann::json&, RangeI&);
-    void from_json(const nlohmann::json&, RangeI64&);
-    void from_json(const nlohmann::json&, RangeSizeT&);
-    void from_json(const nlohmann::json&, RangeF&);
-    void from_json(const nlohmann::json&, RangeD&);
+    FTK_API void from_json(const nlohmann::json&, RangeI&);
+    FTK_API void from_json(const nlohmann::json&, RangeI64&);
+    FTK_API void from_json(const nlohmann::json&, RangeSizeT&);
+    FTK_API void from_json(const nlohmann::json&, RangeF&);
+    FTK_API void from_json(const nlohmann::json&, RangeD&);
 
     template<typename T>
     std::ostream& operator << (std::ostream&, const Range<T>&);

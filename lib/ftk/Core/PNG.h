@@ -13,7 +13,7 @@ namespace ftk
         ///@{
 
         //! PNG image reader.
-        class ImageReader : public IImageReader
+        class FTK_API_TYPE ImageReader : public IImageReader
         {
         public:
             ImageReader(
@@ -31,7 +31,7 @@ namespace ftk
         };
 
         //! PNG image writer.
-        class ImageWriter : public IImageWriter
+        class FTK_API_TYPE ImageWriter : public IImageWriter
         {
         public:
             ImageWriter(
@@ -48,7 +48,7 @@ namespace ftk
         };
             
         //! PNG image I/O plugin.
-        class ImagePlugin : public IImagePlugin
+        class FTK_API_TYPE ImagePlugin : public IImagePlugin
         {
         public:
             ImagePlugin();

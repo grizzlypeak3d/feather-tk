@@ -20,7 +20,7 @@ namespace ftk
     ///@{
         
     //! Base class for renderers.
-    class IRender : public std::enable_shared_from_this<IRender>
+    class FTK_API_TYPE IRender : public std::enable_shared_from_this<IRender>
     {
         FTK_NON_COPYABLE(IRender);
 
@@ -182,7 +182,7 @@ namespace ftk
     };
 
     //! Base class for render factories.
-    class IRenderFactory
+    class FTK_API_TYPE IRenderFactory
     {
     public:
         virtual ~IRenderFactory() = 0;

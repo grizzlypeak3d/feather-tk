@@ -14,7 +14,7 @@
 namespace ftk
 {
     //! Base class for command line options.
-    class ICmdLineOption : public std::enable_shared_from_this<ICmdLineOption>
+    class FTK_API_TYPE ICmdLineOption : public std::enable_shared_from_this<ICmdLineOption>
     {
         FTK_NON_COPYABLE(ICmdLineOption);
 
@@ -47,7 +47,7 @@ namespace ftk
     };
 
     //! Command line flag option.
-    class CmdLineFlagOption : public ICmdLineOption
+    class FTK_API_TYPE CmdLineFlagOption : public ICmdLineOption
     {
     protected:
         CmdLineFlagOption(
@@ -108,7 +108,7 @@ namespace ftk
     };
 
     //! Base class for command line arguments.
-    class ICmdLineArg : public std::enable_shared_from_this<ICmdLineArg>
+    class FTK_API_TYPE ICmdLineArg : public std::enable_shared_from_this<ICmdLineArg>
     {
     protected:
         ICmdLineArg(
@@ -193,11 +193,11 @@ namespace ftk
         std::vector<T> _list;
     };
 
-    bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, std::string&);
-    bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, bool&);
-    bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, int&);
-    bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, float&);
-    bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, double&);
+    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, std::string&);
+    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, bool&);
+    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, int&);
+    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, float&);
+    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, double&);
     template<typename T>
     bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, T&);
 }

@@ -16,20 +16,20 @@ namespace ftk
         ///@{
 
         //! Get the major version number from an OpenGL version string.
-        int getMajorVersion(const std::string&);
+        FTK_API int getMajorVersion(const std::string&);
 
         //! Get the glReadPixels format.
-        unsigned int getReadPixelsFormat(ImageType);
+        FTK_API unsigned int getReadPixelsFormat(ImageType);
 
         //! Get the glReadPixels type.
-        unsigned int getReadPixelsType(ImageType);
+        FTK_API unsigned int getReadPixelsType(ImageType);
 
         //! Set the alpha blending.
-        void setAlphaBlend(AlphaBlend);
+        FTK_API void setAlphaBlend(AlphaBlend);
 
         //! Set whether an OpenGL capability is enabled and restore it to the
         //! previous value when finished.
-        class SetAndRestore
+        class FTK_API_TYPE SetAndRestore
         {
         public:
             SetAndRestore(unsigned int, bool);
@@ -41,7 +41,7 @@ namespace ftk
         };
 
         //! Get an OpenGL error label.
-        std::string getErrorLabel(unsigned int);
+        FTK_API std::string getErrorLabel(unsigned int);
         
         ///@}
     }

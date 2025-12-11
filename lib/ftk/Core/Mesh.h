@@ -16,7 +16,7 @@ namespace ftk
     ///@{
 
     //! Two-dimensional vertex.
-    struct Vertex2
+    struct FTK_API_TYPE Vertex2
     {
         Vertex2() = default;
         constexpr Vertex2(size_t v, size_t t = 0, size_t c = 0);
@@ -27,7 +27,7 @@ namespace ftk
     };
 
     //! Three-dimensional vertex.
-    struct Vertex3
+    struct FTK_API_TYPE Vertex3
     {
         Vertex3() = default;
         constexpr Vertex3(size_t v, size_t t = 0, size_t n = 0, size_t c = 0);
@@ -39,13 +39,13 @@ namespace ftk
     };
 
     //! Two-dimensional triangle.
-    struct Triangle2
+    struct FTK_API_TYPE Triangle2
     {
         std::array<Vertex2, 3> v;
     };
 
     //! Three-dimensional triangle.
-    struct Triangle3
+    struct FTK_API_TYPE Triangle3
     {
         std::array<Vertex3, 3> v;
     };
@@ -75,26 +75,26 @@ namespace ftk
     typedef TriangleMesh3<float> TriMesh3F;
 
     //! Edge function.
-    float edge(const V2F& p, const V2F& v0, const V2F& v1);
+    FTK_API float edge(const V2F& p, const V2F& v0, const V2F& v1);
 
     //! Compute the bounding box of a mesh.
-    Box3F bbox(const TriMesh3F&);
-        
-    //! Create a mesh from a box.
-    TriMesh2F mesh(const Box2I&, bool flipV = false);
+    FTK_API Box3F bbox(const TriMesh3F&);
 
     //! Create a mesh from a box.
-    TriMesh2F mesh(const Box2F&, bool flipV = false);
+    FTK_API TriMesh2F mesh(const Box2I&, bool flipV = false);
+
+    //! Create a mesh from a box.
+    FTK_API TriMesh2F mesh(const Box2F&, bool flipV = false);
 
     //! Create a mesh for drawing checkers.
-    TriMesh2F checkers(
+    FTK_API TriMesh2F checkers(
         const Box2I&,
         const Color4F& color0,
         const Color4F& color1,
         const Size2I& checkerSize);
 
     //! Create a sphere triangle mesh.
-    TriMesh3F sphere(
+    FTK_API TriMesh3F sphere(
         float radius,
         size_t xResolution,
         size_t yResolution);

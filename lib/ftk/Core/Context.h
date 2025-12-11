@@ -16,7 +16,7 @@ namespace ftk
 
     //! The context provides centralized access to systems and other
     //! resources.
-    class Context : public std::enable_shared_from_this<Context>
+    class FTK_API_TYPE Context : public std::enable_shared_from_this<Context>
     {
         FTK_NON_COPYABLE(Context);
 

@@ -18,10 +18,10 @@ namespace ftk
         typedef std::map<std::string, std::string> ImageIOOptions;
 
         //! Merge image I/O options.
-        ImageIOOptions merge(const ImageIOOptions&, const ImageIOOptions&);
+        FTK_API ImageIOOptions merge(const ImageIOOptions&, const ImageIOOptions&);
         
         //! Base class for image readers.
-        class IImageReader
+        class FTK_API_TYPE IImageReader
         {
         public:
             IImageReader(
@@ -42,7 +42,7 @@ namespace ftk
         };
 
         //! Base class for image writers.
-        class IImageWriter
+        class FTK_API_TYPE IImageWriter
         {
         public:
             IImageWriter(
@@ -59,7 +59,7 @@ namespace ftk
         };
         
         //! Base class for image I/O plugins.
-        class IImagePlugin : std::enable_shared_from_this<IImagePlugin>
+        class FTK_API_TYPE IImagePlugin : std::enable_shared_from_this<IImagePlugin>
         {
             FTK_NON_COPYABLE(IImagePlugin);
 
@@ -104,7 +104,7 @@ namespace ftk
         };
         
         //! Image I/O system.
-        class ImageIO : public ISystem
+        class FTK_API_TYPE ImageIO : public ISystem
         {
         protected:
             ImageIO(const std::shared_ptr<Context>&);

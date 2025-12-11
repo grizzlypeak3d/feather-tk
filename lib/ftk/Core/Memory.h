@@ -21,10 +21,10 @@ namespace ftk
     constexpr size_t terabyte = gigabyte * 1024; //!< The number of bytes in a terabyte
 
     //! Get the aligned byte count.
-    size_t getAlignedByteCount(size_t, size_t alignment);
+    FTK_API size_t getAlignedByteCount(size_t, size_t alignment);
         
     //! Endian type.
-    enum class Endian
+    enum class FTK_API_TYPE Endian
     {
         MSB, //!< Most siginificant byte first
         LSB, //!< Least significant byte first
@@ -35,41 +35,41 @@ namespace ftk
     FTK_ENUM(Endian);
 
     //! Get the current endian.
-    Endian getEndian();
+    FTK_API Endian getEndian();
 
     //! Get the opposite of the given endian.
     constexpr Endian opposite(Endian);
 
     //! Convert the endianness of a block of memory in place.
-    void endian(
+    FTK_API void endian(
         void*  in,
         size_t size,
         size_t wordSize);
 
     //! Convert the endianness of a block of memory.
-    void endian(
+    FTK_API void endian(
         const void* in,
         void*       out,
         size_t      size,
         size_t      wordSize);
 
     //! Get the given bit.
-    bool getBit(unsigned int, int bit);
+    FTK_API bool getBit(unsigned int, int bit);
 
     //! Set the given bit.
-    unsigned int setBit(unsigned int, int bit);
+    FTK_API unsigned int setBit(unsigned int, int bit);
 
     //! Clear the given bit.
-    unsigned int clearBit(unsigned int, int bit);
+    FTK_API unsigned int clearBit(unsigned int, int bit);
 
     //! Toggle the given bit.
-    unsigned int toggleBit(unsigned int, int bit);
+    FTK_API unsigned int toggleBit(unsigned int, int bit);
 
     //! Convert bits to a string for debugging.
-    std::string getBitString(uint8_t);
+    FTK_API std::string getBitString(uint8_t);
 
     //! Convert bits to a string for debugging.
-    std::string getBitString(uint16_t);
+    FTK_API std::string getBitString(uint16_t);
 
     ///@}
 }

@@ -147,21 +147,21 @@ namespace ftk
     //! Convert box types.
     constexpr Box<2, float> convert(const Box<2, int>&);
 
-    std::string to_string(const Box2I&);
-    std::string to_string(const Box2F&);
-    std::string to_string(const Box3F&);
+    FTK_API std::string to_string(const Box2I&);
+    FTK_API std::string to_string(const Box2F&);
+    FTK_API std::string to_string(const Box3F&);
 
-    bool from_string(const std::string&, Box2I&);
-    bool from_string(const std::string&, Box2F&);
-    bool from_string(const std::string&, Box3F&);
+    FTK_API bool from_string(const std::string&, Box2I&);
+    FTK_API bool from_string(const std::string&, Box2F&);
+    FTK_API bool from_string(const std::string&, Box3F&);
 
-    void to_json(nlohmann::json&, const Box2I&);
-    void to_json(nlohmann::json&, const Box2F&);
-    void to_json(nlohmann::json&, const Box3F&);
+    FTK_API void to_json(nlohmann::json&, const Box2I&);
+    FTK_API void to_json(nlohmann::json&, const Box2F&);
+    FTK_API void to_json(nlohmann::json&, const Box3F&);
 
-    void from_json(const nlohmann::json&, Box2I&);
-    void from_json(const nlohmann::json&, Box2F&);
-    void from_json(const nlohmann::json&, Box3F&);
+    FTK_API void from_json(const nlohmann::json&, Box2I&);
+    FTK_API void from_json(const nlohmann::json&, Box2F&);
+    FTK_API void from_json(const nlohmann::json&, Box3F&);
 
     template<int C, typename T>
     constexpr Box<C, T> operator + (const Box<C, T>&, const Vector<C, T>&);

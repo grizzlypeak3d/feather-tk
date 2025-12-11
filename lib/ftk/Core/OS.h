@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <string>
 #include <vector>
 
@@ -12,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Operating system information.
-    struct SystemInfo
+    struct FTK_API_TYPE SystemInfo
     {
         std::string name;
         size_t      cores = 0;
@@ -21,54 +23,54 @@ namespace ftk
     };
 
     //! Get operating system information.
-    SystemInfo getSystemInfo();
+    FTK_API SystemInfo getSystemInfo();
 
     //! Environment variable list separators.
     const std::vector<char> envListSeparators = { ':', ';' };
 
     //! Environment variable list separator.
 #if defined(_WINDOWS)
-    const char envListSeparator = ';';
+    constexpr char envListSeparator = ';';
 #else // _WINDOWS
-    const char envListSeparator = ':';
+    constexpr char envListSeparator = ':';
 #endif // _WINDOWS
 
     //! Get an environment variable.
     //! 
     //! Throws:
     //! - std::exception
-    bool getEnv(const std::string& name, std::string&);
+    FTK_API bool getEnv(const std::string& name, std::string&);
 
     //! Get an environment variable and convert it to an integer. If the
     //! variable is empty then zero is returned.
     //!
     //! Throws:
     //! - std::exception
-    bool getEnv(const std::string& name, int& value);
+    FTK_API bool getEnv(const std::string& name, int& value);
 
     //! Get an environment variable and convert it to a list of strings.
     //!
     //! Throws:
     //! - std::exception
-    bool getEnv(const std::string& name, std::vector<std::string>&);
+    FTK_API bool getEnv(const std::string& name, std::vector<std::string>&);
 
     //! Set an environment variable.
     //! 
     //! Throws:
     //! - std::exception
-    bool setEnv(const std::string& name, const std::string&);
+    FTK_API bool setEnv(const std::string& name, const std::string&);
 
     //! Delete an environment variable.
     //! 
     //! Throws:
     //! - std::exception
-    bool delEnv(const std::string& name);
+    FTK_API bool delEnv(const std::string& name);
 
     //! Open the given URL in the default browser.
     //!
     //! Throws:
     //! - std::exception
-    void openURL(const std::string&);
+    FTK_API void openURL(const std::string&);
 
     ///@}
 }

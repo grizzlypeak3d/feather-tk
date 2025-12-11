@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <string>
 #include <vector>
 
@@ -15,78 +17,78 @@ namespace ftk
     constexpr size_t cStringSize = 4096;
 
     //! String split options.
-    enum class SplitOptions
+    enum class FTK_API_TYPE SplitOptions
     {
         DiscardEmpty,
         KeepEmpty
     };
 
     //! Split a string.
-    std::vector<std::string> split(
+    FTK_API std::vector<std::string> split(
         const std::string&,
         char delimeter,
         SplitOptions = SplitOptions::DiscardEmpty);
 
     //! Split a string.
-    std::vector<std::string> split(
+    FTK_API std::vector<std::string> split(
         const std::string&,
         const std::vector<char>& delimeters,
         SplitOptions = SplitOptions::DiscardEmpty);
 
     //! Split a string on new-lines.
-    std::vector<std::string> splitLines(const std::string&);
+    FTK_API std::vector<std::string> splitLines(const std::string&);
 
     //! Join a list of strings.
-    std::string join(const std::vector<std::string>&, char delimeter);
+    FTK_API std::string join(const std::vector<std::string>&, char delimeter);
 
     //! Join a list of strings.
-    std::string join(const std::vector<std::string>&, const std::string& delimeter);
+    FTK_API std::string join(const std::vector<std::string>&, const std::string& delimeter);
 
     //! Join a list of strings with quotes.
-    std::string quotes(const std::vector<std::string>&);
+    FTK_API std::string quotes(const std::vector<std::string>&);
 
     //! Convert to upper case.
-    std::string toUpper(const std::string&);
+    FTK_API std::string toUpper(const std::string&);
 
     //! Convert to lower case.
-    std::string toLower(const std::string&);
+    FTK_API std::string toLower(const std::string&);
 
     //! Remove trailing newlines.
-    void removeTrailingNewlines(std::string&);
+    FTK_API void removeTrailingNewlines(std::string&);
 
     //! Elide a string.
-    std::string elide(const std::string&, size_t = 32);
+    FTK_API std::string elide(const std::string&, size_t = 32);
 
     //! Case compare.
-    enum class CaseCompare
+    enum class FTK_API_TYPE CaseCompare
     {
         Sensitive,
         Insensitive
     };
 
     //! Compare strings.
-    bool compare(
+    FTK_API bool compare(
         const std::string&,
         const std::string&,
         CaseCompare = CaseCompare::Sensitive);
 
     //! Does a string contain the sub string?
-    bool contains(
+    FTK_API bool contains(
         const std::string&,
         const std::string& substr,
         CaseCompare = CaseCompare::Sensitive);
 
     //! Convert a regular string to a wide string.
-    std::wstring toWide(const std::string&);
+    FTK_API std::wstring toWide(const std::string&);
 
     //! Convert a wide string to a regular string.
-    std::string fromWide(const std::wstring&);
+    FTK_API std::string fromWide(const std::wstring&);
 
     //! Get filler text.
-    std::vector<std::string> getLoremIpsum();
+    FTK_API std::vector<std::string> getLoremIpsum();
 
     //! Get filler text.
-    std::string getLoremIpsum(size_t lineCount);
+    FTK_API std::string getLoremIpsum(size_t lineCount);
 
     ///@}
 }

@@ -12,7 +12,7 @@ namespace ftk
     namespace gl
     {
         //! OpenGL system.
-        class System : public ISystem
+        class FTK_API_TYPE System : public ISystem
         {
         protected:
             System(const std::shared_ptr<Context>&);

@@ -24,13 +24,13 @@ namespace ftk
     class ICmdLineOption;
         
     //! Convert command line arguments.
-    std::vector<std::string> convert(int argc, char** argv);
+    FTK_API std::vector<std::string> convert(int argc, char** argv);
 
     //! Convert command line arguments.
-    std::vector<std::string> convert(int argc, wchar_t* argv[]);
+    FTK_API std::vector<std::string> convert(int argc, wchar_t* argv[]);
 
     //! Base class for applications.
-    class IApp : public std::enable_shared_from_this<IApp>
+    class FTK_API_TYPE IApp : public std::enable_shared_from_this<IApp>
     {
         FTK_NON_COPYABLE(IApp);
 

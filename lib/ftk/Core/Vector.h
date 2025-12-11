@@ -133,33 +133,33 @@ namespace ftk
     constexpr Vector<2, float> convert(const Vector<2, int>&);
 
     //! Round vector components.
-    Vector<2, float> round(const Vector<2, float>&);
+    FTK_API Vector<2, float> round(const Vector<2, float>&);
 
     //! Round vector components.
-    Vector<2, float> floor(const Vector<2, float>&);
+    FTK_API Vector<2, float> floor(const Vector<2, float>&);
 
     //! Round vector components.
-    Vector<2, float> ceil(const Vector<2, float>&);
+    FTK_API Vector<2, float> ceil(const Vector<2, float>&);
 
-    std::string to_string(const V2I&);
-    std::string to_string(const V2F&);
-    std::string to_string(const V3F&);
-    std::string to_string(const V4F&);
+    FTK_API std::string to_string(const V2I&);
+    FTK_API std::string to_string(const V2F&);
+    FTK_API std::string to_string(const V3F&);
+    FTK_API std::string to_string(const V4F&);
 
-    bool from_string(const std::string&, V2I&);
-    bool from_string(const std::string&, V2F&);
-    bool from_string(const std::string&, V3F&);
-    bool from_string(const std::string&, V4F&);
+    FTK_API bool from_string(const std::string&, V2I&);
+    FTK_API bool from_string(const std::string&, V2F&);
+    FTK_API bool from_string(const std::string&, V3F&);
+    FTK_API bool from_string(const std::string&, V4F&);
 
-    void to_json(nlohmann::json&, const V2I&);
-    void to_json(nlohmann::json&, const V2F&);
-    void to_json(nlohmann::json&, const V3F&);
-    void to_json(nlohmann::json&, const V4F&);
+    FTK_API void to_json(nlohmann::json&, const V2I&);
+    FTK_API void to_json(nlohmann::json&, const V2F&);
+    FTK_API void to_json(nlohmann::json&, const V3F&);
+    FTK_API void to_json(nlohmann::json&, const V4F&);
 
-    void from_json(const nlohmann::json&, V2I&);
-    void from_json(const nlohmann::json&, V2F&);
-    void from_json(const nlohmann::json&, V3F&);
-    void from_json(const nlohmann::json&, V4F&);
+    FTK_API void from_json(const nlohmann::json&, V2I&);
+    FTK_API void from_json(const nlohmann::json&, V2F&);
+    FTK_API void from_json(const nlohmann::json&, V3F&);
+    FTK_API void from_json(const nlohmann::json&, V4F&);
         
     template<int C, typename T>
     constexpr Vector<C, T> operator + (const Vector<C, T>&, const Vector<C, T>&);

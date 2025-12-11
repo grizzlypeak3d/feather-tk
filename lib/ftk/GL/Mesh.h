@@ -18,7 +18,7 @@ namespace ftk
         ///@{
 
         //! Vertex buffer object types.
-        enum class VBOType
+        enum class FTK_API_TYPE VBOType
         {
             Pos2_F32,
             Pos2_F32_UV_U16,
@@ -37,22 +37,22 @@ namespace ftk
         FTK_ENUM(VBOType);
 
         //! Get the number of bytes used to store vertex buffer object types.
-        std::size_t getByteCount(VBOType);
+        FTK_API std::size_t getByteCount(VBOType);
 
         //! Convert a triangle mesh to vertex buffer data.
-        std::vector<uint8_t> convert(const TriMesh2F&, VBOType);
+        FTK_API std::vector<uint8_t> convert(const TriMesh2F&, VBOType);
 
         //! Convert a triangle mesh to vertex buffer data.
-        std::vector<uint8_t> convert(const TriMesh2F&, VBOType, const RangeSizeT&);
+        FTK_API std::vector<uint8_t> convert(const TriMesh2F&, VBOType, const RangeSizeT&);
 
         //! Convert a triangle mesh to vertex buffer data.
-        std::vector<uint8_t> convert(const TriMesh3F&, VBOType);
+        FTK_API std::vector<uint8_t> convert(const TriMesh3F&, VBOType);
 
         //! Convert a triangle mesh to vertex buffer data.
-        std::vector<uint8_t> convert(const TriMesh3F&, VBOType, const RangeSizeT&);
+        FTK_API std::vector<uint8_t> convert(const TriMesh3F&, VBOType, const RangeSizeT&);
 
         //! Vertex buffer object.
-        class VBO : public std::enable_shared_from_this<VBO>
+        class FTK_API_TYPE VBO : public std::enable_shared_from_this<VBO>
         {
             FTK_NON_COPYABLE(VBO);
 
@@ -88,7 +88,7 @@ namespace ftk
         };
 
         //! Vertex array object.
-        class VAO : public std::enable_shared_from_this<VAO>
+        class FTK_API_TYPE VAO : public std::enable_shared_from_this<VAO>
         {
             FTK_NON_COPYABLE(VAO);
 

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 //! Convenience macro for making a class non-copyable.
 #define FTK_NON_COPYABLE(CLASS) \
     CLASS(const CLASS&) = delete; \
@@ -27,12 +29,12 @@
 //! * string
 //! * vector
 #define FTK_ENUM(ENUM) \
-    std::vector<ENUM> get##ENUM##Enums(); \
-    const std::vector<std::string>& get##ENUM##Labels(); \
-    const std::string& getLabel(ENUM); \
-    std::string to_string(ENUM); \
-    bool from_string(const std::string&, ENUM&); \
-    std::ostream& operator << (std::ostream&, ENUM)
+    FTK_API std::vector<ENUM> get##ENUM##Enums(); \
+    FTK_API const std::vector<std::string>& get##ENUM##Labels(); \
+    FTK_API const std::string& getLabel(ENUM); \
+    FTK_API std::string to_string(ENUM); \
+    FTK_API bool from_string(const std::string&, ENUM&); \
+    FTK_API std::ostream& operator << (std::ostream&, ENUM)
 
 //! Implementation macro for enum utilities.
 //! 

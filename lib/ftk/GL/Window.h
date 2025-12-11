@@ -15,7 +15,7 @@ namespace ftk
         ///@{
         
         //! OpenGL window options.
-        enum class WindowOptions
+        enum class FTK_API_TYPE WindowOptions
         {
             None         = 0,
             Visible      = 1,
@@ -24,7 +24,7 @@ namespace ftk
         };
 
         //! OpenGL window.
-        class Window : public std::enable_shared_from_this<Window>
+        class FTK_API_TYPE Window : public std::enable_shared_from_this<Window>
         {
             FTK_NON_COPYABLE(Window);
 

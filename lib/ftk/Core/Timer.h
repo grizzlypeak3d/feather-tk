@@ -13,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Timer.
-    class Timer : public std::enable_shared_from_this<Timer>
+    class FTK_API_TYPE Timer : public std::enable_shared_from_this<Timer>
     {
         FTK_NON_COPYABLE(Timer);
 
@@ -63,7 +63,7 @@ namespace ftk
     };
 
     //! Timer system.
-    class TimerSystem : public ISystem
+    class FTK_API_TYPE TimerSystem : public ISystem
     {
     protected:
         TimerSystem(const std::shared_ptr<Context>&);

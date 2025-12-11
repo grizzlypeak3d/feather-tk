@@ -13,19 +13,19 @@ namespace ftk
         ///@{
         
         //! Get the OpenGL texture format.
-        unsigned int getTextureFormat(ImageType);
+        FTK_API unsigned int getTextureFormat(ImageType);
 
         //! Get the OpenGL internal texture format.
-        unsigned int getTextureInternalFormat(ImageType);
+        FTK_API unsigned int getTextureInternalFormat(ImageType);
 
         //! Get the OpenGL texture type.
-        unsigned int getTextureType(ImageType);
+        FTK_API unsigned int getTextureType(ImageType);
 
         //! Get the texture filter.
-        unsigned int getTextureFilter(ImageFilter);
+        FTK_API unsigned int getTextureFilter(ImageFilter);
 
         //! Texture options.
-        struct TextureOptions
+        struct FTK_API_TYPE TextureOptions
         {
             ImageFilters filters;
             bool pbo = false;
@@ -35,7 +35,7 @@ namespace ftk
         };
 
         //! Texture.
-        class Texture : public std::enable_shared_from_this<Texture>
+        class FTK_API_TYPE Texture : public std::enable_shared_from_this<Texture>
         {
             FTK_NON_COPYABLE(Texture);
 

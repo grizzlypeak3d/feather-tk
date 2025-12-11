@@ -15,7 +15,7 @@ namespace ftk
     ///@{
 
     //! Built-in fonts.
-    enum class Font
+    enum class FTK_API_TYPE Font
     {
         Regular,
         Bold,
@@ -27,10 +27,10 @@ namespace ftk
     FTK_ENUM(Font);
 
     //! Get a built-in font.
-    const std::string& getFont(Font);
+    FTK_API const std::string& getFont(Font);
 
     //! Font information.
-    struct FontInfo
+    struct FTK_API_TYPE FontInfo
     {
         FontInfo() = default;
         FontInfo(const std::string& family, int size);
@@ -44,7 +44,7 @@ namespace ftk
     };
 
     //! Font metrics.
-    struct FontMetrics
+    struct FTK_API_TYPE FontMetrics
     {
         int ascender   = 0;
         int descender  = 0;
@@ -52,7 +52,7 @@ namespace ftk
     };
 
     //! Font glyph information.
-    struct GlyphInfo
+    struct FTK_API_TYPE GlyphInfo
     {
         GlyphInfo() = default;
         GlyphInfo(uint32_t code, const FontInfo&);
@@ -66,7 +66,7 @@ namespace ftk
     };
 
     //! Font glyph.
-    struct Glyph
+    struct FTK_API_TYPE Glyph
     {
         GlyphInfo              info;
         std::shared_ptr<Image> image;
@@ -81,7 +81,7 @@ namespace ftk
     //! \todo Add text elide functionality.
     //! \todo Add support for gamma correction?
     //! - https://www.freetype.org/freetype2/docs/text-rendering-general.html
-    class FontSystem : public ISystem
+    class FTK_API_TYPE FontSystem : public ISystem
     {
         FTK_NON_COPYABLE(FontSystem);
 
@@ -142,11 +142,11 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    void to_json(nlohmann::json&, const FontInfo&);
+    FTK_API void to_json(nlohmann::json&, const FontInfo&);
 
-    void from_json(const nlohmann::json&, FontInfo&);
+    FTK_API void from_json(const nlohmann::json&, FontInfo&);
 
-    std::ostream& operator << (std::ostream&, const FontInfo&);
+    FTK_API std::ostream& operator << (std::ostream&, const FontInfo&);
 
     ///@}
 }

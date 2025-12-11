@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
+
 #include <cstddef>
 
 namespace ftk
@@ -35,13 +37,13 @@ namespace ftk
     constexpr T smoothStep(T value, T min, T max);
 
     //! Count the number of digits.
-    size_t digits(int);
+    FTK_API size_t digits(int);
 
     //! Fuzzy double comparison.
-    bool fuzzyCompare(double a, double b, double e = .1e-9);
+    FTK_API bool fuzzyCompare(double a, double b, double e = .1e-9);
 
     //! Fuzzy float comparison.
-    bool fuzzyCompare(float a, float b, float e = .1e-6F);
+    FTK_API bool fuzzyCompare(float a, float b, float e = .1e-6F);
         
     ///@}
 }

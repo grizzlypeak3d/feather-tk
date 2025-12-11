@@ -14,7 +14,7 @@ namespace ftk
     class Context;
 
     //! Base class for systems.
-    class ISystem : public std::enable_shared_from_this<ISystem>
+    class FTK_API_TYPE ISystem : public std::enable_shared_from_this<ISystem>
     {
         FTK_NON_COPYABLE(ISystem);
 
