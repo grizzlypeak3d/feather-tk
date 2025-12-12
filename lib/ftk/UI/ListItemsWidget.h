@@ -15,15 +15,15 @@ namespace ftk
     struct FTK_API_TYPE ListItem
     {
         ListItem() = default;
-        explicit ListItem(
+        FTK_API explicit ListItem(
             const std::string& text,
             const std::string& tooltip = std::string());
 
         std::string text;
         std::string tooltip;
 
-        bool operator == (const ListItem&) const;
-        bool operator != (const ListItem&) const;
+        FTK_API bool operator == (const ListItem&) const;
+        FTK_API bool operator != (const ListItem&) const;
     };
 
     //! List items widget.
@@ -38,61 +38,61 @@ namespace ftk
         ListItemsWidget();
 
     public:
-        virtual ~ListItemsWidget();
+        FTK_API virtual ~ListItemsWidget();
 
         //! Create a new widget.
-        static std::shared_ptr<ListItemsWidget> create(
+        FTK_API static std::shared_ptr<ListItemsWidget> create(
             const std::shared_ptr<Context>&,
             ButtonGroupType,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the items.
-        const std::vector<ListItem>& getItems() const;
+        FTK_API const std::vector<ListItem>& getItems() const;
 
         //! Set the items.
-        void setItems(const std::vector<ListItem>&);
+        FTK_API void setItems(const std::vector<ListItem>&);
 
         //! Set the items.
-        void setItems(const std::vector<std::string>&);
+        FTK_API void setItems(const std::vector<std::string>&);
 
         //! Get whether an item is checked.
-        bool getChecked(int) const;
+        FTK_API bool getChecked(int) const;
 
         //! Set whether an item is checked.
-        void setChecked(int, bool);
+        FTK_API void setChecked(int, bool);
 
         //! Set the callback.
-        void setCallback(const std::function<void(int, bool)>&);
+        FTK_API void setCallback(const std::function<void(int, bool)>&);
 
         //! Get the current item.
-        int getCurrent() const;
+        FTK_API int getCurrent() const;
 
         //! Observe the current item.
-        std::shared_ptr<IObservable<int> > observeCurrent() const;
+        FTK_API std::shared_ptr<IObservable<int> > observeCurrent() const;
 
         //! Set the current item.
-        void setCurrent(int);
+        FTK_API void setCurrent(int);
 
         //! Observe the item to scroll to.
-        std::shared_ptr<IObservable<int> > observeScrollTo() const;
+        FTK_API std::shared_ptr<IObservable<int> > observeScrollTo() const;
 
         //! Get the search.
-        const std::string& getSearch() const;
+        FTK_API const std::string& getSearch() const;
 
         //! Set the search.
-        void setSearch(const std::string&);
+        FTK_API void setSearch(const std::string&);
 
         //! Clear the search.
-        void clearSearch();
+        FTK_API void clearSearch();
 
         //! Get an item rectangle.
-        Box2I getRect(int) const;
+        FTK_API Box2I getRect(int) const;
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void keyFocusEvent(bool) override;
-        void keyPressEvent(KeyEvent&) override;
-        void keyReleaseEvent(KeyEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void keyFocusEvent(bool) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
+        FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         void _itemsUpdate();

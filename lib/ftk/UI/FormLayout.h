@@ -24,48 +24,48 @@ namespace ftk
         virtual ~FormLayout();
 
         //! Create a new layout.
-        static std::shared_ptr<FormLayout> create(
+        FTK_API static std::shared_ptr<FormLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Add a row.
-        int addRow(const std::string&, const std::shared_ptr<IWidget>&);
+        FTK_API int addRow(const std::string&, const std::shared_ptr<IWidget>&);
 
         //! Remove a row.
-        void removeRow(int);
+        FTK_API void removeRow(int);
 
         //! Remove a row.
-        void removeRow(const std::shared_ptr<IWidget>&);
+        FTK_API void removeRow(const std::shared_ptr<IWidget>&);
 
         //! Clear all of the rows.
-        void clear();
+        FTK_API void clear();
 
         //! Set row visibility.
-        void setRowVisible(int, bool);
+        FTK_API void setRowVisible(int, bool);
 
         //! Set row visibility.
-        void setRowVisible(const std::shared_ptr<IWidget>&, bool);
+        FTK_API void setRowVisible(const std::shared_ptr<IWidget>&, bool);
 
         //! Get the margin role.
-        SizeRole getMarginRole() const;
+        FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        void setMarginRole(SizeRole);
+        FTK_API void setMarginRole(SizeRole);
 
         //! Get the spacing role.
-        SizeRole getSpacingRole() const;
+        FTK_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        void setSpacingRole(SizeRole);
+        FTK_API void setSpacingRole(SizeRole);
 
         //! Add a spacer.
-        int addSpacer();
+        FTK_API int addSpacer();
 
         //! Add a spacer.
-        int addSpacer(SizeRole);
+        FTK_API int addSpacer(SizeRole);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

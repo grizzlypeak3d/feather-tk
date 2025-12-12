@@ -31,30 +31,30 @@ namespace ftk
         IconSystem(const std::shared_ptr<Context>&);
 
     public:
-        ~IconSystem();
+        FTK_API ~IconSystem();
 
         //! Create a new system.
-        static std::shared_ptr<IconSystem> create(
+        FTK_API static std::shared_ptr<IconSystem> create(
             const std::shared_ptr<Context>&);
 
         //! Get the icon names.
-        std::vector<std::string> getNames() const;
+        FTK_API std::vector<std::string> getNames() const;
         
         //! Add an icon. The icon is stored as an SVG file.
-        void add(const std::string& name, const std::vector<uint8_t>& svg);
+        FTK_API void add(const std::string& name, const std::vector<uint8_t>& svg);
 
         //! Get an icon.
-        std::shared_ptr<Image> get(
+        FTK_API std::shared_ptr<Image> get(
             const std::string& name,
             float displayScale);
 
         //! Request an async icon.
-        IconRequest request(
+        FTK_API IconRequest request(
             const std::string& name,
             float displayScale);
 
         //! Cancel async requests.
-        void cancelRequests(const std::vector<uint64_t>&);
+        FTK_API void cancelRequests(const std::vector<uint64_t>&);
 
     private:
         FTK_PRIVATE();

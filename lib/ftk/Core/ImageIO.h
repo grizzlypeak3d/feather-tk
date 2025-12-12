@@ -24,18 +24,18 @@ namespace ftk
         class FTK_API_TYPE IImageReader
         {
         public:
-            IImageReader(
+            FTK_API IImageReader(
                 const std::filesystem::path&,
                 const MemFile*,
                 const ImageIOOptions&);
             
-            virtual ~IImageReader() = 0;
+            FTK_API virtual ~IImageReader() = 0;
 
             //! Get information about the image.
-            virtual const ImageInfo& getInfo() const = 0;
+            FTK_API virtual const ImageInfo& getInfo() const = 0;
 
             //! Read the image.
-            virtual std::shared_ptr<Image> read() = 0;
+            FTK_API virtual std::shared_ptr<Image> read() = 0;
 
         protected:
             std::filesystem::path _path;
@@ -45,14 +45,14 @@ namespace ftk
         class FTK_API_TYPE IImageWriter
         {
         public:
-            IImageWriter(
+            FTK_API IImageWriter(
                 const std::filesystem::path&,
                 const ImageIOOptions&);
 
-            virtual ~IImageWriter() = 0;
+            FTK_API virtual ~IImageWriter() = 0;
             
             //! Write the image.
-            virtual void write(const std::shared_ptr<Image>&) = 0;
+            FTK_API virtual void write(const std::shared_ptr<Image>&) = 0;
 
         protected:
             std::filesystem::path _path;
@@ -69,31 +69,31 @@ namespace ftk
                 const std::vector<std::string>& exts);
 
         public:
-            virtual ~IImagePlugin() = 0;
+            FTK_API virtual ~IImagePlugin() = 0;
 
-            const std::string& getName() const;
+            FTK_API const std::string& getName() const;
 
-            const std::vector<std::string>& getExts() const;
+            FTK_API const std::vector<std::string>& getExts() const;
             
-            virtual bool canRead(
+            FTK_API virtual bool canRead(
                 const std::filesystem::path&,
                 const ImageIOOptions& = ImageIOOptions());
 
-            virtual std::shared_ptr<IImageReader> read(
+            FTK_API virtual std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
                 const ImageIOOptions& = ImageIOOptions());
             
-            virtual std::shared_ptr<IImageReader> read(
+            FTK_API virtual std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
                 const MemFile&,
                 const ImageIOOptions& = ImageIOOptions());
 
-            virtual bool canWrite(
+            FTK_API virtual bool canWrite(
                 const std::filesystem::path&,
                 const ImageInfo&,
                 const ImageIOOptions& = ImageIOOptions());
 
-            virtual std::shared_ptr<IImageWriter> write(
+            FTK_API virtual std::shared_ptr<IImageWriter> write(
                 const std::filesystem::path&,
                 const ImageInfo&,
                 const ImageIOOptions& = ImageIOOptions());
@@ -110,30 +110,30 @@ namespace ftk
             ImageIO(const std::shared_ptr<Context>&);
 
         public:
-            virtual ~ImageIO();
+            FTK_API virtual ~ImageIO();
 
             //! Create a new system.
-            static std::shared_ptr<ImageIO> create(const std::shared_ptr<Context>&);
+            FTK_API static std::shared_ptr<ImageIO> create(const std::shared_ptr<Context>&);
 
             //! Get the plugins.
-            const std::list<std::shared_ptr<IImagePlugin> >& getPlugins() const;
+            FTK_API const std::list<std::shared_ptr<IImagePlugin> >& getPlugins() const;
             
             //! Add a plugin.
-            void addPlugin(const std::shared_ptr<IImagePlugin>&);
+            FTK_API void addPlugin(const std::shared_ptr<IImagePlugin>&);
             
             //! Get an image reader.
-            std::shared_ptr<IImageReader> read(
+            FTK_API std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
                 const ImageIOOptions& = ImageIOOptions());
 
             //! Get an image reader.
-            std::shared_ptr<IImageReader> read(
+            FTK_API std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
                 const MemFile&,
                 const ImageIOOptions& = ImageIOOptions());
             
             //! Get an image writer.
-            std::shared_ptr<IImageWriter> write(
+            FTK_API std::shared_ptr<IImageWriter> write(
                 const std::filesystem::path&,
                 const ImageInfo&,
                 const ImageIOOptions& = ImageIOOptions());

@@ -21,91 +21,91 @@ namespace ftk
         IWindow();
 
     public:
-        virtual ~IWindow() = 0;
+        FTK_API virtual ~IWindow() = 0;
 
         //! Get the application.
-        std::shared_ptr<App> getApp() const;
+        FTK_API std::shared_ptr<App> getApp() const;
 
         //! Get the window ID.
-        virtual uint32_t getID() const = 0;
+        FTK_API virtual uint32_t getID() const = 0;
 
         //! Get which screen the window is on.
-        virtual int getScreen() const = 0;
+        FTK_API virtual int getScreen() const = 0;
 
         //! Window Title
         ///@{
 
-        const std::string& getTitle() const;
-        virtual void setTitle(const std::string&);
+        FTK_API const std::string& getTitle() const;
+        FTK_API virtual void setTitle(const std::string&);
 
         ///@}
 
         //! Window Size
         ///@{
 
-        const Size2I& getSize() const;
-        virtual void setSize(const Size2I&);
+        FTK_API const Size2I& getSize() const;
+        FTK_API virtual void setSize(const Size2I&);
 
-        Size2I getMinSize() const;
-        virtual void setMinSize(const Size2I&);
+        FTK_API Size2I getMinSize() const;
+        FTK_API virtual void setMinSize(const Size2I&);
 
         ///@}
 
         //! Fullscreen
         ///@{
 
-        bool isFullScreen() const;
-        std::shared_ptr<IObservable<bool> > observeFullScreen() const;
-        virtual void setFullScreen(bool);
+        FTK_API bool isFullScreen() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeFullScreen() const;
+        FTK_API virtual void setFullScreen(bool);
 
         ///@}
 
         //! Float On Top
         ///@{
 
-        bool isFloatOnTop() const;
-        std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
-        virtual void setFloatOnTop(bool);
+        FTK_API bool isFloatOnTop() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
+        FTK_API virtual void setFloatOnTop(bool);
 
         ///@}
 
         //! Frame Buffer
         ///@{
 
-        const Size2I& getFrameBufferSize() const;
+        FTK_API const Size2I& getFrameBufferSize() const;
 
-        ImageType getFrameBufferType() const;
-        std::shared_ptr<IObservable<ImageType> > observeFrameBufferType() const;
-        void setFrameBufferType(ImageType);
+        FTK_API ImageType getFrameBufferType() const;
+        FTK_API std::shared_ptr<IObservable<ImageType> > observeFrameBufferType() const;
+        FTK_API void setFrameBufferType(ImageType);
 
         ///@}
 
         //! Display Scale
         ///@{
 
-        float getDisplayScale() const;
-        std::shared_ptr<IObservable<float> > observeDisplayScale() const;
-        void setDisplayScale(float);
+        FTK_API float getDisplayScale() const;
+        FTK_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
+        FTK_API void setDisplayScale(float);
 
-        float getContentScale() const;
+        FTK_API float getContentScale() const;
 
         ///@}
 
         //! Key Focus
         ///@{
 
-        std::shared_ptr<IWidget> getKeyFocus() const;
-        void setKeyFocus(const std::shared_ptr<IWidget>&);
-        std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
-        std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
+        FTK_API std::shared_ptr<IWidget> getKeyFocus() const;
+        FTK_API void setKeyFocus(const std::shared_ptr<IWidget>&);
+        FTK_API std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
+        FTK_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
 
         ///@}
 
         //! Tooltips
         ///@{
 
-        bool getTooltipsEnabled() const;
-        void setTooltipsEnabled(bool);
+        FTK_API bool getTooltipsEnabled() const;
+        FTK_API void setTooltipsEnabled(bool);
 
         ///@}
 
@@ -115,24 +115,24 @@ namespace ftk
         //! mirroring, memory alignment of one, and LSB memory endian.
         //!
         //! Window icons are not supported on macOS.
-        virtual void setIcon(const std::shared_ptr<Image>&);
+        FTK_API virtual void setIcon(const std::shared_ptr<Image>&);
 
         //! Capture a screenshot.
-        virtual std::shared_ptr<Image> screenshot(const Box2I & = Box2I(0, 0, -1, -1));
+        FTK_API virtual std::shared_ptr<Image> screenshot(const Box2I & = Box2I(0, 0, -1, -1));
 
         //! Close the window.
-        virtual void close();
+        FTK_API virtual void close();
 
         //! Set the window close callback.
-        void setCloseCallback(const std::function<void(void)>&);
+        FTK_API void setCloseCallback(const std::function<void(void)>&);
 
-        void setVisible(bool) override;
-        void tickEvent(
+        FTK_API void setVisible(bool) override;
+        FTK_API void tickEvent(
             bool parentsVisible,
             bool parentsEnabled,
             const TickEvent&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
         virtual void _sizeUpdate(

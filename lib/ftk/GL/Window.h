@@ -37,10 +37,10 @@ namespace ftk
                 const std::shared_ptr<Window>& share);
 
         public:
-            virtual ~Window();
+            FTK_API virtual ~Window();
 
             //! Create a new window.
-            static std::shared_ptr<Window> create(
+            FTK_API static std::shared_ptr<Window> create(
                 const std::shared_ptr<Context>&,
                 const std::string& title,
                 const Size2I&,
@@ -51,28 +51,28 @@ namespace ftk
                 const std::shared_ptr<Window>& share = nullptr);
         
             //! Get the window ID.
-            uint32_t getID() const;
+            FTK_API uint32_t getID() const;
 
             //! Get the window title.
-            std::string getTitle() const;
+            FTK_API std::string getTitle() const;
 
             //! Set the window title.
-            void setTitle(const std::string&);
+            FTK_API void setTitle(const std::string&);
 
             //! Set the window size.
-            void setSize(const Size2I&);
+            FTK_API void setSize(const Size2I&);
 
             //! Get the window minimum size.
-            Size2I getMinSize() const;
+            FTK_API Size2I getMinSize() const;
 
             //! Set the window minimum size.
-            void setMinSize(const Size2I&);
+            FTK_API void setMinSize(const Size2I&);
 
             //! Show the window.
-            void show();
+            FTK_API void show();
 
             //! Hide the window.
-            void hide();
+            FTK_API void hide();
 
             //! Set the window icons
             //! 
@@ -80,31 +80,31 @@ namespace ftk
             //! mirroring, memory alignment of one, and LSB memory endian.
             //!
             //! Window icons are not supported on macOS.
-            void setIcon(const std::shared_ptr<Image>&);
+            FTK_API void setIcon(const std::shared_ptr<Image>&);
 
             //! Make this the current OpenGL context.
-            void makeCurrent();
+            FTK_API void makeCurrent();
 
             //! Clear the current OpenGL context.
-            void clearCurrent();
+            FTK_API void clearCurrent();
 
             //! Get which screen the window is on.
-            int getScreen() const;
+            FTK_API int getScreen() const;
 
             //! Get whether the window is in full screen mode.
-            bool isFullScreen() const;
+            FTK_API bool isFullScreen() const;
 
             //! Set whether the window is in full screen mode.
-            void setFullScreen(bool);
+            FTK_API void setFullScreen(bool);
 
             //! Get whether the window is floating on top.
-            bool isFloatOnTop() const;
+            FTK_API bool isFloatOnTop() const;
 
             //! Set whether the window is floating on top.
-            void setFloatOnTop(bool);
+            FTK_API void setFloatOnTop(bool);
 
             //! Swap the buffers.
-            void swap();
+            FTK_API void swap();
 
         private:
             FTK_PRIVATE();

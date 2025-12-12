@@ -26,67 +26,68 @@ namespace ftk
         virtual ~FloatSlider();
 
         //! Create a new widget.
-        static std::shared_ptr<FloatSlider> create(
+        FTK_API static std::shared_ptr<FloatSlider> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<FloatSlider> create(
+        FTK_API static std::shared_ptr<FloatSlider> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the value.
-        float getValue() const;
+        //! \name Value
+        ///@{
 
-        //! Set the value.
-        void setValue(float);
+        FTK_API float getValue() const;
+        FTK_API void setValue(float);
+        FTK_API void setCallback(const std::function<void(float)>&);
+        
+        ///@}
 
-        //! Set the callback.
-        void setCallback(const std::function<void(float)>&);
+        //! \name Range
+        ///@{
 
-        //! Get the range.
-        const RangeF& getRange() const;
+        FTK_API const RangeF& getRange() const;
+        FTK_API void setRange(const RangeF&);
+        FTK_API void setRange(float, float);
+        
+        ///@}
 
-        //! Set the range.
-        void setRange(const RangeF&);
+        //! \name Increment
+        ///@{
 
-        //! Set the range.
-        void setRange(float, float);
+        FTK_API float getStep() const;
+        FTK_API void setStep(float);
 
-        //! Get the step.
-        float getStep() const;
+        FTK_API float getLargeStep() const;
+        FTK_API void setLargeStep(float);
+        
+        ///@}
 
-        //! Set the step.
-        void setStep(float);
+        //! \name Default Value
+        ///@{
 
-        //! Get the large step.
-        float getLargeStep() const;
-
-        //! Set the large step.
-        void setLargeStep(float);
-
-        //! Get the default value.
-        float getDefaultValue() const;
-
-        //! Set the default value.
-        void setDefaultValue(float);
+        FTK_API float getDefaultValue() const;
+        FTK_API void setDefaultValue(float);
+        
+        ///@}
 
         //! Get the model.
-        const std::shared_ptr<FloatModel>& getModel() const;
+        FTK_API const std::shared_ptr<FloatModel>& getModel() const;
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void mouseEnterEvent(MouseEnterEvent&) override;
-        void mouseLeaveEvent() override;
-        void mouseMoveEvent(MouseMoveEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
-        void scrollEvent(ScrollEvent&) override;
-        void keyPressEvent(KeyEvent&) override;
-        void keyReleaseEvent(KeyEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_API void mouseLeaveEvent() override;
+        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API void scrollEvent(ScrollEvent&) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
+        FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         Box2I _getSliderGeometry() const;

@@ -46,25 +46,25 @@ namespace ftk
         IApp();
 
     public:
-        virtual ~IApp() = 0;
+        FTK_API virtual ~IApp() = 0;
 
         //! Get the executable file name.
-        const std::string& getExeName() const;
+        FTK_API const std::string& getExeName() const;
 
         //! Get the exit code.
-        int getExit() const;
+        FTK_API int getExit() const;
 
         //! Get the context.
-        const std::shared_ptr<Context>& getContext() const;
+        FTK_API const std::shared_ptr<Context>& getContext() const;
 
         //! Get the application name.
-        const std::string& getName() const;
+        FTK_API const std::string& getName() const;
 
         //! Get the application summary.
-        const std::string& getSummary() const;
+        FTK_API const std::string& getSummary() const;
 
         //! Run the application.
-        virtual void run() {}
+        FTK_API virtual void run() {}
 
     protected:
         void _print(const std::string&);

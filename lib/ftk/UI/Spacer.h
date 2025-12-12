@@ -22,21 +22,21 @@ namespace ftk
         Spacer();
 
     public:
-        virtual ~Spacer();
+        FTK_API virtual ~Spacer();
 
         //! Create a new widget.
-        static std::shared_ptr<Spacer> create(
+        FTK_API static std::shared_ptr<Spacer> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the spacing role.
-        SizeRole getSpacingRole() const;
+        FTK_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        void setSpacingRole(SizeRole);
+        FTK_API void setSpacingRole(SizeRole);
 
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

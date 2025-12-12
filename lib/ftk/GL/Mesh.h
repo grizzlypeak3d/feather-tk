@@ -60,26 +60,26 @@ namespace ftk
             VBO(std::size_t size, VBOType);
 
         public:
-            ~VBO();
+            FTK_API ~VBO();
 
             //! Create a new object.
-            static std::shared_ptr<VBO> create(std::size_t size, VBOType);
+            FTK_API static std::shared_ptr<VBO> create(std::size_t size, VBOType);
 
             //! Get the size.
-            std::size_t getSize() const;
+            FTK_API std::size_t getSize() const;
 
             //! Get the type.
-            VBOType getType() const;
+            FTK_API VBOType getType() const;
 
             //! Get the OpenGL ID.
-            unsigned int getID() const;
+            FTK_API unsigned int getID() const;
 
             //! \name Copy
             //! Copy data to the vertex buffer object.
             ///@{
 
-            void copy(const std::vector<uint8_t>&);
-            void copy(const std::vector<uint8_t>&, std::size_t offset, std::size_t size);
+            FTK_API void copy(const std::vector<uint8_t>&);
+            FTK_API void copy(const std::vector<uint8_t>&, std::size_t offset, std::size_t size);
 
             ///@}
 
@@ -96,19 +96,19 @@ namespace ftk
             VAO(VBOType, unsigned int vbo);
 
         public:
-            ~VAO();
+            FTK_API ~VAO();
 
             //! Create a new object.
-            static std::shared_ptr<VAO> create(VBOType, unsigned int vbo);
+            FTK_API static std::shared_ptr<VAO> create(VBOType, unsigned int vbo);
 
             //! Get the OpenGL ID.
-            unsigned int getID() const;
+            FTK_API unsigned int getID() const;
 
             //! Bind the vertex array object.
-            void bind();
+            FTK_API void bind();
 
             //! Draw the vertex array object.
-            void draw(unsigned int mode, std::size_t offset, std::size_t size);
+            FTK_API void draw(unsigned int mode, std::size_t offset, std::size_t size);
 
         private:
             FTK_PRIVATE();

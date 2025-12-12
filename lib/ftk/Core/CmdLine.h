@@ -25,10 +25,10 @@ namespace ftk
             const std::string& group = std::string());
 
     public:
-        virtual ~ICmdLineOption() = 0;
+        FTK_API virtual ~ICmdLineOption() = 0;
             
         //! Parse the option.
-        virtual void parse(std::vector<std::string>& args) = 0;
+        FTK_API virtual void parse(std::vector<std::string>& args) = 0;
 
         //! Get the help.
         const std::string& getHelp() const;
@@ -57,7 +57,7 @@ namespace ftk
 
     public:
         //! Create a new command line flag option.
-        static std::shared_ptr<CmdLineFlagOption> create(
+        FTK_API static std::shared_ptr<CmdLineFlagOption> create(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group = std::string());
@@ -65,7 +65,7 @@ namespace ftk
         //! Get whether the flag was found.
         bool found() const;
 
-        void parse(std::vector<std::string>& args) override;
+        FTK_API void parse(std::vector<std::string>& args) override;
 
     private:
         bool _found = false;
@@ -117,10 +117,10 @@ namespace ftk
             bool optional);
 
     public:
-        virtual ~ICmdLineArg() = 0;
+        FTK_API virtual ~ICmdLineArg() = 0;
 
         //! Parse the argument.
-        virtual void parse(std::vector<std::string>& args) = 0;
+        FTK_API virtual void parse(std::vector<std::string>& args) = 0;
 
         //! Get the argument name.
         const std::string& getName() const;

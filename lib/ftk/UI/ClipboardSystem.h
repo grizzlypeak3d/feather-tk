@@ -15,17 +15,17 @@ namespace ftk
         ClipboardSystem(const std::shared_ptr<Context>&);
 
     public:
-        virtual ~ClipboardSystem();
+        FTK_API virtual ~ClipboardSystem();
 
         //! Create a new system.
-        static std::shared_ptr<ClipboardSystem> create(
+        FTK_API static std::shared_ptr<ClipboardSystem> create(
             const std::shared_ptr<Context>&);
 
         //! Get the clipboard text.
-        std::string getText() const;
+        FTK_API std::string getText() const;
 
         //! Set the clipboard text.
-        void setText(const std::string&);
+        FTK_API void setText(const std::string&);
 
     private:
         FTK_PRIVATE();

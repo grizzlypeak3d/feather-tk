@@ -25,14 +25,14 @@ namespace ftk
         DrivesModel();
 
     public:
-        ~DrivesModel();
+        FTK_API ~DrivesModel();
 
         //! Create a new model.
-        static std::shared_ptr<DrivesModel> create(
+        FTK_API static std::shared_ptr<DrivesModel> create(
             const std::shared_ptr<Context>&);
 
         //! Observe the list of drives.
-        std::shared_ptr<IObservableList<std::filesystem::path> > observeDrives() const;
+        FTK_API std::shared_ptr<IObservableList<std::filesystem::path> > observeDrives() const;
 
     private:
         FTK_PRIVATE();

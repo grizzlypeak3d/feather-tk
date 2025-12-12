@@ -22,36 +22,36 @@ namespace ftk
         ScrollBar();
 
     public:
-        virtual ~ScrollBar();
+        FTK_API virtual ~ScrollBar();
 
         //! Create a new widget.
-        static std::shared_ptr<ScrollBar> create(
+        FTK_API static std::shared_ptr<ScrollBar> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the scroll size.
-        int getScrollSize() const;
+        FTK_API int getScrollSize() const;
 
         //! Set the scroll size.
-        void setScrollSize(int);
+        FTK_API void setScrollSize(int);
 
         //! Get the scroll position.
-        int getScrollPos() const;
+        FTK_API int getScrollPos() const;
 
         //! Set the scroll position.
-        void setScrollPos(int);
+        FTK_API void setScrollPos(int);
 
         //! Set the scroll position callback.
-        void setScrollPosCallback(const std::function<void(int)>&);
+        FTK_API void setScrollPosCallback(const std::function<void(int)>&);
 
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void mouseEnterEvent(MouseEnterEvent&) override;
-        void mouseLeaveEvent() override;
-        void mouseMoveEvent(MouseMoveEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_API void mouseLeaveEvent() override;
+        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
         Box2I _getHandleGeometry() const;

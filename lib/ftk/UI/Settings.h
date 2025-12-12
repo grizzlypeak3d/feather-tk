@@ -29,36 +29,36 @@ namespace ftk
             bool reset);
 
     public:
-        ~Settings();
+        FTK_API ~Settings();
 
         //! Create new settings.
-        static std::shared_ptr<Settings> create(
+        FTK_API static std::shared_ptr<Settings> create(
             const std::shared_ptr<Context>&,
             const std::filesystem::path&,
             bool reset = false);
 
         //! Get the settings path.
-        const std::filesystem::path& getPath() const;
+        FTK_API const std::filesystem::path& getPath() const;
 
         //! Save the settings. The settings are also saved on destruction.
-        void save();
+        FTK_API void save();
 
         //! Do the settings contain the given value?
-        bool contains(const std::string& key) const;
+        FTK_API bool contains(const std::string& key) const;
 
         //! \name Get Values
         ///@{
 
-        bool get(const std::string& key, nlohmann::json&) const;
+        FTK_API bool get(const std::string& key, nlohmann::json&) const;
 
-        bool get(const std::string& key, bool&);
-        bool get(const std::string& key, int&);
-        bool get(const std::string& key, int64_t&);
-        bool get(const std::string& key, float&);
-        bool get(const std::string& key, double&);
-        bool get(const std::string& key, size_t&);
-        bool get(const std::string& key, std::string&);
-        bool get(const std::string& key, std::vector<std::string>&);
+        FTK_API bool get(const std::string& key, bool&);
+        FTK_API bool get(const std::string& key, int&);
+        FTK_API bool get(const std::string& key, int64_t&);
+        FTK_API bool get(const std::string& key, float&);
+        FTK_API bool get(const std::string& key, double&);
+        FTK_API bool get(const std::string& key, size_t&);
+        FTK_API bool get(const std::string& key, std::string&);
+        FTK_API bool get(const std::string& key, std::vector<std::string>&);
 
         template<typename T>
         bool getT(const std::string& key, T&) const;
@@ -68,16 +68,16 @@ namespace ftk
         //! \name Set Values
         ///@{
 
-        void set(const std::string& key, const nlohmann::json&);
+        FTK_API void set(const std::string& key, const nlohmann::json&);
 
-        void set(const std::string& key, bool);
-        void set(const std::string& key, int);
-        void set(const std::string& key, int64_t);
-        void set(const std::string& key, float);
-        void set(const std::string& key, double);
-        void set(const std::string& key, size_t);
-        void set(const std::string& key, const std::string&);
-        void set(const std::string& key, const std::vector<std::string>&);
+        FTK_API void set(const std::string& key, bool);
+        FTK_API void set(const std::string& key, int);
+        FTK_API void set(const std::string& key, int64_t);
+        FTK_API void set(const std::string& key, float);
+        FTK_API void set(const std::string& key, double);
+        FTK_API void set(const std::string& key, size_t);
+        FTK_API void set(const std::string& key, const std::string&);
+        FTK_API void set(const std::string& key, const std::vector<std::string>&);
 
         template<typename T>
         void setT(const std::string& key, const T&);

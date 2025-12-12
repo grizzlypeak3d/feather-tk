@@ -21,44 +21,44 @@ namespace ftk
         GridLayout();
 
     public:
-        virtual ~GridLayout();
+        FTK_API virtual ~GridLayout();
 
         //! Create a new layout.
-        static std::shared_ptr<GridLayout> create(
+        FTK_API static std::shared_ptr<GridLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set a child position within the grid.
-        void setGridPos(
+        FTK_API void setGridPos(
             const std::shared_ptr<IWidget>& child,
             int row,
             int column);
 
         //! Get the odd rows background role.
-        ColorRole getRowBackgroundRole(ColorRole) const;
+        FTK_API ColorRole getRowBackgroundRole(ColorRole) const;
 
         //! Get the odd rows background role.
-        void setRowBackgroundRole(ColorRole);
+        FTK_API void setRowBackgroundRole(ColorRole);
 
         //! Get the margin role.
-        SizeRole getMarginRole() const;
+        FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        void setMarginRole(SizeRole);
+        FTK_API void setMarginRole(SizeRole);
 
         //! Get the spacing role.
-        SizeRole getSpacingRole() const;
+        FTK_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        void setSpacingRole(SizeRole);
+        FTK_API void setSpacingRole(SizeRole);
 
         //! Remove all children from the layout.
-        void clear();
+        FTK_API void clear();
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void childRemoveEvent(const ChildRemoveEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void childRemoveEvent(const ChildRemoveEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

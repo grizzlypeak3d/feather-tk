@@ -24,37 +24,27 @@ namespace ftk
         DoubleModel();
 
     public:
-        ~DoubleModel();
+        FTK_API ~DoubleModel();
 
         //! Create a new model.
-        static std::shared_ptr<DoubleModel> create(
+        FTK_API static std::shared_ptr<DoubleModel> create(
             const std::shared_ptr<Context>&);
 
         //! \name Value
         ///@{
 
-        //! Get the value.
-        double getValue() const;
-
-        //! Observe the value.
-        std::shared_ptr<IObservable<double> > observeValue() const;
-
-        //! Set the value.
-        void setValue(double);
+        FTK_API double getValue() const;
+        FTK_API std::shared_ptr<IObservable<double> > observeValue() const;
+        FTK_API void setValue(double);
 
         ///@}
 
         //! \name Range
         ///@{
 
-        //! Get the range.
-        const RangeD& getRange() const;
-
-        //! Observe the range.
-        std::shared_ptr<IObservable<RangeD> > observeRange() const;
-
-        //! Set the range.
-        void setRange(const RangeD&);
+        FTK_API const RangeD& getRange() const;
+        FTK_API std::shared_ptr<IObservable<RangeD> > observeRange() const;
+        FTK_API void setRange(const RangeD&);
 
         ///@}
 
@@ -62,28 +52,28 @@ namespace ftk
         ///@{
 
         //! Get the increment step.
-        double getStep() const;
+        FTK_API double getStep() const;
 
         //! Set the increment step.
-        void setStep(double);
+        FTK_API void setStep(double);
 
         //! Increment the value by a step.
-        void incrementStep();
+        FTK_API void incrementStep();
 
         //! Decrement the value by a step.
-        void decrementStep();
+        FTK_API void decrementStep();
 
         //! Get the increment large step.
-        double getLargeStep() const;
+        FTK_API double getLargeStep() const;
 
         //! Set the increment large step.
-        void setLargeStep(double);
+        FTK_API void setLargeStep(double);
 
         //! Increment the value by a large step.
-        void incrementLargeStep();
+        FTK_API void incrementLargeStep();
 
         //! Decrement the value by a large step.
-        void decrementLargeStep();
+        FTK_API void decrementLargeStep();
 
         ///@}
 
@@ -91,25 +81,25 @@ namespace ftk
         ///@{
 
         //! Get whether there is a default value.
-        bool hasDefaultValue() const;
+        FTK_API bool hasDefaultValue() const;
 
         //! Observe whether there is a default value.
-        std::shared_ptr<IObservable<bool> > observeHasDefaultValue() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasDefaultValue() const;
 
         //! Observe the default value.
-        std::shared_ptr<IObservable<double> > observeDefaultValue() const;
+        FTK_API std::shared_ptr<IObservable<double> > observeDefaultValue() const;
 
         //! Get the default value.
-        double getDefaultValue() const;
+        FTK_API double getDefaultValue() const;
 
         //! Set the default value.
-        void setDefaultValue(double);
+        FTK_API void setDefaultValue(double);
 
         //! Set the value to the default value.
-        void setDefaultValue();
+        FTK_API void setDefaultValue();
 
         //! Clear the default value.
-        void clearDefaultValue();
+        FTK_API void clearDefaultValue();
 
         ///@}
 

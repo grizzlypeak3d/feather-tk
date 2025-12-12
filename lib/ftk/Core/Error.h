@@ -16,7 +16,7 @@ namespace ftk
     class FTK_API_TYPE ParseError : public std::invalid_argument
     {
     public:
-        ParseError();
+        FTK_API ParseError();
     };
         
 #if defined(_WINDOWS)

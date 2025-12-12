@@ -36,8 +36,8 @@ namespace ftk
         BoxPackTimestamp timestamp = 0;
         std::array<std::shared_ptr<BoxPackNode>, 2> children;
 
-        bool isBranch() const;
-        bool isOccupied() const;
+        FTK_API bool isBranch() const;
+        FTK_API bool isOccupied() const;
     };
 
     //! Pack boxes together.
@@ -49,15 +49,20 @@ namespace ftk
         BoxPack() = default;
 
     public:
-        static std::shared_ptr<BoxPack> create(const Size2I&, int border = 0);
+        //! Create a new object.
+        FTK_API static std::shared_ptr<BoxPack> create(const Size2I&, int border = 0);
 
-        const std::shared_ptr<BoxPackNode>& getRoot() const;
+        //! Get the root node.
+        FTK_API const std::shared_ptr<BoxPackNode>& getRoot() const;
 
-        std::vector<std::shared_ptr<BoxPackNode> > getNodes() const;
+        //! Get the list of nodes.
+        FTK_API std::vector<std::shared_ptr<BoxPackNode> > getNodes() const;
 
-        std::shared_ptr<BoxPackNode> getNode(BoxPackID);
+        //! Get the node with the given ID.
+        FTK_API std::shared_ptr<BoxPackNode> getNode(BoxPackID);
 
-        std::shared_ptr<BoxPackNode> insert(const Size2I&);
+        //! Insert a node.
+        FTK_API std::shared_ptr<BoxPackNode> insert(const Size2I&);
 
     private:
         void _getNodes(

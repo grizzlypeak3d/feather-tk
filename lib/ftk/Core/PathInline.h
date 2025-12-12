@@ -8,6 +8,11 @@ namespace ftk
         return !fileName.empty() && '.' == fileName[0];
     }
 
+    inline const PathOptions& Path::getOptions()
+    {
+        return _options;
+    }
+
     inline const std::string& Path::get() const
     {
         return _path;

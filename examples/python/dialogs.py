@@ -24,7 +24,7 @@ class DialogsWindow(ftk.MainWindow):
         # Confirmation dialog.
         button = ftk.PushButton(context, "Confirmation Dialog", layout)
         button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").
-            confirm("Confirm", "Hello world?", windowWeak(), lambda ok: print("Hellow world:", ok)))
+            confirm("Confirm", "Hello world?", windowWeak(), lambda ok: print("Hello world:", ok)))
 
         # Progress dialog.
         self.progressTimer = ftk.Timer(context)
@@ -42,7 +42,7 @@ class DialogsWindow(ftk.MainWindow):
         self.progressDialog = ftk.ProgressDialog(self.context, "Progress", "In progress:", self.window)
         self.progressDialog.setCloseCallback(self._progressDialogClose)
         self.progressDialog.show()
-        self.progressTimer.start(0.5, self._progressTimerCallback)
+        self.progressTimer.start(0.01, self._progressTimerCallback)
 
     def _progressDialogClose(self):
         self.progressTimer.stop()

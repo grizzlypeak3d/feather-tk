@@ -26,30 +26,30 @@ namespace ftk
         FileEdit();
 
     public:
-        virtual ~FileEdit();
+        FTK_API virtual ~FileEdit();
 
         //! Create a new widget.
-        static std::shared_ptr<FileEdit> create(
+        FTK_API static std::shared_ptr<FileEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<FileEdit> create(
+        FTK_API static std::shared_ptr<FileEdit> create(
             const std::shared_ptr<Context>&,
             FileBrowserMode,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the path.
-        const Path& getPath() const;
+        FTK_API const Path& getPath() const;
 
         //! Set the path.
-        void setPath(const Path&);
+        FTK_API void setPath(const Path&);
 
         //! Set the callback.
-        void setCallback(const std::function<void(const Path&)>&);
+        FTK_API void setCallback(const std::function<void(const Path&)>&);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _openDialog();

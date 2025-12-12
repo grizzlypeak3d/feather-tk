@@ -30,58 +30,58 @@ namespace ftk
             Shader();
 
         public:
-            ~Shader();
+            FTK_API ~Shader();
 
             //! Create a new shader.
-            static std::shared_ptr<Shader> create(
+            FTK_API static std::shared_ptr<Shader> create(
                 const std::string& vertexSource,
                 const std::string& fragmentSource);
 
             //! Get the vertex shader source.
-            const std::string& getVertexSource() const;
+            FTK_API const std::string& getVertexSource() const;
 
             //! Get the fragment shader source.
-            const std::string& getFragmentSource() const;
+            FTK_API const std::string& getFragmentSource() const;
 
             //! Get the OpenGL shader program.
-            unsigned int getProgram() const;
+            FTK_API unsigned int getProgram() const;
 
             //! Bind the shader.
-            void bind();
+            FTK_API void bind();
 
             //! \name Uniforms
             //! Set uniform values.
             ///@{
 
-            void setUniform(int, int);
-            void setUniform(int, float);
-            void setUniform(int, const V2F&);
-            void setUniform(int, const V3F&);
-            void setUniform(int, const V4F&);
-            void setUniform(int, const M33F&);
-            void setUniform(int, const M44F&);
-            void setUniform(int, const Color4F&);
-            void setUniform(int, const float[4]);
+            FTK_API void setUniform(int, int);
+            FTK_API void setUniform(int, float);
+            FTK_API void setUniform(int, const V2F&);
+            FTK_API void setUniform(int, const V3F&);
+            FTK_API void setUniform(int, const V4F&);
+            FTK_API void setUniform(int, const M33F&);
+            FTK_API void setUniform(int, const M44F&);
+            FTK_API void setUniform(int, const Color4F&);
+            FTK_API void setUniform(int, const float[4]);
 
-            void setUniform(int, const std::vector<int>&);
-            void setUniform(int, const std::vector<float>&);
-            void setUniform(int, const std::vector<V3F>&);
-            void setUniform(int, const std::vector<V4F>&);
+            FTK_API void setUniform(int, const std::vector<int>&);
+            FTK_API void setUniform(int, const std::vector<float>&);
+            FTK_API void setUniform(int, const std::vector<V3F>&);
+            FTK_API void setUniform(int, const std::vector<V4F>&);
 
-            void setUniform(const std::string&, int);
-            void setUniform(const std::string&, float);
-            void setUniform(const std::string&, const V2F&);
-            void setUniform(const std::string&, const V3F&);
-            void setUniform(const std::string&, const V4F&);
-            void setUniform(const std::string&, const M33F&);
-            void setUniform(const std::string&, const M44F&);
-            void setUniform(const std::string&, const Color4F&);
-            void setUniform(const std::string&, const float[4]);
+            FTK_API void setUniform(const std::string&, int);
+            FTK_API void setUniform(const std::string&, float);
+            FTK_API void setUniform(const std::string&, const V2F&);
+            FTK_API void setUniform(const std::string&, const V3F&);
+            FTK_API void setUniform(const std::string&, const V4F&);
+            FTK_API void setUniform(const std::string&, const M33F&);
+            FTK_API void setUniform(const std::string&, const M44F&);
+            FTK_API void setUniform(const std::string&, const Color4F&);
+            FTK_API void setUniform(const std::string&, const float[4]);
 
-            void setUniform(const std::string&, const std::vector<int>&);
-            void setUniform(const std::string&, const std::vector<float>&);
-            void setUniform(const std::string&, const std::vector<V3F>&);
-            void setUniform(const std::string&, const std::vector<V4F>&);
+            FTK_API void setUniform(const std::string&, const std::vector<int>&);
+            FTK_API void setUniform(const std::string&, const std::vector<float>&);
+            FTK_API void setUniform(const std::string&, const std::vector<V3F>&);
+            FTK_API void setUniform(const std::string&, const std::vector<V4F>&);
 
             ///@}
 

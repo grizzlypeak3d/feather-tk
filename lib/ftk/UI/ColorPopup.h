@@ -22,16 +22,16 @@ namespace ftk
         ColorPopup();
 
     public:
-        virtual ~ColorPopup();
+        FTK_API virtual ~ColorPopup();
 
         //! Create a new popup.
-        static std::shared_ptr<ColorPopup> create(
+        FTK_API static std::shared_ptr<ColorPopup> create(
             const std::shared_ptr<Context>&,
             const Color4F&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        void setCallback(const std::function<void(const Color4F&)>&);
+        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
     private:
         FTK_PRIVATE();

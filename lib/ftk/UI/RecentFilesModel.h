@@ -26,32 +26,32 @@ namespace ftk
         RecentFilesModel();
 
     public:
-        ~RecentFilesModel();
+        FTK_API ~RecentFilesModel();
 
         //! Create a new model.
-        static std::shared_ptr<RecentFilesModel> create(
+        FTK_API static std::shared_ptr<RecentFilesModel> create(
             const std::shared_ptr<Context>&);
 
         //! Get the maximum number of recent files.
-        size_t getRecentMax() const;
+        FTK_API size_t getRecentMax() const;
 
         //! Observe the maximum number of recent files.
-        std::shared_ptr<IObservable<size_t> > observeRecentMax() const;
+        FTK_API std::shared_ptr<IObservable<size_t> > observeRecentMax() const;
 
         //! Set the maximum number of recent files.
-        void setRecentMax(size_t);
+        FTK_API void setRecentMax(size_t);
 
         //! Get the list of recent files.
-        const std::vector<std::filesystem::path>& getRecent() const;
+        FTK_API const std::vector<std::filesystem::path>& getRecent() const;
 
         //! Observe the list of recent files.
-        std::shared_ptr<IObservableList<std::filesystem::path> > observeRecent() const;
+        FTK_API std::shared_ptr<IObservableList<std::filesystem::path> > observeRecent() const;
 
         //! Set the recent files.
-        void setRecent(const std::vector<std::filesystem::path>&);
+        FTK_API void setRecent(const std::vector<std::filesystem::path>&);
 
         //! Add a recent file.
-        void addRecent(const std::filesystem::path&);
+        FTK_API void addRecent(const std::filesystem::path&);
 
     private:
         FTK_PRIVATE();

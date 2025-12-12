@@ -26,7 +26,7 @@ namespace ftk
         IWidget() = default;
 
     public:
-        virtual ~IWidget() = 0;
+        FTK_API virtual ~IWidget() = 0;
 
         //! Get the context.
         std::shared_ptr<Context> getContext() const;
@@ -35,10 +35,10 @@ namespace ftk
         const std::string& getObjectName() const;
 
         //! Set the object name.
-        void setObjectName(const std::string&);
+        FTK_API void setObjectName(const std::string&);
 
         //! Get the object path.
-        std::string getObjectPath() const;
+        FTK_API std::string getObjectPath() const;
 
         //! Hierarchy
         ///@{
@@ -47,7 +47,7 @@ namespace ftk
         std::shared_ptr<IWidget> getParent() const;
 
         //! Set the parent widget.
-        void setParent(const std::shared_ptr<IWidget>&);
+        FTK_API void setParent(const std::shared_ptr<IWidget>&);
 
         //! Get the children widgets.
         const std::list<std::shared_ptr<IWidget> >& getChildren() const;
@@ -60,16 +60,16 @@ namespace ftk
         int getChildIndex(const std::shared_ptr<IWidget>&) const;
 
         //! Move the child widget to the front of the drawing order.
-        void moveToFront(const std::shared_ptr<IWidget>&);
+        FTK_API void moveToFront(const std::shared_ptr<IWidget>&);
 
         //! Move the child widget to the back of the drawing order.
-        void moveToBack(const std::shared_ptr<IWidget>&);
+        FTK_API void moveToBack(const std::shared_ptr<IWidget>&);
 
         //! Move the child widget to the given index in the drawing order.
-        void moveToIndex(const std::shared_ptr<IWidget>&, size_t);
+        FTK_API void moveToIndex(const std::shared_ptr<IWidget>&, size_t);
 
         //! Get the window.
-        std::shared_ptr<IWindow> getWindow();
+        FTK_API std::shared_ptr<IWindow> getWindow();
 
         ///@}
 
@@ -90,47 +90,47 @@ namespace ftk
         Stretch getHStretch() const;
 
         //! Set the horizontal layout stretch.
-        void setHStretch(Stretch);
+        FTK_API void setHStretch(Stretch);
 
         //! Get the vertical layout stretch.
         Stretch getVStretch() const;
 
         //! Set the vertical layout stretch.
-        void setVStretch(Stretch);
+        FTK_API void setVStretch(Stretch);
 
         //! Set the horizontal and vertical layout stretch.
-        void setStretch(Stretch horizontal, Stretch vertical);
+        FTK_API void setStretch(Stretch horizontal, Stretch vertical);
 
         //! Set the horizontal and vertical layout stretch.
-        void setStretch(Stretch);
+        FTK_API void setStretch(Stretch);
 
         //! Get the horizontal layout alignment.
         HAlign getHAlign() const;
 
         //! Set the horizontal layout alignment.
-        void setHAlign(HAlign);
+        FTK_API void setHAlign(HAlign);
 
         //! Get the vertical layout alignment.
         VAlign getVAlign() const;
 
         //! Set the vertical layout alignment.
-        void setVAlign(VAlign);
+        FTK_API void setVAlign(VAlign);
 
         //! Set the horizontal and vertical layout alignment.
-        void setAlign(HAlign, VAlign);
+        FTK_API void setAlign(HAlign, VAlign);
 
         //! Get the geometry.
         const Box2I& getGeometry() const;
 
         //! Set the geometry. If this method is overridden the base method
         //! should be called.
-        virtual void setGeometry(const Box2I&);
+        FTK_API virtual void setGeometry(const Box2I&);
             
         //! Set the position.
-        void setPos(const V2I&);
+        FTK_API void setPos(const V2I&);
             
         //! Set the size.
-        void setSize(const Size2I&);
+        FTK_API void setSize(const Size2I&);
 
         //! Set the size hint.
         void setSizeHint(const Size2I&);
@@ -145,20 +145,20 @@ namespace ftk
 
         //! Set whether the widget is visible. If this method is overridden
         //! the base method should be called.
-        virtual void setVisible(bool);
+        FTK_API virtual void setVisible(bool);
 
         //! Show the widget.
-        void show();
+        FTK_API void show();
 
         //! Hide the widget.
-        void hide();
+        FTK_API void hide();
 
         //! Is the widget clipped?
         bool isClipped() const;
 
         //! Get the clipping rect applied to the child widgets. By
         //! default this is the same as the widget geometry.
-        virtual Box2I getChildrenClipRect() const;
+        FTK_API virtual Box2I getChildrenClipRect() const;
 
         ///@}
 
@@ -170,7 +170,7 @@ namespace ftk
 
         //! Set whether the widget is enabled. If this method is overridden
         //! the base method should be called.
-        virtual void setEnabled(bool);
+        FTK_API virtual void setEnabled(bool);
 
         ///@}
 
@@ -182,13 +182,13 @@ namespace ftk
 
         //! Set a draw update. The drawEvent() method will be called the next
         //! tick of the event loop.
-        void setDrawUpdate(bool value = true);
+        FTK_API void setDrawUpdate(bool value = true);
 
         //! Get the background role.
         ColorRole getBackgroundRole() const;
 
         //! Set the background role.
-        void setBackgroundRole(ColorRole);
+        FTK_API void setBackgroundRole(ColorRole);
 
         ///@}
 
@@ -200,17 +200,17 @@ namespace ftk
 
         //! Set whether the widget accepts key focus. If this method is
         //! overridden the base method should be called.
-        virtual void setAcceptsKeyFocus(bool);
+        FTK_API virtual void setAcceptsKeyFocus(bool);
 
         //! Does this widget have key focus?
         bool hasKeyFocus() const;
 
         //! Take the key focus. If this method is overridden the base method
         //! should be called.
-        virtual void takeKeyFocus();
+        FTK_API virtual void takeKeyFocus();
 
         //! Release the key focus.
-        void releaseKeyFocus();
+        FTK_API void releaseKeyFocus();
 
         ///@}
 
@@ -221,7 +221,7 @@ namespace ftk
         const std::string& getTooltip() const;
 
         //! Set the tooltip.
-        void setTooltip(const std::string&);
+        FTK_API void setTooltip(const std::string&);
 
         ///@}
 
@@ -229,73 +229,73 @@ namespace ftk
         ///@{
 
         //! Child add event.
-        virtual void childAddEvent(const ChildAddEvent&);
+        FTK_API virtual void childAddEvent(const ChildAddEvent&);
 
         //! Child remove event.
-        virtual void childRemoveEvent(const ChildRemoveEvent&);
+        FTK_API virtual void childRemoveEvent(const ChildRemoveEvent&);
 
         //! Tick event. If this method is overridden the base method
         //! should be called.
-        virtual void tickEvent(
+        FTK_API virtual void tickEvent(
             bool parentsVisible,
             bool parentsEnabled,
             const TickEvent&);
 
         //! Size hint event.
-        virtual void sizeHintEvent(const SizeHintEvent&);
+        FTK_API virtual void sizeHintEvent(const SizeHintEvent&);
 
         //! Clip event. If this method is overridden the base method
         //! should be called.
-        virtual void clipEvent(const Box2I&, bool clipped);
+        FTK_API virtual void clipEvent(const Box2I&, bool clipped);
 
         //! Draw event.
-        virtual void drawEvent(const Box2I&, const DrawEvent&);
+        FTK_API virtual void drawEvent(const Box2I&, const DrawEvent&);
 
         //! Draw overlay event.
-        virtual void drawOverlayEvent(const Box2I&, const DrawEvent&);
+        FTK_API virtual void drawOverlayEvent(const Box2I&, const DrawEvent&);
 
         //! Mouse enter event.
-        virtual void mouseEnterEvent(MouseEnterEvent&);
+        FTK_API virtual void mouseEnterEvent(MouseEnterEvent&);
 
         //! Mouse leave event.
-        virtual void mouseLeaveEvent();
+        FTK_API virtual void mouseLeaveEvent();
 
         //! Mouse move event.
-        virtual void mouseMoveEvent(MouseMoveEvent&);
+        FTK_API virtual void mouseMoveEvent(MouseMoveEvent&);
 
         //! Mouse press event.
-        virtual void mousePressEvent(MouseClickEvent&);
+        FTK_API virtual void mousePressEvent(MouseClickEvent&);
 
         //! Mouse release event.
-        virtual void mouseReleaseEvent(MouseClickEvent&);
+        FTK_API virtual void mouseReleaseEvent(MouseClickEvent&);
 
         //! Scroll event.
-        virtual void scrollEvent(ScrollEvent&);
+        FTK_API virtual void scrollEvent(ScrollEvent&);
 
         //! Key focus event. If this method is overridden the base method
         //! should be called.
-        virtual void keyFocusEvent(bool);
+        FTK_API virtual void keyFocusEvent(bool);
 
         //! Key press event.
-        virtual void keyPressEvent(KeyEvent&);
+        FTK_API virtual void keyPressEvent(KeyEvent&);
 
         //! Key release event.
-        virtual void keyReleaseEvent(KeyEvent&);
+        FTK_API virtual void keyReleaseEvent(KeyEvent&);
 
         //! Text event.
-        virtual void textEvent(TextEvent&);
+        FTK_API virtual void textEvent(TextEvent&);
 
         //! Drag enter event.
-        virtual void dragEnterEvent(DragAndDropEvent&);
+        FTK_API virtual void dragEnterEvent(DragAndDropEvent&);
 
         //! Drag leave event.
-        virtual void dragLeaveEvent(DragAndDropEvent&);
+        FTK_API virtual void dragLeaveEvent(DragAndDropEvent&);
 
         //! Drag move event.
-        virtual void dragMoveEvent(DragAndDropEvent&);
+        FTK_API virtual void dragMoveEvent(DragAndDropEvent&);
 
         //! Drop event.
-        virtual void dropEvent(DragAndDropEvent&);
+        FTK_API virtual void dropEvent(DragAndDropEvent&);
 
         ///@}
 

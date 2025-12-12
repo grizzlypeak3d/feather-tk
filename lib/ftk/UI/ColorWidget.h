@@ -33,30 +33,30 @@ namespace ftk
         ColorWidget();
 
     public:
-        virtual ~ColorWidget();
+        FTK_API virtual ~ColorWidget();
 
         //! Create a new widget.
-        static std::shared_ptr<ColorWidget> create(
+        FTK_API static std::shared_ptr<ColorWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the color.
-        const Color4F& getColor() const;
+        FTK_API const Color4F& getColor() const;
 
         //! Set the color.
-        void setColor(const Color4F&);
+        FTK_API void setColor(const Color4F&);
 
         //! Set the color callback.
-        void setCallback(const std::function<void(const Color4F&)>&);
+        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
         //! Get the widget mode.
-        ColorWidgetMode getMode() const;
+        FTK_API ColorWidgetMode getMode() const;
 
         //! Set the widget mode.
-        void setMode(ColorWidgetMode);
+        FTK_API void setMode(ColorWidgetMode);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _modeUpdate();

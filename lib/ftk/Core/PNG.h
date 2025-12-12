@@ -16,15 +16,15 @@ namespace ftk
         class FTK_API_TYPE ImageReader : public IImageReader
         {
         public:
-            ImageReader(
+            FTK_API ImageReader(
                 const std::filesystem::path&,
                 const MemFile*,
                 const ImageIOOptions&);
                 
-            virtual ~ImageReader();
+            FTK_API virtual ~ImageReader();
 
-            const ImageInfo& getInfo() const override;
-            std::shared_ptr<Image> read() override;
+            FTK_API const ImageInfo& getInfo() const override;
+            FTK_API std::shared_ptr<Image> read() override;
 
         private:
             FTK_PRIVATE();
@@ -34,14 +34,14 @@ namespace ftk
         class FTK_API_TYPE ImageWriter : public IImageWriter
         {
         public:
-            ImageWriter(
+            FTK_API ImageWriter(
                 const std::filesystem::path&,
                 const ImageInfo&,
                 const ImageIOOptions&);
 
-            virtual ~ImageWriter();
+            FTK_API virtual ~ImageWriter();
 
-            void write(const std::shared_ptr<Image>&) override;
+            FTK_API void write(const std::shared_ptr<Image>&) override;
 
         private:
             FTK_PRIVATE();
@@ -51,22 +51,22 @@ namespace ftk
         class FTK_API_TYPE ImagePlugin : public IImagePlugin
         {
         public:
-            ImagePlugin();
+            FTK_API ImagePlugin();
 
-            virtual ~ImagePlugin();
+            FTK_API virtual ~ImagePlugin();
 
-            std::shared_ptr<IImageReader> read(
+            FTK_API std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
                 const ImageIOOptions& = ImageIOOptions()) override;
-            std::shared_ptr<IImageReader> read(
+            FTK_API std::shared_ptr<IImageReader> read(
                 const std::filesystem::path&,
                 const MemFile&,
                 const ImageIOOptions& = ImageIOOptions()) override;
-            bool canWrite(
+            FTK_API bool canWrite(
                 const std::filesystem::path&,
                 const ImageInfo&,
                 const ImageIOOptions& = ImageIOOptions()) override;
-            std::shared_ptr<IImageWriter> write(
+            FTK_API std::shared_ptr<IImageWriter> write(
                 const std::filesystem::path&,
                 const ImageInfo&,
                 const ImageIOOptions& = ImageIOOptions()) override;

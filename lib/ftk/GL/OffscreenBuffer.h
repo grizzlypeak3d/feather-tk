@@ -92,33 +92,33 @@ namespace ftk
             OffscreenBuffer();
 
         public:
-            ~OffscreenBuffer();
+            FTK_API ~OffscreenBuffer();
 
             //! Create a new offscreen buffer.
-            static std::shared_ptr<OffscreenBuffer> create(
+            FTK_API static std::shared_ptr<OffscreenBuffer> create(
                 const Size2I&,
                 const OffscreenBufferOptions&);
 
             //! Get the offscreen buffer size.
-            const Size2I& getSize() const;
+            FTK_API const Size2I& getSize() const;
 
             //! Get the offscreen buffer width.
-            int getWidth() const;
+            FTK_API int getWidth() const;
 
             //! Get the offscreen buffer height.
-            int getHeight() const;
+            FTK_API int getHeight() const;
 
             //! Get the options.
-            const OffscreenBufferOptions& getOptions() const;
+            FTK_API const OffscreenBufferOptions& getOptions() const;
 
             //! Get the offscreen buffer ID.
-            unsigned int getID() const;
+            FTK_API unsigned int getID() const;
 
             //! Get the color texture ID.
-            unsigned int getColorID() const;
+            FTK_API unsigned int getColorID() const;
 
             //! Bind the offscreen buffer.
-            void bind();
+            FTK_API void bind();
 
         private:
             FTK_PRIVATE();
@@ -134,9 +134,9 @@ namespace ftk
         class FTK_API_TYPE OffscreenBufferBinding
         {
         public:
-            explicit OffscreenBufferBinding(const std::shared_ptr<OffscreenBuffer>&);
+            FTK_API explicit OffscreenBufferBinding(const std::shared_ptr<OffscreenBuffer>&);
 
-            ~OffscreenBufferBinding();
+            FTK_API ~OffscreenBufferBinding();
 
         private:
             FTK_PRIVATE();

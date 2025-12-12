@@ -22,10 +22,10 @@ namespace ftk
         IPopup();
 
     public:
-        virtual ~IPopup() = 0;
+        FTK_API virtual ~IPopup() = 0;
 
         //! Close the popup.
-        virtual void close() = 0;
+        FTK_API virtual void close() = 0;
     };
         
     ///@}

@@ -89,22 +89,22 @@ namespace ftk
         FontSystem(const std::shared_ptr<Context>&);
 
     public:
-        virtual ~FontSystem();
+        FTK_API virtual ~FontSystem();
 
         //! Create a new system.
-        static std::shared_ptr<FontSystem> create(const std::shared_ptr<Context>&);
+        FTK_API static std::shared_ptr<FontSystem> create(const std::shared_ptr<Context>&);
 
         //! Add a font.
-        void addFont(const std::string& name, const uint8_t*, size_t);
+        FTK_API void addFont(const std::string& name, const uint8_t*, size_t);
 
         //! \name Information
         ///@{
 
         //! Get the glyph cache size.
-        size_t getGlyphCacheSize() const;
+        FTK_API size_t getGlyphCacheSize() const;
 
         //! Get the percentage of the glyph cache in use.
-        float getGlyphCachePercentage() const;
+        FTK_API float getGlyphCachePercentage() const;
 
         ///@}
 
@@ -112,16 +112,16 @@ namespace ftk
         ///@{
 
         //! Get font metrics.
-        FontMetrics getMetrics(const FontInfo&);
+        FTK_API FontMetrics getMetrics(const FontInfo&);
 
         //! Get the size of the given string.
-        Size2I getSize(
+        FTK_API Size2I getSize(
             const std::string&,
             const FontInfo&,
             int maxLineWidth = 0);
 
         //! Get the character boxes for the given string.
-        std::vector<Box2I> getBoxes(
+        FTK_API std::vector<Box2I> getBoxes(
             const std::string&,
             const FontInfo&,
             int maxLineWidth = 0);
@@ -132,7 +132,7 @@ namespace ftk
         ///@{
 
         //! Get the glyphs for the given string.
-        std::vector<std::shared_ptr<Glyph> > getGlyphs(
+        FTK_API std::vector<std::shared_ptr<Glyph> > getGlyphs(
             const std::string&,
             const FontInfo&);
 

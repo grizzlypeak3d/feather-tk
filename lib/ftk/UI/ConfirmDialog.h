@@ -25,10 +25,10 @@ namespace ftk
         ConfirmDialog();
 
     public:
-        virtual ~ConfirmDialog();
+        FTK_API virtual ~ConfirmDialog();
 
         //! Create a new widget.
-        static std::shared_ptr<ConfirmDialog> create(
+        FTK_API static std::shared_ptr<ConfirmDialog> create(
             const std::shared_ptr<Context>&,
             const std::string& title,
             const std::string& text,
@@ -37,7 +37,7 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        void setCallback(const std::function<void(bool)>&);
+        FTK_API void setCallback(const std::function<void(bool)>&);
 
     private:
         FTK_PRIVATE();

@@ -19,18 +19,18 @@ namespace ftk
         BellowsButton();
 
     public:
-        virtual ~BellowsButton();
+        FTK_API virtual ~BellowsButton();
 
-        static std::shared_ptr<BellowsButton> create(
+        FTK_API static std::shared_ptr<BellowsButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void keyPressEvent(KeyEvent&) override;
-        void keyReleaseEvent(KeyEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
+        FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         FTK_PRIVATE();

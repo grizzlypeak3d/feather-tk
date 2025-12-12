@@ -33,13 +33,8 @@ namespace ftk
         //! \name Value
         ///@{
 
-        //! Get the value.
         int getValue() const;
-
-        //! Observe the value.
         std::shared_ptr<IObservable<int> > observeValue() const;
-
-        //! Set the value.
         void setValue(int);
 
         ///@}
@@ -47,13 +42,8 @@ namespace ftk
         //! \name Range
         ///@{
 
-        //! Get the range.
         const RangeI& getRange() const;
-
-        //! Observe the range.
         std::shared_ptr<IObservable<RangeI> > observeRange() const;
-
-        //! Set the range.
         void setRange(const RangeI&);
 
         ///@}

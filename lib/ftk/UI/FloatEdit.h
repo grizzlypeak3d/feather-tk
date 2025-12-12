@@ -23,69 +23,70 @@ namespace ftk
         FloatEdit();
 
     public:
-        virtual ~FloatEdit();
+        FTK_API virtual ~FloatEdit();
 
         //! Create a new widget.
-        static std::shared_ptr<FloatEdit> create(
+        FTK_API static std::shared_ptr<FloatEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<FloatEdit> create(
+        FTK_API static std::shared_ptr<FloatEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the value.
-        float getValue() const;
+        //! \name Value
+        ///@{
 
-        //! Set the value.
-        void setValue(float);
+        FTK_API float getValue() const;
+        FTK_API void setValue(float);
+        FTK_API void setCallback(const std::function<void(float)>&);
+        
+        ///@}
 
-        //! Set the callback.
-        void setCallback(const std::function<void(float)>&);
+        //! \name Range
+        ///@{
 
-        //! Get the range.
-        const RangeF& getRange() const;
+        FTK_API const RangeF& getRange() const;
+        FTK_API void setRange(const RangeF&);
+        FTK_API void setRange(float, float);
+        
+        ///@}
 
-        //! Set the range.
-        void setRange(const RangeF&);
+        //! \name Increment
+        ///@{
 
-        //! Set the range.
-        void setRange(float, float);
+        FTK_API float getStep() const;
+        FTK_API void setStep(float);
 
-        //! Get the step.
-        float getStep() const;
+        FTK_API float getLargeStep() const;
+        FTK_API void setLargeStep(float);
+        
+        ///@}
 
-        //! Set the step.
-        void setStep(float);
+        //! \name Default Value
+        ///@{
 
-        //! Get the large step.
-        float getLargeStep() const;
-
-        //! Set the large step.
-        void setLargeStep(float);
-
-        //! Get the default value.
-        float getDefaultValue() const;
-
-        //! Set the default value.
-        void setDefaultValue(float);
+        FTK_API float getDefaultValue() const;
+        FTK_API void setDefaultValue(float);
+        
+        ///@}
 
         //! Get the model.
-        const std::shared_ptr<FloatModel>& getModel() const;
+        FTK_API const std::shared_ptr<FloatModel>& getModel() const;
 
         //! Get the display precision.
-        int getPrecision() const;
+        FTK_API int getPrecision() const;
 
         //! Set the display precision.
-        void setPrecision(int);
+        FTK_API void setPrecision(int);
 
         //! Get the font role.
-        FontRole getFontRole() const;
+        FTK_API FontRole getFontRole() const;
 
         //! Set the font role.
-        void setFontRole(FontRole);
+        FTK_API void setFontRole(FontRole);
 
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
@@ -111,16 +112,16 @@ namespace ftk
         FloatResetButton();
 
     public:
-        virtual ~FloatResetButton();
+        FTK_API virtual ~FloatResetButton();
 
         //! Create a new widget.
-        static std::shared_ptr<FloatResetButton> create(
+        FTK_API static std::shared_ptr<FloatResetButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();

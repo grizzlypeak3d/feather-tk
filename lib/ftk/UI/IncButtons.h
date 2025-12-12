@@ -25,15 +25,15 @@ namespace ftk
         IncButton();
 
     public:
-        virtual ~IncButton();
+        FTK_API virtual ~IncButton();
 
         //! Create a new widget.
-        static std::shared_ptr<IncButton> create(
+        FTK_API static std::shared_ptr<IncButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();
@@ -50,21 +50,21 @@ namespace ftk
         IncButtons();
 
     public:
-        virtual ~IncButtons();
+        FTK_API virtual ~IncButtons();
 
         //! Create a new widget.
-        static std::shared_ptr<IncButtons> create(
+        FTK_API static std::shared_ptr<IncButtons> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the increment callback.
-        void setIncCallback(const std::function<void(void)>&);
+        FTK_API void setIncCallback(const std::function<void(void)>&);
 
         //! Set the decrement callback.
-        void setDecCallback(const std::function<void(void)>&);
+        FTK_API void setDecCallback(const std::function<void(void)>&);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     protected:
         std::shared_ptr<IncButton> _incButton;

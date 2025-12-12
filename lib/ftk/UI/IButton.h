@@ -22,86 +22,86 @@ namespace ftk
         IButton();
 
     public:
-        virtual ~IButton();
+        FTK_API virtual ~IButton();
 
         //! Get whether the button is checkable.
-        bool isCheckable() const;
+        FTK_API bool isCheckable() const;
 
         //! Set whether the button is checkable.
-        void setCheckable(bool);
+        FTK_API void setCheckable(bool);
 
         //! Get whether the button is checked.
-        bool isChecked() const;
+        FTK_API bool isChecked() const;
 
         //! Set whether the button is checked.
-        void setChecked(bool);
+        FTK_API void setChecked(bool);
 
         //! Get the text.
-        const std::string& getText() const;
+        FTK_API const std::string& getText() const;
 
         //! Set the text.
-        virtual void setText(const std::string&);
+        FTK_API virtual void setText(const std::string&);
 
         //! Get the font role.
-        FontRole getFontRole() const;
+        FTK_API FontRole getFontRole() const;
 
         //! Set the font role.
-        virtual void setFontRole(FontRole);
+        FTK_API virtual void setFontRole(FontRole);
 
         //! Get the icon.
-        const std::string& getIcon() const;
+        FTK_API const std::string& getIcon() const;
 
         //! Set the icon.
-        void setIcon(const std::string&);
+        FTK_API void setIcon(const std::string&);
 
         //! Get the checked icon.
-        const std::string& getCheckedIcon() const;
+        FTK_API const std::string& getCheckedIcon() const;
 
         //! Set the checked icon.
-        void setCheckedIcon(const std::string&);
+        FTK_API void setCheckedIcon(const std::string&);
 
         //! Get the button color role.
-        ColorRole getButtonRole() const;
+        FTK_API ColorRole getButtonRole() const;
 
         //! Set the button color role.
-        void setButtonRole(ColorRole);
+        FTK_API void setButtonRole(ColorRole);
 
         //! Get the checked color role.
-        ColorRole getCheckedRole() const;
+        FTK_API ColorRole getCheckedRole() const;
 
         //! Set the checked color role.
-        void setCheckedRole(ColorRole);
+        FTK_API void setCheckedRole(ColorRole);
 
         //! Set the hovered callback.
-        void setHoveredCallback(const std::function<void(bool)>&);
+        FTK_API void setHoveredCallback(const std::function<void(bool)>&);
 
         //! Set the pressed callback.
-        void setPressedCallback(const std::function<void(void)>&);
+        FTK_API void setPressedCallback(const std::function<void(void)>&);
 
         //! Get whether the button repeats clicks when pressed.
-        bool hasRepeatClick() const;
+        FTK_API bool hasRepeatClick() const;
 
         //! Set whether the button repeats clicks when pressed.
-        void setRepeatClick(bool);
+        FTK_API void setRepeatClick(bool);
 
         //! Set the clicked callback.
-        void setClickedCallback(const std::function<void(void)>&);
+        FTK_API void setClickedCallback(const std::function<void(void)>&);
 
         //! Set the checked callback.
-        void setCheckedCallback(const std::function<void(bool)>&);
+        FTK_API void setCheckedCallback(const std::function<void(bool)>&);
 
         //! Click the button.
-        void click();
+        FTK_API void click();
 
-        void tickEvent(
+        FTK_API void tickEvent(
             bool,
             bool,
             const TickEvent&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void mouseEnterEvent(MouseEnterEvent&) override;
-        void mouseLeaveEvent() override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_API void mouseLeaveEvent() override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     protected:
         std::string _text;

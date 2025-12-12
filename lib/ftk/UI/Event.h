@@ -19,7 +19,7 @@ namespace ftk
     //! Child added event.
     struct FTK_API_TYPE ChildAddEvent
     {
-        ChildAddEvent(const std::shared_ptr<IWidget>&);
+        FTK_API ChildAddEvent(const std::shared_ptr<IWidget>&);
 
         std::shared_ptr<IWidget> child;
     };
@@ -27,7 +27,7 @@ namespace ftk
     //! Child removed event.
     struct FTK_API_TYPE ChildRemoveEvent
     {
-        ChildRemoveEvent(const std::shared_ptr<IWidget>&, int index);
+        FTK_API ChildRemoveEvent(const std::shared_ptr<IWidget>&, int index);
 
         std::shared_ptr<IWidget> child;
         int index = 0;
@@ -41,7 +41,7 @@ namespace ftk
     //! Size hint event.
     struct FTK_API_TYPE SizeHintEvent
     {
-        SizeHintEvent(
+        FTK_API SizeHintEvent(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             float displayScale,
@@ -56,7 +56,7 @@ namespace ftk
     //! Draw event.
     struct FTK_API_TYPE DrawEvent
     {
-        DrawEvent(
+        FTK_API DrawEvent(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             float displayScale,
@@ -74,13 +74,13 @@ namespace ftk
     class FTK_API_TYPE DragAndDropData : public std::enable_shared_from_this<DragAndDropData>
     {
     public:
-        virtual ~DragAndDropData() = 0;
+        FTK_API virtual ~DragAndDropData() = 0;
     };
 
     //! Mouse enter event.
     struct FTK_API_TYPE MouseEnterEvent
     {
-        MouseEnterEvent(const V2I& pos);
+        FTK_API MouseEnterEvent(const V2I& pos);
 
         bool accept = false;
         V2I  pos;
@@ -89,7 +89,7 @@ namespace ftk
     //! Mouse move event.
     struct FTK_API_TYPE MouseMoveEvent
     {
-        MouseMoveEvent(
+        FTK_API MouseMoveEvent(
             const V2I& pos,
             const V2I& prev);
 
@@ -133,8 +133,8 @@ namespace ftk
     //! Mouse click event.
     struct FTK_API_TYPE MouseClickEvent
     {
-        MouseClickEvent() = default;
-        MouseClickEvent(
+        FTK_API MouseClickEvent() = default;
+        FTK_API MouseClickEvent(
             int              button,
             int              modifiers,
             const V2I& pos);
@@ -148,7 +148,7 @@ namespace ftk
     //! Scroll event (mouse wheel or touch pad).
     struct FTK_API_TYPE ScrollEvent
     {
-        ScrollEvent(
+        FTK_API ScrollEvent(
             const V2F& value,
             int              modifiers,
             const V2I& pos);
@@ -301,8 +301,8 @@ namespace ftk
     //! Key event.
     struct FTK_API_TYPE KeyEvent
     {
-        KeyEvent() = default;
-        KeyEvent(
+        FTK_API KeyEvent() = default;
+        FTK_API KeyEvent(
             Key        key,
             int        modifiers,
             const V2I& pos);
@@ -316,7 +316,7 @@ namespace ftk
     //! Text event.
     struct FTK_API_TYPE TextEvent
     {
-        TextEvent(const std::string& text);
+        FTK_API TextEvent(const std::string& text);
 
         std::string text;
         bool        accept = false;
@@ -326,11 +326,11 @@ namespace ftk
     class FTK_API_TYPE TextDragAndDropData : public DragAndDropData
     {
     public:
-        TextDragAndDropData(const std::string& text);
+        FTK_API TextDragAndDropData(const std::string& text);
 
-        virtual ~TextDragAndDropData();
+        FTK_API virtual ~TextDragAndDropData();
 
-        const std::string& getText() const;
+        FTK_API const std::string& getText() const;
 
     private:
         std::string _text;
@@ -339,7 +339,7 @@ namespace ftk
     //! Drag and drop event.
     struct FTK_API_TYPE DragAndDropEvent
     {
-        DragAndDropEvent(
+        FTK_API DragAndDropEvent(
             const V2I&                              pos,
             const V2I&                              prev,
             const std::shared_ptr<DragAndDropData>& data);

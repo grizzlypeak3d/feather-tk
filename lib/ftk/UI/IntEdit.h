@@ -23,69 +23,70 @@ namespace ftk
         IntEdit();
 
     public:
-        virtual ~IntEdit();
+        FTK_API virtual ~IntEdit();
 
         //! Create a new widget.
-        static std::shared_ptr<IntEdit> create(
+        FTK_API static std::shared_ptr<IntEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<IntEdit> create(
+        FTK_API static std::shared_ptr<IntEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the value.
-        int getValue() const;
+        //! \name Value
+        ///@{
 
-        //! Set the value.
-        void setValue(int);
+        FTK_API int getValue() const;
+        FTK_API void setValue(int);
+        FTK_API void setCallback(const std::function<void(int)>&);
+        
+        ///@}
 
-        //! Set the callback.
-        void setCallback(const std::function<void(int)>&);
+        //! \name Range
+        ///@{
 
-        //! Get the range.
-        const RangeI& getRange() const;
+        FTK_API const RangeI& getRange() const;
+        FTK_API void setRange(const RangeI&);
+        FTK_API void setRange(int, int);
+        
+        ///@}
 
-        //! Set the range.
-        void setRange(const RangeI&);
+        //! \name Increment
+        ///@{
 
-        //! Set the range.
-        void setRange(int, int);
+        FTK_API int getStep() const;
+        FTK_API void setStep(int);
 
-        //! Get the step.
-        int getStep() const;
+        FTK_API int getLargeStep() const;
+        FTK_API void setLargeStep(int);
+        
+        ///@}
 
-        //! Set the step.
-        void setStep(int);
+        //! \name Default Value
+        ///@{
 
-        //! Get the large step.
-        int getLargeStep() const;
-
-        //! Set the large step.
-        void setLargeStep(int);
-
-        //! Get the default value.
-        int getDefaultValue() const;
-
-        //! Set the default value.
-        void setDefaultValue(int);
+        FTK_API int getDefaultValue() const;
+        FTK_API void setDefaultValue(int);
+        
+        ///@}
 
         //! Get the model.
-        const std::shared_ptr<IntModel>& getModel() const;
+        FTK_API const std::shared_ptr<IntModel>& getModel() const;
 
         //! Get the font role.
-        FontRole getFontRole() const;
+        FTK_API FontRole getFontRole() const;
 
         //! Set the font role.
-        void setFontRole(FontRole);
+        FTK_API void setFontRole(FontRole);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void scrollEvent(ScrollEvent&) override;
-        void keyPressEvent(KeyEvent&) override;
-        void keyReleaseEvent(KeyEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void scrollEvent(ScrollEvent&) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
+        FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         void _textUpdate();
@@ -105,16 +106,16 @@ namespace ftk
         IntResetButton();
 
     public:
-        virtual ~IntResetButton();
+        FTK_API virtual ~IntResetButton();
 
         //! Create a new widget.
-        static std::shared_ptr<IntResetButton> create(
+        FTK_API static std::shared_ptr<IntResetButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();

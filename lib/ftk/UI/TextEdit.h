@@ -36,54 +36,54 @@ namespace ftk
         TextEdit();
 
     public:
-        virtual ~TextEdit();
+        FTK_API virtual ~TextEdit();
 
         //! Create a new widget
-        static std::shared_ptr<TextEdit> create(
+        FTK_API static std::shared_ptr<TextEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<TextEditModel>& = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the model.
-        const std::shared_ptr<TextEditModel>& getModel() const;
+        FTK_API const std::shared_ptr<TextEditModel>& getModel() const;
 
         //! Get the text.
-        const std::vector<std::string>& getText() const;
+        FTK_API const std::vector<std::string>& getText() const;
 
         //! Set the text.
-        void setText(const std::vector<std::string>&);
+        FTK_API void setText(const std::vector<std::string>&);
 
         //! Clear the text.
-        void clearText();
+        FTK_API void clearText();
 
         //! Set the text callback.
-        void setTextCallback(const std::function<void(const std::vector<std::string>&)>&);
+        FTK_API void setTextCallback(const std::function<void(const std::vector<std::string>&)>&);
 
         //! Select all.
-        void selectAll();
+        FTK_API void selectAll();
 
         //! Clear the selection.
-        void clearSelection();
+        FTK_API void clearSelection();
 
         //! Get the options.
-        const TextEditOptions& getOptions() const;
+        FTK_API const TextEditOptions& getOptions() const;
 
         //! Observe the options.
-        std::shared_ptr<IObservable<TextEditOptions> > observeOptions() const;
+        FTK_API std::shared_ptr<IObservable<TextEditOptions> > observeOptions() const;
 
         //! Set the options.
-        void setOptions(const TextEditOptions&);
+        FTK_API void setOptions(const TextEditOptions&);
 
         //! Get the margin role.
-        SizeRole getMarginRole() const;
+        FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        void setMarginRole(SizeRole);
+        FTK_API void setMarginRole(SizeRole);
 
-        void takeKeyFocus() override;
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void takeKeyFocus() override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

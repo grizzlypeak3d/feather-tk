@@ -95,8 +95,8 @@ namespace ftk
         float brightness = 1.F;
         float contrast = 1.F;
 
-        bool operator == (const ColorControls&) const;
-        bool operator != (const ColorControls&) const;
+        FTK_API bool operator == (const ColorControls&) const;
+        FTK_API bool operator != (const ColorControls&) const;
     };
 
     //! Font roles.
@@ -126,47 +126,47 @@ namespace ftk
         Style();
 
     public:
-        ~Style();
+        FTK_API ~Style();
 
         //! Create a new style.
-        static std::shared_ptr<Style> create(
+        FTK_API static std::shared_ptr<Style> create(
             const std::shared_ptr<Context>&);
 
         //! Get a size role.
-        int getSizeRole(SizeRole, float scale) const;
+        FTK_API int getSizeRole(SizeRole, float scale) const;
 
         //! Set a size role.
-        void setSizeRole(SizeRole, int);
+        FTK_API void setSizeRole(SizeRole, int);
 
         //! Set the size roles.
-        void setSizeRoles(const std::map<SizeRole, int>&);
+        FTK_API void setSizeRoles(const std::map<SizeRole, int>&);
 
         //! Get a color role.
-        Color4F getColorRole(ColorRole) const;
+        FTK_API Color4F getColorRole(ColorRole) const;
 
         //! Set a color role.
-        void setColorRole(ColorRole, const Color4F&);
+        FTK_API void setColorRole(ColorRole, const Color4F&);
 
         //! Set the color roles.
-        void setColorRoles(const std::map<ColorRole, Color4F>&);
+        FTK_API void setColorRoles(const std::map<ColorRole, Color4F>&);
 
         //! Get the color controls.
-        const ColorControls& getColorControls() const;
+        FTK_API const ColorControls& getColorControls() const;
 
         //! Set the color controls.
-        void setColorControls(const ColorControls&);
+        FTK_API void setColorControls(const ColorControls&);
 
         //! Get a font role.
-        FontInfo getFontRole(FontRole, float scale) const;
+        FTK_API FontInfo getFontRole(FontRole, float scale) const;
 
         //! Set a font role.
-        void setFontRole(FontRole, const FontInfo&);
+        FTK_API void setFontRole(FontRole, const FontInfo&);
 
         //! Set the font roles.
-        void setFontRoles(const std::map<FontRole, FontInfo>&);
+        FTK_API void setFontRoles(const std::map<FontRole, FontInfo>&);
 
         //! Observe style changes.
-        std::shared_ptr<IObservable<bool> > observeChanged() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeChanged() const;
 
     private:
         void _colorUpdate();

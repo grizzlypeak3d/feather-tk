@@ -19,9 +19,9 @@ namespace ftk
     class FTK_API_TYPE Noise
     {
     public:
-        Noise();
+        FTK_API Noise();
 
-        double get(double x, double y, double z);
+        FTK_API double get(double x, double y, double z);
 
     private:
         std::vector<int> _p;

@@ -21,13 +21,13 @@ namespace ftk
         IMouseWidget() = default;
 
     public:
-        virtual ~IMouseWidget() = 0;
+        FTK_API virtual ~IMouseWidget() = 0;
 
-        void mouseEnterEvent(MouseEnterEvent&) override;
-        void mouseLeaveEvent() override;
-        void mouseMoveEvent(MouseMoveEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_API void mouseLeaveEvent() override;
+        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     protected:
         void _setMouseHoverEnabled(bool);

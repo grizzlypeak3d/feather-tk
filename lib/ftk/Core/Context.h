@@ -26,35 +26,35 @@ namespace ftk
         Context() = default;
 
     public:
-        ~Context();
+        FTK_API ~Context();
 
         //! Create a new context.
-        static std::shared_ptr<Context> create();
+        FTK_API static std::shared_ptr<Context> create();
 
         //! Add a system.
-        void addSystem(const std::shared_ptr<ISystem>&);
+        FTK_API void addSystem(const std::shared_ptr<ISystem>&);
 
         //! Get the systems.
-        const std::list<std::shared_ptr<ISystem> >& getSystems() const;
+        FTK_API const std::list<std::shared_ptr<ISystem> >& getSystems() const;
 
         //! Get a system by type.
         template<typename T>
         std::shared_ptr<T> getSystem() const;
 
         //! Get a system by name.
-        std::shared_ptr<ISystem> getSystemByName(const std::string&) const;
+        FTK_API std::shared_ptr<ISystem> getSystemByName(const std::string&) const;
 
         //! Get the log system.
         const std::shared_ptr<LogSystem>& getLogSystem() const;
 
         //! Print to the log.
-        void log(
+        FTK_API void log(
             const std::string& prefix,
             const std::string&,
             LogType = LogType::Message);
 
         //! Tick the context.
-        void tick();
+        FTK_API void tick();
 
     private:
         std::shared_ptr<LogSystem> _logSystem;

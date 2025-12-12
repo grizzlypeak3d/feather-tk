@@ -14,34 +14,34 @@ namespace ftk
     class FTK_API_TYPE Random
     {
     public:
-        Random();
+        FTK_API Random();
 
-        ~Random();
+        FTK_API ~Random();
 
         //! Get a random number between zero and one.
-        float getF();
+        FTK_API float getF();
 
         //! Get a random number between zero and the given value.
-        float getF(float);
+        FTK_API float getF(float);
 
         //! Get a random number between two values.
-        float getF(float min, float max);
+        FTK_API float getF(float min, float max);
 
         //! Get a random number between zero and the given value.
-        int getI(int);
+        FTK_API int getI(int);
 
         //! Get a random number between two values.
-        int getI(int min, int max);
+        FTK_API int getI(int min, int max);
 
         //! Get a random item from a list.
         template<typename T>
         const T& getItem(const std::vector<T>&);
 
         //! Seed the random value generator.
-        void setSeed(unsigned int);
+        FTK_API void setSeed(unsigned int);
 
         //! Seed the random value generator with the current time.
-        void setSeed();
+        FTK_API void setSeed();
 
     private:
         FTK_PRIVATE();

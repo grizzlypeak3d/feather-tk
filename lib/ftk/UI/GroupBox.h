@@ -21,38 +21,38 @@ namespace ftk
         GroupBox();
 
     public:
-        virtual ~GroupBox();
+        FTK_API virtual ~GroupBox();
 
         //! Create a new widget.
-        static std::shared_ptr<GroupBox> create(
+        FTK_API static std::shared_ptr<GroupBox> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<GroupBox> create(
+        FTK_API static std::shared_ptr<GroupBox> create(
             const std::shared_ptr<Context>&,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the text.
-        const std::string& getText() const;
+        FTK_API const std::string& getText() const;
 
         //! Set the text.
-        void setText(const std::string&);
+        FTK_API void setText(const std::string&);
 
         //! Get the font role.
-        FontRole getFontRole() const;
+        FTK_API FontRole getFontRole() const;
 
         //! Set the font role.
-        void setFontRole(FontRole);
+        FTK_API void setFontRole(FontRole);
 
         //! Remove all children from the group box.
-        void clear();
+        FTK_API void clear();
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

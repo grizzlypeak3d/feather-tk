@@ -14,15 +14,15 @@ namespace ftk
     struct FTK_API_TYPE PieChartData
     {
         PieChartData() = default;
-        PieChartData(
+        FTK_API PieChartData(
             float                percentage,
             const Color4F& color);
 
         float         percentage = 0.F;
         Color4F color;
 
-        bool operator == (const PieChartData&) const;
-        bool operator != (const PieChartData&) const;
+        FTK_API bool operator == (const PieChartData&) const;
+        FTK_API bool operator != (const PieChartData&) const;
     };
 
     //! Pie chart widget.
@@ -36,29 +36,29 @@ namespace ftk
         PieChart();
 
     public:
-        virtual ~PieChart();
+        FTK_API virtual ~PieChart();
 
         //! Create a new widget.
-        static std::shared_ptr<PieChart> create(
+        FTK_API static std::shared_ptr<PieChart> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the pie chart data.
-        const std::vector<PieChartData>& getData() const;
+        FTK_API const std::vector<PieChartData>& getData() const;
 
         //! Set the pie chart data.
-        void setData(const std::vector<PieChartData>&);
+        FTK_API void setData(const std::vector<PieChartData>&);
 
         //! Set the size multiplier.
-        int getSizeMult() const;
+        FTK_API int getSizeMult() const;
 
         //! Set the size multiplier.
-        void setSizeMult(int);
+        FTK_API void setSizeMult(int);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

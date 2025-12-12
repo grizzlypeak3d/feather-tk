@@ -21,42 +21,42 @@ namespace ftk
         ColorSwatch();
 
     public:
-        virtual ~ColorSwatch();
+        FTK_API virtual ~ColorSwatch();
 
         //! Create a new widget.
-        static std::shared_ptr<ColorSwatch> create(
+        FTK_API static std::shared_ptr<ColorSwatch> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the color.
-        const Color4F& getColor() const;
+        FTK_API const Color4F& getColor() const;
 
         //! Set the color.
-        void setColor(const Color4F&);
+        FTK_API void setColor(const Color4F&);
 
         //! Set the pressed callback.
-        void setPressedCallback(const std::function<void(void)>&);
+        FTK_API void setPressedCallback(const std::function<void(void)>&);
 
         //! Get whether the color is editable.
-        bool isEditable() const;
+        FTK_API bool isEditable() const;
 
         //! Set whether the color is editable.
-        void setEditable(bool);
+        FTK_API void setEditable(bool);
 
         //! Set the color callback.
-        void setColorCallback(const std::function<void(const Color4F&)>&);
+        FTK_API void setColorCallback(const std::function<void(const Color4F&)>&);
 
         //! Get the size role.
-        SizeRole getSizeRole() const;
+        FTK_API SizeRole getSizeRole() const;
 
         //! Set the size role.
-        void setSizeRole(SizeRole);
+        FTK_API void setSizeRole(SizeRole);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
 
     private:
         void _showPopup();

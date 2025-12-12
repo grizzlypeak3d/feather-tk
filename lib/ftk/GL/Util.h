@@ -32,9 +32,9 @@ namespace ftk
         class FTK_API_TYPE SetAndRestore
         {
         public:
-            SetAndRestore(unsigned int, bool);
+            FTK_API SetAndRestore(unsigned int, bool);
 
-            ~SetAndRestore();
+            FTK_API ~SetAndRestore();
 
         private:
             FTK_PRIVATE();

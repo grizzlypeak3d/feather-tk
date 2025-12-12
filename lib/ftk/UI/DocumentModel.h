@@ -14,7 +14,7 @@ namespace ftk
     class FTK_API_TYPE IDocument : public std::enable_shared_from_this<IDocument>
     {
     public:
-        virtual ~IDocument() = 0;
+        FTK_API virtual ~IDocument() = 0;
     };
 
     //! Document model.
@@ -26,46 +26,46 @@ namespace ftk
         DocumentModel() = default;
 
     public:
-        virtual ~DocumentModel();
+        FTK_API virtual ~DocumentModel();
 
         //! Create a new document model.
-        static std::shared_ptr<DocumentModel> create(
+        FTK_API static std::shared_ptr<DocumentModel> create(
             const std::shared_ptr<ftk::Context>&);
 
         //! \name Documents
         ///@{
 
-        const std::vector<std::shared_ptr<IDocument> >& getList() const;
-        std::shared_ptr<ftk::IObservableList<std::shared_ptr<IDocument> > > observeList() const;
+        FTK_API const std::vector<std::shared_ptr<IDocument> >& getList() const;
+        FTK_API std::shared_ptr<ftk::IObservableList<std::shared_ptr<IDocument> > > observeList() const;
 
         ///@}
 
         //! \name Add Documents
         ///@{
 
-        void add(const std::shared_ptr<IDocument>&);
-        std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeAdd() const;
+        FTK_API void add(const std::shared_ptr<IDocument>&);
+        FTK_API std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeAdd() const;
 
         ///@}
 
         //! \name Close Documents
         ///@{
 
-        void close(int);
-        void closeAll();
-        std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeClose() const;
-        std::shared_ptr<ftk::IObservable<bool> > observeCloseAll() const;
+        FTK_API void close(int);
+        FTK_API void closeAll();
+        FTK_API std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeClose() const;
+        FTK_API std::shared_ptr<ftk::IObservable<bool> > observeCloseAll() const;
 
         ///@}
 
         //! \name Current Document
         ///@{
 
-        std::shared_ptr<IDocument> getCurrent() const;
-        int getCurrentIndex() const;
-        std::shared_ptr<ftk::IObservable<std::shared_ptr<IDocument> > > observeCurrent() const;
-        std::shared_ptr<ftk::IObservable<int> > observeCurrentIndex() const;
-        void setCurrentIndex(int);
+        FTK_API std::shared_ptr<IDocument> getCurrent() const;
+        FTK_API int getCurrentIndex() const;
+        FTK_API std::shared_ptr<ftk::IObservable<std::shared_ptr<IDocument> > > observeCurrent() const;
+        FTK_API std::shared_ptr<ftk::IObservable<int> > observeCurrentIndex() const;
+        FTK_API void setCurrentIndex(int);
 
         ///@}
 

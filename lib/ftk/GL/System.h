@@ -18,16 +18,16 @@ namespace ftk
             System(const std::shared_ptr<Context>&);
 
         public:
-            virtual ~System();
+            FTK_API virtual ~System();
 
             //! Create a new system.
-            static std::shared_ptr<System> create(const std::shared_ptr<Context>&);
+            FTK_API static std::shared_ptr<System> create(const std::shared_ptr<Context>&);
         
             //! Get the render factory.
-            const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
+            FTK_API const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
 
             //! Set the render factory.
-            void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
+            FTK_API void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
 
         private:
             FTK_PRIVATE();

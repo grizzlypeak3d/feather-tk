@@ -23,72 +23,73 @@ namespace ftk
         DoubleEditSlider();
 
     public:
-        virtual ~DoubleEditSlider();
+        FTK_API virtual ~DoubleEditSlider();
 
         //! Create a new widget.
-        static std::shared_ptr<DoubleEditSlider> create(
+        FTK_API static std::shared_ptr<DoubleEditSlider> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<DoubleEditSlider> create(
+        FTK_API static std::shared_ptr<DoubleEditSlider> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the value.
-        double getValue() const;
+        //! \name Value
+        ///@{
 
-        //! Set the value.
-        void setValue(double);
+        FTK_API double getValue() const;
+        FTK_API void setValue(double);
+        FTK_API void setCallback(const std::function<void(double)>&);
+        
+        ///@}
 
-        //! Set the callback.
-        void setCallback(const std::function<void(double)>&);
+        //! \name Range
+        ///@{
 
-        //! Get the range.
-        const RangeD& getRange() const;
+        FTK_API const RangeD& getRange() const;
+        FTK_API void setRange(const RangeD&);
+        FTK_API void setRange(double, double);
+        
+        ///@}
 
-        //! Set the range.
-        void setRange(const RangeD&);
+        //! \name Increment
+        ///@{
 
-        //! Set the range.
-        void setRange(double, double);
+        FTK_API double getStep() const;
+        FTK_API void setStep(double);
 
-        //! Get the step.
-        double getStep() const;
+        FTK_API double getLargeStep() const;
+        FTK_API void setLargeStep(double);
+        
+        ///@}
 
-        //! Set the step.
-        void setStep(double);
+        //! \name Default Value
+        ///@{
 
-        //! Get the large step.
-        double getLargeStep() const;
-
-        //! Set the large step.
-        void setLargeStep(double);
-
-        //! Get the default value.
-        double getDefaultValue() const;
-
-        //! Set the default value.
-        void setDefaultValue(double);
+        FTK_API double getDefaultValue() const;
+        FTK_API void setDefaultValue(double);
+        
+        ///@}
 
         //! Get the model.
-        const std::shared_ptr<DoubleModel>& getModel() const;
+        FTK_API const std::shared_ptr<DoubleModel>& getModel() const;
 
         //! Get the display precision.
-        int getPrecision() const;
+        FTK_API int getPrecision() const;
 
         //! Set the display precision.
-        void setPrecision(int);
+        FTK_API void setPrecision(int);
 
         //! Get the font role.
-        FontRole getFontRole() const;
+        FTK_API FontRole getFontRole() const;
 
         //! Set the font role.
-        void setFontRole(FontRole);
+        FTK_API void setFontRole(FontRole);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

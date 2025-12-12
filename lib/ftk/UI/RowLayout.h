@@ -23,40 +23,40 @@ namespace ftk
         RowLayout();
 
     public:
-        virtual ~RowLayout();
+        FTK_API virtual ~RowLayout();
 
         //! Create a new layout.
-        static std::shared_ptr<RowLayout> create(
+        FTK_API static std::shared_ptr<RowLayout> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the margin role.
-        SizeRole getMarginRole() const;
+        FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        void setMarginRole(SizeRole);
+        FTK_API void setMarginRole(SizeRole);
 
         //! Get the spacing role.
-        SizeRole getSpacingRole() const;
+        FTK_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        void setSpacingRole(SizeRole);
+        FTK_API void setSpacingRole(SizeRole);
 
         //! Add a spacer.
-        void addSpacer(Stretch = Stretch::Fixed);
+        FTK_API void addSpacer(Stretch = Stretch::Fixed);
 
         //! Add a spacer.
-        void addSpacer(SizeRole, Stretch = Stretch::Fixed);
+        FTK_API void addSpacer(SizeRole, Stretch = Stretch::Fixed);
 
         //! Remove all children from the layout.
-        void clear();
+        FTK_API void clear();
 
-        void setGeometry(const Box2I&) override;
-        Box2I getChildrenClipRect() const override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void childAddEvent(const ChildAddEvent&) override;
-        void childRemoveEvent(const ChildRemoveEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API Box2I getChildrenClipRect() const override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void childAddEvent(const ChildAddEvent&) override;
+        FTK_API void childRemoveEvent(const ChildRemoveEvent&) override;
 
     private:
         FTK_PRIVATE();
@@ -73,10 +73,10 @@ namespace ftk
         HorizontalLayout();
 
     public:
-        virtual ~HorizontalLayout();
+        FTK_API virtual ~HorizontalLayout();
 
         //! Create a new layout.
-        static std::shared_ptr<HorizontalLayout> create(
+        FTK_API static std::shared_ptr<HorizontalLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
     };
@@ -92,10 +92,10 @@ namespace ftk
         VerticalLayout();
 
     public:
-        virtual ~VerticalLayout();
+        FTK_API virtual ~VerticalLayout();
 
         //! Create a new layout.
-        static std::shared_ptr<VerticalLayout> create(
+        FTK_API static std::shared_ptr<VerticalLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
     };

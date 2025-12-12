@@ -21,33 +21,33 @@ namespace ftk
         Icon();
 
     public:
-        virtual ~Icon();
+        FTK_API virtual ~Icon();
 
         //! Create a new widget.
-        static std::shared_ptr<Icon> create(
+        FTK_API static std::shared_ptr<Icon> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        static std::shared_ptr<Icon> create(
+        FTK_API static std::shared_ptr<Icon> create(
             const std::shared_ptr<Context>&,
             const std::string& icon,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the icon.
-        const std::string& getIcon() const;
+        FTK_API const std::string& getIcon() const;
 
         //! Set the icon.
-        void setIcon(const std::string&);
+        FTK_API void setIcon(const std::string&);
 
         //! Get the margin role.
-        SizeRole getMarginRole() const;
+        FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        void setMarginRole(SizeRole);
+        FTK_API void setMarginRole(SizeRole);
 
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

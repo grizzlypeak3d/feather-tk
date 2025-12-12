@@ -23,38 +23,38 @@ namespace ftk
         MDICanvas();
 
     public:
-        virtual ~MDICanvas();
+        FTK_API virtual ~MDICanvas();
 
         //! Create a new canvas.
-        static std::shared_ptr<MDICanvas> create(
+        FTK_API static std::shared_ptr<MDICanvas> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the canvas size.
-        const Size2I& getCanvasSize() const;
+        FTK_API const Size2I& getCanvasSize() const;
 
         //! Set the canvas size.
-        void setCanvasSize(const Size2I&);
+        FTK_API void setCanvasSize(const Size2I&);
 
         //! Get the grid size.
-        const Size2I& getGridSize() const;
+        FTK_API const Size2I& getGridSize() const;
 
         //! Set the grid size.
-        void setGridSize(const Size2I&);
+        FTK_API void setGridSize(const Size2I&);
 
         //! Add a widget to the canvas.
-        std::shared_ptr<MDIWidget> addWidget(
+        FTK_API std::shared_ptr<MDIWidget> addWidget(
             const std::string& title,
             const V2I& pos,
             const std::shared_ptr<IWidget>&);
 
-        void setGeometry(const Box2I&) override;
-        void childRemoveEvent(const ChildRemoveEvent&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void mouseMoveEvent(MouseMoveEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void childRemoveEvent(const ChildRemoveEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
         int _snapToGridX(int) const;

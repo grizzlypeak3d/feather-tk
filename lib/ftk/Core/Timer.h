@@ -23,40 +23,40 @@ namespace ftk
         Timer();
 
     public:
-        ~Timer();
+        FTK_API ~Timer();
 
         //! Create a new timer.
-        static std::shared_ptr<Timer> create(
+        FTK_API static std::shared_ptr<Timer> create(
             const std::shared_ptr<Context>&);
 
         //! Does the timer repeat?
-        bool isRepeating() const;
+        FTK_API bool isRepeating() const;
 
         //! Set whether the timer repeats.
-        void setRepeating(bool);
+        FTK_API void setRepeating(bool);
 
         //! Start the timer.
-        void start(
+        FTK_API void start(
             const std::chrono::microseconds& timeout,
             const std::function<void(void)>& callback);
 
         //! Start the timer.
-        void start(
+        FTK_API void start(
             const std::chrono::microseconds& timeout,
             const std::function<void(
                 const std::chrono::steady_clock::time_point&,
                 const std::chrono::microseconds&)>& callback);
 
         //! Stop the timer.
-        void stop();
+        FTK_API void stop();
 
         //! Is the timer active?
-        bool isActive() const;
+        FTK_API bool isActive() const;
 
         //! Get the timeout.
-        const std::chrono::microseconds& getTimeout() const;
+        FTK_API const std::chrono::microseconds& getTimeout() const;
 
-        void tick();
+        FTK_API void tick();
 
     private:
         FTK_PRIVATE();
@@ -69,15 +69,15 @@ namespace ftk
         TimerSystem(const std::shared_ptr<Context>&);
 
     public:
-        virtual ~TimerSystem();
+        FTK_API virtual ~TimerSystem();
 
-        static std::shared_ptr<TimerSystem> create(
+        FTK_API static std::shared_ptr<TimerSystem> create(
             const std::shared_ptr<Context>&);
 
-        void addTimer(const std::shared_ptr<Timer>&);
+        FTK_API void addTimer(const std::shared_ptr<Timer>&);
 
-        void tick() override;
-        std::chrono::milliseconds getTickTime() const override;
+        FTK_API void tick() override;
+        FTK_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         FTK_PRIVATE();

@@ -24,7 +24,7 @@ namespace ftk
             const std::string& name);
 
     public:
-        virtual ~ISystem() = 0;
+        FTK_API virtual ~ISystem() = 0;
 
         //! Get the context.
         std::shared_ptr<Context> getContext() const;
@@ -33,10 +33,10 @@ namespace ftk
         const std::string& getName() const;
 
         //! Tick the system.
-        virtual void tick();
+        FTK_API virtual void tick();
 
         //! Get the system tick time interval.
-        virtual std::chrono::milliseconds getTickTime() const;
+        FTK_API virtual std::chrono::milliseconds getTickTime() const;
 
     protected:
         std::weak_ptr<Context> _context;

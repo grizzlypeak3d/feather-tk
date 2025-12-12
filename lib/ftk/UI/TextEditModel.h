@@ -17,40 +17,40 @@ namespace ftk
     struct FTK_API_TYPE TextEditPos
     {
         TextEditPos() = default;
-        TextEditPos(int line, int chr);
+        FTK_API TextEditPos(int line, int chr);
 
         int line = -1;
         int chr  = -1;
 
-        bool isValid() const;
+        FTK_API bool isValid() const;
 
-        bool operator == (const TextEditPos&) const;
-        bool operator != (const TextEditPos&) const;
-        bool operator < (const TextEditPos&) const;
-        bool operator > (const TextEditPos&) const;
+        FTK_API bool operator == (const TextEditPos&) const;
+        FTK_API bool operator != (const TextEditPos&) const;
+        FTK_API bool operator < (const TextEditPos&) const;
+        FTK_API bool operator > (const TextEditPos&) const;
     };
 
     //! Text edit selection.
     struct FTK_API_TYPE TextEditSelection
     {
         TextEditSelection() = default;
-        TextEditSelection(const TextEditPos&);
-        TextEditSelection(const TextEditPos&, const TextEditPos&);
+        FTK_API TextEditSelection(const TextEditPos&);
+        FTK_API TextEditSelection(const TextEditPos&, const TextEditPos&);
 
         TextEditPos first;
         TextEditPos second;
 
         //! Get whether the selection is valid.
-        bool isValid() const;
+        FTK_API bool isValid() const;
 
         //! Get the minimum.
-        TextEditPos min() const;
+        FTK_API TextEditPos min() const;
 
         //! Get the maximum.
-        TextEditPos max() const;
+        FTK_API TextEditPos max() const;
 
-        bool operator == (const TextEditSelection&) const;
-        bool operator != (const TextEditSelection&) const;
+        FTK_API bool operator == (const TextEditSelection&) const;
+        FTK_API bool operator != (const TextEditSelection&) const;
     };
 
     //! Text edit model options.
@@ -58,8 +58,8 @@ namespace ftk
     {
         int  tabSpaces = 4;
 
-        bool operator == (const TextEditModelOptions&) const;
-        bool operator != (const TextEditModelOptions&) const;
+        FTK_API bool operator == (const TextEditModelOptions&) const;
+        FTK_API bool operator != (const TextEditModelOptions&) const;
     };
 
     //! Text edit model.
@@ -75,63 +75,63 @@ namespace ftk
         TextEditModel();
 
     public:
-        virtual ~TextEditModel();
+        FTK_API virtual ~TextEditModel();
 
         //! Create a new text edit model.
-        static std::shared_ptr<TextEditModel> create(
+        FTK_API static std::shared_ptr<TextEditModel> create(
             const std::shared_ptr<Context>&,
             const std::vector<std::string>& = {});
 
         //! \name Text
         ///@{
 
-        const std::vector<std::string>& getText() const;
-        std::shared_ptr<IObservableList<std::string> > observeText() const;
+        FTK_API const std::vector<std::string>& getText() const;
+        FTK_API std::shared_ptr<IObservableList<std::string> > observeText() const;
 
         //! Set the text. Setting the text will also set the cursor to the
         //! beginning and clear the selection.
-        void setText(const std::vector<std::string>&);
+        FTK_API void setText(const std::vector<std::string>&);
 
-        void clearText();
+        FTK_API void clearText();
 
         ///@}
 
         //! \name Cursor
         ///@{
 
-        const TextEditPos& getCursor() const;
-        std::shared_ptr<IObservable<TextEditPos> > observeCursor() const;
+        FTK_API const TextEditPos& getCursor() const;
+        FTK_API std::shared_ptr<IObservable<TextEditPos> > observeCursor() const;
 
         //! Set the cursor. Setting the cursor clears the selection.
-        void setCursor(const TextEditPos&);
+        FTK_API void setCursor(const TextEditPos&);
 
         ///@}
 
         //! \name Selection
         ///@{
 
-        const TextEditSelection& getSelection() const;
-        std::shared_ptr<IObservable<TextEditSelection> > observeSelection() const;
-        void setSelection(const TextEditSelection&);
-        void selectAll();
-        void clearSelection();
+        FTK_API const TextEditSelection& getSelection() const;
+        FTK_API std::shared_ptr<IObservable<TextEditSelection> > observeSelection() const;
+        FTK_API void setSelection(const TextEditSelection&);
+        FTK_API void selectAll();
+        FTK_API void clearSelection();
 
         ///@}
 
         //! \name Undo
         ///@{
 
-        void undo();
-        void redo();
+        FTK_API void undo();
+        FTK_API void redo();
 
         ///@}
 
         //! \name Clipboard
         ///@{
 
-        void cut();
-        void copy();
-        void paste();
+        FTK_API void cut();
+        FTK_API void copy();
+        FTK_API void paste();
 
         ///@}
 
@@ -139,24 +139,24 @@ namespace ftk
         ///@{
 
         //! Handle text input.
-        void input(const std::string&);
+        FTK_API void input(const std::string&);
 
         //! Handle key input.
-        bool key(Key, int modifiers = 0);
+        FTK_API bool key(Key, int modifiers = 0);
 
         ///@}
 
         //! \name Options
         ///@{
 
-        const TextEditModelOptions& getOptions() const;
-        std::shared_ptr<IObservable<TextEditModelOptions> > observeOptions() const;
-        void setOptions(const TextEditModelOptions&);
+        FTK_API const TextEditModelOptions& getOptions() const;
+        FTK_API std::shared_ptr<IObservable<TextEditModelOptions> > observeOptions() const;
+        FTK_API void setOptions(const TextEditModelOptions&);
 
         ///@}
 
         //! Set the number of rows in a page.
-        void setPageRows(int);
+        FTK_API void setPageRows(int);
 
     private:
         TextEditPos _getNext(const TextEditPos&) const;

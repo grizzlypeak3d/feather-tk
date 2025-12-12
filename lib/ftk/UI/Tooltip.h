@@ -25,21 +25,21 @@ namespace ftk
         Tooltip();
 
     public:
-        virtual ~Tooltip();
+        FTK_API virtual ~Tooltip();
 
         //! Create a new tooltip.
-        static std::shared_ptr<Tooltip> create(
+        FTK_API static std::shared_ptr<Tooltip> create(
             const std::shared_ptr<Context>&,
             const std::string& text,
             const V2I& pos,
             const std::shared_ptr<IWidget>&);
 
-        void close() override;
+        FTK_API void close() override;
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

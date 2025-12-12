@@ -111,11 +111,6 @@ namespace ftk
         _parse(options);
     }
 
-    const PathOptions& Path::getOptions()
-    {
-        return _options;
-    }
-
     void Path::setOptions(const PathOptions& value)
     {
         _options = value;

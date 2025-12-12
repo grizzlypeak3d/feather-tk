@@ -21,54 +21,54 @@ namespace ftk
         StackLayout();
 
     public:
-        virtual ~StackLayout();
+        FTK_API virtual ~StackLayout();
 
         //! Create a new layout.
-        static std::shared_ptr<StackLayout> create(
+        FTK_API static std::shared_ptr<StackLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the current index.
-        int getCurrentIndex() const;
+        FTK_API int getCurrentIndex() const;
 
         //! Set the current index.
-        void setCurrentIndex(int);
+        FTK_API void setCurrentIndex(int);
 
         //! Go to the next index.
-        void nextIndex();
+        FTK_API void nextIndex();
 
         //! Observe whether there is a next index.
-        std::shared_ptr<IObservable<bool> > observeHasNextIndex() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasNextIndex() const;
 
         //! Go to the previous index.
-        void prevIndex();
+        FTK_API void prevIndex();
 
         //! Observe whether there is a previous index.
-        std::shared_ptr<IObservable<bool> > observeHasPrevIndex() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasPrevIndex() const;
 
         //! Go to the first index.
-        void firstIndex();
+        FTK_API void firstIndex();
 
         //! Go to the last index.
-        void lastIndex();
+        FTK_API void lastIndex();
 
         //! Set the current widget.
-        void setCurrentWidget(const std::shared_ptr<IWidget>&);
+        FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 
         //! Get the margin role.
-        SizeRole getMarginRole() const;
+        FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        void setMarginRole(SizeRole);
+        FTK_API void setMarginRole(SizeRole);
 
         //! Remove all children from the group box.
-        void clear();
+        FTK_API void clear();
 
-        void setGeometry(const Box2I&) override;
-        Box2I getChildrenClipRect() const override;
-        void childAddEvent(const ChildAddEvent&) override;
-        void childRemoveEvent(const ChildRemoveEvent&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API Box2I getChildrenClipRect() const override;
+        FTK_API void childAddEvent(const ChildAddEvent&) override;
+        FTK_API void childRemoveEvent(const ChildRemoveEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();

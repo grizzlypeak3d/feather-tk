@@ -45,43 +45,43 @@ namespace ftk
                 const TextureOptions&);
 
         public:
-            ~Texture();
+            FTK_API ~Texture();
 
             //! Create a new texture.
-            static std::shared_ptr<Texture> create(
+            FTK_API static std::shared_ptr<Texture> create(
                 const ImageInfo&,
                 const TextureOptions& = TextureOptions());
 
             //! Get the image information.
-            const ImageInfo& getInfo() const;
+            FTK_API const ImageInfo& getInfo() const;
 
             //! Get the size.
-            const Size2I& getSize() const;
+            FTK_API const Size2I& getSize() const;
 
             //! Get the width.
-            int getWidth() const;
+            FTK_API int getWidth() const;
 
             //! Get the height.
-            int getHeight() const;
+            FTK_API int getHeight() const;
 
             //! Get the image type.
-            ImageType getType() const;
+            FTK_API ImageType getType() const;
 
             //! Get the OpenGL texture ID.
-            unsigned int getID() const;
+            FTK_API unsigned int getID() const;
 
             //! \name Copy
             //! Copy image data to the texture.
             ///@{
 
-            void copy(const std::shared_ptr<Image>&);
-            void copy(const std::shared_ptr<Image>&, int x, int y);
-            void copy(const uint8_t*, const ImageInfo&);
+            FTK_API void copy(const std::shared_ptr<Image>&);
+            FTK_API void copy(const std::shared_ptr<Image>&, int x, int y);
+            FTK_API void copy(const uint8_t*, const ImageInfo&);
 
             ///@}
 
             //! Bind the texture.
-            void bind();
+            FTK_API void bind();
 
         private:
             FTK_PRIVATE();

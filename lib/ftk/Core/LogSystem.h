@@ -43,22 +43,22 @@ namespace ftk
         LogSystem(const std::shared_ptr<Context>&);
 
     public:
-        virtual ~LogSystem();
+        FTK_API virtual ~LogSystem();
 
         //! Create a new system.
-        static std::shared_ptr<LogSystem> create(const std::shared_ptr<Context>&);
+        FTK_API static std::shared_ptr<LogSystem> create(const std::shared_ptr<Context>&);
 
         //! Print to the log.
-        void print(
+        FTK_API void print(
             const std::string& prefix,
             const std::string&,
             LogType = LogType::Message);
             
         //! Observe the log items.
-        std::shared_ptr<IObservableList<LogItem> > observeLogItems() const;
+        FTK_API std::shared_ptr<IObservableList<LogItem> > observeLogItems() const;
 
-        void tick() override;
-        std::chrono::milliseconds getTickTime() const override;
+        FTK_API void tick() override;
+        FTK_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         FTK_PRIVATE();

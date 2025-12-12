@@ -21,72 +21,72 @@ namespace ftk
         TabWidget();
 
     public:
-        virtual ~TabWidget();
+        FTK_API virtual ~TabWidget();
 
         //! Create a new widget.
-        static std::shared_ptr<TabWidget> create(
+        FTK_API static std::shared_ptr<TabWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the tabs.
-        const std::vector<std::string>& getTabs() const;
+        FTK_API const std::vector<std::string>& getTabs() const;
 
         //! Add a tab.
-        void addTab(
+        FTK_API void addTab(
             const std::string& name,
             const std::shared_ptr<IWidget>& widget,
             const std::string& tooltip = std::string());
 
         //! Remove a tab.
-        void removeTab(int);
+        FTK_API void removeTab(int);
 
         //! Remove a tab.
-        void removeTab(const std::shared_ptr<IWidget>&);
+        FTK_API void removeTab(const std::shared_ptr<IWidget>&);
 
         //! Clear the tabs.
-        void clearTabs();
+        FTK_API void clearTabs();
 
         //! Get the current tab.
-        int getCurrentTab() const;
+        FTK_API int getCurrentTab() const;
 
         //! Set the current tab.
-        void setCurrentTab(int);
+        FTK_API void setCurrentTab(int);
 
         //! Set the current tab callback.
-        void setCurrentTabCallback(const std::function<void(int)>&);
+        FTK_API void setCurrentTabCallback(const std::function<void(int)>&);
 
         //! Get the current widget.
-        std::shared_ptr<IWidget> getCurrentWidget() const;
+        FTK_API std::shared_ptr<IWidget> getCurrentWidget() const;
 
         //! Set the current widget.
-        void setCurrentWidget(const std::shared_ptr<IWidget>&);
+        FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 
         //! Set the current widget callback.
-        void setCurrentWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>&);
+        FTK_API void setCurrentWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>&);
 
         //! Set the tab text.
-        void setTabText(int index, const std::string&);
+        FTK_API void setTabText(int index, const std::string&);
 
         //! Set the tab text.
-        void setTabText(const std::shared_ptr<IWidget>&, const std::string&);
+        FTK_API void setTabText(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Set the tab tooltip.
-        void setTabTooltip(int index, const std::string&);
+        FTK_API void setTabTooltip(int index, const std::string&);
 
         //! Set the tab tooltip.
-        void setTabTooltip(const std::shared_ptr<IWidget>&, const std::string&);
+        FTK_API void setTabTooltip(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Get whether the tabs are closable.
-        bool areTabsClosable() const;
+        FTK_API bool areTabsClosable() const;
 
         //! Set whether the tabs are closable.
-        void setTabsClosable(bool);
+        FTK_API void setTabsClosable(bool);
 
         //! Set the close callback.
-        void setTabCloseCallback(const std::function<void(int)>&);
+        FTK_API void setTabCloseCallback(const std::function<void(int)>&);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();

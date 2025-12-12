@@ -22,7 +22,7 @@ namespace ftk
     class FTK_API_TYPE Format
     {
     public:
-        Format(const std::string&);
+        FTK_API Format(const std::string&);
 
         //! \name Arguments
         //! Replace the next argument in the string with the given value.
@@ -31,14 +31,14 @@ namespace ftk
         //! object is returned so that you can chain calls together.
         ///@{
 
-        Format& arg(const std::string&, int width = 0);
-        Format& arg(int, int width = 0, char pad = ' ');
-        Format& arg(int8_t, int width = 0, char pad = ' ');
-        Format& arg(uint8_t, int width = 0, char pad = ' ');
-        Format& arg(int16_t, int width = 0, char pad = ' ');
-        Format& arg(uint16_t, int width = 0, char pad = ' ');
-        Format& arg(float, int precision = -1, int width = 0, char pad = ' ');
-        Format& arg(double, int precision = -1, int width = 0, char pad = ' ');
+        FTK_API Format& arg(const std::string&, int width = 0);
+        FTK_API Format& arg(int, int width = 0, char pad = ' ');
+        FTK_API Format& arg(int8_t, int width = 0, char pad = ' ');
+        FTK_API Format& arg(uint8_t, int width = 0, char pad = ' ');
+        FTK_API Format& arg(int16_t, int width = 0, char pad = ' ');
+        FTK_API Format& arg(uint16_t, int width = 0, char pad = ' ');
+        FTK_API Format& arg(float, int precision = -1, int width = 0, char pad = ' ');
+        FTK_API Format& arg(double, int precision = -1, int width = 0, char pad = ' ');
         template<typename T>
         Format& arg(T);
 

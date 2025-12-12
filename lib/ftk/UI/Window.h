@@ -20,29 +20,29 @@ namespace ftk
         Window();
 
     public:
-        virtual ~Window();
+        FTK_API virtual ~Window();
 
         //! Create a new window.
-        static std::shared_ptr<Window> create(
+        FTK_API static std::shared_ptr<Window> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const std::string& title,
             const Size2I& = Size2I(1280, 960));
 
-        uint32_t getID() const override;
-        int getScreen() const override;
-        void setTitle(const std::string&) override;
-        void setSize(const Size2I&) override;
-        void setMinSize(const Size2I&) override;
-        void setFullScreen(bool) override;
-        void setFloatOnTop(bool) override;
-        void setIcon(const std::shared_ptr<Image>&) override;
-        std::shared_ptr<Image> screenshot(const Box2I& = Box2I(0, 0, -1, -1)) override;
+        FTK_API uint32_t getID() const override;
+        FTK_API int getScreen() const override;
+        FTK_API void setTitle(const std::string&) override;
+        FTK_API void setSize(const Size2I&) override;
+        FTK_API void setMinSize(const Size2I&) override;
+        FTK_API void setFullScreen(bool) override;
+        FTK_API void setFloatOnTop(bool) override;
+        FTK_API void setIcon(const std::shared_ptr<Image>&) override;
+        FTK_API std::shared_ptr<Image> screenshot(const Box2I& = Box2I(0, 0, -1, -1)) override;
 
-        void setGeometry(const Box2I&) override;
-        void setVisible(bool) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void setVisible(bool) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
         void _makeCurrent();

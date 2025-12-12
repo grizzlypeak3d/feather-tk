@@ -40,32 +40,32 @@ namespace ftk
             TextureAtlas();
 
         public:
-            ~TextureAtlas();
+            FTK_API ~TextureAtlas();
 
             //! Create a new texture atlas.
-            static std::shared_ptr<TextureAtlas> create(
+            FTK_API static std::shared_ptr<TextureAtlas> create(
                 int size,
                 ImageType,
                 ImageFilter = ImageFilter::Linear,
                 int border = 1);
 
             //! Get the texture atlas size.
-            int getSize() const;
+            FTK_API int getSize() const;
 
             //! Get the texture atlas type.
-            ImageType getType() const;
+            FTK_API ImageType getType() const;
 
             //! Get the texture atlas ID.
-            unsigned int getTexture() const;
+            FTK_API unsigned int getTexture() const;
 
             //! Get a texture atlas item.
-            bool getItem(BoxPackID, TextureAtlasItem&);
+            FTK_API bool getItem(BoxPackID, TextureAtlasItem&);
 
             //! Add a texture atlas item.
-            bool addItem(const std::shared_ptr<Image>&, TextureAtlasItem&);
+            FTK_API bool addItem(const std::shared_ptr<Image>&, TextureAtlasItem&);
 
             //! Get the percentage of the texture atlas that is in use.
-            float getPercentageUsed() const;
+            FTK_API float getPercentageUsed() const;
 
         private:
             void _toItem(const std::shared_ptr<BoxPackNode>&, TextureAtlasItem&);

@@ -72,41 +72,41 @@ namespace ftk
         FileIO();
 
     public:
-        ~FileIO();
+        FTK_API ~FileIO();
 
         //! Create a new file I/O object.
-        static std::shared_ptr<FileIO> create(
+        FTK_API static std::shared_ptr<FileIO> create(
             const std::filesystem::path&,
             FileMode,
             FileRead = FileRead::MMap);
 
         //! Create a new file I/O object.
-        static std::shared_ptr<FileIO> create(
+        FTK_API static std::shared_ptr<FileIO> create(
             const std::string&,
             FileMode,
             FileRead = FileRead::MMap);
 
         //! Create a read-only file I/O object from memory.
-        static std::shared_ptr<FileIO> create(
+        FTK_API static std::shared_ptr<FileIO> create(
             const std::filesystem::path&,
             const MemFile&);
 
         //! Create a read-only file I/O object from memory.
-        static std::shared_ptr<FileIO> create(
+        FTK_API static std::shared_ptr<FileIO> create(
             const std::string&,
             const MemFile&);
 
         //! Get whether the file is open.
-        bool isOpen() const;
+        FTK_API bool isOpen() const;
 
         //! \name Information
         ///@{
 
         //! Get the file path.
-        const std::filesystem::path& getPath() const;
+        FTK_API const std::filesystem::path& getPath() const;
 
         //! Get the file size.
-        size_t getSize() const;
+        FTK_API size_t getSize() const;
 
         ///@}
 
@@ -114,53 +114,53 @@ namespace ftk
         ///@{
 
         //! Get the current file position.
-        size_t getPos() const;
+        FTK_API size_t getPos() const;
 
         //! Change the current file position.
-        void seek(size_t, SeekMode);
+        FTK_API void seek(size_t, SeekMode);
 
         //! Get whether the file position is at the end of the file.
-        bool isEOF() const;
+        FTK_API bool isEOF() const;
 
         ///@}
 
         //! \name Read
         ///@{
 
-        void read(void*, size_t, size_t wordSize = 1);
+        FTK_API void read(void*, size_t, size_t wordSize = 1);
 
-        void read8(int8_t*, size_t = 1);
-        void readU8(uint8_t*, size_t = 1);
-        void read16(int16_t*, size_t = 1);
-        void readU16(uint16_t*, size_t = 1);
-        void read32(int32_t*, size_t = 1);
-        void readU32(uint32_t*, size_t = 1);
-        void readF32(float*, size_t = 1);
+        FTK_API void read8(int8_t*, size_t = 1);
+        FTK_API void readU8(uint8_t*, size_t = 1);
+        FTK_API void read16(int16_t*, size_t = 1);
+        FTK_API void readU16(uint16_t*, size_t = 1);
+        FTK_API void read32(int32_t*, size_t = 1);
+        FTK_API void readU32(uint32_t*, size_t = 1);
+        FTK_API void readF32(float*, size_t = 1);
 
         ///@}
 
         //! \name Write
         ///@{
 
-        void write(const void*, size_t, size_t wordSize = 1);
+        FTK_API void write(const void*, size_t, size_t wordSize = 1);
 
-        void write8(const int8_t*, size_t);
-        void writeU8(const uint8_t*, size_t);
-        void write16(const int16_t*, size_t);
-        void writeU16(const uint16_t*, size_t);
-        void write32(const int32_t*, size_t);
-        void writeU32(const uint32_t*, size_t);
-        void writeF32(const float*, size_t);
+        FTK_API void write8(const int8_t*, size_t);
+        FTK_API void writeU8(const uint8_t*, size_t);
+        FTK_API void write16(const int16_t*, size_t);
+        FTK_API void writeU16(const uint16_t*, size_t);
+        FTK_API void write32(const int32_t*, size_t);
+        FTK_API void writeU32(const uint32_t*, size_t);
+        FTK_API void writeF32(const float*, size_t);
 
-        void write8(int8_t);
-        void writeU8(uint8_t);
-        void write16(int16_t);
-        void writeU16(uint16_t);
-        void write32(int32_t);
-        void writeU32(uint32_t);
-        void writeF32(float);
+        FTK_API void write8(int8_t);
+        FTK_API void writeU8(uint8_t);
+        FTK_API void write16(int16_t);
+        FTK_API void writeU16(uint16_t);
+        FTK_API void write32(int32_t);
+        FTK_API void writeU32(uint32_t);
+        FTK_API void writeF32(float);
 
-        void write(const std::string&);
+        FTK_API void write(const std::string&);
 
         ///@}
 
@@ -168,13 +168,13 @@ namespace ftk
         ///@{
 
         //! Get a pointer to the start of the file memory.
-        const uint8_t* getMemStart() const;
+        FTK_API const uint8_t* getMemStart() const;
 
         //! Get a pointer to the end of the file memory.
-        const uint8_t* getMemEnd() const;
+        FTK_API const uint8_t* getMemEnd() const;
 
         //! Get the current file memory position.
-        const uint8_t* getMemP() const;
+        FTK_API const uint8_t* getMemP() const;
 
         ///@}
 
@@ -182,10 +182,10 @@ namespace ftk
         ///@{
 
         //! Get whether automatic endian conversion is performed.
-        bool hasEndianConversion() const;
+        FTK_API bool hasEndianConversion() const;
 
         //! Set whether automatic endian conversion is performed.
-        void setEndianConversion(bool);
+        FTK_API void setEndianConversion(bool);
 
         ///@}
 

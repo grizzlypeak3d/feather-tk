@@ -23,32 +23,32 @@ namespace ftk
         MenuBar();
 
     public:
-        virtual ~MenuBar();
+        FTK_API virtual ~MenuBar();
 
         //! Create a new widget.
-        static std::shared_ptr<MenuBar> create(
+        FTK_API static std::shared_ptr<MenuBar> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Add a menu.
-        void addMenu(
+        FTK_API void addMenu(
             const std::string& text,
             const std::shared_ptr<Menu>&);
 
         //! Get a menu.
-        std::shared_ptr<Menu> getMenu(const std::string&) const;
+        FTK_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 
         //! Clear the menus.
-        void clear();
+        FTK_API void clear();
 
         //! Handle keyboard shortcuts.
-        bool shortcut(Key, int);
+        FTK_API bool shortcut(Key, int);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void keyFocusEvent(bool) override;
-        void keyPressEvent(KeyEvent&) override;
-        void keyReleaseEvent(KeyEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void keyFocusEvent(bool) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
+        FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         void _setCurrent(int);

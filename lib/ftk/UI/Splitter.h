@@ -22,34 +22,34 @@ namespace ftk
         Splitter();
 
     public:
-        virtual ~Splitter();
+        FTK_API virtual ~Splitter();
 
         //! Create a new widget.
-        static std::shared_ptr<Splitter> create(
+        FTK_API static std::shared_ptr<Splitter> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the split value.
-        float getSplit() const;
+        FTK_API float getSplit() const;
 
         //! Set the split value.
-        void setSplit(float);
+        FTK_API void setSplit(float);
 
         //! Get whether the splitter has a border.
-        bool hasBorder() const;
+        FTK_API bool hasBorder() const;
 
         //! Set whether the splitter has a border.
-        void setBorder(bool);
+        FTK_API void setBorder(bool);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void mouseEnterEvent(MouseEnterEvent&) override;
-        void mouseLeaveEvent() override;
-        void mouseMoveEvent(MouseMoveEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_API void mouseLeaveEvent() override;
+        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
         FTK_PRIVATE();

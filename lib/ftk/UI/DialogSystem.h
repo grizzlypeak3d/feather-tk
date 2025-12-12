@@ -22,20 +22,20 @@ namespace ftk
         DialogSystem(const std::shared_ptr<Context>&);
 
     public:
-        virtual ~DialogSystem();
+        FTK_API virtual ~DialogSystem();
 
         //! Create a new system.
-        static std::shared_ptr<DialogSystem> create(
+        FTK_API static std::shared_ptr<DialogSystem> create(
             const std::shared_ptr<Context>&);
 
         //! Open a message dialog.
-        std::shared_ptr<MessageDialog> message(
+        FTK_API std::shared_ptr<MessageDialog> message(
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWindow>& window);
 
         //! Open a confirmation dialog.
-        std::shared_ptr<ConfirmDialog> confirm(
+        FTK_API std::shared_ptr<ConfirmDialog> confirm(
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWindow>& window,

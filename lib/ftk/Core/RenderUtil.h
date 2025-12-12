@@ -19,9 +19,9 @@ namespace ftk
     class FTK_API_TYPE RenderSizeState
     {
     public:
-        RenderSizeState(const std::shared_ptr<IRender>&);
+        FTK_API RenderSizeState(const std::shared_ptr<IRender>&);
 
-        ~RenderSizeState();
+        FTK_API ~RenderSizeState();
 
     private:
         FTK_PRIVATE();
@@ -31,9 +31,9 @@ namespace ftk
     class FTK_API_TYPE ViewportState
     {
     public:
-        ViewportState(const std::shared_ptr<IRender>&);
+        FTK_API ViewportState(const std::shared_ptr<IRender>&);
 
-        ~ViewportState();
+        FTK_API ~ViewportState();
 
     private:
         FTK_PRIVATE();
@@ -43,9 +43,9 @@ namespace ftk
     class FTK_API_TYPE ClipRectEnabledState
     {
     public:
-        ClipRectEnabledState(const std::shared_ptr<IRender>&);
+        FTK_API ClipRectEnabledState(const std::shared_ptr<IRender>&);
 
-        ~ClipRectEnabledState();
+        FTK_API ~ClipRectEnabledState();
 
     private:
         FTK_PRIVATE();
@@ -55,11 +55,11 @@ namespace ftk
     class FTK_API_TYPE ClipRectState
     {
     public:
-        ClipRectState(const std::shared_ptr<IRender>&);
+        FTK_API ClipRectState(const std::shared_ptr<IRender>&);
 
-        ~ClipRectState();
+        FTK_API ~ClipRectState();
 
-        const Box2I& getClipRect() const;
+        FTK_API const Box2I& getClipRect() const;
 
     private:
         FTK_PRIVATE();
@@ -69,9 +69,9 @@ namespace ftk
     class FTK_API_TYPE TransformState
     {
     public:
-        TransformState(const std::shared_ptr<IRender>&);
+        FTK_API TransformState(const std::shared_ptr<IRender>&);
 
-        ~TransformState();
+        FTK_API ~TransformState();
 
     private:
         FTK_PRIVATE();

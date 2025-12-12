@@ -22,15 +22,15 @@ namespace ftk
         Divider();
 
     public:
-        virtual ~Divider();
+        FTK_API virtual ~Divider();
 
         //! Create a new widget.
-        static std::shared_ptr<Divider> create(
+        FTK_API static std::shared_ptr<Divider> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

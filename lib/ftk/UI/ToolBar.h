@@ -25,25 +25,25 @@ namespace ftk
         ToolBar();
 
     public:
-        virtual ~ToolBar();
+        FTK_API virtual ~ToolBar();
 
         //! Create a new widget.
-        static std::shared_ptr<ToolBar> create(
+        FTK_API static std::shared_ptr<ToolBar> create(
             const std::shared_ptr<Context>&,
             Orientation = Orientation::Horizontal,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Add an action.
-        std::shared_ptr<ToolButton> addAction(const std::shared_ptr<Action>&);
+        FTK_API std::shared_ptr<ToolButton> addAction(const std::shared_ptr<Action>&);
 
         //! Add a widget.
-        void addWidget(const std::shared_ptr<IWidget>&);
+        FTK_API void addWidget(const std::shared_ptr<IWidget>&);
 
         //! Clear the tool bar.
-        void clear();
+        FTK_API void clear();
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

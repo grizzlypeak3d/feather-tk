@@ -30,112 +30,112 @@ namespace ftk
         IRender() = default;
 
     public:
-        virtual ~IRender() = 0;
+        FTK_API virtual ~IRender() = 0;
 
         //! Begin a render.
-        virtual void begin(
+        FTK_API virtual void begin(
             const Size2I&,
             const RenderOptions& = RenderOptions()) = 0;
 
         //! Finish a render.
-        virtual void end() = 0;
+        FTK_API virtual void end() = 0;
 
         //! Get the render size.
-        virtual Size2I getRenderSize() const = 0;
+        FTK_API virtual Size2I getRenderSize() const = 0;
 
         //! Set the render size.
-        virtual void setRenderSize(const Size2I&) = 0;
+        FTK_API virtual void setRenderSize(const Size2I&) = 0;
 
         //! Get the render options.
-        virtual RenderOptions getRenderOptions() const = 0;
+        FTK_API virtual RenderOptions getRenderOptions() const = 0;
 
         //! Get the viewport.
-        virtual Box2I getViewport() const = 0;
+        FTK_API virtual Box2I getViewport() const = 0;
 
         //! Set the viewport.
-        virtual void setViewport(const Box2I&) = 0;
+        FTK_API virtual void setViewport(const Box2I&) = 0;
 
         //! Clear the viewport.
-        virtual void clearViewport(const Color4F&) = 0;
+        FTK_API virtual void clearViewport(const Color4F&) = 0;
 
         //! Get whether the clipping rectangle is enabled.
-        virtual bool getClipRectEnabled() const = 0;
+        FTK_API virtual bool getClipRectEnabled() const = 0;
 
         //! Set whether the clipping rectangle is enabled.
-        virtual void setClipRectEnabled(bool) = 0;
+        FTK_API virtual void setClipRectEnabled(bool) = 0;
 
         //! Get the clipping rectangle.
-        virtual Box2I getClipRect() const = 0;
+        FTK_API virtual Box2I getClipRect() const = 0;
 
         //! Set the clipping rectangle.
-        virtual void setClipRect(const Box2I&) = 0;
+        FTK_API virtual void setClipRect(const Box2I&) = 0;
 
         //! Get the transformation matrix.
-        virtual M44F getTransform() const = 0;
+        FTK_API virtual M44F getTransform() const = 0;
 
         //! Set the transformation matrix.
-        virtual void setTransform(const M44F&) = 0;
+        FTK_API virtual void setTransform(const M44F&) = 0;
 
         //! Draw a filled rectangle.
-        virtual void drawRect(
+        FTK_API virtual void drawRect(
             const Box2F&,
             const Color4F&) = 0;
 
         //! Draw a filled rectangle.
-        virtual void drawRect(
+        FTK_API virtual void drawRect(
             const Box2I&,
             const Color4F&);
 
         //! Draw filled rectangles.
-        virtual void drawRects(
+        FTK_API virtual void drawRects(
             const std::vector<Box2F>&,
             const Color4F&) = 0;
 
         //! Draw filled rectangles.
-        virtual void drawRects(
+        FTK_API virtual void drawRects(
             const std::vector<Box2I>&,
             const Color4F&);
 
         //! Draw a line.
-        virtual void drawLine(
+        FTK_API virtual void drawLine(
             const V2F&,
             const V2F&,
             const Color4F&,
             const LineOptions& = LineOptions()) = 0;
 
         //! Draw a line.
-        virtual void drawLine(
+        FTK_API virtual void drawLine(
             const V2I&,
             const V2I&,
             const Color4F&,
             const LineOptions& = LineOptions());
 
         //! Draw multiple lines.
-        virtual void drawLines(
+        FTK_API virtual void drawLines(
             const std::vector<std::pair<V2F, V2F> >&,
             const Color4F&,
             const LineOptions& = LineOptions()) = 0;
 
         //! Draw multiple lines.
-        virtual void drawLines(
+        FTK_API virtual void drawLines(
             const std::vector<std::pair<V2I, V2I> >&,
             const Color4F&,
             const LineOptions& = LineOptions());
 
         //! Draw a triangle mesh.
-        virtual void drawMesh(
+        FTK_API virtual void drawMesh(
             const TriMesh2F&,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
             const V2F& pos = V2F()) = 0;
 
         //! Draw a triangle mesh with vertex color information.
-        virtual void drawColorMesh(
+        FTK_API virtual void drawColorMesh(
             const TriMesh2F&,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
             const V2F& pos = V2F()) = 0;
 
         //! Draw a texture.
-        virtual void drawTexture(
+        FTK_API virtual void drawTexture(
             unsigned int,
             const Box2I&,
             bool flipV = false,
@@ -143,35 +143,35 @@ namespace ftk
             AlphaBlend = AlphaBlend::Straight) = 0;
 
         //! Draw text.
-        virtual void drawText(
+        FTK_API virtual void drawText(
             const std::vector<std::shared_ptr<Glyph> >&,
             const FontMetrics&,
             const V2F& position,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F)) = 0;
 
         //! Draw text.
-        virtual void drawText(
+        FTK_API virtual void drawText(
             const std::vector<std::shared_ptr<Glyph> >&,
             const FontMetrics&,
             const V2I& position,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F));
 
         //! Draw an image.
-        virtual void drawImage(
+        FTK_API virtual void drawImage(
             const std::shared_ptr<Image>&,
             const TriMesh2F&,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
             const ImageOptions& = ImageOptions()) = 0;
 
         //! Draw an image.
-        virtual void drawImage(
+        FTK_API virtual void drawImage(
             const std::shared_ptr<Image>&,
             const Box2F&,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
             const ImageOptions& = ImageOptions()) = 0;
 
         //! Draw an image.
-        virtual void drawImage(
+        FTK_API virtual void drawImage(
             const std::shared_ptr<Image>&,
             const Box2I&,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
@@ -185,10 +185,10 @@ namespace ftk
     class FTK_API_TYPE IRenderFactory
     {
     public:
-        virtual ~IRenderFactory() = 0;
+        FTK_API virtual ~IRenderFactory() = 0;
 
         //! Create a new renderer.
-        virtual std::shared_ptr<IRender> createRender(const std::shared_ptr<LogSystem>&) = 0;
+        FTK_API virtual std::shared_ptr<IRender> createRender(const std::shared_ptr<LogSystem>&) = 0;
     };
         
     ///@}

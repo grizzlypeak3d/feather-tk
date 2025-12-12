@@ -25,41 +25,41 @@ namespace ftk
         ProgressDialog();
 
     public:
-        virtual ~ProgressDialog();
+        FTK_API virtual ~ProgressDialog();
 
         //! Create a new widget.
-        static std::shared_ptr<ProgressDialog> create(
+        FTK_API static std::shared_ptr<ProgressDialog> create(
             const std::shared_ptr<Context>& context,
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the text.
-        const std::string& getText() const;
+        FTK_API const std::string& getText() const;
 
         //! Set the text.
-        void setText(const std::string&);
+        FTK_API void setText(const std::string&);
 
         //! Get the progress message.
-        const std::string& getMessage() const;
+        FTK_API const std::string& getMessage() const;
 
         //! Set the progress message.
-        void setMessage(const std::string&);
+        FTK_API void setMessage(const std::string&);
 
         //! Get the range.
-        const RangeD& getRange() const;
+        FTK_API const RangeD& getRange() const;
 
         //! Set the range.
-        void setRange(const RangeD&);
+        FTK_API void setRange(const RangeD&);
 
         //! Set the range.
-        void setRange(double, double);
+        FTK_API void setRange(double, double);
 
         //! Get the value.
-        double getValue() const;
+        FTK_API double getValue() const;
 
         //! Set the value.
-        void setValue(double);
+        FTK_API void setValue(double);
 
     private:
         FTK_PRIVATE();

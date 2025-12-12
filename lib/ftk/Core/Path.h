@@ -73,10 +73,10 @@ namespace ftk
     {
     public:
         Path() = default;
-        explicit Path(
+        FTK_API explicit Path(
             const std::string&,
             const PathOptions& = PathOptions());
-        Path(
+        FTK_API Path(
             const std::string& dir,
             const std::string& fileName,
             const PathOptions& = PathOptions());
@@ -85,7 +85,7 @@ namespace ftk
         ///@{
 
         const PathOptions& getOptions();
-        void setOptions(const PathOptions&);
+        FTK_API void setOptions(const PathOptions&);
 
         ///@}
 
@@ -111,14 +111,14 @@ namespace ftk
         std::string getRequest() const;
         std::string getFileName(bool dir = false) const;
 
-        void setProtocol(const std::string&);
-        void setDir(const std::string&);
-        void setBase(const std::string&);
-        void setNum(const std::string&);
-        void setPad(int);
-        void setExt(const std::string&);
-        void setRequest(const std::string&);
-        void setFileName(const std::string&);
+        FTK_API void setProtocol(const std::string&);
+        FTK_API void setDir(const std::string&);
+        FTK_API void setBase(const std::string&);
+        FTK_API void setNum(const std::string&);
+        FTK_API void setPad(int);
+        FTK_API void setExt(const std::string&);
+        FTK_API void setRequest(const std::string&);
+        FTK_API void setFileName(const std::string&);
 
         ///@}
 
@@ -126,7 +126,7 @@ namespace ftk
         ///@{
 
         const std::optional<RangeI64>& getFrames() const;
-        void setFrames(const RangeI64&);
+        FTK_API void setFrames(const RangeI64&);
 
         //! Get whether this is a sequence.
         bool isSeq() const;
@@ -144,7 +144,7 @@ namespace ftk
         bool seq(const Path&) const;
 
         //! Add a path to this sequence.
-        bool addSeq(const Path&);
+        FTK_API bool addSeq(const Path&);
 
         ///@}
 
@@ -155,7 +155,7 @@ namespace ftk
         bool isAbs() const;
 
         //! Test whether this extension matches one in the given list.
-        bool testExt(const std::vector<std::string>&) const;
+        FTK_API bool testExt(const std::vector<std::string>&) const;
 
         ///@}
 

@@ -166,19 +166,19 @@ namespace ftk
         Image(const ImageInfo&, uint8_t* externalData = nullptr);
 
     public:
-        ~Image();
+        FTK_API ~Image();
 
         //! Create a new image.
-        static std::shared_ptr<Image> create(const ImageInfo&);
+        FTK_API static std::shared_ptr<Image> create(const ImageInfo&);
 
         //! Create a new image.
-        static std::shared_ptr<Image> create(const ImageInfo&, uint8_t* externalData);
+        FTK_API static std::shared_ptr<Image> create(const ImageInfo&, uint8_t* externalData);
 
         //! Create a new image.
-        static std::shared_ptr<Image> create(const Size2I&, ImageType);
+        FTK_API static std::shared_ptr<Image> create(const Size2I&, ImageType);
 
         //! Create a new image.
-        static std::shared_ptr<Image> create(int w, int h, ImageType);
+        FTK_API static std::shared_ptr<Image> create(int w, int h, ImageType);
 
         //! Get the image information.
         const ImageInfo& getInfo() const;
@@ -205,7 +205,7 @@ namespace ftk
         const ImageTags& getTags() const;
 
         //! Set the image tags.
-        void setTags(const ImageTags&);
+        FTK_API void setTags(const ImageTags&);
 
         //! Get the number of bytes used to store the image data.
         size_t getByteCount() const;
@@ -217,7 +217,7 @@ namespace ftk
         uint8_t* getData();
 
         //! Zero the image data.
-        void zero();
+        FTK_API void zero();
 
     private:
         ImageInfo _info;

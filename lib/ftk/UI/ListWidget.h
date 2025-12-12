@@ -22,49 +22,49 @@ namespace ftk
         ListWidget();
 
     public:
-        virtual ~ListWidget();
+        FTK_API virtual ~ListWidget();
 
         //! Create a new widget.
-        static std::shared_ptr<ListWidget> create(
+        FTK_API static std::shared_ptr<ListWidget> create(
             const std::shared_ptr<Context>&,
             ButtonGroupType,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the items.
-        const std::vector<ListItem>& getItems() const;
+        FTK_API const std::vector<ListItem>& getItems() const;
 
         //! Set the items.
-        void setItems(const std::vector<ListItem>&);
+        FTK_API void setItems(const std::vector<ListItem>&);
 
         //! Set the items.
-        void setItems(const std::vector<std::string>&);
+        FTK_API void setItems(const std::vector<std::string>&);
 
         //! Get whether an item is checked.
-        bool getChecked(int) const;
+        FTK_API bool getChecked(int) const;
 
         //! Set the checked item.
-        void setChecked(int, bool = true);
+        FTK_API void setChecked(int, bool = true);
 
         //! Set the callback.
-        void setCallback(const std::function<void(int, bool)>&);
+        FTK_API void setCallback(const std::function<void(int, bool)>&);
 
         //! Get the current item.
-        int getCurrent() const;
+        FTK_API int getCurrent() const;
 
         //! Set the current item.
-        void setCurrent(int);
+        FTK_API void setCurrent(int);
 
         //! Get the search.
-        const std::string& getSearch() const;
+        FTK_API const std::string& getSearch() const;
 
         //! Set the search.
-        void setSearch(const std::string&);
+        FTK_API void setSearch(const std::string&);
 
         //! Clear the search.
-        void clearSearch();
+        FTK_API void clearSearch();
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _scrollUpdate(int);

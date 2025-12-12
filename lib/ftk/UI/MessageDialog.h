@@ -23,17 +23,17 @@ namespace ftk
         MessageDialog();
 
     public:
-        virtual ~MessageDialog();
+        FTK_API virtual ~MessageDialog();
 
         //! Create a new widget.
-        static std::shared_ptr<MessageDialog> create(
+        FTK_API static std::shared_ptr<MessageDialog> create(
             const std::shared_ptr<Context>& context,
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        void setCallback(const std::function<void(void)>&);
+        FTK_API void setCallback(const std::function<void(void)>&);
 
     private:
         FTK_PRIVATE();

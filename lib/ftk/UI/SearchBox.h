@@ -21,24 +21,24 @@ namespace ftk
         SearchBox();
 
     public:
-        virtual ~SearchBox();
+        FTK_API virtual ~SearchBox();
 
         //! Create a new widget.
-        static std::shared_ptr<SearchBox> create(
+        FTK_API static std::shared_ptr<SearchBox> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the text.
-        const std::string& getText() const;
+        FTK_API const std::string& getText() const;
 
         //! Set the text.
-        void setText(const std::string&);
+        FTK_API void setText(const std::string&);
 
         //! Set the callback.
-        void setCallback(const std::function<void(const std::string&)>&);
+        FTK_API void setCallback(const std::function<void(const std::string&)>&);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();
