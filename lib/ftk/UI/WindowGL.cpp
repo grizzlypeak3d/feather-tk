@@ -21,7 +21,11 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/FontSystem.h>
 
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
+#elif defined(FTK_SDL3)
+#include <SDL3/SDL.h>
+#endif // FTK_SDL2
 
 #include <codecvt>
 #include <locale>

@@ -9,7 +9,11 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
+#elif defined(FTK_SDL3)
+#include <SDL3/SDL.h>
+#endif // FTK_SDL2
 
 #include <stdexcept>
 

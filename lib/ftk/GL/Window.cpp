@@ -13,7 +13,11 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
 
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
+#elif defined(FTK_SDL3)
+#include <SDL3/SDL.h>
+#endif // FTK_SDL2
 
 #include <algorithm>
 #include <iostream>
@@ -67,11 +71,17 @@ namespace ftk
 #endif // FTK_API_GL_4_1
             uint32_t sdlWindowFlags =
                 SDL_WINDOW_OPENGL |
-                SDL_WINDOW_RESIZABLE |
-                SDL_WINDOW_ALLOW_HIGHDPI;
+                SDL_WINDOW_RESIZABLE;
+#if defined(FTK_SDL2)
+            sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#elif defined(FTK_SDL3)
+            sdlWindowFlags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#endif // FTK_SDL2
             if (options & static_cast<int>(WindowOptions::Visible))
             {
+#if defined(FTK_SDL2)
                 sdlWindowFlags |= SDL_WINDOW_SHOWN;
+#endif // FTK_SDL2
             }
             else
             {
@@ -79,8 +89,10 @@ namespace ftk
             }
             p.sdlWindow = SDL_CreateWindow(
                 title.c_str(),
+#if defined(FTK_SDL2)
                 SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED,
+#endif // FTK_SDL2
                 size.w,
                 size.h,
                 sdlWindowFlags);
@@ -184,7 +196,11 @@ namespace ftk
             }
             if (p.sdlGLContext)
             {
+#if defined(FTK_SDL2)
                 SDL_GL_DeleteContext(p.sdlGLContext);
+#elif defined(FTK_SDL3)
+                SDL_GL_DestroyContext(p.sdlGLContext);
+#endif // FTK_SDL2
             }
             if (p.sdlWindow)
             {
@@ -260,6 +276,7 @@ namespace ftk
                         icon->getData() + y * info.size.w * 4,
                         info.size.w * 4);
                 }
+#if defined(FTK_SDL2)
                 if (SDL_Surface* sdlSurface = SDL_CreateRGBSurfaceFrom(
                     flipped->getData(),
                     info.size.w,
@@ -270,9 +287,21 @@ namespace ftk
                     0x0000ff00,
                     0x00ff0000,
                     0xff000000))
+#elif defined(FTK_SDL3)
+                if (SDL_Surface* sdlSurface = SDL_CreateSurfaceFrom(
+                    info.size.w,
+                    info.size.h,
+                    SDL_PIXELFORMAT_RGBA8888,
+                    flipped->getData(),
+                    info.size.w * 4))
+#endif // FTK_SDL2
                 {
                     SDL_SetWindowIcon(_p->sdlWindow, sdlSurface);
+#if defined(FTK_SDL2)
                     SDL_FreeSurface(sdlSurface);
+#elif defined(FTK_SDL3)
+                    SDL_DestroySurface(sdlSurface);
+#endif // FTK_SDL2
                 }
             }
         }
@@ -327,7 +356,11 @@ namespace ftk
             {
                 SDL_GetWindowPosition(p.sdlWindow, &p.pos.x, &p.pos.y);
                 SDL_GetWindowSize(p.sdlWindow, &p.restoreSize.w, &p.restoreSize.h);
+#if defined(FTK_SDL2)
                 SDL_SetWindowFullscreen(p.sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+#elif defined(FTK_SDL3)
+                SDL_SetWindowFullscreen(p.sdlWindow, 1);
+#endif // FTK_SDL2
             }
             else
             {

@@ -11,7 +11,11 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
 
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
+#elif defined(FTK_SDL3)
+#include <SDL3/SDL.h>
+#endif // FTK_SDL2
 
 #include <iostream>
 
@@ -50,7 +54,9 @@ namespace ftk
             auto logSystem = context->getLogSystem();
             logSystem->print("ftk::gl::System", "Init SDL video and events...");
             p.logSystem = logSystem;
+#if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
+#endif // FTK_SDL2
             if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
             {
                 throw std::runtime_error(Format("Cannot initialize SDL: {0}").
@@ -61,7 +67,11 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
                     arg(SDL_GetError()));
             }
+#if defined(FTK_SDL2)
             SDL_LogSetOutputFunction(logOutput, this);
+#elif defined(FTK_SDL3)
+            SDL_SetLogOutputFunction(logOutput, this);
+#endif // FTK_SDL2
 
             // Create default render factory.
             p.renderFactory = std::make_shared<RenderFactory>();
@@ -74,7 +84,11 @@ namespace ftk
             {
                 logSystem->print("ftk::gl::System", "Quit SDL...");
             }
+#if defined(FTK_SDL2)
             SDL_LogSetOutputFunction(nullptr, nullptr);
+#elif defined(FTK_SDL3)
+            SDL_SetLogOutputFunction(nullptr, nullptr);
+#endif // FTK_SDL2
             SDL_Quit();
         }
 

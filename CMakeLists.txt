@@ -24,6 +24,8 @@ project(
 # Options
 
 set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
+set(ftk_SDL2 ON CACHE BOOL "Enable support for SDL2")
+set(ftk_SDL3 OFF CACHE BOOL "Enable support for SDL3")
 set(ftk_nfd_DEFAULT OFF)
 if(WIN32 OR APPLE)
     set(ftk_nfd_DEFAULT ON)
@@ -136,7 +138,13 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
     "${ftk_API}" STREQUAL "GLES_2")
     find_package(OpenGL REQUIRED)
-    find_package(SDL2 REQUIRED)
+    if(ftk_SDL2)
+        add_definitions(-DFTK_SDL2)
+        find_package(SDL2 REQUIRED)
+    elseif(ftk_SDL3)
+        add_definitions(-DFTK_SDL3)
+        find_package(SDL3 REQUIRED)
+    endif()
     add_subdirectory(deps/glad_${ftk_API})
 endif()
 add_definitions(-DFTK_API_${ftk_API})

@@ -19,7 +19,11 @@
 #include <ftk/Core/Time.h>
 #include <ftk/Core/Timer.h>
 
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
+#elif defined(FTK_SDL3)
+#include <SDL3/SDL.h>
+#endif // FTK_SDL2
 
 #include <algorithm>
 #include <iostream>
@@ -161,6 +165,7 @@ namespace ftk
         }
         p.customColorRoles = ObservableMap<ColorRole, Color4F>::create(ftk::getCustomColorRoles());
 
+#if defined(FTK_SDL2)
         float dDpi = 0.F;
         float hDpi = 0.F;
         float vDpi = 0.F;
@@ -171,6 +176,14 @@ namespace ftk
                 Format("Display DPI: {0}").arg(hDpi));
             p.defaultDisplayScale = std::round(hDpi / getBaseDPI());
         }
+#elif defined(FTK_SDL3)
+        int sdlDisplayCount = 0;
+        if (SDL_DisplayID* sdlDisplays = SDL_GetDisplays(&sdlDisplayCount))
+        {
+            p.defaultDisplayScale = SDL_GetDisplayContentScale(sdlDisplays[0]);
+            SDL_free(sdlDisplays);
+        }
+#endif // FTK_SDL2
         if (p.cmdLine.displayScale->hasValue())
         {
             p.defaultDisplayScale = p.cmdLine.displayScale->getValue();
@@ -404,6 +417,7 @@ namespace ftk
 
     namespace
     {
+#if defined(FTK_SDL2)
         Key fromSDL(int32_t value)
         {
             Key out = Key::Unknown;
@@ -538,10 +552,147 @@ namespace ftk
             }
             return out;
         }
+#elif defined(FTK_SDL3)
+        Key fromSDL(SDL_Keycode value)
+        {
+            Key out = Key::Unknown;
+            switch (value)
+            {
+            case SDLK_RETURN: out = Key::Return; break;
+            case SDLK_ESCAPE: out = Key::Escape; break;
+            case SDLK_BACKSPACE: out = Key::Backspace; break;
+            case SDLK_TAB: out = Key::Tab; break;
+            case SDLK_SPACE: out = Key::Space; break;
+            case SDLK_EXCLAIM: out = Key::Exclaim; break;
+            case SDLK_DBLAPOSTROPHE: out = Key::DoubleQuote; break;
+            case SDLK_HASH: out = Key::Hash; break;
+            case SDLK_PERCENT: out = Key::Percent; break;
+            case SDLK_DOLLAR: out = Key::Dollar; break;
+            case SDLK_AMPERSAND: out = Key::Ampersand; break;
+            case SDLK_APOSTROPHE: out = Key::DoubleQuote; break;
+            case SDLK_LEFTPAREN: out = Key::LeftParen; break;
+            case SDLK_RIGHTPAREN: out = Key::RightParen; break;
+            case SDLK_ASTERISK: out = Key::Asterisk; break;
+            case SDLK_PLUS: out = Key::Plus; break;
+            case SDLK_COMMA: out = Key::Comma; break;
+            case SDLK_MINUS: out = Key::Minus; break;
+            case SDLK_PERIOD: out = Key::Period; break;
+            case SDLK_SLASH: out = Key::Slash; break;
+            case SDLK_0: out = Key::_0; break;
+            case SDLK_1: out = Key::_1; break;
+            case SDLK_2: out = Key::_2; break;
+            case SDLK_3: out = Key::_3; break;
+            case SDLK_4: out = Key::_4; break;
+            case SDLK_5: out = Key::_5; break;
+            case SDLK_6: out = Key::_6; break;
+            case SDLK_7: out = Key::_7; break;
+            case SDLK_8: out = Key::_8; break;
+            case SDLK_9: out = Key::_9; break;
+            case SDLK_COLON: out = Key::Colon; break;
+            case SDLK_SEMICOLON: out = Key::Semicolon; break;
+            case SDLK_LESS: out = Key::Less; break;
+            case SDLK_EQUALS: out = Key::Equals; break;
+            case SDLK_GREATER: out = Key::Greater; break;
+            case SDLK_QUESTION: out = Key::Question; break;
+            case SDLK_AT: out = Key::At; break;
+            case SDLK_LEFTBRACKET: out = Key::LeftBracket; break;
+            case SDLK_BACKSLASH: out = Key::Backslash; break;
+            case SDLK_RIGHTBRACKET: out = Key::RightBracket; break;
+            case SDLK_CARET: out = Key::Caret; break;
+            case SDLK_UNDERSCORE: out = Key::Underscore;  break;
+            case SDLK_GRAVE: out = Key::BackQuote; break;
+            case SDLK_A: out = Key::A; break;
+            case SDLK_B: out = Key::B; break;
+            case SDLK_C: out = Key::C; break;
+            case SDLK_D: out = Key::D; break;
+            case SDLK_E: out = Key::E; break;
+            case SDLK_F: out = Key::F; break;
+            case SDLK_G: out = Key::G; break;
+            case SDLK_H: out = Key::H; break;
+            case SDLK_I: out = Key::I; break;
+            case SDLK_J: out = Key::J; break;
+            case SDLK_K: out = Key::K; break;
+            case SDLK_L: out = Key::L; break;
+            case SDLK_M: out = Key::M; break;
+            case SDLK_N: out = Key::N; break;
+            case SDLK_O: out = Key::O; break;
+            case SDLK_P: out = Key::P; break;
+            case SDLK_Q: out = Key::Q; break;
+            case SDLK_R: out = Key::R; break;
+            case SDLK_S: out = Key::S; break;
+            case SDLK_T: out = Key::T; break;
+            case SDLK_U: out = Key::U; break;
+            case SDLK_V: out = Key::V; break;
+            case SDLK_W: out = Key::W; break;
+            case SDLK_X: out = Key::X; break;
+            case SDLK_Y: out = Key::Y; break;
+            case SDLK_Z: out = Key::Z; break;
+            case SDLK_CAPSLOCK: out = Key::CapsLock; break;
+            case SDLK_F1: out = Key::F1; break;
+            case SDLK_F2: out = Key::F2; break;
+            case SDLK_F3: out = Key::F3; break;
+            case SDLK_F4: out = Key::F4; break;
+            case SDLK_F5: out = Key::F5; break;
+            case SDLK_F6: out = Key::F6; break;
+            case SDLK_F7: out = Key::F7; break;
+            case SDLK_F8: out = Key::F8; break;
+            case SDLK_F9: out = Key::F9; break;
+            case SDLK_F10: out = Key::F10; break;
+            case SDLK_F11: out = Key::F11; break;
+            case SDLK_F12: out = Key::F12; break;
+            case SDLK_F13: out = Key::F13; break;
+            case SDLK_F14: out = Key::F14; break;
+            case SDLK_F15: out = Key::F15; break;
+            case SDLK_F16: out = Key::F16; break;
+            case SDLK_F17: out = Key::F17; break;
+            case SDLK_F18: out = Key::F18; break;
+            case SDLK_F19: out = Key::F19; break;
+            case SDLK_F20: out = Key::F20; break;
+            case SDLK_F21: out = Key::F21; break;
+            case SDLK_F22: out = Key::F22; break;
+            case SDLK_F23: out = Key::F23; break;
+            case SDLK_F24: out = Key::F24; break;
+            case SDLK_PRINTSCREEN: out = Key::PrintScreen; break;
+            case SDLK_SCROLLLOCK: out = Key::ScrollLock; break;
+            case SDLK_PAUSE: out = Key::Pause; break;
+            case SDLK_INSERT: out = Key::Insert; break;
+            case SDLK_HOME: out = Key::Home; break;
+            case SDLK_PAGEUP: out = Key::PageUp; break;
+            case SDLK_DELETE: out = Key::Delete; break;
+            case SDLK_END: out = Key::End; break;
+            case SDLK_PAGEDOWN: out = Key::PageDown; break;
+            case SDLK_RIGHT: out = Key::Right; break;
+            case SDLK_LEFT: out = Key::Left; break;
+            case SDLK_DOWN: out = Key::Down; break;
+            case SDLK_UP: out = Key::Up; break;
+            case SDLK_NUMLOCKCLEAR: out = Key::NumLock; break;
+            case SDLK_KP_DIVIDE: out = Key::KeypadDivide; break;
+            case SDLK_KP_MULTIPLY: out = Key::KeypadMulitply; break;
+            case SDLK_KP_MINUS: out = Key::KeypadMinus; break;
+            case SDLK_KP_PLUS: out = Key::KeypadPlus; break;
+            case SDLK_KP_ENTER: out = Key::KeypadEnter; break;
+            case SDLK_KP_1: out = Key::Keypad_1; break;
+            case SDLK_KP_2: out = Key::Keypad_2; break;
+            case SDLK_KP_3: out = Key::Keypad_3; break;
+            case SDLK_KP_4: out = Key::Keypad_4; break;
+            case SDLK_KP_5: out = Key::Keypad_5; break;
+            case SDLK_KP_6: out = Key::Keypad_6; break;
+            case SDLK_KP_7: out = Key::Keypad_7; break;
+            case SDLK_KP_8: out = Key::Keypad_8; break;
+            case SDLK_KP_9: out = Key::Keypad_9; break;
+            case SDLK_KP_0: out = Key::Keypad_0; break;
+            case SDLK_KP_PERIOD: out = Key::KeypadPeriod; break;
+            case SDLK_KP_EQUALS: out = Key::KeypadEquals; break;
+            default: break;
+            }
+            return out;
+        }
+#endif // FTK_SDL2
 
         int fromSDL(uint16_t value)
         {
             int out = 0;
+#if defined(FTK_SDL2)
             if (value & KMOD_SHIFT)
             {
                 out |= static_cast<int>(KeyModifier::Shift);
@@ -558,6 +709,24 @@ namespace ftk
             {
                 out |= static_cast<int>(KeyModifier::Super);
             }
+#elif defined(FTK_SDL3)
+            if (value & SDL_KMOD_SHIFT)
+            {
+                out |= static_cast<int>(KeyModifier::Shift);
+            }
+            if (value & SDL_KMOD_CTRL)
+            {
+                out |= static_cast<int>(KeyModifier::Control);
+            }
+            if (value & SDL_KMOD_ALT)
+            {
+                out |= static_cast<int>(KeyModifier::Alt);
+            }
+            if (value & SDL_KMOD_GUI)
+            {
+                out |= static_cast<int>(KeyModifier::Super);
+            }
+#endif // FTK_SDL2
             return out;
         }
     }
@@ -586,59 +755,130 @@ namespace ftk
             {
                 switch (event.type)
                 {
+#if defined(FTK_SDL2)
                 case SDL_DISPLAYEVENT:
-                    logSystem->print("ftk::App", "SDL_DISPLAYEVENT");
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_DISPLAY_ORIENTATION:
+                case SDL_EVENT_DISPLAY_ADDED:
+                case SDL_EVENT_DISPLAY_REMOVED:
+                case SDL_EVENT_DISPLAY_MOVED:
+                case SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED:
+                case SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED:
+                case SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED:
+#endif // FTK_SDL2
+                    logSystem->print("ftk::App", "SDL Display Event");
                     _monitorsUpdate();
                     break;
 
+#if defined(FTK_SDL2)
                 case SDL_WINDOWEVENT:
                 {
-                    const auto i = std::find_if(
-                        p.windows.begin(),
-                        p.windows.end(),
-                        [&event](const std::shared_ptr<IWindow>& window)
-                        {
-                            return window->getID() == event.window.windowID;
-                        });
-                    if (i != p.windows.end())
+                    switch (event.window.event)
                     {
-                        switch (event.window.event)
+                    case SDL_WINDOWEVENT_SHOWN:
+                        if (auto window = _getWindow(event.window.windowID))
                         {
-                        case SDL_WINDOWEVENT_SHOWN:
-                            (*i)->setVisible(true);
-                            break;
-                        case SDL_WINDOWEVENT_HIDDEN:
-                            (*i)->setVisible(false);
-                            break;
-                        case SDL_WINDOWEVENT_EXPOSED:
-                        case SDL_WINDOWEVENT_SIZE_CHANGED:
-                            if (SDL_Window* sdlWindow = SDL_GetWindowFromID((*i)->getID()))
+                            window->setVisible(true);
+                        }
+                        break;
+                    case SDL_WINDOWEVENT_HIDDEN:
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            window->setVisible(false);
+                        }
+                        break;
+                    case SDL_WINDOWEVENT_EXPOSED:
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            if (SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID))
                             {
                                 Size2I windowSize;
                                 Size2I frameBufferSize;
                                 SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
                                 SDL_GL_GetDrawableSize(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
-                                (*i)->_sizeUpdate(windowSize, frameBufferSize);
+                                window->_sizeUpdate(windowSize, frameBufferSize);
                             }
-                            break;
-                        case SDL_WINDOWEVENT_ENTER:
-                            (*i)->_cursorEnter(true);
-                            p.activeWindow = *i;
-                            break;
-                        case SDL_WINDOWEVENT_LEAVE:
-                            (*i)->_cursorEnter(false);
-                            p.activeWindow.reset();
-                            break;
-                        case SDL_WINDOWEVENT_CLOSE:
-                            (*i)->close();
-                            break;
-                        default: break;
                         }
+                        break;
+                    case SDL_WINDOWEVENT_ENTER:
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            window->_cursorEnter(true);
+                            p.activeWindow = window;
+                        }
+                        break;
+                    case SDL_WINDOWEVENT_LEAVE:
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            window->_cursorEnter(false);
+                            p.activeWindow.reset();
+                        }
+                        break;
+                    case SDL_WINDOWEVENT_CLOSE:
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            window->close();
+                        }
+                        break;
+                    default: break;
                     }
                     break;
                 }
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_WINDOW_SHOWN:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->setVisible(true);
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_HIDDEN:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->setVisible(false);
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_EXPOSED:
+                case SDL_EVENT_WINDOW_RESIZED:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        if (SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID))
+                        {
+                            Size2I windowSize;
+                            Size2I frameBufferSize;
+                            SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
+                            SDL_GetWindowSizeInPixels(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+                            window->_sizeUpdate(windowSize, frameBufferSize);
+                        }
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_MOUSE_ENTER:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->_cursorEnter(true);
+                        p.activeWindow = window;
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->_cursorEnter(false);
+                        p.activeWindow.reset();
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->close();
+                    }
+                    break;
+#endif // FTK_SDL2
 
+#if defined(FTK_SDL2)
                 case SDL_MOUSEMOTION:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_MOTION:
+#endif // FTK_SDL2
                     if (auto window = p.activeWindow.lock())
                     {
                         const float contentScale = window->getContentScale();
@@ -648,7 +888,11 @@ namespace ftk
                     }
                     break;
 
+#if defined(FTK_SDL2)
                 case SDL_MOUSEBUTTONDOWN:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+#endif // FTK_SDL2
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_mouseButton(
@@ -658,7 +902,11 @@ namespace ftk
                     }
                     break;
 
+#if defined(FTK_SDL2)
                 case SDL_MOUSEBUTTONUP:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_BUTTON_UP:
+#endif // FTK_SDL2
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_mouseButton(
@@ -668,6 +916,7 @@ namespace ftk
                     }
                     break;
 
+#if defined(FTK_SDL2)
                 case SDL_MOUSEWHEEL:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -678,7 +927,21 @@ namespace ftk
                             fromSDL(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_WHEEL:
+                    if (auto window = p.activeWindow.lock())
+                    {
+                        const float contentScale = window->getContentScale();
+                        window->_scroll(V2F(
+                            event.wheel.x * contentScale,
+                            event.wheel.y * contentScale),
+                            fromSDL(static_cast<uint16_t>(SDL_GetModState())));
+                    }
+                    break;
+#endif // FTK_SDL2
 
+
+#if defined(FTK_SDL2)
                 case SDL_KEYDOWN:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -688,7 +951,19 @@ namespace ftk
                             fromSDL(event.key.keysym.mod));
                     }
                     break;
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_KEY_DOWN:
+                    if (auto window = p.activeWindow.lock())
+                    {
+                        window->_key(
+                            fromSDL(event.key.key),
+                            true,
+                            fromSDL(event.key.mod));
+                    }
+                    break;
+#endif // FTK_SDL3
 
+#if defined(FTK_SDL2)
                 case SDL_KEYUP:
                     if (auto window = p.activeWindow.lock())
                     {
@@ -698,32 +973,76 @@ namespace ftk
                             fromSDL(event.key.keysym.mod));
                     }
                     break;
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_KEY_UP:
+                    if (auto window = p.activeWindow.lock())
+                    {
+                        window->_key(
+                            fromSDL(event.key.key),
+                            false,
+                            fromSDL(event.key.mod));
+                    }
+                    break;
+#endif // FTK_SDL2
 
+#if defined(FTK_SDL2)
                 case SDL_TEXTINPUT:
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_text(event.text.text);
                     }
                     break;
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_TEXT_INPUT:
+                    if (auto window = p.activeWindow.lock())
+                    {
+                        window->_text(event.text.text);
+                    }
+                    break;
+#endif // FTK_SDL2
 
+#if defined(FTK_SDL2)
                 case SDL_CLIPBOARDUPDATE:
                 {
                     const std::string text = SDL_GetClipboardText();
                     _context->getSystem<ClipboardSystem>()->setText(text);
                     break;
                 }
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_CLIPBOARD_UPDATE:
+                {
+                    const std::string text = SDL_GetClipboardText();
+                    _context->getSystem<ClipboardSystem>()->setText(text);
+                    break;
+                }
+#endif // FTK_SDL2
 
+#if defined(FTK_SDL2)
                 case SDL_DROPFILE:
                     logSystem->print("ftk::App", Format("SDL_DROPFILE: {0}").arg(event.drop.file));
                     p.dropFiles.push_back(event.drop.file);
                     break;
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_DROP_FILE:
+                    logSystem->print("ftk::App", Format("SDL_EVENT_DROP_FILE: {0}").arg(event.drop.data));
+                    p.dropFiles.push_back(event.drop.data);
+                    break;
+#endif // FTK_SDL2
 
+#if defined(FTK_SDL2)
                 case SDL_DROPBEGIN:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_DROP_BEGIN:
+#endif // FTK_SDL2
                     logSystem->print("ftk::App", "SDL_DROPBEGIN");
                     p.dropFiles.clear();
                     break;
 
+#if defined(FTK_SDL2)
                 case SDL_DROPCOMPLETE:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_DROP_COMPLETE:
+#endif // FTK_SDL2
                 {
                     logSystem->print("ftk::App", "SDL_DROPCOMPLETE");
                     bool found = false;
@@ -750,7 +1069,11 @@ namespace ftk
                     break;
                 }
 
+#if defined(FTK_SDL2)
                 case SDL_QUIT:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_QUIT:
+#endif // FTK_SDL2
                     exit();
                     break;
 
@@ -800,6 +1123,19 @@ namespace ftk
         }
     }
 
+    std::shared_ptr<IWindow> App::_getWindow(uint32_t id) const
+    {
+        FTK_P();
+        const auto i = std::find_if(
+            p.windows.begin(),
+            p.windows.end(),
+            [id](const std::shared_ptr<IWindow>& window)
+            {
+                return window->getID() == id;
+            });
+        return i != p.windows.end() ? *i : nullptr;
+    }
+
     void App::_tickRecursive(
         const std::shared_ptr<IWidget>& widget,
         bool visible,
@@ -824,6 +1160,8 @@ namespace ftk
     {
         FTK_P();
         std::vector<MonitorInfo> monitors;
+
+#if defined(FTK_SDL2)
         const int displayCount = SDL_GetNumVideoDisplays();
         for (int i = 0; i < displayCount; ++i)
         {
@@ -842,6 +1180,32 @@ namespace ftk
             monitors.push_back(monitor);
         }
         p.monitors->setIfChanged(monitors);
+#elif defined(FTK_SDL3)
+        int sdlDisplayCount = 0;
+        if (SDL_DisplayID* sdlDisplays = SDL_GetDisplays(&sdlDisplayCount))
+        {
+            for (int i = 0; i < sdlDisplayCount; ++i)
+            {
+                MonitorInfo monitor;
+                if (const char* sdlName = SDL_GetDisplayName(i))
+                {
+                    monitor.name = sdlName;
+                }
+                if (const SDL_DisplayMode* sdlDisplayMode = SDL_GetCurrentDisplayMode(i))
+                {
+                    monitor.size.w = sdlDisplayMode->w;
+                    monitor.size.h = sdlDisplayMode->h;
+                    monitor.refreshRate = sdlDisplayMode->refresh_rate;
+                    //! \todo DPI
+                    SDL_Rect sdlRect;
+                    SDL_GetDisplayBounds(i, &sdlRect);
+                    monitor.bounds = Box2I(sdlRect.x, sdlRect.y, sdlRect.w, sdlRect.h);
+                    monitors.push_back(monitor);
+                }
+            }
+            SDL_free(sdlDisplays);
+        }
+#endif // FTK_SDL2
 
         std::vector<std::string> lines;
         for (int i = 0; i < monitors.size(); ++i)

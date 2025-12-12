@@ -170,6 +170,8 @@ namespace ftk
         void _removeWindow(const std::shared_ptr<IWindow>&);
 
     private:
+        std::shared_ptr<IWindow> _getWindow(uint32_t id) const;
+
         void _tickRecursive(
             const std::shared_ptr<IWidget>&,
             bool visible,
