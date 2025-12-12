@@ -34,18 +34,6 @@ namespace ftk
                 .def_readwrite("panel", &FileBrowserOptions::panel)
                 .def_readwrite("pathEditable", &FileBrowserOptions::pathEditable)
                 .def_readwrite("bellows", &FileBrowserOptions::bellows)
-                .def("to_json",
-                    [](FileBrowserOptions& self)
-                    {
-                        nlohmann::json json;
-                        to_json(json, self);
-                        return json.dump();
-                    })
-                .def("from_json",
-                    [](FileBrowserOptions& self, const std::string& value)
-                    {
-                        from_json(nlohmann::json().parse(value), self);
-                    })
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
@@ -100,6 +88,19 @@ namespace ftk
                     "recentFilesModel",
                     &FileBrowserSystem::getRecentFilesModel,
                     &FileBrowserSystem::setRecentFilesModel);
+
+            m.def("to_json",
+                [](const FileBrowserOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("from_json",
+                [](const std::string& value, FileBrowserOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }

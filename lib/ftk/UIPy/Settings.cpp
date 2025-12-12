@@ -69,7 +69,8 @@ namespace ftk
                     [](Settings& settings, const std::string& key)
                     {
                         nlohmann::json json;
-                        return py::make_tuple(settings.get(key, json), json.dump());
+                        bool out = settings.get(key, json);
+                        return py::make_tuple(out, json.dump());
                     })
                 .def("setBool", py::overload_cast<const std::string&, bool>(&Settings::set), py::arg("key"), py::arg("value"))
                 .def("setInt", py::overload_cast<const std::string&, int64_t>(&Settings::set), py::arg("key"), py::arg("value"))
