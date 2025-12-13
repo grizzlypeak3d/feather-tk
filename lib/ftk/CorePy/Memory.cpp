@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <ftk/CorePy/Memory.h>
-
-#include <ftk/CorePy/Util.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/Core/Memory.h>
 

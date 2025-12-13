@@ -3,29 +3,6 @@
 
 #include <ftk/CorePy/Bindings.h>
 
-#include <ftk/CorePy/Box.h>
-#include <ftk/CorePy/CmdLine.h>
-#include <ftk/CorePy/Color.h>
-#include <ftk/CorePy/Context.h>
-#include <ftk/CorePy/FontSystem.h>
-#include <ftk/CorePy/IApp.h>
-#include <ftk/CorePy/IRender.h>
-#include <ftk/CorePy/ISystem.h>
-#include <ftk/CorePy/Image.h>
-#include <ftk/CorePy/LogSystem.h>
-#include <ftk/CorePy/Memory.h>
-#include <ftk/CorePy/Observable.h>
-#include <ftk/CorePy/ObservableList.h>
-#include <ftk/CorePy/ObservableMap.h>
-#include <ftk/CorePy/OS.h>
-#include <ftk/CorePy/Path.h>
-#include <ftk/CorePy/Random.h>
-#include <ftk/CorePy/Range.h>
-#include <ftk/CorePy/Size.h>
-#include <ftk/CorePy/String.h>
-#include <ftk/CorePy/Timer.h>
-#include <ftk/CorePy/Vector.h>
-
 #include <ftk/Core/Context.h>
 
 #include <pybind11/pybind11.h>

@@ -1,33 +1,9 @@
 set(HEADERS
     Bindings.h
-    Box.h
-    Bindings.h
-    CmdLine.h
     CmdLineInline.h
-    Color.h
-    Context.h
-    FontSystem.h
-    IApp.h
-    IRender.h
-    ISystem.h
-    Image.h
-    LogSystem.h
-    Memory.h
-    OS.h
-    Observable.h
     ObservableInline.h
-    ObservableList.h
     ObservableListInline.h
-    ObservableMap.h
-    ObservableMapInline.h
-    Path.h
-    Random.h
-    Range.h
-    Size.h
-    String.h
-    Timer.h
-    Util.h
-    Vector.h)
+    ObservableMapInline.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Box.cpp

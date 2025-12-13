@@ -3,7 +3,7 @@
 
 #include <ftk/UIPy/ButtonGroup.h>
 
-#include <ftk/CorePy/Util.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/UI/ButtonGroup.h>
 

@@ -3,7 +3,7 @@
 
 #include <ftk/UIPy/WidgetOptions.h>
 
-#include <ftk/CorePy/Util.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/UI/IWidget.h>
 

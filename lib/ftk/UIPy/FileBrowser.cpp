@@ -3,7 +3,7 @@
 
 #include <ftk/UIPy/FileBrowser.h>
 
-#include <ftk/CorePy/Util.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/UI/FileBrowser.h>
 #include <ftk/UI/IWindow.h>

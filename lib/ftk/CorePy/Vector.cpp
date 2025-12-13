@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <ftk/CorePy/Vector.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/Core/Vector.h>
 

@@ -3,7 +3,7 @@
 
 #include <ftk/UIPy/MDIWidget.h>
 
-#include <ftk/CorePy/Util.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/UI/MDIWidget.h>
 

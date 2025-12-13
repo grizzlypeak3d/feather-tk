@@ -3,8 +3,7 @@
 
 #include <ftk/UIPy/RecentFilesModel.h>
 
-#include <ftk/CorePy/ObservableList.h>
-#include <ftk/CorePy/Observable.h>
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/UI/RecentFilesModel.h>
 
