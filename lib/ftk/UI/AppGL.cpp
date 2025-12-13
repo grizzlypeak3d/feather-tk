@@ -418,6 +418,106 @@ namespace ftk
     namespace
     {
 #if defined(FTK_SDL2)
+        std::string to_string(uint32_t event)
+        {
+            std::string out = "Unknown";
+            switch (event)
+            {
+            case SDL_FIRSTEVENT: out = "First"; break;
+            case SDL_QUIT: out = "Quit"; break;
+
+            case SDL_APP_TERMINATING: out = "App terminating"; break;
+            case SDL_APP_LOWMEMORY: out = "Low memory"; break;
+            case SDL_APP_WILLENTERBACKGROUND: out = "Will enter background"; break;
+            case SDL_APP_DIDENTERBACKGROUND: out = "Did enter background"; break;
+            case SDL_APP_WILLENTERFOREGROUND: out = "Will enter foreground"; break;
+            case SDL_APP_DIDENTERFOREGROUND: out = "Did enter foreground"; break;
+
+            case SDL_LOCALECHANGED: out = "Local changed"; break;
+            case SDL_DISPLAYEVENT: out = "Display"; break;
+            case SDL_WINDOWEVENT: out = "Window"; break;
+            case SDL_SYSWMEVENT: out = "Sys WM"; break;
+
+            case SDL_KEYDOWN: out = "Key down"; break;
+            case SDL_KEYUP: out = "Key up"; break;
+            case SDL_TEXTEDITING: out = "Text editing"; break;
+            case SDL_TEXTINPUT: out = "Text input"; break;
+            case SDL_KEYMAPCHANGED: out = "Keymap changed"; break;
+            case SDL_TEXTEDITING_EXT: out = "Text editing ext"; break;
+
+            case SDL_MOUSEMOTION: out = "Mouse motion"; break;
+            case SDL_MOUSEBUTTONDOWN: out = "Mouse button down"; break;
+            case SDL_MOUSEBUTTONUP: out = "Mouse button up"; break;
+            case SDL_MOUSEWHEEL: out = "Mouse wheel"; break;
+
+            case SDL_JOYAXISMOTION: out = "Joy axis motion"; break;
+            case SDL_JOYBALLMOTION: out = "Joy ball motion"; break;
+            case SDL_JOYHATMOTION: out = "Joy hat motion"; break;
+            case SDL_JOYBUTTONDOWN: out = "Joy button down"; break;
+            case SDL_JOYBUTTONUP: out = "Joy button up"; break;
+            case SDL_JOYDEVICEADDED: out = "Joy device added"; break;
+            case SDL_JOYDEVICEREMOVED: out = "Joy device removed"; break;
+            case SDL_JOYBATTERYUPDATED: out = "Joy battery updated"; break;
+
+            case SDL_CONTROLLERAXISMOTION: out = "Controller axis motion"; break;
+            case SDL_CONTROLLERBUTTONDOWN: out = "Controller button down"; break;
+            case SDL_CONTROLLERBUTTONUP: out = "Controller button up"; break;
+            case SDL_CONTROLLERDEVICEADDED: out = "Controller device added"; break;
+            case SDL_CONTROLLERDEVICEREMOVED: out = "Controller device removed"; break;
+            case SDL_CONTROLLERDEVICEREMAPPED: out = "Controller device remapped"; break;
+            case SDL_CONTROLLERTOUCHPADDOWN: out = "Controller touch pad down"; break;
+            case SDL_CONTROLLERTOUCHPADMOTION: out = "Controller touch pad motion"; break;
+            case SDL_CONTROLLERTOUCHPADUP: out = "Controller touch pad up"; break;
+            case SDL_CONTROLLERSENSORUPDATE: out = "Controller sensor update"; break;
+            case SDL_CONTROLLERUPDATECOMPLETE_RESERVED_FOR_SDL3: out = "Controller reserved for SDL3"; break;
+            case SDL_CONTROLLERSTEAMHANDLEUPDATED: out = "Controller steam handle updated"; break; 
+
+            case SDL_FINGERDOWN: out = "Finger down"; break;
+            case SDL_FINGERUP: out = "Finger up"; break;
+            case SDL_FINGERMOTION: out = "Finger motion"; break;
+
+            case SDL_DOLLARGESTURE: out = "Dollar gesture"; break;
+            case SDL_DOLLARRECORD: out = "Dollar record"; break;
+            case SDL_MULTIGESTURE: out = "Multi gesture"; break;
+
+            case SDL_CLIPBOARDUPDATE: out = "Clipboard update"; break;
+
+            case SDL_DROPFILE: out = "Drop file"; break;
+            case SDL_DROPTEXT: out = "Drop text"; break;
+            case SDL_DROPBEGIN: out = "Drop begin"; break;
+            case SDL_DROPCOMPLETE: out = "Drop complete"; break;
+
+            case SDL_AUDIODEVICEADDED: out = "Audio device added"; break;
+            case SDL_AUDIODEVICEREMOVED: out = "Audio device removed"; break;
+
+            case SDL_SENSORUPDATE: out = "Sensor update"; break;
+
+            case SDL_RENDER_TARGETS_RESET: out = "Render targets reset"; break;
+            case SDL_RENDER_DEVICE_RESET: out = "Render device reset"; break;
+
+            case SDL_POLLSENTINEL: out = "Poll sentinel"; break;
+
+            case SDL_USEREVENT: out = "User"; break;
+
+            case SDL_LASTEVENT: out = "Last"; break;
+
+            default: break;
+            }
+            return out;
+        }
+#elif defined(FTK_SDL3)
+        std::string to_string(SDL_EventType event)
+        {
+            std::string out = "Unknown";
+            switch (event)
+            {
+            default: break;
+            }
+            return out;
+        }
+#endif // FTK_SDL2
+
+#if defined(FTK_SDL2)
         Key fromSDL(int32_t value)
         {
             Key out = Key::Unknown;
@@ -753,6 +853,7 @@ namespace ftk
             SDL_Event event;
             while (SDL_PollEvent(&event))
             {
+                //std::cout << "Event: " << to_string(event.type) << std::endl;
                 switch (event.type)
                 {
 #if defined(FTK_SDL2)
