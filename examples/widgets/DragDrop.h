@@ -14,12 +14,12 @@ namespace widgets
 {
     class DragWidget;
 
-    class DragAndDropData : public ftk::DragAndDropData
+    class DragDropData : public ftk::IDragDropData
     {
     public:
-        DragAndDropData(const std::shared_ptr<DragWidget>&);
+        DragDropData(const std::shared_ptr<DragWidget>&);
 
-        virtual ~DragAndDropData();
+        virtual ~DragDropData();
 
         const std::shared_ptr<DragWidget>& getWidget() const;
 
@@ -79,10 +79,10 @@ namespace widgets
         void setGeometry(const ftk::Box2I&) override;
         void sizeHintEvent(const ftk::SizeHintEvent&) override;
         void drawOverlayEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
-        void dragEnterEvent(ftk::DragAndDropEvent&) override;
-        void dragLeaveEvent(ftk::DragAndDropEvent&) override;
-        void dragMoveEvent(ftk::DragAndDropEvent&) override;
-        void dropEvent(ftk::DragAndDropEvent&) override;
+        void dragEnterEvent(ftk::DragDropEvent&) override;
+        void dragLeaveEvent(ftk::DragDropEvent&) override;
+        void dragMoveEvent(ftk::DragDropEvent&) override;
+        void dropEvent(ftk::DragDropEvent&) override;
 
     private:
         int _getDropIndex(const ftk::V2I&) const;
@@ -93,17 +93,17 @@ namespace widgets
         int _dropTarget = -1;
     };
 
-    class DnD : public ftk::IWidget
+    class DragDrop : public ftk::IWidget
     {
     protected:
         void _init(const std::shared_ptr<Context>&);
 
-        DnD() = default;
+        DragDrop() = default;
 
     public:
-        virtual ~DnD();
+        virtual ~DragDrop();
 
-        static std::shared_ptr<DnD> create(const std::shared_ptr<Context>&);
+        static std::shared_ptr<DragDrop> create(const std::shared_ptr<Context>&);
 
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;

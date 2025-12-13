@@ -6,8 +6,8 @@
 #include "Bellows.h"
 #include "Buttons.h"
 #include "Charts.h"
-#include "DnD.h"
 #include "Dialogs.h"
+#include "DragDrop.h"
 #include "Icons.h"
 #include "Images.h"
 #include "Layouts.h"
@@ -33,8 +33,8 @@ namespace widgets
         _tabWidget->addTab("Bellows", Bellows::create(context));
         _tabWidget->addTab("Buttons", Buttons::create(context));
         _tabWidget->addTab("Charts", Charts::create(context));
-        _tabWidget->addTab("DnD", DnD::create(context));
         _tabWidget->addTab("Dialogs", Dialogs::create(context));
+        _tabWidget->addTab("DragDrop", DragDrop::create(context));
         _tabWidget->addTab("Icons", Icons::create(context));
         _tabWidget->addTab("Images", Images::create(context));
         _tabWidget->addTab("Layouts", Layouts::create(context));

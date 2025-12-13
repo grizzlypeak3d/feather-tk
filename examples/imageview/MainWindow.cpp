@@ -107,17 +107,21 @@ namespace imageview
         return _currentView;
     }
 
-    void MainWindow::_drop(const std::vector<std::string>& drops)
+    void MainWindow::dropEvent(DragDropEvent& event)
     {
-        if (auto app = _app.lock())
+        event.accept = true;
+        if (auto textData = std::dynamic_pointer_cast<DragDropTextData>(event.data))
         {
-            // Open dropped files.
-            std::vector<std::filesystem::path> paths;
-            for (const auto& drop : drops)
+            if (auto app = _app.lock())
             {
-                paths.push_back(std::filesystem::u8path(drop));
+                // Open dropped files.
+                std::vector<std::filesystem::path> paths;
+                for (const auto& text : textData->getText())
+                {
+                    paths.push_back(std::filesystem::u8path(text));
+                }
+                app->open(paths);
             }
-            app->open(paths);
         }
     }
 }

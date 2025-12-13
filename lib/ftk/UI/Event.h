@@ -70,11 +70,11 @@ namespace ftk
         std::shared_ptr<IRender>    render;
     };
 
-    //! Drag and drop data.
-    class FTK_API_TYPE DragAndDropData : public std::enable_shared_from_this<DragAndDropData>
+    //! Base class for drag and drop data.
+    class FTK_API_TYPE IDragDropData : public std::enable_shared_from_this<IDragDropData>
     {
     public:
-        FTK_API virtual ~DragAndDropData() = 0;
+        FTK_API virtual ~IDragDropData() = 0;
     };
 
     //! Mouse enter event.
@@ -93,12 +93,12 @@ namespace ftk
             const V2I& pos,
             const V2I& prev);
 
-        V2I                              pos;
-        V2I                              prev;
-        bool                             accept = false;
-        std::shared_ptr<DragAndDropData> dndData;
-        std::shared_ptr<Image>           dndCursor;
-        V2I                              dndCursorHotspot;
+        V2I                            pos;
+        V2I                            prev;
+        bool                           accept = false;
+        std::shared_ptr<IDragDropData> dragDropData;
+        std::shared_ptr<Image>         dragDropCursor;
+        V2I                            dragDropCursorHotspot;
     };
 
     //! Keyboard modifiers.
@@ -323,31 +323,31 @@ namespace ftk
     };
 
     //! Drag and drop text data.
-    class FTK_API_TYPE TextDragAndDropData : public DragAndDropData
+    class FTK_API_TYPE DragDropTextData : public IDragDropData
     {
     public:
-        FTK_API TextDragAndDropData(const std::string& text);
+        FTK_API DragDropTextData(const std::vector<std::string>&);
 
-        FTK_API virtual ~TextDragAndDropData();
+        FTK_API virtual ~DragDropTextData();
 
-        FTK_API const std::string& getText() const;
+        FTK_API const std::vector<std::string>& getText() const;
 
     private:
-        std::string _text;
+        std::vector<std::string> _text;
     };
 
     //! Drag and drop event.
-    struct FTK_API_TYPE DragAndDropEvent
+    struct FTK_API_TYPE DragDropEvent
     {
-        FTK_API DragAndDropEvent(
-            const V2I&                              pos,
-            const V2I&                              prev,
-            const std::shared_ptr<DragAndDropData>& data);
+        FTK_API DragDropEvent(
+            const V2I&                            pos,
+            const V2I&                            prev,
+            const std::shared_ptr<IDragDropData>& data);
 
-        V2I                              pos;
-        V2I                              prev;
-        std::shared_ptr<DragAndDropData> data;
-        bool                             accept = false;
+        V2I                            pos;
+        V2I                            prev;
+        std::shared_ptr<IDragDropData> data;
+        bool                           accept = false;
     };
         
     ///@}

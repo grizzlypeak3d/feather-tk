@@ -286,16 +286,16 @@ namespace ftk
         FTK_API virtual void textEvent(TextEvent&);
 
         //! Drag enter event.
-        FTK_API virtual void dragEnterEvent(DragAndDropEvent&);
+        FTK_API virtual void dragEnterEvent(DragDropEvent&);
 
         //! Drag leave event.
-        FTK_API virtual void dragLeaveEvent(DragAndDropEvent&);
+        FTK_API virtual void dragLeaveEvent(DragDropEvent&);
 
         //! Drag move event.
-        FTK_API virtual void dragMoveEvent(DragAndDropEvent&);
+        FTK_API virtual void dragMoveEvent(DragDropEvent&);
 
         //! Drop event.
-        FTK_API virtual void dropEvent(DragAndDropEvent&);
+        FTK_API virtual void dropEvent(DragDropEvent&);
 
         ///@}
 

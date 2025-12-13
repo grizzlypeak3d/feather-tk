@@ -166,8 +166,6 @@ namespace ftk
             const Box2I&,
             bool clipped);
 
-        virtual void _drop(const std::vector<std::string>&);
-
     private:
         enum class UnderCursor
         {

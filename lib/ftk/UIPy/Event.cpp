@@ -54,7 +54,7 @@ namespace ftk
                 .def_readwrite("style", &DrawEvent::style)
                 .def_readwrite("render", &DrawEvent::render);
 
-            py::class_<DragAndDropData, std::shared_ptr<DragAndDropData> >(m, "DragAndDropData");
+            py::class_<IDragDropData, std::shared_ptr<IDragDropData> >(m, "IDragDropData");
 
             py::class_<MouseEnterEvent>(m, "MouseEnterEvent")
                 .def(py::init<const V2I&>())
@@ -66,9 +66,9 @@ namespace ftk
                 .def_readwrite("pos", &MouseMoveEvent::pos)
                 .def_readwrite("prev", &MouseMoveEvent::prev)
                 .def_readwrite("accept", &MouseMoveEvent::accept)
-                .def_readwrite("dndData", &MouseMoveEvent::dndData)
-                .def_readwrite("dndCursor", &MouseMoveEvent::dndCursor)
-                .def_readwrite("dndCursorHotspot", &MouseMoveEvent::dndCursorHotspot);
+                .def_readwrite("dragDropData", &MouseMoveEvent::dragDropData)
+                .def_readwrite("dragDropCursor", &MouseMoveEvent::dragDropCursor)
+                .def_readwrite("dragDropCursorHotspot", &MouseMoveEvent::dragDropCursorHotspot);
 
             py::enum_<KeyModifier>(m, "KeyModifier")
                 .value("_None", KeyModifier::None)
@@ -232,19 +232,19 @@ namespace ftk
                 .def_readwrite("text", &TextEvent::text)
                 .def_readwrite("accept", &TextEvent::accept);
 
-            py::class_<TextDragAndDropData, DragAndDropData, std::shared_ptr<TextDragAndDropData> >(m, "TextDragAndDropData")
-                .def(py::init<const std::string&>())
-                .def_property_readonly("text", &TextDragAndDropData::getText);
+            py::class_<DragDropTextData, IDragDropData, std::shared_ptr<DragDropTextData> >(m, "DragDropTextData")
+                .def(py::init<const std::vector<std::string>&>())
+                .def_property_readonly("text", &DragDropTextData::getText);
 
-            py::class_<DragAndDropEvent>(m, "DragAndDropEvent")
+            py::class_<DragDropEvent>(m, "DragDropEvent")
                 .def(py::init<
                     const V2I&,
                     const V2I&,
-                    const std::shared_ptr<DragAndDropData>&>())
-                .def_readwrite("pos", &DragAndDropEvent::pos)
-                .def_readwrite("prev", &DragAndDropEvent::prev)
-                .def_readwrite("data", &DragAndDropEvent::data)
-                .def_readwrite("accept", &DragAndDropEvent::accept);
+                    const std::shared_ptr<IDragDropData>&>())
+                .def_readwrite("pos", &DragDropEvent::pos)
+                .def_readwrite("prev", &DragDropEvent::prev)
+                .def_readwrite("data", &DragDropEvent::data)
+                .def_readwrite("accept", &DragDropEvent::accept);
         }
     }
 }

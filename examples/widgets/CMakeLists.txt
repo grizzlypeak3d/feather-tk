@@ -2,8 +2,8 @@ set(HEADERS
     Bellows.h
     Buttons.h
     Charts.h
-    DnD.h
     Dialogs.h
+    DragDrop.h
     Icons.h
     Images.h
     Layouts.h
@@ -20,8 +20,8 @@ set(SOURCE
     Bellows.cpp
     Buttons.cpp
     Charts.cpp
-    DnD.cpp
     Dialogs.cpp
+    DragDrop.cpp
     Icons.cpp
     Images.cpp
     Layouts.cpp

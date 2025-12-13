@@ -42,12 +42,9 @@ namespace textedit
             const ftk::Size2I&);
 
         void close() override;
-
-    protected:
-        void _drop(const std::vector<std::string>&) override;
+        void dropEvent(ftk::DragDropEvent&) override;
  
     private:
-
         std::weak_ptr<App> _app;
         std::shared_ptr<SettingsModel> _settingsModel;
 

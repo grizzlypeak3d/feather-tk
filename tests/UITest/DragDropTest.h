@@ -9,16 +9,15 @@ namespace ftk
 {
     namespace ui_test
     {
-        class DragAndDropTest : public test::ITest
+        class DragDropTest : public test::ITest
         {
         protected:
-            DragAndDropTest(const std::shared_ptr<Context>&);
+            DragDropTest(const std::shared_ptr<Context>&);
 
         public:
-            virtual ~DragAndDropTest();
+            virtual ~DragDropTest();
 
-            static std::shared_ptr<DragAndDropTest> create(
-                const std::shared_ptr<Context>&);
+            static std::shared_ptr<DragDropTest> create(const std::shared_ptr<Context>&);
 
             void run() override;
         };

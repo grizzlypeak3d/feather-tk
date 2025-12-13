@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include "DnD.h"
+#include "DragDrop.h"
 
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/RowLayout.h>
@@ -12,14 +12,14 @@ using namespace ftk;
 
 namespace widgets
 {
-    DragAndDropData::DragAndDropData(const std::shared_ptr<DragWidget>& widget) :
+    DragDropData::DragDropData(const std::shared_ptr<DragWidget>& widget) :
         _widget(widget)
     {}
 
-    DragAndDropData::~DragAndDropData()
+    DragDropData::~DragDropData()
     {}
 
-    const std::shared_ptr<DragWidget>& DragAndDropData::getWidget() const
+    const std::shared_ptr<DragWidget>& DragDropData::getWidget() const
     {
         return _widget;
     }
@@ -29,7 +29,7 @@ namespace widgets
         int number,
         const std::shared_ptr<IWidget>& parent)
     {
-        IMouseWidget::_init(context, "ftk::examples::dnd::DragWidget", parent);
+        IMouseWidget::_init(context, "ftk::examples::DragWidget", parent);
 
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
@@ -101,13 +101,13 @@ namespace widgets
             const float length = ftk::length(event.pos - _getMousePressPos());
             if (length > _dragLength)
             {
-                event.dndData = std::make_shared<DragAndDropData>(
+                event.dragDropData = std::make_shared<DragDropData>(
                     std::dynamic_pointer_cast<DragWidget>(shared_from_this()));
                 const Box2I& g = getGeometry();
                 const int w = g.w();
                 const int h = g.h();
-                event.dndCursor = Image::create(w, h, ImageType::RGBA_U8);
-                uint8_t* p = event.dndCursor->getData();
+                event.dragDropCursor = Image::create(w, h, ImageType::RGBA_U8);
+                uint8_t* p = event.dragDropCursor->getData();
                 for (int y = 0; y < h; ++y)
                 {
                     for (int x = 0; x < w; ++x)
@@ -119,7 +119,7 @@ namespace widgets
                         p += 4;
                     }
                 }
-                event.dndCursorHotspot = _getMousePos() - g.min;
+                event.dragDropCursorHotspot = _getMousePos() - g.min;
             }
         }
     }
@@ -128,7 +128,7 @@ namespace widgets
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::examples::dnd::ContainerWidget", parent);
+        IWidget::_init(context, "ftk::examples::ContainerWidget", parent);
 
         _layout = VerticalLayout::create(context, shared_from_this());
         _layout->setSpacingRole(SizeRole::None);
@@ -177,21 +177,21 @@ namespace widgets
         }
     }
 
-    void ContainerWidget::dragEnterEvent(DragAndDropEvent& event)
+    void ContainerWidget::dragEnterEvent(DragDropEvent& event)
     {
         event.accept = true;
         _dropTarget = _getDropIndex(event.pos);
         setDrawUpdate();
     }
 
-    void ContainerWidget::dragLeaveEvent(DragAndDropEvent& event)
+    void ContainerWidget::dragLeaveEvent(DragDropEvent& event)
     {
         event.accept = true;
         _dropTarget = -1;
         setDrawUpdate();
     }
 
-    void ContainerWidget::dragMoveEvent(DragAndDropEvent& event)
+    void ContainerWidget::dragMoveEvent(DragDropEvent& event)
     {
         event.accept = true;
         const int dropTarget = _getDropIndex(event.pos);
@@ -202,9 +202,9 @@ namespace widgets
         }
     }
 
-    void ContainerWidget::dropEvent(DragAndDropEvent& event)
+    void ContainerWidget::dropEvent(DragDropEvent& event)
     {
-        if (auto data = std::dynamic_pointer_cast<DragAndDropData>(event.data))
+        if (auto data = std::dynamic_pointer_cast<DragDropData>(event.data))
         {
             event.accept = true;
             auto widget = data->getWidget();
@@ -263,9 +263,9 @@ namespace widgets
         return out;
     }
 
-    void DnD::_init(const std::shared_ptr<Context>& context)
+    void DragDrop::_init(const std::shared_ptr<Context>& context)
     {
-        ftk::IWidget::_init(context, "DnD", nullptr);
+        ftk::IWidget::_init(context, "DragDrop", nullptr);
 
         // Create a layout.
         _layout = HorizontalLayout::create(context, shared_from_this());
@@ -279,34 +279,34 @@ namespace widgets
         scrollWidget1->setStretch(Stretch::Expanding);
 
         // Create the drag and drop widgets.
-        auto dndContainer0 = ContainerWidget::create(context);
-        scrollWidget0->setWidget(dndContainer0);
-        auto dndContainer1 = ContainerWidget::create(context);
-        scrollWidget1->setWidget(dndContainer1);
+        auto dragDropContainer0 = ContainerWidget::create(context);
+        scrollWidget0->setWidget(dragDropContainer0);
+        auto dragDropContainer1 = ContainerWidget::create(context);
+        scrollWidget1->setWidget(dragDropContainer1);
         for (int i = 0; i < 100; ++i)
         {
-            dndContainer0->addWidget(DragWidget::create(context, i));
-            dndContainer1->addWidget(DragWidget::create(context, i));
+            dragDropContainer0->addWidget(DragWidget::create(context, i));
+            dragDropContainer1->addWidget(DragWidget::create(context, i));
         }
     }
 
-    DnD::~DnD()
+    DragDrop::~DragDrop()
     {}
 
-    std::shared_ptr<DnD> DnD::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<DragDrop> DragDrop::create(const std::shared_ptr<Context>& context)
     {
-        auto out = std::shared_ptr<DnD>(new DnD);
+        auto out = std::shared_ptr<DragDrop>(new DragDrop);
         out->_init(context);
         return out;
     }
 
-    void DnD::setGeometry(const Box2I& value)
+    void DragDrop::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _layout->setGeometry(value);
     }
 
-    void DnD::sizeHintEvent(const SizeHintEvent& event)
+    void DragDrop::sizeHintEvent(const SizeHintEvent& event)
     {
         setSizeHint(_layout->getSizeHint());
     }

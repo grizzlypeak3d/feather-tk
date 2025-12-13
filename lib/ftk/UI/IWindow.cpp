@@ -39,10 +39,10 @@ namespace ftk
         std::weak_ptr<IWidget> keyPress;
         KeyEvent keyEvent;
 
-        std::shared_ptr<DragAndDropData> dndData;
-        std::shared_ptr<Image> dndCursor;
-        V2I dndCursorHotspot;
-        std::weak_ptr<IWidget> dndHover;
+        std::shared_ptr<IDragDropData> dragDropData;
+        std::shared_ptr<Image> dragDropCursor;
+        V2I dragDropCursorHotspot;
+        std::weak_ptr<IWidget> dragDropHover;
 
         bool tooltipsEnabled = true;
         std::shared_ptr<Tooltip> tooltip;
@@ -361,17 +361,17 @@ namespace ftk
                 p.keyEvent.accept = false;
                 keyPress->keyReleaseEvent(p.keyEvent);
             }
-            if (auto dragAndDrop = p.dndHover.lock())
+            if (auto dragDropWidget = p.dragDropHover.lock())
             {
-                p.dndHover.reset();
-                DragAndDropEvent event(
+                p.dragDropHover.reset();
+                DragDropEvent event(
                     p.cursorPos,
                     p.cursorPosPrev,
-                    p.dndData);
-                dragAndDrop->dragLeaveEvent(event);
+                    p.dragDropData);
+                dragDropWidget->dragLeaveEvent(event);
             }
-            p.dndData.reset();
-            p.dndCursor.reset();
+            p.dragDropData.reset();
+            p.dragDropCursor.reset();
             _clipEventRecursive(shared_from_this(), getGeometry(), true);
         }
     }
@@ -433,15 +433,15 @@ namespace ftk
     void IWindow::drawOverlayEvent(const Box2I& clipRect, const DrawEvent& event)
     {
         FTK_P();
-        if (p.dndCursor)
+        if (p.dragDropCursor)
         {
             event.render->drawImage(
-                p.dndCursor,
+                p.dragDropCursor,
                 Box2F(
-                    p.cursorPos.x - p.dndCursorHotspot.x,
-                    p.cursorPos.y - p.dndCursorHotspot.y,
-                    p.dndCursor->getWidth(),
-                    p.dndCursor->getHeight()),
+                    p.cursorPos.x - p.dragDropCursorHotspot.x,
+                    p.cursorPos.y - p.dragDropCursorHotspot.y,
+                    p.dragDropCursor->getWidth(),
+                    p.dragDropCursor->getHeight()),
                 Color4F(1.F, 1.F, 1.F));
         }
     }
@@ -647,14 +647,14 @@ namespace ftk
         auto widget = p.mousePress.lock();
         if (widget)
         {
-            if (p.dndData)
+            if (p.dragDropData)
             {
                 // Find the drag and drop hover widget.
-                DragAndDropEvent event(
+                DragDropEvent event(
                     p.cursorPos,
                     p.cursorPosPrev,
-                    p.dndData);
-                auto hover = p.dndHover.lock();
+                    p.dragDropData);
+                auto hover = p.dragDropHover.lock();
                 auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
                 std::shared_ptr<IWidget> widget;
                 while (!widgets.empty())
@@ -677,20 +677,20 @@ namespace ftk
                     {
                         hover->dragLeaveEvent(event);
                     }
-                    p.dndHover = widget;
+                    p.dragDropHover = widget;
                 }
                 else if (widgets.empty() && hover)
                 {
-                    p.dndHover.reset();
+                    p.dragDropHover.reset();
                     hover->dragLeaveEvent(event);
                 }
-                hover = p.dndHover.lock();
+                hover = p.dragDropHover.lock();
                 if (hover)
                 {
-                    DragAndDropEvent event(
+                    DragDropEvent event(
                         p.cursorPos,
                         p.cursorPosPrev,
-                        p.dndData);
+                        p.dragDropData);
                     hover->dragMoveEvent(event);
                 }
             }
@@ -698,10 +698,10 @@ namespace ftk
             {
                 widget->mouseMoveEvent(event);
 
-                p.dndData = event.dndData;
-                p.dndCursor = event.dndCursor;
-                p.dndCursorHotspot = event.dndCursorHotspot;
-                if (p.dndData)
+                p.dragDropData = event.dragDropData;
+                p.dragDropCursor = event.dragDropCursor;
+                p.dragDropCursorHotspot = event.dragDropCursorHotspot;
+                if (p.dragDropData)
                 {
                     // Start a drag and drop.
                     widget->mouseReleaseEvent(p.mouseClickEvent);
@@ -714,7 +714,7 @@ namespace ftk
             _hoverUpdate(event);
         }
 
-        if (widget && p.dndCursor)
+        if (widget && p.dragDropCursor)
         {
             setDrawUpdate();
         }
@@ -757,14 +757,14 @@ namespace ftk
             if (auto widget = p.mousePress.lock())
             {
                 p.mousePress.reset();
-                if (auto hover = p.dndHover.lock())
+                if (auto hover = p.dragDropHover.lock())
                 {
                     // Finish a drag and drop.
-                    p.dndHover.reset();
-                    DragAndDropEvent event(
+                    p.dragDropHover.reset();
+                    DragDropEvent event(
                         p.cursorPos,
                         p.cursorPosPrev,
-                        p.dndData);
+                        p.dragDropData);
                     hover->dropEvent(event);
                     hover->dragLeaveEvent(event);
                 }
@@ -772,8 +772,8 @@ namespace ftk
                 {
                     widget->mouseReleaseEvent(p.mouseClickEvent);
                 }
-                p.dndData.reset();
-                p.dndCursor.reset();
+                p.dragDropData.reset();
+                p.dragDropCursor.reset();
                 setDrawUpdate();
             }
 
@@ -821,9 +821,6 @@ namespace ftk
                 clipped);
         }
     }
-
-    void IWindow::_drop(const std::vector<std::string>&)
-    {}
 
     std::list<std::shared_ptr<IWidget> > IWindow::_getUnderCursor(
         UnderCursor type,

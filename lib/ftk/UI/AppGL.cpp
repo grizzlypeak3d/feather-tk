@@ -1152,7 +1152,8 @@ namespace ftk
                         if (window->getID() == event.drop.windowID)
                         {
                             found = true;
-                            window->_drop(p.dropFiles);
+                            DragDropEvent event(V2I(), V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
+                            window->dropEvent(event);
                             break;
                         }
                     }
@@ -1160,11 +1161,13 @@ namespace ftk
                     {
                         if (auto window = p.activeWindow.lock())
                         {
-                            window->_drop(p.dropFiles);
+                            DragDropEvent event(V2I(), V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
+                            window->dropEvent(event);
                         }
                         else if (!p.windows.empty())
                         {
-                            p.windows.front()->_drop(p.dropFiles);
+                            DragDropEvent event(V2I(), V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
+                            p.windows.front()->dropEvent(event);
                         }
                     }
                     break;

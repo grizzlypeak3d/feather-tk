@@ -70,6 +70,42 @@ namespace ftk
                     drawRect,
                     event);
             }
+    
+            void dragEnterEvent(DragDropEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    dragEnterEvent,
+                    event);
+            }
+
+            void dragLeaveEvent(DragDropEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    dragLeaveEvent,
+                    event);
+            }
+
+            void dragMoveEvent(DragDropEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    dragMoveEvent,
+                    event);
+            }
+
+            void dropEvent(DragDropEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    dropEvent,
+                    event);
+            }
         };
 
         void mainWindow(py::module_& m)

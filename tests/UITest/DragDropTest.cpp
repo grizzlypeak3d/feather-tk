@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <UITest/DragAndDropTest.h>
+#include <UITest/DragDropTest.h>
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/IMouseWidget.h>
@@ -18,76 +18,76 @@ namespace ftk
     {
         namespace
         {
-            class DragAndDropWidget : public IMouseWidget
+            class DragDropWidget : public IMouseWidget
             {
             protected:
                 void _init(
                     const std::shared_ptr<Context>&,
-                    const std::string& text,
+                    const std::vector<std::string>& text,
                     const std::shared_ptr<IWidget>& parent);
 
-                DragAndDropWidget() = default;
+                DragDropWidget() = default;
 
             public:
-                virtual ~DragAndDropWidget();
+                virtual ~DragDropWidget();
 
-                static std::shared_ptr<DragAndDropWidget> create(
+                static std::shared_ptr<DragDropWidget> create(
                     const std::shared_ptr<Context>&,
-                    const std::string& text,
+                    const std::vector<std::string>& text,
                     const std::shared_ptr<IWidget>& parent = nullptr);
 
-                const std::string& getText() const;
+                const std::vector<std::string>& getText() const;
 
                 void sizeHintEvent(const SizeHintEvent&) override;
                 void mouseMoveEvent(MouseMoveEvent&) override;
-                void dragEnterEvent(DragAndDropEvent&) override;
-                void dragLeaveEvent(DragAndDropEvent&) override;
-                void dropEvent(DragAndDropEvent&) override;
+                void dragEnterEvent(DragDropEvent&) override;
+                void dragLeaveEvent(DragDropEvent&) override;
+                void dropEvent(DragDropEvent&) override;
 
             private:
-                std::string _text;
+                std::vector<std::string> _text;
                 int _dragLength = 0;
                 bool _dropTarget = false;;
             };
 
-            void DragAndDropWidget::_init(
+            void DragDropWidget::_init(
                 const std::shared_ptr<Context>& context,
-                const std::string& text,
+                const std::vector<std::string>& text,
                 const std::shared_ptr<IWidget>& parent)
             {
-                IMouseWidget::_init(context, "ftk::examples::dnd::DragAndDropWidget", parent);
+                IMouseWidget::_init(context, "ftk::ui_test::DragDropWidget", parent);
                 setStretch(Stretch::Expanding);
                 _setMouseHoverEnabled(true);
                 _setMousePressEnabled(true);
                 _text = text;
             }
 
-            DragAndDropWidget::~DragAndDropWidget()
+            DragDropWidget::~DragDropWidget()
             {}
 
-            std::shared_ptr<DragAndDropWidget> DragAndDropWidget::create(
+            std::shared_ptr<DragDropWidget> DragDropWidget::create(
                 const std::shared_ptr<Context>& context,
-                const std::string& text,
+                const std::vector<std::string>& text,
                 const std::shared_ptr<IWidget>& parent)
             {
-                auto out = std::shared_ptr<DragAndDropWidget>(new DragAndDropWidget);
+                auto out = std::shared_ptr<DragDropWidget>(new DragDropWidget);
                 out->_init(context, text, parent);
                 return out;
             }
 
-            const std::string& DragAndDropWidget::getText() const
+            const std::vector<std::string>& DragDropWidget::getText() const
             {
                 return _text;
             }
 
-            void DragAndDropWidget::sizeHintEvent(const SizeHintEvent& event)
+            void DragDropWidget::sizeHintEvent(const SizeHintEvent& event)
             {
                 IMouseWidget::sizeHintEvent(event);
                 _dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
                 setSizeHint(Size2I(100, 100));
             }
 
-            void DragAndDropWidget::mouseMoveEvent(MouseMoveEvent& event)
+            void DragDropWidget::mouseMoveEvent(MouseMoveEvent& event)
             {
                 IMouseWidget::mouseMoveEvent(event);
                 if (_isMousePressed())
@@ -95,12 +95,12 @@ namespace ftk
                     const float length = ftk::length(event.pos - _getMousePressPos());
                     if (length > _dragLength)
                     {
-                        event.dndData = std::make_shared<TextDragAndDropData>(_text);
+                        event.dragDropData = std::make_shared<DragDropTextData>(std::vector<std::string>({ _text }));
                         const Box2I& g = getGeometry();
                         const int w = g.w();
                         const int h = g.h();
-                        event.dndCursor = Image::create(w, h, ImageType::RGBA_U8);
-                        uint8_t* p = event.dndCursor->getData();
+                        event.dragDropCursor = Image::create(w, h, ImageType::RGBA_U8);
+                        uint8_t* p = event.dragDropCursor->getData();
                         for (int y = 0; y < h; ++y)
                         {
                             for (int x = 0; x < w; ++x)
@@ -112,26 +112,26 @@ namespace ftk
                                 p += 4;
                             }
                         }
-                        event.dndCursorHotspot = _getMousePos() - g.min;
+                        event.dragDropCursorHotspot = _getMousePos() - g.min;
                     }
                 }
             }
 
-            void DragAndDropWidget::dragEnterEvent(DragAndDropEvent& event)
+            void DragDropWidget::dragEnterEvent(DragDropEvent& event)
             {
                 event.accept = true;
                 _dropTarget = true;
             }
 
-            void DragAndDropWidget::dragLeaveEvent(DragAndDropEvent& event)
+            void DragDropWidget::dragLeaveEvent(DragDropEvent& event)
             {
                 event.accept = true;
                 _dropTarget = false;
             }
 
-            void DragAndDropWidget::dropEvent(DragAndDropEvent& event)
+            void DragDropWidget::dropEvent(DragDropEvent& event)
             {
-                if (auto data = std::dynamic_pointer_cast<TextDragAndDropData>(event.data))
+                if (auto data = std::dynamic_pointer_cast<DragDropTextData>(event.data))
                 {
                     event.accept = true;
                     _text = data->getText();
@@ -139,34 +139,34 @@ namespace ftk
             }
         }
 
-        DragAndDropTest::DragAndDropTest(const std::shared_ptr<Context>& context) :
-            ITest(context, "ftk::ui_test::DragAndDropTest")
+        DragDropTest::DragDropTest(const std::shared_ptr<Context>& context) :
+            ITest(context, "ftk::ui_test::DragDropTest")
         {}
 
-        DragAndDropTest::~DragAndDropTest()
+        DragDropTest::~DragDropTest()
         {}
 
-        std::shared_ptr<DragAndDropTest> DragAndDropTest::create(
+        std::shared_ptr<DragDropTest> DragDropTest::create(
             const std::shared_ptr<Context>& context)
         {
-            return std::shared_ptr<DragAndDropTest>(new DragAndDropTest(context));
+            return std::shared_ptr<DragDropTest>(new DragDropTest(context));
         }
                 
-        void DragAndDropTest::run()
+        void DragDropTest::run()
         {
             if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
-                argv.push_back("DragAndDropTest");
+                argv.push_back("DragDropTest");
                 auto app = App::create(
                     context,
                     argv,
-                    "DragAndDropTest",
+                    "DragDropTest",
                     "Drag and drop test.");
-                auto window = Window::create(context, app, "DragAndDropTest");
+                auto window = Window::create(context, app, "DragDropTest");
                 auto layout = HorizontalLayout::create(context, window);
-                auto dndWidget0 = DragAndDropWidget::create(context, "Drag 0", layout);
-                auto dndWidget1 = DragAndDropWidget::create(context, "Drag 1", layout);
+                auto dragDropWidget0 = DragDropWidget::create(context, { "Drag 0" }, layout);
+                auto dragDropWidget1 = DragDropWidget::create(context, { "Drag 1" }, layout);
                 auto spacer = Spacer::create(context, Orientation::Horizontal, layout);
                 spacer->setStretch(Stretch::Expanding);
                 window->show();

@@ -411,15 +411,15 @@ namespace ftk
     void IWidget::textEvent(TextEvent&)
     {}
 
-    void IWidget::dragEnterEvent(DragAndDropEvent&)
+    void IWidget::dragEnterEvent(DragDropEvent&)
     {}
 
-    void IWidget::dragLeaveEvent(DragAndDropEvent&)
+    void IWidget::dragLeaveEvent(DragDropEvent&)
     {}
 
-    void IWidget::dragMoveEvent(DragAndDropEvent&)
+    void IWidget::dragMoveEvent(DragDropEvent&)
     {}
 
-    void IWidget::dropEvent(DragAndDropEvent&)
+    void IWidget::dropEvent(DragDropEvent&)
     {}
 }

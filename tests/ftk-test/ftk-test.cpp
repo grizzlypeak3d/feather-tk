@@ -15,7 +15,7 @@
 #include <UITest/DoubleEditSliderTest.h>
 #include <UITest/DoubleSliderTest.h>
 #include <UITest/DoubleModelTest.h>
-#include <UITest/DragAndDropTest.h>
+#include <UITest/DragDropTest.h>
 #include <UITest/DrawUtilTest.h>
 #include <UITest/EventTest.h>
 #include <UITest/FileBrowserTest.h>
@@ -201,7 +201,7 @@ namespace ftk
             p.tests.push_back(ui_test::DoubleEditSliderTest::create(context));
             p.tests.push_back(ui_test::DoubleSliderTest::create(context));
             p.tests.push_back(ui_test::DoubleModelTest::create(context));
-            p.tests.push_back(ui_test::DragAndDropTest::create(context));
+            p.tests.push_back(ui_test::DragDropTest::create(context));
             p.tests.push_back(ui_test::DrawUtilTest::create(context));
             p.tests.push_back(ui_test::EventTest::create(context));
             p.tests.push_back(ui_test::FileBrowserTest::create(context));

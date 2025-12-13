@@ -11,7 +11,7 @@ set(HEADERS
     DoubleEditTest.h
     DoubleModelTest.h
     DoubleSliderTest.h
-    DragAndDropTest.h
+    DragDropTest.h
     DrawUtilTest.h
     EventTest.h
     FileBrowserTest.h
@@ -64,7 +64,7 @@ set(SOURCE
     DoubleEditTest.cpp
     DoubleModelTest.cpp
     DoubleSliderTest.cpp
-    DragAndDropTest.cpp
+    DragDropTest.cpp
     DrawUtilTest.cpp
     EventTest.cpp
     FileBrowserTest.cpp

@@ -49,8 +49,7 @@ namespace objview
 
         ///@}
 
-    protected:
-        void _drop(const std::vector<std::string>&) override;
+        void dropEvent(ftk::DragDropEvent&) override;
  
     private:
 

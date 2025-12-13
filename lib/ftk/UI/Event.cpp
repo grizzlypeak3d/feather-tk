@@ -43,7 +43,7 @@ namespace ftk
         render(render)
     {}
 
-    DragAndDropData::~DragAndDropData()
+    IDragDropData::~IDragDropData()
     {}
 
     MouseEnterEvent::MouseEnterEvent(const V2I & pos) :
@@ -293,22 +293,22 @@ namespace ftk
         text(text)
     {}
 
-    TextDragAndDropData::TextDragAndDropData(const std::string& text) :
+    DragDropTextData::DragDropTextData(const std::vector<std::string>& text) :
         _text(text)
     {}
 
-    TextDragAndDropData::~TextDragAndDropData()
+    DragDropTextData::~DragDropTextData()
     {}
 
-    const std::string& TextDragAndDropData::getText() const
+    const std::vector<std::string>& DragDropTextData::getText() const
     {
         return _text;
     }
 
-    DragAndDropEvent::DragAndDropEvent(
+    DragDropEvent::DragDropEvent(
         const V2I& pos,
         const V2I& prev,
-        const std::shared_ptr<DragAndDropData>& data) :
+        const std::shared_ptr<IDragDropData>& data) :
         pos(pos),
         prev(prev),
         data(data)
