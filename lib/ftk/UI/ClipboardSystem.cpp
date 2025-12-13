@@ -12,12 +12,17 @@
 namespace ftk
 {
     struct ClipboardSystem::Private
-    {};
+    {
+        std::shared_ptr<ftk::Observable<std::string> > text;
+    };
 
     ClipboardSystem::ClipboardSystem(const std::shared_ptr<Context>& context) :
         ISystem(context, "ftk::ClipboardSystem"),
         _p(new Private)
-    {}
+    {
+        FTK_P();
+        p.text = Observable<std::string>::create();
+    }
 
     ClipboardSystem::~ClipboardSystem()
     {}
@@ -27,21 +32,22 @@ namespace ftk
         return std::shared_ptr<ClipboardSystem>(new ClipboardSystem(context));
     }
 
-    std::string ClipboardSystem::getText() const
+    const std::string& ClipboardSystem::getText() const
     {
-        std::string out;
-        char* buf = SDL_GetClipboardText();
-        if (buf)
-        {
-            out = std::string(buf);
-        }
-        //! \bug This is causing segfaults in the tests on Linux:
-        //SDL_free(&buf);
-        return out;
+        return _p->text->get();
+    }
+
+    std::shared_ptr<ftk::IObservable<std::string> > ClipboardSystem::observeText() const
+    {
+        return _p->text;
     }
 
     void ClipboardSystem::setText(const std::string& value)
     {
-        SDL_SetClipboardText(value.c_str());
+        if (_p->text->setIfChanged(value))
+        {
+            SDL_SetClipboardText(value.c_str());
+        }
     }
 }
+
