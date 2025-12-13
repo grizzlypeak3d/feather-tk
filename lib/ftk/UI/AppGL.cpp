@@ -107,6 +107,7 @@ namespace ftk
         bool running = true;
         std::list<std::shared_ptr<IWindow> > windows;
         std::weak_ptr<IWindow> activeWindow;
+        std::map<std::shared_ptr<IWindow>, V2I> mousePos;
         std::vector<std::string> dropFiles;
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
@@ -983,9 +984,11 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         const float contentScale = window->getContentScale();
-                        window->_cursorPos(V2I(
+                        const V2I pos(
                             event.motion.x * contentScale,
-                            event.motion.y * contentScale));
+                            event.motion.y * contentScale);
+                        window->_cursorPos(pos);
+                        p.mousePos[window] = pos;
                     }
                     break;
 
@@ -1152,7 +1155,13 @@ namespace ftk
                         if (window->getID() == event.drop.windowID)
                         {
                             found = true;
-                            DragDropEvent event(V2I(), V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
+                            V2I pos;
+                            auto i = p.mousePos.find(window);
+                            if (i != p.mousePos.end())
+                            {
+                                pos = i->second;
+                            }
+                            DragDropEvent event(pos, pos, std::make_shared<DragDropTextData>(p.dropFiles));
                             window->dropEvent(event);
                             break;
                         }
@@ -1161,12 +1170,24 @@ namespace ftk
                     {
                         if (auto window = p.activeWindow.lock())
                         {
-                            DragDropEvent event(V2I(), V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
+                            V2I pos;
+                            auto i = p.mousePos.find(window);
+                            if (i != p.mousePos.end())
+                            {
+                                pos = i->second;
+                            }
+                            DragDropEvent event(pos, pos, std::make_shared<DragDropTextData>(p.dropFiles));
                             window->dropEvent(event);
                         }
                         else if (!p.windows.empty())
                         {
-                            DragDropEvent event(V2I(), V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
+                            V2I pos;
+                            auto i = p.mousePos.find(p.windows.front());
+                            if (i != p.mousePos.end())
+                            {
+                                pos = i->second;
+                            }
+                            DragDropEvent event(pos, pos, std::make_shared<DragDropTextData>(p.dropFiles));
                             p.windows.front()->dropEvent(event);
                         }
                     }
@@ -1224,6 +1245,11 @@ namespace ftk
         if (i != p.windows.end())
         {
             p.windows.erase(i);
+        }
+        const auto j = p.mousePos.find(window);
+        if (j != p.mousePos.end())
+        {
+            p.mousePos.erase(j);
         }
     }
 
