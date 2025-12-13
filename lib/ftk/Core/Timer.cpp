@@ -158,12 +158,13 @@ namespace ftk
         FTK_P();
 
         // Delete the expired timers.
-        auto i = p.timers.begin();
-        while (i != p.timers.end())
+        auto timers = p.timers;
+        auto i = timers.begin();
+        while (i != timers.end())
         {
             if (i->expired())
             {
-                i = p.timers.erase(i);
+                i = timers.erase(i);
             }
             else
             {
@@ -172,7 +173,6 @@ namespace ftk
         }
 
         // Tick the active timers.
-        auto timers = p.timers;
         for (i = timers.begin(); i != timers.end(); ++i)
         {
             if (auto timer = i->lock())
