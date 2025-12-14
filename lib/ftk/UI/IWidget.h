@@ -86,6 +86,10 @@ namespace ftk
         //! Get the size hint.
         const Size2I& getSizeHint() const;
 
+        //! Set the size hint. The size hint is usually computed and set during
+        //! the sizeHint event.
+        void setSizeHint(const Size2I&);
+
         //! Get the horizontal layout stretch.
         Stretch getHStretch() const;
 
@@ -131,9 +135,6 @@ namespace ftk
             
         //! Set the size.
         FTK_API void setSize(const Size2I&);
-
-        //! Set the size hint.
-        void setSizeHint(const Size2I&);
 
         ///@}
 
