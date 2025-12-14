@@ -182,6 +182,16 @@ namespace ftk
         _p->scrollPosCallback = value;
     }
 
+    bool ScrollWidget::isAreaResizable() const
+    {
+        return _p->scrollArea->isAreaResizable();
+    }
+
+    void ScrollWidget::setAreaResizable(bool value)
+    {
+        _p->scrollArea->setAreaResizable(value);
+    }
+
     bool ScrollWidget::areScrollBarsVisible() const
     {
         return _p->scrollBarsVisible;

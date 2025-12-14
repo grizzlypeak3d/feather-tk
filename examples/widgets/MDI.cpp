@@ -22,9 +22,11 @@ namespace widgets
         // Create a scroll widget.
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
         _scrollWidget->setBorder(false);
+        _scrollWidget->setAreaResizable(false);
 
         // Create a MDI canvas.
         auto canvas = MDICanvas::create(context);
+        canvas->setSize(Size2I(8192, 8192));
         _scrollWidget->setWidget(canvas);
 
         // Create MDI widgets.

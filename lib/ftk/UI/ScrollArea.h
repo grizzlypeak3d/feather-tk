@@ -67,6 +67,12 @@ namespace ftk
         //! Set the scroll position callback.
         FTK_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
 
+        //! Get whether the scrolled area is resizable.
+        bool isAreaResizable() const;
+
+        //! Get whether the scrolled area is resizable.
+        void setAreaResizable(bool);
+
         //! Get the size hint role.
         FTK_API SizeRole getSizeHintRole() const;
 

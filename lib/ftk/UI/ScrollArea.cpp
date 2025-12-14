@@ -27,12 +27,13 @@ namespace ftk
         V2I scrollPos;
         std::function<void(const Size2I&)> scrollSizeCallback;
         std::function<void(const V2I&)> scrollPosCallback;
+        bool areaResizable = true;
         SizeRole sizeHintRole = SizeRole::ScrollArea;
 
         struct SizeData
         {
             std::optional<float> displayScale;
-            int size = 0;
+            int sizeHint = 0;
         };
         SizeData size;
     };
@@ -147,6 +148,21 @@ namespace ftk
         _p->scrollPosCallback = value;
     }
 
+    bool ScrollArea::isAreaResizable() const
+    {
+        return _p->areaResizable;
+    }
+
+    void ScrollArea::setAreaResizable(bool value)
+    {
+        FTK_P();
+        if (value == p.areaResizable)
+            return;
+        p.areaResizable = value;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     SizeRole ScrollArea::getSizeHintRole() const
     {
         return _p->sizeHintRole;
@@ -171,29 +187,37 @@ namespace ftk
         Size2I scrollSize;
         for (const auto& child : getChildren())
         {
-            Size2I childSizeHint = child->getSizeHint();
-            switch (p.scrollType)
+            Size2I childSize;
+            if (p.areaResizable)
             {
-            case ScrollType::Horizontal:
-                childSizeHint.h = std::max(childSizeHint.h, value.h());
-                break;
-            case ScrollType::Vertical:
-            case ScrollType::Menu:
-                childSizeHint.w = std::max(childSizeHint.w, value.w());
-                break;
-            case ScrollType::Both:
-                childSizeHint.w = std::max(childSizeHint.w, value.w());
-                childSizeHint.h = std::max(childSizeHint.h, value.h());
-                break;
-            default: break;
+                childSize = child->getSizeHint();
+                switch (p.scrollType)
+                {
+                case ScrollType::Horizontal:
+                    childSize.h = std::max(childSize.h, value.h());
+                    break;
+                case ScrollType::Vertical:
+                case ScrollType::Menu:
+                    childSize.w = std::max(childSize.w, value.w());
+                    break;
+                case ScrollType::Both:
+                    childSize.w = std::max(childSize.w, value.w());
+                    childSize.h = std::max(childSize.h, value.h());
+                    break;
+                default: break;
+                }
             }
-            scrollSize.w = std::max(scrollSize.w, childSizeHint.w);
-            scrollSize.h = std::max(scrollSize.h, childSizeHint.h);
+            else
+            {
+                childSize = child->getGeometry().size();
+            }
+            scrollSize.w = std::max(scrollSize.w, childSize.w);
+            scrollSize.h = std::max(scrollSize.h, childSize.h);
             const Box2I g2(
                 value.min.x - p.scrollPos.x,
                 value.min.y - p.scrollPos.y,
-                childSizeHint.w,
-                childSizeHint.h);
+                childSize.w,
+                childSize.h);
             child->setGeometry(g2);
         }
         if (scrollSize != p.scrollSize)
@@ -230,7 +254,7 @@ namespace ftk
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(p.sizeHintRole, event.displayScale);
+            p.size.sizeHint = event.style->getSizeRole(p.sizeHintRole, event.displayScale);
         }
 
         Size2I sizeHint;
@@ -243,13 +267,13 @@ namespace ftk
         switch (p.scrollType)
         {
         case ScrollType::Horizontal:
-            sizeHint.w = p.size.size;
+            sizeHint.w = p.size.sizeHint;
             break;
         case ScrollType::Vertical:
-            sizeHint.h = p.size.size;
+            sizeHint.h = p.size.sizeHint;
             break;
         case ScrollType::Both:
-            sizeHint.w = sizeHint.h = p.size.size;
+            sizeHint.w = sizeHint.h = p.size.sizeHint;
             break;
         default: break;
         }
