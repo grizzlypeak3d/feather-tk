@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <ftk/UIPy/MessageDialog.h>
+#include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/MessageDialog.h>
 #include <ftk/UI/Window.h>

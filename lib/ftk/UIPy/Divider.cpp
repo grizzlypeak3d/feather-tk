@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <ftk/UIPy/Divider.h>
+#include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/Divider.h>
 
