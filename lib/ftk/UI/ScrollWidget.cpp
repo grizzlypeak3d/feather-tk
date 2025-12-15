@@ -13,6 +13,19 @@
 
 namespace ftk
 {
+    bool ScrollViewport::operator == (const ScrollViewport& other) const
+    {
+        return
+            size == other.size &&
+            scrollSize == other.scrollSize &&
+            scrollPos == other.scrollPos;
+    }
+
+    bool ScrollViewport::operator != (const ScrollViewport& other) const
+    {
+        return !(*this == other);
+    }
+
     struct ScrollWidget::Private
     {
         bool scrollBarsVisible = true;
@@ -32,7 +45,7 @@ namespace ftk
 
         std::function<void(const Size2I&)> scrollSizeCallback;
         std::function<void(const V2I&)> scrollPosCallback;
-        std::function<void(const Box2I&)> viewportCallback;
+        std::function<void(const ScrollViewport&)> viewportCallback;
 
         struct SizeData
         {
@@ -93,6 +106,10 @@ namespace ftk
                 if (p.scrollSizeCallback)
                 {
                     p.scrollSizeCallback(value);
+                }
+                if (p.viewportCallback)
+                {
+                    p.viewportCallback(getViewport());
                 }
             });
 
@@ -255,22 +272,6 @@ namespace ftk
         _p->lineStep = value;
     }
 
-    SizeRole ScrollWidget::getMarginRole() const
-    {
-        return _p->marginRole;
-    }
-
-    void ScrollWidget::setMarginRole(SizeRole value)
-    {
-        FTK_P();
-        if (value == p.marginRole)
-            return;
-        p.marginRole = value;
-        p.size.displayScale.reset();
-        setSizeUpdate();
-        setDrawUpdate();
-    }
-
     bool ScrollWidget::hasBorder() const
     {
         return _p->border;
@@ -296,14 +297,41 @@ namespace ftk
         _p->scrollArea->setSizeHintRole(value);
     }
 
-    const Box2I& ScrollWidget::getViewport() const
+    SizeRole ScrollWidget::getMarginRole() const
     {
-        return _p->scrollArea->getGeometry();
+        return _p->marginRole;
     }
 
-    void ScrollWidget::setViewportCallback(const std::function<void(const Box2I&)>& value)
+    void ScrollWidget::setMarginRole(SizeRole value)
+    {
+        FTK_P();
+        if (value == p.marginRole)
+            return;
+        p.marginRole = value;
+        p.size.displayScale.reset();
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
+    ScrollViewport ScrollWidget::getViewport() const
+    {
+        FTK_P();
+        ScrollViewport out;
+        out.size = _p->scrollArea->getGeometry().size();
+        out.scrollSize = p.scrollArea->getScrollSize();
+        out.scrollPos = p.scrollArea->getScrollPos();
+        return out;
+    }
+
+    void ScrollWidget::setViewportCallback(
+        const std::function<void(const ScrollViewport&)>& value)
     {
         _p->viewportCallback = value;
+    }
+
+    const std::shared_ptr<IWidget>& ScrollWidget::getViewportWidget() const
+    {
+        return _p->viewportWidget;
     }
 
     void ScrollWidget::setViewportWidget(const std::shared_ptr<IWidget>& widget)
@@ -325,7 +353,7 @@ namespace ftk
         IWidget::setGeometry(value);
         FTK_P();
 
-        const Box2I viewportPrev = getViewport();
+        const ScrollViewport viewportPrev = getViewport();
 
         Box2I g = value;
         if (p.border || p.marginRole != SizeRole::None)
@@ -335,7 +363,7 @@ namespace ftk
         p.layout->setGeometry(g);
         _scrollBarsUpdate();
 
-        const Box2I viewport = getViewport();
+        const ScrollViewport viewport = getViewport();
         if (viewport != viewportPrev && p.viewportCallback)
         {
             p.viewportCallback(viewport);

@@ -54,6 +54,7 @@ namespace ftk
         FTK_API void label(pybind11::module_&);
         FTK_API void mainWindow(pybind11::module_&);
         FTK_API void mdiCanvas(pybind11::module_&);
+        FTK_API void mdiMiniMap(pybind11::module_&);
         FTK_API void mdiWidget(pybind11::module_&);
         FTK_API void menu(pybind11::module_&);
         FTK_API void menuBar(pybind11::module_&);

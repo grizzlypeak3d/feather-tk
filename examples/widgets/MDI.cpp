@@ -46,20 +46,10 @@ namespace widgets
         _scrollWidget->setViewportWidget(_miniMap);
 
         // Setup callbacks.
-        _scrollWidget->setScrollSizeCallback(
-            [this](const Size2I& value)
-            {
-                _miniMap->setScrollSize(value);
-            });
-        _scrollWidget->setScrollPosCallback(
-            [this](const V2I& value)
-            {
-                _miniMap->setScrollPos(value);
-            });
         _scrollWidget->setViewportCallback(
-            [this](const Box2I& value)
+            [this](const ScrollViewport& value)
             {
-                _miniMap->setViewportSize(value.size());
+                _miniMap->setViewport(value);
             });
 
         _canvas->setChildGeometryCallback(

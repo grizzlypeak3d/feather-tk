@@ -74,7 +74,6 @@ namespace ftk
             app->tick();
 
             _print(Format("Scroll type: {0}").arg(scrollType));
-            _print(Format("Viewport: {0}").arg(scrollWidget->getViewport()));
             _print(Format("Scroll size: {0}").arg(scrollWidget->getScrollSize()));
             _print(Format("Scroll pos: {0}").arg(scrollWidget->getScrollPos()));
 

@@ -119,6 +119,11 @@ namespace ftk
         }
     }
 
+    void ScrollArea::setScrollPosCallback(const std::function<void(const V2I&)>& value)
+    {
+        _p->scrollPosCallback = value;
+    }
+
     void ScrollArea::scrollTo(const Box2I& value)
     {
         FTK_P();
@@ -141,11 +146,6 @@ namespace ftk
             scrollPos.y = value.min.y;
         }
         setScrollPos(scrollPos, false);
-    }
-
-    void ScrollArea::setScrollPosCallback(const std::function<void(const V2I&)>& value)
-    {
-        _p->scrollPosCallback = value;
     }
 
     bool ScrollArea::isAreaResizable() const

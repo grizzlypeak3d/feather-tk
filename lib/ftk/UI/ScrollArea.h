@@ -43,34 +43,41 @@ namespace ftk
             ScrollType = ScrollType::Both,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the scroll type.
+        //! \name Scroll Type
+        ///@{
+
         FTK_API ScrollType getScrollType() const;
-
-        //! Set the scroll type.
         FTK_API void setScrollType(ScrollType);
+        
+        ///@}
 
-        //! Get the scroll size.
+        //! \name Scroll Size
+        ///@{
+
         FTK_API const Size2I& getScrollSize() const;
-
-        //! Set the scroll size callback.
         FTK_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
 
-        //! Get the scroll position.
-        FTK_API const V2I& getScrollPos() const;
+        ///@}
 
-        //! Set the scroll position.
+        //! \name Scroll Position
+        ///@{
+
+        FTK_API const V2I& getScrollPos() const;
         FTK_API void setScrollPos(const V2I&, bool clamp = true);
+        FTK_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
 
         //! Scroll to make the given box visible.
         FTK_API void scrollTo(const Box2I&);
+        
+        ///@}
 
-        //! Set the scroll position callback.
-        FTK_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
+        //! \name Options
+        ///@{
 
         //! Get whether the scrolled area is resizable.
         bool isAreaResizable() const;
 
-        //! Get whether the scrolled area is resizable.
+        //! Set whether the scrolled area is resizable.
         void setAreaResizable(bool);
 
         //! Get the size hint role.
@@ -78,6 +85,8 @@ namespace ftk
 
         //! Set the size hint role.
         FTK_API void setSizeHintRole(SizeRole);
+        
+        ///@}
 
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;

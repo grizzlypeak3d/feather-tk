@@ -30,20 +30,22 @@ namespace ftk
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the scroll size.
+        //! \name Scroll Size
+        ///@{
+
         FTK_API int getScrollSize() const;
-
-        //! Set the scroll size.
         FTK_API void setScrollSize(int);
+        
+        ///@}
 
-        //! Get the scroll position.
+        //! \name Scroll Position
+        ///@{
+
         FTK_API int getScrollPos() const;
-
-        //! Set the scroll position.
         FTK_API void setScrollPos(int);
-
-        //! Set the scroll position callback.
         FTK_API void setScrollPosCallback(const std::function<void(int)>&);
+        
+        ///@}
 
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;

@@ -72,6 +72,7 @@ namespace ftk
             label(m);
             mainWindow(m);
             mdiCanvas(m);
+            mdiMiniMap(m);
             mdiWidget(m);
             menu(m);
             menuBar(m);

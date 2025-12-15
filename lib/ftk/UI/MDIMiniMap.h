@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <ftk/UI/IWidget.h>
+#include <ftk/UI/ScrollWidget.h>
 
 namespace ftk
 {
@@ -28,20 +28,17 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Set the scroll size.
-        FTK_API void setScrollSize(const Size2I&);
+        //! Set the viewport information.
+        FTK_API void setViewport(const ScrollViewport&);
 
-        //! Set the scroll position.
-        FTK_API void setScrollPos(const V2I&);
-
-        //! Set the scroll viewport size.
-        FTK_API void setViewportSize(const Size2I&);
-        
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const V2I&)>&);
 
         //! Set the child geometry.
         FTK_API void setChildGeometry(const std::vector<Box2I>&);
+        
+        //! Get the child geometry color role.
+        FTK_API ColorRole getChildColorRole() const;
         
         //! Set the child geometry color role.
         FTK_API void setChildColorRole(ColorRole);

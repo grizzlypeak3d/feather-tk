@@ -45,6 +45,7 @@ set(SOURCE
     IntSlider.cpp
     Label.cpp
     MDICanvas.cpp
+    MDIMiniMap.cpp
     MDIWidget.cpp
     MainWindow.cpp
     Menu.cpp

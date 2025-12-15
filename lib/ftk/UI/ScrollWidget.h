@@ -10,6 +10,17 @@ namespace ftk
     //! \name Layouts
     ///@{
 
+    //! Scroll widget viewport information.
+    struct FTK_API_TYPE ScrollViewport
+    {
+        Size2I size;
+        Size2I scrollSize;
+        V2I    scrollPos;
+        
+        bool operator == (const ScrollViewport&) const;
+        bool operator != (const ScrollViewport&) const;
+    };
+
     //! Scroll widget.
     class FTK_API_TYPE ScrollWidget : public IWidget
     {
@@ -30,41 +41,55 @@ namespace ftk
             ScrollType = ScrollType::Both,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Get the widget.
+        //! \name Scroll Widget
+        ///@{
+
         FTK_API const std::shared_ptr<IWidget>& getWidget() const;
-
-        //! Set the widget.
         FTK_API void setWidget(const std::shared_ptr<IWidget>&);
+        
+        ///@}
 
-        //! Get the scroll type.
+        //! \name Scroll Type
+        ///@{
+
         FTK_API ScrollType getScrollType() const;
-
-        //! Set the scroll type.
         FTK_API void setScrollType(ScrollType);
+        
+        ///@}
 
-        //! Get the scroll size.
+        //! \name Scroll Size
+        ///@{
+
         FTK_API const Size2I& getScrollSize() const;
-
-        //! Set the scroll size callback.
         FTK_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
+        
+        ///@}
 
-        //! Get the scroll position.
+        //! \name Scroll Position
+        ///@{
+
         FTK_API const V2I& getScrollPos() const;
-
-        //! Set the scroll position.
         FTK_API void setScrollPos(const V2I&, bool clamp = true);
+        FTK_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
 
         //! Scroll to make the given box visible.
         FTK_API void scrollTo(const Box2I&);
 
-        //! Set the scroll position callback.
-        FTK_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
+        ///@}
+
+        //! \name Scroll Area
+        ///@{
 
         //! Get whether the scrolled area is resizable.
-        bool isAreaResizable() const;
+        FTK_API bool isAreaResizable() const;
 
         //! Get whether the scrolled area is resizable.
-        void setAreaResizable(bool);
+        FTK_API void setAreaResizable(bool);
+
+        ///@}
+
+        //! \name Options
+        ///@{
 
         //! Get whether the scroll bars are visible.
         FTK_API bool areScrollBarsVisible() const;
@@ -90,12 +115,6 @@ namespace ftk
         //! Set the line step.
         FTK_API void setLineStep(int);
 
-        //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
-
-        //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
-
         //! Get whether the scroll area has a border.
         FTK_API bool hasBorder() const;
 
@@ -108,14 +127,31 @@ namespace ftk
         //! Set the size hint role.
         FTK_API void setSizeHintRole(SizeRole);
 
-        //! Get the viewport geometry.
-        FTK_API const Box2I& getViewport() const;
+        //! Get the margin role.
+        FTK_API SizeRole getMarginRole() const;
 
-        //! Set the viewport geometry callback.
-        FTK_API void setViewportCallback(const std::function<void(const Box2I&)>&);
+        //! Set the margin role.
+        FTK_API void setMarginRole(SizeRole);
+
+        ///@}
+
+        //! \name Viewport
+        ///@{
+
+        //! Get the viewport information.
+        FTK_API ScrollViewport getViewport() const;
+
+        //! Set the viewport callback.
+        FTK_API void setViewportCallback(
+            const std::function<void(const ScrollViewport&)>&);
+
+        //! Get the viewport widget.
+        FTK_API const std::shared_ptr<IWidget>& getViewportWidget() const;
 
         //! Set the viewport widget.
         FTK_API void setViewportWidget(const std::shared_ptr<IWidget>&);
+
+        ///@}
 
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
