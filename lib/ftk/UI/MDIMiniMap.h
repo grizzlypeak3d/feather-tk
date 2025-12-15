@@ -10,21 +10,21 @@ namespace ftk
     //! \name MDI Widgets
     ///@{
 
-    //! MDI navigator widget.
-    class FTK_API_TYPE MDINavigator : public IWidget
+    //! MDI mini-map widget.
+    class FTK_API_TYPE MDIMiniMap : public IWidget
     {
     protected:
         void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent);
 
-        MDINavigator();
+        MDIMiniMap();
 
     public:
-        FTK_API virtual ~MDINavigator();
+        FTK_API virtual ~MDIMiniMap();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<MDINavigator> create(
+        FTK_API static std::shared_ptr<MDIMiniMap> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 

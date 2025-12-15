@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <ftk/UI/MDINavigator.h>
+#include <ftk/UI/MDIMiniMap.h>
 
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/IMouseWidget.h>
@@ -10,19 +10,19 @@ namespace ftk
 {
     namespace
     {
-        class FTK_API_TYPE MDINavigatorWidget : public IMouseWidget
+        class FTK_API_TYPE MDIMiniMapWidget : public IMouseWidget
         {
         protected:
             void _init(
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent);
 
-            MDINavigatorWidget() = default;
+            MDIMiniMapWidget() = default;
 
         public:
-            virtual ~MDINavigatorWidget() {}
+            virtual ~MDIMiniMapWidget() {}
 
-            static std::shared_ptr<MDINavigatorWidget> create(
+            static std::shared_ptr<MDIMiniMapWidget> create(
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
@@ -54,26 +54,26 @@ namespace ftk
             SizeData _size;
         };
 
-        void MDINavigatorWidget::_init(
+        void MDIMiniMapWidget::_init(
             const std::shared_ptr<Context>& context,
             const std::shared_ptr<IWidget>& parent)
         {
-            IMouseWidget::_init(context, "ftk::MDINavigatorWidget", parent);
+            IMouseWidget::_init(context, "ftk::MDIMiniMapWidget", parent);
             setBackgroundRole(ColorRole::Overlay);
             _setMouseHoverEnabled(true);
             _setMousePressEnabled(true);
         }
 
-        std::shared_ptr<MDINavigatorWidget> MDINavigatorWidget::create(
+        std::shared_ptr<MDIMiniMapWidget> MDIMiniMapWidget::create(
             const std::shared_ptr<Context>& context,
             const std::shared_ptr<IWidget>& parent)
         {
-            auto out = std::shared_ptr<MDINavigatorWidget>(new MDINavigatorWidget);
+            auto out = std::shared_ptr<MDIMiniMapWidget>(new MDIMiniMapWidget);
             out->_init(context, parent);
             return out;
         }
 
-        void MDINavigatorWidget::setWidgetGeometry(const std::vector<Box2I>& value)
+        void MDIMiniMapWidget::setWidgetGeometry(const std::vector<Box2I>& value)
         {
             if (value == _widgetGeometry)
                 return;
@@ -81,7 +81,7 @@ namespace ftk
             setDrawUpdate();
         }
 
-        void MDINavigatorWidget::setScrollSize(const Size2I& value)
+        void MDIMiniMapWidget::setScrollSize(const Size2I& value)
         {
             if (value == _scrollSize)
                 return;
@@ -90,7 +90,7 @@ namespace ftk
             setDrawUpdate();
         }
 
-        void MDINavigatorWidget::setScrollPos(const V2I& value)
+        void MDIMiniMapWidget::setScrollPos(const V2I& value)
         {
             if (value == _scrollPos)
                 return;
@@ -98,7 +98,7 @@ namespace ftk
             setDrawUpdate();
         }
 
-        void MDINavigatorWidget::setViewportSize(const Size2I& value)
+        void MDIMiniMapWidget::setViewportSize(const Size2I& value)
         {
             if (value == _viewportSize)
                 return;
@@ -106,12 +106,12 @@ namespace ftk
             setDrawUpdate();
         }
         
-        void MDINavigatorWidget::setCallback(const std::function<void(const V2I&)>& value)
+        void MDIMiniMapWidget::setCallback(const std::function<void(const V2I&)>& value)
         {
             _callback = value;
         }
 
-        void MDINavigatorWidget::sizeHintEvent(const SizeHintEvent& event)
+        void MDIMiniMapWidget::sizeHintEvent(const SizeHintEvent& event)
         {
             IMouseWidget::sizeHintEvent(event);
 
@@ -131,7 +131,7 @@ namespace ftk
             setSizeHint(Size2I(_size.sizeHint * aspect, _size.sizeHint) + _size.border * 2);
         }
 
-        void MDINavigatorWidget::drawEvent(
+        void MDIMiniMapWidget::drawEvent(
             const Box2I& drawRect,
             const DrawEvent& event)
         {
@@ -146,19 +146,21 @@ namespace ftk
             {
                 const Box2I g2 = margin(g, -_size.border);
 
+                std::cout << _widgetGeometry.front() << std::endl;
+
                 std::vector<Box2I> rects;
                 for (const auto& wg : _widgetGeometry)
                 {
                     rects.push_back(
                         Box2I(
-                            g2.min.x + wg.min.x / static_cast<float>(_scrollSize.w) * g2.w(),
-                            g2.min.y + wg.min.y / static_cast<float>(_scrollSize.h) * g2.h(),
+                            g2.min.x + (wg.min.x + _scrollPos.x) / static_cast<float>(_scrollSize.w) * g2.w(),
+                            g2.min.y + (wg.min.y + _scrollPos.y) / static_cast<float>(_scrollSize.h) * g2.h(),
                             std::ceil(wg.w() / static_cast<float>(_scrollSize.w) * g2.w()),
                             std::ceil(wg.h() / static_cast<float>(_scrollSize.h) * g2.h())));
                 }
                 event.render->drawRects(
                     rects,
-                    event.style->getColorRole(ColorRole::Window));
+                    event.style->getColorRole(ColorRole::Cyan));
 
                 const Box2I viewport(
                     g2.min.x + _scrollPos.x / static_cast<float>(_scrollSize.w) * g2.w(),
@@ -171,7 +173,7 @@ namespace ftk
             }
         }
 
-        void MDINavigatorWidget::mouseMoveEvent(MouseMoveEvent& event)
+        void MDIMiniMapWidget::mouseMoveEvent(MouseMoveEvent& event)
         {
             IMouseWidget::mouseMoveEvent(event);
             if (_isMousePressed() && _scrollSize.isValid() && _callback)
@@ -187,16 +189,16 @@ namespace ftk
             }
         }
 
-        void MDINavigatorWidget::mousePressEvent(MouseClickEvent& event)
+        void MDIMiniMapWidget::mousePressEvent(MouseClickEvent& event)
         {
             IMouseWidget::mousePressEvent(event);
             _scrollPosPress = _scrollPos;
         }
     }
 
-    struct MDINavigator::Private
+    struct MDIMiniMap::Private
     {
-        std::shared_ptr<MDINavigatorWidget> widget;
+        std::shared_ptr<MDIMiniMapWidget> widget;
 
         struct SizeData
         {
@@ -212,57 +214,57 @@ namespace ftk
         std::optional<DrawData> draw;
     };
 
-    void MDINavigator::_init(
+    void MDIMiniMap::_init(
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::MDINavigator", parent);
+        IWidget::_init(context, "ftk::MDIMiniMap", parent);
         FTK_P();
-        p.widget = MDINavigatorWidget::create(context, shared_from_this());
+        p.widget = MDIMiniMapWidget::create(context, shared_from_this());
     }
 
-    MDINavigator::MDINavigator() :
+    MDIMiniMap::MDIMiniMap() :
         _p(new Private)
     {}
 
-    MDINavigator::~MDINavigator()
+    MDIMiniMap::~MDIMiniMap()
     {}
 
-    std::shared_ptr<MDINavigator> MDINavigator::create(
+    std::shared_ptr<MDIMiniMap> MDIMiniMap::create(
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        auto out = std::shared_ptr<MDINavigator>(new MDINavigator);
+        auto out = std::shared_ptr<MDIMiniMap>(new MDIMiniMap);
         out->_init(context, parent);
         return out;
     }
 
-    void MDINavigator::setWidgetGeometry(const std::vector<Box2I>& value)
+    void MDIMiniMap::setWidgetGeometry(const std::vector<Box2I>& value)
     {
         _p->widget->setWidgetGeometry(value);
     }
 
-    void MDINavigator::setScrollSize(const Size2I& value)
+    void MDIMiniMap::setScrollSize(const Size2I& value)
     {
         _p->widget->setScrollSize(value);
     }
 
-    void MDINavigator::setScrollPos(const V2I& value)
+    void MDIMiniMap::setScrollPos(const V2I& value)
     {
         _p->widget->setScrollPos(value);
     }
 
-    void MDINavigator::setCallback(const std::function<void(const V2I&)>& value)
+    void MDIMiniMap::setCallback(const std::function<void(const V2I&)>& value)
     {
         _p->widget->setCallback(value);
     }
 
-    void MDINavigator::setViewportSize(const Size2I& value)
+    void MDIMiniMap::setViewportSize(const Size2I& value)
     {
         _p->widget->setViewportSize(value);
     }
 
-    void MDINavigator::setGeometry(const Box2I& value)
+    void MDIMiniMap::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
         IWidget::setGeometry(value);
@@ -280,7 +282,7 @@ namespace ftk
         }
     }
 
-    void MDINavigator::sizeHintEvent(const SizeHintEvent& event)
+    void MDIMiniMap::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
         if (!p.size.displayScale.has_value() ||
@@ -291,7 +293,7 @@ namespace ftk
         }
     }
 
-    void MDINavigator::drawEvent(
+    void MDIMiniMap::drawEvent(
         const Box2I& drawRect,
         const DrawEvent& event)
     {

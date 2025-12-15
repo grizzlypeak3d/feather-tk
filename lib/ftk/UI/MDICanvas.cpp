@@ -13,6 +13,7 @@ namespace ftk
         Size2I gridSize = Size2I(20, 20);
         std::vector<std::pair<V2I, std::shared_ptr<MDIWidget> > > newWidgets;
         std::map<std::shared_ptr<IWidget>, Size2I> sizeHints;
+        std::map<std::shared_ptr<IWidget>, Box2I> geometry;
         std::function<void(const std::vector<Box2I>&)> widgetGeometryCallback;
 
         struct SizeData
@@ -252,8 +253,7 @@ namespace ftk
         p.newWidgets.clear();
 
         // Update the child widget geometry.
-        const auto widgetGeometryPrev = _getWidgetGeometry();
-        std::vector<Box2I> widgetGeometry;
+        std::map<std::shared_ptr<IWidget>, Box2I> geometry;
         for (const auto& child : getChildren())
         {
             if (auto mdi = std::dynamic_pointer_cast<MDIWidget>(child))
@@ -305,14 +305,20 @@ namespace ftk
 
                 g = mdi->_addMargins(g);
                 mdi->setGeometry(g);
-                widgetGeometry.push_back(g);
+                geometry[mdi] = g;
             }
         }
 
-        if (p.widgetGeometryCallback && widgetGeometry != widgetGeometryPrev)
+        if (p.widgetGeometryCallback && geometry != p.geometry)
         {
+            std::vector<Box2I> widgetGeometry;
+            for (const auto& i : geometry)
+            {
+                widgetGeometry.push_back(i.second);
+            }
             p.widgetGeometryCallback(widgetGeometry);
         }
+        p.geometry = geometry;
     }
 
     void MDICanvas::childRemoveEvent(const ChildRemoveEvent& event)

@@ -55,7 +55,7 @@ set(HEADERS
     ListWidget.h
     MainWindow.h
     MDICanvas.h
-    MDINavigator.h
+    MDIMiniMap.h
     MDIWidget.h
     Menu.h
     MenuBar.h
@@ -161,7 +161,7 @@ set(SOURCE
     ListItemsWidget.cpp
     ListWidget.cpp
     MDICanvas.cpp
-    MDINavigator.cpp
+    MDIMiniMap.cpp
     MDIWidget.cpp
     MainWindow.cpp
     Menu.cpp

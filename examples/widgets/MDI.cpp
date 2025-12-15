@@ -41,34 +41,34 @@ namespace widgets
                 colorWidget);
         }
 
-        // Create a MDI navigator.
-        _navigator = MDINavigator::create(context);
-        _scrollWidget->setViewportWidget(_navigator);
+        // Create a MDI mini-map.
+        _miniMap = MDIMiniMap::create(context);
+        _scrollWidget->setViewportWidget(_miniMap);
 
         // Setup callbacks.
         _scrollWidget->setScrollSizeCallback(
             [this](const Size2I& value)
             {
-                _navigator->setScrollSize(value);
+                _miniMap->setScrollSize(value);
             });
         _scrollWidget->setScrollPosCallback(
             [this](const V2I& value)
             {
-                _navigator->setScrollPos(value);
+                _miniMap->setScrollPos(value);
             });
         _scrollWidget->setViewportCallback(
             [this](const Box2I& value)
             {
-                _navigator->setViewportSize(value.size());
+                _miniMap->setViewportSize(value.size());
             });
 
         _canvas->setWidgetGeometryCallback(
             [this](const std::vector<Box2I>& value)
             {
-                _navigator->setWidgetGeometry(value);
+                _miniMap->setWidgetGeometry(value);
             });
 
-        _navigator->setCallback(
+        _miniMap->setCallback(
             [this](const V2I& value)
             {
                 _scrollWidget->setScrollPos(value);

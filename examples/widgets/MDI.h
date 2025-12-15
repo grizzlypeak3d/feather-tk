@@ -4,7 +4,7 @@
 #pragma once
 
 #include <ftk/UI/MDICanvas.h>
-#include <ftk/UI/MDINavigator.h>
+#include <ftk/UI/MDIMiniMap.h>
 #include <ftk/UI/ScrollWidget.h>
 
 using namespace ftk;
@@ -29,6 +29,6 @@ namespace widgets
     private:
         std::shared_ptr<ScrollWidget> _scrollWidget;
         std::shared_ptr<MDICanvas> _canvas;
-        std::shared_ptr<MDINavigator> _navigator;
+        std::shared_ptr<MDIMiniMap> _miniMap;
     };
 }
