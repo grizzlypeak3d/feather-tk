@@ -12,9 +12,9 @@ namespace ftk
         Size2I canvasSize = Size2I(500, 500);
         Size2I gridSize = Size2I(20, 20);
         std::vector<std::pair<V2I, std::shared_ptr<MDIWidget> > > newWidgets;
-        std::map<std::shared_ptr<IWidget>, Size2I> sizeHints;
-        std::map<std::shared_ptr<IWidget>, Box2I> geometry;
-        std::function<void(const std::vector<Box2I>&)> widgetGeometryCallback;
+        std::map<std::shared_ptr<IWidget>, Size2I> childSizeHints;
+        std::map<std::shared_ptr<IWidget>, Box2I> childGeometry;
+        std::function<void(const std::vector<Box2I>&)> childGeometryCallback;
 
         struct SizeData
         {
@@ -222,10 +222,10 @@ namespace ftk
         return out;
     }
 
-    void MDICanvas::setWidgetGeometryCallback(
+    void MDICanvas::setChildGeometryCallback(
         const std::function<void(const std::vector<Box2I>&)>& value)
     {
-        _p->widgetGeometryCallback = value;
+        _p->childGeometryCallback = value;
     }
 
     void MDICanvas::setGeometry(const Box2I& value)
@@ -240,7 +240,7 @@ namespace ftk
         for (auto i : p.newWidgets)
         {
             const Size2I& sizeHint = i.second->getSizeHint();
-            p.sizeHints[i.second] = sizeHint;
+            p.childSizeHints[i.second] = sizeHint;
             Box2I g = i.second->_removeMargins(Box2I(i.first, sizeHint));
             const Size2I sizeHintGrid = _snapToGrid(i.second->_removeMargins(sizeHint));
             g = Box2I(
@@ -253,7 +253,7 @@ namespace ftk
         p.newWidgets.clear();
 
         // Update the child widget geometry.
-        std::map<std::shared_ptr<IWidget>, Box2I> geometry;
+        std::map<std::shared_ptr<IWidget>, Box2I> childGeometry;
         for (const auto& child : getChildren())
         {
             if (auto mdi = std::dynamic_pointer_cast<MDIWidget>(child))
@@ -266,10 +266,10 @@ namespace ftk
 
                 // Update the size hint.
                 const Size2I& sizeHint = mdi->getSizeHint();
-                const auto i = p.sizeHints.find(mdi);
-                if (i != p.sizeHints.end() && i->second != sizeHint)
+                const auto i = p.childSizeHints.find(mdi);
+                if (i != p.childSizeHints.end() && i->second != sizeHint)
                 {
-                    p.sizeHints[mdi] = sizeHint;
+                    p.childSizeHints[mdi] = sizeHint;
                     const Size2I sizeHintGrid = _snapToGrid(mdi->_removeMargins(sizeHint));
                     g = Box2I(
                         g.min.x,
@@ -305,30 +305,30 @@ namespace ftk
 
                 g = mdi->_addMargins(g);
                 mdi->setGeometry(g);
-                geometry[mdi] = g;
+                childGeometry[mdi] = g;
             }
         }
 
-        if (p.widgetGeometryCallback && geometry != p.geometry)
+        if (p.childGeometryCallback && childGeometry != p.childGeometry)
         {
-            std::vector<Box2I> widgetGeometry;
-            for (const auto& i : geometry)
+            std::vector<Box2I> childGeometryList;
+            for (const auto& i : childGeometry)
             {
-                widgetGeometry.push_back(i.second);
+                childGeometryList.push_back(i.second);
             }
-            p.widgetGeometryCallback(widgetGeometry);
+            p.childGeometryCallback(childGeometryList);
         }
-        p.geometry = geometry;
+        p.childGeometry = childGeometry;
     }
 
     void MDICanvas::childRemoveEvent(const ChildRemoveEvent& event)
     {
         IMouseWidget::childRemoveEvent(event);
         FTK_P();
-        const auto i = p.sizeHints.find(event.child);
-        if (i != p.sizeHints.end())
+        const auto i = p.childSizeHints.find(event.child);
+        if (i != p.childSizeHints.end())
         {
-            p.sizeHints.erase(i);
+            p.childSizeHints.erase(i);
         }
     }
 
@@ -406,15 +406,5 @@ namespace ftk
         return Size2I(
             ceilf(value.w / static_cast<float>(p.size.gridSize.w)) * p.size.gridSize.w,
             ceilf(value.h / static_cast<float>(p.size.gridSize.h)) * p.size.gridSize.h);
-    }
-
-    std::vector<Box2I> MDICanvas::_getWidgetGeometry() const
-    {
-        std::vector<Box2I> out;
-        for (const auto& child : getChildren())
-        {
-            out.push_back(child->getGeometry());
-        }
-        return out;
     }
 }

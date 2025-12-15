@@ -48,8 +48,8 @@ namespace ftk
             const V2I& pos,
             const std::shared_ptr<IWidget>&);
 
-        //! Set the widget geometry callback.
-        void setWidgetGeometryCallback(
+        //! Set the child geometry callback.
+        void setChildGeometryCallback(
             const std::function<void(const std::vector<Box2I>&)>&);
 
         FTK_API void setGeometry(const Box2I&) override;
@@ -64,8 +64,6 @@ namespace ftk
         int _snapToGridX(int) const;
         int _snapToGridY(int) const;
         Size2I _snapToGrid(const Size2I&) const;
-
-        std::vector<Box2I> _getWidgetGeometry() const;
 
         FTK_PRIVATE();
     };

@@ -26,11 +26,12 @@ namespace ftk
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
-            void setWidgetGeometry(const std::vector<Box2I>&);
             void setScrollSize(const Size2I&);
             void setScrollPos(const V2I&);
             void setViewportSize(const Size2I&);
             void setCallback(const std::function<void(const V2I&)>&);
+            void setChildGeometry(const std::vector<Box2I>&);
+            void setChildColorRole(ColorRole);
 
             void sizeHintEvent(const SizeHintEvent&) override;
             void drawEvent(const Box2I&, const DrawEvent&) override;
@@ -38,12 +39,13 @@ namespace ftk
             void mousePressEvent(MouseClickEvent&) override;
 
         private:
-            std::vector<Box2I> _widgetGeometry;
             Size2I _scrollSize;
             V2I _scrollPos;
             V2I _scrollPosPress;
             Size2I _viewportSize;
             std::function<void(const V2I&)> _callback;
+            std::vector<Box2I> _childGeometry;
+            ColorRole _childColorRole = ColorRole::Cyan;
 
             struct SizeData
             {
@@ -71,14 +73,6 @@ namespace ftk
             auto out = std::shared_ptr<MDIMiniMapWidget>(new MDIMiniMapWidget);
             out->_init(context, parent);
             return out;
-        }
-
-        void MDIMiniMapWidget::setWidgetGeometry(const std::vector<Box2I>& value)
-        {
-            if (value == _widgetGeometry)
-                return;
-            _widgetGeometry = value;
-            setDrawUpdate();
         }
 
         void MDIMiniMapWidget::setScrollSize(const Size2I& value)
@@ -109,6 +103,22 @@ namespace ftk
         void MDIMiniMapWidget::setCallback(const std::function<void(const V2I&)>& value)
         {
             _callback = value;
+        }
+
+        void MDIMiniMapWidget::setChildGeometry(const std::vector<Box2I>& value)
+        {
+            if (value == _childGeometry)
+                return;
+            _childGeometry = value;
+            setDrawUpdate();
+        }
+
+        void MDIMiniMapWidget::setChildColorRole(ColorRole value)
+        {
+            if (value == _childColorRole)
+                return;
+            _childColorRole = value;
+            setDrawUpdate();
         }
 
         void MDIMiniMapWidget::sizeHintEvent(const SizeHintEvent& event)
@@ -146,10 +156,8 @@ namespace ftk
             {
                 const Box2I g2 = margin(g, -_size.border);
 
-                std::cout << _widgetGeometry.front() << std::endl;
-
                 std::vector<Box2I> rects;
-                for (const auto& wg : _widgetGeometry)
+                for (const auto& wg : _childGeometry)
                 {
                     rects.push_back(
                         Box2I(
@@ -160,7 +168,7 @@ namespace ftk
                 }
                 event.render->drawRects(
                     rects,
-                    event.style->getColorRole(ColorRole::Cyan));
+                    event.style->getColorRole(_childColorRole));
 
                 const Box2I viewport(
                     g2.min.x + _scrollPos.x / static_cast<float>(_scrollSize.w) * g2.w(),
@@ -239,11 +247,6 @@ namespace ftk
         return out;
     }
 
-    void MDIMiniMap::setWidgetGeometry(const std::vector<Box2I>& value)
-    {
-        _p->widget->setWidgetGeometry(value);
-    }
-
     void MDIMiniMap::setScrollSize(const Size2I& value)
     {
         _p->widget->setScrollSize(value);
@@ -254,14 +257,24 @@ namespace ftk
         _p->widget->setScrollPos(value);
     }
 
+    void MDIMiniMap::setViewportSize(const Size2I& value)
+    {
+        _p->widget->setViewportSize(value);
+    }
+
     void MDIMiniMap::setCallback(const std::function<void(const V2I&)>& value)
     {
         _p->widget->setCallback(value);
     }
 
-    void MDIMiniMap::setViewportSize(const Size2I& value)
+    void MDIMiniMap::setChildGeometry(const std::vector<Box2I>& value)
     {
-        _p->widget->setViewportSize(value);
+        _p->widget->setChildGeometry(value);
+    }
+    
+    void MDIMiniMap::setChildColorRole(ColorRole value)
+    {
+        _p->widget->setChildColorRole(value);
     }
 
     void MDIMiniMap::setGeometry(const Box2I& value)

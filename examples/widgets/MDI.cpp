@@ -31,7 +31,7 @@ namespace widgets
 
         // Create MDI widgets.
         Random random;
-        for (size_t i = 0; i < 50; ++i)
+        for (size_t i = 0; i < 25; ++i)
         {
             auto colorWidget = ColorWidget::create(context);
             colorWidget->setColor(Color4F(random.getF(), random.getF(), random.getF()));
@@ -62,10 +62,10 @@ namespace widgets
                 _miniMap->setViewportSize(value.size());
             });
 
-        _canvas->setWidgetGeometryCallback(
+        _canvas->setChildGeometryCallback(
             [this](const std::vector<Box2I>& value)
             {
-                _miniMap->setWidgetGeometry(value);
+                _miniMap->setChildGeometry(value);
             });
 
         _miniMap->setCallback(

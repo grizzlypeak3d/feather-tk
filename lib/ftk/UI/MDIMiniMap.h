@@ -28,9 +28,6 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Set the widget geometry.
-        FTK_API void setWidgetGeometry(const std::vector<Box2I>&);
-
         //! Set the scroll size.
         FTK_API void setScrollSize(const Size2I&);
 
@@ -42,6 +39,12 @@ namespace ftk
         
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const V2I&)>&);
+
+        //! Set the child geometry.
+        FTK_API void setChildGeometry(const std::vector<Box2I>&);
+        
+        //! Set the child geometry color role.
+        FTK_API void setChildColorRole(ColorRole);
 
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
