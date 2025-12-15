@@ -55,10 +55,12 @@ set(HEADERS
     ListWidget.h
     MainWindow.h
     MDICanvas.h
+    MDINavigator.h
     MDIWidget.h
     Menu.h
     MenuBar.h
     MessageDialog.h
+    OverlayLayout.h
     PieChart.h
     ProgressDialog.h
     PushButton.h
@@ -159,6 +161,7 @@ set(SOURCE
     ListItemsWidget.cpp
     ListWidget.cpp
     MDICanvas.cpp
+    MDINavigator.cpp
     MDIWidget.cpp
     MainWindow.cpp
     Menu.cpp
@@ -166,6 +169,7 @@ set(SOURCE
     MenuBarButton.cpp
     MenuButton.cpp
     MessageDialog.cpp
+    OverlayLayout.cpp
     PieChart.cpp
     ProgressDialog.cpp
     PushButton.cpp

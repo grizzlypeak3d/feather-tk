@@ -109,6 +109,15 @@ namespace ftk
         setCurrentIndex(index);
     }
 
+    void StackLayout::clear()
+    {
+        auto children = getChildren();
+        for (auto child : children)
+        {
+            child->setParent(nullptr);
+        }
+    }
+
     SizeRole StackLayout::getMarginRole() const
     {
         return _p->marginRole;
@@ -123,15 +132,6 @@ namespace ftk
         p.size.displayScale.reset();
         setSizeUpdate();
         setDrawUpdate();
-    }
-
-    void StackLayout::clear()
-    {
-        auto children = getChildren();
-        for (auto child : children)
-        {
-            child->setParent(nullptr);
-        }
     }
 
     void StackLayout::setGeometry(const Box2I& value)

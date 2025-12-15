@@ -36,9 +36,6 @@ namespace ftk
         //! Set the widget.
         FTK_API void setWidget(const std::shared_ptr<IWidget>&);
 
-        //! Get the viewport geometry.
-        FTK_API Box2I getViewport() const;
-
         //! Get the scroll type.
         FTK_API ScrollType getScrollType() const;
 
@@ -47,6 +44,9 @@ namespace ftk
 
         //! Get the scroll size.
         FTK_API const Size2I& getScrollSize() const;
+
+        //! Set the scroll size callback.
+        FTK_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
 
         //! Get the scroll position.
         FTK_API const V2I& getScrollPos() const;
@@ -107,6 +107,15 @@ namespace ftk
 
         //! Set the size hint role.
         FTK_API void setSizeHintRole(SizeRole);
+
+        //! Get the viewport geometry.
+        FTK_API const Box2I& getViewport() const;
+
+        //! Set the viewport geometry callback.
+        FTK_API void setViewportCallback(const std::function<void(const Box2I&)>&);
+
+        //! Set the viewport widget.
+        FTK_API void setViewportWidget(const std::shared_ptr<IWidget>&);
 
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;

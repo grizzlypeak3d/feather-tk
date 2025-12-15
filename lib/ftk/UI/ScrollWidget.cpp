@@ -5,6 +5,7 @@
 
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/GridLayout.h>
+#include <ftk/UI/OverlayLayout.h>
 #include <ftk/UI/ScrollArea.h>
 #include <ftk/UI/ScrollBar.h>
 
@@ -25,9 +26,13 @@ namespace ftk
         std::shared_ptr<ScrollArea> scrollArea;
         std::shared_ptr<ScrollBar> hScrollBar;
         std::shared_ptr<ScrollBar> vScrollBar;
+        std::shared_ptr<IWidget> viewportWidget;
+        std::shared_ptr<OverlayLayout> viewportLayout;
         std::shared_ptr<GridLayout> layout;
 
+        std::function<void(const Size2I&)> scrollSizeCallback;
         std::function<void(const V2I&)> scrollPosCallback;
+        std::function<void(const Box2I&)> viewportCallback;
 
         struct SizeData
         {
@@ -47,15 +52,17 @@ namespace ftk
         FTK_P();
 
         p.scrollArea = ScrollArea::create(context, scrollType);
-        p.scrollArea->setStretch(Stretch::Expanding);
 
         p.hScrollBar = ScrollBar::create(context, Orientation::Horizontal);
         p.vScrollBar = ScrollBar::create(context, Orientation::Vertical);
 
         p.layout = GridLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::None);
-        p.scrollArea->setParent(p.layout);
-        p.layout->setGridPos(p.scrollArea, 0, 0);
+
+        p.viewportLayout = OverlayLayout::create(context, p.layout);
+        p.viewportLayout->setStretch(Stretch::Expanding);
+        p.scrollArea->setParent(p.viewportLayout);
+        p.layout->setGridPos(p.viewportLayout, 0, 0);
         p.hScrollBar->setParent(p.layout);
         p.layout->setGridPos(p.hScrollBar, 1, 0);
         p.vScrollBar->setParent(p.layout);
@@ -83,6 +90,10 @@ namespace ftk
                 FTK_P();
                 p.hScrollBar->setScrollSize(value.w);
                 p.vScrollBar->setScrollSize(value.h);
+                if (p.scrollSizeCallback)
+                {
+                    p.scrollSizeCallback(value);
+                }
             });
 
         p.scrollArea->setScrollPosCallback(
@@ -94,6 +105,10 @@ namespace ftk
                 if (p.scrollPosCallback)
                 {
                     p.scrollPosCallback(value);
+                }
+                if (p.viewportCallback)
+                {
+                    p.viewportCallback(getViewport());
                 }
             });
     }
@@ -136,11 +151,6 @@ namespace ftk
         setDrawUpdate();
     }
 
-    Box2I ScrollWidget::getViewport() const
-    {
-        return _p->scrollArea->getChildrenClipRect();
-    }
-
     ScrollType ScrollWidget::getScrollType() const
     {
         return _p->scrollArea->getScrollType();
@@ -160,6 +170,11 @@ namespace ftk
     const Size2I& ScrollWidget::getScrollSize() const
     {
         return _p->scrollArea->getScrollSize();
+    }
+
+    void ScrollWidget::setScrollSizeCallback(const std::function<void(const Size2I&)>& value)
+    {
+        _p->scrollSizeCallback = value;
     }
 
     const V2I& ScrollWidget::getScrollPos() const
@@ -281,10 +296,37 @@ namespace ftk
         _p->scrollArea->setSizeHintRole(value);
     }
 
+    const Box2I& ScrollWidget::getViewport() const
+    {
+        return _p->scrollArea->getGeometry();
+    }
+
+    void ScrollWidget::setViewportCallback(const std::function<void(const Box2I&)>& value)
+    {
+        _p->viewportCallback = value;
+    }
+
+    void ScrollWidget::setViewportWidget(const std::shared_ptr<IWidget>& widget)
+    {
+        FTK_P();
+        if (p.viewportWidget)
+        {
+            p.viewportWidget->setParent(nullptr);
+        }
+        p.viewportWidget = widget;
+        if (p.viewportWidget)
+        {
+            p.viewportWidget->setParent(p.viewportLayout);
+        }
+    }
+
     void ScrollWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         FTK_P();
+
+        const Box2I viewportPrev = getViewport();
+
         Box2I g = value;
         if (p.border || p.marginRole != SizeRole::None)
         {
@@ -292,6 +334,12 @@ namespace ftk
         }
         p.layout->setGeometry(g);
         _scrollBarsUpdate();
+
+        const Box2I viewport = getViewport();
+        if (viewport != viewportPrev && p.viewportCallback)
+        {
+            p.viewportCallback(viewport);
+        }
     }
 
     void ScrollWidget::sizeHintEvent(const SizeHintEvent& event)

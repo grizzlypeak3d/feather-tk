@@ -3,13 +3,15 @@
 
 #pragma once
 
+#include <ftk/UI/MDICanvas.h>
+#include <ftk/UI/MDINavigator.h>
 #include <ftk/UI/ScrollWidget.h>
 
 using namespace ftk;
 
 namespace widgets
 {
-    class MDI : public ftk::IWidget
+    class MDI : public IWidget
     {
     protected:
         void _init(const std::shared_ptr<Context>&);
@@ -25,6 +27,8 @@ namespace widgets
         void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
-        std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
+        std::shared_ptr<ScrollWidget> _scrollWidget;
+        std::shared_ptr<MDICanvas> _canvas;
+        std::shared_ptr<MDINavigator> _navigator;
     };
 }

@@ -4,7 +4,6 @@
 #include "MDI.h"
 
 #include <ftk/UI/ColorWidget.h>
-#include <ftk/UI/MDICanvas.h>
 #include <ftk/UI/MDIWidget.h>
 #include <ftk/UI/RowLayout.h>
 
@@ -25,21 +24,55 @@ namespace widgets
         _scrollWidget->setAreaResizable(false);
 
         // Create a MDI canvas.
-        auto canvas = MDICanvas::create(context);
-        canvas->setSize(Size2I(8192, 8192));
-        _scrollWidget->setWidget(canvas);
+        _canvas = MDICanvas::create(context);
+        const Size2I canvasSize(8192, 8192);
+        _canvas->setSize(canvasSize);
+        _scrollWidget->setWidget(_canvas);
 
         // Create MDI widgets.
         Random random;
-        for (size_t i = 0; i < 10; ++i)
+        for (size_t i = 0; i < 50; ++i)
         {
             auto colorWidget = ColorWidget::create(context);
             colorWidget->setColor(Color4F(random.getF(), random.getF(), random.getF()));
-            canvas->addWidget(
+            _canvas->addWidget(
                 Format("Color {0}").arg(i),
-                V2I(random.getI(0, 1600), random.getI(0, 900)),
+                V2I(random.getI(0, canvasSize.w - 200), random.getI(0, canvasSize.h - 200)),
                 colorWidget);
         }
+
+        // Create a MDI navigator.
+        _navigator = MDINavigator::create(context);
+        _scrollWidget->setViewportWidget(_navigator);
+
+        // Setup callbacks.
+        _scrollWidget->setScrollSizeCallback(
+            [this](const Size2I& value)
+            {
+                _navigator->setScrollSize(value);
+            });
+        _scrollWidget->setScrollPosCallback(
+            [this](const V2I& value)
+            {
+                _navigator->setScrollPos(value);
+            });
+        _scrollWidget->setViewportCallback(
+            [this](const Box2I& value)
+            {
+                _navigator->setViewportSize(value.size());
+            });
+
+        _canvas->setWidgetGeometryCallback(
+            [this](const std::vector<Box2I>& value)
+            {
+                _navigator->setWidgetGeometry(value);
+            });
+
+        _navigator->setCallback(
+            [this](const V2I& value)
+            {
+                _scrollWidget->setScrollPos(value);
+            });
     }
 
     MDI::~MDI()

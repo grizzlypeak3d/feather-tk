@@ -55,14 +55,14 @@ namespace ftk
         //! Set the current widget.
         FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 
+        //! Remove all children from the group box.
+        FTK_API void clear();
+
         //! Get the margin role.
         FTK_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
         FTK_API void setMarginRole(SizeRole);
-
-        //! Remove all children from the group box.
-        FTK_API void clear();
 
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API Box2I getChildrenClipRect() const override;

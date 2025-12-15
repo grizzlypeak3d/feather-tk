@@ -23,9 +23,9 @@ namespace ftk
                     py::arg("type") = ScrollType::Both,
                     py::arg("parent") = nullptr)
                 .def_property("widget", &ScrollWidget::getWidget, &ScrollWidget::setWidget)
-                .def_property_readonly("viewport", &ScrollWidget::getViewport)
                 .def_property("scrollType", &ScrollWidget::getScrollType, &ScrollWidget::setScrollType)
                 .def_property_readonly("scrollSize", &ScrollWidget::getScrollSize)
+                .def("setScrollSizeCallback", &ScrollWidget::setScrollSizeCallback)
                 .def_property("scrollPos", &ScrollWidget::getScrollPos, &ScrollWidget::setScrollPos)
                 .def("scrollTo", &ScrollWidget::scrollTo)
                 .def("setScrollPosCallback", &ScrollWidget::setScrollPosCallback)
@@ -33,6 +33,8 @@ namespace ftk
                 .def_property("scrollBarsVisible", &ScrollWidget::areScrollBarsVisible, &ScrollWidget::setScrollBarsVisible)
                 .def_property("scrollBarsAutoHide", &ScrollWidget::getScrollBarsAutoHide, &ScrollWidget::setScrollBarsAutoHide)
                 .def("setScrollEventsEnabled", &ScrollWidget::setScrollEventsEnabled)
+                .def_property_readonly("viewport", &ScrollWidget::getViewport)
+                .def_property_readonly("setViewportCallback", &ScrollWidget::setViewportCallback)
                 .def_property("border", &ScrollWidget::hasBorder, &ScrollWidget::setBorder);
         }
     }

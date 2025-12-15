@@ -13,6 +13,7 @@ namespace ftk
         Size2I gridSize = Size2I(20, 20);
         std::vector<std::pair<V2I, std::shared_ptr<MDIWidget> > > newWidgets;
         std::map<std::shared_ptr<IWidget>, Size2I> sizeHints;
+        std::function<void(const std::vector<Box2I>&)> widgetGeometryCallback;
 
         struct SizeData
         {
@@ -23,7 +24,7 @@ namespace ftk
         struct MouseData
         {
             std::shared_ptr<MDIWidget> widget;
-            Box2I geom;
+            Box2I geometry;
         };
         MouseData mouse;
     };
@@ -104,13 +105,13 @@ namespace ftk
                         {
                             moveToFront(widget);
                             _p->mouse.widget = widget;
-                            _p->mouse.geom = widget->getGeometry();
+                            _p->mouse.geometry = widget->getGeometry();
                         }
                     }
                     else
                     {
                         _p->mouse.widget.reset();
-                        _p->mouse.geom = Box2I();
+                        _p->mouse.geometry = Box2I();
                     }
                 });
             out->setMoveCallback(
@@ -119,7 +120,7 @@ namespace ftk
                     if (auto widget = _p->mouse.widget)
                     {
                         const Box2I& pg = getGeometry();
-                        Box2I g = widget->_removeMargins(_p->mouse.geom);
+                        Box2I g = widget->_removeMargins(_p->mouse.geometry);
                         g = Box2I(
                             clamp(
                                 _snapToGridX(g.min.x - pg.min.x + move.x),
@@ -141,7 +142,7 @@ namespace ftk
                     {
                         const Box2I& pg = getGeometry();
                         const Size2I sizeHintGrid = _snapToGrid(widget->_removeMargins(widget->getSizeHint()));
-                        Box2I g = widget->_removeMargins(_p->mouse.geom);
+                        Box2I g = widget->_removeMargins(_p->mouse.geometry);
                         switch (value)
                         {
                         case MDIResize::North:
@@ -220,6 +221,12 @@ namespace ftk
         return out;
     }
 
+    void MDICanvas::setWidgetGeometryCallback(
+        const std::function<void(const std::vector<Box2I>&)>& value)
+    {
+        _p->widgetGeometryCallback = value;
+    }
+
     void MDICanvas::setGeometry(const Box2I& value)
     {
         V2I offset = value.min - getGeometry().min;
@@ -245,6 +252,8 @@ namespace ftk
         p.newWidgets.clear();
 
         // Update the child widget geometry.
+        const auto widgetGeometryPrev = _getWidgetGeometry();
+        std::vector<Box2I> widgetGeometry;
         for (const auto& child : getChildren())
         {
             if (auto mdi = std::dynamic_pointer_cast<MDIWidget>(child))
@@ -294,8 +303,15 @@ namespace ftk
                         _snapToGridX(pg.max.y + 1 - pg.min.y)) - 1 + pg.min.y;
                 }
 
-                mdi->setGeometry(mdi->_addMargins(g));
+                g = mdi->_addMargins(g);
+                mdi->setGeometry(g);
+                widgetGeometry.push_back(g);
             }
+        }
+
+        if (p.widgetGeometryCallback && widgetGeometry != widgetGeometryPrev)
+        {
+            p.widgetGeometryCallback(widgetGeometry);
         }
     }
 
@@ -384,5 +400,15 @@ namespace ftk
         return Size2I(
             ceilf(value.w / static_cast<float>(p.size.gridSize.w)) * p.size.gridSize.w,
             ceilf(value.h / static_cast<float>(p.size.gridSize.h)) * p.size.gridSize.h);
+    }
+
+    std::vector<Box2I> MDICanvas::_getWidgetGeometry() const
+    {
+        std::vector<Box2I> out;
+        for (const auto& child : getChildren())
+        {
+            out.push_back(child->getGeometry());
+        }
+        return out;
     }
 }
