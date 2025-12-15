@@ -141,27 +141,27 @@ namespace ftk
 
             if (_viewport.scrollSize.isValid())
             {
-                const Box2I g2 = margin(g, -_size.border);
-
                 std::vector<Box2I> rects;
+                const Box2I g2 = margin(g, -_size.border);
+                const float sw = static_cast<float>(_viewport.scrollSize.w);
+                const float sh = static_cast<float>(_viewport.scrollSize.h);
                 for (const auto& wg : _childGeometry)
                 {
-                    rects.push_back(
-                        Box2I(
-                            g2.min.x + (wg.min.x + _viewport.scrollPos.x) / static_cast<float>(_viewport.scrollSize.w) * g2.w(),
-                            g2.min.y + (wg.min.y + _viewport.scrollPos.y) / static_cast<float>(_viewport.scrollSize.h) * g2.h(),
-                            std::ceil(wg.w() / static_cast<float>(_viewport.scrollSize.w) * g2.w()),
-                            std::ceil(wg.h() / static_cast<float>(_viewport.scrollSize.h) * g2.h())));
+                    rects.push_back(Box2I(
+                        g2.min.x + wg.min.x / sw * g2.w(),
+                        g2.min.y + wg.min.y / sh * g2.h(),
+                        std::ceil(wg.w() / sw * g2.w()),
+                        std::ceil(wg.h() / sh * g2.h())));
                 }
                 event.render->drawRects(
                     rects,
                     event.style->getColorRole(_childColorRole));
 
                 const Box2I viewport(
-                    g2.min.x + _viewport.scrollPos.x / static_cast<float>(_viewport.scrollSize.w) * g2.w(),
-                    g2.min.y + _viewport.scrollPos.y / static_cast<float>(_viewport.scrollSize.h) * g2.h(),
-                    std::ceil(_viewport.size.w / static_cast<float>(_viewport.scrollSize.w) * g2.w()),
-                    std::ceil(_viewport.size.h / static_cast<float>(_viewport.scrollSize.h) * g2.h()));
+                    g2.min.x + _viewport.scrollPos.x / sw * g2.w(),
+                    g2.min.y + _viewport.scrollPos.y / sh * g2.h(),
+                    std::ceil(_viewport.size.w / sw * g2.w()),
+                    std::ceil(_viewport.size.h / sh * g2.h()));
                 event.render->drawMesh(
                     border(viewport, _size.border),
                     event.style->getColorRole(ColorRole::Text));

@@ -305,7 +305,7 @@ namespace ftk
 
                 g = mdi->_addMargins(g);
                 mdi->setGeometry(g);
-                childGeometry[mdi] = g;
+                childGeometry[mdi] = Box2I(g.min - pg.min, g.size());
             }
         }
 
