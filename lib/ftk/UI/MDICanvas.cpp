@@ -123,7 +123,8 @@ namespace ftk
                     if (auto widget = _p->mouse.widget)
                     {
                         const Box2I& pg = getGeometry();
-                        Box2I g = widget->_removeMargins(_p->mouse.geometry);
+                        const auto& margins = widget->getMargins();
+                        Box2I g = mdiRemoveMargins(_p->mouse.geometry, margins);
                         g = Box2I(
                             clamp(
                                 _snapToGridX(g.min.x - pg.min.x + move.x),
@@ -135,7 +136,7 @@ namespace ftk
                                 _snapToGridY(pg.max.y + 1 - pg.min.y - g.h())) + pg.min.y,
                             g.w(),
                             g.h());
-                        widget->setGeometry(widget->_addMargins(g));
+                        widget->setGeometry(mdiAddMargins(g, margins));
                     }
                 });
             out->setResizeCallback(
@@ -144,8 +145,9 @@ namespace ftk
                     if (auto widget = _p->mouse.widget)
                     {
                         const Box2I& pg = getGeometry();
-                        const Size2I sizeHintGrid = _snapToGrid(widget->_removeMargins(widget->getSizeHint()));
-                        Box2I g = widget->_removeMargins(_p->mouse.geometry);
+                        const auto& margins = widget->getMargins();
+                        const Size2I sizeHintGrid = _snapToGrid(mdiRemoveMargins(widget->getSizeHint(), margins));
+                        Box2I g = mdiRemoveMargins(_p->mouse.geometry, margins);
                         switch (value)
                         {
                         case MDIResize::North:
@@ -214,7 +216,7 @@ namespace ftk
                             break;
                         default: break;
                         }
-                        widget->setGeometry(widget->_addMargins(g));
+                        widget->setGeometry(mdiAddMargins(g, margins));
                     }
                 });
             p.newWidgets.push_back(std::make_pair(pos, out));
@@ -243,14 +245,15 @@ namespace ftk
         {
             const Size2I& sizeHint = i.second->getSizeHint();
             p.childSizeHints[i.second] = sizeHint;
-            Box2I g = i.second->_removeMargins(Box2I(i.first, sizeHint));
-            const Size2I sizeHintGrid = _snapToGrid(i.second->_removeMargins(sizeHint));
+            const auto& margins = i.second->getMargins();
+            Box2I g = mdiRemoveMargins(Box2I(i.first, sizeHint), margins);
+            const Size2I sizeHintGrid = _snapToGrid(mdiRemoveMargins(sizeHint, margins));
             g = Box2I(
                 _snapToGridX(g.min.x),
                 _snapToGridY(g.min.y),
                 sizeHintGrid.w,
                 sizeHintGrid.h);
-            i.second->setGeometry(i.second->_addMargins(g));
+            i.second->setGeometry(mdiAddMargins(g, margins));
         }
         p.newWidgets.clear();
 
@@ -260,7 +263,8 @@ namespace ftk
         {
             if (auto mdi = std::dynamic_pointer_cast<MDIWidget>(child))
             {
-                Box2I g = mdi->_removeMargins(mdi->getGeometry());
+                const auto& margins = mdi->getMargins();
+                Box2I g = mdiRemoveMargins(mdi->getGeometry(), margins);
 
                 // Add the parent offset.
                 g.min = g.min + offset;
@@ -272,7 +276,7 @@ namespace ftk
                 if (i != p.childSizeHints.end() && i->second != sizeHint)
                 {
                     p.childSizeHints[mdi] = sizeHint;
-                    const Size2I sizeHintGrid = _snapToGrid(mdi->_removeMargins(sizeHint));
+                    const Size2I sizeHintGrid = _snapToGrid(mdiRemoveMargins(sizeHint, margins));
                     g = Box2I(
                         g.min.x,
                         g.min.y,
@@ -286,7 +290,7 @@ namespace ftk
                     g.max.x > pg.max.x ||
                     g.max.y > pg.max.y)
                 {
-                    const Size2I sizeHintGrid = _snapToGrid(mdi->_removeMargins(sizeHint));
+                    const Size2I sizeHintGrid = _snapToGrid(mdiRemoveMargins(sizeHint, margins));
                     g.min.x = clamp(
                         _snapToGridX(g.min.x - pg.min.x),
                         0,
@@ -305,7 +309,7 @@ namespace ftk
                         _snapToGridX(pg.max.y + 1 - pg.min.y)) - 1 + pg.min.y;
                 }
 
-                g = mdi->_addMargins(g);
+                g = mdiAddMargins(g, margins);
                 mdi->setGeometry(g);
                 childGeometry[mdi] = Box2I(g.min - pg.min, g.size());
             }
@@ -374,15 +378,6 @@ namespace ftk
             lines,
             event.style->getColorRole(ColorRole::Border),
             options);
-
-        // Draw the shadows.
-        for (const auto& i : p.childGeometry)
-        {
-            const Box2I g2(g.min + i.second.min, i.second.size());
-            event.render->drawColorMesh(shadow(
-                ftk::margin(g2, p.size.shadow, 0, p.size.shadow, p.size.shadow),
-                p.size.shadow));
-        }
     }
 
     void MDICanvas::mouseMoveEvent(MouseMoveEvent& event)

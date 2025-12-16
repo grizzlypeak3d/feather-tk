@@ -5,9 +5,11 @@
 
 #include <ftk/UI/IMouseWidget.h>
 
+#include <array>
+
 namespace ftk
 {
-    class MDICanvas;
+    //class MDICanvas;
 
     //! \name MDI Widgets
     ///@{
@@ -29,6 +31,18 @@ namespace ftk
         First = North
     };
     FTK_ENUM(MDIResize);
+
+    //! Get a resize box.
+    Box2I getResizeBox(MDIResize, const Box2I&, int handle);
+
+    //! Add margins.
+    Box2I mdiAddMargins(const Box2I&, const std::array<int, 4>&);
+
+    //! Remove margins.
+    Box2I mdiRemoveMargins(const Box2I&, const std::array<int, 4>&);
+
+    //! Remove margins.
+    Size2I mdiRemoveMargins(const Size2I&, const std::array<int, 4>&);
 
     //! MDI widget.
     class FTK_API_TYPE MDIWidget : public IMouseWidget
@@ -71,6 +85,9 @@ namespace ftk
         //! Set the resize callback.
         FTK_API void setResizeCallback(const std::function<void(MDIResize, const V2I&)>&);
 
+        //! Get the margins.
+        std::array<int, 4> getMargins() const;
+
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;
@@ -81,11 +98,11 @@ namespace ftk
         FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
-        Box2I _addMargins(const Box2I&) const;
+        /*Box2I _addMargins(const Box2I&) const;
         Box2I _removeMargins(const Box2I&) const;
         Size2I _removeMargins(const Size2I&) const;
 
-        friend class MDICanvas;
+        friend class MDICanvas;*/
 
         FTK_PRIVATE();
     };
