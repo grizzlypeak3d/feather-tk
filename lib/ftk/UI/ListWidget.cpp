@@ -127,7 +127,7 @@ namespace ftk
     {
         FTK_P();
         const V2I& pos = _p->scrollWidget->getScrollPos();
-        const Size2I vp = _p->scrollWidget->getViewport().size;
+        const Size2I vp = _p->scrollWidget->getScrollInfo().viewport.size();
         const Box2I r = _p->widget->getRect(value);
         if (r.min.y < pos.y || r.max.y > pos.y + vp.h)
         {

@@ -10,15 +10,15 @@ namespace ftk
     //! \name Layouts
     ///@{
 
-    //! Scroll widget viewport information.
-    struct FTK_API_TYPE ScrollViewport
+    //! Scroll widget information.
+    struct FTK_API_TYPE ScrollInfo
     {
-        Size2I size;
+        Box2I  viewport;
         Size2I scrollSize;
         V2I    scrollPos;
-        
-        bool operator == (const ScrollViewport&) const;
-        bool operator != (const ScrollViewport&) const;
+
+        bool operator == (const ScrollInfo&) const;
+        bool operator != (const ScrollInfo&) const;
     };
 
     //! Scroll widget.
@@ -88,6 +88,18 @@ namespace ftk
 
         ///@}
 
+        //! \name Scroll Information
+        ///@{
+
+        //! Get the scroll information.
+        FTK_API ScrollInfo getScrollInfo() const;
+
+        //! Set the scroll information callback.
+        FTK_API void setScrollInfoCallback(
+            const std::function<void(const ScrollInfo&)>&);
+
+        ///@}
+
         //! \name Options
         ///@{
 
@@ -137,13 +149,6 @@ namespace ftk
 
         //! \name Viewport
         ///@{
-
-        //! Get the viewport information.
-        FTK_API ScrollViewport getViewport() const;
-
-        //! Set the viewport callback.
-        FTK_API void setViewportCallback(
-            const std::function<void(const ScrollViewport&)>&);
 
         //! Get the viewport widget.
         FTK_API const std::shared_ptr<IWidget>& getViewportWidget() const;

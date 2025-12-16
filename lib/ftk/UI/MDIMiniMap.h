@@ -28,8 +28,8 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Set the viewport information.
-        FTK_API void setViewport(const ScrollViewport&);
+        //! Set the scroll information.
+        FTK_API void setScrollInfo(const ScrollInfo&);
 
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const V2I&)>&);

@@ -13,15 +13,15 @@
 
 namespace ftk
 {
-    bool ScrollViewport::operator == (const ScrollViewport& other) const
+    bool ScrollInfo::operator == (const ScrollInfo& other) const
     {
         return
-            size == other.size &&
+            viewport == other.viewport &&
             scrollSize == other.scrollSize &&
             scrollPos == other.scrollPos;
     }
 
-    bool ScrollViewport::operator != (const ScrollViewport& other) const
+    bool ScrollInfo::operator != (const ScrollInfo& other) const
     {
         return !(*this == other);
     }
@@ -45,7 +45,7 @@ namespace ftk
 
         std::function<void(const Size2I&)> scrollSizeCallback;
         std::function<void(const V2I&)> scrollPosCallback;
-        std::function<void(const ScrollViewport&)> viewportCallback;
+        std::function<void(const ScrollInfo&)> scrollInfoCallback;
 
         struct SizeData
         {
@@ -107,9 +107,9 @@ namespace ftk
                 {
                     p.scrollSizeCallback(value);
                 }
-                if (p.viewportCallback)
+                if (p.scrollInfoCallback)
                 {
-                    p.viewportCallback(getViewport());
+                    p.scrollInfoCallback(getScrollInfo());
                 }
             });
 
@@ -123,9 +123,9 @@ namespace ftk
                 {
                     p.scrollPosCallback(value);
                 }
-                if (p.viewportCallback)
+                if (p.scrollInfoCallback)
                 {
-                    p.viewportCallback(getViewport());
+                    p.scrollInfoCallback(getScrollInfo());
                 }
             });
     }
@@ -212,6 +212,22 @@ namespace ftk
     void ScrollWidget::setScrollPosCallback(const std::function<void(const V2I&)>& value)
     {
         _p->scrollPosCallback = value;
+    }
+
+    ScrollInfo ScrollWidget::getScrollInfo() const
+    {
+        FTK_P();
+        ScrollInfo out;
+        out.viewport = _p->scrollArea->getGeometry();
+        out.scrollSize = p.scrollArea->getScrollSize();
+        out.scrollPos = p.scrollArea->getScrollPos();
+        return out;
+    }
+
+    void ScrollWidget::setScrollInfoCallback(
+        const std::function<void(const ScrollInfo&)>& value)
+    {
+        _p->scrollInfoCallback = value;
     }
 
     bool ScrollWidget::isAreaResizable() const
@@ -313,22 +329,6 @@ namespace ftk
         setDrawUpdate();
     }
 
-    ScrollViewport ScrollWidget::getViewport() const
-    {
-        FTK_P();
-        ScrollViewport out;
-        out.size = _p->scrollArea->getGeometry().size();
-        out.scrollSize = p.scrollArea->getScrollSize();
-        out.scrollPos = p.scrollArea->getScrollPos();
-        return out;
-    }
-
-    void ScrollWidget::setViewportCallback(
-        const std::function<void(const ScrollViewport&)>& value)
-    {
-        _p->viewportCallback = value;
-    }
-
     const std::shared_ptr<IWidget>& ScrollWidget::getViewportWidget() const
     {
         return _p->viewportWidget;
@@ -353,7 +353,7 @@ namespace ftk
         IWidget::setGeometry(value);
         FTK_P();
 
-        const ScrollViewport viewportPrev = getViewport();
+        const auto scrollInfoPrev = getScrollInfo();
 
         Box2I g = value;
         if (p.border || p.marginRole != SizeRole::None)
@@ -363,10 +363,10 @@ namespace ftk
         p.layout->setGeometry(g);
         _scrollBarsUpdate();
 
-        const ScrollViewport viewport = getViewport();
-        if (viewport != viewportPrev && p.viewportCallback)
+        const auto scrollInfo = getScrollInfo();
+        if (scrollInfo != scrollInfoPrev && p.scrollInfoCallback)
         {
-            p.viewportCallback(viewport);
+            p.scrollInfoCallback(scrollInfo);
         }
     }
 

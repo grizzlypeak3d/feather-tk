@@ -22,7 +22,7 @@ namespace ftk
                     py::init(&MDIMiniMap::create),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
-                .def("setViewport", &MDIMiniMap::setViewport)
+                .def("setScrollInfo", &MDIMiniMap::setScrollInfo)
                 .def("setCallback", &MDIMiniMap::setCallback)
                 .def("setChildGeometry", &MDIMiniMap::setChildGeometry)
                 .def_property("childColorRole", &MDIMiniMap::getChildColorRole, &MDIMiniMap::setChildColorRole);

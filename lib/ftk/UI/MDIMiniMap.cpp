@@ -26,7 +26,7 @@ namespace ftk
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
-            void setViewport(const ScrollViewport&);
+            void setScrollInfo(const ScrollInfo&);
             void setCallback(const std::function<void(const V2I&)>&);
             void setChildGeometry(const std::vector<Box2I>&);
             ColorRole getChildColorRole() const;
@@ -38,7 +38,7 @@ namespace ftk
             void mousePressEvent(MouseClickEvent&) override;
 
         private:
-            ScrollViewport _viewport;
+            ScrollInfo _scrollInfo;
             std::function<void(const V2I&)> _callback;
             std::vector<Box2I> _childGeometry;
             ColorRole _childColorRole = ColorRole::Cyan;
@@ -73,11 +73,11 @@ namespace ftk
             return out;
         }
 
-        void MDIMiniMapWidget::setViewport(const ScrollViewport& value)
+        void MDIMiniMapWidget::setScrollInfo(const ScrollInfo& value)
         {
-            if (value == _viewport)
+            if (value == _scrollInfo)
                 return;
-            _viewport = value;
+            _scrollInfo = value;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -121,9 +121,9 @@ namespace ftk
             }
 
             float aspect = 1.F;
-            if (_viewport.scrollSize.isValid())
+            if (_scrollInfo.scrollSize.isValid())
             {
-                aspect = _viewport.scrollSize.w / static_cast<float>(_viewport.scrollSize.h);
+                aspect = _scrollInfo.scrollSize.w / static_cast<float>(_scrollInfo.scrollSize.h);
             }
             setSizeHint(Size2I(_size.sizeHint * aspect, _size.sizeHint) + _size.border * 2);
         }
@@ -139,12 +139,12 @@ namespace ftk
                 border(g, _size.border),
                 event.style->getColorRole(ColorRole::Border));
 
-            if (_viewport.scrollSize.isValid())
+            if (_scrollInfo.scrollSize.isValid())
             {
                 std::vector<Box2I> rects;
                 const Box2I g2 = margin(g, -_size.border);
-                const float sw = static_cast<float>(_viewport.scrollSize.w);
-                const float sh = static_cast<float>(_viewport.scrollSize.h);
+                const float sw = static_cast<float>(_scrollInfo.scrollSize.w);
+                const float sh = static_cast<float>(_scrollInfo.scrollSize.h);
                 for (const auto& wg : _childGeometry)
                 {
                     rects.push_back(Box2I(
@@ -158,10 +158,10 @@ namespace ftk
                     event.style->getColorRole(_childColorRole));
 
                 const Box2I viewport(
-                    g2.min.x + _viewport.scrollPos.x / sw * g2.w(),
-                    g2.min.y + _viewport.scrollPos.y / sh * g2.h(),
-                    std::ceil(_viewport.size.w / sw * g2.w()),
-                    std::ceil(_viewport.size.h / sh * g2.h()));
+                    g2.min.x + _scrollInfo.scrollPos.x / sw * g2.w(),
+                    g2.min.y + _scrollInfo.scrollPos.y / sh * g2.h(),
+                    std::ceil(_scrollInfo.viewport.size().w / sw * g2.w()),
+                    std::ceil(_scrollInfo.viewport.size().h / sh * g2.h()));
                 event.render->drawMesh(
                     border(viewport, _size.border),
                     event.style->getColorRole(ColorRole::Text));
@@ -171,15 +171,15 @@ namespace ftk
         void MDIMiniMapWidget::mouseMoveEvent(MouseMoveEvent& event)
         {
             IMouseWidget::mouseMoveEvent(event);
-            if (_isMousePressed() && _viewport.scrollSize.isValid() && _callback)
+            if (_isMousePressed() && _scrollInfo.scrollSize.isValid() && _callback)
             {
                 const Box2I& g = getGeometry();
                 const Box2I g2 = margin(g, -_size.border);
                 const V2I& m = _getMousePos();
                 const V2I& mp = _getMousePressPos();
                 const V2I v(
-                    (m.x - mp.x) / static_cast<float>(g2.w()) * _viewport.scrollSize.w,
-                    (m.y - mp.y) / static_cast<float>(g2.h()) * _viewport.scrollSize.h);
+                    (m.x - mp.x) / static_cast<float>(g2.w()) * _scrollInfo.scrollSize.w,
+                    (m.y - mp.y) / static_cast<float>(g2.h()) * _scrollInfo.scrollSize.h);
                 _callback(_scrollPosPress + v);
             }
         }
@@ -187,7 +187,7 @@ namespace ftk
         void MDIMiniMapWidget::mousePressEvent(MouseClickEvent& event)
         {
             IMouseWidget::mousePressEvent(event);
-            _scrollPosPress = _viewport.scrollPos;
+            _scrollPosPress = _scrollInfo.scrollPos;
         }
     }
 
@@ -234,9 +234,9 @@ namespace ftk
         return out;
     }
 
-    void MDIMiniMap::setViewport(const ScrollViewport& value)
+    void MDIMiniMap::setScrollInfo(const ScrollInfo& value)
     {
-        _p->widget->setViewport(value);
+        _p->widget->setScrollInfo(value);
     }
 
     void MDIMiniMap::setCallback(const std::function<void(const V2I&)>& value)

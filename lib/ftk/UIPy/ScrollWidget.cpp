@@ -18,11 +18,11 @@ namespace ftk
     {
         void scrollWidget(py::module_& m)
         {
-            py::class_<ScrollViewport>(m, "ScrollViewport")
+            py::class_<ScrollInfo>(m, "ScrollInfo")
                 .def(py::init<>())
-                .def_readwrite("size", &ScrollViewport::size)
-                .def_readwrite("scrollSize", &ScrollViewport::scrollSize)
-                .def_readwrite("scrollPos", &ScrollViewport::scrollPos)
+                .def_readwrite("viewport", &ScrollInfo::viewport)
+                .def_readwrite("scrollSize", &ScrollInfo::scrollSize)
+                .def_readwrite("scrollPos", &ScrollInfo::scrollPos)
                 .def(py::self == py::self)
                 .def(py::self != py::self);
 
@@ -40,6 +40,8 @@ namespace ftk
                 .def_property_readonly("scrollPos", &ScrollWidget::getScrollPos)
                 .def("setScrollPosCallback", &ScrollWidget::setScrollPosCallback)
                 .def("scrollTo", &ScrollWidget::scrollTo)
+                .def_property_readonly("scrollInfo", &ScrollWidget::getScrollInfo)
+                .def("setScrollInfoCallback", &ScrollWidget::setScrollInfoCallback)
                 .def_property("areaResizable", &ScrollWidget::isAreaResizable, &ScrollWidget::setAreaResizable)
                 .def_property("scrollBarsVisible", &ScrollWidget::areScrollBarsVisible, &ScrollWidget::setScrollBarsVisible)
                 .def_property("scrollBarsAutoHide", &ScrollWidget::getScrollBarsAutoHide, &ScrollWidget::setScrollBarsAutoHide)
@@ -47,8 +49,6 @@ namespace ftk
                 .def_property("border", &ScrollWidget::hasBorder, &ScrollWidget::setBorder)
                 .def_property("sizeHintRole", &ScrollWidget::getSizeHintRole, &ScrollWidget::setSizeHintRole)
                 .def_property("marginRole", &ScrollWidget::getMarginRole, &ScrollWidget::setMarginRole)
-                .def_property_readonly("viewport", &ScrollWidget::getViewport)
-                .def("setViewportCallback", &ScrollWidget::setViewportCallback)
                 .def_property("viewportWidget", &ScrollWidget::getViewportWidget, &ScrollWidget::setViewportWidget);
         }
     }
