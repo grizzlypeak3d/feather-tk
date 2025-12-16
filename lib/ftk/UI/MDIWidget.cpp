@@ -44,14 +44,12 @@ namespace ftk
             std::optional<float> displayScale;
             int border = 0;
             int handle = 0;
-            int shadow = 0;
         };
         SizeData size;
 
         struct DrawData
         {
             Box2I g;
-            TriMesh2F shadow;
             TriMesh2F border;
         };
         std::optional<DrawData> draw;
@@ -176,13 +174,12 @@ namespace ftk
             p.draw.reset();
         }
 
-        const int margin = std::max(p.size.handle, p.size.shadow);
         Box2I g = ftk::margin(
             value,
-            -(margin + p.size.border),
             -(p.size.handle + p.size.border),
-            -(margin + p.size.border),
-            -(margin + p.size.border));
+            -(p.size.handle + p.size.border),
+            -(p.size.handle + p.size.border),
+            -(p.size.handle + p.size.border));
         p.layout->setGeometry(g);
 
         p.mouse.resizeBoxes.clear();
@@ -239,14 +236,12 @@ namespace ftk
             p.size.displayScale = event.displayScale;
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
 
-        const int margin = std::max(p.size.handle, p.size.shadow);
         Size2I sizeHint = p.layout->getSizeHint() + p.size.border * 2;
-        sizeHint.w += margin * 2;
-        sizeHint.h += p.size.handle + margin;
+        sizeHint.w += p.size.handle * 2;
+        sizeHint.h += p.size.handle * 2;
         setSizeHint(sizeHint);
     }
 
@@ -270,15 +265,12 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            const int margin = std::max(p.size.handle, p.size.shadow);
             const Box2I& g = getGeometry();
-            const Box2I g2 = ftk::margin(g, -margin, -p.size.handle, -margin, -margin);
+            const Box2I g2 = ftk::margin(g, -p.size.handle);
             p.draw->g = ftk::margin(g2, -p.size.border);
-            p.draw->shadow = shadow(ftk::margin(g2, p.size.shadow, 0, p.size.shadow, p.size.shadow), p.size.shadow);
             p.draw->border = border(g2, p.size.border);
         }
 
-        event.render->drawColorMesh(p.draw->shadow);
         if (p.mouse.resize != MDIResize::None)
         {
             const auto i = p.mouse.resizeBoxes.find(p.mouse.resize);
@@ -369,21 +361,18 @@ namespace ftk
     Box2I MDIWidget::_addMargins(const Box2I& value) const
     {
         FTK_P();
-        const int margin = std::max(p.size.handle, p.size.shadow);
-        return ftk::margin(value, margin, p.size.handle, margin, margin);
+        return ftk::margin(value, p.size.handle);
     }
 
     Box2I MDIWidget::_removeMargins(const Box2I& value) const
     {
         FTK_P();
-        const int margin = std::max(p.size.handle, p.size.shadow);
-        return ftk::margin(value, -margin, -p.size.handle, -margin, -margin);
+        return ftk::margin(value, -p.size.handle);
     }
 
     Size2I MDIWidget::_removeMargins(const Size2I& value) const
     {
         FTK_P();
-        const int margin = std::max(p.size.handle, p.size.shadow);
-        return Size2I(value.w - margin * 2, value.h - p.size.handle - margin);
+        return Size2I(value.w - p.size.handle * 2, value.h - p.size.handle * 2);
     }
 }

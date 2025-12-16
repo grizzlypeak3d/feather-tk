@@ -45,9 +45,12 @@ miniMap = ftk.MDIMiniMap(context)
 scrollWidget.viewportWidget = miniMap
 
 # Setup callbacks.
-scrollWidget.setScrollInfoCallback(lambda value: miniMap.setScrollInfo(value))
-canvas.setChildGeometryCallback(lambda value: miniMap.setChildGeometry(value))
-miniMap.setCallback(lambda value: scrollWidget.setScrollPos(value))
+scrollWidget.setScrollInfoCallback(
+    lambda value: miniMap.setScrollInfo(value))
+canvas.setChildGeometryCallback(
+    lambda value: miniMap.setChildGeometry(value))
+miniMap.setCallback(
+    lambda value: scrollWidget.setScrollPos(value))
 
 # Run the application.
 app.run()

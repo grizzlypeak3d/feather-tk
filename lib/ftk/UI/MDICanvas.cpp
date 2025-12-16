@@ -3,6 +3,7 @@
 
 #include <ftk/UI/MDICanvas.h>
 
+#include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/MDIWidget.h>
 
 namespace ftk
@@ -19,6 +20,7 @@ namespace ftk
         struct SizeData
         {
             Size2I gridSize;
+            int shadow = 0;
         };
         SizeData size;
 
@@ -337,6 +339,7 @@ namespace ftk
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
         p.size.gridSize = p.gridSize * static_cast<int>(event.displayScale);
+        p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
         setSizeHint(p.canvasSize * static_cast<int>(event.displayScale));
     }
 
@@ -371,6 +374,15 @@ namespace ftk
             lines,
             event.style->getColorRole(ColorRole::Border),
             options);
+
+        // Draw the shadows.
+        for (const auto& i : p.childGeometry)
+        {
+            const Box2I g2(g.min + i.second.min, i.second.size());
+            event.render->drawColorMesh(shadow(
+                ftk::margin(g2, p.size.shadow, 0, p.size.shadow, p.size.shadow),
+                p.size.shadow));
+        }
     }
 
     void MDICanvas::mouseMoveEvent(MouseMoveEvent& event)
