@@ -256,9 +256,12 @@ namespace ftk
         {
             for (const auto& i : p.actionToButton)
             {
-                if (i.first->isEnabled() &&
-                    shortcut == i.first->getShortcut() &&
-                    modifiers == i.first->getShortcutModifiers())
+                const auto& shortcuts = i.first->getShortcuts();
+                const auto j = std::find(
+                    shortcuts.begin(),
+                    shortcuts.end(),
+                    KeyShortcut(shortcut, modifiers));
+                if (i.first->isEnabled() && j != shortcuts.end())
                 {
                     if (i.first->isCheckable())
                     {

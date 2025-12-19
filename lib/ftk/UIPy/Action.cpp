@@ -17,6 +17,12 @@ namespace ftk
     {
         void action(py::module_& m)
         {
+            py::class_<KeyShortcut>(m, "KeyShortcut")
+                .def(py::init<>())
+                .def(py::init<Key, int>(), py::arg("key"), py::arg("modifiers") = -1)
+                .def_readwrite("key", &KeyShortcut::key)
+                .def_readwrite("modifiers", &KeyShortcut::modifiers);
+
             py::class_<Action, std::shared_ptr<Action> >(m, "Action")
                 .def(
                     py::init(py::overload_cast<
@@ -35,24 +41,20 @@ namespace ftk
                 .def(
                     py::init(py::overload_cast<
                         const std::string&,
-                        Key,
-                        int,
+                        const KeyShortcut&,
                         const std::function<void(void)>&>(&Action::create)),
                     py::arg("text"),
                     py::arg("shortcut"),
-                    py::arg("shortcutModifiers"),
                     py::arg("callback"))
                 .def(
                     py::init(py::overload_cast<
                         const std::string&,
                         const std::string&,
-                        Key,
-                        int,
+                        const KeyShortcut&,
                         const std::function<void(void)>&>(&Action::create)),
                     py::arg("text"),
                     py::arg("icon"),
                     py::arg("shortcut"),
-                    py::arg("shortcutModifiers"),
                     py::arg("callback"))
                 .def(
                     py::init(py::overload_cast<
@@ -71,24 +73,20 @@ namespace ftk
                 .def(
                     py::init(py::overload_cast<
                         const std::string&,
-                        Key,
-                        int,
+                        const KeyShortcut&,
                         const std::function<void(bool)>&>(&Action::create)),
                     py::arg("text"),
                     py::arg("shortcut"),
-                    py::arg("shortcutModifiers"),
                     py::arg("checkedCallback"))
                 .def(
                     py::init(py::overload_cast<
                         const std::string&,
                         const std::string&,
-                        Key,
-                        int,
+                        const KeyShortcut&,
                         const std::function<void(bool)>&>(&Action::create)),
                     py::arg("text"),
                     py::arg("icon"),
                     py::arg("shortcut"),
-                    py::arg("shortcutModifiers"),
                     py::arg("checkedCallback"))
                 .def_property("text", &Action::getText, &Action::setText)
                 .def_property_readonly("observeText", &Action::observeText)
@@ -96,8 +94,7 @@ namespace ftk
                 .def_property_readonly("observeIcon", &Action::observeIcon)
                 .def_property("checkedIcon", &Action::getCheckedIcon, &Action::setCheckedIcon)
                 .def_property_readonly("observeCheckedIcon", &Action::observeCheckedIcon)
-                .def_property("shortcut", &Action::getShortcut, &Action::setShortcut)
-                .def_property("shortcutModifiers", &Action::getShortcutModifiers, &Action::setShortcutModifiers)
+                .def_property("shortcuts", &Action::getShortcuts, &Action::setShortcuts)
                 .def("doCallback", &Action::doCallback)
                 .def_property("checkable", &Action::isCheckable, &Action::setCheckable)
                 .def_property("checked", &Action::isChecked, &Action::setChecked)

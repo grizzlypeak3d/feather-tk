@@ -10,6 +10,19 @@ namespace ftk
     //! \name Actions
     ///@{
 
+    //! Keyboard shortcut.
+    struct FTK_API_TYPE KeyShortcut
+    {
+        KeyShortcut() = default;
+        FTK_API KeyShortcut(Key, int modifiers = -1);
+
+        Key key       = Key::Unknown;
+        int modifiers = -1;
+
+        FTK_API bool operator == (const KeyShortcut&) const;
+        FTK_API bool operator != (const KeyShortcut&) const;
+    };
+
     //! Action.
     class FTK_API_TYPE Action : public std::enable_shared_from_this<Action>
     {
@@ -17,8 +30,7 @@ namespace ftk
         void _init(
             const std::string&               text,
             const std::string&               icon,
-            Key                              shortcut,
-            int                              shortcutModifiers,
+            const KeyShortcut&               shortcut,
             const std::function<void(void)>& callback,
             const std::function<void(bool)>& checkedCallback);
 
@@ -41,15 +53,13 @@ namespace ftk
 
         FTK_API static std::shared_ptr<Action> create(
             const std::string&               text,
-            Key                              shortcut,
-            int                              shortcutModifiers,
+            const KeyShortcut&               shortcut,
             const std::function<void(void)>& callback);
 
         FTK_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::string&               icon,
-            Key                              shortcut,
-            int                              shortcutModifiers,
+            const KeyShortcut&               shortcut,
             const std::function<void(void)>& callback);
 
         FTK_API static std::shared_ptr<Action> create(
@@ -63,15 +73,13 @@ namespace ftk
 
         FTK_API static std::shared_ptr<Action> create(
             const std::string&               text,
-            Key                              shortcut,
-            int                              shortcutModifiers,
+            const KeyShortcut&               shortcut,
             const std::function<void(bool)>& checkedCallback);
 
         FTK_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::string&               icon,
-            Key                              shortcut,
-            int                              shortcutModifiers,
+            const KeyShortcut&               shortcut,
             const std::function<void(bool)>& checkedCallback);
 
         ///@}
@@ -100,12 +108,9 @@ namespace ftk
         //! \name Shortcut
         ///@{
 
-        FTK_API Key getShortcut() const;
-        FTK_API int getShortcutModifiers() const;
-        FTK_API std::shared_ptr<IObservable<Key> > observeShortcut() const;
-        FTK_API std::shared_ptr<IObservable<int> > observeShortcutModifiers() const;
-        FTK_API void setShortcut(Key);
-        FTK_API void setShortcutModifiers(int);
+        FTK_API const std::vector<KeyShortcut>& getShortcuts() const;
+        FTK_API std::shared_ptr<IObservableList<KeyShortcut> > observeShortcuts() const;
+        FTK_API void setShortcuts(const std::vector<KeyShortcut>&);
 
         ///@}
 

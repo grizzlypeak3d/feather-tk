@@ -80,8 +80,7 @@ namespace objview
         _actions["File/Open"] = Action::create(
             "Open",
             "FileOpen",
-            Key::O,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::O, static_cast<int>(KeyModifier::Control)),
             [this, appWeak]
             {
                 auto app = appWeak.lock();
@@ -102,8 +101,7 @@ namespace objview
         _actions["File/Close"] = Action::create(
             "Close",
             "FileClose",
-            Key::E,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::E, static_cast<int>(KeyModifier::Control)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -114,9 +112,10 @@ namespace objview
         _actions["File/CloseAll"] = Action::create(
             "Close All",
             "FileCloseAll",
-            Key::E,
-            static_cast<int>(KeyModifier::Shift) |
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(
+                Key::E,
+                    static_cast<int>(KeyModifier::Shift) |
+                    static_cast<int>(KeyModifier::Control)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -126,8 +125,7 @@ namespace objview
 
         _actions["File/Exit"] = Action::create(
             "Exit",
-            Key::Q,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::Q, static_cast<int>(KeyModifier::Control)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -169,8 +167,7 @@ namespace objview
         _actions["Window/FullScreen"] = Action::create(
             "Full Screen",
             "WindowFullScreen",
-            Key::U,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::U, static_cast<int>(KeyModifier::Control)),
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -198,7 +195,6 @@ namespace objview
             "Frame",
             "ViewFrame",
             Key::Backspace,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -215,7 +211,6 @@ namespace objview
             "Zoom In",
             "ViewZoomIn",
             Key::Equals,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -232,7 +227,6 @@ namespace objview
             "Zoom Out",
             "ViewZoomOut",
             Key::Minus,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -249,7 +243,6 @@ namespace objview
             "Orbit Left",
             "ViewLeft",
             Key::Left,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -266,7 +259,6 @@ namespace objview
             "Orbit Right",
             "ViewRight",
             Key::Right,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -283,7 +275,6 @@ namespace objview
             "Orbit Up",
             "ViewUp",
             Key::Up,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -300,7 +291,6 @@ namespace objview
             "Orbit Down",
             "ViewDown",
             Key::Down,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -334,7 +324,6 @@ namespace objview
             _actions[key] = Action::create(
                 label,
                 shortcuts[e],
-                0,
                 [appWeak, e](bool value)
                 {
                     if (auto app = appWeak.lock())

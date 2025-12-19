@@ -67,8 +67,7 @@ namespace imageview
         _actions["File/Open"] = Action::create(
             "Open",
             "FileOpen",
-            Key::O,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::O, static_cast<int>(KeyModifier::Control)),
             [this, appWeak]
             {
                 auto app = appWeak.lock();
@@ -88,8 +87,7 @@ namespace imageview
         _actions["File/Close"] = Action::create(
             "Close",
             "FileClose",
-            Key::E,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::E, static_cast<int>(KeyModifier::Control)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -100,9 +98,10 @@ namespace imageview
         _actions["File/CloseAll"] = Action::create(
             "Close All",
             "FileCloseAll",
-            Key::E,
-            static_cast<int>(KeyModifier::Shift) |
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(
+                Key::E,
+                static_cast<int>(KeyModifier::Shift) |
+                static_cast<int>(KeyModifier::Control)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -112,8 +111,7 @@ namespace imageview
 
         _actions["File/Exit"] = Action::create(
             "Exit",
-            Key::Q,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::Q, static_cast<int>(KeyModifier::Control)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -155,8 +153,7 @@ namespace imageview
         _actions["Window/FullScreen"] = Action::create(
             "Full Screen",
             "WindowFullScreen",
-            Key::U,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::U, static_cast<int>(KeyModifier::Control)),
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -184,7 +181,6 @@ namespace imageview
             "Frame",
             "ViewFrame",
             Key::Backspace,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -198,7 +194,6 @@ namespace imageview
             "Zoom Reset",
             "ViewZoomReset",
             Key::_0,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -212,7 +207,6 @@ namespace imageview
             "Zoom In",
             "ViewZoomIn",
             Key::Equals,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -229,7 +223,6 @@ namespace imageview
             "Zoom Out",
             "ViewZoomOut",
             Key::Minus,
-            0,
             [mainWindowWeak]
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -245,7 +238,6 @@ namespace imageview
         _actions["View/Red"] = Action::create(
             "Red Channel",
             Key::R,
-            0,
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -261,7 +253,6 @@ namespace imageview
         _actions["View/Green"] = Action::create(
             "Green Channel",
             Key::G,
-            0,
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -277,7 +268,6 @@ namespace imageview
         _actions["View/Blue"] = Action::create(
             "Blue Channel",
             Key::B,
-            0,
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())
@@ -293,7 +283,6 @@ namespace imageview
         _actions["View/Alpha"] = Action::create(
             "Alpha Channel",
             Key::A,
-            0,
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())

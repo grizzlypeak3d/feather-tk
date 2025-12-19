@@ -53,15 +53,13 @@ namespace ftk
                 menu->addAction(Action::create(
                     "Action 1",
                     "FileOpen",
-                    Key::O,
-                    static_cast<int>(KeyModifier::Control),
+                    KeyShortcut(Key::O, static_cast<int>(KeyModifier::Control)),
                     [&action1] { action1 = true; }));
                 bool action2 = false;
                 auto action = Action::create(
                     "Action 2",
                     "Mute",
-                    Key::M,
-                    static_cast<int>(KeyModifier::Control),
+                    KeyShortcut(Key::M, static_cast<int>(KeyModifier::Control)),
                     [&action2](bool value) { action2 = value; });
                 menu->addAction(action);
                 menu->setChecked(action, true);
@@ -78,14 +76,12 @@ namespace ftk
                 bool action4 = false;
                 menu->addAction(Action::create(
                     "Action 4",
-                    Key::_4,
-                    static_cast<int>(KeyModifier::Control),
+                    KeyShortcut(Key::_4, static_cast<int>(KeyModifier::Control)),
                     [&action4] { action4 = true; }));
                 bool action5 = false;
                 menu->addAction(Action::create(
                     "Action 5",
-                    Key::_5,
-                    static_cast<int>(KeyModifier::Control),
+                    KeyShortcut(Key::_5, static_cast<int>(KeyModifier::Control)),
                     [&action5](bool value) { action5 = value; }));
                 menuBar->addMenu("Menu 2", menu);
                 app->tick();

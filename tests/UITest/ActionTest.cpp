@@ -42,26 +42,24 @@ namespace ftk
                 FTK_ASSERT("Icon" == a->getIcon());
             }
             {
+                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
                 auto a = Action::create(
                     "Test",
-                    Key::T,
-                    static_cast<int>(KeyModifier::Control),
+                    shortcut,
                     [] {});
                 FTK_ASSERT("Test" == a->getText());
-                FTK_ASSERT(Key::T == a->getShortcut());
-                FTK_ASSERT(static_cast<int>(KeyModifier::Control) == a->getShortcutModifiers());
+                FTK_ASSERT(shortcut == a->getShortcuts().front());
             }
             {
+                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
                 auto a = Action::create(
                     "Test",
                     "Icon",
-                    Key::T,
-                    static_cast<int>(KeyModifier::Control),
+                    shortcut,
                     [] {});
                 FTK_ASSERT("Test" == a->getText());
                 FTK_ASSERT("Icon" == a->getIcon());
-                FTK_ASSERT(Key::T == a->getShortcut());
-                FTK_ASSERT(static_cast<int>(KeyModifier::Control) == a->getShortcutModifiers());
+                FTK_ASSERT(shortcut == a->getShortcuts().front());
             }
             {
                 auto a = Action::create(
@@ -78,26 +76,24 @@ namespace ftk
                 FTK_ASSERT("Icon" == a->getIcon());
             }
             {
+                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
                 auto a = Action::create(
                     "Test",
-                    Key::T,
-                    static_cast<int>(KeyModifier::Control),
+                    shortcut,
                     [](bool) {});
                 FTK_ASSERT("Test" == a->getText());
-                FTK_ASSERT(Key::T == a->getShortcut());
-                FTK_ASSERT(static_cast<int>(KeyModifier::Control) == a->getShortcutModifiers());
+                FTK_ASSERT(shortcut == a->getShortcuts().front());
             }
             {
+                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
                 auto a = Action::create(
                     "Test",
                     "Icon",
-                    Key::T,
-                    static_cast<int>(KeyModifier::Control),
+                    shortcut,
                     [](bool) {});
                 FTK_ASSERT("Test" == a->getText());
                 FTK_ASSERT("Icon" == a->getIcon());
-                FTK_ASSERT(Key::T == a->getShortcut());
-                FTK_ASSERT(static_cast<int>(KeyModifier::Control) == a->getShortcutModifiers());
+                FTK_ASSERT(shortcut == a->getShortcuts().front());
             }
         }
     }

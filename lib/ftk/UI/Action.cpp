@@ -5,13 +5,29 @@
 
 namespace ftk
 {
+    KeyShortcut::KeyShortcut(Key key, int modifiers) :
+        key(key),
+        modifiers(modifiers)
+    {}
+
+    bool KeyShortcut::operator == (const KeyShortcut& other) const
+    {
+        return
+            key == other.key &&
+            modifiers == other.modifiers;
+    }
+
+    bool KeyShortcut::operator != (const KeyShortcut& other) const
+    {
+        return !(*this == other);
+    }
+
     struct Action::Private
     {
         std::shared_ptr<Observable<std::string> > text;
         std::shared_ptr<Observable<std::string> > icon;
         std::shared_ptr<Observable<std::string> > checkedIcon;
-        std::shared_ptr<Observable<Key> > shortcut;
-        std::shared_ptr<Observable<int> > shortcutModifiers;
+        std::shared_ptr<ObservableList<KeyShortcut> > shortcuts;
         std::function<void(void)> callback;
         std::shared_ptr<Observable<bool> > checkable;
         std::shared_ptr<Observable<bool> > checked;
@@ -23,8 +39,7 @@ namespace ftk
     void Action::_init(
         const std::string& text,
         const std::string& icon,
-        Key shortcut,
-        int shortcutModifiers,
+        const KeyShortcut& shortcut,
         const std::function<void(void)>& callback,
         const std::function<void(bool)>& checkedCallback)
     {
@@ -33,8 +48,7 @@ namespace ftk
         p.text = Observable<std::string>::create(text);
         p.icon = Observable<std::string>::create(icon);
         p.checkedIcon = Observable<std::string>::create();
-        p.shortcut = Observable<Key>::create(shortcut);
-        p.shortcutModifiers = Observable<int>::create(shortcutModifiers);
+        p.shortcuts = ObservableList<KeyShortcut>::create({ shortcut });
         p.callback = callback;
         p.checkable = Observable<bool>::create(bool(checkedCallback));
         p.checked = Observable<bool>::create(false);
@@ -58,8 +72,7 @@ namespace ftk
         out->_init(
             text,
             std::string(),
-            Key::Unknown,
-            0,
+            KeyShortcut(),
             callback,
             nullptr);
         return out;
@@ -74,8 +87,7 @@ namespace ftk
         out->_init(
             text,
             icon,
-            Key::Unknown,
-            0,
+            KeyShortcut(),
             callback,
             nullptr);
         return out;
@@ -83,8 +95,7 @@ namespace ftk
 
     std::shared_ptr<Action> Action::create(
         const std::string& text,
-        Key shortcut,
-        int shortcutModifiers,
+        const KeyShortcut& shortcut,
         const std::function<void(void)>& callback)
     {
         auto out = std::shared_ptr<Action>(new Action);
@@ -92,7 +103,6 @@ namespace ftk
             text,
             std::string(),
             shortcut,
-            shortcutModifiers,
             callback,
             nullptr);
         return out;
@@ -101,8 +111,7 @@ namespace ftk
     std::shared_ptr<Action> Action::create(
         const std::string& text,
         const std::string& icon,
-        Key shortcut,
-        int shortcutModifiers,
+        const KeyShortcut& shortcut,
         const std::function<void(void)>& callback)
     {
         auto out = std::shared_ptr<Action>(new Action);
@@ -110,7 +119,6 @@ namespace ftk
             text,
             icon,
             shortcut,
-            shortcutModifiers,
             callback,
             nullptr);
         return out;
@@ -124,8 +132,7 @@ namespace ftk
         out->_init(
             text,
             std::string(),
-            Key::Unknown,
-            0,
+            KeyShortcut(),
             nullptr,
             checkedCallback);
         return out;
@@ -140,8 +147,7 @@ namespace ftk
         out->_init(
             text,
             icon,
-            Key::Unknown,
-            0,
+            KeyShortcut(),
             nullptr,
             checkedCallback);
         return out;
@@ -149,8 +155,7 @@ namespace ftk
 
     std::shared_ptr<Action> Action::create(
         const std::string& text,
-        Key shortcut,
-        int shortcutModifiers,
+        const KeyShortcut& shortcut,
         const std::function<void(bool)>& checkedCallback)
     {
         auto out = std::shared_ptr<Action>(new Action);
@@ -158,7 +163,6 @@ namespace ftk
             text,
             std::string(),
             shortcut,
-            shortcutModifiers,
             nullptr,
             checkedCallback);
         return out;
@@ -167,8 +171,7 @@ namespace ftk
     std::shared_ptr<Action> Action::create(
         const std::string& text,
         const std::string& icon,
-        Key shortcut,
-        int shortcutModifiers,
+        const KeyShortcut& shortcut,
         const std::function<void(bool)>& checkedCallback)
     {
         auto out = std::shared_ptr<Action>(new Action);
@@ -176,7 +179,6 @@ namespace ftk
             text,
             icon,
             shortcut,
-            shortcutModifiers,
             nullptr,
             checkedCallback);
         return out;
@@ -227,34 +229,19 @@ namespace ftk
         _p->checkedIcon->setIfChanged(value);
     }
 
-    Key Action::getShortcut() const
+    const std::vector<KeyShortcut>& Action::getShortcuts() const
     {
-        return _p->shortcut->get();
+        return _p->shortcuts->get();
     }
 
-    int Action::getShortcutModifiers() const
+    std::shared_ptr<IObservableList<KeyShortcut> > Action::observeShortcuts() const
     {
-        return _p->shortcutModifiers->get();
+        return _p->shortcuts;
     }
 
-    std::shared_ptr<IObservable<Key> > Action::observeShortcut() const
+    void Action::setShortcuts(const std::vector<KeyShortcut>& value)
     {
-        return _p->shortcut;
-    }
-
-    std::shared_ptr<IObservable<int> > Action::observeShortcutModifiers() const
-    {
-        return _p->shortcutModifiers;
-    }
-
-    void Action::setShortcut(Key value)
-    {
-        _p->shortcut->setIfChanged(value);
-    }
-
-    void Action::setShortcutModifiers(int value)
-    {
-        _p->shortcutModifiers->setIfChanged(value);
+        _p->shortcuts->setIfChanged(value);
     }
 
     void Action::doCallback()

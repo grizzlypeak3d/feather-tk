@@ -5,6 +5,8 @@
 
 #include <ftk/UI/DrawUtil.h>
 
+#include <ftk/Core/String.h>
+
 #include <optional>
 
 namespace ftk
@@ -12,8 +14,7 @@ namespace ftk
     struct MenuButton::Private
     {
         bool current = false;
-        Key shortcut = Key::Unknown;
-        int shortcutModifiers = 0;
+        std::vector<KeyShortcut> shortcuts;
         std::string shortcutText;
 
         float iconScale = 1.F;
@@ -25,8 +26,7 @@ namespace ftk
         std::shared_ptr<Observer<std::string> > textObserver;
         std::shared_ptr<Observer<std::string> > iconObserver;
         std::shared_ptr<Observer<std::string> > checkedIconObserver;
-        std::shared_ptr<Observer<Key> > shortcutObserver;
-        std::shared_ptr<Observer<int> > shortcutModifiersObserver;
+        std::shared_ptr<ListObserver<KeyShortcut> > shortcutsObserver;
         std::shared_ptr<Observer<bool> > checkableObserver;
         std::shared_ptr<Observer<bool> > checkedObserver;
         std::shared_ptr<Observer<bool> > enabledObserver;
@@ -85,17 +85,11 @@ namespace ftk
                 {
                     setCheckedIcon(value);
                 });
-            p.shortcutObserver = Observer<Key>::create(
-                action->observeShortcut(),
-                [this](Key value)
+            p.shortcutsObserver = ListObserver<KeyShortcut>::create(
+                action->observeShortcuts(),
+                [this](const std::vector<KeyShortcut>& value)
                 {
-                    setShortcut(value, _p->shortcutModifiers);
-                });
-            p.shortcutModifiersObserver = Observer<int>::create(
-                action->observeShortcutModifiers(),
-                [this](int value)
-                {
-                    setShortcut(_p->shortcut, value);
+                    setShortcuts(value);
                 });
             p.checkableObserver = Observer<bool>::create(
                 action->observeCheckable(),
@@ -152,14 +146,18 @@ namespace ftk
         setDrawUpdate();
     }
 
-    void MenuButton::setShortcut(Key key, int modifiers)
+    void MenuButton::setShortcuts(const std::vector<KeyShortcut>& value)
     {
         FTK_P();
-        if (key == p.shortcut && modifiers == p.shortcutModifiers)
+        if (value == p.shortcuts)
             return;
-        p.shortcut = key;
-        p.shortcutModifiers = modifiers;
-        p.shortcutText = getShortcutLabel(p.shortcut, p.shortcutModifiers);
+        p.shortcuts = value;
+        std::vector<std::string> tmp;
+        for (const auto& shortcut : value)
+        {
+            tmp.push_back(getShortcutLabel(shortcut.key, shortcut.modifiers));
+        }
+        p.shortcutText = join(tmp, ", ");
         p.size.displayScale.reset();
         setSizeUpdate();
         setDrawUpdate();

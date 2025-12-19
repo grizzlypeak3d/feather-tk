@@ -28,7 +28,7 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         void setCurrent(bool);
-        void setShortcut(Key, int modifiers = 0);
+        void setShortcuts(const std::vector<KeyShortcut>&);
         void setSubMenuIcon(const std::string&);
 
         void setEnabledCallback(const std::function<void(bool)>&);

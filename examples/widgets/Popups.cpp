@@ -32,15 +32,13 @@ namespace widgets
         menu->addDivider();
         menu->addAction(Action::create(
             "Action 3",
-            Key::_3,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::_3, static_cast<int>(KeyModifier::Control)),
             [] { std::cout << "Action 3" << std::endl; }));
         menu->addDivider();
         menu->addAction(Action::create(
             "Action 4",
             "FileClose",
-            Key::_4,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::_4, static_cast<int>(KeyModifier::Control)),
             [] { std::cout << "Action 4" << std::endl; }));
         menuBar->addMenu("Menu 1", menu);
         menu = Menu::create(context);
@@ -53,14 +51,12 @@ namespace widgets
             [](bool value) { std::cout << "Action 6: " << value << std::endl; }));
         menu->addAction(Action::create(
             "Action 7",
-            Key::_7,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::_7, static_cast<int>(KeyModifier::Control)),
             [](bool value) { std::cout << "Action 7: " << value << std::endl; }));
         menu->addAction(Action::create(
             "Action 8",
             "Prev",
-            Key::_8,
-            static_cast<int>(KeyModifier::Control),
+            KeyShortcut(Key::_8, static_cast<int>(KeyModifier::Control)),
             [](bool value) { std::cout << "Action 8: " << value << std::endl; }));
         menuBar->addMenu("Menu 2", menu);
 
