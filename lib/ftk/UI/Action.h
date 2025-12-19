@@ -14,10 +14,10 @@ namespace ftk
     struct FTK_API_TYPE KeyShortcut
     {
         KeyShortcut() = default;
-        FTK_API KeyShortcut(Key, int modifiers = -1);
+        FTK_API KeyShortcut(Key, int modifiers = 0);
 
         Key key       = Key::Unknown;
-        int modifiers = -1;
+        int modifiers = 0;
 
         FTK_API bool operator == (const KeyShortcut&) const;
         FTK_API bool operator != (const KeyShortcut&) const;
