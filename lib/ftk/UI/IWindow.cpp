@@ -725,7 +725,7 @@ namespace ftk
         }
     }
 
-    void IWindow::_mouseButton(int button, bool press, int modifiers)
+    void IWindow::_mouseButton(MouseButton button, bool press, int modifiers)
     {
         FTK_P();
         _closeTooltip();

@@ -534,7 +534,7 @@ namespace objview
         event.accept = true;
         switch (_mouseButton)
         {
-        case 1:
+        case MouseButton::Left:
         {
             const V2I d = event.pos - event.prev;
             const V2F v(d.x * .25F, d.y * .25F);
@@ -561,7 +561,7 @@ namespace objview
     void ObjView::mouseReleaseEvent(ftk::MouseClickEvent& event)
     {
         event.accept = true;
-        _mouseButton = 0;
+        _mouseButton = MouseButton::None;
     }
 
     ftk::M44F ObjView::_getModelTransform() const

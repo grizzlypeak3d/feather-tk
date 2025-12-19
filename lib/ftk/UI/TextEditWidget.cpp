@@ -30,7 +30,7 @@ namespace ftk
         std::chrono::steady_clock::time_point autoScrollTimer;
         TextEditSelection selection;
         std::shared_ptr<FontSystem> fontSystem;
-        int mousePress = 0;
+        MouseButton mousePress = MouseButton::None;
 
         struct SizeData
         {
@@ -402,7 +402,7 @@ namespace ftk
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
-        if (1 == p.mousePress)
+        if (MouseButton::Left == p.mousePress)
         {
             event.accept = true;
             V2I autoScroll;
@@ -445,7 +445,7 @@ namespace ftk
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
-        if (1 == event.button)
+        if (MouseButton::Left == event.button)
         {
             event.accept = true;
             p.mousePress = event.button;
@@ -461,7 +461,7 @@ namespace ftk
         FTK_P();
         event.accept = true;
         p.autoScroll = V2I();
-        p.mousePress = 0;
+        p.mousePress = MouseButton::None;
     }
 
     void TextEditWidget::keyFocusEvent(bool value)

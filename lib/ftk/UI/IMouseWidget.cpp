@@ -47,12 +47,12 @@ namespace ftk
     void IMouseWidget::mousePressEvent(MouseClickEvent& event)
     {
         const bool button =
-            _mousePressButton != 0 ?
+            _mousePressButton != MouseButton::None ?
             event.button == _mousePressButton :
             true;
         const bool modifiers =
-            _mousePressModifiers != -1 ?
-            event.modifiers == _mousePressModifiers :
+            _mouseModifiers != 0 ?
+            event.modifiers == _mouseModifiers :
             true;
         if (_mousePressEnabled && button && modifiers)
         {
@@ -77,11 +77,14 @@ namespace ftk
         _mouseHoverEnabled = value;
     }
 
-    void IMouseWidget::_setMousePressEnabled(bool value, int button, int modifiers)
+    void IMouseWidget::_setMousePressEnabled(
+        bool value,
+        MouseButton
+        button, int modifiers)
     {
         _mousePressEnabled = value;
         _mousePressButton = button;
-        _mousePressModifiers = modifiers;
+        _mouseModifiers = modifiers;
     }
 
     bool IMouseWidget::_isMouseInside() const

@@ -84,7 +84,7 @@ namespace objview
         RenderSettings _settings;
 
         bool _mouseInside = false;
-        int _mouseButton = 0;
+        ftk::MouseButton _mouseButton = ftk::MouseButton::None;
 
         bool _frameInit = true;
         bool _doRender = true;

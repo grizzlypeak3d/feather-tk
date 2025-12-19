@@ -31,7 +31,10 @@ namespace ftk
 
     protected:
         void _setMouseHoverEnabled(bool);
-        void _setMousePressEnabled(bool, int button = 0, int modifiers = 0);
+        void _setMousePressEnabled(
+            bool,
+            MouseButton = MouseButton::Left,
+            int modifiers = 0);
 
         bool _isMouseInside() const;
         const V2I& _getMousePos() const;
@@ -41,8 +44,8 @@ namespace ftk
     private:
         bool _mouseHoverEnabled = false;
         bool _mousePressEnabled = false;
-        int _mousePressButton = 0;
-        int _mousePressModifiers = 0;
+        MouseButton _mousePressButton = MouseButton::None;
+        int _mouseModifiers = 0;
         bool _mouseInside = false;
         V2I _mousePos;
         bool _mousePress = false;

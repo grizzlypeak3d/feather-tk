@@ -35,8 +35,7 @@ namespace ftk
 
     //! Tick event.
     struct FTK_API_TYPE TickEvent
-    {
-    };
+    {};
 
     //! Size hint event.
     struct FTK_API_TYPE SizeHintEvent
@@ -101,6 +100,21 @@ namespace ftk
         V2I                            dragDropCursorHotspot;
     };
 
+    //! Mouse buttons.
+    enum class FTK_API_TYPE MouseButton
+    {
+        None,
+        Left,
+        Middle,
+        Right,
+        Extra1,
+        Extra2,
+
+        Count,
+        First = None
+    };
+    FTK_ENUM(MouseButton);
+
     //! Keyboard modifiers.
     enum class FTK_API_TYPE KeyModifier
     {
@@ -135,14 +149,14 @@ namespace ftk
     {
         FTK_API MouseClickEvent() = default;
         FTK_API MouseClickEvent(
-            int              button,
-            int              modifiers,
-            const V2I& pos);
+            MouseButton button,
+            int         modifiers,
+            const V2I&  pos);
 
-        int  button    = 0;
-        int  modifiers = 0;
-        V2I  pos;
-        bool accept    = false;
+        MouseButton button    = MouseButton::None;
+        int         modifiers = 0;
+        V2I         pos;
+        bool        accept    = false;
     };
 
     //! Scroll event (mouse wheel or touch pad).

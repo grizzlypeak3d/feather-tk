@@ -418,8 +418,22 @@ namespace ftk
 
     namespace
     {
+        MouseButton fromSDLMouseButton(int value)
+        {
+            MouseButton out = MouseButton::None;
+            switch (value)
+            {
+            case SDL_BUTTON_LEFT:   out = MouseButton::Left;   break;
+            case SDL_BUTTON_MIDDLE: out = MouseButton::Middle; break;
+            case SDL_BUTTON_RIGHT:  out = MouseButton::Right;  break;
+            case SDL_BUTTON_X1:     out = MouseButton::Extra1; break;
+            case SDL_BUTTON_X2:     out = MouseButton::Extra2; break;
+            }
+            return out;
+        }
+
 #if defined(FTK_SDL2)
-        std::string to_string(uint32_t event)
+        std::string fromSDLEvent(uint32_t event)
         {
             std::string out = "Unknown";
             switch (event)
@@ -507,7 +521,7 @@ namespace ftk
             return out;
         }
 #elif defined(FTK_SDL3)
-        std::string to_string(SDL_EventType event)
+        std::string fromSDLEvent(SDL_EventType event)
         {
             std::string out = "Unknown";
             switch (event)
@@ -519,7 +533,7 @@ namespace ftk
 #endif // FTK_SDL2
 
 #if defined(FTK_SDL2)
-        Key fromSDL(int32_t value)
+        Key fromSDLKey(int32_t value)
         {
             Key out = Key::Unknown;
             switch (value)
@@ -654,7 +668,7 @@ namespace ftk
             return out;
         }
 #elif defined(FTK_SDL3)
-        Key fromSDL(SDL_Keycode value)
+        Key fromSDLKey(SDL_Keycode value)
         {
             Key out = Key::Unknown;
             switch (value)
@@ -790,7 +804,7 @@ namespace ftk
         }
 #endif // FTK_SDL2
 
-        int fromSDL(uint16_t value)
+        int fromSDLKeyModifier(uint16_t value)
         {
             int out = 0;
 #if defined(FTK_SDL2)
@@ -1000,9 +1014,9 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_mouseButton(
-                            event.button.button,
+                            fromSDLMouseButton(event.button.button),
                             true,
-                            fromSDL(static_cast<uint16_t>(SDL_GetModState())));
+                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
 
@@ -1014,9 +1028,9 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_mouseButton(
-                            event.button.button,
+                            fromSDLMouseButton(event.button.button),
                             false,
-                            fromSDL(static_cast<uint16_t>(SDL_GetModState())));
+                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
 
@@ -1028,7 +1042,7 @@ namespace ftk
                         window->_scroll(V2F(
                             event.wheel.preciseX * contentScale,
                             event.wheel.preciseY * contentScale),
-                            fromSDL(static_cast<uint16_t>(SDL_GetModState())));
+                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
 #elif defined(FTK_SDL3)
@@ -1039,7 +1053,7 @@ namespace ftk
                         window->_scroll(V2F(
                             event.wheel.x * contentScale,
                             event.wheel.y * contentScale),
-                            fromSDL(static_cast<uint16_t>(SDL_GetModState())));
+                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
 #endif // FTK_SDL2
@@ -1050,9 +1064,9 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_key(
-                            fromSDL(event.key.keysym.sym),
+                            fromSDLKey(event.key.keysym.sym),
                             true,
-                            fromSDL(event.key.keysym.mod));
+                            fromSDLKeyModifier(event.key.keysym.mod));
                     }
                     break;
 #elif defined(FTK_SDL3)
@@ -1060,9 +1074,9 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_key(
-                            fromSDL(event.key.key),
+                            fromSDLKey(event.key.key),
                             true,
-                            fromSDL(event.key.mod));
+                            fromSDLKeyModifier(event.key.mod));
                     }
                     break;
 #endif // FTK_SDL3
@@ -1072,9 +1086,9 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_key(
-                            fromSDL(event.key.keysym.sym),
+                            fromSDLKey(event.key.keysym.sym),
                             false,
-                            fromSDL(event.key.keysym.mod));
+                            fromSDLKeyModifier(event.key.keysym.mod));
                     }
                     break;
 #elif defined(FTK_SDL3)
@@ -1082,9 +1096,9 @@ namespace ftk
                     if (auto window = p.activeWindow.lock())
                     {
                         window->_key(
-                            fromSDL(event.key.key),
+                            fromSDLKey(event.key.key),
                             false,
-                            fromSDL(event.key.mod));
+                            fromSDLKeyModifier(event.key.mod));
                     }
                     break;
 #endif // FTK_SDL2

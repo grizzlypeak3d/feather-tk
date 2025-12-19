@@ -70,6 +70,14 @@ namespace ftk
                 .def_readwrite("dragDropCursor", &MouseMoveEvent::dragDropCursor)
                 .def_readwrite("dragDropCursorHotspot", &MouseMoveEvent::dragDropCursorHotspot);
 
+            py::enum_<MouseButton>(m, "MouseButton")
+                .value("_None", MouseButton::None)
+                .value("Left", MouseButton::Left)
+                .value("Middle", MouseButton::Middle)
+                .value("Right", MouseButton::Right)
+                .value("Extra1", MouseButton::Extra1)
+                .value("Extra2", MouseButton::Extra2);
+
             py::enum_<KeyModifier>(m, "KeyModifier")
                 .value("_None", KeyModifier::None)
                 .value("Shift", KeyModifier::Shift)
@@ -83,7 +91,7 @@ namespace ftk
 
             py::class_<MouseClickEvent>(m, "MouseClickEvent")
                 .def(py::init<>())
-                .def(py::init<int, int, const V2I&>())
+                .def(py::init<MouseButton, int, const V2I&>())
                 .def_readwrite("button", &MouseClickEvent::button)
                 .def_readwrite("modifiers", &MouseClickEvent::modifiers)
                 .def_readwrite("pos", &MouseClickEvent::pos)

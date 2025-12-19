@@ -158,7 +158,7 @@ namespace ftk
         void _text(const std::string&);
         void _cursorEnter(bool enter);
         void _cursorPos(const V2I&);
-        void _mouseButton(int button, bool press, int modifiers);
+        void _mouseButton(MouseButton, bool press, int modifiers);
         void _scroll(const V2F&, int modifiers);
 
         void _clipEventRecursive(

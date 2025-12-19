@@ -57,10 +57,19 @@ namespace ftk
         prev(prev)
     {}
 
+    FTK_ENUM_IMPL(
+        MouseButton,
+        "None",
+        "Left",
+        "Middle",
+        "Right",
+        "Extra 1",
+        "Extra 2");
+
     MouseClickEvent::MouseClickEvent(
-        int        button,
-        int        modifiers,
-        const V2I& pos) :
+        MouseButton button,
+        int         modifiers,
+        const V2I&  pos) :
         button(button),
         modifiers(modifiers),
         pos(pos)
