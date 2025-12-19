@@ -51,7 +51,7 @@ namespace ftk
             event.button == _mousePressButton :
             true;
         const bool modifiers =
-            _mouseModifiers != 0 ?
+            _mouseModifiers != -1 ?
             event.modifiers == _mouseModifiers :
             true;
         if (_mousePressEnabled && button && modifiers)
@@ -79,8 +79,8 @@ namespace ftk
 
     void IMouseWidget::_setMousePressEnabled(
         bool value,
-        MouseButton
-        button, int modifiers)
+        MouseButton button,
+        int modifiers)
     {
         _mousePressEnabled = value;
         _mousePressButton = button;
