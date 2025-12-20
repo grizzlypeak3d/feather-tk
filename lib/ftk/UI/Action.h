@@ -156,5 +156,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
+    FTK_API void to_json(nlohmann::json&, const KeyShortcut&);
+
+    FTK_API void from_json(const nlohmann::json&, KeyShortcut&);
+
     ///@}
 }

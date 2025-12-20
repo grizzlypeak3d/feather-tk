@@ -322,4 +322,16 @@ namespace ftk
     {
         _p->tooltip->setIfChanged(value);
     }
+
+    void to_json(nlohmann::json& json, const KeyShortcut& value)
+    {
+        json["Key"] = to_string(value.key);
+        json["Modifiers"] = value.modifiers;
+    }
+
+    void from_json(const nlohmann::json& json, KeyShortcut& value)
+    {
+        from_string(json.at("Key").get<std::string>(), value.key);
+        json.at("Modifiers").get_to(value.modifiers);
+    }
 }
