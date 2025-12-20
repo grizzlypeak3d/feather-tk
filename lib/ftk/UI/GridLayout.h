@@ -28,6 +28,15 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Get the grid position of the given child.
+        std::pair<int, int> getGridPos(const std::shared_ptr<IWidget>&) const;
+
+        //! Get the grid row of the given child.
+        int getGridRow(const std::shared_ptr<IWidget>&) const;
+
+        //! Get the grid column of the given child.
+        int getGridColumn(const std::shared_ptr<IWidget>&) const;
+
         //! Set a child position within the grid.
         FTK_API void setGridPos(
             const std::shared_ptr<IWidget>& child,

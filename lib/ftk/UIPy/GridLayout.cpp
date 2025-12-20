@@ -21,6 +21,9 @@ namespace ftk
                     py::init(&GridLayout::create),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
+                .def("getGridPos", &GridLayout::getGridPos)
+                .def("getGridRow", &GridLayout::getGridRow)
+                .def("getGridColumn", &GridLayout::getGridColumn)
                 .def(
                     "setGridPos",
                     &GridLayout::setGridPos,

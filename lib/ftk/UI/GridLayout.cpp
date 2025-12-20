@@ -89,6 +89,43 @@ namespace ftk
         return out;
     }
 
+    std::pair<int, int> GridLayout::getGridPos(const std::shared_ptr<IWidget>& widget) const
+    {
+        FTK_P();
+        std::pair<int, int> out(-1, -1);
+        const auto i = p.gridPos.find(widget);
+        if (i != p.gridPos.end())
+        {
+            out.first = i->second.row;
+            out.second = i->second.column;
+        }
+        return out;
+    }
+
+    int GridLayout::getGridRow(const std::shared_ptr<IWidget>& widget) const
+    {
+        FTK_P();
+        int out = -1;
+        const auto i = p.gridPos.find(widget);
+        if (i != p.gridPos.end())
+        {
+            out = i->second.row;
+        }
+        return out;
+    }
+
+    int GridLayout::getGridColumn(const std::shared_ptr<IWidget>& widget) const
+    {
+        FTK_P();
+        int out = -1;
+        const auto i = p.gridPos.find(widget);
+        if (i != p.gridPos.end())
+        {
+            out = i->second.column;
+        }
+        return out;
+    }
+
     void GridLayout::setGridPos(
         const std::shared_ptr<IWidget>& child,
         int row,
