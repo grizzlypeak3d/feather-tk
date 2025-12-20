@@ -12,7 +12,9 @@ set(RESOURCES
     etc/Icons/BellowsClosed.svg
     etc/Icons/BellowsOpen.svg
     etc/Icons/Clear.svg
+    etc/Icons/ClearSmall.svg
     etc/Icons/Close.svg
+    etc/Icons/CloseSmall.svg
     etc/Icons/Copy.svg
     etc/Icons/Cut.svg
     etc/Icons/Decrement.svg

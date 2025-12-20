@@ -27,7 +27,9 @@ namespace ftk_resource
     extern std::vector<uint8_t> BellowsClosed;
     extern std::vector<uint8_t> BellowsOpen;
     extern std::vector<uint8_t> Clear;
+    extern std::vector<uint8_t> ClearSmall;
     extern std::vector<uint8_t> Close;
+    extern std::vector<uint8_t> CloseSmall;
     extern std::vector<uint8_t> Copy;
     extern std::vector<uint8_t> Cut;
     extern std::vector<uint8_t> Decrement;
@@ -142,7 +144,9 @@ namespace ftk
         p.iconData["BellowsClosed"] = ftk_resource::BellowsClosed;
         p.iconData["BellowsOpen"] = ftk_resource::BellowsOpen;
         p.iconData["Clear"] = ftk_resource::Clear;
+        p.iconData["ClearSmall"] = ftk_resource::ClearSmall;
         p.iconData["Close"] = ftk_resource::Close;
+        p.iconData["CloseSmall"] = ftk_resource::CloseSmall;
         p.iconData["Copy"] = ftk_resource::Copy;
         p.iconData["Cut"] = ftk_resource::Cut;
         p.iconData["Decrement"] = ftk_resource::Decrement;
