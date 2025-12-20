@@ -23,6 +23,7 @@ namespace ftk
                 .value("Message", LogType::Message)
                 .value("Warning", LogType::Warning)
                 .value("Error", LogType::Error);
+            FTK_ENUM_BIND(m, LogType);
                 
             py::class_<LogItem>(m, "LogItem")
                 .def(py::init<>())
@@ -30,14 +31,10 @@ namespace ftk
                 .def_readwrite("prefix", &LogItem::prefix)
                 .def_readwrite("message", &LogItem::message)
                 .def_readwrite("type", &LogItem::type)
-                .def(
-                    "toString",
-                    [](LogItem& self)
-                    {
-                        return toString(self);
-                    })
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("getLabel", [](LogType value) { return getLabel(value); });
 
             observableList<LogItem>(m, "LogItem");
 

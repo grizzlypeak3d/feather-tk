@@ -4,12 +4,21 @@
 #include <ftk/Core/LogSystem.h>
 
 #include <ftk/Core/Context.h>
+#include <ftk/Core/Error.h>
+#include <ftk/Core/String.h>
 
+#include <array>
 #include <mutex>
 #include <sstream>
 
 namespace ftk
 {
+    FTK_ENUM_IMPL(
+        LogType,
+        "Message",
+        "Warning",
+        "Error");
+
     bool LogItem::operator == (const LogItem& other) const
     {
         return
@@ -24,12 +33,15 @@ namespace ftk
         return !(*this == other);
     }
 
-    std::string toString(const LogItem& item)
+    std::string getLabel(const LogItem& item, bool brief)
     {
         std::stringstream ss;
-        ss.precision(2);
-        ss << std::fixed << item.time << " ";
-        ss << item.prefix << ": ";
+        if (!brief)
+        {
+            ss.precision(2);
+            ss << std::fixed << item.time << " ";
+            ss << item.prefix << ": ";
+        }
         switch (item.type)
         {
         case LogType::Message:

@@ -277,7 +277,7 @@ namespace ftk
         {
             for (const auto& item : value)
             {
-                std::cout << "LOG: " << toString(item) << std::endl;
+                std::cout << "LOG: " << getLabel(item) << std::endl;
             }
         }
     }

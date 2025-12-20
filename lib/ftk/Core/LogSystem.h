@@ -18,9 +18,13 @@ namespace ftk
     {
         Message,
         Warning,
-        Error
+        Error,
+
+        Count,
+        First = Message
     };
-        
+    FTK_ENUM(LogType);
+
     //! Log item.
     struct FTK_API_TYPE LogItem
     {
@@ -33,8 +37,8 @@ namespace ftk
         bool operator != (const LogItem&) const;
     };
 
-    //! Convert a log item to a string.
-    FTK_API std::string toString(const LogItem&);
+    //! Get a log item label.
+    FTK_API std::string getLabel(const LogItem&, bool brief = false);
         
     //! Log system.
     class FTK_API_TYPE LogSystem : public ISystem
