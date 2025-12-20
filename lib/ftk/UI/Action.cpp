@@ -3,6 +3,10 @@
 
 #include <ftk/UI/Action.h>
 
+#include <ftk/Core/String.h>
+
+#include <sstream>
+
 namespace ftk
 {
     KeyShortcut::KeyShortcut(Key key, int modifiers) :
@@ -321,6 +325,27 @@ namespace ftk
     void Action::setTooltip(const std::string& value)
     {
         _p->tooltip->setIfChanged(value);
+    }
+
+    FTK_API std::string to_string(const KeyShortcut& value)
+    {
+        std::stringstream ss;
+        ss << value.key;
+        ss << value.modifiers;
+        return ss.str();
+    }
+
+    FTK_API bool from_string(const std::string& s, KeyShortcut& value)
+    {
+        bool out = false;
+        const auto pieces = split(s, ' ');
+        if (2 == pieces.size())
+        {
+            from_string(pieces[0], value.key);
+            value.modifiers = std::atoi(pieces[1].c_str());
+            out = true;
+        }
+        return out;
     }
 
     void to_json(nlohmann::json& json, const KeyShortcut& value)

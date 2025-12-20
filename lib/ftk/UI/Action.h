@@ -156,6 +156,10 @@ namespace ftk
         FTK_PRIVATE();
     };
 
+    FTK_API std::string to_string(const KeyShortcut&);
+
+    FTK_API bool from_string(const std::string&, KeyShortcut&);
+
     FTK_API void to_json(nlohmann::json&, const KeyShortcut&);
 
     FTK_API void from_json(const nlohmann::json&, KeyShortcut&);
