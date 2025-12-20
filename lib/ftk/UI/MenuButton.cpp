@@ -155,7 +155,10 @@ namespace ftk
         std::vector<std::string> tmp;
         for (const auto& shortcut : value)
         {
-            tmp.push_back(getShortcutLabel(shortcut.key, shortcut.modifiers));
+            if (shortcut.key != Key::Unknown)
+            {
+                tmp.push_back(getShortcutLabel(shortcut.key, shortcut.modifiers));
+            }
         }
         p.shortcutText = join(tmp, ", ");
         p.size.displayScale.reset();
