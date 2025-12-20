@@ -66,7 +66,7 @@ namespace ftk
     };
 
     LogSystem::LogSystem(const std::shared_ptr<Context>& context) :
-        ISystem(context, "ftk::LogSystem"),
+        IBaseSystem(context, "ftk::LogSystem"),
         _p(new Private)
     {
         FTK_P();

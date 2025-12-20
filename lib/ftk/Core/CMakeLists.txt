@@ -14,14 +14,16 @@ set(HEADERS
     Export.h
     FileIO.h
     FileIOInline.h
+    FileLogSystem.h
     FontSystem.h
     FontSystemInline.h
     Format.h
     FormatInline.h
     IApp.h
+    IBaseSystem.h
+    IBaseSystemInline.h
     IRender.h
     ISystem.h
-    ISystemInline.h
     ImageIO.h
     Image.h
     ImageInline.h
@@ -74,9 +76,11 @@ set(SOURCE
     Context.cpp
     Error.cpp
     FileIO.cpp
+    FileLogSystem.cpp
     FontSystem.cpp
     Format.cpp
     IApp.cpp
+    IBaseSystem.cpp
     IRender.cpp
     ISystem.cpp
     ImageIO.cpp

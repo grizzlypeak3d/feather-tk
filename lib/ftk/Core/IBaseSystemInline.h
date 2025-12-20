@@ -3,12 +3,12 @@
 
 namespace ftk
 {
-    inline std::shared_ptr<Context> ISystem::getContext() const
+    inline std::shared_ptr<Context> IBaseSystem::getContext() const
     {
         return _context.lock();
     }
 
-    inline const std::string& ISystem::getName() const
+    inline const std::string& IBaseSystem::getName() const
     {
         return _name;
     }

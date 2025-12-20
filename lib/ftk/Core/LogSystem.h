@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <ftk/Core/ISystem.h>
+#include <ftk/Core/IBaseSystem.h>
 #include <ftk/Core/ObservableList.h>
 
 #include <chrono>
@@ -41,7 +41,7 @@ namespace ftk
     FTK_API std::string getLabel(const LogItem&, bool brief = false);
         
     //! Log system.
-    class FTK_API_TYPE LogSystem : public ISystem
+    class FTK_API_TYPE LogSystem : public IBaseSystem
     {
     protected:
         LogSystem(const std::shared_ptr<Context>&);

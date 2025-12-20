@@ -38,7 +38,7 @@ namespace ftk
 
             observableList<LogItem>(m, "LogItem");
 
-            py::class_<LogSystem, ISystem, std::shared_ptr<LogSystem> >(m, "LogSystem")
+            py::class_<LogSystem, IBaseSystem, std::shared_ptr<LogSystem> >(m, "LogSystem")
                 .def(
                     py::init(&LogSystem::create),
                     py::arg("context"))

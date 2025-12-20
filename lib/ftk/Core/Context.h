@@ -12,7 +12,7 @@
 
 namespace ftk
 {
-    class ISystem;
+    class IBaseSystem;
 
     //! The context provides centralized access to systems and other
     //! resources.
@@ -32,17 +32,17 @@ namespace ftk
         FTK_API static std::shared_ptr<Context> create();
 
         //! Add a system.
-        FTK_API void addSystem(const std::shared_ptr<ISystem>&);
+        FTK_API void addSystem(const std::shared_ptr<IBaseSystem>&);
 
         //! Get the systems.
-        FTK_API const std::list<std::shared_ptr<ISystem> >& getSystems() const;
+        FTK_API const std::list<std::shared_ptr<IBaseSystem> >& getSystems() const;
 
         //! Get a system by type.
         template<typename T>
         std::shared_ptr<T> getSystem() const;
 
         //! Get a system by name.
-        FTK_API std::shared_ptr<ISystem> getSystemByName(const std::string&) const;
+        FTK_API std::shared_ptr<IBaseSystem> getSystemByName(const std::string&) const;
 
         //! Get the log system.
         const std::shared_ptr<LogSystem>& getLogSystem() const;
@@ -58,8 +58,8 @@ namespace ftk
 
     private:
         std::shared_ptr<LogSystem> _logSystem;
-        std::list<std::shared_ptr<ISystem> > _systems;
-        std::map<std::shared_ptr<ISystem>, std::chrono::steady_clock::time_point> _systemTimes;
+        std::list<std::shared_ptr<IBaseSystem> > _systems;
+        std::map<std::shared_ptr<IBaseSystem>, std::chrono::steady_clock::time_point> _systemTimes;
     };
 }
 

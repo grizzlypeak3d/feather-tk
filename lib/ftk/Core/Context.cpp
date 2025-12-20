@@ -47,20 +47,20 @@ namespace ftk
         return out;
     }
 
-    void Context::addSystem(const std::shared_ptr<ISystem>& system)
+    void Context::addSystem(const std::shared_ptr<IBaseSystem>& system)
     {
         _systems.push_front(system);
         _systemTimes[system] = std::chrono::steady_clock::now();
     }
 
-    const std::list<std::shared_ptr<ISystem> >& Context::getSystems() const
+    const std::list<std::shared_ptr<IBaseSystem> >& Context::getSystems() const
     {
         return _systems;
     }
 
-    std::shared_ptr<ISystem> Context::getSystemByName(const std::string& name) const
+    std::shared_ptr<IBaseSystem> Context::getSystemByName(const std::string& name) const
     {
-        std::shared_ptr<ISystem> out;
+        std::shared_ptr<IBaseSystem> out;
         for (const auto& system : _systems)
         {
             if (name == system->getName())

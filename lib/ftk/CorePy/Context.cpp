@@ -4,7 +4,7 @@
 #include <ftk/CorePy/Bindings.h>
 
 #include <ftk/Core/Context.h>
-#include <ftk/Core/ISystem.h>
+#include <ftk/Core/IBaseSystem.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
