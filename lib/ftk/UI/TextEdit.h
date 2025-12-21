@@ -24,7 +24,7 @@ namespace ftk
         
     //! Text edit widget.
     //! 
-    //! \todo Double-click to select.
+    //! \todo Double-click to select text.
     class FTK_API_TYPE TextEdit : public IWidget
     {
     protected:

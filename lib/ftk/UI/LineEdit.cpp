@@ -6,8 +6,8 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/ClipboardSystem.h>
 #include <ftk/UI/DrawUtil.h>
-#include <ftk/UI/IWindow.h>
 #include <ftk/UI/LayoutUtil.h>
+#include <ftk/UI/LineEditModel.h>
 
 #include <ftk/Core/RenderUtil.h>
 
@@ -15,100 +15,26 @@
 
 namespace ftk
 {
-    namespace
-    {
-        typedef std::pair<int, int> SelectionPair;
-
-        class Selection
-        {
-        public:
-            const SelectionPair& get() const;
-            SelectionPair getSorted() const;
-            bool isValid() const;
-            void set(const SelectionPair&);
-            void setFirst(int);
-            void setSecond(int);
-
-            void select(const SelectionPair&);
-            void select(int first, int second);
-            void clear();
-
-        private:
-            SelectionPair _pair = std::make_pair(-1, -1);
-        };
-
-        const SelectionPair& Selection::get() const
-        {
-            return _pair;
-        }
-
-        SelectionPair Selection::getSorted() const
-        {
-            return std::make_pair(
-                std::min(_pair.first, _pair.second),
-                std::max(_pair.first, _pair.second));
-        }
-
-        bool Selection::isValid() const
-        {
-            return
-                _pair.first != -1 &&
-                _pair.second != -1 &&
-                _pair.first != _pair.second;
-        }
-
-        void Selection::set(const SelectionPair& value)
-        {
-            _pair = value;
-        }
-
-        void Selection::setFirst(int value)
-        {
-            _pair.first = value;
-        }
-
-        void Selection::setSecond(int value)
-        {
-            _pair.second = value;
-        }
-
-        void Selection::select(const SelectionPair& value)
-        {
-            if (-1 == _pair.first)
-            {
-                _pair.first = value.first;
-                _pair.second = value.second;
-            }
-            else
-            {
-                _pair.second = value.second;
-            }
-        }
-
-        void Selection::select(int first, int second)
-        {
-            select(SelectionPair(first, second));
-        }
-
-        void Selection::clear()
-        {
-            _pair = std::make_pair(-1, -1);
-        }
-    }
-
     struct LineEdit::Private
     {
-        std::string text;
+        std::shared_ptr<LineEditModel> model;
+        std::shared_ptr<FontSystem> fontSystem;
         std::function<void(const std::string&)> textCallback;
+        bool textCallbackOnFocusLost = true;
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = "                    ";
         std::function<void(bool)> focusCallback;
         FontRole fontRole = FontRole::Label;
         ColorRole borderRole = ColorRole::Border;
-        int cursorPos = 0;
+        std::vector<Box2I> glyphBoxes;
+        int cursorStart = -1;
         bool cursorVisible = false;
         std::chrono::steady_clock::time_point cursorTimer;
-        Selection selection;
+        int scroll = 0;
+
+        std::shared_ptr<Observer<std::string> > textObserver;
+        std::shared_ptr<Observer<int> > cursorObserver;
+        std::shared_ptr<Observer<LineEditSelection> > selectionObserver;
 
         struct SizeData
         {
@@ -130,28 +56,66 @@ namespace ftk
             TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
-            std::vector<Box2I> glyphsBox;
         };
         std::optional<DrawData> draw;
     };
 
     void LineEdit::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<LineEditModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
         IMouseWidget::_init(context, "ftk::LineEdit", parent);
         FTK_P();
+
         setHAlign(HAlign::Fill);
         setAcceptsKeyFocus(true);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
-        _textUpdate();
+
+        p.model = model;
+        if (!p.model)
+        {
+            p.model = LineEditModel::create(context);
+        }
+
+        p.fontSystem = context->getSystem<FontSystem>();
+
+        p.textObserver = Observer<std::string>::create(
+            p.model->observeText(),
+            [this](const std::string& text)
+            {
+                FTK_P();
+                p.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
+                p.size.displayScale.reset();
+                setSizeUpdate();
+                setDrawUpdate();
+            });
+
+        p.cursorObserver = Observer<int>::create(
+            p.model->observeCursor(),
+            [this](int index)
+            {
+                if (hasKeyFocus())
+                {
+                    _p->cursorVisible = true;
+                    _p->cursorTimer = std::chrono::steady_clock::now();
+                    setDrawUpdate();
+                }
+                _scrollUpdate(index);
+            });
+
+        p.selectionObserver = Observer<LineEditSelection>::create(
+            p.model->observeSelection(),
+            [this](const LineEditSelection&)
+            {
+                setDrawUpdate();
+            });
     }
 
     LineEdit::LineEdit() :
         _p(new Private)
-    {
-  }
+    {}
 
     LineEdit::~LineEdit()
     {}
@@ -161,33 +125,48 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<LineEdit>(new LineEdit);
-        out->_init(context, parent);
+        out->_init(context, nullptr, parent);
+        return out;
+    }
+
+    std::shared_ptr<LineEdit> LineEdit::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<LineEditModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<LineEdit>(new LineEdit);
+        out->_init(context, model, parent);
         return out;
     }
 
     const std::string& LineEdit::getText() const
     {
-        return _p->text;
+        return _p->model->getText();
     }
 
     void LineEdit::setText(const std::string& value)
     {
-        FTK_P();
-        if (value == p.text)
-            return;
-        p.text = value;
-        p.cursorPos = p.text.size();
-        _textUpdate();
+        _p->model->setText(value);
     }
 
     void LineEdit::clearText()
     {
-        setText(std::string());
+        _p->model->clearText();
     }
 
     void LineEdit::setTextCallback(const std::function<void(const std::string&)>& value)
     {
         _p->textCallback = value;
+    }
+
+    bool LineEdit::hasTextCallbackOnFocusLost() const
+    {
+        return _p->textCallbackOnFocusLost;
+    }
+
+    void LineEdit::setTextCallbackOnFocusLost(bool value)
+    {
+        _p->textCallbackOnFocusLost = value;
     }
 
     void LineEdit::setTextChangedCallback(const std::function<void(const std::string&)>& value)
@@ -206,7 +185,9 @@ namespace ftk
         if (value == p.format)
             return;
         p.format = value;
-        _textUpdate();
+        p.size.displayScale.reset();
+        setSizeUpdate();
+        setDrawUpdate();
     }
 
     void LineEdit::setFocusCallback(const std::function<void(bool)>& value)
@@ -216,24 +197,12 @@ namespace ftk
 
     void LineEdit::selectAll()
     {
-        FTK_P();
-        const SelectionPair select(0, static_cast<int>(p.text.size()));
-        if (select != p.selection.get())
-        {
-            p.selection.clear();
-            p.selection.select(select);
-            setDrawUpdate();
-        }
+        _p->model->selectAll();
     }
 
-    void LineEdit::selectNone()
+    void LineEdit::clearSelection()
     {
-        FTK_P();
-        if (p.selection.isValid())
-        {
-            p.selection.clear();
-            setDrawUpdate();
-        }
+        _p->model->clearSelection();
     }
 
     FontRole LineEdit::getFontRole() const
@@ -317,17 +286,12 @@ namespace ftk
         {
             const auto now = std::chrono::steady_clock::now();
             const std::chrono::duration<float> diff = now - p.cursorTimer;
-            if (diff.count() > .5F)
+            if (diff.count() > .7F)
             {
                 p.cursorVisible = !p.cursorVisible;
                 setDrawUpdate();
                 p.cursorTimer = now;
             }
-        }
-        else if (p.cursorVisible)
-        {
-            p.cursorVisible = false;
-            setDrawUpdate();
         }
     }
 
@@ -345,7 +309,7 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
-            p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
+            p.size.textSize = event.fontSystem->getSize(p.model->getText(), p.size.fontInfo);
             p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
             p.draw.reset();
         }
@@ -409,26 +373,29 @@ namespace ftk
         event.render->setClipRect(intersect(p.draw->g2, drawRect));
 
         // Draw the selection.
-        if (p.selection.isValid())
+        const std::string& text = p.model->getText();
+        const LineEditSelection& selection = p.model->getSelection();
+        if (selection.isValid())
         {
-            const auto selection = p.selection.getSorted();
-            const std::string text0 = p.text.substr(0, selection.first);
+            const std::string text0 = text.substr(0, selection.min());
             const int x0 = event.fontSystem->getSize(text0, p.size.fontInfo).w;
-            const std::string text1 = p.text.substr(0, selection.second);
+            const std::string text1 = text.substr(0, selection.max());
             const int x1 = event.fontSystem->getSize(text1, p.size.fontInfo).w;
             event.render->drawRect(
-                Box2I(p.draw->g3.x() + x0, p.draw->g3.y(), x1 - x0 + 1, p.draw->g3.h()),
+                Box2I(p.draw->g3.x() - p.scroll + x0,
+                    p.draw->g3.y(),
+                    x1 - x0 + 1,
+                    p.draw->g3.h()),
                 event.style->getColorRole(ColorRole::Checked));
         }
 
         // Draw the text.
         const V2I pos(
-            p.draw->g3.x(),
+            p.draw->g3.x() - p.scroll,
             p.draw->g3.y() + p.draw->g3.h() / 2 - p.size.fontMetrics.lineHeight / 2);
-        if (!p.text.empty() && p.draw->glyphs.empty())
+        if (!text.empty() && p.draw->glyphs.empty())
         {
-            p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
-            p.draw->glyphsBox = event.fontSystem->getBoxes(p.text, p.size.fontInfo);
+            p.draw->glyphs = event.fontSystem->getGlyphs(text, p.size.fontInfo);
         }
         event.render->drawText(
             p.draw->glyphs,
@@ -441,11 +408,9 @@ namespace ftk
         // Draw the cursor.
         if (p.cursorVisible)
         {
-            const std::string text = p.text.substr(0, p.cursorPos);
-            const int x = event.fontSystem->getSize(text, p.size.fontInfo).w;
             event.render->drawRect(
                 Box2I(
-                    p.draw->g3.x() + x,
+                    p.draw->g3.x() - p.scroll + _toPos(p.model->getCursor()),
                     p.draw->g3.y(),
                     p.size.border,
                     p.draw->g3.h()),
@@ -457,21 +422,11 @@ namespace ftk
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
-        if (_isMousePressed())
+        if (_isMousePressed() && p.draw.has_value())
         {
-            const int cursorPos = _getCursorPos(event.pos);
-            if (cursorPos != p.cursorPos)
-            {
-                p.cursorPos = cursorPos;
-                p.cursorVisible = true;
-                p.cursorTimer = std::chrono::steady_clock::now();
-                setDrawUpdate();
-            }
-            if (cursorPos != p.selection.get().second)
-            {
-                p.selection.setSecond(cursorPos);
-                setDrawUpdate();
-            }
+            const int cursor = _toCursor(event.pos.x - p.draw->g3.min.x + p.scroll);
+            p.model->setCursor(cursor);
+            p.model->setSelection(LineEditSelection(p.cursorStart, cursor));
         }
     }
 
@@ -479,19 +434,10 @@ namespace ftk
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
-        const int cursorPos = _getCursorPos(event.pos);
-        if (cursorPos != p.cursorPos)
+        if (p.draw.has_value())
         {
-            p.cursorPos = cursorPos;
-            p.cursorVisible = true;
-            p.cursorTimer = std::chrono::steady_clock::now();
-            setDrawUpdate();
-        }
-        const SelectionPair selection(cursorPos, cursorPos);
-        if (selection != p.selection.get())
-        {
-            p.selection.set(selection);
-            setDrawUpdate();
+            p.cursorStart = _toCursor(event.pos.x - p.draw->g3.min.x + p.scroll);
+            p.model->setCursor(p.cursorStart);
         }
         takeKeyFocus();
     }
@@ -500,10 +446,21 @@ namespace ftk
     {
         IMouseWidget::keyFocusEvent(value);
         FTK_P();
-        if (!value)
+        if (value)
         {
-            p.selection.clear();
+            p.cursorVisible = true;
+            p.cursorTimer = std::chrono::steady_clock::now();
             setDrawUpdate();
+        }
+        else
+        {
+            p.model->clearSelection();
+            p.cursorVisible = false;
+            setDrawUpdate();
+            if (p.textCallback && p.textCallbackOnFocusLost)
+            {
+                p.textCallback(p.model->getText());
+            }
         }
         if (p.focusCallback)
         {
@@ -516,251 +473,24 @@ namespace ftk
         FTK_P();
         if (hasKeyFocus())
         {
-            switch (event.key)
+            event.accept = p.model->key(event.key, event.modifiers);
+            if (!event.accept)
             {
-            case Key::A:
-                event.accept = true;
-                if (event.modifiers & static_cast<int>(KeyModifier::Control))
+                switch (event.key)
                 {
-                    selectAll();
-                }
-                break;
-            case Key::C:
-                event.accept = true;
-                if (event.modifiers & static_cast<int>(KeyModifier::Control))
-                {
-                    if (p.selection.isValid())
-                    {
-                        if (auto context = getContext())
-                        {
-                            const auto selection = p.selection.getSorted();
-                            const std::string text = p.text.substr(
-                                selection.first,
-                                selection.second - selection.first);
-                            auto clipboardSystem = context->getSystem<ClipboardSystem>();
-                            clipboardSystem->setText(text);
-                        }
-                    }
-                }
-                break;
-            case Key::V:
-                event.accept = true;
-                if (event.modifiers & static_cast<int>(KeyModifier::Control))
-                {
-                    if (auto context = getContext())
-                    {
-                        auto clipboardSystem = context->getSystem<ClipboardSystem>();
-                        const std::string text = clipboardSystem->getText();
-                        if (p.selection.isValid())
-                        {
-                            const auto selection = p.selection.getSorted();
-                            p.text.replace(
-                                selection.first,
-                                selection.second - selection.first,
-                                text);
-                            p.selection.clear();
-                            p.cursorPos = selection.first + text.size();
-                        }
-                        else
-                        {
-                            p.text.insert(p.cursorPos, text);
-                            p.cursorPos += text.size();
-                        }
-                        if (p.textChangedCallback)
-                        {
-                            p.textChangedCallback(p.text);
-                        }
-                        _textUpdate();
-                    }
-                }
-                break;
-            case Key::X:
-                event.accept = true;
-                if (event.modifiers & static_cast<int>(KeyModifier::Control))
-                {
-                    if (p.selection.isValid())
-                    {
-                        if (auto context = getContext())
-                        {
-                            const auto selection = p.selection.getSorted();
-                            const std::string text = p.text.substr(
-                                selection.first,
-                                selection.second - selection.first);
-                            auto clipboardSystem = context->getSystem<ClipboardSystem>();
-                            clipboardSystem->setText(text);
-                            p.text.replace(
-                                selection.first,
-                                selection.second - selection.first,
-                                "");
-                            p.selection.clear();
-                            p.cursorPos = selection.first;
-                            if (p.textChangedCallback)
-                            {
-                                p.textChangedCallback(p.text);
-                            }
-                            _textUpdate();
-                        }
-                    }
-                }
-                break;
-            case Key::Left:
-                event.accept = true;
-                if (p.cursorPos > 0)
-                {
-                    if (event.modifiers & static_cast<int>(KeyModifier::Shift))
-                    {
-                        p.selection.select(p.cursorPos, p.cursorPos - 1);
-                    }
-                    else
-                    {
-                        p.selection.clear();
-                    }
-
-                    p.cursorPos--;
-                    p.cursorVisible = true;
-                    p.cursorTimer = std::chrono::steady_clock::now();
-
-                    setDrawUpdate();
-                }
-                break;
-            case Key::Right:
-                event.accept = true;
-                if (p.cursorPos < p.text.size())
-                {
-                    if (event.modifiers & static_cast<int>(KeyModifier::Shift))
-                    {
-                        p.selection.select(p.cursorPos, p.cursorPos + 1);
-                    }
-                    else
-                    {
-                        p.selection.clear();
-                    }
-
-                    p.cursorPos++;
-                    p.cursorVisible = true;
-                    p.cursorTimer = std::chrono::steady_clock::now();
-
-                    setDrawUpdate();
-                }
-                break;
-            case Key::Home:
-                event.accept = true;
-                if (p.cursorPos > 0)
-                {
-                    if (event.modifiers & static_cast<int>(KeyModifier::Shift))
-                    {
-                        p.selection.select(p.cursorPos, 0);
-                    }
-                    else
-                    {
-                        p.selection.clear();
-                    }
-
-                    p.cursorPos = 0;
-                    p.cursorVisible = true;
-                    p.cursorTimer = std::chrono::steady_clock::now();
-
-                    setDrawUpdate();
-                }
-                break;
-            case Key::End:
-                event.accept = true;
-                if (p.cursorPos < p.text.size())
-                {
-                    if (event.modifiers & static_cast<int>(KeyModifier::Shift))
-                    {
-                        p.selection.select(p.cursorPos, p.text.size());
-                    }
-                    else
-                    {
-                        p.selection.clear();
-                    }
-
-                    p.cursorPos = p.text.size();
-                    p.cursorVisible = true;
-                    p.cursorTimer = std::chrono::steady_clock::now();
-
-                    setDrawUpdate();
-                }
-                break;
-            case Key::Backspace:
-                event.accept = true;
-                if (p.selection.isValid())
-                {
-                    const auto selection = p.selection.getSorted();
-                    p.text.erase(
-                        selection.first,
-                        selection.second - selection.first);
-                    p.selection.clear();
-                    p.cursorPos = selection.first;
-                    if (p.textChangedCallback)
-                    {
-                        p.textChangedCallback(p.text);
-                    }
-                    _textUpdate();
-                }
-                else if (p.cursorPos > 0)
-                {
-                    const auto i = p.text.begin() + p.cursorPos - 1;
-                    p.text.erase(i);
-                    p.cursorPos--;
-                    if (p.textChangedCallback)
-                    {
-                        p.textChangedCallback(p.text);
-                    }
-                    _textUpdate();
-                }
-                break;
-            case Key::Delete:
-                event.accept = true;
-                if (p.selection.isValid())
-                {
-                    const auto selection = p.selection.getSorted();
-                    p.text.erase(
-                        selection.first,
-                        selection.second - selection.first);
-                    p.selection.clear();
-                    p.cursorPos = selection.first;
-                    if (p.textChangedCallback)
-                    {
-                        p.textChangedCallback(p.text);
-                    }
-                    _textUpdate();
-                }
-                else if (p.cursorPos < p.text.size())
-                {
-                    const auto i = p.text.begin() + p.cursorPos;
-                    p.text.erase(i);
-                    if (p.textChangedCallback)
-                    {
-                        p.textChangedCallback(p.text);
-                    }
-                    _textUpdate();
-                }
-                break;
-            case Key::Return:
-                event.accept = true;
-                if (p.textCallback)
-                {
-                    p.textCallback(p.text);
-                }
-                break;
-            case Key::Escape:
-                event.accept = true;
-                releaseKeyFocus();
-                break;
-            case Key::Up:
-            case Key::Down:
-            case Key::PageUp:
-            case Key::PageDown:
-            case Key::Tab:
-                break;
-            default:
-                if (0 == event.modifiers || event.modifiers == static_cast<int>(KeyModifier::Shift))
-                {
+                case Key::Return:
                     event.accept = true;
+                    if (p.textCallback)
+                    {
+                        p.textCallback(p.model->getText());
+                    }
+                    break;
+                case Key::Escape:
+                    event.accept = true;
+                    releaseKeyFocus();
+                    break;
+                default: break;
                 }
-                break;
             }
         }
         if (!event.accept)
@@ -779,51 +509,51 @@ namespace ftk
     {
         FTK_P();
         event.accept = true;
-        if (p.selection.isValid())
-        {
-            const auto selection = p.selection.getSorted();
-            p.text.replace(
-                selection.first,
-                selection.second - selection.first,
-                event.text);
-            p.selection.clear();
-            p.cursorPos = selection.first + event.text.size();
-        }
-        else
-        {
-            p.text.insert(p.cursorPos, event.text);
-            p.cursorPos += event.text.size();
-        }
-        if (p.textChangedCallback)
-        {
-            p.textChangedCallback(p.text);
-        }
-        _textUpdate();
+        p.model->input(event.text);
     }
 
-    int LineEdit::_getCursorPos(const V2I& value) const
+    int LineEdit::_toCursor(int value) const
     {
         FTK_P();
         int out = 0;
-        if (p.draw.has_value())
+        for (;
+            out < p.glyphBoxes.size() && p.glyphBoxes[out].max.x < value;
+            ++out)
+            ;
+        return out;
+    }
+
+    int LineEdit::_toPos(int value) const
+    {
+        FTK_P();
+        int out = 0;
+        if (value >= 0 && value < p.glyphBoxes.size())
         {
-            for (const auto& glyphBox : p.draw->glyphsBox)
-            {
-                if (value.x < p.draw->g3.x() + glyphBox.x() + glyphBox.w())
-                {
-                    break;
-                }
-                ++out;
-            }
+            out = p.glyphBoxes[value].min.x;
+        }
+        else if (value >= p.glyphBoxes.size() && !p.glyphBoxes.empty())
+        {
+            out = p.glyphBoxes.back().max.x;
         }
         return out;
     }
 
-    void LineEdit::_textUpdate()
+    void LineEdit::_scrollUpdate(int value)
     {
         FTK_P();
-        p.size.displayScale.reset();
-        setSizeUpdate();
-        setDrawUpdate();
+        if (p.draw.has_value())
+        {
+            const int pos = _toPos(value);
+            if (pos > p.scroll + p.draw->g3.w())
+            {
+                p.scroll = pos - p.draw->g3.w();
+                setDrawUpdate();
+            }
+            else if (pos < p.scroll)
+            {
+                p.scroll = pos;
+                setDrawUpdate();
+            }
+        }
     }
 }

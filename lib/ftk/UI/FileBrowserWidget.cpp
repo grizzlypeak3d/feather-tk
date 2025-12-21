@@ -122,6 +122,7 @@ namespace ftk
 
         p.fileEdit = LineEdit::create(context);
         p.fileEdit->setText(path.u8string());
+        p.fileEdit->setTextCallbackOnFocusLost(false);
 
         p.searchBox = SearchBox::create(context);
         p.searchBox->setTooltip("Filter");

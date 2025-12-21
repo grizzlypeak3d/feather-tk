@@ -51,6 +51,7 @@ set(HEADERS
     Label.h
     LayoutUtil.h
     LineEdit.h
+    LineEditModel.h
     ListItemsWidget.h
     ListWidget.h
     MainWindow.h
@@ -157,6 +158,7 @@ set(SOURCE
     Label.cpp
     LayoutUtil.cpp
     LineEdit.cpp
+    LineEditModel.cpp
     ListItemsButton.cpp
     ListItemsWidget.cpp
     ListWidget.cpp

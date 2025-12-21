@@ -18,6 +18,7 @@ namespace ftk
         std::vector<std::string> tooltips;
         int currentTab = -1;
         bool closable = false;
+
         std::vector<std::shared_ptr<TabBarButton> > buttons;
         std::shared_ptr<ButtonGroup> buttonGroup;
         std::vector<std::shared_ptr<ToolButton> > closeButtons;
@@ -25,11 +26,13 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> buttonLayout;
         std::shared_ptr<ScrollWidget> scrollWidget;
         std::shared_ptr<ToolButton> menuButton;
-        std::shared_ptr<HorizontalLayout> layout;
         std::shared_ptr<ComboBoxMenu> menu;
-        int currentFocus = -1;
+        std::shared_ptr<HorizontalLayout> layout;
+
         std::function<void(int)> callback;
         std::function<void(int)> closeCallback;
+
+        int currentFocus = -1;
     };
 
     void TabBar::_init(

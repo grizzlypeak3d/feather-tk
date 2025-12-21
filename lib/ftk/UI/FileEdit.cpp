@@ -7,6 +7,9 @@
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
+#include <ftk/Core/Error.h>
+#include <ftk/Core/String.h>
+
 namespace ftk
 {
     struct FileEdit::Private
@@ -50,16 +53,12 @@ namespace ftk
         p.lineEdit->setTextCallback(
             [this](const std::string& value)
             {
-                _p->path = Path(value);
-                if (_p->callback)
+                FTK_P();
+                p.path = Path(value);
+                if (p.callback)
                 {
-                    _p->callback(_p->path);
+                    p.callback(p.path);
                 }
-            });
-        p.lineEdit->setTextChangedCallback(
-            [this](const std::string&)
-            {
-                _widgetUpdate();
             });
 
         p.browseButton->setClickedCallback(
@@ -106,7 +105,6 @@ namespace ftk
         if (value == p.path)
             return;
         p.path = value;
-        p.lineEdit->setText(value.get());
         _widgetUpdate();
     }
 
@@ -139,7 +137,6 @@ namespace ftk
                     {
                         FTK_P();
                         p.path = value;
-                        p.lineEdit->setText(p.path.get());
                         _widgetUpdate();
                         if (p.callback)
                         {
@@ -156,7 +153,7 @@ namespace ftk
     void FileEdit::_widgetUpdate()
     {
         FTK_P();
-        const std::string& text = p.lineEdit->getText();
-        p.lineEdit->setTooltip(text);
+        p.lineEdit->setText(p.path.get());
+        p.lineEdit->setTooltip(p.path.get());
     }
 }

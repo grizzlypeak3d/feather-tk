@@ -21,6 +21,7 @@ namespace ftk
     {
         TextEditOptions options;
         std::shared_ptr<TextEditModel> model;
+        std::shared_ptr<FontSystem> fontSystem;
         std::function<void(const std::vector<std::string>&)> textCallback;
         std::function<void(bool)> focusCallback;
         TextEditPos cursorStart;
@@ -29,7 +30,6 @@ namespace ftk
         V2I autoScroll;
         std::chrono::steady_clock::time_point autoScrollTimer;
         TextEditSelection selection;
-        std::shared_ptr<FontSystem> fontSystem;
         MouseButton mousePress = MouseButton::None;
 
         struct SizeData
@@ -111,21 +111,6 @@ namespace ftk
         return out;
     }
 
-    const std::vector<std::string>& TextEditWidget::getText() const
-    {
-        return _p->model->getText();
-    }
-
-    void TextEditWidget::setText(const std::vector<std::string>& value)
-    {
-        _p->model->setText(value);
-    }
-
-    void TextEditWidget::clearText()
-    {
-        _p->model->clearText();
-    }
-
     void TextEditWidget::setTextCallback(const std::function<void(const std::vector<std::string>&)>& value)
     {
         _p->textCallback = value;
@@ -134,16 +119,6 @@ namespace ftk
     void TextEditWidget::setFocusCallback(const std::function<void(bool)>& value)
     {
         _p->focusCallback = value;
-    }
-
-    void TextEditWidget::selectAll()
-    {
-        _p->model->selectAll();
-    }
-
-    void TextEditWidget::clearSelection()
-    {
-        _p->model->clearSelection();
     }
 
     void TextEditWidget::setOptions(const TextEditOptions& value)

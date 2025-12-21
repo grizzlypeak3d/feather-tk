@@ -81,6 +81,11 @@ namespace ftk
             second == other.second;
     }
 
+    bool TextEditSelection::operator != (const TextEditSelection& other) const
+    {
+        return !(*this == other);
+    }
+
     bool TextEditModelOptions::operator != (const TextEditModelOptions& other) const
     {
         return !(*this == other);
@@ -89,11 +94,6 @@ namespace ftk
     bool TextEditModelOptions::operator == (const TextEditModelOptions& other) const
     {
         return tabSpaces == other.tabSpaces;
-    }
-
-    bool TextEditSelection::operator != (const TextEditSelection& other) const
-    {
-        return !(*this == other);
     }
 
     struct TextEditModel::Private

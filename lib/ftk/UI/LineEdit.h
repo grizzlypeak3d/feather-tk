@@ -7,18 +7,20 @@
 
 namespace ftk
 {
+    class LineEditModel;
+
     //! \name Text Widgets
     ///@{
         
     //! Text line edit.
     //! 
-    //! \todo Scroll the view with the cursor.
     //! \todo Double click to select text.
     class FTK_API_TYPE LineEdit : public IMouseWidget
     {
     protected:
         void _init(
             const std::shared_ptr<Context>&,
+            const std::shared_ptr<LineEditModel>&,
             const std::shared_ptr<IWidget>& parent);
 
         LineEdit();
@@ -31,6 +33,15 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Create a new widget
+        FTK_API static std::shared_ptr<LineEdit> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<LineEditModel>&,
+            const std::shared_ptr<IWidget>& parent = nullptr);
+
+        //! Get the model.
+        FTK_API const std::shared_ptr<LineEditModel>& getModel() const;
+
         //! Get the text.
         FTK_API const std::string& getText() const;
 
@@ -40,8 +51,15 @@ namespace ftk
         //! Clear the text.
         FTK_API void clearText();
 
-        //! Set the text callback.
+        //! Set the text callback. The text callback is called when the enter
+        //! key is clicked, and optionally when the text focus is lost.
         FTK_API void setTextCallback(const std::function<void(const std::string&)>&);
+
+        //! Get whether the text callback is called when focus is lost.
+        FTK_API bool hasTextCallbackOnFocusLost() const;
+
+        //! Set whether the text callback is called when focus is lost.
+        FTK_API void setTextCallbackOnFocusLost(bool);
 
         //! Set the text changed callback.
         FTK_API void setTextChangedCallback(const std::function<void(const std::string&)>&);
@@ -59,7 +77,7 @@ namespace ftk
         FTK_API void selectAll();
 
         //! Clear the selection.
-        FTK_API void selectNone();
+        FTK_API void clearSelection();
 
         //! Get the font role.
         FTK_API FontRole getFontRole() const;
@@ -91,9 +109,10 @@ namespace ftk
         FTK_API void textEvent(TextEvent&) override;
 
     private:
-        int _getCursorPos(const V2I&) const;
+        int _toCursor(int) const;
+        int _toPos(int) const;
 
-        void _textUpdate();
+        void _scrollUpdate(int);
 
         FTK_PRIVATE();
     };

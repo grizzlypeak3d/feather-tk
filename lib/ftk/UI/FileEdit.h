@@ -9,11 +9,6 @@
 
 namespace ftk
 {
-    class RecentFilesModel;
-
-    //! \name File Widgets
-    ///@{
-
     //! File edit widget.
     class FTK_API_TYPE FileEdit : public IWidget
     {

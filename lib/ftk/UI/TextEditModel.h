@@ -56,7 +56,7 @@ namespace ftk
     //! Text edit model options.
     struct FTK_API_TYPE TextEditModelOptions
     {
-        int  tabSpaces = 4;
+        int tabSpaces = 4;
 
         FTK_API bool operator == (const TextEditModelOptions&) const;
         FTK_API bool operator != (const TextEditModelOptions&) const;
@@ -92,6 +92,7 @@ namespace ftk
         //! beginning and clear the selection.
         FTK_API void setText(const std::vector<std::string>&);
 
+        //! Clear the text.
         FTK_API void clearText();
 
         ///@}

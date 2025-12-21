@@ -111,17 +111,17 @@ namespace ftk
 
     const std::vector<std::string>& TextEdit::getText() const
     {
-        return _p->widget->getText();
+        return _p->model->getText();
     }
 
     void TextEdit::setText(const std::vector<std::string>& value)
     {
-        _p->widget->setText(value);
+        _p->model->setText(value);
     }
 
     void TextEdit::clearText()
     {
-        _p->widget->clearText();
+        _p->model->clearText();
     }
 
     void TextEdit::setTextCallback(const std::function<void(const std::vector<std::string>&)>& value)
@@ -131,12 +131,12 @@ namespace ftk
 
     void TextEdit::selectAll()
     {
-        _p->widget->selectAll();
+        _p->model->selectAll();
     }
 
     void TextEdit::clearSelection()
     {
-        _p->widget->clearSelection();
+        _p->model->clearSelection();
     }
 
     const TextEditOptions& TextEdit::getOptions() const
