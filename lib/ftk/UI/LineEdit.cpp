@@ -26,10 +26,12 @@ namespace ftk
         std::function<void(bool)> focusCallback;
         FontRole fontRole = FontRole::Label;
         ColorRole borderRole = ColorRole::Border;
+
         int cursorStart = -1;
         bool cursorVisible = false;
         std::chrono::steady_clock::time_point cursorTimer;
         int scroll = 0;
+        Box2I textBox;
 
         std::shared_ptr<Observer<std::string> > textObserver;
         std::shared_ptr<Observer<int> > cursorObserver;
@@ -51,6 +53,7 @@ namespace ftk
 
         struct DrawData
         {
+            Box2I g;
             Box2I g2;
             Box2I g3;
             TriMesh2F border;
@@ -251,6 +254,15 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            // Adjust scroll position if necessary.
+            const Box2I textBox = _getTextBox();
+            const int diff = textBox.w() - p.textBox.w();
+            if (diff > 0)
+            {
+                p.scroll = std::max(0, p.scroll - diff);
+            }
+            p.textBox = textBox;
+
             p.draw.reset();
         }
     }
@@ -344,6 +356,23 @@ namespace ftk
         }
     }
 
+    Box2I LineEdit::_getBorderBox() const
+    {
+        return align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
+    }
+
+    Box2I LineEdit::_getBackgroundBox() const
+    {
+        FTK_P();
+        return margin(_getBorderBox(), -p.size.keyFocus);
+    }
+
+    Box2I LineEdit::_getTextBox() const
+    {
+        FTK_P();
+        return margin(_getBackgroundBox(), -p.size.margin * 2, -p.size.margin);
+    }
+
     void LineEdit::drawEvent(
         const Box2I& drawRect,
         const DrawEvent& event)
@@ -354,14 +383,11 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            const Box2I g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
-            p.draw->g2 = margin(g, -p.size.keyFocus);
-            p.draw->g3 = margin(
-                p.draw->g2,
-                -p.size.margin * 2,
-                -p.size.margin);
-            p.draw->border = border(g, p.size.border);
-            p.draw->keyFocus = border(g, p.size.keyFocus);
+            p.draw->g = _getBorderBox();
+            p.draw->g2 = _getBackgroundBox();
+            p.draw->g3 = _getTextBox();
+            p.draw->border = border(p.draw->g, p.size.border);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         const bool enabled = isEnabled();

@@ -112,6 +112,9 @@ namespace ftk
         int _toCursor(int) const;
         int _toPos(int) const;
 
+        Box2I _getBorderBox() const;
+        Box2I _getBackgroundBox() const;
+        Box2I _getTextBox() const;
         void _scrollUpdate(int);
 
         FTK_PRIVATE();
