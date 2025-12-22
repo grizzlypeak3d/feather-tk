@@ -20,7 +20,7 @@ namespace ftk
     {
         void fileEdit(py::module_& m)
         {
-            py::enum_<FileEditDisplay>(m, "Endian")
+            py::enum_<FileEditDisplay>(m, "FileEditDisplay")
                 .value("FullPath", FileEditDisplay::FullPath)
                 .value("FileName", FileEditDisplay::FileName);
             FTK_ENUM_BIND(m, FileEditDisplay);
