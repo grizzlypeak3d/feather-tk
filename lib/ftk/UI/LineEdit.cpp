@@ -26,7 +26,6 @@ namespace ftk
         std::function<void(bool)> focusCallback;
         FontRole fontRole = FontRole::Label;
         ColorRole borderRole = ColorRole::Border;
-        std::vector<Box2I> glyphBoxes;
         int cursorStart = -1;
         bool cursorVisible = false;
         std::chrono::steady_clock::time_point cursorTimer;
@@ -46,6 +45,7 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I formatSize;
+            std::vector<Box2I> glyphBoxes;
         };
         SizeData size;
 
@@ -86,8 +86,8 @@ namespace ftk
             [this](const std::string& text)
             {
                 FTK_P();
-                p.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
                 p.size.displayScale.reset();
+                p.size.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
                 setSizeUpdate();
                 setDrawUpdate();
                 if (p.textChangedCallback)
@@ -319,8 +319,10 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
-            p.size.textSize = event.fontSystem->getSize(p.model->getText(), p.size.fontInfo);
+            const auto& text = p.model->getText();
+            p.size.textSize = event.fontSystem->getSize(text, p.size.fontInfo);
             p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
+            p.size.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
             p.draw.reset();
         }
 
@@ -527,7 +529,7 @@ namespace ftk
         FTK_P();
         int out = 0;
         for (;
-            out < p.glyphBoxes.size() && p.glyphBoxes[out].max.x < value;
+            out < p.size.glyphBoxes.size() && p.size.glyphBoxes[out].max.x < value;
             ++out)
             ;
         return out;
@@ -537,13 +539,13 @@ namespace ftk
     {
         FTK_P();
         int out = 0;
-        if (value >= 0 && value < p.glyphBoxes.size())
+        if (value >= 0 && value < p.size.glyphBoxes.size())
         {
-            out = p.glyphBoxes[value].min.x;
+            out = p.size.glyphBoxes[value].min.x;
         }
-        else if (value >= p.glyphBoxes.size() && !p.glyphBoxes.empty())
+        else if (value >= p.size.glyphBoxes.size() && !p.size.glyphBoxes.empty())
         {
-            out = p.glyphBoxes.back().max.x;
+            out = p.size.glyphBoxes.back().max.x;
         }
         return out;
     }
