@@ -90,16 +90,21 @@ namespace ftk
                 p.size.displayScale.reset();
                 setSizeUpdate();
                 setDrawUpdate();
+                if (p.textChangedCallback)
+                {
+                    p.textChangedCallback(text);
+                }
             });
 
         p.cursorObserver = Observer<int>::create(
             p.model->observeCursor(),
             [this](int index)
             {
+                FTK_P();
                 if (hasKeyFocus())
                 {
-                    _p->cursorVisible = true;
-                    _p->cursorTimer = std::chrono::steady_clock::now();
+                    p.cursorVisible = true;
+                    p.cursorTimer = std::chrono::steady_clock::now();
                     setDrawUpdate();
                 }
                 _scrollUpdate(index);
