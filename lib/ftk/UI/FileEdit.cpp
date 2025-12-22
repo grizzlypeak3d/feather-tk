@@ -61,7 +61,17 @@ namespace ftk
             [this](const std::string& value)
             {
                 FTK_P();
-                p.path = Path(value);
+                switch (p.display)
+                {
+                case FileEditDisplay::FullPath:
+                    p.path = Path(value);
+                    break;
+                case FileEditDisplay::FileName:
+                    p.path.setFileName(value);
+                    break;
+                default: break;
+                }
+                p.lineEdit->setTooltip(p.path.get());
                 if (p.callback)
                 {
                     p.callback(p.path);
