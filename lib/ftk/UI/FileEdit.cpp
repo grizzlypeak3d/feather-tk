@@ -4,6 +4,7 @@
 #include <ftk/UI/FileEdit.h>
 
 #include <ftk/UI/LineEdit.h>
+#include <ftk/UI/LineEditModel.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
@@ -12,10 +13,16 @@
 
 namespace ftk
 {
+    FTK_ENUM_IMPL(
+        FileEditDisplay,
+        "FullPath",
+        "FileName");
+
     struct FileEdit::Private
     {
         FileBrowserMode mode = FileBrowserMode::File;
         Path path;
+        FileEditDisplay display = FileEditDisplay::FullPath;
 
         std::shared_ptr<LineEdit> lineEdit;
         std::shared_ptr<ToolButton> browseButton;
@@ -112,6 +119,20 @@ namespace ftk
     {
         _p->callback = value;
     }
+    
+    FileEditDisplay FileEdit::getDisplay() const
+    {
+        return _p->display;
+    }
+
+    void FileEdit::setDisplay(FileEditDisplay value)
+    {
+        FTK_P();
+        if (value == p.display)
+            return;
+        p.display = value;
+        _widgetUpdate();
+    }
 
     void FileEdit::setGeometry(const Box2I& value)
     {
@@ -153,7 +174,18 @@ namespace ftk
     void FileEdit::_widgetUpdate()
     {
         FTK_P();
-        p.lineEdit->setText(p.path.get());
+        std::string text;
+        switch (p.display)
+        {
+        case FileEditDisplay::FullPath:
+            text = p.path.get();
+            break;
+        case FileEditDisplay::FileName:
+            text = p.path.getFileName();
+            break;
+        default: break;
+        }
+        p.lineEdit->setText(text);
         p.lineEdit->setTooltip(p.path.get());
     }
 }

@@ -139,6 +139,11 @@ namespace ftk
         return out;
     }
 
+    const std::shared_ptr<LineEditModel>& LineEdit::getModel() const
+    {
+        return _p->model;
+    }
+
     const std::string& LineEdit::getText() const
     {
         return _p->model->getText();
