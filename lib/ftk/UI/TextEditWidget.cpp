@@ -482,7 +482,6 @@ namespace ftk
 
     void TextEditWidget::textEvent(TextEvent& event)
     {
-        IMouseWidget::textEvent(event);
         event.accept = true;
         _p->model->input(event.text);
     }

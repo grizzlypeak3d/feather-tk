@@ -429,7 +429,9 @@ namespace ftk
             out = true;
             break;
 
-        default: break;
+        default:
+            out = !isControlKey(key) && 0 == modifiers;
+            break;
         }
         return out;
     }

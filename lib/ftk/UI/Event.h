@@ -309,6 +309,9 @@ namespace ftk
     };
     FTK_ENUM(Key);
 
+    //! Get whether the given key is a control key.
+    bool isControlKey(Key);
+
     //! Get a keyboard shortcut label.
     FTK_API std::string getShortcutLabel(Key, int modifiers = 0);
 

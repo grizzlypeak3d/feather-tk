@@ -274,6 +274,61 @@ namespace ftk
         "Keypad Period",
         "Keypad Equals");
 
+    bool isControlKey(Key key)
+    {
+        bool out = false;
+        switch (key)
+        {
+        case Key::Return:
+        case Key::Escape:
+        case Key::Backspace:
+        case Key::CapsLock:
+        case Key::F1:
+        case Key::F2:
+        case Key::F3:
+        case Key::F4:
+        case Key::F5:
+        case Key::F6:
+        case Key::F7:
+        case Key::F8:
+        case Key::F9:
+        case Key::F10:
+        case Key::F11:
+        case Key::F12:
+        case Key::F13:
+        case Key::F14:
+        case Key::F15:
+        case Key::F16:
+        case Key::F17:
+        case Key::F18:
+        case Key::F19:
+        case Key::F20:
+        case Key::F21:
+        case Key::F22:
+        case Key::F23:
+        case Key::F24:
+        case Key::PrintScreen:
+        case Key::ScrollLock:
+        case Key::Pause:
+        case Key::Insert:
+        case Key::Home:
+        case Key::PageUp:
+        case Key::Delete:
+        case Key::End:
+        case Key::PageDown:
+        case Key::Right:
+        case Key::Left:
+        case Key::Down:
+        case Key::Up:
+        case Key::NumLock:
+        case Key::KeypadEnter:
+            out = true;
+            break;
+        default: break;
+        }
+        return out;
+    }
+
     std::string getShortcutLabel(Key key, int modifiers)
     {
         std::stringstream ss;

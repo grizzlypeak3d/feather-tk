@@ -301,8 +301,8 @@ namespace ftk
             if (static_cast<int>(KeyModifier::Control) == modifiers)
             {
                 selectAll();
-                out = true;
             }
+            out = true;
             break;
 
         case Key::C:
@@ -345,7 +345,9 @@ namespace ftk
             }
             break;
 
-        default: break;
+        default:
+            out = !isControlKey(key) && 0 == modifiers;
+            break;
         }
         return out;
     }

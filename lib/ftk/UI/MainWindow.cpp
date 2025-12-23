@@ -212,7 +212,14 @@ namespace ftk
     void MainWindow::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
-        event.accept = p.menuBar->shortcut(event.key, event.modifiers);
+        if (p.menuBar)
+        {
+            event.accept = p.menuBar->shortcut(event.key, event.modifiers);
+        }
+        if (!event.accept)
+        {
+            Window::keyPressEvent(event);
+        }
     }
 
     void MainWindow::keyReleaseEvent(KeyEvent& event)

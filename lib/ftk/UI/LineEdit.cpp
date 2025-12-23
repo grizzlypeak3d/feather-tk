@@ -511,24 +511,22 @@ namespace ftk
         FTK_P();
         if (hasKeyFocus())
         {
-            event.accept = p.model->key(event.key, event.modifiers);
-            if (!event.accept)
+            switch (event.key)
             {
-                switch (event.key)
+            case Key::Return:
+                event.accept = true;
+                if (p.textCallback)
                 {
-                case Key::Return:
-                    event.accept = true;
-                    if (p.textCallback)
-                    {
-                        p.textCallback(p.model->getText());
-                    }
-                    break;
-                case Key::Escape:
-                    event.accept = true;
-                    releaseKeyFocus();
-                    break;
-                default: break;
+                    p.textCallback(p.model->getText());
                 }
+                break;
+            case Key::Escape:
+                event.accept = true;
+                releaseKeyFocus();
+                break;
+            default:
+                event.accept = p.model->key(event.key, event.modifiers);
+                break;
             }
         }
         if (!event.accept)
@@ -545,9 +543,8 @@ namespace ftk
 
     void LineEdit::textEvent(TextEvent& event)
     {
-        FTK_P();
         event.accept = true;
-        p.model->input(event.text);
+        _p->model->input(event.text);
     }
 
     int LineEdit::_toCursor(int value) const
