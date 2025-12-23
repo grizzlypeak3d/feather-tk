@@ -868,7 +868,7 @@ namespace ftk
             SDL_Event event;
             while (SDL_PollEvent(&event))
             {
-                //std::cout << "Event: " << to_string(event.type) << std::endl;
+                //std::cout << "Event: " << fromSDLEvent(event.type) << std::endl;
                 switch (event.type)
                 {
 #if defined(FTK_SDL2)
@@ -892,19 +892,28 @@ namespace ftk
                     switch (event.window.event)
                     {
                     case SDL_WINDOWEVENT_SHOWN:
+                        //std::cout << "Window event shown" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->setVisible(true);
                         }
                         break;
                     case SDL_WINDOWEVENT_HIDDEN:
+                        //std::cout << "Window event hidden" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->setVisible(false);
                         }
                         break;
                     case SDL_WINDOWEVENT_EXPOSED:
+                        //std::cout << "Window event exposed" << std::endl;
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            window->_cursorEnter(true);
+                            p.activeWindow = window;
+                        }
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        //std::cout << "Window event size changed" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             if (SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID))
@@ -918,6 +927,7 @@ namespace ftk
                         }
                         break;
                     case SDL_WINDOWEVENT_ENTER:
+                        //std::cout << "Window event enter" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->_cursorEnter(true);
@@ -925,6 +935,7 @@ namespace ftk
                         }
                         break;
                     case SDL_WINDOWEVENT_LEAVE:
+                        //std::cout << "Window event leave" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->_cursorEnter(false);
@@ -932,6 +943,7 @@ namespace ftk
                         }
                         break;
                     case SDL_WINDOWEVENT_CLOSE:
+                        //std::cout << "Window event close" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->close();
