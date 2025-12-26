@@ -327,6 +327,46 @@ namespace ftk
     }
 
     template<typename T>
+    constexpr Box<2, T> bbox(const std::vector<Box<2, T> >& b)
+    {
+        Box<2, T> out;
+        if (!b.empty())
+        {
+            out.min = b[0].min;
+            out.max = b[0].max;
+            for (size_t i = 1; i < b.size(); ++i)
+            {
+                out.min.x = std::min(out.min.x, b[i].min.x);
+                out.min.y = std::min(out.min.y, b[i].min.y);
+                out.max.x = std::max(out.max.x, b[i].max.x);
+                out.max.y = std::max(out.max.y, b[i].max.y);
+            }
+        }
+        return out;
+    }
+
+    template<typename T>
+    constexpr Box<3, T> bbox(const std::vector<Box<3, T> >& b)
+    {
+        Box<3, T> out;
+        if (!b.empty())
+        {
+            out.min = b[0].min;
+            out.max = b[0].max;
+            for (size_t i = 1; i < b.size(); ++i)
+            {
+                out.min.x = std::min(out.min.x, b[i].min.x);
+                out.min.y = std::min(out.min.y, b[i].min.y);
+                out.min.z = std::min(out.min.z, b[i].min.z);
+                out.max.x = std::max(out.max.x, b[i].max.x);
+                out.max.y = std::max(out.max.y, b[i].max.y);
+                out.max.z = std::max(out.max.z, b[i].max.z);
+            }
+        }
+        return out;
+    }
+
+    template<typename T>
     constexpr Box<2, T> bbox(const std::vector<Vector<2, T> >& v)
     {
         Box<2, T> out;

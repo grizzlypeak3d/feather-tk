@@ -140,6 +140,9 @@ namespace ftk
             m.def("margin",
                 [](const Box2F& v, float x0, float y0, float x1, float y1) { return margin(v, x0, y0, x1, y1); });
 
+            m.def("bbox", [](const std::vector<Box2I>& v) { return bbox(v); });
+            m.def("bbox", [](const std::vector<Box2F>& v) { return bbox(v); });
+            m.def("bbox", [](const std::vector<Box3F>& v) { return bbox(v); });
             m.def("bbox", [](const std::vector<V2I>& v) { return bbox(v); });
             m.def("bbox", [](const std::vector<V2F>& v) { return bbox(v); });
             m.def("bbox", [](const std::vector<V3F>& v) { return bbox(v); });
