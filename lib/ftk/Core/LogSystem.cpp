@@ -59,10 +59,15 @@ namespace ftk
 
     struct LogSystem::Private
     {
-        std::chrono::steady_clock::time_point startTime;
+        Private() :
+            startTime(std::chrono::steady_clock::now())
+        {}
+
+        const std::chrono::steady_clock::time_point startTime;
         std::shared_ptr<ObservableList<LogItem> > observableItems;
-        std::vector<LogItem> items;
+
         std::mutex mutex;
+        std::vector<LogItem> items;
     };
 
     LogSystem::LogSystem(const std::shared_ptr<Context>& context) :
@@ -70,7 +75,6 @@ namespace ftk
         _p(new Private)
     {
         FTK_P();
-        p.startTime = std::chrono::steady_clock::now();
         p.observableItems = ObservableList<LogItem>::create();
     }
 
@@ -95,6 +99,7 @@ namespace ftk
         FTK_P();
         const auto now = std::chrono::steady_clock::now();
         const std::chrono::duration<float> time = now - p.startTime;
+
         std::unique_lock<std::mutex> lock(p.mutex);
         p.items.push_back({ time.count(), prefix, value, type });
     }
