@@ -52,14 +52,16 @@ namespace ftk
         
         void RenderTest::run()
         {
-            if (auto context = _context.lock())
+            auto context = _context.lock();
+            auto logSystem = context->getLogSystem();
+            auto fontSystem = context->getSystem<FontSystem>();
             {
                 auto window = createWindow(context);
                 Size2I size(1920, 1080);
                 auto buffer = createBuffer(size);
                 OffscreenBufferBinding bufferBinding(buffer);
 
-                auto render = Render::create(context->getLogSystem());
+                auto render = Render::create(logSystem, fontSystem);
                 render->begin(size);
                 FTK_ASSERT(render->getRenderSize() == size);
 
@@ -91,7 +93,7 @@ namespace ftk
                 auto buffer = createBuffer(size);
                 OffscreenBufferBinding bufferBinding(buffer);
 
-                auto render = Render::create(context->getLogSystem());
+                auto render = Render::create(logSystem, fontSystem);
                 render->begin(size);
                 
                 Box2F box(0, 0, size.w, size.h);

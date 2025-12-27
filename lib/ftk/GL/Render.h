@@ -28,6 +28,7 @@ namespace ftk
         protected:
             void _init(
                 const std::shared_ptr<LogSystem>&,
+                const std::shared_ptr<FontSystem>&,
                 const std::shared_ptr<TextureCache>&);
 
             Render();
@@ -37,7 +38,8 @@ namespace ftk
 
             //! Create a new renderer.
             FTK_API static std::shared_ptr<Render> create(
-                const std::shared_ptr<LogSystem>& = nullptr,
+                const std::shared_ptr<LogSystem>&,
+                const std::shared_ptr<FontSystem>&,
                 const std::shared_ptr<TextureCache>& = nullptr);
 
             //! Get a shader.
@@ -132,7 +134,9 @@ namespace ftk
         class FTK_API_TYPE RenderFactory : public IRenderFactory
         {
         public:
-            FTK_API std::shared_ptr<IRender> createRender(const std::shared_ptr<LogSystem>& logSystem) override;
+            FTK_API std::shared_ptr<IRender> createRender(
+                const std::shared_ptr<LogSystem>& logSystem,
+                const std::shared_ptr<FontSystem>& fontSystem) override;
         };
         
         ///@}

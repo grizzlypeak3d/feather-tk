@@ -20,13 +20,11 @@ namespace ftk
 
         void Render::_init(
             const std::shared_ptr<LogSystem>& logSystem,
+            const std::shared_ptr<FontSystem>& fontSystem,
             const std::shared_ptr<TextureCache>& textureCache)
         {
-            IRender::_init(logSystem);
+            IRender::_init(logSystem, fontSystem);
             FTK_P();
-
-            p.logSystem = logSystem;
-
             p.textureCache = textureCache;
             if (!p.textureCache)
             {
@@ -43,10 +41,11 @@ namespace ftk
 
         std::shared_ptr<Render> Render::create(
             const std::shared_ptr<LogSystem>& logSystem,
+            const std::shared_ptr<FontSystem>& fontSystem,
             const std::shared_ptr<TextureCache>& textureCache)
         {
             auto out = std::shared_ptr<Render>(new Render);
-            out->_init(logSystem, textureCache);
+            out->_init(logSystem, fontSystem, textureCache);
             return out;
         }
 
@@ -525,9 +524,8 @@ namespace ftk
         void Render::_log()
         {
             FTK_P();
-            if (auto logSystem = p.logSystem.lock())
+            if (auto logSystem = _logSystem.lock())
             {
-                
                 Private::Stats average;
                 const size_t size = p.statsList.size();
                 if (size)
@@ -559,9 +557,11 @@ namespace ftk
             }
         }
 
-        std::shared_ptr<IRender> RenderFactory::createRender(const std::shared_ptr<LogSystem>& logSystem)
+        std::shared_ptr<IRender> RenderFactory::createRender(
+            const std::shared_ptr<LogSystem>& logSystem,
+            const std::shared_ptr<FontSystem>& fontSystem)
         {
-            return Render::create(logSystem);
+            return Render::create(logSystem, fontSystem);
         }
     }
 }

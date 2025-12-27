@@ -63,7 +63,9 @@ namespace ftk
             size,
             static_cast<int>(gl::WindowOptions::DoubleBuffer));
 
-        p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(context->getLogSystem());
+        p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(
+            context->getLogSystem(),
+            context->getSystem<FontSystem>());
 
         setVisible(false);
     }

@@ -35,7 +35,8 @@ namespace ftk
                 virtual ~Render() {}
 
                 static std::shared_ptr<Render> create(
-                    const std::shared_ptr<LogSystem>&);
+                    const std::shared_ptr<LogSystem>&,
+                    const std::shared_ptr<FontSystem>&);
 
                 void begin(
                     const Size2I&,
@@ -107,10 +108,12 @@ namespace ftk
                 M44F _transform;
             };
 
-            std::shared_ptr<Render> Render::create(const std::shared_ptr<LogSystem>& logSystem)
+            std::shared_ptr<Render> Render::create(
+                const std::shared_ptr<LogSystem>& logSystem,
+                const std::shared_ptr<FontSystem>& fontSystem)
             {
                 auto out = std::shared_ptr<Render>(new Render);
-                out->_init(logSystem);
+                out->_init(logSystem, fontSystem);
                 return out;
             }
 
@@ -180,67 +183,66 @@ namespace ftk
 
         void RenderUtilTest::run()
         {
-            if (auto context = _context.lock())
+            auto context = _context.lock();
+            auto logSystem = context->getLogSystem();
+            auto fontSystem = context->getSystem<FontSystem>();
             {
-                auto logSystem = context->getLogSystem();
+                auto render = Render::create(logSystem, fontSystem);
+                const Size2I a(1280, 960);
+                render->begin(a);
                 {
-                    auto render = Render::create(logSystem);
-                    const Size2I a(1280, 960);
-                    render->begin(a);
-                    {
-                        RenderSizeState state(render);
-                        const Size2I b(1920, 1080);
-                        render->setRenderSize(b);
-                        FTK_ASSERT(b == render->getRenderSize());
-                    }
-                    FTK_ASSERT(a == render->getRenderSize());
+                    RenderSizeState state(render);
+                    const Size2I b(1920, 1080);
+                    render->setRenderSize(b);
+                    FTK_ASSERT(b == render->getRenderSize());
                 }
+                FTK_ASSERT(a == render->getRenderSize());
+            }
+            {
+                auto render = Render::create(logSystem, fontSystem);
+                const Box2I a(0, 0, 1280, 960);
+                render->setViewport(a);
                 {
-                    auto render = Render::create(logSystem);
-                    const Box2I a(0, 0, 1280, 960);
-                    render->setViewport(a);
-                    {
-                        ViewportState state(render);
-                        const Box2I b(0, 0, 640, 480);
-                        render->setViewport(b);
-                        FTK_ASSERT(b == render->getViewport());
-                    }
-                    FTK_ASSERT(a == render->getViewport());
+                    ViewportState state(render);
+                    const Box2I b(0, 0, 640, 480);
+                    render->setViewport(b);
+                    FTK_ASSERT(b == render->getViewport());
                 }
+                FTK_ASSERT(a == render->getViewport());
+            }
+            {
+                auto render = Render::create(logSystem, fontSystem);
+                render->setClipRectEnabled(true);
                 {
-                    auto render = Render::create(logSystem);
-                    render->setClipRectEnabled(true);
-                    {
-                        ClipRectEnabledState state(render);
-                        render->setClipRectEnabled(false);
-                        FTK_ASSERT(!render->getClipRectEnabled());
-                    }
-                    FTK_ASSERT(render->getClipRectEnabled());
+                    ClipRectEnabledState state(render);
+                    render->setClipRectEnabled(false);
+                    FTK_ASSERT(!render->getClipRectEnabled());
                 }
+                FTK_ASSERT(render->getClipRectEnabled());
+            }
+            {
+                auto render = Render::create(logSystem, fontSystem);
+                const Box2I a(0, 0, 1280, 960);
+                render->setClipRect(a);
                 {
-                    auto render = Render::create(logSystem);
-                    const Box2I a(0, 0, 1280, 960);
-                    render->setClipRect(a);
-                    {
-                        ClipRectState state(render);
-                        const Box2I b(0, 0, 640, 480);
-                        render->setClipRect(b);
-                        FTK_ASSERT(b == render->getClipRect());
-                    }
-                    FTK_ASSERT(a == render->getClipRect());
+                    ClipRectState state(render);
+                    const Box2I b(0, 0, 640, 480);
+                    render->setClipRect(b);
+                    FTK_ASSERT(b == render->getClipRect());
                 }
+                FTK_ASSERT(a == render->getClipRect());
+            }
+            {
+                auto render = Render::create(logSystem, fontSystem);
+                const M44F a = translate(V3F(1.F, 1.F, 1.F));
+                render->setTransform(a);
                 {
-                    auto render = Render::create(logSystem);
-                    const M44F a = translate(V3F(1.F, 1.F, 1.F));
-                    render->setTransform(a);
-                    {
-                        TransformState state(render);
-                        const M44F b = scale(V3F(2.F, 2.F, 2.F));
-                        render->setTransform(b);
-                        FTK_ASSERT(b == render->getTransform());
-                    }
-                    FTK_ASSERT(a == render->getTransform());
+                    TransformState state(render);
+                    const M44F b = scale(V3F(2.F, 2.F, 2.F));
+                    render->setTransform(b);
+                    FTK_ASSERT(b == render->getTransform());
                 }
+                FTK_ASSERT(a == render->getTransform());
             }
         }
     }

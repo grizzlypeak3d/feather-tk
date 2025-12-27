@@ -14,6 +14,7 @@
 
 namespace ftk
 {
+    class FontSystem;
     class LogSystem;
 
     //! \name Rendering
@@ -25,7 +26,9 @@ namespace ftk
         FTK_NON_COPYABLE(IRender);
 
     protected:
-        void _init(const std::shared_ptr<LogSystem>&);
+        void _init(
+            const std::shared_ptr<LogSystem>&,
+            const std::shared_ptr<FontSystem>&);
 
         IRender() = default;
 
@@ -179,6 +182,7 @@ namespace ftk
 
     protected:
         std::weak_ptr<LogSystem> _logSystem;
+        std::weak_ptr<FontSystem> _fontSystem;
     };
 
     //! Base class for render factories.
@@ -188,7 +192,9 @@ namespace ftk
         FTK_API virtual ~IRenderFactory() = 0;
 
         //! Create a new renderer.
-        FTK_API virtual std::shared_ptr<IRender> createRender(const std::shared_ptr<LogSystem>&) = 0;
+        FTK_API virtual std::shared_ptr<IRender> createRender(
+            const std::shared_ptr<LogSystem>&,
+            const std::shared_ptr<FontSystem>&) = 0;
     };
         
     ///@}

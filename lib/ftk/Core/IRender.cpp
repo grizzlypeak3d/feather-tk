@@ -5,9 +5,12 @@
 
 namespace ftk
 {
-    void IRender::_init(const std::shared_ptr<LogSystem>& logSystem)
+    void IRender::_init(
+        const std::shared_ptr<LogSystem>& logSystem,
+        const std::shared_ptr<FontSystem>& fontSystem)
     {
         _logSystem = logSystem;
+        _fontSystem = fontSystem;
     }
 
     IRender::~IRender()

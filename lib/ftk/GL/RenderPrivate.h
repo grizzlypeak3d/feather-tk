@@ -26,8 +26,6 @@ namespace ftk
 
         struct Render::Private
         {
-            std::weak_ptr<LogSystem> logSystem;
-
             Size2I size;
             RenderOptions options;
             Box2I viewport;
