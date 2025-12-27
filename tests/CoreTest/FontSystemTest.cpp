@@ -99,13 +99,7 @@ namespace ftk
             if (auto context = _context.lock())
             {
                 auto fontSystem = context->getSystem<FontSystem>();
-                try
-                {
-                    fontSystem->addFont("", nullptr, 0);
-                    FTK_ASSERT(false);
-                }
-                catch (const std::exception&)
-                {}
+                FTK_ASSERT(!fontSystem->addFont("", nullptr, 0));
             }
         }
     }

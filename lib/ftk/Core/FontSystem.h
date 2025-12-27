@@ -95,7 +95,7 @@ namespace ftk
         FTK_API static std::shared_ptr<FontSystem> create(const std::shared_ptr<Context>&);
 
         //! Add a font.
-        FTK_API void addFont(const std::string& name, const uint8_t*, size_t);
+        FTK_API bool addFont(const std::string& name, const uint8_t*, size_t);
 
         //! \name Information
         ///@{
