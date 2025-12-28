@@ -42,6 +42,18 @@ namespace ftk
         //! Clear the tool bar.
         FTK_API void clear();
 
+        //! Get the margin role.
+        FTK_API SizeRole getMarginRole() const;
+
+        //! Set the margin role.
+        FTK_API void setMarginRole(SizeRole);
+
+        //! Get the spacing role.
+        FTK_API SizeRole getSpacingRole() const;
+
+        //! Set the spacing role.
+        FTK_API void setSpacingRole(SizeRole);
+
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 

@@ -78,6 +78,26 @@ namespace ftk
         }
     }
 
+    SizeRole ToolBar::getMarginRole() const
+    {
+        return _p->layout->getMarginRole();
+    }
+
+    void ToolBar::setMarginRole(SizeRole value)
+    {
+        _p->layout->setMarginRole(value);
+    }
+
+    SizeRole ToolBar::getSpacingRole() const
+    {
+        return _p->layout->getSpacingRole();
+    }
+
+    void ToolBar::setSpacingRole(SizeRole value)
+    {
+        _p->layout->setSpacingRole(value);
+    }
+
     void ToolBar::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
