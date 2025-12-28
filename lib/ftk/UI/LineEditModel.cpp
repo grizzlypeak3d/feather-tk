@@ -278,12 +278,8 @@ namespace ftk
         {
         case Key::Left:
         case Key::Right:
-        case Key::Up:
-        case Key::Down:
         case Key::Home:
         case Key::End:
-        case Key::PageUp:
-        case Key::PageDown:
             _move(key, modifiers);
             out = true;
             break;
@@ -344,6 +340,8 @@ namespace ftk
                 out = true;
             }
             break;
+
+        case Key::Tab: break;
 
         default:
             out = !isControlKey(key) && 0 == modifiers;
