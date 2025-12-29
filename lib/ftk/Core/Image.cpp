@@ -167,9 +167,9 @@ namespace ftk
 
     Image::Image(const ImageInfo& info, uint8_t* externalData) :
         _info(info),
+        _byteCount(info.getByteCount()),
         _externalData(externalData)
     {
-        _byteCount = info.getByteCount();
         if (externalData)
         {
             _data = externalData;
