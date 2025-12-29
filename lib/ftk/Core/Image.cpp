@@ -166,24 +166,29 @@ namespace ftk
     }
 
     Image::Image(const ImageInfo& info, uint8_t* externalData) :
-        _info(info)
+        _info(info),
+        _externalData(externalData)
     {
         _byteCount = info.getByteCount();
         if (externalData)
         {
-            _dataP = externalData;
+            _data = externalData;
         }
         else
         {
             // Allocate a bit of extra space since FFmpeg sws_scale()
             // can read past the end.
-            _data.resize(_byteCount + 16);
-            _dataP = _data.data();
+            _data = new uint8_t[_byteCount + 16];
         }
     }
 
     Image::~Image()
-    {}
+    {
+        if (!_externalData)
+        {
+            delete[] _data;
+        }
+    }
 
     std::shared_ptr<Image> Image::create(const ImageInfo& info)
     {
@@ -212,7 +217,7 @@ namespace ftk
 
     void Image::zero()
     {
-        memset(_dataP, 0, _byteCount);
+        memset(_data, 0, _byteCount);
     }
 
     void to_json(nlohmann::json& json, const ImageMirror& in)

@@ -124,11 +124,11 @@ namespace ftk
 
     inline const uint8_t* Image::getData() const
     {
-        return _dataP;
+        return _data;
     }
 
     inline uint8_t* Image::getData()
     {
-        return _dataP;
+        return _data;
     }
 }

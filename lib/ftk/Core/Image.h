@@ -13,7 +13,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace ftk
 {
@@ -222,9 +221,9 @@ namespace ftk
     private:
         ImageInfo _info;
         ImageTags _tags;
-        size_t _byteCount = 0;
-        std::vector<uint8_t> _data;
-        uint8_t* _dataP = nullptr;
+        size_t    _byteCount    = 0;
+        uint8_t*  _data         = nullptr;
+        bool      _externalData = false;
     };
 
     FTK_API void to_json(nlohmann::json&, const ImageMirror&);
