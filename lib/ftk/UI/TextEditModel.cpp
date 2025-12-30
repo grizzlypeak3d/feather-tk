@@ -377,7 +377,7 @@ namespace ftk
             break;
 
         case Key::A:
-            if (static_cast<int>(KeyModifier::Control) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 selectAll();
                 out = true;
@@ -385,7 +385,7 @@ namespace ftk
             break;
 
         case Key::C:
-            if (static_cast<int>(KeyModifier::Control) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 copy();
                 out = true;
@@ -393,7 +393,7 @@ namespace ftk
             break;
 
         case Key::X:
-            if (static_cast<int>(KeyModifier::Control) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 cut();
                 out = true;
@@ -401,7 +401,7 @@ namespace ftk
             break;
 
         case Key::V:
-            if (static_cast<int>(KeyModifier::Control) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 paste();
                 out = true;
@@ -409,7 +409,7 @@ namespace ftk
             break;
 
         case Key::Y:
-            if (static_cast<int>(KeyModifier::Control) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 redo();
                 out = true;
@@ -417,7 +417,7 @@ namespace ftk
             break;
 
         case Key::Z:
-            if (static_cast<int>(KeyModifier::Control) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 undo();
                 out = true;

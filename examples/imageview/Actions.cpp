@@ -67,7 +67,7 @@ namespace imageview
         _actions["File/Open"] = Action::create(
             "Open",
             "FileOpen",
-            KeyShortcut(Key::O, static_cast<int>(KeyModifier::Control)),
+            KeyShortcut(Key::O, static_cast<int>(commandKeyModifier)),
             [this, appWeak]
             {
                 auto app = appWeak.lock();
@@ -87,7 +87,7 @@ namespace imageview
         _actions["File/Close"] = Action::create(
             "Close",
             "FileClose",
-            KeyShortcut(Key::E, static_cast<int>(KeyModifier::Control)),
+            KeyShortcut(Key::E, static_cast<int>(commandKeyModifier)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -101,7 +101,7 @@ namespace imageview
             KeyShortcut(
                 Key::E,
                 static_cast<int>(KeyModifier::Shift) |
-                static_cast<int>(KeyModifier::Control)),
+                static_cast<int>(commandKeyModifier)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -111,7 +111,7 @@ namespace imageview
 
         _actions["File/Exit"] = Action::create(
             "Exit",
-            KeyShortcut(Key::Q, static_cast<int>(KeyModifier::Control)),
+            KeyShortcut(Key::Q, static_cast<int>(commandKeyModifier)),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -153,7 +153,7 @@ namespace imageview
         _actions["Window/FullScreen"] = Action::create(
             "Full Screen",
             "WindowFullScreen",
-            KeyShortcut(Key::U, static_cast<int>(KeyModifier::Control)),
+            KeyShortcut(Key::U, static_cast<int>(commandKeyModifier)),
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())
