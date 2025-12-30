@@ -19,7 +19,7 @@ namespace ftk
         {
             py::class_<KeyShortcut>(m, "KeyShortcut")
                 .def(py::init<>())
-                .def(py::init<Key, int>(), py::arg("key"), py::arg("modifiers") = -1)
+                .def(py::init<Key, int>(), py::arg("key"), py::arg("modifiers") = 0)
                 .def_readwrite("key", &KeyShortcut::key)
                 .def_readwrite("modifiers", &KeyShortcut::modifiers);
 
