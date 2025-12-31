@@ -297,8 +297,8 @@ namespace ftk
             if (static_cast<int>(commandKeyModifier) == modifiers)
             {
                 selectAll();
+                out = true;
             }
-            out = true;
             break;
 
         case Key::C:
@@ -341,12 +341,11 @@ namespace ftk
             }
             break;
 
-        case Key::Tab:
         default: break;
         }
-        if (!out)
+        if (!out && key != Key::Tab && 0 == modifiers)
         {
-            out = !isControlKey(key) && 0 == modifiers;
+            out = !isControlKey(key);
         }
         return out;
     }

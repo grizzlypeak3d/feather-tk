@@ -431,9 +431,9 @@ namespace ftk
 
         default: break;
         }
-        if (!out)
+        if (!out && 0 == modifiers)
         {
-            out = !isControlKey(key) && 0 == modifiers;
+            out = !isControlKey(key);
         }
         return out;
     }
