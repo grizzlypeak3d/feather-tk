@@ -13,17 +13,12 @@
 
 namespace ftk
 {
-    FTK_ENUM_IMPL(
-        FileEditDisplay,
-        "FullPath",
-        "FileName");
-
     struct FileEdit::Private
     {
         FileBrowserMode mode = FileBrowserMode::File;
         Path path;
-        FileEditDisplay display = FileEditDisplay::FullPath;
 
+        std::shared_ptr<ToolButton> button;
         std::shared_ptr<LineEdit> lineEdit;
         std::shared_ptr<ToolButton> browseButton;
         std::shared_ptr<HorizontalLayout> layout;
@@ -43,8 +38,13 @@ namespace ftk
 
         p.mode = mode;
 
+        p.button = ToolButton::create(context);
+        p.button->setButtonRole(ColorRole::Base);
+        p.button->setHStretch(Stretch::Expanding);
+
         p.lineEdit = LineEdit::create(context);
         p.lineEdit->setHStretch(Stretch::Expanding);
+        p.lineEdit->hide();
 
         p.browseButton = ToolButton::create(context);
         p.browseButton->setIcon("FileBrowser");
@@ -52,29 +52,43 @@ namespace ftk
 
         p.layout = HorizontalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingTool);
+        p.button->setParent(p.layout);
         p.lineEdit->setParent(p.layout);
         p.browseButton->setParent(p.layout);
 
         _widgetUpdate();
 
+        p.button->setClickedCallback(
+            [this]
+            {
+                FTK_P();
+                p.button->hide();
+                p.lineEdit->show();
+                p.lineEdit->takeKeyFocus();
+            });
+
         p.lineEdit->setTextCallback(
             [this](const std::string& value)
             {
                 FTK_P();
-                switch (p.display)
-                {
-                case FileEditDisplay::FullPath:
-                    p.path = Path(value);
-                    break;
-                case FileEditDisplay::FileName:
-                    p.path.setFileName(value);
-                    break;
-                default: break;
-                }
-                p.lineEdit->setTooltip(p.path.get());
+                p.path = Path(value);
+                p.lineEdit->hide();
+                p.button->show();
+                _widgetUpdate();
                 if (p.callback)
                 {
                     p.callback(p.path);
+                }
+            });
+
+        p.lineEdit->setFocusCallback(
+            [this](bool value)
+            {
+                FTK_P();
+                if (!value)
+                {
+                    p.lineEdit->hide();
+                    p.button->show();
                 }
             });
 
@@ -122,26 +136,13 @@ namespace ftk
         if (value == p.path)
             return;
         p.path = value;
+        p.lineEdit->setText(value.get());
         _widgetUpdate();
     }
 
     void FileEdit::setCallback(const std::function<void(const Path&)>& value)
     {
         _p->callback = value;
-    }
-    
-    FileEditDisplay FileEdit::getDisplay() const
-    {
-        return _p->display;
-    }
-
-    void FileEdit::setDisplay(FileEditDisplay value)
-    {
-        FTK_P();
-        if (value == p.display)
-            return;
-        p.display = value;
-        _widgetUpdate();
     }
 
     void FileEdit::setGeometry(const Box2I& value)
@@ -168,6 +169,7 @@ namespace ftk
                     {
                         FTK_P();
                         p.path = value;
+                        p.lineEdit->setText(value.get());
                         _widgetUpdate();
                         if (p.callback)
                         {
@@ -185,17 +187,7 @@ namespace ftk
     {
         FTK_P();
         std::string text;
-        switch (p.display)
-        {
-        case FileEditDisplay::FullPath:
-            text = p.path.get();
-            break;
-        case FileEditDisplay::FileName:
-            text = p.path.getFileName();
-            break;
-        default: break;
-        }
-        p.lineEdit->setText(text);
-        p.lineEdit->setTooltip(p.path.get());
+        p.button->setText(p.path.getFileName());
+        p.button->setTooltip(p.path.get());
     }
 }

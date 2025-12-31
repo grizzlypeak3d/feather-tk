@@ -12,17 +12,6 @@ namespace ftk
     //! \name File Widgets
     ///@{
 
-    //! File edit display mode.
-    enum class FTK_API_TYPE FileEditDisplay
-    {
-        FullPath,
-        FileName,
-
-        Count,
-        First = FullPath
-    };
-    FTK_ENUM(FileEditDisplay);
-
     //! File edit widget.
     class FTK_API_TYPE FileEdit : public IWidget
     {
@@ -56,12 +45,6 @@ namespace ftk
 
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Path&)>&);
-
-        //! Get the display mode.
-        FTK_API FileEditDisplay getDisplay() const;
-
-        //! Get the display mode.
-        FTK_API void setDisplay(FileEditDisplay);
 
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
