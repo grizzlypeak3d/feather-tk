@@ -33,9 +33,6 @@ namespace ftk
         std::weak_ptr<IWidget> mousePress;
         MouseClickEvent mouseClickEvent;
         std::weak_ptr<IWidget> keyFocus;
-        std::list<std::pair<
-            std::shared_ptr<IWidget>,
-            std::weak_ptr<IWidget> > > restoreKeyFocus;
         std::weak_ptr<IWidget> keyPress;
         KeyEvent keyEvent;
 
@@ -221,11 +218,8 @@ namespace ftk
         if (value && value->acceptsKeyFocus())
         {
             p.keyFocus = value;
-            if (auto widget = p.keyFocus.lock())
-            {
-                widget->keyFocusEvent(true);
-                setDrawUpdate();
-            }
+            value->keyFocusEvent(true);
+            setDrawUpdate();
         }
     }
 
