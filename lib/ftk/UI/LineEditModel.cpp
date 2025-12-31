@@ -341,11 +341,12 @@ namespace ftk
             }
             break;
 
-        case Key::Tab: break;
-
-        default:
+        case Key::Tab:
+        default: break;
+        }
+        if (!out)
+        {
             out = !isControlKey(key) && 0 == modifiers;
-            break;
         }
         return out;
     }
