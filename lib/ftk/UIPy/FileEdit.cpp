@@ -20,11 +20,6 @@ namespace ftk
     {
         void fileEdit(py::module_& m)
         {
-            py::enum_<FileEditDisplay>(m, "FileEditDisplay")
-                .value("FullPath", FileEditDisplay::FullPath)
-                .value("FileName", FileEditDisplay::FileName);
-            FTK_ENUM_BIND(m, FileEditDisplay);
-
             py::class_<FileEdit, IWidget, std::shared_ptr<FileEdit> >(m, "FileEdit")
                 .def(
                     py::init(py::overload_cast<
@@ -49,7 +44,6 @@ namespace ftk
                     {
                         w->setPath(Path(s));
                     })
-                .def_property("display", &FileEdit::getDisplay, &FileEdit::setDisplay)
                 .def("setCallback", &FileEdit::setCallback);
         }
     }
