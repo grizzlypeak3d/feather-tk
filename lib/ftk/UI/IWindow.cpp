@@ -207,17 +207,17 @@ namespace ftk
     void IWindow::setKeyFocus(const std::shared_ptr<IWidget>& value)
     {
         FTK_P();
-        if (value == p.keyFocus.lock())
+        auto prev = p.keyFocus.lock();
+        if (value == prev)
             return;
-        if (auto widget = p.keyFocus.lock())
+        p.keyFocus = value;
+        if (prev)
         {
-            p.keyFocus.reset();
-            widget->keyFocusEvent(false);
+            prev->keyFocusEvent(false);
             setDrawUpdate();
         }
-        if (value && value->acceptsKeyFocus())
+        if (value)
         {
-            p.keyFocus = value;
             value->keyFocusEvent(true);
             setDrawUpdate();
         }
