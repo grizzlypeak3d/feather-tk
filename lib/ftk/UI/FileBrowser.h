@@ -12,6 +12,7 @@
 
 namespace ftk
 {
+    class FileBrowserView;
     class RecentFilesModel;
 
     //! \name File Widgets
@@ -155,6 +156,9 @@ namespace ftk
         //! Set the recent files model.
         FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
+        //! Get the file browser view.
+        FTK_API std::shared_ptr<FileBrowserView> getView() const;
+
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
@@ -207,6 +211,8 @@ namespace ftk
 
         //! Set the recent files model.
         FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+
+        FTK_API virtual std::shared_ptr<IWidget> getKeyFocus() const override;
 
     private:
         FTK_PRIVATE();

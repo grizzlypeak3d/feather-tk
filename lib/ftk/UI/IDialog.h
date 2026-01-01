@@ -38,6 +38,9 @@ namespace ftk
         //! Set the close callback.
         FTK_API void setCloseCallback(const std::function<void(void)>&);
 
+        //! Get the key focus widget.
+        FTK_API virtual std::shared_ptr<IWidget> getKeyFocus() const;
+
         FTK_API void close() override;
 
         FTK_API void setGeometry(const Box2I&) override;

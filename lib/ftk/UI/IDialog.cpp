@@ -57,14 +57,15 @@ namespace ftk
         FTK_P();
         p.open = true;
         p.restoreFocus = window->getKeyFocus();
+        window->setKeyFocus(nullptr);
         setParent(window);
-        if (auto widget = window->getNextKeyFocus(shared_from_this()))
+        if (auto widget = getKeyFocus())
         {
             widget->takeKeyFocus();
         }
-        else
+        else if (widget = window->getNextKeyFocus(shared_from_this()))
         {
-            window->setKeyFocus(nullptr);
+            widget->takeKeyFocus();
         }
     }
 
@@ -76,6 +77,11 @@ namespace ftk
     void IDialog::setCloseCallback(const std::function<void(void)>& value)
     {
         _p->closeCallback = value;
+    }
+
+    std::shared_ptr<IWidget> IDialog::getKeyFocus() const
+    {
+        return nullptr;
     }
 
     void IDialog::close()

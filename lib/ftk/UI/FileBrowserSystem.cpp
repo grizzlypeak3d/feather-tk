@@ -90,15 +90,12 @@ namespace ftk
         {
             if (auto context = _context.lock())
             {
-                if (!p.fileBrowser)
-                {
-                    p.fileBrowser = FileBrowser::create(
-                        context,
-                        title,
-                        path,
-                        mode,
-                        p.model);
-                }
+                p.fileBrowser = FileBrowser::create(
+                    context,
+                    title,
+                    path,
+                    mode,
+                    p.model);
                 p.fileBrowser->setTitle(title);
                 p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
                 p.fileBrowser->open(window);

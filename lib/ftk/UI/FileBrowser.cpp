@@ -107,6 +107,11 @@ namespace ftk
         _p->widget->setRecentFilesModel(value);
     }
 
+    std::shared_ptr<IWidget> FileBrowser::getKeyFocus() const
+    {
+        return _p->widget->getView();
+    }
+
     void to_json(nlohmann::json& json, const FileBrowserOptions& value)
     {
         json["DirList"] = value.dirList;

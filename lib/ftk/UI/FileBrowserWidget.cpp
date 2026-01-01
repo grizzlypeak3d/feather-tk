@@ -416,6 +416,11 @@ namespace ftk
         p.panelWidget->setRecentFilesModel(value);
     }
 
+    std::shared_ptr<FileBrowserView> FileBrowserWidget::getView() const
+    {
+        return _p->view;
+    }
+
     void FileBrowserWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
