@@ -64,18 +64,18 @@ namespace ftk
 
             m.def("getYUVCoefficients", &getYUVCoefficients);
 
-            py::class_<ImageMirror>(m, "ImageMirror")
+            py::class_<ImageFlip>(m, "ImageFlip")
                 .def(py::init<>())
                 .def(py::init<bool, bool>())
-                .def_readwrite("x", &ImageMirror::x)
-                .def_readwrite("y", &ImageMirror::y)
+                .def_readwrite("x", &ImageFlip::x)
+                .def_readwrite("y", &ImageFlip::y)
                 .def(py::self == py::self)
                 .def(py::self != py::self);
 
             py::class_<ImageLayout>(m, "ImageLayout")
                 .def(py::init<>())
-                .def(py::init<const ImageMirror&, int, Endian>())
-                .def_readwrite("mirror", &ImageLayout::mirror)
+                .def(py::init<const ImageFlip&, int, Endian>())
+                .def_readwrite("flip", &ImageLayout::flip)
                 .def_readwrite("alignment", &ImageLayout::alignment)
                 .def_readwrite("endian", &ImageLayout::endian)
                 .def(py::self == py::self)

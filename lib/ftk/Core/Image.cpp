@@ -220,13 +220,13 @@ namespace ftk
         memset(_data, 0, _byteCount);
     }
 
-    void to_json(nlohmann::json& json, const ImageMirror& in)
+    void to_json(nlohmann::json& json, const ImageFlip& in)
     {
         json["X"] = in.x;
         json["Y"] = in.y;
     }
 
-    void from_json(const nlohmann::json& json, ImageMirror& out)
+    void from_json(const nlohmann::json& json, ImageFlip& out)
     {
         json.at("X").get_to(out.x);
         json.at("Y").get_to(out.y);

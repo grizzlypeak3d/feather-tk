@@ -404,8 +404,8 @@ namespace ftk
             }
             p.shaders["image"]->setUniform("videoLevels", static_cast<int>(videoLevels));
             p.shaders["image"]->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
-            p.shaders["image"]->setUniform("mirrorX", info.layout.mirror.x);
-            p.shaders["image"]->setUniform("mirrorY", info.layout.mirror.y);
+            p.shaders["image"]->setUniform("flipX", info.layout.flip.x);
+            p.shaders["image"]->setUniform("flipY", info.layout.flip.y);
             switch (info.type)
             {
             case ImageType::YUV_420P_U8:
