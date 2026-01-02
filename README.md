@@ -10,15 +10,15 @@ Projects using feather-tk:
 * https://github.com/grizzlypeak3d/tlRender
 * https://github.com/OpenTimelineIO/toucan
 
-Example image viewer showing menus, toolbars, and persistent settings:
+Example image viewer with menus, toolbars, and persistent settings:
 
 ![DemoDarkStyle](etc/Images/imageview.png)
 
-Example object viewer showing offscreen rendering and a heads up display:
+Example object viewer with offscreen rendering and a heads up display:
 
 ![DemoDarkStyle](etc/Images/objview.png)
 
-Example text editor showing multiple documents with loading and saving:
+Example text editor with multiple documents:
 
 ![DemoDarkStyle](etc/Images/textedit.png)
 
