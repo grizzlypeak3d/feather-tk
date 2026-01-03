@@ -112,7 +112,7 @@ namespace ftk
         //! Set the window icon.
         //! 
         //! Icon images should be of type ImageType::RGBA_U8, with no
-        //! flipping, memory alignment of one, and LSB memory endian.
+        //! mirroring, memory alignment of one, and LSB memory endian.
         //!
         //! Window icons are not supported on macOS.
         FTK_API virtual void setIcon(const std::shared_ptr<Image>&);

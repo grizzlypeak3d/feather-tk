@@ -258,7 +258,7 @@ namespace ftk
             }
 
             p.info = ImageInfo(width, height, type);
-            p.info.layout.flip.y = true;
+            p.info.layout.mirror.y = true;
         }
 
         ImageReader::~ImageReader()

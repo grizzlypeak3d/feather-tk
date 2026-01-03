@@ -268,17 +268,17 @@ namespace ftk
             if (info.type == ImageType::RGBA_U8 &&
                 1 == info.layout.alignment)
             {
-                auto flipped = Image::create(info);
+                auto mirrored = Image::create(info);
                 for (int y = 0; y < info.size.h; ++y)
                 {
                     memcpy(
-                        flipped->getData() + (info.size.h - 1 - y) * info.size.w * 4,
+                        mirrored->getData() + (info.size.h - 1 - y) * info.size.w * 4,
                         icon->getData() + y * info.size.w * 4,
                         info.size.w * 4);
                 }
 #if defined(FTK_SDL2)
                 if (SDL_Surface* sdlSurface = SDL_CreateRGBSurfaceFrom(
-                    flipped->getData(),
+                    mirrored->getData(),
                     info.size.w,
                     info.size.h,
                     32,
@@ -292,7 +292,7 @@ namespace ftk
                     info.size.w,
                     info.size.h,
                     SDL_PIXELFORMAT_RGBA8888,
-                    flipped->getData(),
+                    mirrored->getData(),
                     info.size.w * 4))
 #endif // FTK_SDL2
                 {

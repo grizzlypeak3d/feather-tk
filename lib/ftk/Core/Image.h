@@ -95,17 +95,17 @@ namespace ftk
     //! Get YUV coefficients.
     FTK_API V4F getYUVCoefficients(YUVCoefficients);
 
-    //! Image flipping.
-    struct FTK_API_TYPE ImageFlip
+    //! Image mirroring.
+    struct FTK_API_TYPE ImageMirror
     {
-        ImageFlip() = default;
-        constexpr ImageFlip(bool x, bool y);
+        ImageMirror() = default;
+        constexpr ImageMirror(bool x, bool y);
 
         bool x = false;
         bool y = false;
 
-        constexpr bool operator == (const ImageFlip&) const;
-        constexpr bool operator != (const ImageFlip&) const;
+        constexpr bool operator == (const ImageMirror&) const;
+        constexpr bool operator != (const ImageMirror&) const;
     };
 
     //! Image data layout.
@@ -113,13 +113,13 @@ namespace ftk
     {
         ImageLayout() = default;
         ImageLayout(
-            const ImageFlip& flip,
-            int              alignment = 1,
-            Endian           endian    = getEndian());
+            const ImageMirror& mirrot,
+            int                alignment = 1,
+            Endian             endian    = getEndian());
 
-        ImageFlip flip;
-        int       alignment = 1;
-        Endian    endian    = getEndian();
+        ImageMirror mirror;
+        int         alignment = 1;
+        Endian      endian    = getEndian();
 
         constexpr bool operator == (const ImageLayout&) const;
         constexpr bool operator != (const ImageLayout&) const;
@@ -226,9 +226,9 @@ namespace ftk
         bool      _externalData = false;
     };
 
-    FTK_API void to_json(nlohmann::json&, const ImageFlip&);
+    FTK_API void to_json(nlohmann::json&, const ImageMirror&);
 
-    FTK_API void from_json(const nlohmann::json&, ImageFlip&);
+    FTK_API void from_json(const nlohmann::json&, ImageMirror&);
 
     ///@}
 }

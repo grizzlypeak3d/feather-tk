@@ -3,26 +3,26 @@
 
 namespace ftk
 {
-    constexpr ImageFlip::ImageFlip(bool x, bool y) :
+    constexpr ImageMirror::ImageMirror(bool x, bool y) :
         x(x),
         y(y)
     {}
 
-    constexpr bool ImageFlip::operator == (const ImageFlip& other) const
+    constexpr bool ImageMirror::operator == (const ImageMirror& other) const
     {
         return other.x == x && other.y == y;
     }
 
-    constexpr bool ImageFlip::operator != (const ImageFlip& other) const
+    constexpr bool ImageMirror::operator != (const ImageMirror& other) const
     {
         return !(other == *this);
     }
 
     inline ImageLayout::ImageLayout(
-        const ImageFlip& flip,
+        const ImageMirror& mirror,
         int alignment,
         Endian endian) :
-        flip(flip),
+        mirror(mirror),
         alignment(alignment),
         endian(endian)
     {}
@@ -30,7 +30,7 @@ namespace ftk
     constexpr bool ImageLayout::operator == (const ImageLayout & other) const
     {
         return
-            other.flip == flip &&
+            other.mirror == mirror &&
             other.alignment == alignment &&
             other.endian == endian;
     }

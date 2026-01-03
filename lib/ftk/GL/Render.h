@@ -90,7 +90,7 @@ namespace ftk
             FTK_API void drawTexture(
                 unsigned int,
                 const Box2I&,
-                bool flipV = false,
+                bool mirrorV = false,
                 const Color4F& = Color4F(1.F, 1.F, 1.F),
                 AlphaBlend = AlphaBlend::Straight) override;
             FTK_API void drawText(

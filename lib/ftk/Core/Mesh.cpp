@@ -28,7 +28,7 @@ namespace ftk
         return out;
     }
 
-    TriMesh2F mesh(const Box2I& box, bool flipV)
+    TriMesh2F mesh(const Box2I& box, bool mirrorV)
     {
         TriMesh2F out;
 
@@ -38,10 +38,10 @@ namespace ftk
         out.v.push_back(V2F(max.x + 1, min.y));
         out.v.push_back(V2F(max.x + 1, max.y + 1));
         out.v.push_back(V2F(min.x, max.y + 1));
-        out.t.push_back(V2F(0.F, flipV ? 1.F : 0.F));
-        out.t.push_back(V2F(1.F, flipV ? 1.F : 0.F));
-        out.t.push_back(V2F(1.F, flipV ? 0.F : 1.F));
-        out.t.push_back(V2F(0.F, flipV ? 0.F : 1.F));
+        out.t.push_back(V2F(0.F, mirrorV ? 1.F : 0.F));
+        out.t.push_back(V2F(1.F, mirrorV ? 1.F : 0.F));
+        out.t.push_back(V2F(1.F, mirrorV ? 0.F : 1.F));
+        out.t.push_back(V2F(0.F, mirrorV ? 0.F : 1.F));
 
         Triangle2 triangle;
         triangle.v[0].v = 1;
@@ -62,7 +62,7 @@ namespace ftk
         return out;
     }
 
-    TriMesh2F mesh(const Box2F& box, bool flipV)
+    TriMesh2F mesh(const Box2F& box, bool mirrorV)
     {
         TriMesh2F out;
 
@@ -72,10 +72,10 @@ namespace ftk
         out.v.push_back(V2F(max.x, min.y));
         out.v.push_back(V2F(max.x, max.y));
         out.v.push_back(V2F(min.x, max.y));
-        out.t.push_back(V2F(0.F, flipV ? 1.F : 0.F));
-        out.t.push_back(V2F(1.F, flipV ? 1.F : 0.F));
-        out.t.push_back(V2F(1.F, flipV ? 0.F : 1.F));
-        out.t.push_back(V2F(0.F, flipV ? 0.F : 1.F));
+        out.t.push_back(V2F(0.F, mirrorV ? 1.F : 0.F));
+        out.t.push_back(V2F(1.F, mirrorV ? 1.F : 0.F));
+        out.t.push_back(V2F(1.F, mirrorV ? 0.F : 1.F));
+        out.t.push_back(V2F(0.F, mirrorV ? 0.F : 1.F));
 
         Triangle2 triangle;
         triangle.v[0].v = 1;

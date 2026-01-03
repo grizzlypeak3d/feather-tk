@@ -81,10 +81,10 @@ namespace ftk
     FTK_API Box3F bbox(const TriMesh3F&);
 
     //! Create a mesh from a box.
-    FTK_API TriMesh2F mesh(const Box2I&, bool flipV = false);
+    FTK_API TriMesh2F mesh(const Box2I&, bool mirrorV = false);
 
     //! Create a mesh from a box.
-    FTK_API TriMesh2F mesh(const Box2F&, bool flipV = false);
+    FTK_API TriMesh2F mesh(const Box2F&, bool mirrorV = false);
 
     //! Create a mesh for drawing checkers.
     FTK_API TriMesh2F checkers(
