@@ -149,6 +149,14 @@ namespace ftk
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
+
+        Size2I sizeHint;
+        const auto& children = getChildren();
+        if (!children.empty())
+        {
+            sizeHint = children.front()->getSizeHint();
+        }
+        setSizeHint(sizeHint);
     }
 
     void IDialog::clipEvent(const Box2I& clipRect, bool clipped)
