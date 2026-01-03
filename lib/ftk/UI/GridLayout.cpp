@@ -311,8 +311,6 @@ namespace ftk
         }
 
         // Get size hints.
-        p.geom.rowSizeHints.clear();
-        p.geom.columnSizeHints.clear();
         p.getSizeHints(p.geom.rowSizeHints, p.geom.columnSizeHints);
         Size2I sizeHint;
         for (int i : p.geom.rowSizeHints)
@@ -325,8 +323,6 @@ namespace ftk
         }
 
         // Add spacing.
-        p.geom.rowsVisibleCount = 0;
-        p.geom.columnsVisibleCount = 0;
         p.getVisible(p.geom.rowsVisibleCount, p.geom.columnsVisibleCount);
         if (p.geom.rowsVisibleCount > 0)
         {
@@ -405,8 +401,8 @@ namespace ftk
         std::vector<int>& columns) const
     {
         const GridPos size = getSize();
-        rows = std::vector<int>(size.row, false);
-        columns = std::vector<int>(size.column, false);
+        rows = std::vector<int>(size.row, 0);
+        columns = std::vector<int>(size.column, 0);
         for (const auto& i : gridPos)
         {
             const bool visible = i.first->isVisible(false);
