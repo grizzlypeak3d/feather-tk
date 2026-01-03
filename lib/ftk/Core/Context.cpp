@@ -20,7 +20,7 @@ namespace ftk
             "ftk::Context",
             Format("ftk version: {0}").arg(ftk_VERSION_FULL));
 
-        const auto systemInfo = getSystemInfo();
+        const auto sysInfo = getSysInfo();
         _logSystem->print(
             "ftk::Context",
             Format(
@@ -28,9 +28,9 @@ namespace ftk
                 "    Name:  {0}\n"
                 "    Cores: {1}\n"
                 "    RAM:   {2}GB").
-            arg(systemInfo.name).
-            arg(systemInfo.cores).
-            arg(systemInfo.ramGB));
+            arg(sysInfo.name).
+            arg(sysInfo.cores).
+            arg(sysInfo.ramGB));
 
         addSystem(FontSystem::create(shared_from_this()));
         addSystem(ImageIO::create(shared_from_this()));

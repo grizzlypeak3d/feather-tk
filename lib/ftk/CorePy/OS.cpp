@@ -15,13 +15,13 @@ namespace ftk
     {
         void os(py::module_& m)
         {
-            py::class_<SystemInfo>(m, "SystemInfo")
-                .def_readwrite("name", &SystemInfo::name)
-                .def_readwrite("cores", &SystemInfo::cores)
-                .def_readwrite("ram", &SystemInfo::ram)
-                .def_readwrite("ramGB", &SystemInfo::ramGB);
+            py::class_<SysInfo>(m, "SystInfo")
+                .def_readwrite("name", &SysInfo::name)
+                .def_readwrite("cores", &SysInfo::cores)
+                .def_readwrite("ram", &SysInfo::ram)
+                .def_readwrite("ramGB", &SysInfo::ramGB);
 
-            m.def("getSystemInfo", &getSystemInfo, "Get operating system information.");
+            m.def("getSystInfo", &getSysInfo, "Get operating system information.");
         }
     }
 }

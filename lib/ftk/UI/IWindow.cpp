@@ -324,6 +324,11 @@ namespace ftk
         _p->closeCallback = value;
     }
 
+    std::vector<std::pair<std::string, std::string> > IWindow::getWindowInfo() const
+    {
+        return {};
+    }
+
     void IWindow::setVisible(bool value)
     {
         const bool changed = value != isVisible(false);

@@ -32,6 +32,7 @@ namespace ftk
             std::weak_ptr<LogSystem> logSystem;
             SDL_Window* sdlWindow = nullptr;
             SDL_GLContext sdlGLContext = nullptr;
+            GLInfo glInfo;
             V2I pos;
             std::vector<std::shared_ptr<Image> > icons;
             bool fullScreen = false;
@@ -133,22 +134,19 @@ namespace ftk
             }
 #endif // FTK_API_GL_4_1_Debug
 
-            std::string glVendor;
-            std::string glRenderer;
-            std::string glVersion;
             int glVersionMajor = 0;
             if (const GLubyte* glString = glGetString(GL_VENDOR))
             {
-                glVendor = std::string((const char*)glString);
+                p.glInfo.vendor = std::string((const char*)glString);
             }
             if (const GLubyte* glString = glGetString(GL_RENDERER))
             {
-                glRenderer = std::string((const char*)glString);
+                p.glInfo.renderer = std::string((const char*)glString);
             }
             if (const GLubyte* glString = glGetString(GL_VERSION))
             {
-                glVersion = std::string((const char*)glString);
-                glVersionMajor = getMajorVersion(glVersion);
+                p.glInfo.version = std::string((const char*)glString);
+                glVersionMajor = getMajorVersion(p.glInfo.version);
             }
             //! \todo Shouldn't window creation fail if we didn't get the
             //! requested OpenGL version?
@@ -174,9 +172,9 @@ namespace ftk
                         "    OpenGL version: {4}").
                     arg(this).
                     arg(size).
-                    arg(glVendor).
-                    arg(glRenderer).
-                    arg(glVersion));
+                    arg(p.glInfo.vendor).
+                    arg(p.glInfo.renderer).
+                    arg(p.glInfo.version));
             }
 
             if (!(options & static_cast<int>(WindowOptions::MakeCurrent)))
@@ -386,6 +384,11 @@ namespace ftk
         void Window::swap()
         {
             SDL_GL_SwapWindow(_p->sdlWindow);
+        }
+
+        const GLInfo& Window::getGLInfo() const
+        {
+            return _p->glInfo;
         }
     }
 }

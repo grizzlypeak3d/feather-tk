@@ -14,6 +14,14 @@ namespace ftk
         //! \name Windows
         ///@{
         
+        //! OpenGL information.
+        struct FTK_API_TYPE GLInfo
+        {
+            std::string vendor;
+            std::string renderer;
+            std::string version;
+        };
+
         //! OpenGL window options.
         enum class FTK_API_TYPE WindowOptions
         {
@@ -105,6 +113,9 @@ namespace ftk
 
             //! Swap the buffers.
             FTK_API void swap();
+
+            //! Get the OpenGL information.
+            FTK_API const GLInfo& getGLInfo() const;
 
         private:
             FTK_PRIVATE();

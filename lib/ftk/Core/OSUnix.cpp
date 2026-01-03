@@ -74,9 +74,9 @@ namespace ftk
         }
     }
     
-    SystemInfo getSystemInfo()
+    SysInfo getSysInfo()
     {
-        SystemInfo out;
+        SysInfo out;
         out.name = getName();
         out.cores = std::thread::hardware_concurrency();
         out.ram = getRAMSize();

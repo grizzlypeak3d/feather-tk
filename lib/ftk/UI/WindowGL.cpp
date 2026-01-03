@@ -171,6 +171,17 @@ namespace ftk
         return out;
     }
 
+    std::vector<std::pair<std::string, std::string> > Window::getWindowInfo() const
+    {
+        FTK_P();
+        std::vector<std::pair<std::string, std::string> > out;
+        const auto& glInfo = p.window->getGLInfo();
+        out.push_back(std::make_pair("GL vendor", glInfo.vendor));
+        out.push_back(std::make_pair("GL renderer", glInfo.renderer));
+        out.push_back(std::make_pair("GL version", glInfo.version));
+        return out;
+    }
+
     void Window::setGeometry(const Box2I& value)
     {
         IWindow::setGeometry(value);

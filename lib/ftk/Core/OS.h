@@ -14,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Operating system information.
-    struct FTK_API_TYPE SystemInfo
+    struct FTK_API_TYPE SysInfo
     {
         std::string name;
         size_t      cores = 0;
@@ -23,7 +23,7 @@ namespace ftk
     };
 
     //! Get operating system information.
-    FTK_API SystemInfo getSystemInfo();
+    FTK_API SysInfo getSysInfo();
 
     //! Environment variable list separators.
     const std::vector<char> envListSeparators = { ':', ';' };

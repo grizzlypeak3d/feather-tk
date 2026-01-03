@@ -126,6 +126,9 @@ namespace ftk
         //! Set the window close callback.
         FTK_API void setCloseCallback(const std::function<void(void)>&);
 
+        //! Get the window information.
+        FTK_API virtual std::vector<std::pair<std::string, std::string> > getWindowInfo() const;
+
         FTK_API void setVisible(bool) override;
         FTK_API void tickEvent(
             bool parentsVisible,
