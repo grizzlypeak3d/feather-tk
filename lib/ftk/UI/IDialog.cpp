@@ -117,15 +117,25 @@ namespace ftk
             const Box2I g = margin(value, -p.size.margin);
             const Size2I& sizeHint = children.front()->getSizeHint();
             V2I size;
-            size.x = std::min(sizeHint.w, g.w());
-            size.y = std::min(sizeHint.h, g.h());
-            if (Stretch::Expanding == children.front()->getHStretch())
+            switch (children.front()->getHStretch())
             {
+            case Stretch::Expanding:
                 size.x = g.w();
+                break;
+            case Stretch::Fixed:
+            default:
+                size.x = sizeHint.w;
+                break;
             }
-            if (Stretch::Expanding == children.front()->getVStretch())
+            switch (children.front()->getVStretch())
             {
+            case Stretch::Expanding:
                 size.y = g.h();
+                break;
+            case Stretch::Fixed:
+            default:
+                size.y = sizeHint.h;
+                break;
             }
             children.front()->setGeometry(Box2I(
                 g.x() + g.w() / 2 - size.x / 2,
@@ -149,14 +159,6 @@ namespace ftk
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
-
-        Size2I sizeHint;
-        const auto& children = getChildren();
-        if (!children.empty())
-        {
-            sizeHint = children.front()->getSizeHint();
-        }
-        setSizeHint(sizeHint);
     }
 
     void IDialog::clipEvent(const Box2I& clipRect, bool clipped)
