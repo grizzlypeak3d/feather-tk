@@ -179,6 +179,32 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Size2I ScrollArea::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        for (const auto& child : getChildren())
+        {
+            const Size2I& childSizeHint = child->getSizeHint();
+            out.w = std::max(out.w, childSizeHint.w);
+            out.h = std::max(out.h, childSizeHint.h);
+        }
+        switch (p.scrollType)
+        {
+        case ScrollType::Horizontal:
+            out.w = p.size.sizeHint;
+            break;
+        case ScrollType::Vertical:
+            out.h = p.size.sizeHint;
+            break;
+        case ScrollType::Both:
+            out.w = out.h = p.size.sizeHint;
+            break;
+        default: break;
+        }
+        return out;
+    }
+
     void ScrollArea::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
@@ -249,34 +275,11 @@ namespace ftk
     void ScrollArea::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
             p.size.sizeHint = event.style->getSizeRole(p.sizeHintRole, event.displayScale);
         }
-
-        Size2I sizeHint;
-        for (const auto& child : getChildren())
-        {
-            const Size2I& childSizeHint = child->getSizeHint();
-            sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
-            sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
-        }
-        switch (p.scrollType)
-        {
-        case ScrollType::Horizontal:
-            sizeHint.w = p.size.sizeHint;
-            break;
-        case ScrollType::Vertical:
-            sizeHint.h = p.size.sizeHint;
-            break;
-        case ScrollType::Both:
-            sizeHint.w = sizeHint.h = p.size.sizeHint;
-            break;
-        default: break;
-        }
-        setSizeHint(sizeHint);
     }
 }

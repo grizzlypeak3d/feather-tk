@@ -36,6 +36,7 @@ namespace ftk
         //! Set the spacing role.
         FTK_API void setSpacingRole(SizeRole);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:

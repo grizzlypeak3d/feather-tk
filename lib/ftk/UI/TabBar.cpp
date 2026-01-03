@@ -305,16 +305,16 @@ namespace ftk
     {
         _p->scrollWidget->setScrollBarsVisible(value);
     }
+    
+    Size2I TabBar::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void TabBar::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void TabBar::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void TabBar::keyFocusEvent(bool value)

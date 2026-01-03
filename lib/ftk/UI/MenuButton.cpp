@@ -206,6 +206,34 @@ namespace ftk
             }
         }
     }
+    
+    Size2I MenuButton::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        if (_iconImage)
+        {
+            out.w = _iconImage->getWidth();
+            out.h = _iconImage->getHeight();
+        }
+        if (!_text.empty())
+        {
+            out.w += p.size.textSize.w + p.size.pad * 2;
+            out.h = std::max(out.h, p.size.fontMetrics.lineHeight);
+        }
+        if (!p.shortcutText.empty())
+        {
+            out.w += p.size.shortcutSize.w + p.size.pad * 4;
+            out.h = std::max(out.h, p.size.shortcutSize.h);
+        }
+        if (p.subMenuImage)
+        {
+            out.w += p.subMenuImage->getWidth();
+            out.h = std::max(out.h, p.subMenuImage->getHeight());
+        }
+        out = margin(out, p.size.margin + p.size.keyFocus);
+        return out;
+    }
 
     void MenuButton::setGeometry(const Box2I& value)
     {
@@ -222,7 +250,6 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -236,7 +263,6 @@ namespace ftk
             p.size.shortcutSize = event.fontSystem->getSize(p.shortcutText, p.size.fontInfo);
             p.draw.reset();
         }
-
         if (event.displayScale != p.iconScale)
         {
             p.iconScale = event.displayScale;
@@ -246,30 +272,6 @@ namespace ftk
         {
             p.subMenuImage = event.iconSystem->get(p.subMenuIcon, p.iconScale);
         }
-
-        Size2I sizeHint;
-        if (_iconImage)
-        {
-            sizeHint.w = _iconImage->getWidth();
-            sizeHint.h = _iconImage->getHeight();
-        }
-        if (!_text.empty())
-        {
-            sizeHint.w += p.size.textSize.w + p.size.pad * 2;
-            sizeHint.h = std::max(sizeHint.h, p.size.fontMetrics.lineHeight);
-        }
-        if (!p.shortcutText.empty())
-        {
-            sizeHint.w += p.size.shortcutSize.w + p.size.pad * 4;
-            sizeHint.h = std::max(sizeHint.h, p.size.shortcutSize.h);
-        }
-        if (p.subMenuImage)
-        {
-            sizeHint.w += p.subMenuImage->getWidth();
-            sizeHint.h = std::max(sizeHint.h, p.subMenuImage->getHeight());
-        }
-        sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void MenuButton::clipEvent(const Box2I& clipRect, bool clipped)

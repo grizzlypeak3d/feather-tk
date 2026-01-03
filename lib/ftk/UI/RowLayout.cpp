@@ -125,6 +125,52 @@ namespace ftk
         }
     }
 
+    Size2I RowLayout::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        std::vector<Size2I> sizeHints;
+        size_t visible = 0;
+        for (const auto& child : getChildren())
+        {
+            if (child->isVisible(false))
+            {
+                const Size2I& childSizeHint = child->getSizeHint();
+                sizeHints.push_back(childSizeHint);
+                switch (p.orientation)
+                {
+                case Orientation::Horizontal:
+                    out.w += childSizeHint.w;
+                    out.h = std::max(out.h, childSizeHint.h);
+                    ++visible;
+                    break;
+                case Orientation::Vertical:
+                    out.w = std::max(out.w, childSizeHint.w);
+                    out.h += childSizeHint.h;
+                    ++visible;
+                    break;
+                default: break;
+                }
+            }
+        }
+        if (visible > 0)
+        {
+            switch (p.orientation)
+            {
+            case Orientation::Horizontal:
+                out.w += p.size.spacing * (visible - 1);
+                break;
+            case Orientation::Vertical:
+                out.h += p.size.spacing * (visible - 1);
+                break;
+            default: break;
+            }
+        }
+        out.w += p.size.margin * 2;
+        out.h += p.size.margin * 2;
+        return out;
+    }
+
     void RowLayout::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
@@ -244,7 +290,6 @@ namespace ftk
     void RowLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -252,48 +297,6 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
             p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
-
-        Size2I sizeHint;
-        std::vector<Size2I> sizeHints;
-        size_t visible = 0;
-        for (const auto& child : getChildren())
-        {
-            if (child->isVisible(false))
-            {
-                const Size2I& childSizeHint = child->getSizeHint();
-                sizeHints.push_back(childSizeHint);
-                switch (p.orientation)
-                {
-                case Orientation::Horizontal:
-                    sizeHint.w += childSizeHint.w;
-                    sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
-                    ++visible;
-                    break;
-                case Orientation::Vertical:
-                    sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
-                    sizeHint.h += childSizeHint.h;
-                    ++visible;
-                    break;
-                default: break;
-                }
-            }
-        }
-        if (visible > 0)
-        {
-            switch (p.orientation)
-            {
-            case Orientation::Horizontal:
-                sizeHint.w += p.size.spacing * (visible - 1);
-                break;
-            case Orientation::Vertical:
-                sizeHint.h += p.size.spacing * (visible - 1);
-                break;
-            default: break;
-            }
-        }
-        sizeHint.w += p.size.margin * 2;
-        sizeHint.h += p.size.margin * 2;
-        setSizeHint(sizeHint);
     }
 
     void RowLayout::childAddEvent(const ChildAddEvent& event)

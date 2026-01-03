@@ -111,16 +111,16 @@ namespace ftk
     {
         _p->widget->clearSearch();
     }
+    
+    Size2I ListWidget::getSizeHint() const
+    {
+        return _p->scrollWidget->getSizeHint();
+    }
 
     void ListWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->scrollWidget->setGeometry(value);
-    }
-
-    void ListWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->scrollWidget->getSizeHint());
     }
 
     void ListWidget::_scrollUpdate(int value)

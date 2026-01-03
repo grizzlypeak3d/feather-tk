@@ -177,6 +177,18 @@ namespace ftk
         return Box2I(0, y, getGeometry().w(), h);
     }
 
+    Size2I FileBrowserView::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        for (const auto& item : p.items)
+        {
+            out.w = std::max(out.w, item.size.w);
+            out.h += item.size.h;
+        }
+        return out;
+    }
+
     void FileBrowserView::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
@@ -226,14 +238,6 @@ namespace ftk
                 }
             }
         }
-
-        Size2I sizeHint;
-        for (const auto& item : p.items)
-        {
-            sizeHint.w = std::max(sizeHint.w, item.size.w);
-            sizeHint.h += item.size.h;
-        }
-        setSizeHint(sizeHint);
     }
 
     void FileBrowserView::drawEvent(

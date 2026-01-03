@@ -29,8 +29,8 @@ namespace ftk
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            Size2I getSizeHint() const override;
             void setGeometry(const Box2I&) override;
-            void sizeHintEvent(const SizeHintEvent&) override;
         };
 
         void ContainerWidget::_init(
@@ -57,6 +57,12 @@ namespace ftk
             return out;
         }
 
+        Size2I ContainerWidget::getSizeHint() const
+        {
+            const auto& children = getChildren();
+            return !children.empty() ? children.front()->getSizeHint() : Size2I();
+        }
+
         void ContainerWidget::setGeometry(const Box2I& value)
         {
             IMouseWidget::setGeometry(value);
@@ -64,16 +70,6 @@ namespace ftk
             if (!children.empty())
             {
                 children.front()->setGeometry(value);
-            }
-        }
-
-        void ContainerWidget::sizeHintEvent(const SizeHintEvent& event)
-        {
-            IMouseWidget::sizeHintEvent(event);
-            const auto& children = getChildren();
-            if (!children.empty())
-            {
-                setSizeHint(children.front()->getSizeHint());
             }
         }
     }

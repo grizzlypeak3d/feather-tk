@@ -32,6 +32,7 @@ namespace ftk
             ColorRole getChildColorRole() const;
             void setChildColorRole(ColorRole);
 
+            FTK_API Size2I getSizeHint() const override;
             void sizeHintEvent(const SizeHintEvent&) override;
             void drawEvent(const Box2I&, const DrawEvent&) override;
             void mouseMoveEvent(MouseMoveEvent&) override;
@@ -107,11 +108,20 @@ namespace ftk
             _childColorRole = value;
             setDrawUpdate();
         }
+        
+        Size2I MDIMiniMapWidget::getSizeHint() const
+        {
+            float aspect = 1.F;
+            if (_scrollInfo.scrollSize.isValid())
+            {
+                aspect = _scrollInfo.scrollSize.w / static_cast<float>(_scrollInfo.scrollSize.h);
+            }
+            return Size2I(_size.sizeHint * aspect, _size.sizeHint) + _size.border * 2;
+        }
 
         void MDIMiniMapWidget::sizeHintEvent(const SizeHintEvent& event)
         {
             IMouseWidget::sizeHintEvent(event);
-
             if (!_size.displayScale.has_value() ||
                 (_size.displayScale.has_value() && _size.displayScale.value() != event.displayScale))
             {
@@ -119,13 +129,6 @@ namespace ftk
                 _size.sizeHint = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale) / 2;
                 _size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             }
-
-            float aspect = 1.F;
-            if (_scrollInfo.scrollSize.isValid())
-            {
-                aspect = _scrollInfo.scrollSize.w / static_cast<float>(_scrollInfo.scrollSize.h);
-            }
-            setSizeHint(Size2I(_size.sizeHint * aspect, _size.sizeHint) + _size.border * 2);
         }
 
         void MDIMiniMapWidget::drawEvent(

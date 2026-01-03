@@ -52,6 +52,7 @@ namespace ftk
         //! Remove all children from the layout.
         FTK_API void clear();
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API Box2I getChildrenClipRect() const override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;

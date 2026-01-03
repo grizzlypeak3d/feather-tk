@@ -170,14 +170,14 @@ namespace ftk
         _p->edit->setFontRole(value);
     }
 
+    Size2I DoubleEditSlider::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
     void DoubleEditSlider::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void DoubleEditSlider::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 }

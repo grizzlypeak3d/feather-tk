@@ -43,22 +43,18 @@ namespace ftk
         return out;
     }
 
-    void IncButton::sizeHintEvent(const SizeHintEvent& event)
+    Size2I IncButton::getSizeHint() const
     {
-        IButton::sizeHintEvent(event);
         FTK_P();
-
-        //p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, _displayScale);
-
-        Size2I sizeHint;
+        Size2I out;
         if (_iconImage)
         {
-            sizeHint.w = _iconImage->getWidth();
-            sizeHint.h = _iconImage->getHeight();
+            out.w = _iconImage->getWidth();
+            out.h = _iconImage->getHeight();
         }
-        sizeHint.w += p.size.margin * 2;
-        sizeHint.h += p.size.margin * 2;
-        setSizeHint(sizeHint);
+        out.w += p.size.margin * 2;
+        out.h += p.size.margin * 2;
+        return out;
     }
 
     void IncButton::drawEvent(
@@ -133,6 +129,15 @@ namespace ftk
         out->_init(context, parent);
         return out;
     }
+    
+    Size2I IncButtons::getSizeHint() const
+    {
+        const Size2I incSizeHint = _incButton->getSizeHint();
+        const Size2I decSizeHint = _decButton->getSizeHint();
+        return Size2I(
+            std::max(incSizeHint.w, decSizeHint.w),
+            incSizeHint.h + decSizeHint.h);
+    }
 
     void IncButtons::setGeometry(const Box2I& value)
     {
@@ -147,15 +152,6 @@ namespace ftk
             value.max.y - value.h() / 2,
             value.w(),
             value.h() / 2));
-    }
-
-    void IncButtons::sizeHintEvent(const SizeHintEvent& event)
-    {
-        const Size2I incSizeHint = _incButton->getSizeHint();
-        const Size2I decSizeHint = _decButton->getSizeHint();
-        setSizeHint(Size2I(
-            std::max(incSizeHint.w, decSizeHint.w),
-            incSizeHint.h + decSizeHint.h));
     }
 
     void IncButtons::setIncCallback(const std::function<void(void)>& value)

@@ -194,15 +194,15 @@ namespace ftk
         _p->lineEdit->setFontRole(value);
     }
 
+    Size2I IntEdit::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
     void IntEdit::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void IntEdit::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void IntEdit::scrollEvent(ScrollEvent& event)
@@ -341,15 +341,15 @@ namespace ftk
         return out;
     }
 
+    Size2I IntResetButton::getSizeHint() const
+    {
+        return _p->resetButton->getSizeHint();
+    }
+
     void IntResetButton::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->resetButton->setGeometry(value);
-    }
-
-    void IntResetButton::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->resetButton->getSizeHint());
     }
 
     void IntResetButton::_widgetUpdate()

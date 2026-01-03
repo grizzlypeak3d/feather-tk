@@ -103,6 +103,13 @@ namespace ftk
         setSizeUpdate();
         setDrawUpdate();
     }
+    
+    Size2I PieChart::getSizeHint() const
+    {
+        FTK_P();
+        const int d = p.size.fontMetrics.lineHeight * p.sizeMult;
+        return Size2I(d, d);
+    }
 
     void PieChart::setGeometry(const Box2I& value)
     {
@@ -118,7 +125,6 @@ namespace ftk
     void PieChart::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -127,9 +133,6 @@ namespace ftk
             p.size.fontMetrics = event.fontSystem->getMetrics(fontInfo);
             p.draw.reset();
         }
-
-        const int d = p.size.fontMetrics.lineHeight * p.sizeMult;
-        setSizeHint(Size2I(d, d));
     }
 
     void PieChart::clipEvent(const Box2I& clipRect, bool clipped)

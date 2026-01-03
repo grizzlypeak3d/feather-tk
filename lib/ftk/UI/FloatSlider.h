@@ -76,6 +76,7 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<FloatModel>& getModel() const;
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;

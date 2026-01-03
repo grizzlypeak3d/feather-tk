@@ -21,6 +21,7 @@ namespace ftk
         {
             Size2I gridSize;
             int shadow = 0;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -337,6 +338,11 @@ namespace ftk
             p.childSizeHints.erase(i);
         }
     }
+    
+    Size2I MDICanvas::getSizeHint() const
+    {
+        return _p->size.sizeHint;
+    }
 
     void MDICanvas::sizeHintEvent(const SizeHintEvent& event)
     {
@@ -344,7 +350,7 @@ namespace ftk
         FTK_P();
         p.size.gridSize = p.gridSize * static_cast<int>(event.displayScale);
         p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
-        setSizeHint(p.canvasSize * static_cast<int>(event.displayScale));
+        p.size.sizeHint = p.canvasSize * static_cast<int>(event.displayScale);
     }
 
     void MDICanvas::drawEvent(const Box2I& drawRect, const DrawEvent& event)

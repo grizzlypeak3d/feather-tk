@@ -101,6 +101,17 @@ namespace ftk
             setDrawUpdate();
         }
     }
+    
+    Size2I RadioButton::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        out.w += p.size.diameter;
+        out.w += p.size.spacing;
+        out.w += p.size.textSize.w + p.size.pad * 2;
+        out.h = p.size.fontMetrics.lineHeight;
+        return margin(out, p.size.margin + p.size.keyFocus);
+    }
 
     void RadioButton::setGeometry(const Box2I& value)
     {
@@ -117,7 +128,6 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -133,14 +143,6 @@ namespace ftk
             p.size.diameter = p.size.fontMetrics.lineHeight * .8F;
             p.draw.reset();
         }
-
-        Size2I sizeHint;
-        sizeHint.w += p.size.diameter;
-        sizeHint.w += p.size.spacing;
-        sizeHint.w += p.size.textSize.w + p.size.pad * 2;
-        sizeHint.h = p.size.fontMetrics.lineHeight;
-        sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void RadioButton::clipEvent(const Box2I& clipRect, bool clipped)

@@ -40,9 +40,9 @@ namespace ftk
         FTK_API std::shared_ptr<Image> screenshot(const Box2I& = Box2I(0, 0, -1, -1)) override;
         FTK_API std::vector<std::pair<std::string, std::string> > getWindowInfo() const override;
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void setVisible(bool) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     protected:

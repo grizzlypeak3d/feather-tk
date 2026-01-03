@@ -94,8 +94,8 @@ namespace ftk
         //! Set the border role.
         FTK_API void setBorderRole(ColorRole);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void scrollEvent(ScrollEvent&) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
@@ -126,8 +126,8 @@ namespace ftk
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();

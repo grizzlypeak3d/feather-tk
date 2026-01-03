@@ -185,6 +185,34 @@ namespace ftk
             setDrawUpdate();
         }
     }
+    
+    Size2I ToolButton::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        if (!_text.empty())
+        {
+            out.w = p.size.textSize.w + p.size.pad * 2;
+            out.h = p.size.fontMetrics.lineHeight;
+            if (_icon.empty())
+            {
+                const int max = std::max(out.w, out.h);
+                out.w = max;
+                out.h = out.h;
+            }
+        }
+        if (_iconImage)
+        {
+            out.w += _iconImage->getWidth();
+            out.h = std::max(out.h, _iconImage->getHeight());
+        }
+        out = margin(out, p.size.margin);
+        if (acceptsKeyFocus())
+        {
+            out = margin(out, p.size.keyFocus);
+        }
+        return out;
+    }
 
     void ToolButton::setGeometry(const Box2I& value)
     {
@@ -201,7 +229,6 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -214,30 +241,6 @@ namespace ftk
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint;
-        if (!_text.empty())
-        {
-            sizeHint.w = p.size.textSize.w + p.size.pad * 2;
-            sizeHint.h = p.size.fontMetrics.lineHeight;
-            if (_icon.empty())
-            {
-                const int max = std::max(sizeHint.w, sizeHint.h);
-                sizeHint.w = max;
-                sizeHint.h = sizeHint.h;
-            }
-        }
-        if (_iconImage)
-        {
-            sizeHint.w += _iconImage->getWidth();
-            sizeHint.h = std::max(sizeHint.h, _iconImage->getHeight());
-        }
-        sizeHint = margin(sizeHint, p.size.margin);
-        if (acceptsKeyFocus())
-        {
-            sizeHint = margin(sizeHint, p.size.keyFocus);
-        }
-        setSizeHint(sizeHint);
     }
 
     void ToolButton::clipEvent(const Box2I& clipRect, bool clipped)

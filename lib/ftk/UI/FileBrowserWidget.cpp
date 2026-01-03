@@ -420,17 +420,16 @@ namespace ftk
     {
         return _p->view;
     }
+    
+    Size2I FileBrowserWidget::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void FileBrowserWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FileBrowserWidget::sizeHintEvent(const SizeHintEvent& value)
-    {
-        IMouseWidget::sizeHintEvent(value);
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileBrowserWidget::_accept(const std::string& text)

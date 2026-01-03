@@ -165,6 +165,14 @@ namespace ftk
         return _p->model;
     }
 
+    Size2I DoubleSlider::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out(p.size.size, p.size.fontMetrics.lineHeight);
+        out = margin(out, p.size.margin + p.size.keyFocus);
+        return out;
+    }
+
     void DoubleSlider::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
@@ -180,7 +188,6 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -194,10 +201,6 @@ namespace ftk
             p.size.fontMetrics = event.fontSystem->getMetrics(fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint(p.size.size, p.size.fontMetrics.lineHeight);
-        sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void DoubleSlider::clipEvent(const Box2I& clipRect, bool clipped)

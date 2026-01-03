@@ -164,6 +164,11 @@ namespace ftk
         return std::dynamic_pointer_cast<IWindow>(out);
     }
 
+    Size2I IWidget::getSizeHint() const
+    {
+        return Size2I();
+    }
+
     void IWidget::setHStretch(Stretch value)
     {
         if (value == _hStretch)

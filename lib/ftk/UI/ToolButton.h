@@ -46,6 +46,7 @@ namespace ftk
         FTK_API void setText(const std::string&) override;
         FTK_API void setFontRole(FontRole) override;
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void setAcceptsKeyFocus(bool) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;

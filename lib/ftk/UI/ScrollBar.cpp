@@ -95,12 +95,28 @@ namespace ftk
     {
         _p->scrollPosCallback = value;
     }
+    
+    Size2I ScrollBar::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out(p.size.handle, p.size.handle);
+        switch (p.orientation)
+        {
+        case Orientation::Horizontal:
+            out.w += p.size.handle;
+            break;
+        case Orientation::Vertical:
+            out.h += p.size.handle;
+            break;
+        default: break;
+        }
+        return out;
+    }
 
     void ScrollBar::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -108,19 +124,6 @@ namespace ftk
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
-
-        Size2I sizeHint(p.size.handle, p.size.handle);
-        switch (p.orientation)
-        {
-        case Orientation::Horizontal:
-            sizeHint.w += p.size.handle;
-            break;
-        case Orientation::Vertical:
-            sizeHint.h += p.size.handle;
-            break;
-        default: break;
-        }
-        setSizeHint(sizeHint);
     }
 
     void ScrollBar::drawEvent(

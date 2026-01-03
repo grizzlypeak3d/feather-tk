@@ -235,12 +235,17 @@ namespace ftk
             }
         }
     }
+    
+    Size2I TextEditWidget::getSizeHint() const
+    {
+        FTK_P();
+        return margin(p.size.textSize.value(), p.size.margin);
+    }
 
     void TextEditWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale != event.displayScale))
         {
@@ -252,7 +257,6 @@ namespace ftk
             p.size.fontInfo.size *= event.displayScale;
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
         }
-        
         if (!p.size.textSize.has_value())
         {
             p.size.textSize = Size2I();
@@ -265,8 +269,6 @@ namespace ftk
                 p.size.textSize->h += p.size.fontMetrics.lineHeight;
             }
         }
-
-        setSizeHint(margin(p.size.textSize.value(), p.size.margin));
     }
 
     void TextEditWidget::drawEvent(

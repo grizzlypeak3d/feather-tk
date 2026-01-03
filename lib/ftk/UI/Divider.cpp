@@ -53,6 +53,12 @@ namespace ftk
         return out;
     }
 
+    Size2I Divider::getSizeHint() const
+    {
+        FTK_P();
+        return Size2I(p.size.size, p.size.size);
+    }
+
     void Divider::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
@@ -62,6 +68,5 @@ namespace ftk
             p.size.displayScale = event.displayScale;
             p.size.size = event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
-        setSizeHint(Size2I(p.size.size, p.size.size));
     }
 }

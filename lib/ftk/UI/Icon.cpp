@@ -82,6 +82,18 @@ namespace ftk
         return _p->marginRole;
     }
 
+    Size2I Icon::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        if (p.iconImage)
+        {
+            out.w = p.iconImage->getWidth();
+            out.h = p.iconImage->getHeight();
+        }
+        return out;
+    }
+
     void Icon::setMarginRole(SizeRole value)
     {
         FTK_P();
@@ -95,14 +107,12 @@ namespace ftk
     void Icon::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
-
         if (event.displayScale != p.iconScale)
         {
             p.iconScale = event.displayScale;
@@ -112,14 +122,6 @@ namespace ftk
         {
             p.iconImage = event.iconSystem->get(p.icon, event.displayScale);
         }
-
-        Size2I sizeHint;
-        if (p.iconImage)
-        {
-            sizeHint.w = p.iconImage->getWidth();
-            sizeHint.h = p.iconImage->getHeight();
-        }
-        setSizeHint(sizeHint);
     }
 
     void Icon::drawEvent(

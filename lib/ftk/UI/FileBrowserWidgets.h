@@ -45,8 +45,8 @@ namespace ftk
         //! Set the editable callback.
         FTK_API void setEditableCallback(const std::function<void(bool)>&);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();
@@ -74,8 +74,8 @@ namespace ftk
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();
@@ -103,8 +103,8 @@ namespace ftk
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();
@@ -138,8 +138,8 @@ namespace ftk
         //! Set the recent files model.
         FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();
@@ -167,8 +167,8 @@ namespace ftk
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();
@@ -219,6 +219,7 @@ namespace ftk
         //! Get the rectangle of an item.
         FTK_API Box2I getRect(int) const;
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I& drawRect, const DrawEvent&) override;
         FTK_API void mouseEnterEvent(MouseEnterEvent&) override;

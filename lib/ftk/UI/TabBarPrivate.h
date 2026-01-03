@@ -31,6 +31,7 @@ namespace ftk
 
         void setText(const std::string&) override;
 
+        Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
         void clipEvent(const Box2I&, bool) override;

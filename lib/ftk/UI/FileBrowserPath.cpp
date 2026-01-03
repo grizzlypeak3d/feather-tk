@@ -159,16 +159,16 @@ namespace ftk
     {
         _p->editableCallback = value;
     }
+    
+    Size2I FileBrowserPath::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void FileBrowserPath::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FileBrowserPath::sizeHintEvent(const SizeHintEvent& value)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileBrowserPath::_widgetUpdate()

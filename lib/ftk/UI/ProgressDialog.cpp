@@ -33,6 +33,7 @@ namespace ftk
         double getValue() const;
         void setValue(double);
 
+        Size2I getSizeHint() const override;
         void sizeHintEvent(const SizeHintEvent&) override;
         void drawEvent(const Box2I&, const DrawEvent&) override;
 
@@ -98,6 +99,13 @@ namespace ftk
         _value = value;
         setDrawUpdate();
     }
+    
+    Size2I ProgressWidget::getSizeHint() const
+    {
+        return Size2I(
+            _size.width + _size.border * 2,
+            _size.height + _size.border * 2);
+    }
 
     void ProgressWidget::sizeHintEvent(const SizeHintEvent& event)
     {
@@ -106,9 +114,6 @@ namespace ftk
         const FontInfo fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
         const FontMetrics fontMetrics = event.fontSystem->getMetrics(fontInfo);
         _size.height = fontMetrics.lineHeight * .75F;
-        setSizeHint(Size2I(
-            _size.width + _size.border * 2,
-            _size.height + _size.border * 2));
     }
 
     void ProgressWidget::drawEvent(const Box2I& drawRect, const DrawEvent& event)
@@ -177,8 +182,8 @@ namespace ftk
 
         void setCancelCallback(const std::function<void(void)>&);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         std::shared_ptr<Label> _titleLabel;
@@ -309,17 +314,16 @@ namespace ftk
     {
         _cancelCallback = value;
     }
+    
+    Size2I ProgressDialogWidget::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
 
     void ProgressDialogWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
         _layout->setGeometry(value);
-    }
-
-    void ProgressDialogWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        IMouseWidget::sizeHintEvent(event);
-        setSizeHint(_layout->getSizeHint());
     }
 
     struct ProgressDialog::Private

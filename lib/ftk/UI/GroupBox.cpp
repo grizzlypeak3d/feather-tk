@@ -109,6 +109,22 @@ namespace ftk
             child->setParent(nullptr);
         }
     }
+    
+    Size2I GroupBox::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        for (const auto& child : getChildren())
+        {
+            const Size2I& childSizeHint = child->getSizeHint();
+            out.w = std::max(out.w, childSizeHint.w);
+            out.h = std::max(out.h, childSizeHint.h);
+        }
+        out = margin(out, p.size.margin + p.size.border);
+        out.w = std::max(out.w, p.size.textSize.w);
+        out.h += p.size.fontMetrics.lineHeight + p.size.spacing;
+        return out;
+    }
 
     void GroupBox::setGeometry(const Box2I& value)
     {
@@ -132,7 +148,6 @@ namespace ftk
     void GroupBox::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -145,18 +160,6 @@ namespace ftk
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint;
-        for (const auto& child : getChildren())
-        {
-            const Size2I& childSizeHint = child->getSizeHint();
-            sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
-            sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
-        }
-        sizeHint = margin(sizeHint, p.size.margin + p.size.border);
-        sizeHint.w = std::max(sizeHint.w, p.size.textSize.w);
-        sizeHint.h += p.size.fontMetrics.lineHeight + p.size.spacing;
-        setSizeHint(sizeHint);
     }
 
     void GroupBox::clipEvent(const Box2I& clipRect, bool clipped)

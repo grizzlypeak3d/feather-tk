@@ -40,6 +40,7 @@ namespace ftk
             bool,
             bool,
             const TickEvent&) override;
+        Size2I getSizeHint() const override;
         void sizeHintEvent(const SizeHintEvent&) override;
         void drawEvent(const Box2I&, const DrawEvent&) override;
         void mouseMoveEvent(MouseMoveEvent&) override;

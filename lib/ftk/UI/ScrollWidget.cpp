@@ -347,6 +347,17 @@ namespace ftk
             p.viewportWidget->setParent(p.viewportLayout);
         }
     }
+    
+    Size2I ScrollWidget::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out = _p->layout->getSizeHint();
+        if (p.border || p.marginRole != SizeRole::None)
+        {
+            out = margin(out, std::max(p.size.margin, p.size.border));
+        }
+        return out;
+    }
 
     void ScrollWidget::setGeometry(const Box2I& value)
     {
@@ -373,7 +384,6 @@ namespace ftk
     void ScrollWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale != event.displayScale))
         {
@@ -382,13 +392,6 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
-
-        Size2I sizeHint = _p->layout->getSizeHint();
-        if (p.border || p.marginRole != SizeRole::None)
-        {
-            sizeHint = margin(sizeHint, std::max(p.size.margin, p.size.border));
-        }
-        setSizeHint(sizeHint);
     }
 
     void ScrollWidget::drawEvent(

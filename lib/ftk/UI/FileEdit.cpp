@@ -144,16 +144,16 @@ namespace ftk
     {
         _p->callback = value;
     }
+    
+    Size2I FileEdit::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void FileEdit::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FileEdit::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileEdit::_openDialog()

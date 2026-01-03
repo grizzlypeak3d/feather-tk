@@ -79,25 +79,28 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Size2I ImageWidget::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        if (p.image)
+        {
+            out.w = p.image->getWidth();
+            out.h = p.image->getHeight();
+        }
+        out = out + p.size.margin * 2;
+        return out;
+    }
+
     void ImageWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
-
-        Size2I sizeHint;
-        if (p.image)
-        {
-            sizeHint.w = p.image->getWidth();
-            sizeHint.h = p.image->getHeight();
-        }
-        sizeHint = sizeHint + p.size.margin * 2;
-        setSizeHint(sizeHint);
     }
 
     void ImageWidget::drawEvent(

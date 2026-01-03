@@ -87,6 +87,15 @@ namespace ftk
             setDrawUpdate();
         }
     }
+    
+    Size2I TabBarButton::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out(
+            p.size.textSize.w + p.size.pad * 2,
+            p.size.fontMetrics.lineHeight);
+        return margin(out, p.size.margin + p.size.keyFocus);
+    }
 
     void TabBarButton::setGeometry(const Box2I& value)
     {
@@ -103,7 +112,6 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -116,12 +124,6 @@ namespace ftk
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint(
-            p.size.textSize.w + p.size.pad * 2,
-            p.size.fontMetrics.lineHeight);
-        sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void TabBarButton::clipEvent(const Box2I& clipRect, bool clipped)

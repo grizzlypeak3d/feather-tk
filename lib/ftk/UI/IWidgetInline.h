@@ -50,11 +50,6 @@ namespace ftk
         _sizeUpdate = value;
     }
 
-    inline const Size2I& IWidget::getSizeHint() const
-    {
-        return _sizeHint;
-    }
-
     inline Stretch IWidget::getHStretch() const
     {
         return _hStretch;
@@ -78,11 +73,6 @@ namespace ftk
     inline const Box2I& IWidget::getGeometry() const
     {
         return _geometry;
-    }
-
-    inline void IWidget::setSizeHint(const Size2I& value)
-    {
-        _sizeHint = value;
     }
 
     inline bool IWidget::isVisible(bool andParentsVisible) const

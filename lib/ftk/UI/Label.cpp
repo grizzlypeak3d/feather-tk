@@ -199,6 +199,14 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Size2I Label::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out(p.size.textSize);
+        out = margin(out, p.size.hMargin, p.size.vMargin);
+        return out;
+    }
+
     void Label::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
@@ -213,7 +221,6 @@ namespace ftk
     void Label::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -233,10 +240,6 @@ namespace ftk
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint(p.size.textSize);
-        sizeHint = margin(sizeHint, p.size.hMargin, p.size.vMargin);
-        setSizeHint(sizeHint);
     }
 
     void Label::clipEvent(const Box2I& clipRect, bool clipped)

@@ -9,7 +9,7 @@
 
 namespace ftk
 {
-    class ListItemButton : public IButton
+    class FTK_API_TYPE ListItemButton : public IButton
     {
     protected:
         void _init(
@@ -20,19 +20,20 @@ namespace ftk
         ListItemButton();
 
     public:
-        virtual ~ListItemButton();
+        FTK_API virtual ~ListItemButton();
 
-        static std::shared_ptr<ListItemButton> create(
+        FTK_API static std::shared_ptr<ListItemButton> create(
             const std::shared_ptr<Context>&,
             const std::string&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setCurrent(bool);
+        FTK_API void setCurrent(bool);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API Size2I getSizeHint() const override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

@@ -32,7 +32,7 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
@@ -63,6 +63,7 @@ namespace ftk
         //! Set the decrement callback.
         FTK_API void setDecCallback(const std::function<void(void)>&);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 

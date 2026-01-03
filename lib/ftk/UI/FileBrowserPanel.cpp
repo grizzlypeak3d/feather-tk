@@ -85,15 +85,15 @@ namespace ftk
         return out;
     }
 
+    Size2I FileBrowserDrives::getSizeHint() const
+    {
+        return _p->listWidget->getSizeHint();
+    }
+
     void FileBrowserDrives::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->listWidget->setGeometry(value);
-    }
-
-    void FileBrowserDrives::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->listWidget->getSizeHint());
     }
 
     struct FileBrowserShortcuts::Private
@@ -147,15 +147,15 @@ namespace ftk
         return out;
     }
 
+    Size2I FileBrowserShortcuts::getSizeHint() const
+    {
+        return _p->listWidget->getSizeHint();
+    }
+
     void FileBrowserShortcuts::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->listWidget->setGeometry(value);
-    }
-
-    void FileBrowserShortcuts::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->listWidget->getSizeHint());
     }
 
     void FileBrowserShortcuts::_widgetUpdate()
@@ -265,16 +265,16 @@ namespace ftk
             p.recentObserver.reset();
         }
     }
+    
+    Size2I FileBrowserRecent::getSizeHint() const
+    {
+        return _p->listWidget->getSizeHint();
+    }
 
     void FileBrowserRecent::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->listWidget->setGeometry(value);
-    }
-
-    void FileBrowserRecent::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->listWidget->getSizeHint());
     }
 
     void FileBrowserRecent::_widgetUpdate()
@@ -367,15 +367,15 @@ namespace ftk
         return out;
     }
 
+    Size2I FileBrowserSettings::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
     void FileBrowserSettings::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FileBrowserSettings::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void FileBrowserSettings::_widgetUpdate()
@@ -469,14 +469,14 @@ namespace ftk
         _p->recentWidget->setRecentFilesModel(value);
     }
 
+    Size2I FileBrowserPanel::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
     void FileBrowserPanel::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FileBrowserPanel::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 }

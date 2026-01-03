@@ -90,16 +90,16 @@ namespace ftk
     {
         _p->callback = value;
     }
+    
+    Size2I SearchBox::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void SearchBox::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void SearchBox::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void SearchBox::_widgetUpdate()

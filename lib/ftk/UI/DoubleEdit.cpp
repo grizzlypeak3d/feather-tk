@@ -221,15 +221,15 @@ namespace ftk
         _p->lineEdit->setBorderRole(value);
     }
 
+    Size2I DoubleEdit::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
     void DoubleEdit::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void DoubleEdit::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void DoubleEdit::scrollEvent(ScrollEvent& event)
@@ -367,16 +367,16 @@ namespace ftk
         out->_init(context, model, parent);
         return out;
     }
+    
+    Size2I DoubleResetButton::getSizeHint() const
+    {
+        return _p->resetButton->getSizeHint();
+    }
 
     void DoubleResetButton::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->resetButton->setGeometry(value);
-    }
-
-    void DoubleResetButton::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->resetButton->getSizeHint());
     }
 
     void DoubleResetButton::_widgetUpdate()

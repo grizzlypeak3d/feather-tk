@@ -177,6 +177,12 @@ namespace ftk
     {
         _p->widget->takeKeyFocus();
     }
+    
+    Size2I TextEdit::getSizeHint() const
+    {
+        FTK_P();
+        return margin(_p->scrollWidget->getSizeHint(), std::max(p.size.margin, p.size.keyFocus));
+    }
 
     void TextEdit::setGeometry(const Box2I& value)
     {
@@ -193,7 +199,6 @@ namespace ftk
     void TextEdit::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -203,8 +208,6 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.draw.reset();
         }
-
-        setSizeHint(margin(_p->scrollWidget->getSizeHint(), std::max(p.size.margin, p.size.keyFocus)));
     }
 
     void TextEdit::drawEvent(

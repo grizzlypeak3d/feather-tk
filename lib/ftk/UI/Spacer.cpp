@@ -61,29 +61,32 @@ namespace ftk
         p.size.displayScale.reset();
         setSizeUpdate();
     }
+    
+    Size2I Spacer::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        switch (p.orientation)
+        {
+        case Orientation::Horizontal:
+            out.w = p.size.size;
+            break;
+        case Orientation::Vertical:
+            out.h = p.size.size;
+            break;
+        default: break;
+        }
+        return out;
+    }
 
     void Spacer::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
             p.size.size = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
-
-        Size2I sizeHint;
-        switch (p.orientation)
-        {
-        case Orientation::Horizontal:
-            sizeHint.w = p.size.size;
-            break;
-        case Orientation::Vertical:
-            sizeHint.h = p.size.size;
-            break;
-        default: break;
-        }
-        setSizeHint(sizeHint);
     }
 }

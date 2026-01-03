@@ -241,16 +241,16 @@ namespace ftk
     {
         _p->tabs->setTabCloseCallback(value);
     }
+    
+    Size2I TabWidget::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void TabWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void TabWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void TabWidget::_widgetUpdate()

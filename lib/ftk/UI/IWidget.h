@@ -84,11 +84,7 @@ namespace ftk
         void setSizeUpdate(bool value = true);
 
         //! Get the size hint.
-        const Size2I& getSizeHint() const;
-
-        //! Set the size hint. The size hint is usually computed and set during
-        //! the sizeHint event.
-        void setSizeHint(const Size2I&);
+        virtual Size2I getSizeHint() const;
 
         //! Get the horizontal layout stretch.
         Stretch getHStretch() const;
@@ -310,7 +306,6 @@ namespace ftk
         std::list<std::shared_ptr<IWidget> > _children;
 
         bool _sizeUpdate = false;
-        Size2I _sizeHint;
         Stretch _hStretch = Stretch::Fixed;
         Stretch _vStretch = Stretch::Fixed;
         HAlign _hAlign = HAlign::Fill;

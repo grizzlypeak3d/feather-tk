@@ -304,15 +304,15 @@ namespace ftk
         _modeUpdate();
     }
 
+    Size2I ColorWidget::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
     void ColorWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void ColorWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void ColorWidget::_modeUpdate()

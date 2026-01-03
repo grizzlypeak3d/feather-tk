@@ -37,6 +37,7 @@ namespace ftk
 
         void setCallback(const std::function<void(bool)>&);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
 
@@ -48,6 +49,7 @@ namespace ftk
         std::shared_ptr<PushButton> _cancelButton;
         std::shared_ptr<VerticalLayout> _layout;
         std::function<void(bool)> _callback;
+        int _sizeHint = 0;
     };
 
     void ConfirmDialogWidget::_init(
@@ -135,6 +137,13 @@ namespace ftk
         _callback = value;
     }
 
+    Size2I ConfirmDialogWidget::getSizeHint() const
+    {
+        Size2I out = _layout->getSizeHint();
+        out.w = std::max(out.w, _sizeHint * 2);
+        return out;
+    }
+
     void ConfirmDialogWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
@@ -144,10 +153,7 @@ namespace ftk
     void ConfirmDialogWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
-        const int sa = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale);
-        Size2I sizeHint = _layout->getSizeHint();
-        sizeHint.w = std::max(sizeHint.w, sa * 2);
-        setSizeHint(sizeHint);
+        _sizeHint = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale);
     }
 
     struct ConfirmDialog::Private

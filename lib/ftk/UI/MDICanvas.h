@@ -52,6 +52,7 @@ namespace ftk
         void setChildGeometryCallback(
             const std::function<void(const std::vector<Box2I>&)>&);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void childRemoveEvent(const ChildRemoveEvent&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;

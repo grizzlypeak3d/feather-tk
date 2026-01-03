@@ -49,6 +49,7 @@ namespace ftk
         //! Remove all children from the group box.
         FTK_API void clear();
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;

@@ -61,8 +61,8 @@ namespace ftk
         //! Set the tool widget.
         FTK_API void setToolWidget(const std::shared_ptr<IWidget>&);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

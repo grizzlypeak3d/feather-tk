@@ -253,6 +253,15 @@ namespace ftk
         return _p->size.margins;
     }
 
+    Size2I MDIWidget::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out = p.layout->getSizeHint() + p.size.border * 2;
+        out.w += p.size.margins[0] + p.size.margins[2];
+        out.h += p.size.margins[1] + p.size.margins[3];
+        return out;
+    }
+
     void MDIWidget::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
@@ -318,7 +327,6 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -332,11 +340,6 @@ namespace ftk
             p.size.margins[3] = std::max(p.size.handle, p.size.shadow);
             p.draw.reset();
         }
-
-        Size2I sizeHint = p.layout->getSizeHint() + p.size.border * 2;
-        sizeHint.w += p.size.margins[0] + p.size.margins[2];
-        sizeHint.h += p.size.margins[1] + p.size.margins[3];
-        setSizeHint(sizeHint);
     }
 
     void MDIWidget::clipEvent(const Box2I& clipRect, bool clipped)

@@ -37,8 +37,8 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const std::string&)>&);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         void _widgetUpdate();

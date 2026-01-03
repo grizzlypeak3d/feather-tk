@@ -194,6 +194,26 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Size2I ComboBox::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        out.w = p.size.textSize.w + p.size.pad * 2;
+        out.h = p.size.fontMetrics.lineHeight;
+        if (p.iconImage)
+        {
+            out.w += p.iconImage->getWidth();
+            out.h = std::max(out.h, p.iconImage->getHeight());
+        }
+        if (p.arrowIconImage)
+        {
+            out.w += p.arrowIconImage->getWidth();
+            out.h = std::max(out.h, p.arrowIconImage->getHeight());
+        }
+        out = margin(out, p.size.margin + p.size.keyFocus);
+        return out;
+    }
+
     void ComboBox::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
@@ -247,22 +267,6 @@ namespace ftk
         {
             p.arrowIconImage = event.iconSystem->get("MenuArrow", event.displayScale);
         }
-
-        Size2I sizeHint;
-        sizeHint.w = p.size.textSize.w + p.size.pad * 2;
-        sizeHint.h = p.size.fontMetrics.lineHeight;
-        if (p.iconImage)
-        {
-            sizeHint.w += p.iconImage->getWidth();
-            sizeHint.h = std::max(sizeHint.h, p.iconImage->getHeight());
-        }
-        if (p.arrowIconImage)
-        {
-            sizeHint.w += p.arrowIconImage->getWidth();
-            sizeHint.h = std::max(sizeHint.h, p.arrowIconImage->getHeight());
-        }
-        sizeHint = margin(sizeHint, p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void ComboBox::clipEvent(const Box2I& clipRect, bool clipped)

@@ -57,6 +57,21 @@ namespace ftk
         setSizeUpdate();
         setDrawUpdate();
     }
+    
+    Size2I OverlayLayout::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        for (const auto& child : getChildren())
+        {
+            const Size2I& childSizeHint = child->getSizeHint();
+            out.w = std::max(out.w, childSizeHint.w);
+            out.h = std::max(out.h, childSizeHint.h);
+        }
+        out.w += p.size.margin * 2;
+        out.h += p.size.margin * 2;
+        return out;
+    }
 
     void OverlayLayout::setGeometry(const Box2I& value)
     {
@@ -77,23 +92,11 @@ namespace ftk
     void OverlayLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
-
-        Size2I sizeHint;
-        for (const auto& child : getChildren())
-        {
-            const Size2I& childSizeHint = child->getSizeHint();
-            sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
-            sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
-        }
-        sizeHint.w += p.size.margin * 2;
-        sizeHint.h += p.size.margin * 2;
-        setSizeHint(sizeHint);
     }
 }

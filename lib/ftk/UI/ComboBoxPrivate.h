@@ -29,6 +29,7 @@ namespace ftk
 
         void setCurrent(bool);
 
+        FTK_API Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
         void clipEvent(const Box2I&, bool) override;

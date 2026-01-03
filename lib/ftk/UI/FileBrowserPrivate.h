@@ -29,8 +29,8 @@ namespace ftk
 
         void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
+        FTK_API Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

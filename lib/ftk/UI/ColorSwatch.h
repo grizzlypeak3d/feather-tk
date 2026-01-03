@@ -52,6 +52,7 @@ namespace ftk
         //! Set the size role.
         FTK_API void setSizeRole(SizeRole);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;

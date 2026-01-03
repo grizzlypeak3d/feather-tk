@@ -96,6 +96,26 @@ namespace ftk
         }
     }
 
+    Size2I PushButton::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        if (!_text.empty())
+        {
+            out.w = p.size.textSize.w + p.size.pad * 2;
+            out.h = p.size.fontMetrics.lineHeight;
+        }
+        if (_iconImage)
+        {
+            out.w += _iconImage->getWidth();
+            out.h = std::max(out.h, _iconImage->getHeight());
+        }
+        return margin(
+            out,
+            p.size.margin + p.size.pad + p.size.keyFocus,
+            p.size.margin + p.size.keyFocus);
+    }
+
     void PushButton::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
@@ -111,7 +131,6 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -125,23 +144,6 @@ namespace ftk
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint;
-        if (!_text.empty())
-        {
-            sizeHint.w = p.size.textSize.w + p.size.pad * 2;
-            sizeHint.h = p.size.fontMetrics.lineHeight;
-        }
-        if (_iconImage)
-        {
-            sizeHint.w += _iconImage->getWidth();
-            sizeHint.h = std::max(sizeHint.h, _iconImage->getHeight());
-        }
-        sizeHint = margin(
-            sizeHint,
-            p.size.margin + p.size.pad + p.size.keyFocus,
-            p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void PushButton::clipEvent(const Box2I& clipRect, bool clipped)

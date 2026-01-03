@@ -181,6 +181,18 @@ namespace ftk
         out.push_back(std::make_pair("GL version", glInfo.version));
         return out;
     }
+    
+    Size2I Window::getSizeHint() const
+    {
+        Size2I out;
+        for (const auto& child : getChildren())
+        {
+            const Size2I& childSizeHint = child->getSizeHint();
+            out.w = std::max(out.w, childSizeHint.w);
+            out.h = std::max(out.h, childSizeHint.h);
+        }
+        return out;
+    }
 
     void Window::setGeometry(const Box2I& value)
     {
@@ -203,19 +215,6 @@ namespace ftk
         {
             p.window->hide();
         }
-    }
-
-    void Window::sizeHintEvent(const SizeHintEvent& event)
-    {
-        IWindow::sizeHintEvent(event);
-        Size2I sizeHint;
-        for (const auto& child : getChildren())
-        {
-            const Size2I& childSizeHint = child->getSizeHint();
-            sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
-            sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
-        }
-        setSizeHint(sizeHint);
     }
     
     void Window::drawEvent(const Box2I& drawRect, const DrawEvent& event)

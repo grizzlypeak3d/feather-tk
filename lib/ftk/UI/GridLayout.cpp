@@ -190,6 +190,40 @@ namespace ftk
             child->setParent(nullptr);
         }
     }
+    
+    Size2I GridLayout::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+
+        // Get size hints.
+        p.getSizeHints(p.geom.rowSizeHints, p.geom.columnSizeHints);
+        for (int i : p.geom.rowSizeHints)
+        {
+            out.h += i;
+        }
+        for (int i : p.geom.columnSizeHints)
+        {
+            out.w += i;
+        }
+
+        // Add spacing.
+        p.getVisible(p.geom.rowsVisibleCount, p.geom.columnsVisibleCount);
+        if (p.geom.rowsVisibleCount > 0)
+        {
+            out.h += (p.geom.rowsVisibleCount - 1) * p.size.spacing;
+        }
+        if (p.geom.columnsVisibleCount > 0)
+        {
+            out.w += (p.geom.columnsVisibleCount - 1) * p.size.spacing;
+        }
+
+        // Add the margin.
+        out.w += p.size.margin * 2;
+        out.h += p.size.margin * 2;
+
+        return out;
+    }
 
     void GridLayout::setGeometry(const Box2I& value)
     {
@@ -301,7 +335,6 @@ namespace ftk
     void GridLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -309,35 +342,6 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
             p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
-
-        // Get size hints.
-        p.getSizeHints(p.geom.rowSizeHints, p.geom.columnSizeHints);
-        Size2I sizeHint;
-        for (int i : p.geom.rowSizeHints)
-        {
-            sizeHint.h += i;
-        }
-        for (int i : p.geom.columnSizeHints)
-        {
-            sizeHint.w += i;
-        }
-
-        // Add spacing.
-        p.getVisible(p.geom.rowsVisibleCount, p.geom.columnsVisibleCount);
-        if (p.geom.rowsVisibleCount > 0)
-        {
-            sizeHint.h += (p.geom.rowsVisibleCount - 1) * p.size.spacing;
-        }
-        if (p.geom.columnsVisibleCount > 0)
-        {
-            sizeHint.w += (p.geom.columnsVisibleCount - 1) * p.size.spacing;
-        }
-
-        // Add the margin.
-        sizeHint.w += p.size.margin * 2;
-        sizeHint.h += p.size.margin * 2;
-
-        setSizeHint(sizeHint);
     }
 
     void GridLayout::drawEvent(const Box2I& drawRect, const DrawEvent& event)

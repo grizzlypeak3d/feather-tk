@@ -79,8 +79,8 @@ namespace ftk
         //! Set whether the scroll bar is visible.
         FTK_API void setScrollBarVisible(bool);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void keyFocusEvent(bool) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;

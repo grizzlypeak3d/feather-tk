@@ -221,16 +221,16 @@ namespace ftk
         }
         return out;
     }
+    
+    Size2I ListItemsWidget::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void ListItemsWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void ListItemsWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void ListItemsWidget::keyFocusEvent(bool value)

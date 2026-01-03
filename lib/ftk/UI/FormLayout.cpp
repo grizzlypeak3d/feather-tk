@@ -156,15 +156,15 @@ namespace ftk
         }
         return index;
     }
+    
+    Size2I FormLayout::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void FormLayout::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FormLayout::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 }

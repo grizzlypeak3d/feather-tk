@@ -92,6 +92,36 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Size2I Splitter::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out;
+        const auto& children = getChildren();
+        auto i = children.begin();
+        if (children.size() > 0)
+        {
+            out = (*i)->getSizeHint();
+            ++i;
+        }
+        if (children.size() > 1)
+        {
+            const auto& childSizeHint = (*i)->getSizeHint();
+            out.w = std::max(out.w, childSizeHint.w);
+            out.h = std::max(out.h, childSizeHint.h);
+            switch (p.orientation)
+            {
+            case Orientation::Horizontal:
+                out.w += p.size.handle;
+                break;
+            case Orientation::Vertical:
+                out.h += p.size.handle;
+                break;
+            default: break;
+            }
+        }
+        return out;
+    }
+
     void Splitter::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
@@ -193,7 +223,6 @@ namespace ftk
     void Splitter::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -201,32 +230,6 @@ namespace ftk
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
-
-        Size2I sizeHint;
-        const auto& children = getChildren();
-        auto i = children.begin();
-        if (children.size() > 0)
-        {
-            sizeHint = (*i)->getSizeHint();
-            ++i;
-        }
-        if (children.size() > 1)
-        {
-            const auto& childSizeHint = (*i)->getSizeHint();
-            sizeHint.w = std::max(sizeHint.w, childSizeHint.w);
-            sizeHint.h = std::max(sizeHint.h, childSizeHint.h);
-            switch (p.orientation)
-            {
-            case Orientation::Horizontal:
-                sizeHint.w += p.size.handle;
-                break;
-            case Orientation::Vertical:
-                sizeHint.h += p.size.handle;
-                break;
-            default: break;
-            }
-        }
-        setSizeHint(sizeHint);
     }
 
     void Splitter::drawEvent(

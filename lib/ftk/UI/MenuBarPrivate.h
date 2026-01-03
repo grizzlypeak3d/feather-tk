@@ -9,7 +9,7 @@
 
 namespace ftk
 {
-    class MenuBarButton : public IButton
+    class FTK_API_TYPE MenuBarButton : public IButton
     {
     protected:
         void _init(
@@ -20,19 +20,20 @@ namespace ftk
         MenuBarButton();
 
     public:
-        virtual ~MenuBarButton();
+        FTK_API virtual ~MenuBarButton();
 
-        static std::shared_ptr<MenuBarButton> create(
+        FTK_API static std::shared_ptr<MenuBarButton> create(
             const std::shared_ptr<Context>&,
             const std::string&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setCurrent(bool);
+        FTK_API void setCurrent(bool);
 
-        void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void clipEvent(const Box2I&, bool) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API Size2I getSizeHint() const override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

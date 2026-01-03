@@ -31,6 +31,7 @@ namespace ftk
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
 
@@ -43,6 +44,7 @@ namespace ftk
         std::shared_ptr<PushButton> _okButton;
         std::shared_ptr<VerticalLayout> _layout;
         std::function<void(void)> _callback;
+        int _sizeHint = 0;
     };
 
     void MessageDialogWidget::_init(
@@ -114,6 +116,13 @@ namespace ftk
     {
         _callback = value;
     }
+    
+    Size2I MessageDialogWidget::getSizeHint() const
+    {
+        Size2I out = _layout->getSizeHint();
+        out.w = std::max(out.w, _sizeHint * 2);
+        return out;
+    }
 
     void MessageDialogWidget::setGeometry(const Box2I& value)
     {
@@ -124,10 +133,7 @@ namespace ftk
     void MessageDialogWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
-        const int sa = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale);
-        Size2I sizeHint = _layout->getSizeHint();
-        sizeHint.w = std::max(sizeHint.w, sa * 2);
-        setSizeHint(sizeHint);
+        _sizeHint = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale);
     }
 
     struct MessageDialog::Private

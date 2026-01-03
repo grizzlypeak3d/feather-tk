@@ -247,6 +247,17 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Size2I LineEdit::getSizeHint() const
+    {
+        FTK_P();
+        Size2I out(p.size.formatSize.w, p.size.fontMetrics.lineHeight);
+        out = margin(
+            out,
+            p.size.margin * 2 + p.size.keyFocus,
+            p.size.margin + p.size.keyFocus);
+        return out;
+    }
+
     void LineEdit::setGeometry(const Box2I& value)
     {
         const bool changed = value != getGeometry();
@@ -321,7 +332,6 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -337,13 +347,6 @@ namespace ftk
             p.size.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
             p.draw.reset();
         }
-
-        Size2I sizeHint(p.size.formatSize.w, p.size.fontMetrics.lineHeight);
-        sizeHint = margin(
-            sizeHint,
-            p.size.margin * 2 + p.size.keyFocus,
-            p.size.margin + p.size.keyFocus);
-        setSizeHint(sizeHint);
     }
 
     void LineEdit::clipEvent(const Box2I& clipRect, bool clipped)

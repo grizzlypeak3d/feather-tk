@@ -149,15 +149,15 @@ namespace ftk
             p.toolWidget->setParent(p.buttonLayout);
         }
     }
+    
+    Size2I Bellows::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void Bellows::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void Bellows::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 }

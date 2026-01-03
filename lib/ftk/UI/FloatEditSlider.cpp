@@ -168,15 +168,15 @@ namespace ftk
     {
         _p->edit->setFontRole(value);
     }
+    
+    Size2I FloatEditSlider::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void FloatEditSlider::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void FloatEditSlider::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 }

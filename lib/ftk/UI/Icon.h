@@ -46,6 +46,7 @@ namespace ftk
         //! Set the margin role.
         FTK_API void setMarginRole(SizeRole);
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 

@@ -97,15 +97,15 @@ namespace ftk
     {
         _p->layout->setSpacingRole(value);
     }
+    
+    Size2I ToolBar::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void ToolBar::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void ToolBar::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 }

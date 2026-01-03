@@ -47,6 +47,7 @@ namespace ftk
         
         ///@}
 
+        FTK_API Size2I getSizeHint() const override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_API void mouseEnterEvent(MouseEnterEvent&) override;

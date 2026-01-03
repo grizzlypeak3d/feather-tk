@@ -112,6 +112,12 @@ namespace ftk
         setSizeUpdate();
         setDrawUpdate();
     }
+    
+    Size2I ColorSwatch::getSizeHint() const
+    {
+        FTK_P();
+        return Size2I(p.size.size, p.size.size);
+    }
 
     void ColorSwatch::setGeometry(const Box2I& value)
     {
@@ -128,7 +134,6 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
@@ -137,8 +142,6 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.draw.reset();
         }
-
-        setSizeHint(Size2I(p.size.size, p.size.size));
     }
 
     void ColorSwatch::clipEvent(const Box2I& clipRect, bool clipped)

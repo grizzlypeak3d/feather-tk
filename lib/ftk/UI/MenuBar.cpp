@@ -134,16 +134,16 @@ namespace ftk
         }
         return out;
     }
+    
+    Size2I MenuBar::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
 
     void MenuBar::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-
-    void MenuBar::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_p->layout->getSizeHint());
     }
 
     void MenuBar::keyFocusEvent(bool value)
