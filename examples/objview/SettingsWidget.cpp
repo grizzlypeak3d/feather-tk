@@ -129,14 +129,14 @@ namespace objview
         return out;
     }
 
+    Size2I SettingsWidget::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
+
     void SettingsWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _layout->setGeometry(value);
-    }
-
-    void SettingsWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_layout->getSizeHint());
     }
 }

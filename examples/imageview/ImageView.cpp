@@ -107,6 +107,16 @@ namespace imageview
         }
     }
 
+    Size2I ImageView::getSizeHint() const
+    {
+        Size2I out;
+        if (_image)
+        {
+            out = _image->getSize() * _zoom->get();
+        }
+        return out;
+    }
+
     void ImageView::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
@@ -115,16 +125,6 @@ namespace imageview
             _frameInit = false;
             frame();
         }
-    }
-
-    void ImageView::sizeHintEvent(const SizeHintEvent& event)
-    {
-        Size2I sizeHint;
-        if (_image)
-        {
-            sizeHint = _image->getSize() * _zoom->get();
-        }
-        setSizeHint(sizeHint);
     }
 
     void ImageView::drawEvent(const Box2I& drawRect, const DrawEvent& event)

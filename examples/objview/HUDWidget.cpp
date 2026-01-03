@@ -81,14 +81,14 @@ namespace objview
         _labels["Distance"]->setText(Format("Distance: {0}").arg(value, 2));
     }
 
+    ftk::Size2I HUDWidget::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
+
     void HUDWidget::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _layout->setGeometry(value);
-    }
-
-    void HUDWidget::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_layout->getSizeHint());
     }
 }

@@ -39,8 +39,8 @@ namespace objview
 
         ///@}
 
+        ftk::Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
-        void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
     private:
         std::shared_ptr<ftk::TabWidget> _tabWidget;

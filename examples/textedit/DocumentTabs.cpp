@@ -155,14 +155,14 @@ namespace textedit
         return out;
     }
 
+    Size2I DocumentTabs::getSizeHint() const
+    {
+        return _tabWidget->getSizeHint();
+    }
+
     void DocumentTabs::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _tabWidget->setGeometry(value);
-    }
-
-    void DocumentTabs::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_tabWidget->getSizeHint());
     }
 }

@@ -35,15 +35,15 @@ namespace widgets
         out->_init(context);
         return out;
     }
+    
+    Size2I Splitters::getSizeHint() const
+    {
+        return _splitter->getSizeHint();
+    }
 
     void Splitters::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _splitter->setGeometry(value);
-    }
-
-    void Splitters::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_splitter->getSizeHint());
     }
 }

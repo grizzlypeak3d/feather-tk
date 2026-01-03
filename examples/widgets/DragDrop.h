@@ -45,6 +45,7 @@ namespace widgets
             int,
             const std::shared_ptr<ftk::IWidget>& parent = nullptr);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
         void sizeHintEvent(const ftk::SizeHintEvent&) override;
         void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
@@ -76,6 +77,7 @@ namespace widgets
 
         void addWidget(const std::shared_ptr<DragWidget>&);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
         void sizeHintEvent(const ftk::SizeHintEvent&) override;
         void drawOverlayEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
@@ -105,8 +107,8 @@ namespace widgets
 
         static std::shared_ptr<DragDrop> create(const std::shared_ptr<Context>&);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         std::shared_ptr<ftk::HorizontalLayout> _layout;

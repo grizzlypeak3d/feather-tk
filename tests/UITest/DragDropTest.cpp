@@ -38,6 +38,7 @@ namespace ftk
 
                 const std::vector<std::string>& getText() const;
 
+                Size2I getSizeHint() const override;
                 void sizeHintEvent(const SizeHintEvent&) override;
                 void mouseMoveEvent(MouseMoveEvent&) override;
                 void dragEnterEvent(DragDropEvent&) override;
@@ -80,11 +81,15 @@ namespace ftk
                 return _text;
             }
 
+            Size2I DragDropWidget::getSizeHint() const
+            {
+                return Size2I(100, 100);
+            }
+            
             void DragDropWidget::sizeHintEvent(const SizeHintEvent& event)
             {
                 IMouseWidget::sizeHintEvent(event);
                 _dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
-                setSizeHint(Size2I(100, 100));
             }
 
             void DragDropWidget::mouseMoveEvent(MouseMoveEvent& event)

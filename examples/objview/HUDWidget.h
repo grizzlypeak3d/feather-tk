@@ -32,8 +32,8 @@ namespace objview
         void setOrbit(const ftk::V2F&);
         void setDistance(float);
 
+        ftk::Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
-        void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
     private:
         std::map<std::string, std::shared_ptr<ftk::Label> > _labels;

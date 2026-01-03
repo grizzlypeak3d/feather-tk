@@ -88,14 +88,14 @@ namespace widgets
         return out;
     }
 
+    Size2I Bellows::getSizeHint() const
+    {
+        return _scrollWidget->getSizeHint();
+    }
+
     void Bellows::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _scrollWidget->setGeometry(value);
-    }
-
-    void Bellows::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

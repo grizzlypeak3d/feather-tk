@@ -66,14 +66,14 @@ namespace imageview
         return out;
     }
 
+    ftk::Size2I StatusBar::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
+
     void StatusBar::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _layout->setGeometry(value);
-    }
-
-    void StatusBar::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_layout->getSizeHint());
     }
 }

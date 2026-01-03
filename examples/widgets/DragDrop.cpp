@@ -54,6 +54,11 @@ namespace widgets
         return out;
     }
 
+    Size2I DragWidget::getSizeHint() const
+    {
+        return _label->getSizeHint();
+    }
+
     void DragWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
@@ -64,7 +69,6 @@ namespace widgets
     {
         IMouseWidget::sizeHintEvent(event);
         _dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
-        setSizeHint(_label->getSizeHint());
     }
 
     void DragWidget::drawEvent(
@@ -150,6 +154,11 @@ namespace widgets
     {
         value->setParent(_layout);
     }
+    
+    Size2I ContainerWidget::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
 
     void ContainerWidget::setGeometry(const Box2I& value)
     {
@@ -160,7 +169,6 @@ namespace widgets
     void ContainerWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         _handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-        setSizeHint(_layout->getSizeHint());
     }
 
     void ContainerWidget::drawOverlayEvent(
@@ -300,14 +308,14 @@ namespace widgets
         return out;
     }
 
+    Size2I DragDrop::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
+
     void DragDrop::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _layout->setGeometry(value);
-    }
-
-    void DragDrop::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_layout->getSizeHint());
     }
 }

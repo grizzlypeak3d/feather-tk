@@ -146,15 +146,15 @@ namespace widgets
         out->_init(context, menuBar);
         return out;
     }
+    
+    Size2I Popups::getSizeHint() const
+    {
+        return _scrollWidget->getSizeHint();
+    }
 
     void Popups::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _scrollWidget->setGeometry(value);
-    }
-
-    void Popups::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

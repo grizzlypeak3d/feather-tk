@@ -137,15 +137,15 @@ namespace widgets
         out->_init(context);
         return out;
     }
+    
+    Size2I Buttons::getSizeHint() const
+    {
+        return _scrollWidget->getSizeHint();
+    }
 
     void Buttons::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _scrollWidget->setGeometry(value);
-    }
-
-    void Buttons::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_scrollWidget->getSizeHint());
     }
 }

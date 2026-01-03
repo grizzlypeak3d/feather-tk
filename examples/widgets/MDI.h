@@ -23,8 +23,8 @@ namespace widgets
 
         static std::shared_ptr<MDI> create(const std::shared_ptr<Context>&);
 
+        Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
-        void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         std::shared_ptr<ScrollWidget> _scrollWidget;

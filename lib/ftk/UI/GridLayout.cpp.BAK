@@ -35,15 +35,8 @@ namespace ftk
 
         struct GeomData
         {
-            std::vector<int> rowSizeHints;
-            int rowsVisibleCount = 0;
             std::vector<bool> rowsVisible;
             std::vector<int> rowSizes;
-
-            std::vector<int> columnSizeHints;
-            int columnsVisibleCount = 0;
-            std::vector<bool> columnsVisible;
-            std::vector<int> columnSizes;
         };
         GeomData geom;
 
@@ -197,25 +190,29 @@ namespace ftk
         Size2I out;
 
         // Get size hints.
-        p.getSizeHints(p.geom.rowSizeHints, p.geom.columnSizeHints);
-        for (int i : p.geom.rowSizeHints)
+        std::vector<int> rowSizeHints;
+        std::vector<int> columnSizeHints;
+        p.getSizeHints(rowSizeHints, columnSizeHints);
+        for (int i : rowSizeHints)
         {
             out.h += i;
         }
-        for (int i : p.geom.columnSizeHints)
+        for (int i : columnSizeHints)
         {
             out.w += i;
         }
 
         // Add spacing.
-        p.getVisible(p.geom.rowsVisibleCount, p.geom.columnsVisibleCount);
-        if (p.geom.rowsVisibleCount > 0)
+        int rowsVisibleCount = 0;
+        int columnsVisibleCount = 0;
+        p.getVisible(rowsVisibleCount, columnsVisibleCount);
+        if (rowsVisibleCount > 0)
         {
-            out.h += (p.geom.rowsVisibleCount - 1) * p.size.spacing;
+            out.h += (rowsVisibleCount - 1) * p.size.spacing;
         }
-        if (p.geom.columnsVisibleCount > 0)
+        if (columnsVisibleCount > 0)
         {
-            out.w += (p.geom.columnsVisibleCount - 1) * p.size.spacing;
+            out.w += (columnsVisibleCount - 1) * p.size.spacing;
         }
 
         // Add the margin.
@@ -230,17 +227,26 @@ namespace ftk
         IWidget::setGeometry(value);
         FTK_P();
 
+        // Get layout information.
+        std::vector<int> rowSizeHints;
+        std::vector<int> columnSizeHints;
+        p.getSizeHints(rowSizeHints, columnSizeHints);
+        std::vector<bool> columnsVisible;
+        p.getVisible(p.geom.rowsVisible, columnsVisible);
+        int rowsVisibleCount = 0;
+        int columnsVisibleCount = 0;
+        p.getVisible(rowsVisibleCount, columnsVisibleCount);
+
         // Get the total size.
         V2I totalSize;
-        for (const auto& i : p.geom.rowSizeHints)
+        for (const auto& i : rowSizeHints)
         {
             totalSize.y += i;
         }
-        for (const auto& i : p.geom.columnSizeHints)
+        for (const auto& i : columnSizeHints)
         {
             totalSize.x += i;
         }
-        p.getVisible(p.geom.rowsVisible, p.geom.columnsVisible);
 
         // Get the layout stretch.
         std::vector<bool> rowStretch;
@@ -269,36 +275,35 @@ namespace ftk
         if (rowStretchCount > 0)
         {
             stretchSize.y = (g.h() -
-                (p.geom.rowsVisibleCount - 1) * p.size.spacing -
+                (rowsVisibleCount - 1) * p.size.spacing -
                 totalSize.y) / rowStretchCount;
         }
         if (columnStretchCount > 0)
         {
             stretchSize.x = (g.w() -
-                (p.geom.columnsVisibleCount - 1) * p.size.spacing -
+                (columnsVisibleCount - 1) * p.size.spacing -
                 totalSize.x) / columnStretchCount;
         }
 
         // Get the sizes.
-        p.geom.rowSizes.clear();
-        p.geom.columnSizes.clear();
-        for (int i = 0; i < p.geom.rowSizeHints.size(); ++i)
+        std::vector<int> columnSizes;
+        for (int i = 0; i < rowSizeHints.size(); ++i)
         {
-            int size = p.geom.rowSizeHints[i];
+            int size = rowSizeHints[i];
             if (rowStretch[i])
             {
                 size += stretchSize.y;
             }
             p.geom.rowSizes.push_back(size);
         }
-        for (int i = 0; i < p.geom.columnSizeHints.size(); ++i)
+        for (int i = 0; i < columnSizeHints.size(); ++i)
         {
-            int size = p.geom.columnSizeHints[i];
+            int size = columnSizeHints[i];
             if (columnStretch[i])
             {
                 size += stretchSize.x;
             }
-            p.geom.columnSizes.push_back(size);
+            columnSizes.push_back(size);
         }
 
         // Layout the children.
@@ -306,32 +311,26 @@ namespace ftk
         {
             const bool visible = i.first->isVisible(false);
             V2I pos = g.min;
-            for (int j = 0; j < i.second.row && j < p.geom.rowSizes.size(); ++j)
+            for (int j = 0; j < i.second.row; ++j)
             {
                 if (p.geom.rowsVisible[j])
                 {
                     pos.y += p.geom.rowSizes[j] + (visible ? p.size.spacing : 0);
                 }
             }
-            for (int j = 0; j < i.second.column && j < p.geom.columnSizes.size(); ++j)
+            for (int j = 0; j < i.second.column; ++j)
             {
-                if (p.geom.columnsVisible[j])
+                if (columnsVisible[j])
                 {
-                    pos.x += p.geom.columnSizes[j] + (visible ? p.size.spacing : 0);
+                    pos.x += columnSizes[j] + (visible ? p.size.spacing : 0);
                 }
             }
-            Size2I size;
-            if (i.second.column < p.geom.columnSizes.size())
-            {
-                size.w = p.geom.columnSizes[i.second.column];
-            }
-            if (i.second.row < p.geom.rowSizes.size())
-            {
-                size.h = p.geom.rowSizes[i.second.row];
-            }
+            const V2I size(
+                columnSizes[i.second.column],
+                p.geom.rowSizes[i.second.row]);
             i.first->setGeometry(
                 align(
-                    Box2I(pos, size),
+                    Box2I(pos.x, pos.y, size.x, size.y),
                     i.first->getSizeHint(),
                     i.first->getHAlign(),
                     i.first->getVAlign()));

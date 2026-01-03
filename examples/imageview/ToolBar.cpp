@@ -43,16 +43,16 @@ namespace imageview
         out->_init(context, actions, parent);
         return out;
     }
+    
+    Size2I ToolBar::getSizeHint() const
+    {
+        return _layout->getSizeHint();
+    }
 
     void ToolBar::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
         _layout->setGeometry(value);
-    }
-
-    void ToolBar::sizeHintEvent(const SizeHintEvent& event)
-    {
-        setSizeHint(_layout->getSizeHint());
     }
 
     void ToolBar::_createFileToolBar(
