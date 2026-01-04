@@ -129,14 +129,12 @@ namespace ftk
     {
         FTK_P();
         Size2I out;
-        std::vector<Size2I> sizeHints;
         size_t visible = 0;
         for (const auto& child : getChildren())
         {
             if (child->isVisible(false))
             {
                 const Size2I& childSizeHint = child->getSizeHint();
-                sizeHints.push_back(childSizeHint);
                 switch (p.orientation)
                 {
                 case Orientation::Horizontal:
@@ -175,7 +173,8 @@ namespace ftk
     {
         IWidget::setGeometry(value);
         FTK_P();
-        p.geom.g = align(value, getSizeHint(), getHAlign(), getVAlign());
+        const Size2I sizeHint = getSizeHint();
+        p.geom.g = align(value, sizeHint, getHAlign(), getVAlign());
         p.geom.g2 = margin(p.geom.g, -p.size.margin);
 
         std::vector<Size2I> sizeHints;
@@ -207,8 +206,8 @@ namespace ftk
             }
         }
         const std::pair<int, int> extra(
-            p.geom.g.w() - getSizeHint().w,
-            p.geom.g.h() - getSizeHint().h);
+            p.geom.g.w() - sizeHint.w,
+            p.geom.g.h() - sizeHint.h);
         V2I pos = p.geom.g2.min;
         size_t count = 0;
         for (const auto& child : children)

@@ -459,15 +459,18 @@ namespace ftk
     bool IWindow::_hasSizeUpdate(const std::shared_ptr<IWidget>& widget) const
     {
         bool out = widget->hasSizeUpdate();
-        if (out)
+        if (widget->isVisible(false))
         {
-            //std::cout << "Size update: " << widget->getObjectName() << std::endl;
-        }
-        else
-        {
-            for (const auto& child : widget->getChildren())
+            if (out)
             {
-                out |= _hasSizeUpdate(child);
+                //std::cout << "Size update: " << widget->getObjectName() << std::endl;
+            }
+            else
+            {
+                for (const auto& child : widget->getChildren())
+                {
+                    out |= _hasSizeUpdate(child);
+                }
             }
         }
         return out;
