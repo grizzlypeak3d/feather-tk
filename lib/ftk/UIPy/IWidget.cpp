@@ -28,6 +28,14 @@ namespace ftk
                 return out;
             }
             
+            Size2I getSizeHint() const override
+            {
+                PYBIND11_OVERRIDE(
+                    Size2I,
+                    IWidget,
+                    getSizeHint);
+            }
+
             void setGeometry(const Box2I& value) override
             {
                 PYBIND11_OVERRIDE(
@@ -92,7 +100,7 @@ namespace ftk
                 .def("moveToBack", &IWidget::moveToBack)
                 .def_property_readonly("window", &IWidget::getWindow)
 
-                .def_property_readonly("sizeHint", &IWidget::getSizeHint)
+                .def("getSizeHint", &IWidget::getSizeHint)
                 .def_property("hStretch", &IWidget::getHStretch, &IWidget::setHStretch)
                 .def_property("vStretch", &IWidget::getVStretch, &IWidget::setVStretch)
                 .def(
