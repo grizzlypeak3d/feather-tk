@@ -181,6 +181,18 @@ namespace ftk
             {
                 clearCurrent();
             }
+
+#if defined(_WINDOWS)
+            //! \bug Make sure the window title bar does not go off screen.
+            /*V2I pos;
+            SDL_GetWindowPosition(p.sdlWindow, &pos.x, &pos.y);
+            if (pos.x <= 0 || pos.y <= 0)
+            {
+                pos.x = std::max(pos.x, 100);
+                pos.y = std::max(pos.y, 100);
+                SDL_SetWindowPosition(p.sdlWindow, pos.x, pos.y);
+            }*/
+#endif // _WINDOWS
         }
         
         Window::~Window()

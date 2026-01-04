@@ -46,7 +46,7 @@ namespace objview
         _mainWindow = MainWindow::create(
             context,
             std::dynamic_pointer_cast<App>(shared_from_this()),
-            Size2I(1920, 1080));
+            Size2I(1280, 960));
 
         // Observe style settings.
         _styleSettingsObserver = Observer<StyleSettings>::create(

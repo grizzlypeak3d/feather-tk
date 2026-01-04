@@ -16,7 +16,7 @@ namespace ftk
     {
         const std::vector<Size2I> windowSizes =
         {
-            { 1280, 720 },
+            { 1280, 960 },
             { 1920, 1080 },
             { 3840, 2160 }
         };

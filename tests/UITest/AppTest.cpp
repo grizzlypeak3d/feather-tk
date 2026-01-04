@@ -50,7 +50,7 @@ namespace ftk
                         auto button = PushButton::create(context, "Button", layout);
                         FTK_ASSERT(app->getWindows().front() == window);
                         window->show();
-                        window->setSize(Size2I(1920, 1080));
+                        window->setSize(Size2I(1280, 960));
 
                         _print(Format("Window size: {0}").arg(window->getSize()));
                         _print(Format("Frame buffer size: {0}").
