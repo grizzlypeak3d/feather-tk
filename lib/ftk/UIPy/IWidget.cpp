@@ -92,7 +92,7 @@ namespace ftk
                 .def("moveToBack", &IWidget::moveToBack)
                 .def_property_readonly("window", &IWidget::getWindow)
 
-                .def_property("sizeHint", &IWidget::getSizeHint, &IWidget::setSizeHint)
+                .def_property_readonly("sizeHint", &IWidget::getSizeHint)
                 .def_property("hStretch", &IWidget::getHStretch, &IWidget::setHStretch)
                 .def_property("vStretch", &IWidget::getVStretch, &IWidget::setVStretch)
                 .def(
@@ -114,7 +114,6 @@ namespace ftk
                 .def_property_readonly("geometry", &IWidget::getGeometry)
                 .def("setPos", &IWidget::setPos)
                 .def("setSize", &IWidget::setSize)
-                .def("setSizeHint", &IWidget::setSizeHint, py::arg("sizeHint"))
 
                 .def(
                     "isVisible",
