@@ -12,11 +12,26 @@
 
 namespace ftk
 {
+    namespace
+    {
+        const std::vector<Size2I> windowSizes =
+        {
+            { 1280, 720 },
+            { 1920, 1080 },
+            { 3840, 2160 }
+        };
+
+        const std::vector<float> displayScales =
+        {
+            1.F, 1.5F, 2.F, 2.5F, 3.F, 3.5F, 4.F
+        };
+    }
+
     struct MainWindow::Private
     {
         std::shared_ptr<MenuBar> menuBar;
         std::map<std::string, std::shared_ptr<Menu> > menus;
-        std::vector<float> displayScales = { 1.F, 1.5F, 2.F, 2.5F, 3.F, 3.5F, 4.F };
+        std::vector<std::shared_ptr<Action> > windowSizeActions;
         std::vector<std::shared_ptr<Action> > displayScaleActions;
         std::map<ColorStyle, std::shared_ptr<Action> > colorStyleActions;
         std::shared_ptr<Action> tooltipsAction;
@@ -63,6 +78,19 @@ namespace ftk
                 setFullScreen(value);
             }));
 
+        p.menus["WindowSize"] = p.menus["Window"]->addSubMenu("Window Size");
+        for (auto windowSize : windowSizes)
+        {
+            auto action = Action::create(
+                to_string(windowSize),
+                [this, windowSize]
+                {
+                    setSize(windowSize);
+                });
+            p.windowSizeActions.push_back(action);
+            p.menus["WindowSize"]->addAction(action);
+        }
+
         p.menus["ColorStyle"] = p.menus["Window"]->addSubMenu("Color Style");
         for (auto colorStyle : getColorStyleEnums())
         {
@@ -80,9 +108,9 @@ namespace ftk
         }
 
         p.menus["DisplayScale"] = p.menus["Window"]->addSubMenu("Display Scale");
-        for (size_t i = 0; i < p.displayScales.size(); ++i)
+        for (size_t i = 0; i < displayScales.size(); ++i)
         {
-            const float displayScale = p.displayScales[i];
+            const float displayScale = displayScales[i];
             auto action = Action::create(
                 Format("{0}").arg(displayScale).str(),
                 [appWeak, displayScale](bool)
@@ -134,11 +162,11 @@ namespace ftk
             [this](float value)
             {
                 FTK_P();
-                for (size_t i = 0; i < p.displayScales.size() && i < p.displayScaleActions.size(); ++i)
+                for (size_t i = 0; i < displayScales.size() && i < p.displayScaleActions.size(); ++i)
                 {
                     p.menus["DisplayScale"]->setChecked(
                         p.displayScaleActions[i],
-                        p.displayScales[i] == value);
+                        displayScales[i] == value);
                 }
             });
 
