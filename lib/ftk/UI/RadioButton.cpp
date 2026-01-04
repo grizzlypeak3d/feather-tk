@@ -23,6 +23,7 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             int diameter = 0;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -104,13 +105,7 @@ namespace ftk
     
     Size2I RadioButton::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        out.w += p.size.diameter;
-        out.w += p.size.spacing;
-        out.w += p.size.textSize.w + p.size.pad * 2;
-        out.h = p.size.fontMetrics.lineHeight;
-        return margin(out, p.size.margin + p.size.keyFocus);
+        return _p->size.sizeHint;
     }
 
     void RadioButton::setGeometry(const Box2I& value)
@@ -141,6 +136,14 @@ namespace ftk
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
             p.size.diameter = p.size.fontMetrics.lineHeight * .8F;
+
+            p.size.sizeHint = Size2I();
+            p.size.sizeHint.w += p.size.diameter;
+            p.size.sizeHint.w += p.size.spacing;
+            p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
+            p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
+
             p.draw.reset();
         }
     }

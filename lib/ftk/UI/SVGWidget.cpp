@@ -24,6 +24,7 @@ namespace ftk
         {
             std::optional<float> displayScale;
             int margin = 0;
+            Size2I sizeHint;
         };
         SizeData size;
     };
@@ -102,27 +103,23 @@ namespace ftk
     
     Size2I SvgWidget::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        if (p.image)
-        {
-            out.w = p.image->getWidth();
-            out.h = p.image->getHeight();
-        }
-        return out + p.size.margin * 2;
+        return _p->size.sizeHint;
     }
 
     void SvgWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
+        bool init = false;
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
+            init = true;
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
         if (!p.svgData.empty() && !p.image)
         {
+            init = true;
             const std::string s(p.svgData.begin(), p.svgData.end());
             if (auto doc = lunasvg::Document::loadFromData(s))
             {
@@ -147,6 +144,17 @@ namespace ftk
                     }
                 }
             }
+        }
+
+        if (init)
+        {
+            p.size.sizeHint = Size2I();
+            if (p.image)
+            {
+                p.size.sizeHint.w = p.image->getWidth();
+                p.size.sizeHint.h = p.image->getHeight();
+            }
+            p.size.sizeHint = p.size.sizeHint + p.size.margin * 2;
         }
     }
 

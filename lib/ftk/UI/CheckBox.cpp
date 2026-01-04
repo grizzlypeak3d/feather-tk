@@ -23,6 +23,7 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             int checkBox = 0;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -102,14 +103,7 @@ namespace ftk
     
     Size2I CheckBox::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        out.w += p.size.checkBox;
-        out.w += p.size.spacing;
-        out.w += p.size.textSize.w + p.size.pad * 2;
-        out.h = p.size.fontMetrics.lineHeight;
-        out = margin(out, p.size.margin + p.size.keyFocus);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void CheckBox::setGeometry(const Box2I& value)
@@ -140,6 +134,14 @@ namespace ftk
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
             p.size.checkBox = p.size.fontMetrics.lineHeight * .8F;
+
+            p.size.sizeHint = Size2I();
+            p.size.sizeHint.w += p.size.checkBox;
+            p.size.sizeHint.w += p.size.spacing;
+            p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
+            p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
+
             p.draw.reset();
         }
     }

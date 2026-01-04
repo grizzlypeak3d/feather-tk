@@ -20,6 +20,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -64,20 +65,7 @@ namespace ftk
     
     Size2I BellowsButton::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        if (!_text.empty())
-        {
-            out.w = p.size.textSize.w + p.size.pad * 2;
-            out.h = p.size.fontMetrics.lineHeight;
-        }
-        if (_iconImage)
-        {
-            out.w += _iconImage->getWidth();
-            out.h = std::max(out.h, _iconImage->getHeight());
-        }
-        out = margin(out, p.size.margin + p.size.keyFocus);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void BellowsButton::setGeometry(const Box2I& value)
@@ -105,6 +93,20 @@ namespace ftk
             p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+
+            p.size.sizeHint = Size2I();
+            if (!_text.empty())
+            {
+                p.size.sizeHint.w = p.size.textSize.w + p.size.pad * 2;
+                p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+            }
+            if (_iconImage)
+            {
+                p.size.sizeHint.w += _iconImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, _iconImage->getHeight());
+            }
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
+
             p.draw.reset();
         }
     }

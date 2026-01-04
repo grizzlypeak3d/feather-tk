@@ -29,6 +29,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -188,30 +189,7 @@ namespace ftk
     
     Size2I ToolButton::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        if (!_text.empty())
-        {
-            out.w = p.size.textSize.w + p.size.pad * 2;
-            out.h = p.size.fontMetrics.lineHeight;
-            if (_icon.empty())
-            {
-                const int max = std::max(out.w, out.h);
-                out.w = max;
-                out.h = out.h;
-            }
-        }
-        if (_iconImage)
-        {
-            out.w += _iconImage->getWidth();
-            out.h = std::max(out.h, _iconImage->getHeight());
-        }
-        out = margin(out, p.size.margin);
-        if (acceptsKeyFocus())
-        {
-            out = margin(out, p.size.keyFocus);
-        }
-        return out;
+        return _p->size.sizeHint;
     }
 
     void ToolButton::setGeometry(const Box2I& value)
@@ -239,6 +217,30 @@ namespace ftk
             p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+
+            p.size.sizeHint = Size2I();
+            if (!_text.empty())
+            {
+                p.size.sizeHint.w = p.size.textSize.w + p.size.pad * 2;
+                p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+                if (_icon.empty())
+                {
+                    const int max = std::max(p.size.sizeHint.w, p.size.sizeHint.h);
+                    p.size.sizeHint.w = max;
+                    p.size.sizeHint.h = p.size.sizeHint.h;
+                }
+            }
+            if (_iconImage)
+            {
+                p.size.sizeHint.w += _iconImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, _iconImage->getHeight());
+            }
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin);
+            if (acceptsKeyFocus())
+            {
+                p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
+            }
+
             p.draw.reset();
         }
     }

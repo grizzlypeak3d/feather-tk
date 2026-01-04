@@ -24,7 +24,7 @@ namespace ftk
             int border = 0;
             int keyFocus = 0;
             int handle = 0;
-            FontMetrics fontMetrics;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -167,10 +167,7 @@ namespace ftk
 
     Size2I DoubleSlider::getSizeHint() const
     {
-        FTK_P();
-        Size2I out(p.size.size, p.size.fontMetrics.lineHeight);
-        out = margin(out, p.size.margin + p.size.keyFocus);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void DoubleSlider::setGeometry(const Box2I& value)
@@ -197,8 +194,11 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.fontMetrics = event.fontSystem->getMetrics(fontInfo);
+
+            const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
+
             p.draw.reset();
         }
     }

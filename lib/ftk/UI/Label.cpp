@@ -28,6 +28,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -201,10 +202,7 @@ namespace ftk
 
     Size2I Label::getSizeHint() const
     {
-        FTK_P();
-        Size2I out(p.size.textSize);
-        out = margin(out, p.size.hMargin, p.size.vMargin);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void Label::setGeometry(const Box2I& value)
@@ -238,6 +236,7 @@ namespace ftk
             }
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
+            p.size.sizeHint = margin(p.size.textSize, p.size.hMargin, p.size.vMargin);
             p.draw.reset();
         }
     }

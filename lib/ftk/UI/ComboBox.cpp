@@ -50,6 +50,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -196,22 +197,7 @@ namespace ftk
 
     Size2I ComboBox::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        out.w = p.size.textSize.w + p.size.pad * 2;
-        out.h = p.size.fontMetrics.lineHeight;
-        if (p.iconImage)
-        {
-            out.w += p.iconImage->getWidth();
-            out.h = std::max(out.h, p.iconImage->getHeight());
-        }
-        if (p.arrowIconImage)
-        {
-            out.w += p.arrowIconImage->getWidth();
-            out.h = std::max(out.h, p.arrowIconImage->getHeight());
-        }
-        out = margin(out, p.size.margin + p.size.keyFocus);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void ComboBox::setGeometry(const Box2I& value)
@@ -230,9 +216,11 @@ namespace ftk
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
 
+        bool init = false;
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
+            init = true;
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
@@ -255,17 +243,37 @@ namespace ftk
 
         if (event.displayScale != p.iconScale)
         {
+            init = true;
             p.iconScale = event.displayScale;
             p.iconImage.reset();
             p.arrowIconImage.reset();
         }
         if (!p.icon.empty() && !p.iconImage)
         {
+            init = true;
             p.iconImage = event.iconSystem->get(p.icon, event.displayScale);
         }
         if (!p.arrowIconImage)
         {
+            init = true;
             p.arrowIconImage = event.iconSystem->get("MenuArrow", event.displayScale);
+        }
+
+        if (init)
+        {
+            p.size.sizeHint.w = p.size.textSize.w + p.size.pad * 2;
+            p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+            if (p.iconImage)
+            {
+                p.size.sizeHint.w += p.iconImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.iconImage->getHeight());
+            }
+            if (p.arrowIconImage)
+            {
+                p.size.sizeHint.w += p.arrowIconImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.arrowIconImage->getHeight());
+            }
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
         }
     }
 

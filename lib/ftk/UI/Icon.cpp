@@ -22,6 +22,7 @@ namespace ftk
         {
             std::optional<float> displayScale;
             int margin = 0;
+            Size2I sizeHint;
         };
         SizeData size;
     };
@@ -84,14 +85,7 @@ namespace ftk
 
     Size2I Icon::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        if (p.iconImage)
-        {
-            out.w = p.iconImage->getWidth();
-            out.h = p.iconImage->getHeight();
-        }
-        return out;
+        return _p->size.sizeHint;
     }
 
     void Icon::setMarginRole(SizeRole value)
@@ -107,20 +101,34 @@ namespace ftk
     void Icon::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
+        bool init = false;
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
+            init = true;
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
         if (event.displayScale != p.iconScale)
         {
+            init = true;
             p.iconScale = event.displayScale;
             p.iconImage.reset();
         }
         if (!p.icon.empty() && !p.iconImage)
         {
+            init = true;
             p.iconImage = event.iconSystem->get(p.icon, event.displayScale);
+        }
+
+        if (init)
+        {
+            p.size.sizeHint = Size2I();
+            if (p.iconImage)
+            {
+                p.size.sizeHint.w = p.iconImage->getWidth();
+                p.size.sizeHint.h = p.iconImage->getHeight();
+            }
         }
     }
 

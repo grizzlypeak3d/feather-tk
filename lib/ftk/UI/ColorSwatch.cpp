@@ -22,8 +22,8 @@ namespace ftk
         struct SizeData
         {
             std::optional<float> displayScale;
-            int size = 0;
             int border = 0;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -115,8 +115,7 @@ namespace ftk
     
     Size2I ColorSwatch::getSizeHint() const
     {
-        FTK_P();
-        return Size2I(p.size.size, p.size.size);
+        return _p->size.sizeHint;
     }
 
     void ColorSwatch::setGeometry(const Box2I& value)
@@ -138,8 +137,11 @@ namespace ftk
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(p.sizeRole, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+
+            p.size.sizeHint.w = p.size.sizeHint.h =
+                event.style->getSizeRole(p.sizeRole, event.displayScale);
+
             p.draw.reset();
         }
     }

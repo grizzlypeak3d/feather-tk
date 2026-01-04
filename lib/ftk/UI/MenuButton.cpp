@@ -41,6 +41,7 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I shortcutSize;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -209,30 +210,7 @@ namespace ftk
     
     Size2I MenuButton::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        if (_iconImage)
-        {
-            out.w = _iconImage->getWidth();
-            out.h = _iconImage->getHeight();
-        }
-        if (!_text.empty())
-        {
-            out.w += p.size.textSize.w + p.size.pad * 2;
-            out.h = std::max(out.h, p.size.fontMetrics.lineHeight);
-        }
-        if (!p.shortcutText.empty())
-        {
-            out.w += p.size.shortcutSize.w + p.size.pad * 4;
-            out.h = std::max(out.h, p.size.shortcutSize.h);
-        }
-        if (p.subMenuImage)
-        {
-            out.w += p.subMenuImage->getWidth();
-            out.h = std::max(out.h, p.subMenuImage->getHeight());
-        }
-        out = margin(out, p.size.margin + p.size.keyFocus);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void MenuButton::setGeometry(const Box2I& value)
@@ -250,9 +228,11 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
+        bool init = false;
         if (!p.size.displayScale.has_value() ||
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
+            init = true;
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
@@ -265,12 +245,40 @@ namespace ftk
         }
         if (event.displayScale != p.iconScale)
         {
+            init = true;
             p.iconScale = event.displayScale;
             p.subMenuImage.reset();
         }
         if (!p.subMenuIcon.empty() && !p.subMenuImage)
         {
+            init = true;
             p.subMenuImage = event.iconSystem->get(p.subMenuIcon, p.iconScale);
+        }
+
+        if (init)
+        {
+            p.size.sizeHint = Size2I();
+            if (_iconImage)
+            {
+                p.size.sizeHint.w = _iconImage->getWidth();
+                p.size.sizeHint.h = _iconImage->getHeight();
+            }
+            if (!_text.empty())
+            {
+                p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.size.fontMetrics.lineHeight);
+            }
+            if (!p.shortcutText.empty())
+            {
+                p.size.sizeHint.w += p.size.shortcutSize.w + p.size.pad * 4;
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.size.shortcutSize.h);
+            }
+            if (p.subMenuImage)
+            {
+                p.size.sizeHint.w += p.subMenuImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.subMenuImage->getHeight());
+            }
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
         }
     }
 

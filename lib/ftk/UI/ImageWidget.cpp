@@ -20,6 +20,7 @@ namespace ftk
         {
             std::optional<float> displayScale;
             int margin = 0;
+            Size2I sizeHint;
         };
         SizeData size;
     };
@@ -81,15 +82,7 @@ namespace ftk
 
     Size2I ImageWidget::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        if (p.image)
-        {
-            out.w = p.image->getWidth();
-            out.h = p.image->getHeight();
-        }
-        out = out + p.size.margin * 2;
-        return out;
+        return _p->size.sizeHint;
     }
 
     void ImageWidget::sizeHintEvent(const SizeHintEvent& event)
@@ -100,6 +93,14 @@ namespace ftk
         {
             p.size.displayScale = event.displayScale;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+
+            p.size.sizeHint = Size2I();
+            if (p.image)
+            {
+                p.size.sizeHint.w = p.image->getWidth();
+                p.size.sizeHint.h = p.image->getHeight();
+            }
+            p.size.sizeHint = p.size.sizeHint + p.size.margin * 2;
         }
     }
 

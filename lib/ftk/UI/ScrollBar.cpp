@@ -21,6 +21,7 @@ namespace ftk
             std::optional<float> displayScale;
             int handle = 0;
             int border = 0;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -98,19 +99,7 @@ namespace ftk
     
     Size2I ScrollBar::getSizeHint() const
     {
-        FTK_P();
-        Size2I out(p.size.handle, p.size.handle);
-        switch (p.orientation)
-        {
-        case Orientation::Horizontal:
-            out.w += p.size.handle;
-            break;
-        case Orientation::Vertical:
-            out.h += p.size.handle;
-            break;
-        default: break;
-        }
-        return out;
+        return _p->size.sizeHint;
     }
 
     void ScrollBar::sizeHintEvent(const SizeHintEvent& event)
@@ -123,6 +112,18 @@ namespace ftk
             p.size.displayScale = event.displayScale;
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+
+            p.size.sizeHint = Size2I(p.size.handle, p.size.handle);
+            switch (p.orientation)
+            {
+            case Orientation::Horizontal:
+                p.size.sizeHint.w += p.size.handle;
+                break;
+            case Orientation::Vertical:
+                p.size.sizeHint.h += p.size.handle;
+                break;
+            default: break;
+            }
         }
     }
 

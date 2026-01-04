@@ -48,6 +48,7 @@ namespace ftk
             Size2I textSize;
             Size2I formatSize;
             std::vector<Box2I> glyphBoxes;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -249,13 +250,7 @@ namespace ftk
 
     Size2I LineEdit::getSizeHint() const
     {
-        FTK_P();
-        Size2I out(p.size.formatSize.w, p.size.fontMetrics.lineHeight);
-        out = margin(
-            out,
-            p.size.margin * 2 + p.size.keyFocus,
-            p.size.margin + p.size.keyFocus);
-        return out;
+        return _p->size.sizeHint;
     }
 
     void LineEdit::setGeometry(const Box2I& value)
@@ -345,6 +340,13 @@ namespace ftk
             p.size.textSize = event.fontSystem->getSize(text, p.size.fontInfo);
             p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
             p.size.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
+
+            p.size.sizeHint = Size2I(p.size.formatSize.w, p.size.fontMetrics.lineHeight);
+            p.size.sizeHint = margin(
+                p.size.sizeHint,
+                p.size.margin * 2 + p.size.keyFocus,
+                p.size.margin + p.size.keyFocus);
+
             p.draw.reset();
         }
     }

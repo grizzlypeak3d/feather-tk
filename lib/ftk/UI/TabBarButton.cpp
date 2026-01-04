@@ -22,6 +22,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -90,11 +91,7 @@ namespace ftk
     
     Size2I TabBarButton::getSizeHint() const
     {
-        FTK_P();
-        Size2I out(
-            p.size.textSize.w + p.size.pad * 2,
-            p.size.fontMetrics.lineHeight);
-        return margin(out, p.size.margin + p.size.keyFocus);
+        return _p->size.sizeHint;
     }
 
     void TabBarButton::setGeometry(const Box2I& value)
@@ -122,6 +119,12 @@ namespace ftk
             p.size.fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+
+            p.size.sizeHint = Size2I(
+                p.size.textSize.w + p.size.pad * 2,
+                p.size.fontMetrics.lineHeight);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
+
             p.draw.reset();
         }
     }
