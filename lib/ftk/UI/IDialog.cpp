@@ -63,7 +63,7 @@ namespace ftk
         {
             widget->takeKeyFocus();
         }
-        else if (widget = window->getNextKeyFocus(shared_from_this()))
+        else if ((widget = window->getNextKeyFocus(shared_from_this())))
         {
             widget->takeKeyFocus();
         }
