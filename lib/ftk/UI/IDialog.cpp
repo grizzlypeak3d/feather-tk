@@ -115,33 +115,39 @@ namespace ftk
         if (!children.empty())
         {
             const Box2I g = margin(value, -p.size.margin);
-            const Size2I& sizeHint = children.front()->getSizeHint();
-            V2I size;
+            const Size2I sizeHint = children.front()->getSizeHint();
+            Size2I size;
             switch (children.front()->getHStretch())
             {
             case Stretch::Expanding:
-                size.x = g.w();
+                size.w = g.w();
                 break;
             case Stretch::Fixed:
             default:
-                size.x = sizeHint.w;
+                size.w = sizeHint.w;
                 break;
             }
             switch (children.front()->getVStretch())
             {
             case Stretch::Expanding:
-                size.y = g.h();
+                size.h = g.h();
                 break;
             case Stretch::Fixed:
             default:
-                size.y = sizeHint.h;
+                size.h = sizeHint.h;
                 break;
             }
-            children.front()->setGeometry(Box2I(
-                g.x() + g.w() / 2 - size.x / 2,
-                g.y() + g.h() / 2 - size.y / 2,
-                size.x,
-                size.y));
+
+            const Box2I g2(
+                g.x() + g.w() / 2 - size.w / 2,
+                g.y() + g.h() / 2 - size.h / 2,
+                size.w,
+                size.h);
+            if (g2 != children.front()->getGeometry())
+            {
+                p.draw.reset();
+            }
+            children.front()->setGeometry(g2);
         }
     }
 
