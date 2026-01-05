@@ -86,8 +86,8 @@ namespace ftk
                 .def("addSeq", &Path::addSeq, py::arg("path"))
                 .def_property_readonly("isAbs", &Path::isAbs)
                 .def("testExt", &Path::testExt)
-                .def_readonly_static("numbers", &Path::numbers)
-                .def_readonly_static("pathSeparators", &Path::pathSeparators)
+                .def("getNumbers", &Path::getNumbers)
+                .def("getPathSeparators", &Path::getPathSeparators)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 

@@ -37,9 +37,9 @@ namespace ftk
             Count
         };
 
-        const std::string& getLabel(Windows value)
+        std::string getLabel(Windows value)
         {
-            static const std::array<std::string, static_cast<size_t>(Windows::Count)> data =
+            const std::array<std::string, static_cast<size_t>(Windows::Count)> data =
             {
                 "Unknown",
                 "Windows 7+",

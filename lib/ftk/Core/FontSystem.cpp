@@ -36,9 +36,9 @@ namespace ftk
         "Bold",
         "Mono");
 
-    const std::string& getFont(Font value)
+    std::string getFont(Font value)
     {
-        static const std::array<std::string, static_cast<size_t>(Font::Count)> data =
+        const std::array<std::string, static_cast<size_t>(Font::Count)> data =
         {
             "NotoSans-Regular",
             "NotoSans-Bold",

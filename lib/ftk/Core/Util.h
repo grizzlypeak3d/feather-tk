@@ -30,8 +30,8 @@
 //! * vector
 #define FTK_ENUM(ENUM) \
     FTK_API std::vector<ENUM> get##ENUM##Enums(); \
-    FTK_API const std::vector<std::string>& get##ENUM##Labels(); \
-    FTK_API const std::string& getLabel(ENUM); \
+    FTK_API std::vector<std::string> get##ENUM##Labels(); \
+    FTK_API std::string getLabel(ENUM); \
     FTK_API std::string to_string(ENUM); \
     FTK_API bool from_string(const std::string&, ENUM&); \
     FTK_API std::ostream& operator << (std::ostream&, ENUM)
@@ -55,15 +55,14 @@
         return out; \
     } \
     \
-    const std::vector<std::string>& get##ENUM##Labels() \
+    std::vector<std::string> get##ENUM##Labels() \
     { \
-        static std::vector<std::string> data = { __VA_ARGS__ }; \
-        return data; \
+        return std::vector<std::string>{ __VA_ARGS__ }; \
     } \
     \
-    const std::string& getLabel(ENUM value) \
+    std::string getLabel(ENUM value) \
     { \
-        static const std::array<std::string, static_cast<std::size_t>(ENUM::Count)> data = { __VA_ARGS__ }; \
+        const std::array<std::string, static_cast<std::size_t>(ENUM::Count)> data = { __VA_ARGS__ }; \
         return data[static_cast<std::size_t>(value)]; \
     } \
     \

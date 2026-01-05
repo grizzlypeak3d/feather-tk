@@ -220,7 +220,7 @@ namespace ftk
         if (hasDir())
         {
             const std::string dir = getDir();
-            if (pathSeparators.find_first_of(dir[0]) != std::string::npos)
+            if (getPathSeparators().find_first_of(dir[0]) != std::string::npos)
             {
                 out = true;
             }
@@ -242,8 +242,15 @@ namespace ftk
             true;
     }
 
-    const std::string Path::numbers = "0123456789#";
-    const std::string Path::pathSeparators = "/\\";
+    std::string Path::getNumbers()
+    {
+        return "0123456789#";
+    }
+
+    std::string Path::getPathSeparators()
+    {
+        return "/\\";
+    }
 
     void Path::_parse(const PathOptions& options)
     {
@@ -291,6 +298,7 @@ namespace ftk
         }
 
         // Find the directory.
+        const std::string pathSeparators = getPathSeparators();
         size_t dirEnd = std::string::npos;
         size_t dirSize = 0;
         if (size > 0)
@@ -343,6 +351,7 @@ namespace ftk
         }
 
         // Find the number.
+        const std::string numbers = getNumbers();
         size_t numPos = std::string::npos;
         if (size > 0)
         {

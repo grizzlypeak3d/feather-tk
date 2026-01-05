@@ -162,8 +162,8 @@ namespace ftk
         //! \name Constants
         ///@{
 
-        static const std::string numbers;
-        static const std::string pathSeparators;
+        static std::string getNumbers();
+        static std::string getPathSeparators();
 
         ///@}
 

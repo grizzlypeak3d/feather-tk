@@ -46,7 +46,7 @@ namespace ftk
 
     int getChannelCount(ImageType value)
     {
-        static const std::array<int, static_cast<size_t>(ImageType::Count)> values =
+        const std::array<int, static_cast<size_t>(ImageType::Count)> values =
         {
             0,
             1, 1, 1, 1, 1,
@@ -62,7 +62,7 @@ namespace ftk
 
     int getBitDepth(ImageType value)
     {
-        static const std::array<int, static_cast<size_t>(ImageType::Count)> values =
+        const std::array<int, static_cast<size_t>(ImageType::Count)> values =
         {
             0,
             8, 16, 32, 16, 32,
@@ -104,7 +104,7 @@ namespace ftk
         //!     d  1.772    1.8556   1.8814
         //!     e  1.402    1.5748   1.4746
         //!
-        static const std::array<V4F, static_cast<size_t>(YUVCoefficients::Count)> data =
+        const std::array<V4F, static_cast<size_t>(YUVCoefficients::Count)> data =
         {
             V4F(1.5748, 0.468124273, 0.187324273, 1.8556),
             V4F(1.4746, 0.571353127, 0.164553127, 1.8814)
