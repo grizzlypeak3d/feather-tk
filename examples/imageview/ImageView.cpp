@@ -138,7 +138,7 @@ namespace imageview
         {
             const Size2I& size = _image->getSize() * _zoom->get();
             ImageOptions options;
-            options.videoLevels = InputVideoLevels::LegalRange;
+            //options.videoLevels = InputVideoLevels::LegalRange;
             options.channelDisplay = _channelDisplay->get();
             event.render->drawImage(
                 _image,
