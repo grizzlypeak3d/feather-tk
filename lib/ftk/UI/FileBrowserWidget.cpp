@@ -265,9 +265,17 @@ namespace ftk
             });
 
         p.fileEdit->setTextChangedCallback(
-            [this](const std::string& text)
+            [this](const std::string& value)
             {
-                _p->okButton->setEnabled(!text.empty());
+                FTK_P();
+                switch (p.mode)
+                {
+                case FileBrowserMode::Open:
+                case FileBrowserMode::Save:
+                    p.okButton->setEnabled(!value.empty());
+                    break;
+                default: break;
+                }
             });
 
         p.searchBox->setCallback(

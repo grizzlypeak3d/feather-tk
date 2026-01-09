@@ -31,6 +31,7 @@ namespace ftk
     {
         FileBrowserMode mode = FileBrowserMode::Open;
         std::shared_ptr<FileBrowserModel> model;
+        FileBrowserOptions options;
         std::string search;
         std::vector<DirEntry> dirEntries;
         std::shared_ptr<Observable<int> > current;
@@ -89,13 +90,20 @@ namespace ftk
             model->observePath(),
             [this](const std::filesystem::path&)
             {
+                _clearCurrent();
                 _directoryUpdate();
             });
 
         p.optionsObserver = Observer<FileBrowserOptions>::create(
             model->observeOptions(),
-            [this](const FileBrowserOptions&)
+            [this](const FileBrowserOptions& value)
             {
+                FTK_P();
+                if (value.dirList != p.options.dirList)
+                {
+                    _clearCurrent();
+                }
+                p.options = value;
                 _directoryUpdate();
             });
 
@@ -103,6 +111,7 @@ namespace ftk
             model->observeExt(),
             [this](const std::string&)
             {
+                _clearCurrent();
                 _directoryUpdate();
             });
     }
@@ -151,6 +160,7 @@ namespace ftk
         if (value == p.search)
             return;
         p.search = value;
+        _clearCurrent();
         _directoryUpdate();
     }
 
@@ -249,12 +259,12 @@ namespace ftk
         const Box2I& g = getGeometry();
 
         // Draw the current state.
-        if (p.current->get() != -1 && hasKeyFocus())
+        if (p.current->get() != -1)
         {
             const Box2I g2 = move(getRect(p.current->get()), g.min);
             event.render->drawMesh(
                 border(g2, p.size.keyFocus),
-                event.style->getColorRole(ColorRole::KeyFocus));
+                event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::TextDisabled));
         }
 
         // Draw the mouse hover.
@@ -559,12 +569,6 @@ namespace ftk
             }
         }
 
-        p.current->setIfChanged(-1);
-        if (p.selectCallback)
-        {
-            p.selectCallback(Path());
-        }
-
         setSizeUpdate();
         setDrawUpdate();
         p.size.displayScale.reset();
@@ -588,6 +592,18 @@ namespace ftk
                 p.selectCallback(path);
             }
             setDrawUpdate();
+        }
+    }
+
+    void FileBrowserView::_clearCurrent()
+    {
+        FTK_P();
+        if (p.current->setIfChanged(-1))
+        {
+            if (p.selectCallback)
+            {
+                p.selectCallback(Path());
+            }
         }
     }
 

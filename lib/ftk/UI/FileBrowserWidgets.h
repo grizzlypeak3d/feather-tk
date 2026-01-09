@@ -235,6 +235,7 @@ namespace ftk
         int _getItem(const V2I&) const;
         void _directoryUpdate();
         void _setCurrent(int);
+        void _clearCurrent();
         void _doubleClick(int);
 
         FTK_PRIVATE();
