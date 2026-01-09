@@ -69,7 +69,8 @@ namespace ftk
             nfdu8char_t* outPath = nullptr;
             switch (mode)
             {
-            case FileBrowserMode::File:
+            case FileBrowserMode::Open:
+            case FileBrowserMode::Save:
                 NFD::OpenDialog(outPath);
                 break;
             case FileBrowserMode::Dir:
