@@ -9,6 +9,12 @@
 
 #include <cstdlib>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 namespace ftk
 {
     std::vector<std::filesystem::path> getDrives()
@@ -53,5 +59,33 @@ namespace ftk
         }
 #endif // __APPLE__
         return out;
+    }
+
+    std::filesystem::path createTmpDir()
+    {
+        std::string path;
+        char* env = nullptr;
+        if ((env = getenv("TEMP"))) path = env;
+        else if ((env = getenv("TMP"))) path = env;
+        else if ((env = getenv("TMPDIR"))) path = env;
+        else
+        {
+            for (const auto& i : { "/tmp", "/var/tmp", "/usr/tmp" })
+            {
+                struct stat buffer;
+                if (0 == stat(i, &buffer))
+                {
+                    path = i;
+                    break;
+                }
+            }
+        }
+
+        path = path + "/XXXXXX";
+        const size_t size = path.size();
+        std::vector<char> buf(size + 1);
+        memcpy(buf.data(), path.c_str(), size);
+        buf[size] = 0;
+        return std::filesystem::u8path(mkdtemp(buf.data()));
     }
 }

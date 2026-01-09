@@ -44,6 +44,31 @@ namespace ftk
 
     //! Get a user path.
     FTK_API std::filesystem::path getUserPath(UserPath);
+    
+    //! Create a unique temporary directory.
+    FTK_API std::filesystem::path createTmpDir();
+
+    //! Create a temporary directory that will automatically be removed when
+    //! finished.
+    class FTK_API_TYPE TmpDir
+    {
+        FTK_NON_COPYABLE(TmpDir);
+
+    public:
+        FTK_API TmpDir();
+
+        FTK_API ~TmpDir();
+        
+        //! Get the path to the temporary directory.
+        FTK_API const std::filesystem::path& getPath() const;
+
+        //! Remove the temporary directory (this will also be called
+        //! automatically in the destructor).
+        FTK_API void remove();
+
+    private:
+        std::filesystem::path _path;
+    };
 
     //! Convert a frame number to a string.
     FTK_API std::string toString(int64_t frame, int pad = 0);

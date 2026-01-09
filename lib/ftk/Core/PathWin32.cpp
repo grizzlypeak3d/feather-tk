@@ -10,6 +10,7 @@
 #define NOMINMAX
 #endif // NOMINMAX
 #include <windows.h>
+#include <combaseapi.h>
 #include <Shlobj.h>
 #include <shellapi.h>
 
@@ -70,5 +71,28 @@ namespace ftk
         }
         CoTaskMemFree(path);
         return out;
+    }
+
+    std::filesystem::path createTmpDir()
+    {
+        std::string out;
+        char path[MAX_PATH];
+        DWORD r = GetTempPath(MAX_PATH, path);
+        if (r)
+        {
+            out = std::string(path);
+            GUID guid;
+            CoCreateGuid(&guid);
+            const uint8_t* guidP = reinterpret_cast<const uint8_t*>(&guid);
+            for (int i = 0; i < 16; ++i)
+            {
+                char buf[3] = "";
+                sprintf_s(buf, 3, "%02x", guidP[i]);
+                out += buf;
+            }
+
+            CreateDirectory(out.c_str(), NULL);
+        }
+        return std::filesystem::u8path(out);
     }
 }
