@@ -233,7 +233,9 @@ namespace textedit
                                 _mainWindow);
                         }
                     },
-                    "Save");
+                    "Save",
+                    std::filesystem::path(),
+                    FileBrowserMode::Save);
             }
             else
             {
@@ -273,7 +275,9 @@ namespace textedit
                             _mainWindow);
                     }
                 },
-                "Save As");
+                "Save As",
+                std::filesystem::path(),
+                FileBrowserMode::Save);
         }
     }
 

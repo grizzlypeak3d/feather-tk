@@ -24,7 +24,8 @@ namespace ftk
         void fileBrowser(py::module_& m)
         {
             py::enum_<FileBrowserMode>(m, "FileBrowserMode")
-                .value("File", FileBrowserMode::File)
+                .value("Open", FileBrowserMode::Open)
+                .value("Save", FileBrowserMode::Save)
                 .value("Dir", FileBrowserMode::Dir);
             FTK_ENUM_BIND(m, FileBrowserMode);
 
@@ -76,7 +77,7 @@ namespace ftk
                     py::arg("callback"),
                     py::arg("title") = "Open",
                     py::arg("fileName") = std::string(),
-                    py::arg("mode") = FileBrowserMode::File)
+                    py::arg("mode") = FileBrowserMode::Open)
                 .def_property(
                     "nativeFileDialog",
                     &FileBrowserSystem::isNativeFileDialog,

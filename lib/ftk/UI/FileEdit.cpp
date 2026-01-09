@@ -15,7 +15,7 @@ namespace ftk
 {
     struct FileEdit::Private
     {
-        FileBrowserMode mode = FileBrowserMode::File;
+        FileBrowserMode mode = FileBrowserMode::Open;
         Path path;
 
         std::shared_ptr<ToolButton> button;
@@ -111,7 +111,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<FileEdit>(new FileEdit);
-        out->_init(context, FileBrowserMode::File, parent);
+        out->_init(context, FileBrowserMode::Open, parent);
         return out;
     }
 

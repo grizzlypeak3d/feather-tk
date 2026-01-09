@@ -29,7 +29,7 @@ namespace ftk
 
     struct FileBrowserView::Private
     {
-        FileBrowserMode mode = FileBrowserMode::File;
+        FileBrowserMode mode = FileBrowserMode::Open;
         std::shared_ptr<FileBrowserModel> model;
         std::string search;
         std::vector<DirEntry> dirEntries;
@@ -600,7 +600,8 @@ namespace ftk
             const DirEntry& dirEntry = p.dirEntries[index];
             switch (p.mode)
             {
-            case FileBrowserMode::File:
+            case FileBrowserMode::Open:
+            case FileBrowserMode::Save:
                 if (!dirEntry.isDir && p.callback)
                 {
                     p.callback(dirEntry.path);

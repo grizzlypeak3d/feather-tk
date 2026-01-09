@@ -21,11 +21,12 @@ namespace ftk
     //! File browser mode.
     enum class FTK_API_TYPE FileBrowserMode
     {
-        File,
+        Open,
+        Save,
         Dir,
 
         Count,
-        First = File
+        First = Open
     };
     FTK_ENUM(FileBrowserMode);
 
@@ -134,7 +135,7 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
             const std::filesystem::path& = std::filesystem::path(),
-            FileBrowserMode = FileBrowserMode::File,
+            FileBrowserMode = FileBrowserMode::Open,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
@@ -163,7 +164,7 @@ namespace ftk
         FTK_API void setGeometry(const Box2I&) override;
 
     private:
-        void _accept(const std::string&);
+        void _accept(const Path&);
 
         void _optionsUpdate();
         void _extsUpdate();
@@ -193,7 +194,7 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
             const std::filesystem::path& = std::filesystem::path(),
-            FileBrowserMode = FileBrowserMode::File,
+            FileBrowserMode = FileBrowserMode::Open,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
@@ -237,7 +238,7 @@ namespace ftk
             const std::function<void(const Path&)>&,
             const std::string& title = "Open",
             const std::filesystem::path& = std::filesystem::path(),
-            FileBrowserMode = FileBrowserMode::File);
+            FileBrowserMode = FileBrowserMode::Open);
 
         //! Get whether the native file dialog is used.
         FTK_API bool isNativeFileDialog() const;

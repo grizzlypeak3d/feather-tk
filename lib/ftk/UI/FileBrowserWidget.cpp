@@ -24,9 +24,10 @@ namespace ftk
 {
     struct FileBrowserWidget::Private
     {
-        FileBrowserMode mode = FileBrowserMode::File;
+        FileBrowserMode mode = FileBrowserMode::Open;
         std::shared_ptr<FileBrowserModel> model;
         std::shared_ptr<RecentFilesModel> recentFilesModel;
+        Path selection;
 
         std::shared_ptr<Label> titleLabel;
         std::shared_ptr<ToolButton> panelButton;
@@ -39,7 +40,7 @@ namespace ftk
         std::shared_ptr<ScrollWidget> panelScrollWidget;
         std::shared_ptr<FileBrowserView> view;
         std::shared_ptr<ScrollWidget> viewScrollWidget;
-        std::shared_ptr<LineEdit> fileEdit;
+        std::shared_ptr<ftk::LineEdit> fileEdit;
         std::shared_ptr<SearchBox> searchBox;
         std::shared_ptr<ComboBox> extsComboBox;
         std::shared_ptr<ComboBox> sortComboBox;
@@ -120,16 +121,15 @@ namespace ftk
         p.viewScrollWidget->setWidget(p.view);
         p.viewScrollWidget->setVStretch(Stretch::Expanding);
 
-        p.fileEdit = LineEdit::create(context);
-        p.fileEdit->setText(path.u8string());
-        p.fileEdit->setTextCallbackOnFocusLost(false);
+        p.fileEdit = ftk::LineEdit::create(context);
+        p.fileEdit->setVisible(FileBrowserMode::Save == mode);
 
         p.searchBox = SearchBox::create(context);
         p.searchBox->setTooltip("Filter");
 
         p.extsComboBox = ComboBox::create(context);
         p.extsComboBox->setTooltip("Filter by extension");
-        p.extsComboBox->setVisible(FileBrowserMode::File == mode);
+        p.extsComboBox->setVisible(FileBrowserMode::Open == mode);
 
         p.sortComboBox = ComboBox::create(context, getDirListSortLabels());
         p.sortComboBox->setTooltip("Sorting");
@@ -141,6 +141,7 @@ namespace ftk
 
         p.okButton = PushButton::create(context);
         p.okButton->setText("Ok");
+        p.okButton->setEnabled(FileBrowserMode::Dir == mode);
 
         p.cancelButton = PushButton::create(context);
         p.cancelButton->setText("Cancel");
@@ -251,16 +252,22 @@ namespace ftk
             [this](const Path& value)
             {
                 FTK_P();
-                if (!value.isEmpty())
+                p.selection = value;
+                p.fileEdit->setText(value.getFileName());
+                switch (p.mode)
                 {
-                    p.fileEdit->setText(value.getFileName());
+                case FileBrowserMode::Open:
+                case FileBrowserMode::Save:
+                    p.okButton->setEnabled(!value.isEmpty());
+                    break;
+                default: break;
                 }
             });
 
-        p.fileEdit->setTextCallback(
+        p.fileEdit->setTextChangedCallback(
             [this](const std::string& text)
             {
-                _accept(text);
+                _p->okButton->setEnabled(!text.empty());
             });
 
         p.searchBox->setCallback(
@@ -302,7 +309,27 @@ namespace ftk
         p.okButton->setClickedCallback(
             [this]
             {
-                _accept(_p->fileEdit->getText());
+                FTK_P();
+                switch (p.mode)
+                {
+                case FileBrowserMode::Open:
+                    _accept(p.selection);
+                    break;
+                case FileBrowserMode::Save:
+                {
+                    Path path(p.model->getPath().u8string());
+                    path.setFileName(p.fileEdit->getText());
+                    _accept(path);
+                    break;
+                }
+                case FileBrowserMode::Dir:
+                    _accept(
+                        !p.selection.isEmpty() ?
+                        p.selection :
+                        Path(p.model->getPath().u8string()));
+                    break;
+                default: break;
+                }
             });
 
         p.cancelButton->setClickedCallback(
@@ -432,30 +459,10 @@ namespace ftk
         _p->layout->setGeometry(value);
     }
 
-    void FileBrowserWidget::_accept(const std::string& text)
+    void FileBrowserWidget::_accept(const Path& path)
     {
         FTK_P();
-        Path path;
-        switch (p.mode)
-        {
-        case FileBrowserMode::File:
-            if (!text.empty())
-            {
-                path = Path((p.model->getPath() /
-                    std::filesystem::u8path(text)).u8string());
-            }
-            break;
-        case FileBrowserMode::Dir:
-            path = Path(p.model->getPath().u8string());
-            if (!text.empty())
-            {
-                path = Path((std::filesystem::u8path(path.get()) /
-                    std::filesystem::u8path(text)).u8string());
-            }
-            break;
-        default: break;
-        }
-        if (!path.isEmpty() && p.recentFilesModel)
+        if (p.recentFilesModel)
         {
             p.recentFilesModel->addRecent(path.get());
         }
