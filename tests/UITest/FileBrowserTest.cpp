@@ -77,7 +77,7 @@ namespace ftk
                 app->tick();
 
                 auto model = FileBrowserModel::create(context);
-                auto view = FileBrowserView::create(context, FileBrowserMode::File, model, window);
+                auto view = FileBrowserView::create(context, FileBrowserMode::Open, model, window);
                 auto path = std::filesystem::current_path();
                 model->setPath(path);
                 model->setPath(path);
@@ -126,7 +126,7 @@ namespace ftk
                     context,
                     "Open",
                     path,
-                    FileBrowserMode::File,
+                    FileBrowserMode::Open,
                     model,
                     window);
                 FileBrowserOptions options;
@@ -170,7 +170,7 @@ namespace ftk
                     context,
                     "Open",
                     path,
-                    FileBrowserMode::File,
+                    FileBrowserMode::Open,
                     model);
                 FileBrowserOptions options;
                 options.dirList.sortReverse = true;
