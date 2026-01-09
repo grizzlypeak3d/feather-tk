@@ -31,6 +31,7 @@ namespace ftk
             _util();
             _drives();
             _userPaths();
+            _tmpDir();
             _path();
             _dirList();
             _expandSeq();
@@ -132,6 +133,15 @@ namespace ftk
             for (auto path : getUserPathEnums())
             {
                 _print(Format("{0}: {1}").arg(path).arg(getUserPath(path)));
+            }
+        }
+
+        void PathTest::_tmpDir()
+        {
+            {
+                TmpDir tmpDir;
+                _print(Format("Tmp dir: {0}").arg(tmpDir.getPath().u8string()));
+                FileIO::create(tmpDir.getPath() / "render.exr", FileMode::Write);
             }
         }
 

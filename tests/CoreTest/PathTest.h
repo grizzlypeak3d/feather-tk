@@ -27,6 +27,7 @@ namespace ftk
             void _util();
             void _drives();
             void _userPaths();
+            void _tmpDir();
             void _path();
             void _dirList();
             void _expandSeq();
