@@ -18,11 +18,6 @@ namespace ftk
         return _group;
     }
 
-    inline bool ICmdLineOption::found() const
-    {
-        return !_matchedName.empty();
-    }
-
     inline const std::string& ICmdLineOption::getMatchedName() const
     {
         return _matchedName;
@@ -98,6 +93,12 @@ namespace ftk
                 }
             }
         }
+    }
+
+    template<typename T>
+    inline bool CmdLineValueOption<T>::found() const
+    {
+        return ICmdLineOption::found() && _value.has_value();
     }
 
     template<>

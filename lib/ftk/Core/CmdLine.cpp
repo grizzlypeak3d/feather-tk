@@ -19,6 +19,11 @@ namespace ftk
     ICmdLineOption::~ICmdLineOption()
     {}
 
+    bool ICmdLineOption::found() const
+    {
+        return !_matchedName.empty();
+    }
+
     CmdLineFlagOption::CmdLineFlagOption(
         const std::vector<std::string>& names,
         const std::string& help,

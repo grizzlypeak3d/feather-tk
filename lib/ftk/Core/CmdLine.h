@@ -37,7 +37,7 @@ namespace ftk
         FTK_API virtual void parse(std::vector<std::string>& args) = 0;
 
         //! Get whether the option was found.
-        bool found() const;
+        FTK_API virtual bool found() const;
 
         //! Get the option name that was matched.
         const std::string& getMatchedName() const;
@@ -97,6 +97,7 @@ namespace ftk
         const T& getValue() const;
 
         void parse(std::vector<std::string>& args) override;
+        bool found() const override;
 
     private:
         std::optional<T> _value;
