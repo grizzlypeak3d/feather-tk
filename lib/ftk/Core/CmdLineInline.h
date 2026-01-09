@@ -18,14 +18,14 @@ namespace ftk
         return _group;
     }
 
+    inline bool ICmdLineOption::found() const
+    {
+        return !_matchedName.empty();
+    }
+
     inline const std::string& ICmdLineOption::getMatchedName() const
     {
         return _matchedName;
-    }
-
-    inline bool CmdLineFlagOption::found() const
-    {
-        return _found;
     }
 
     template<typename T>

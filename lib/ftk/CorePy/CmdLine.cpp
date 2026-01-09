@@ -16,15 +16,18 @@ namespace ftk
     {
         void cmdLine(py::module_& m)
         {
-            py::class_<ICmdLineOption, std::shared_ptr<ICmdLineOption> >(m, "ICmdLineOption");
-            
+            py::class_<ICmdLineOption, std::shared_ptr<ICmdLineOption> >(m, "ICmdLineOption")
+                .def_property_readonly("help", &ICmdLineOption::getHelp)
+                .def_property_readonly("group", &ICmdLineOption::getGroup)
+                .def_property_readonly("found", &ICmdLineOption::found)
+                .def_property_readonly("matchedName", &ICmdLineOption::getMatchedName);
+
             py::class_<CmdLineFlagOption, ICmdLineOption, std::shared_ptr<CmdLineFlagOption> >(m, "CmdLineFlagOption")
                 .def(
                     pybind11::init(&CmdLineFlagOption::create),
                     pybind11::arg("names"),
                     pybind11::arg("help"),
-                    pybind11::arg("group") = std::string())
-                .def_property_readonly("found", &CmdLineFlagOption::found);
+                    pybind11::arg("group") = std::string());
 
             cmdLineValueOption<int>(m, "I");
             cmdLineValueOption<float>(m, "F");

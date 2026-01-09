@@ -27,14 +27,17 @@ namespace ftk
     public:
         FTK_API virtual ~ICmdLineOption() = 0;
             
-        //! Parse the option.
-        FTK_API virtual void parse(std::vector<std::string>& args) = 0;
-
         //! Get the help.
         const std::string& getHelp() const;
 
         //! Get the group.
         const std::string& getGroup() const;
+
+        //! Parse the option.
+        FTK_API virtual void parse(std::vector<std::string>& args) = 0;
+
+        //! Get whether the option was found.
+        bool found() const;
 
         //! Get the option name that was matched.
         const std::string& getMatchedName() const;
@@ -62,13 +65,7 @@ namespace ftk
             const std::string& help,
             const std::string& group = std::string());
 
-        //! Get whether the flag was found.
-        bool found() const;
-
         FTK_API void parse(std::vector<std::string>& args) override;
-
-    private:
-        bool _found = false;
     };
 
     //! Command line value option.
