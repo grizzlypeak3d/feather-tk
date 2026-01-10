@@ -18,7 +18,6 @@ namespace ftk
         FileBrowserMode mode = FileBrowserMode::Open;
         Path path;
 
-        std::shared_ptr<ToolButton> button;
         std::shared_ptr<LineEdit> lineEdit;
         std::shared_ptr<ToolButton> browseButton;
         std::shared_ptr<HorizontalLayout> layout;
@@ -38,13 +37,8 @@ namespace ftk
 
         p.mode = mode;
 
-        p.button = ToolButton::create(context);
-        p.button->setButtonRole(ColorRole::Base);
-        p.button->setHStretch(Stretch::Expanding);
-
         p.lineEdit = LineEdit::create(context);
         p.lineEdit->setHStretch(Stretch::Expanding);
-        p.lineEdit->hide();
 
         p.browseButton = ToolButton::create(context);
         p.browseButton->setIcon("FileBrowser");
@@ -52,28 +46,16 @@ namespace ftk
 
         p.layout = HorizontalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingTool);
-        p.button->setParent(p.layout);
         p.lineEdit->setParent(p.layout);
         p.browseButton->setParent(p.layout);
 
         _widgetUpdate();
-
-        p.button->setClickedCallback(
-            [this]
-            {
-                FTK_P();
-                p.button->hide();
-                p.lineEdit->show();
-                p.lineEdit->takeKeyFocus();
-            });
 
         p.lineEdit->setTextCallback(
             [this](const std::string& value)
             {
                 FTK_P();
                 p.path = Path(value);
-                p.lineEdit->hide();
-                p.button->show();
                 _widgetUpdate();
                 if (p.callback)
                 {
@@ -84,12 +66,7 @@ namespace ftk
         p.lineEdit->setFocusCallback(
             [this](bool value)
             {
-                FTK_P();
-                if (!value)
-                {
-                    p.lineEdit->hide();
-                    p.button->show();
-                }
+                _widgetUpdate();
             });
 
         p.browseButton->setClickedCallback(
@@ -136,7 +113,6 @@ namespace ftk
         if (value == p.path)
             return;
         p.path = value;
-        p.lineEdit->setText(value.get());
         _widgetUpdate();
     }
 
@@ -169,7 +145,6 @@ namespace ftk
                     {
                         FTK_P();
                         p.path = value;
-                        p.lineEdit->setText(value.get());
                         _widgetUpdate();
                         if (p.callback)
                         {
@@ -182,12 +157,13 @@ namespace ftk
             }
         }
     }
-
     void FileEdit::_widgetUpdate()
     {
         FTK_P();
-        std::string text;
-        p.button->setText(p.path.getFileName());
-        p.button->setTooltip(p.path.get());
+        p.lineEdit->setText(
+            p.lineEdit->hasKeyFocus() ?
+            p.path.get() :
+            p.path.getFileName());
+        p.lineEdit->setTooltip(p.path.get());
     }
 }
