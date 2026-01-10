@@ -77,44 +77,46 @@ namespace ftk
         button->setClickedCallback(
             [this, index]
             {
-                if (_p->clickedCallback)
+                FTK_P();
+                if (p.clickedCallback)
                 {
-                    _p->clickedCallback(index);
+                    p.clickedCallback(index);
                 }
             });
         button->setCheckedCallback(
             [this, index](bool value)
             {
-                switch (_p->type)
+                FTK_P();
+                switch (p.type)
                 {
                 case ButtonGroupType::Check:
-                    if (_p->checkedCallback)
+                    if (p.checkedCallback)
                     {
-                        _p->checkedCallback(index, value);
+                        p.checkedCallback(index, value);
                     }
                     break;
                 case ButtonGroupType::Radio:
-                    for (size_t i = 0; i < _p->buttons.size(); ++i)
+                    p.radio = index;
+                    for (size_t i = 0; i < p.buttons.size(); ++i)
                     {
-                        _p->buttons[i]->setChecked(i == index);
+                        p.buttons[i]->setChecked(i == index);
                     }
-                    if (_p->checkedCallback && index != _p->radio)
+                    if (p.checkedCallback && index != p.radio)
                     {
-                        _p->checkedCallback(index, true);
+                        p.checkedCallback(index, true);
                     }
-                    _p->radio = index;
                     break;
                 case ButtonGroupType::Toggle:
-                    for (size_t i = 0; i < _p->buttons.size(); ++i)
+                    for (size_t i = 0; i < p.buttons.size(); ++i)
                     {
                         if (i != index)
                         {
-                            _p->buttons[i]->setChecked(false);
+                            p.buttons[i]->setChecked(false);
                         }
                     }
-                    if (_p->checkedCallback)
+                    if (p.checkedCallback)
                     {
-                        _p->checkedCallback(index, value);
+                        p.checkedCallback(index, value);
                     }
                     break;
                 default: break;
