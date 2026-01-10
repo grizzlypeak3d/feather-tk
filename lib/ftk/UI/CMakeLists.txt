@@ -159,7 +159,7 @@ set(SOURCE
     LayoutUtil.cpp
     LineEdit.cpp
     LineEditModel.cpp
-    ListItemsButton.cpp
+    ListItemButton.cpp
     ListItemsWidget.cpp
     ListWidget.cpp
     MDICanvas.cpp
