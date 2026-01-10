@@ -96,16 +96,19 @@ namespace ftk
                     }
                     break;
                 case ButtonGroupType::Radio:
+                {
+                    const bool changed = index != p.radio;
                     p.radio = index;
                     for (size_t i = 0; i < p.buttons.size(); ++i)
                     {
                         p.buttons[i]->setChecked(i == index);
                     }
-                    if (p.checkedCallback && index != p.radio)
+                    if (changed && p.checkedCallback)
                     {
                         p.checkedCallback(index, true);
                     }
                     break;
+                }
                 case ButtonGroupType::Toggle:
                     for (size_t i = 0; i < p.buttons.size(); ++i)
                     {
