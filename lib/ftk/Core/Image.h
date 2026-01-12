@@ -153,6 +153,9 @@ namespace ftk
         bool operator != (const ImageInfo&) const;
     };
 
+    //! Get an image information label.
+    std::string getLabel(const ImageInfo&);
+
     //! Image tags.
     typedef std::map<std::string, std::string> ImageTags;
 

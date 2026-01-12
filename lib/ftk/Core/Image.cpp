@@ -4,6 +4,7 @@
 #include <ftk/Core/Image.h>
 
 #include <ftk/Core/Error.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
 #include <array>
@@ -163,6 +164,15 @@ namespace ftk
         default: break;
         }
         return out;
+    }
+
+    std::string getLabel(const ImageInfo& info)
+    {
+        return ftk::Format("{0}x{1}:{2} {3}").
+            arg(info.size.w).
+            arg(info.size.h).
+            arg(info.getAspect()).
+            arg(info.type);
     }
 
     Image::Image(const ImageInfo& info, uint8_t* externalData) :
