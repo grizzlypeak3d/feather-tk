@@ -171,7 +171,7 @@ namespace ftk
         return ftk::Format("{0}x{1}:{2} {3}").
             arg(info.size.w).
             arg(info.size.h).
-            arg(info.getAspect()).
+            arg(info.getAspect(), 2).
             arg(info.type);
     }
 
