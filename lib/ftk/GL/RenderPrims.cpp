@@ -221,6 +221,10 @@ namespace ftk
             {
                 setAlphaBlend(alphaBlend);
             }
+            else
+            {
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            }
 
             glActiveTexture(static_cast<GLenum>(GL_TEXTURE0));
             glBindTexture(GL_TEXTURE_2D, id);
@@ -429,6 +433,10 @@ namespace ftk
             if (imageOptions.alphaBlend != AlphaBlend::None)
             {
                 setAlphaBlend(imageOptions.alphaBlend);
+            }
+            else
+            {
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }
 
             const size_t size = mesh.triangles.size();
