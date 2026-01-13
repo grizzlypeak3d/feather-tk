@@ -396,7 +396,7 @@ namespace ftk
 
             p.shaders["image"]->bind();
             p.shaders["image"]->setUniform("color", color);
-            p.shaders["texture"]->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
+            p.shaders["image"]->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
             p.shaders["image"]->setUniform("imageType", static_cast<int>(info.type));
             p.shaders["image"]->setUniform("channelCount", getChannelCount(info.type));
             p.shaders["image"]->setUniform("channelDisplay", static_cast<int>(imageOptions.channelDisplay));
