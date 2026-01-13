@@ -214,9 +214,13 @@ namespace ftk
             FTK_P();
             p.shaders["texture"]->bind();
             p.shaders["texture"]->setUniform("color", color);
+            p.shaders["texture"]->setUniform("opaque", AlphaBlend::None == alphaBlend);
             p.shaders["texture"]->setUniform("textureSampler", 0);
 
-            setAlphaBlend(alphaBlend);
+            if (alphaBlend != AlphaBlend::None)
+            {
+                setAlphaBlend(alphaBlend);
+            }
 
             glActiveTexture(static_cast<GLenum>(GL_TEXTURE0));
             glBindTexture(GL_TEXTURE_2D, id);
@@ -388,6 +392,7 @@ namespace ftk
 
             p.shaders["image"]->bind();
             p.shaders["image"]->setUniform("color", color);
+            p.shaders["texture"]->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
             p.shaders["image"]->setUniform("imageType", static_cast<int>(info.type));
             p.shaders["image"]->setUniform("channelCount", getChannelCount(info.type));
             p.shaders["image"]->setUniform("channelDisplay", static_cast<int>(imageOptions.channelDisplay));
@@ -421,7 +426,10 @@ namespace ftk
                 break;
             }
 
-            setAlphaBlend(imageOptions.alphaBlend);
+            if (imageOptions.alphaBlend != AlphaBlend::None)
+            {
+                setAlphaBlend(imageOptions.alphaBlend);
+            }
 
             const size_t size = mesh.triangles.size();
             if (!p.vbos["image"] || (p.vbos["image"] && p.vbos["image"]->getSize() < size * 3))
