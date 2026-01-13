@@ -161,6 +161,14 @@ namespace ftk
                 "const int ImageType_YUV_444P_U16      = 27;\n"
                 "const int ImageType_ARGB_4444_Premult = 28;\n";
 
+            const std::string channelDisplay =
+                "// enum ftk::ChannelDisplay\n"
+                "const int ChannelDisplay_Color = 0;\n"
+                "const int ChannelDisplay_Red   = 1;\n"
+                "const int ChannelDisplay_Green = 2;\n"
+                "const int ChannelDisplay_Blue  = 3;\n"
+                "const int ChannelDisplay_Alpha = 4;\n";
+
             const std::string videoLevels =
                 "// enum ftk::VideoLevels\n"
                 "const int VideoLevels_FullRange  = 0;\n"
@@ -271,6 +279,8 @@ namespace ftk
                 "\n"
                 "{2}\n"
                 "\n"
+                "{3}\n"
+                "\n"
                 "uniform vec4      color;\n"
                 "uniform bool      opaque;\n"
                 "uniform int       imageType;\n"
@@ -327,6 +337,7 @@ namespace ftk
                 "    }\n"
                 "}\n").
                 arg(imageType).
+                arg(channelDisplay).
                 arg(videoLevels).
                 arg(sampleTexture);
         }
