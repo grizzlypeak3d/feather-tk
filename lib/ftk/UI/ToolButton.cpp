@@ -360,6 +360,10 @@ namespace ftk
             {
             case Key::Return:
                 event.accept = true;
+                if (_pressedCallback)
+                {
+                    _pressedCallback();
+                }
                 click();
                 break;
             case Key::Escape:
