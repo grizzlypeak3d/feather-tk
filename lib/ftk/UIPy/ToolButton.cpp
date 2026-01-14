@@ -31,7 +31,7 @@ namespace ftk
                     py::arg("context"),
                     py::arg("text"),
                     py::arg("parent") = nullptr)
-            .def_property("popupIcon", &IButton::hasPopupIcon, &IButton::setPopupIcon);
+            .def_property("popupIcon", &ToolButton::hasPopupIcon, &ToolButton::setPopupIcon);
         }
     }
 }
