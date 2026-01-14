@@ -6,6 +6,8 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/ScrollWidget.h>
 
+#include <optional>
+
 namespace ftk
 {
     bool TextEditOptions::operator == (const TextEditOptions& other) const

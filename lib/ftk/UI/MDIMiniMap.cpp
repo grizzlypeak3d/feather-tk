@@ -6,6 +6,8 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/IMouseWidget.h>
 
+#include <optional>
+
 namespace ftk
 {
     namespace
