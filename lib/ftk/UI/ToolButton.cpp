@@ -13,6 +13,9 @@ namespace ftk
     struct ToolButton::Private
     {
         std::shared_ptr<Action> action;
+        bool popupIcon = false;
+        float popupIconScale = 1.F;
+        std::shared_ptr<Image> popupImage;
         std::shared_ptr<Observer<std::string> > iconObserver;
         std::shared_ptr<Observer<std::string> > checkedIconObserver;
         std::shared_ptr<Observer<bool> > checkableObserver;
@@ -148,6 +151,22 @@ namespace ftk
         return out;
     }
 
+    bool ToolButton::hasPopupIcon() const
+    {
+        return _p->popupIcon;
+    }
+
+    void ToolButton::setPopupIcon(bool value)
+    {
+        FTK_P();
+        if (value == p.popupIcon)
+            return;
+        p.popupIcon = value;
+        p.size.displayScale.reset();
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     void ToolButton::setText(const std::string& value)
     {
         const bool changed = value != _text;
@@ -218,6 +237,20 @@ namespace ftk
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
 
+            if (event.displayScale != p.popupIconScale)
+            {
+                p.popupIconScale = event.displayScale;
+                p.popupImage.reset();
+            }
+            if (p.popupIcon && !p.popupImage)
+            {
+                p.popupImage = event.iconSystem->get("MenuArrow", event.displayScale);
+            }
+            else if (!p.popupIcon)
+            {
+                p.popupImage.reset();
+            }
+
             p.size.sizeHint = Size2I();
             if (!_text.empty())
             {
@@ -234,6 +267,11 @@ namespace ftk
             {
                 p.size.sizeHint.w += _iconImage->getWidth();
                 p.size.sizeHint.h = std::max(p.size.sizeHint.h, _iconImage->getHeight());
+            }
+            if (p.popupImage)
+            {
+                p.size.sizeHint.w += p.popupImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.popupImage->getHeight());
             }
             p.size.sizeHint = margin(p.size.sizeHint, p.size.margin);
             if (acceptsKeyFocus())
@@ -316,10 +354,6 @@ namespace ftk
         if (iconImage)
         {
             const Size2I& iconSize = iconImage->getSize();
-            if (_text.empty())
-            {
-                x = p.draw->g2.x() + p.draw->g2.w() / 2 - iconSize.w / 2;
-            }
             event.render->drawImage(
                 iconImage,
                 Box2I(
@@ -345,6 +379,23 @@ namespace ftk
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
                     p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+                event.style->getColorRole(isEnabled() ?
+                    ColorRole::Text :
+                    ColorRole::TextDisabled));
+            x += p.size.pad * 2 + p.size.textSize.w;
+        }
+
+        // Draw the popup icon.
+        if (p.popupImage)
+        {
+            const Size2I& iconSize = p.popupImage->getSize();
+            event.render->drawImage(
+                p.popupImage,
+                Box2I(
+                    x,
+                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    iconSize.w,
+                    iconSize.h),
                 event.style->getColorRole(isEnabled() ?
                     ColorRole::Text :
                     ColorRole::TextDisabled));

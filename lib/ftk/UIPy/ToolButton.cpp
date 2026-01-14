@@ -30,7 +30,8 @@ namespace ftk
                         const std::shared_ptr<IWidget>&>(&ToolButton::create)),
                     py::arg("context"),
                     py::arg("text"),
-                    py::arg("parent") = nullptr);
+                    py::arg("parent") = nullptr)
+            .def_property("popupIcon", &IButton::hasPopupIcon, &IButton::setPopupIcon);
         }
     }
 }

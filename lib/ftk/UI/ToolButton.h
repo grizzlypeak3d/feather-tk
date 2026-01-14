@@ -43,6 +43,12 @@ namespace ftk
             const std::shared_ptr<Action>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Get whether the button has a popup icon.
+        bool hasPopupIcon() const;
+
+        //! Set whether the button has a popup icon.
+        void setPopupIcon(bool);
+
         FTK_API void setText(const std::string&) override;
         FTK_API void setFontRole(FontRole) override;
 
