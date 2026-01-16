@@ -28,6 +28,7 @@ set(HEADERS
     FloatModel.h
     FloatSlider.h
     FormLayout.h
+    GraphWidget.h
     GridLayout.h
     GroupBox.h
     IButton.h
@@ -136,6 +137,7 @@ set(SOURCE
     FloatModel.cpp
     FloatSlider.cpp
     FormLayout.cpp
+    GraphWidget.cpp
     GridLayout.cpp
     GroupBox.cpp
     IButton.cpp
