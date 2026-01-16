@@ -7,6 +7,8 @@
 
 #include <ftk/Core/String.h>
 
+#include <atomic>
+
 namespace ftk
 {
     void IWidget::_init(

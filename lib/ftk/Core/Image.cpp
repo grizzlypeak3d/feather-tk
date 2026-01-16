@@ -7,6 +7,7 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
+#include <atomic>
 #include <array>
 #include <cstring>
 #include <sstream>
