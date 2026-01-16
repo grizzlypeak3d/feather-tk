@@ -165,11 +165,12 @@ namespace ftk
                 logSystem->print(
                     "ftk::gl::Window",
                     Format(
-                        "New window {0}:\n"
-                        "    Size: {1}\n"
-                        "    OpenGL vendor: {2}\n"
-                        "    OpenGL renderer: {3}\n"
-                        "    OpenGL version: {4}").
+                        "\n"
+                        "    New window: {0}\n"
+                        "    * Size: {1}\n"
+                        "    * OpenGL vendor: {2}\n"
+                        "    * OpenGL renderer: {3}\n"
+                        "    * OpenGL version: {4}").
                     arg(this).
                     arg(size).
                     arg(p.glInfo.vendor).
