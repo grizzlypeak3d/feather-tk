@@ -27,8 +27,20 @@ namespace ftk
         }
     }
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+    }
+
+    IWidget::IWidget()
+    {
+        ++objectCount;
+    }
+
     IWidget::~IWidget()
-    {}
+    {
+        --objectCount;
+    }
 
     void IWidget::setObjectName(const std::string& value)
     {
@@ -427,4 +439,9 @@ namespace ftk
 
     void IWidget::dropEvent(DragDropEvent&)
     {}
+
+    size_t IWidget::getObjectCount()
+    {
+        return objectCount;
+    }
 }

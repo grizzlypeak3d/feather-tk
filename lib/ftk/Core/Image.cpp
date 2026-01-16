@@ -175,11 +175,20 @@ namespace ftk
             arg(info.type);
     }
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+        std::atomic<size_t> totalByteCount = 0;
+    }
+
     Image::Image(const ImageInfo& info, uint8_t* externalData) :
         _info(info),
         _byteCount(info.getByteCount()),
         _externalData(externalData)
     {
+        ++objectCount;
+        totalByteCount += _byteCount;
+
         if (externalData)
         {
             _data = externalData;
@@ -198,6 +207,9 @@ namespace ftk
         {
             delete[] _data;
         }
+
+        --objectCount;
+        totalByteCount -= _byteCount;
     }
 
     std::shared_ptr<Image> Image::create(const ImageInfo& info)
@@ -228,6 +240,16 @@ namespace ftk
     void Image::zero()
     {
         memset(_data, 0, _byteCount);
+    }
+
+    size_t Image::getObjectCount()
+    {
+        return objectCount;
+    }
+
+    size_t Image::getTotalByteCount()
+    {
+        return totalByteCount;
     }
 
     void to_json(nlohmann::json& json, const ImageMirror& in)

@@ -109,6 +109,7 @@ namespace ftk
         std::weak_ptr<IWindow> activeWindow;
         std::map<std::shared_ptr<IWindow>, V2I> mousePos;
         std::vector<std::string> dropFiles;
+
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
     };
@@ -1149,12 +1150,10 @@ namespace ftk
 
 #if defined(FTK_SDL2)
                 case SDL_DROPFILE:
-                    logSystem->print("ftk::App", Format("SDL_DROPFILE: {0}").arg(event.drop.file));
                     p.dropFiles.push_back(event.drop.file);
                     break;
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_DROP_FILE:
-                    logSystem->print("ftk::App", Format("SDL_EVENT_DROP_FILE: {0}").arg(event.drop.data));
                     p.dropFiles.push_back(event.drop.data);
                     break;
 #endif // FTK_SDL2
@@ -1164,7 +1163,6 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_DROP_BEGIN:
 #endif // FTK_SDL2
-                    logSystem->print("ftk::App", "SDL_DROPBEGIN");
                     p.dropFiles.clear();
                     break;
 
@@ -1174,7 +1172,6 @@ namespace ftk
                 case SDL_EVENT_DROP_COMPLETE:
 #endif // FTK_SDL2
                 {
-                    logSystem->print("ftk::App", "SDL_DROPCOMPLETE");
                     bool found = false;
                     for (const auto& window : p.windows)
                     {
@@ -1398,6 +1395,9 @@ namespace ftk
     void App::_log()
     {
         FTK_P();
+
+        std::vector<std::string> lines;
+        lines.push_back(std::string());
         double tickAverage = 0.0;
         if (!p.tickTimes.empty())
         {
@@ -1407,9 +1407,12 @@ namespace ftk
             }
             tickAverage /= static_cast<double>(p.tickTimes.size());
         }
+        lines.push_back(Format("    * Average tick time: {0}ms").arg(tickAverage));
+        lines.push_back(Format("    * Image count: {0}").arg(Image::getObjectCount()));
+        lines.push_back(Format("    * Image byte count: {0}").arg(Image::getTotalByteCount()));
+        lines.push_back(Format("    * Widget count: {0}").arg(IWidget::getObjectCount()));
+
         auto logSystem = _context->getSystem<LogSystem>();
-        logSystem->print(
-            "ftk::App",
-            Format("Average tick time: {0}ms").arg(tickAverage));
+        logSystem->print("ftk::App", join(lines, '\n'));
     }
 }

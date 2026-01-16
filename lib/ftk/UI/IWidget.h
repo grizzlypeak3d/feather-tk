@@ -23,7 +23,7 @@ namespace ftk
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
 
-        IWidget() = default;
+        IWidget();
 
     public:
         FTK_API virtual ~IWidget() = 0;
@@ -295,6 +295,9 @@ namespace ftk
         FTK_API virtual void dropEvent(DragDropEvent&);
 
         ///@}
+
+        //! Get the number of objects currenty instantiated.
+        FTK_API static size_t getObjectCount();
 
     private:
         std::weak_ptr<Context> _context;
