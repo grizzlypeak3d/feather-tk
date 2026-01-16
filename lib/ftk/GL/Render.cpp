@@ -545,11 +545,12 @@ namespace ftk
                 logSystem->print(
                     "ftk::gl::Render",
                     Format(
-                        "Averages:\n"
-                        "    Render time:    {0}ms\n"
-                        "    Triangle count: {1}\n"
-                        "    Texture count:  {2}\n"
-                        "    Glyph count:    {3}").
+                        "\n"
+                        "    Averages:\n"
+                        "    * Render time:    {0}ms\n"
+                        "    * Triangle count: {1}\n"
+                        "    * Texture count:  {2}\n"
+                        "    * Glyph count:    {3}").
                         arg(average.renderTime).
                         arg(average.triCount).
                         arg(average.textureCount).
