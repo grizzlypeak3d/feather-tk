@@ -94,7 +94,7 @@ namespace ftk
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
-            p.size.sizeHint = event.style->getSizeRole(SizeRole::ScrollAreaSmall, event.displayScale);
+            p.size.sizeHint = event.style->getSizeRole(SizeRole::ScrollAreaSmall, event.displayScale) / 2;
             p.size.sampleSize = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
