@@ -30,6 +30,7 @@ namespace ftk
         struct DrawData
         {
             Box2I g;
+            TriMesh2F border;
             TriMesh2F mesh;
         };
         std::optional<DrawData> draw;
@@ -117,20 +118,26 @@ namespace ftk
         FTK_P();
 
         const Box2I& g = getGeometry();
-        const int w = g.w();
-        const int h = g.h();
+        const Box2I g2 = margin(g, -p.size.border);
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
+
+            int w = g.w();
+            int h = g.h();
+            p.draw->border = border(Box2I(0, 0, w, h), p.size.border);
+
+            w = g2.w();
+            h = g2.h();
             int j = 0;
             for (auto i = p.samples.begin(); i != p.samples.end() && j < w; ++i, j = j + p.size.sampleSize)
             {
                 const int v = *i / static_cast<float>(p.samplesMax) * h;
-                const Box2I b = margin(Box2I(j, h - 1 - v, p.size.sampleSize, v), -p.size.border);
+                const Box2I b = margin(Box2I(j, h - v, p.size.sampleSize, v), -p.size.border);
                 p.draw->mesh.v.push_back(V2F(b.min.x, b.min.y));
-                p.draw->mesh.v.push_back(V2F(b.min.x, b.max.y));
-                p.draw->mesh.v.push_back(V2F(b.max.x, b.min.y));
-                p.draw->mesh.v.push_back(V2F(b.max.x, b.max.y));
+                p.draw->mesh.v.push_back(V2F(b.min.x, b.max.y + 1));
+                p.draw->mesh.v.push_back(V2F(b.max.x + 1, b.min.y));
+                p.draw->mesh.v.push_back(V2F(b.max.x + 1, b.max.y + 1));
             }
             for (int i = 0; i < p.draw->mesh.v.size() - 4; i += 4)
             {
@@ -147,9 +154,14 @@ namespace ftk
         }
 
         event.render->drawMesh(
+            p.draw->border,
+            event.style->getColorRole(ColorRole::Border),
+            V2F(g.min.x, g.min.y));
+
+        event.render->drawMesh(
             p.draw->mesh,
             event.style->getColorRole(ColorRole::Cyan),
-            V2F(g.min.x, g.min.y));
+            V2F(g2.min.x, g2.min.y));
     }
 
     void GraphWidget::_samplesUpdate()
@@ -159,8 +171,9 @@ namespace ftk
         bool changed = false;
 
         const Box2I& g = getGeometry();
-        const int w = g.w();
-        while ((p.samples.size() - 1) * p.size.sampleSize > w)
+        const Box2I g2 = margin(g, -p.size.border);
+        const int w = g2.w();
+        while (p.samples.size() * p.size.sampleSize > (w + p.size.sampleSize))
         {
             changed = true;
             p.samples.pop_front();
