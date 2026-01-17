@@ -25,17 +25,17 @@ namespace widgets
         // Create graph widgets.
         auto vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _imagesLabel = Label::create(context, "Images:", vLayout);
+        _imagesLabel = Label::create(context, vLayout);
         _imagesGraph = GraphWidget::create(context, vLayout);
 
         vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _imagesSizeLabel = Label::create(context, "Total image size (MB):", vLayout);
+        _imagesSizeLabel = Label::create(context, vLayout);
         _imageSizeGraph = GraphWidget::create(context, vLayout);
         
         vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _widgetsLabel = Label::create(context, "Widgets:", vLayout);
+        _widgetsLabel = Label::create(context, vLayout);
         _widgetsGraph = GraphWidget::create(context, vLayout);
 
         _timer = Timer::create(context);
@@ -49,7 +49,7 @@ namespace widgets
                 _imagesGraph->addSample(count);
 
                 count = Image::getTotalByteCount() / megabyte;
-                _imagesSizeLabel->setText(Format("Total image size (MB): {0}").arg(count));
+                _imagesSizeLabel->setText(Format("Total image size: {0}MB").arg(count));
                 _imageSizeGraph->addSample(count);
 
                 count = IWidget::getObjectCount();
