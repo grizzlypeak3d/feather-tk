@@ -139,7 +139,7 @@ namespace ftk
                 p.draw->mesh.v.push_back(V2F(b.max.x + 1, b.min.y));
                 p.draw->mesh.v.push_back(V2F(b.max.x + 1, b.max.y + 1));
             }
-            for (int i = 0; i < p.draw->mesh.v.size() - 4; i += 4)
+            for (int i = 0; p.draw->mesh.v.size() >= 4 && i < p.draw->mesh.v.size() - 4; i += 4)
             {
                 Triangle2 t;
                 t.v[0].v = i + 0 + 1;
