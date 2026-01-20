@@ -80,6 +80,8 @@ namespace ftk
         //! \name Scroll Area
         ///@{
 
+        FTK_API const std::shared_ptr<ScrollArea>& getScrollArea() const;
+
         //! Get whether the scrolled area is resizable.
         FTK_API bool isAreaResizable() const;
 

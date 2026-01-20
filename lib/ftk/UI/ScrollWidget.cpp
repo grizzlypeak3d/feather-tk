@@ -230,6 +230,11 @@ namespace ftk
         _p->scrollInfoCallback = value;
     }
 
+    const std::shared_ptr<ScrollArea>& ScrollWidget::getScrollArea() const
+    {
+        return _p->scrollArea;
+    }
+
     bool ScrollWidget::isAreaResizable() const
     {
         return _p->scrollArea->isAreaResizable();
