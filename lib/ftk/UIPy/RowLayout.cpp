@@ -18,9 +18,17 @@ namespace ftk
         {
             py::class_<RowMargins>(m, "RowMargins")
                 .def(py::init<>())
-                .def(py::init<>(SizeRole))
-                .def(py::init<>(SizeRole, SizeRole))
-                .def(py::init<>(SizeRole, SizeRole, SizeRole, SizeRole))
+                .def(py::init<SizeRole>())
+                .def(
+                    py::init<SizeRole, SizeRole>(),
+                    py::arg("horizontal"),
+                    py::arg("vertical"))
+                .def(
+                    py::init<SizeRole, SizeRole, SizeRole, SizeRole>(),
+                    py::arg("left"),
+                    py::arg("top"),
+                    py::arg("right"),
+                    py::arg("bottom"))
                 .def_readwrite("left", &RowMargins::left)
                 .def_readwrite("top", &RowMargins::top)
                 .def_readwrite("right", &RowMargins::right)
