@@ -10,6 +10,27 @@ namespace ftk
     //! \name Layouts
     ///@{
         
+    //! Row layout margins.
+    struct FTK_API_TYPE RowMargins
+    {
+        RowMargins() = default;
+        FTK_API RowMargins(SizeRole);
+        FTK_API RowMargins(SizeRole horizontal, SizeRole vertical);
+        FTK_API RowMargins(
+            SizeRole left,
+            SizeRole top,
+            SizeRole right,
+            SizeRole bottom);
+
+        SizeRole left   = SizeRole::None;
+        SizeRole top    = SizeRole::None;
+        SizeRole right  = SizeRole::None;
+        SizeRole bottom = SizeRole::None;
+
+        FTK_API bool operator == (const RowMargins&) const;
+        FTK_API bool operator != (const RowMargins&) const;
+    };
+
     //! Row layout.
     class FTK_API_TYPE RowLayout : public IWidget
     {
@@ -30,6 +51,12 @@ namespace ftk
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
+
+        //! Get the margins.
+        FTK_API const RowMargins& getMargins() const;
+
+        //! Set the margins.
+        FTK_API void setMargins(const RowMargins&);
 
         //! Get the margin role.
         FTK_API SizeRole getMarginRole() const;

@@ -10,16 +10,55 @@
 
 namespace ftk
 {
+    RowMargins::RowMargins(SizeRole value) :
+        left(value),
+        top(value),
+        right(value),
+        bottom(value)
+    {}
+
+    RowMargins::RowMargins(SizeRole horizontal, SizeRole vertical) :
+        left(horizontal),
+        top(vertical),
+        right(horizontal),
+        bottom(vertical)
+    {}
+
+    RowMargins::RowMargins(
+        SizeRole left,
+        SizeRole top,
+        SizeRole right,
+        SizeRole bottom) :
+        left(left),
+        top(top),
+        right(right),
+        bottom(bottom)
+    {}
+
+    bool RowMargins::operator == (const RowMargins& other) const
+    {
+        return
+            left == other.left &&
+            top == other.top &&
+            right == other.right &&
+            bottom == other.bottom;
+    }
+
+    bool RowMargins::operator != (const RowMargins& other) const
+    {
+        return !(*this == other);
+    }
+
     struct RowLayout::Private
     {
         Orientation orientation = Orientation::Horizontal;
-        SizeRole marginRole = SizeRole::None;
+        RowMargins margins;
         SizeRole spacingRole = SizeRole::Spacing;
 
         struct SizeData
         {
             std::optional<float> displayScale;
-            int margin = 0;
+            std::array<int, 4> margins = { 0, 0, 0, 0 };
             int spacing = 0;
         };
         SizeData size;
@@ -60,19 +99,29 @@ namespace ftk
         return out;
     }
 
+    const RowMargins& RowLayout::getMargins() const
+    {
+        return _p->margins;
+    }
+
+    void RowLayout::setMargins(const RowMargins& value)
+    {
+        FTK_P();
+        if (value == p.margins)
+            return;
+        p.margins = value;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     SizeRole RowLayout::getMarginRole() const
     {
-        return _p->marginRole;
+        return _p->margins.left;
     }
 
     void RowLayout::setMarginRole(SizeRole value)
     {
-        FTK_P();
-        if (value == p.marginRole)
-            return;
-        p.marginRole = value;
-        setSizeUpdate();
-        setDrawUpdate();
+        setMargins(RowMargins(value));
     }
 
     SizeRole RowLayout::getSpacingRole() const
@@ -164,8 +213,8 @@ namespace ftk
             default: break;
             }
         }
-        out.w += p.size.margin * 2;
-        out.h += p.size.margin * 2;
+        out.w += p.size.margins[0] + p.size.margins[2];
+        out.h += p.size.margins[1] + p.size.margins[3];
         return out;
     }
 
@@ -175,7 +224,12 @@ namespace ftk
         FTK_P();
         const Size2I sizeHint = getSizeHint();
         p.geom.g = align(value, sizeHint, getHAlign(), getVAlign());
-        p.geom.g2 = margin(p.geom.g, -p.size.margin);
+        p.geom.g2 = margin(
+            p.geom.g,
+            -p.size.margins[0],
+            -p.size.margins[1],
+            -p.size.margins[2],
+            -p.size.margins[3]);
 
         std::vector<Size2I> sizeHints;
         size_t expanding = 0;
@@ -293,7 +347,10 @@ namespace ftk
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size.margins[0] = event.style->getSizeRole(p.margins.left, event.displayScale);
+            p.size.margins[1] = event.style->getSizeRole(p.margins.top, event.displayScale);
+            p.size.margins[2] = event.style->getSizeRole(p.margins.right, event.displayScale);
+            p.size.margins[3] = event.style->getSizeRole(p.margins.bottom, event.displayScale);
             p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
     }

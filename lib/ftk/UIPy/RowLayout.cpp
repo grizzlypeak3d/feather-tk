@@ -16,12 +16,23 @@ namespace ftk
     {
         void rowLayout(py::module_& m)
         {
+            py::class_<RowMargins>(m, "RowMargins")
+                .def(py::init<>())
+                .def(py::init<>(SizeRole))
+                .def(py::init<>(SizeRole, SizeRole))
+                .def(py::init<>(SizeRole, SizeRole, SizeRole, SizeRole))
+                .def_readwrite("left", &RowMargins::left)
+                .def_readwrite("top", &RowMargins::top)
+                .def_readwrite("right", &RowMargins::right)
+                .def_readwrite("bottom", &RowMargins::bottom);
+
             py::class_<RowLayout, IWidget, std::shared_ptr<RowLayout> >(m, "RowLayout")
                 .def(
                     py::init(&RowLayout::create),
                     py::arg("context"),
                     py::arg("orientation"),
                     py::arg("parent") = nullptr)
+                .def_property("margins", &RowLayout::getMargins, &RowLayout::setMargins)
                 .def_property("marginRole", &RowLayout::getMarginRole, &RowLayout::setMarginRole)
                 .def_property("spacingRole", &RowLayout::getSpacingRole, &RowLayout::setSpacingRole)
                 .def("addSpacer", py::overload_cast<Stretch>(&RowLayout::addSpacer), py::arg("stretch"))
