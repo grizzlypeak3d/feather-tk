@@ -164,7 +164,7 @@ namespace ftk
     {
         FTK_API ScrollEvent(
             const V2F& value,
-            int              modifiers,
+            int        modifiers,
             const V2I& pos);
 
         V2F  value;

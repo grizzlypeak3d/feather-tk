@@ -9,6 +9,21 @@
 
 namespace ftk
 {
+    KeyShortcut::KeyShortcut(Key key, KeyModifier modifier) :
+        key(key),
+        modifiers(static_cast<int>(modifier))
+    {}
+
+    KeyShortcut::KeyShortcut(Key key, KeyModifier modifier, KeyModifier modifier2) :
+        key(key),
+        modifiers(static_cast<int>(modifier) | static_cast<int>(modifier2))
+    {}
+
+    KeyShortcut::KeyShortcut(Key key, KeyModifier modifier, KeyModifier modifier2, KeyModifier modifier3) :
+        key(key),
+        modifiers(static_cast<int>(modifier) | static_cast<int>(modifier2) | static_cast<int>(modifier3))
+    {}
+
     KeyShortcut::KeyShortcut(Key key, int modifiers) :
         key(key),
         modifiers(modifiers)

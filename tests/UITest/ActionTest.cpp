@@ -42,7 +42,7 @@ namespace ftk
                 FTK_ASSERT("Icon" == a->getIcon());
             }
             {
-                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
+                const KeyShortcut shortcut(Key::T, KeyModifier::Control);
                 auto a = Action::create(
                     "Test",
                     shortcut,
@@ -51,7 +51,7 @@ namespace ftk
                 FTK_ASSERT(shortcut == a->getShortcuts().front());
             }
             {
-                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
+                const KeyShortcut shortcut(Key::T, KeyModifier::Control);
                 auto a = Action::create(
                     "Test",
                     "Icon",
@@ -76,7 +76,7 @@ namespace ftk
                 FTK_ASSERT("Icon" == a->getIcon());
             }
             {
-                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
+                const KeyShortcut shortcut(Key::T, KeyModifier::Control);
                 auto a = Action::create(
                     "Test",
                     shortcut,
@@ -85,7 +85,7 @@ namespace ftk
                 FTK_ASSERT(shortcut == a->getShortcuts().front());
             }
             {
-                const KeyShortcut shortcut(Key::T, static_cast<int>(KeyModifier::Control));
+                const KeyShortcut shortcut(Key::T, KeyModifier::Control);
                 auto a = Action::create(
                     "Test",
                     "Icon",

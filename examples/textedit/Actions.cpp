@@ -85,7 +85,7 @@ namespace textedit
         _actions["File/New"] = Action::create(
             "New",
             "FileNew",
-            KeyShortcut(Key::N, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::N, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -97,7 +97,7 @@ namespace textedit
         _actions["File/Open"] = Action::create(
             "Open",
             "FileOpen",
-            KeyShortcut(Key::O, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::O, commandKeyModifier),
             [this, appWeak]
             {
                 auto app = appWeak.lock();
@@ -117,7 +117,7 @@ namespace textedit
         _actions["File/Close"] = Action::create(
             "Close",
             "FileClose",
-            KeyShortcut(Key::E, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::E, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -128,10 +128,7 @@ namespace textedit
         _actions["File/CloseAll"] = Action::create(
             "Close All",
             "FileCloseAll",
-            KeyShortcut(
-                Key::E,
-                    static_cast<int>(KeyModifier::Shift) |
-                    static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::E, KeyModifier::Shift, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -142,7 +139,7 @@ namespace textedit
         _actions["File/Save"] = Action::create(
             "Save",
             "FileSave",
-            KeyShortcut(Key::S, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::S, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -152,10 +149,7 @@ namespace textedit
 
         _actions["File/SaveAs"] = Action::create(
             "Save As",
-            KeyShortcut(
-                Key::S,
-                    static_cast<int>(KeyModifier::Shift) |
-                    static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::S, KeyModifier::Shift, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -165,7 +159,7 @@ namespace textedit
 
         _actions["File/Exit"] = Action::create(
             "Exit",
-            KeyShortcut(Key::Q, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::Q, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -181,7 +175,7 @@ namespace textedit
         _actions["Edit/Undo"] = Action::create(
             "Undo",
             "Undo",
-            KeyShortcut(Key::Z, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::Z, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -195,7 +189,7 @@ namespace textedit
         _actions["Edit/Redo"] = Action::create(
             "Redo",
             "Redo",
-            KeyShortcut(Key::Y, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::Y, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -209,7 +203,7 @@ namespace textedit
         _actions["Edit/Cut"] = Action::create(
             "Cut",
             "Cut",
-            KeyShortcut(Key::X, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::X, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -223,7 +217,7 @@ namespace textedit
         _actions["Edit/Copy"] = Action::create(
             "Copy",
             "Copy",
-            KeyShortcut(Key::C, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::C, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -237,7 +231,7 @@ namespace textedit
         _actions["Edit/Paste"] = Action::create(
             "Paste",
             "Paste",
-            KeyShortcut(Key::V, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::V, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -250,7 +244,7 @@ namespace textedit
 
         _actions["Edit/SelectAll"] = Action::create(
             "Select All",
-            KeyShortcut(Key::A, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::A, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -263,10 +257,7 @@ namespace textedit
 
         _actions["Edit/ClearSelection"] = Action::create(
             "Clear Selection",
-            KeyShortcut(
-                Key::A,
-                    static_cast<int>(KeyModifier::Shift) |
-                    static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::A, KeyModifier::Shift, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -306,7 +297,7 @@ namespace textedit
         _actions["Window/FullScreen"] = Action::create(
             "Full Screen",
             "WindowFullScreen",
-            KeyShortcut(Key::U, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::U, commandKeyModifier),
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())

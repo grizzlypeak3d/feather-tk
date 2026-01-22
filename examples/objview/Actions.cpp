@@ -80,7 +80,7 @@ namespace objview
         _actions["File/Open"] = Action::create(
             "Open",
             "FileOpen",
-            KeyShortcut(Key::O, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::O, commandKeyModifier),
             [this, appWeak]
             {
                 auto app = appWeak.lock();
@@ -101,7 +101,7 @@ namespace objview
         _actions["File/Close"] = Action::create(
             "Close",
             "FileClose",
-            KeyShortcut(Key::E, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::E, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -112,10 +112,7 @@ namespace objview
         _actions["File/CloseAll"] = Action::create(
             "Close All",
             "FileCloseAll",
-            KeyShortcut(
-                Key::E,
-                    static_cast<int>(KeyModifier::Shift) |
-                    static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::E, KeyModifier::Shift, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -125,7 +122,7 @@ namespace objview
 
         _actions["File/Exit"] = Action::create(
             "Exit",
-            KeyShortcut(Key::Q, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::Q, commandKeyModifier),
             [appWeak]
             {
                 auto app = appWeak.lock();
@@ -167,7 +164,7 @@ namespace objview
         _actions["Window/FullScreen"] = Action::create(
             "Full Screen",
             "WindowFullScreen",
-            KeyShortcut(Key::U, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::U, commandKeyModifier),
             [mainWindowWeak](bool value)
             {
                 if (auto mainWindow = mainWindowWeak.lock())

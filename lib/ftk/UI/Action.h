@@ -14,6 +14,9 @@ namespace ftk
     struct FTK_API_TYPE KeyShortcut
     {
         KeyShortcut() = default;
+        FTK_API KeyShortcut(Key, KeyModifier);
+        FTK_API KeyShortcut(Key, KeyModifier, KeyModifier);
+        FTK_API KeyShortcut(Key, KeyModifier, KeyModifier, KeyModifier);
         FTK_API KeyShortcut(Key, int modifiers = 0);
 
         Key key       = Key::Unknown;

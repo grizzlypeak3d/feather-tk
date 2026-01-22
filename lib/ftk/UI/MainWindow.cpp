@@ -59,7 +59,7 @@ namespace ftk
         std::weak_ptr<App> appWeak(app);
         fileMenu->addAction(Action::create(
             "Exit",
-            KeyShortcut(Key::Q, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::Q, commandKeyModifier),
             [appWeak]
             {
                 if (auto app = appWeak.lock())
@@ -72,7 +72,7 @@ namespace ftk
         p.menus["Window"] = Menu::create(context);
         p.menus["Window"]->addAction(Action::create(
             "Full Screen",
-            KeyShortcut(Key::U, static_cast<int>(commandKeyModifier)),
+            KeyShortcut(Key::U, commandKeyModifier),
             [this](bool value)
             {
                 setFullScreen(value);
