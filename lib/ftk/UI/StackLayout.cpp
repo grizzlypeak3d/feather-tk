@@ -103,7 +103,7 @@ namespace ftk
         {
             int i = 0;
             auto j = children.begin();
-            for (; i <= p.currentIndex && j != children.end(); ++i, ++j)
+            for (; i < p.currentIndex && j != children.end(); ++i, ++j)
                 ;
             out = *j;
         }
