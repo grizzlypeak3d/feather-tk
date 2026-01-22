@@ -52,6 +52,9 @@ namespace ftk
         //! Go to the last index.
         FTK_API void lastIndex();
 
+        //! Get the current widget.
+        FTK_API std::shared_ptr<IWidget> getCurrentWidget() const;
+
         //! Set the current widget.
         FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 

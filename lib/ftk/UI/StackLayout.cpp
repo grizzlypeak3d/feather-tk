@@ -93,6 +93,23 @@ namespace ftk
         setCurrentIndex(static_cast<int>(getChildren().size()) - 1);
     }
 
+    std::shared_ptr<IWidget> StackLayout::getCurrentWidget() const
+    {
+        FTK_P();
+        std::shared_ptr<IWidget> out;
+        const auto& children = getChildren();
+        if (p.currentIndex >= 0 &&
+            p.currentIndex < static_cast<int>(children.size()))
+        {
+            int i = 0;
+            auto j = children.begin();
+            for (; i <= p.currentIndex && j != children.end(); ++i, ++j)
+                ;
+            out = *j;
+        }
+        return out;
+    }
+
     void StackLayout::setCurrentWidget(const std::shared_ptr<IWidget>& value)
     {
         int index = -1;

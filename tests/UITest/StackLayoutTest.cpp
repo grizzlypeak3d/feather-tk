@@ -67,7 +67,7 @@ namespace ftk
 
                 layout->setCurrentWidget(spacer2);
                 app->tick();
-                FTK_ASSERT(2 == layout->getCurrentIndex());
+                FTK_ASSERT(spacer2 == layout->getCurrentWidget());
                 FTK_ASSERT(!spacer0->isVisible());
                 FTK_ASSERT(!spacer1->isVisible());
                 FTK_ASSERT(spacer2->isVisible());

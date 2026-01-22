@@ -28,7 +28,7 @@ namespace ftk
                 .def_property_readonly("observeHasPrevIndex", &StackLayout::observeHasPrevIndex)
                 .def("firstIndex", &StackLayout::firstIndex)
                 .def("lastIndex", &StackLayout::lastIndex)
-                .def("setCurrentWidget", &StackLayout::setCurrentWidget)
+                .def_property("currentWidget", &StackLayout::getCurrentWidget, &StackLayout::setCurrentWidget)
                 .def_property("marginRole", &StackLayout::getMarginRole, &StackLayout::setMarginRole)
                 .def("clear", &StackLayout::clear);
         }
