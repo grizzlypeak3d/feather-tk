@@ -24,7 +24,7 @@ namespace ftk
     }
 
     template<typename T>
-    inline CmdLineValueOption<T>::CmdLineValueOption(
+    inline CmdLineOption<T>::CmdLineOption(
         const std::vector<std::string>& names,
         const std::string& help,
         const std::string& group,
@@ -49,14 +49,14 @@ namespace ftk
     }
 
     template<typename T>
-    inline std::shared_ptr<CmdLineValueOption<T> > CmdLineValueOption<T>::create(
+    inline std::shared_ptr<CmdLineOption<T> > CmdLineOption<T>::create(
         const std::vector<std::string>& names,
         const std::string& help,
         const std::string& group,
         const std::optional<T>& defaultValue,
         const std::string& possibleValues)
     {
-        return std::shared_ptr<CmdLineValueOption<T> >(new CmdLineValueOption<T>(
+        return std::shared_ptr<CmdLineOption<T> >(new CmdLineOption<T>(
             names,
             help,
             group,
@@ -65,19 +65,19 @@ namespace ftk
     }
 
     template<typename T>
-    bool CmdLineValueOption<T>::hasValue() const
+    bool CmdLineOption<T>::hasValue() const
     {
         return _value.has_value();
     }
 
     template<typename T>
-    const T& CmdLineValueOption<T>::getValue() const
+    const T& CmdLineOption<T>::getValue() const
     {
         return _value.value();
     }
 
     template<typename T>
-    inline void CmdLineValueOption<T>::parse(std::vector<std::string>& args)
+    inline void CmdLineOption<T>::parse(std::vector<std::string>& args)
     {
         for (const auto& name : _names)
         {
@@ -96,13 +96,13 @@ namespace ftk
     }
 
     template<typename T>
-    inline bool CmdLineValueOption<T>::found() const
+    inline bool CmdLineOption<T>::found() const
     {
         return ICmdLineOption::found() && _value.has_value();
     }
 
     template<>
-    inline void CmdLineValueOption<std::string>::parse(std::vector<std::string>& args)
+    inline void CmdLineOption<std::string>::parse(std::vector<std::string>& args)
     {
         for (const auto& name : _names)
         {
@@ -152,7 +152,7 @@ namespace ftk
     }
 
     template<typename T>
-    inline CmdLineValueArg<T>::CmdLineValueArg(
+    inline CmdLineArg<T>::CmdLineArg(
         const std::string& name,
         const std::string& help,
         bool optional) :
@@ -160,28 +160,28 @@ namespace ftk
     {}
 
     template<typename T>
-    inline std::shared_ptr<CmdLineValueArg<T> > CmdLineValueArg<T>::create(
+    inline std::shared_ptr<CmdLineArg<T> > CmdLineArg<T>::create(
         const std::string& name,
         const std::string& help,
         bool optional)
     {
-        return std::shared_ptr<CmdLineValueArg<T> >(new CmdLineValueArg<T>(name, help, optional));
+        return std::shared_ptr<CmdLineArg<T> >(new CmdLineArg<T>(name, help, optional));
     }
 
     template<typename T>
-    bool CmdLineValueArg<T>::hasValue() const
+    bool CmdLineArg<T>::hasValue() const
     {
         return _value.has_value();
     }
 
     template<typename T>
-    const T& CmdLineValueArg<T>::getValue() const
+    const T& CmdLineArg<T>::getValue() const
     {
         return _value.value();
     }
 
     template<typename T>
-    inline void CmdLineValueArg<T>::parse(std::vector<std::string>& args)
+    inline void CmdLineArg<T>::parse(std::vector<std::string>& args)
     {
         auto i = args.begin();
         _value = T();
@@ -192,7 +192,7 @@ namespace ftk
     }
 
     template<>
-    inline void CmdLineValueArg<std::string>::parse(std::vector<std::string>& args)
+    inline void CmdLineArg<std::string>::parse(std::vector<std::string>& args)
     {
         auto i = args.begin();
         if (i != args.end())

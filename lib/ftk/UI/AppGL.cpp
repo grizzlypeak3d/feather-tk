@@ -89,9 +89,9 @@ namespace ftk
     {
         struct CmdLine
         {
-            std::shared_ptr<CmdLineFlagOption> exit;
-            std::shared_ptr<CmdLineValueOption<float> > displayScale;
-            std::shared_ptr<CmdLineValueOption<ColorStyle> > colorStyle;
+            std::shared_ptr<CmdLineFlag> exit;
+            std::shared_ptr<CmdLineOption<float> > displayScale;
+            std::shared_ptr<CmdLineOption<ColorStyle> > colorStyle;
         };
         CmdLine cmdLine;
 
@@ -125,17 +125,17 @@ namespace ftk
         FTK_P();
 
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptionsTmp = cmdLineOptions;
-        p.cmdLine.exit = CmdLineFlagOption::create(
+        p.cmdLine.exit = CmdLineFlag::create(
             { "-exit" },
             "Start the user interface and then exit.",
             "Testing");
         cmdLineOptionsTmp.push_back(p.cmdLine.exit);
-        p.cmdLine.displayScale = CmdLineValueOption<float>::create(
+        p.cmdLine.displayScale = CmdLineOption<float>::create(
             { "-displayScale", "-ds" },
             "Set the display scale.",
             "Style");
         cmdLineOptionsTmp.push_back(p.cmdLine.displayScale);
-        p.cmdLine.colorStyle = CmdLineValueOption<ColorStyle>::create(
+        p.cmdLine.colorStyle = CmdLineOption<ColorStyle>::create(
             { "-colorStyle", "-cs" },
             "Set the color style.",
             "Style",
@@ -335,7 +335,7 @@ namespace ftk
         }
     }
 
-    const std::shared_ptr<CmdLineValueOption<ColorStyle> >& App::getColorStyleCmdLineOption() const
+    const std::shared_ptr<CmdLineOption<ColorStyle> >& App::getColorStyleCmdLineOption() const
     {
         return _p->cmdLine.colorStyle;
     }
@@ -365,7 +365,7 @@ namespace ftk
         }
     }
 
-    const std::shared_ptr<CmdLineValueOption<float> >& App::getDisplayScaleCmdLineOption() const
+    const std::shared_ptr<CmdLineOption<float> >& App::getDisplayScaleCmdLineOption() const
     {
         return _p->cmdLine.displayScale;
     }

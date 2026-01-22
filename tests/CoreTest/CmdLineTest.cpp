@@ -38,7 +38,7 @@ namespace ftk
                 "list2"
             };
 
-            auto flagCmdLineOption = CmdLineFlagOption::create(
+            auto flagCmdLineOption = CmdLineFlag::create(
                 { "-flag" },
                 "This is a flag option");
             _print(flagCmdLineOption->getHelp());
@@ -46,7 +46,7 @@ namespace ftk
             FTK_ASSERT(flagCmdLineOption->found());
             FTK_ASSERT(!flagCmdLineOption->getMatchedName().empty());
 
-            auto boolCmdLineOption = CmdLineValueOption<bool>::create(
+            auto boolCmdLineOption = CmdLineOption<bool>::create(
                 { "-boolOption" },
                 "This is a boolean option",
                 std::string(),
@@ -56,7 +56,7 @@ namespace ftk
             boolCmdLineOption->parse(argv);
             FTK_ASSERT(boolCmdLineOption->getValue());
 
-            auto intCmdLineOption = CmdLineValueOption<int>::create(
+            auto intCmdLineOption = CmdLineOption<int>::create(
                 { "-intOption" },
                 "This is an integer option",
                 std::string(),
@@ -65,7 +65,7 @@ namespace ftk
             intCmdLineOption->parse(argv);
             FTK_ASSERT(10 == intCmdLineOption->getValue());
 
-            auto intCmdLineArg = CmdLineValueArg<int>::create(
+            auto intCmdLineArg = CmdLineArg<int>::create(
                 "int",
                 "This is an integer argument");
             FTK_ASSERT(!intCmdLineArg->getName().empty());
@@ -74,7 +74,7 @@ namespace ftk
             intCmdLineArg->parse(argv);
             FTK_ASSERT(100 == intCmdLineArg->getValue());
 
-            auto stringCmdLineArg = CmdLineValueArg<std::string>::create(
+            auto stringCmdLineArg = CmdLineArg<std::string>::create(
                 "string",
                 "This is a string argument");
             FTK_ASSERT(!stringCmdLineArg->getName().empty());

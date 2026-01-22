@@ -130,7 +130,7 @@ namespace ftk
         FTK_API void setCustomColorRoles(const std::map<ColorRole, Color4F>&);
 
         //! Get the color style command line option.
-        FTK_API const std::shared_ptr<CmdLineValueOption<ColorStyle> >& getColorStyleCmdLineOption() const;
+        FTK_API const std::shared_ptr<CmdLineOption<ColorStyle> >& getColorStyleCmdLineOption() const;
 
         //! Get the default display scale.
         FTK_API float getDefaultDisplayScale() const;
@@ -145,7 +145,7 @@ namespace ftk
         FTK_API void setDisplayScale(float);
 
         //! Get the display scale command line option.
-        FTK_API const std::shared_ptr<CmdLineValueOption<float> >& getDisplayScaleCmdLineOption() const;
+        FTK_API const std::shared_ptr<CmdLineOption<float> >& getDisplayScaleCmdLineOption() const;
 
         //! Get whether tooltips are enabled.
         FTK_API bool areTooltipsEnabled() const;

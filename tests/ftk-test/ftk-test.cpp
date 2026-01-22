@@ -120,7 +120,7 @@ namespace ftk
     {
         struct App::Private
         {
-            std::shared_ptr<CmdLineValueArg<std::string> > testName;
+            std::shared_ptr<CmdLineArg<std::string> > testName;
             std::vector<std::shared_ptr<test::ITest> > tests;
             std::chrono::steady_clock::time_point startTime;
         };
@@ -130,7 +130,7 @@ namespace ftk
             std::vector<std::string>& argv)
         {
             FTK_P();
-            p.testName = CmdLineValueArg<std::string>::create(
+            p.testName = CmdLineArg<std::string>::create(
                 "Test",
                 "Name of the test to run.",
                 true);

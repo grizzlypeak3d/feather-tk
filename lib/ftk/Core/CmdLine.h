@@ -49,18 +49,18 @@ namespace ftk
         std::string _matchedName;
     };
 
-    //! Command line flag option.
-    class FTK_API_TYPE CmdLineFlagOption : public ICmdLineOption
+    //! Command line flag.
+    class FTK_API_TYPE CmdLineFlag : public ICmdLineOption
     {
     protected:
-        CmdLineFlagOption(
+        CmdLineFlag(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group);
 
     public:
-        //! Create a new command line flag option.
-        FTK_API static std::shared_ptr<CmdLineFlagOption> create(
+        //! Create a new command line flag.
+        FTK_API static std::shared_ptr<CmdLineFlag> create(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group = std::string());
@@ -68,12 +68,12 @@ namespace ftk
         FTK_API void parse(std::vector<std::string>& args) override;
     };
 
-    //! Command line value option.
+    //! Command line option.
     template<typename T>
-    class CmdLineValueOption : public ICmdLineOption
+    class CmdLineOption : public ICmdLineOption
     {
     protected:
-        CmdLineValueOption(
+        CmdLineOption(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group,
@@ -81,8 +81,8 @@ namespace ftk
             const std::string& possibleValues);
 
     public:
-        //! Create a new command line value option.
-        static std::shared_ptr<CmdLineValueOption<T> > create(
+        //! Create a new command line option.
+        static std::shared_ptr<CmdLineOption<T> > create(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group = std::string(),
@@ -135,19 +135,19 @@ namespace ftk
         bool _optional = false;
     };
 
-    //! Command line value argument.
+    //! Command line argument.
     template<typename T>
-    class CmdLineValueArg : public ICmdLineArg
+    class CmdLineArg : public ICmdLineArg
     {
     protected:
-        CmdLineValueArg(
+        CmdLineArg(
             const std::string& name,
             const std::string& help,
             bool optional);
 
     public:
         //! Create a new command line argument.
-        static std::shared_ptr<CmdLineValueArg<T> > create(
+        static std::shared_ptr<CmdLineArg<T> > create(
             const std::string& name,
             const std::string& help,
             bool optional = false);

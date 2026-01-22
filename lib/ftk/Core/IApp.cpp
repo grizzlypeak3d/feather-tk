@@ -39,8 +39,8 @@ namespace ftk
         std::string name;
         std::string summary;
         std::vector<std::shared_ptr<ICmdLineArg> > cmdLineArgs;
-        std::shared_ptr<CmdLineFlagOption> logFlag;
-        std::shared_ptr<CmdLineFlagOption> helpFlag;
+        std::shared_ptr<CmdLineFlag> logFlag;
+        std::shared_ptr<CmdLineFlag> helpFlag;
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptions;
         std::shared_ptr<ListObserver<LogItem> > logObserver;
         int exit = 0;
@@ -68,11 +68,11 @@ namespace ftk
 
         p.cmdLineArgs = cmdLineArgs;
         p.cmdLineOptions = cmdLineOptions;
-        p.logFlag = CmdLineFlagOption::create(
+        p.logFlag = CmdLineFlag::create(
             { "-log" },
             "Print the log to the console.");
         p.cmdLineOptions.push_back(p.logFlag);
-        p.helpFlag = CmdLineFlagOption::create(
+        p.helpFlag = CmdLineFlag::create(
             { "-help", "-h", "--help", "--h" },
             "Show this message.");
         p.cmdLineOptions.push_back(p.helpFlag);

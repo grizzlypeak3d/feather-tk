@@ -22,26 +22,26 @@ namespace ftk
                 .def_property_readonly("found", &ICmdLineOption::found)
                 .def_property_readonly("matchedName", &ICmdLineOption::getMatchedName);
 
-            py::class_<CmdLineFlagOption, ICmdLineOption, std::shared_ptr<CmdLineFlagOption> >(m, "CmdLineFlagOption")
+            py::class_<CmdLineFlag, ICmdLineOption, std::shared_ptr<CmdLineFlag> >(m, "CmdLineFlag")
                 .def(
-                    pybind11::init(&CmdLineFlagOption::create),
+                    pybind11::init(&CmdLineFlag::create),
                     pybind11::arg("names"),
                     pybind11::arg("help"),
                     pybind11::arg("group") = std::string());
 
-            cmdLineValueOption<int>(m, "I");
-            cmdLineValueOption<float>(m, "F");
-            cmdLineValueOption<double>(m, "D");
-            cmdLineValueOption<bool>(m, "Bool");
-            cmdLineValueOption<std::string>(m, "String");
+            cmdLineOption<int>(m, "I");
+            cmdLineOption<float>(m, "F");
+            cmdLineOption<double>(m, "D");
+            cmdLineOption<bool>(m, "Bool");
+            cmdLineOption<std::string>(m, "String");
 
             py::class_<ICmdLineArg, std::shared_ptr<ICmdLineArg> >(m, "ICmdLineArg");
 
-            cmdLineValueArg<int>(m, "I");
-            cmdLineValueArg<float>(m, "F");
-            cmdLineValueArg<double>(m, "D");
-            cmdLineValueArg<bool>(m, "Bool");
-            cmdLineValueArg<std::string>(m, "String");
+            cmdLineArg<int>(m, "I");
+            cmdLineArg<float>(m, "F");
+            cmdLineArg<double>(m, "D");
+            cmdLineArg<bool>(m, "Bool");
+            cmdLineArg<std::string>(m, "String");
 
             cmdLineListArg<std::string>(m, "String");
         }

@@ -52,18 +52,18 @@ namespace ftk
                 void run() override;
                 
             private:
-                std::shared_ptr<CmdLineValueArg<std::string> > _arg;
-                std::shared_ptr<CmdLineValueOption<int> > _option;
+                std::shared_ptr<CmdLineArg<std::string> > _arg;
+                std::shared_ptr<CmdLineOption<int> > _option;
             };
 
             void App::_init(
                 const std::shared_ptr<Context>& context,
                 std::vector<std::string>& argv)
             {
-                _arg = CmdLineValueArg<std::string>::create(
+                _arg = CmdLineArg<std::string>::create(
                     "arg",
                     "This is an argument");
-                _option = CmdLineValueOption<int>::create(
+                _option = CmdLineOption<int>::create(
                     { "-option" },
                     "This is an option");
                 IApp::_init(

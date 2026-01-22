@@ -24,7 +24,7 @@ namespace ftk
         return !_matchedName.empty();
     }
 
-    CmdLineFlagOption::CmdLineFlagOption(
+    CmdLineFlag::CmdLineFlag(
         const std::vector<std::string>& names,
         const std::string& help,
         const std::string& group) :
@@ -33,15 +33,15 @@ namespace ftk
         _help = join(_names, ", ") + " - " + help;
     }
 
-    std::shared_ptr<CmdLineFlagOption> CmdLineFlagOption::create(
+    std::shared_ptr<CmdLineFlag> CmdLineFlag::create(
         const std::vector<std::string>& names,
         const std::string& help,
         const std::string& group)
     {
-        return std::shared_ptr<CmdLineFlagOption>(new CmdLineFlagOption(names, help, group));
+        return std::shared_ptr<CmdLineFlag>(new CmdLineFlag(names, help, group));
     }
 
-    void CmdLineFlagOption::parse(std::vector<std::string>& args)
+    void CmdLineFlag::parse(std::vector<std::string>& args)
     {
         for (const auto& name : _names)
         {
