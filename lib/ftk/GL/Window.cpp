@@ -275,6 +275,8 @@ namespace ftk
 
         void Window::setIcon(const std::shared_ptr<Image>& icon)
         {
+            if (!icon)
+                return;
             const ImageInfo& info = icon->getInfo();
             if (info.type == ImageType::RGBA_U8 &&
                 1 == info.layout.alignment)
