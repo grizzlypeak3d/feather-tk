@@ -67,7 +67,7 @@ namespace ftk
                 tabs.push_back("Tab 2");
                 FTK_ASSERT(tabs == widget->getTabs());
                 app->tick();
-                widget->clearTabs();
+                widget->clear();
                 FTK_ASSERT(widget->getTabs().empty());
                 app->tick();
                 widget->setTabs(tabs);
@@ -113,7 +113,7 @@ namespace ftk
                 widget->addTab(tabs[1], label1);
                 FTK_ASSERT(tabs == widget->getTabs());
                 app->tick();
-                widget->clearTabs();
+                widget->clear();
                 FTK_ASSERT(widget->getTabs().empty());
                 app->tick();
                 widget->addTab(tabs[0], label0);

@@ -107,7 +107,7 @@ namespace textedit
                 if (value)
                 {
                     _textEdits.clear();
-                    _tabWidget->clearTabs();
+                    _tabWidget->clear();
                     _nameObservers.clear();
                     _tooltipObservers.clear();
                 }

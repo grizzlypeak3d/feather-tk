@@ -122,10 +122,10 @@ namespace ftk
         p.tabs->removeTab(i);
     }
 
-    void TabWidget::clearTabs()
+    void TabWidget::clear()
     {
         FTK_P();
-        p.tabs->clearTabs();
+        p.tabs->clear();
         auto children = p.stack->getChildren();
         for (const auto& child : children)
         {

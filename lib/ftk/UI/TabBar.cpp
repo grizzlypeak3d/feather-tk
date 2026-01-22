@@ -218,7 +218,7 @@ namespace ftk
         }
     }
 
-    void TabBar::clearTabs()
+    void TabBar::clear()
     {
         FTK_P();
         p.text.clear();

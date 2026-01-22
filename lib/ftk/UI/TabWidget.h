@@ -44,7 +44,7 @@ namespace ftk
         FTK_API void removeTab(const std::shared_ptr<IWidget>&);
 
         //! Clear the tabs.
-        FTK_API void clearTabs();
+        FTK_API void clear();
 
         //! Get the current tab.
         FTK_API int getCurrentTab() const;

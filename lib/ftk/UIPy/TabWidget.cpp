@@ -29,7 +29,7 @@ namespace ftk
                     py::arg("name"),
                     py::arg("widget"),
                     py::arg("tooltip") = std::string())
-                .def("clearTabs", &TabWidget::clearTabs)
+                .def("clear", &TabWidget::clear)
                 .def_property("currentTab", &TabWidget::getCurrentTab, &TabWidget::setCurrentTab)
                 .def("setCurrentTabCallback", &TabWidget::setCurrentTabCallback)
                 .def_property("currentWidget", &TabWidget::getCurrentWidget, &TabWidget::setCurrentWidget)

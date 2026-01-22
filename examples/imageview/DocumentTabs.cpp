@@ -86,7 +86,7 @@ namespace imageview
                 if (value)
                 {
                     _views.clear();
-                    _tabWidget->clearTabs();
+                    _tabWidget->clear();
                 }
             });
 

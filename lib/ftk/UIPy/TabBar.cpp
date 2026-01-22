@@ -24,9 +24,11 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def_property("tabs", &TabBar::getTabs, &TabBar::setTabs)
                 .def("addTab", &TabBar::addTab)
-                .def("clearTabs", &TabBar::clearTabs)
+                .def("clear", &TabBar::clearTabs)
                 .def_property("currentTab", &TabBar::getCurrentTab, &TabBar::setCurrentTab)
-                .def("setCallback", &TabBar::setCallback);
+                .def("setCallback", &TabBar::setCallback)
+                .def("setTabText", &TabBar::setTabText, py::arg("index"), py::arg("text"))
+                .def("setTabTooltip", &TabBar::setTabTooltip, py::arg("index"), py::arg("tooltip"));
         }
     }
 }
