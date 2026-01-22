@@ -26,7 +26,7 @@ namespace ftk
                 .def("addTab", &TabBar::addTab)
                 .def("clear", &TabBar::clear)
                 .def_property("currentTab", &TabBar::getCurrentTab, &TabBar::setCurrentTab)
-                .def("setCallback", &TabBar::setCallback)
+                .def("setCurrentTabCallback", &TabBar::setCurrentTabCallback)
                 .def("setTabText", &TabBar::setTabText, py::arg("index"), py::arg("text"))
                 .def("setTabTooltip", &TabBar::setTabTooltip, py::arg("index"), py::arg("tooltip"))
                 .def_property("tabsClosable", &TabBar::areTabsClosable, &TabBar::setTabsClosable)

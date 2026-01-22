@@ -72,7 +72,7 @@ namespace ftk
                 app->tick();
                 widget->setTabs(tabs);
                 int tab = 0;
-                widget->setCallback(
+                widget->setCurrentTabCallback(
                     [&tab](int value)
                     {
                         tab = value;

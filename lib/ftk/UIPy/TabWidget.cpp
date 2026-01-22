@@ -33,7 +33,33 @@ namespace ftk
                 .def_property("currentTab", &TabWidget::getCurrentTab, &TabWidget::setCurrentTab)
                 .def("setCurrentTabCallback", &TabWidget::setCurrentTabCallback)
                 .def_property("currentWidget", &TabWidget::getCurrentWidget, &TabWidget::setCurrentWidget)
-                .def("setCurrentWidgetCallback", &TabWidget::setCurrentWidgetCallback);
+                .def("setCurrentWidgetCallback", &TabWidget::setCurrentWidgetCallback)
+                .def(
+                    "setTabText",
+                    [](const std::shared_ptr<TabWidget> self, int index, const std::string& text)
+                    {
+                        self->setTabText(index, text);
+                    })
+                .def(
+                    "setTabText",
+                    [](const std::shared_ptr<TabWidget> self, const std::shared_ptr<IWidget>& widget, const std::string& text)
+                    {
+                        self->setTabText(widget, text);
+                    })
+                .def(
+                    "setTabTooltip",
+                    [](const std::shared_ptr<TabWidget> self, int index, const std::string& tooltip)
+                    {
+                        self->setTabTooltip(index, tooltip);
+                    })
+                .def(
+                    "setTabTooltip",
+                    [](const std::shared_ptr<TabWidget> self, const std::shared_ptr<IWidget>& widget, const std::string& tooltip)
+                    {
+                        self->setTabTooltip(widget, tooltip);
+                    })
+                .def_property("tabsClosable", &TabWidget::areTabsClosable, &TabWidget::setTabsClosable)
+                .def("setTabCloseCallback", &TabWidget::setTabCloseCallback);
         }
     }
 }

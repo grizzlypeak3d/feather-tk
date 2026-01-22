@@ -55,8 +55,8 @@ namespace ftk
         //! Set the current tab.
         FTK_API void setCurrentTab(int);
 
-        //! Set the callback.
-        FTK_API void setCallback(const std::function<void(int)>&);
+        //! Set the current tab callback.
+        FTK_API void setCurrentTabCallback(const std::function<void(int)>&);
 
         //! Set the tab text.
         FTK_API void setTabText(int index, const std::string&);
@@ -70,7 +70,7 @@ namespace ftk
         //! Set whether the tabs are closable.
         FTK_API void setTabsClosable(bool);
 
-        //! Set the close callback.
+        //! Set the tab close callback.
         FTK_API void setTabCloseCallback(const std::function<void(int)>&);
 
         //! Get whether the scroll bar is visible.

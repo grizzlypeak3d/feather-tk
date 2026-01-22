@@ -82,7 +82,7 @@ namespace ftk
         //! Set whether the tabs are closable.
         FTK_API void setTabsClosable(bool);
 
-        //! Set the close callback.
+        //! Set the tab close callback.
         FTK_API void setTabCloseCallback(const std::function<void(int)>&);
 
         FTK_API Size2I getSizeHint() const override;

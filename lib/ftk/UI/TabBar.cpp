@@ -29,8 +29,8 @@ namespace ftk
         std::shared_ptr<ComboBoxMenu> menu;
         std::shared_ptr<HorizontalLayout> layout;
 
-        std::function<void(int)> callback;
-        std::function<void(int)> closeCallback;
+        std::function<void(int)> currentTabCallback;
+        std::function<void(int)> tabCloseCallback;
 
         int currentFocus = -1;
     };
@@ -73,9 +73,9 @@ namespace ftk
                 takeKeyFocus();
                 _p->currentTab = index;
                 _p->currentFocus = index;
-                if (_p->callback)
+                if (_p->currentTabCallback)
                 {
-                    _p->callback(index);
+                    _p->currentTabCallback(index);
                 }
                 _currentUpdate();
             });
@@ -83,9 +83,9 @@ namespace ftk
         p.closeButtonGroup->setClickedCallback(
             [this](int index)
             {
-                if (_p->closeCallback)
+                if (_p->tabCloseCallback)
                 {
-                    _p->closeCallback(index);
+                    _p->tabCloseCallback(index);
                 }
             });
 
@@ -113,9 +113,9 @@ namespace ftk
                                     if (index != -1)
                                     {
                                         widget->setCurrentTab(index);
-                                        if (widget->_p->callback)
+                                        if (widget->_p->currentTabCallback)
                                         {
-                                            widget->_p->callback(index);
+                                            widget->_p->currentTabCallback(index);
                                         }
                                     }
                                 }
@@ -248,9 +248,9 @@ namespace ftk
         _currentUpdate();
     }
 
-    void TabBar::setCallback(const std::function<void(int)>& value)
+    void TabBar::setCurrentTabCallback(const std::function<void(int)>& value)
     {
-        _p->callback = value;
+        _p->currentTabCallback = value;
     }
 
     void TabBar::setTabText(int index, const std::string& text)
@@ -293,7 +293,7 @@ namespace ftk
 
     void TabBar::setTabCloseCallback(const std::function<void(int)>& value)
     {
-        _p->closeCallback = value;
+        _p->tabCloseCallback = value;
     }
 
     bool TabBar::isScrollBarVisible() const

@@ -38,7 +38,7 @@ namespace ftk
 
         _widgetUpdate();
 
-        p.tabs->setCallback(
+        p.tabs->setCurrentTabCallback(
             [this](int value)
             {
                 FTK_P();
