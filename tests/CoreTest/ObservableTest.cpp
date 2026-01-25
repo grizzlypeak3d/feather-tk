@@ -163,6 +163,7 @@ namespace ftk
                     FTK_ASSERT(2 == omap->getSize());
                     FTK_ASSERT(!omap->isEmpty());
                     FTK_ASSERT(omap->hasKey(1));
+                    FTK_ASSERT(omap->getKeys() == std::vector<int>({ 0, 1 }));
                     FTK_ASSERT(omap->getItem(1));
                     FTK_ASSERT(!map.empty() && map[1]);
 

@@ -65,6 +65,9 @@ namespace ftk
         //! Get whether the map is empty.
         virtual bool isEmpty() const = 0;
 
+        //! Get the map keys.
+        virtual std::vector<T> getKeys() const = 0;
+
         //! Does the given key exist?
         virtual bool hasKey(const T&) = 0;
 
@@ -118,6 +121,7 @@ namespace ftk
         const std::map<T, U>& get() const override;
         std::size_t getSize() const override;
         bool isEmpty() const override;
+        std::vector<T> getKeys() const override;
         bool hasKey(const T&) override;
         const U& getItem(const T&) const override;
 

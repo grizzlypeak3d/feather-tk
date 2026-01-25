@@ -193,6 +193,17 @@ namespace ftk
     }
 
     template<typename T, typename U>
+    inline std::vector<T> ObservableMap<T, U>::getKeys() const
+    {
+        std::vector<T> out;
+        for (const auto i : _value)
+        {
+            out.push_back(i.first);
+        }
+        return out;
+    }
+
+    template<typename T, typename U>
     inline bool ObservableMap<T, U>::hasKey(const T& value)
     {
         return _value.find(value) != _value.end();
