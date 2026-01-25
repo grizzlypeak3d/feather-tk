@@ -305,13 +305,13 @@ namespace ftk
         IMouseWidget::mousePressEvent(event);
         FTK_P();
         takeKeyFocus();
-        if (p.model)
-        {
-            p.model->setValue(_posToValue(_getMousePos().x));
-        }
         if (p.pressedCallback)
         {
             p.pressedCallback(true);
+        }
+        if (p.model)
+        {
+            p.model->setValue(_posToValue(_getMousePos().x));
         }
         setDrawUpdate();
     }
