@@ -23,9 +23,8 @@ namespace ftk
                     py::arg("context"),
                     py::arg("parent") = nullptr)
                 .def_property("color", &ColorSwatch::getColor, &ColorSwatch::setColor)
-                .def("setPressedCallback", &ColorSwatch::setPressedCallback)
                 .def_property("editable", &ColorSwatch::isEditable, &ColorSwatch::setEditable)
-                .def("setColorCallback", &ColorSwatch::setColorCallback)
+                .def("setCallback", &ColorSwatch::setCallback)
                 .def_property("sizeRole", &ColorSwatch::getSizeRole, &ColorSwatch::setSizeRole);
         }
     }

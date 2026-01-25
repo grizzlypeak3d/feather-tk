@@ -56,7 +56,7 @@ namespace ftk
                 widget->setEditable(true);
                 widget->setEditable(true);
                 FTK_ASSERT(widget->isEditable());
-                widget->setColorCallback(
+                widget->setCallback(
                     [&color](const Color4F& value)
                     {
                         color = value;

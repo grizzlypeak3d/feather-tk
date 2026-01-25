@@ -34,17 +34,14 @@ namespace ftk
         //! Set the color.
         FTK_API void setColor(const Color4F&);
 
-        //! Set the pressed callback.
-        FTK_API void setPressedCallback(const std::function<void(void)>&);
-
         //! Get whether the color is editable.
         FTK_API bool isEditable() const;
 
         //! Set whether the color is editable.
         FTK_API void setEditable(bool);
 
-        //! Set the color callback.
-        FTK_API void setColorCallback(const std::function<void(const Color4F&)>&);
+        //! Set the callback.
+        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
         //! Get the size role.
         FTK_API SizeRole getSizeRole() const;

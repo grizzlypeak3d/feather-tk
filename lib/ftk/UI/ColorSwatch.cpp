@@ -14,8 +14,7 @@ namespace ftk
     {
         Color4F color;
         bool editable = false;
-        std::function<void(void)> pressedCallback;
-        std::function<void(const Color4F&)> colorCallback;
+        std::function<void(const Color4F&)> callback;
         SizeRole sizeRole = SizeRole::Swatch;
         std::shared_ptr<ColorPopup> popup;
 
@@ -72,11 +71,6 @@ namespace ftk
         setDrawUpdate();
     }
 
-    void ColorSwatch::setPressedCallback(const std::function<void(void)>& value)
-    {
-        _p->pressedCallback = value;
-    }
-
     bool ColorSwatch::isEditable() const
     {
         return _p->editable;
@@ -92,9 +86,9 @@ namespace ftk
         _setMousePressEnabled(p.editable);
     }
 
-    void ColorSwatch::setColorCallback(const std::function<void(const Color4F&)>& value)
+    void ColorSwatch::setCallback(const std::function<void(const Color4F&)>& value)
     {
-        _p->colorCallback = value;
+        _p->callback = value;
     }
 
     SizeRole ColorSwatch::getSizeRole() const
@@ -186,10 +180,6 @@ namespace ftk
         {
             _showPopup();
         }
-        else if (p.pressedCallback)
-        {
-            p.pressedCallback();
-        }
     }
 
     void ColorSwatch::_showPopup()
@@ -206,9 +196,9 @@ namespace ftk
                     {
                         _p->color = value;
                         setDrawUpdate();
-                        if (_p->colorCallback)
+                        if (_p->callback)
                         {
-                            _p->colorCallback(value);
+                            _p->callback(value);
                         }
                     });
                 p.popup->setCloseCallback(
