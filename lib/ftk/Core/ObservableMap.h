@@ -116,7 +116,7 @@ namespace ftk
         void setItem(const T&, const U&);
 
         //! Set a map item only if it has changed.
-        void setItemOnlyIfChanged(const T&, const U&);
+        bool setItemOnlyIfChanged(const T&, const U&);
 
         const std::map<T, U>& get() const override;
         std::size_t getSize() const override;

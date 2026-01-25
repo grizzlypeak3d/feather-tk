@@ -119,7 +119,7 @@ namespace ftk
         void setItem(size_t, const T&);
 
         //! Set an item only if it has changed.
-        void setItemOnlyIfChanged(size_t, const T&);
+        bool setItemOnlyIfChanged(size_t, const T&);
 
         //! Append an item.
         void pushBack(const T&);

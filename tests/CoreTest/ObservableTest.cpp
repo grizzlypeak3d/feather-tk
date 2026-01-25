@@ -110,8 +110,8 @@ namespace ftk
                     FTK_ASSERT(4 == olist->getSize());
 
                     olist->setItem(0, 1);
-                    olist->setItemOnlyIfChanged(0, 1);
-                    olist->setItemOnlyIfChanged(0, 2);
+                    FTK_ASSERT(!olist->setItemOnlyIfChanged(0, 1));
+                    FTK_ASSERT(olist->setItemOnlyIfChanged(0, 2));
                     olist->replaceItems(2, 4, { 5, 6 });
                     FTK_ASSERT(5 == olist->getItem(2));
                     FTK_ASSERT(6 == olist->getItem(3));
@@ -168,8 +168,8 @@ namespace ftk
                     FTK_ASSERT(!map.empty() && map[1]);
 
                     omap->setItem(1, false);
-                    omap->setItemOnlyIfChanged(1, false);
-                    omap->setItemOnlyIfChanged(1, true);
+                    FTK_ASSERT(!omap->setItemOnlyIfChanged(1, false));
+                    FTK_ASSERT(omap->setItemOnlyIfChanged(1, true));
                 }
             }
             FTK_ASSERT(!omap->getObserversCount());

@@ -159,11 +159,11 @@ namespace ftk
     }
 
     template<typename T, typename U>
-    inline void ObservableMap<T, U>::setItemOnlyIfChanged(const T& key, const U& value)
+    inline bool ObservableMap<T, U>::setItemOnlyIfChanged(const T& key, const U& value)
     {
         const auto i = _value.find(key);
         if (i != _value.end() && i->second == value)
-            return;
+            return false;
         _value[key] = value;
         for (const auto& s : IObservableMap<T, U>::_observers)
         {
@@ -172,6 +172,7 @@ namespace ftk
                 observer->doCallback(_value);
             }
         }
+        return true;
     }
 
     template<typename T, typename U>

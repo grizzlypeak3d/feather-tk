@@ -158,10 +158,10 @@ namespace ftk
     }
 
     template<typename T>
-    inline void ObservableList<T>::setItemOnlyIfChanged(size_t index, const T& value)
+    inline bool ObservableList<T>::setItemOnlyIfChanged(size_t index, const T& value)
     {
         if (value == _value[index])
-            return;
+            return false;
         _value[index] = value;
         for (const auto& i : IObservableList<T>::_observers)
         {
@@ -170,6 +170,7 @@ namespace ftk
                 observer->doCallback(_value);
             }
         }
+        return true;
     }
 
     template<typename T>
