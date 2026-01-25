@@ -150,6 +150,11 @@ namespace ftk
         return _p->model;
     }
 
+    void DoubleEditSlider::setPressedCallback(const std::function<void(bool)>& value)
+    {
+        _p->slider->setPressedCallback(value);
+    }
+
     int DoubleEditSlider::getPrecision() const
     {
         return _p->edit->getPrecision();

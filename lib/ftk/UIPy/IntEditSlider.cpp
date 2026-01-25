@@ -40,6 +40,7 @@ namespace ftk
                 .def_property("largeStep", &IntEditSlider::getLargeStep, &IntEditSlider::setLargeStep)
                 .def_property("defaultValue", &IntEditSlider::getDefaultValue, &IntEditSlider::setDefaultValue)
                 .def("getModel", &IntEditSlider::getModel)
+                .def("setPressedCallback", &IntEditSlider::setPressedCallback)
                 .def_property("fontRole", &IntEditSlider::getFontRole, &IntEditSlider::setFontRole);
         }
     }

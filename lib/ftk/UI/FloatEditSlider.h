@@ -76,6 +76,9 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<FloatModel>& getModel() const;
 
+        //! Set the pressed callback.
+        FTK_API void setPressedCallback(const std::function<void(bool)>&);
+
         //! Get the display precision.
         FTK_API int getPrecision() const;
 

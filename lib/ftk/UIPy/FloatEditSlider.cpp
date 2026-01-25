@@ -40,6 +40,7 @@ namespace ftk
                 .def_property("largeStep", &FloatEditSlider::getLargeStep, &FloatEditSlider::setLargeStep)
                 .def_property("defaultValue", &FloatEditSlider::getDefaultValue, &FloatEditSlider::setDefaultValue)
                 .def("getModel", &FloatEditSlider::getModel)
+                .def("setPressedCallback", &FloatEditSlider::setPressedCallback)
                 .def_property("precision", &FloatEditSlider::getPrecision, &FloatEditSlider::setPrecision)
                 .def_property("fontRole", &FloatEditSlider::getFontRole, &FloatEditSlider::setFontRole);
         }

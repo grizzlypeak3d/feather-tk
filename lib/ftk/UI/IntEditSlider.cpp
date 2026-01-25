@@ -149,6 +149,11 @@ namespace ftk
         return _p->model;
     }
 
+    void IntEditSlider::setPressedCallback(const std::function<void(bool)>& value)
+    {
+        _p->slider->setPressedCallback(value);
+    }
+
     FontRole IntEditSlider::getFontRole() const
     {
         return _p->edit->getFontRole();

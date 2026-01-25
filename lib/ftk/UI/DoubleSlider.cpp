@@ -13,6 +13,7 @@ namespace ftk
     {
         std::shared_ptr<DoubleModel> model;
         std::function<void(double)> callback;
+        std::function<void(double)> pressedCallback;
         std::shared_ptr<Observer<double> > valueObserver;
         std::shared_ptr<Observer<RangeD> > rangeObserver;
 
@@ -165,6 +166,11 @@ namespace ftk
         return _p->model;
     }
 
+    void DoubleSlider::setPressedCallback(const std::function<void(bool)>& value)
+    {
+        _p->pressedCallback = value;
+    }
+
     Size2I DoubleSlider::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -298,17 +304,26 @@ namespace ftk
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
+        takeKeyFocus();
         if (p.model)
         {
             p.model->setValue(_posToValue(_getMousePos().x));
         }
-        takeKeyFocus();
+        if (p.pressedCallback)
+        {
+            p.pressedCallback(true);
+        }
         setDrawUpdate();
     }
 
     void DoubleSlider::mouseReleaseEvent(MouseClickEvent& event)
     {
         IMouseWidget::mouseReleaseEvent(event);
+        FTK_P();
+        if (p.pressedCallback)
+        {
+            p.pressedCallback(false);
+        }
         setDrawUpdate();
     }
 

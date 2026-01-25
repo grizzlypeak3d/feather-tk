@@ -39,7 +39,8 @@ namespace ftk
                 .def_property("step", &FloatSlider::getStep, &FloatSlider::setStep)
                 .def_property("largeStep", &FloatSlider::getLargeStep, &FloatSlider::setLargeStep)
                 .def_property("defaultValue", &FloatSlider::getDefaultValue, &FloatSlider::setDefaultValue)
-                .def("getModel", &FloatSlider::getModel);
+                .def("getModel", &FloatSlider::getModel)
+                .def("setPressedCallback", &FloatSlider::setPressedCallback);
         }
     }
 }

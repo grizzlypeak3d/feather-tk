@@ -149,6 +149,11 @@ namespace ftk
         return _p->model;
     }
 
+    void FloatEditSlider::setPressedCallback(const std::function<void(bool)>& value)
+    {
+        _p->slider->setPressedCallback(value);
+    }
+
     int FloatEditSlider::getPrecision() const
     {
         return _p->edit->getPrecision();

@@ -76,6 +76,9 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<IntModel>& getModel() const;
 
+        //! Set the pressed callback.
+        FTK_API void setPressedCallback(const std::function<void(bool)>&);
+
         //! Get the font role.
         FTK_API FontRole getFontRole() const;
 

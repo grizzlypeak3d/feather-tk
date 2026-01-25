@@ -76,6 +76,9 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<DoubleModel>& getModel() const;
 
+        //! Set the pressed callback.
+        FTK_API void setPressedCallback(const std::function<void(bool)>&);
+
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
