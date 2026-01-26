@@ -43,6 +43,9 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
+        //! Set the finished callback.
+        FTK_API void setFinishedCallback(const std::function<void(const Color4F&)>&);
+
         //! Get the size role.
         FTK_API SizeRole getSizeRole() const;
 

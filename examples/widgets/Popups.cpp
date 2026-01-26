@@ -132,6 +132,16 @@ namespace widgets
             auto colorSwatch = ColorSwatch::create(context, hLayout);
             colorSwatch->setColor(color);
             colorSwatch->setEditable(true);
+            colorSwatch->setCallback(
+                [](const Color4F& value)
+                {
+                    std::cout << "Color: " << value << std::endl;
+                });
+            colorSwatch->setFinishedCallback(
+                [](const Color4F& value)
+                {
+                    std::cout << "Finished: " << value << std::endl;
+                });
         }
     }
 
