@@ -23,7 +23,8 @@ namespace ftk
                     py::arg("context"),
                     py::arg("parent") = nullptr)
                 .def_property("color", &ColorWidget::getColor, &ColorWidget::setColor)
-                .def("setCallback", &ColorWidget::setCallback);
+                .def("setCallback", &ColorWidget::setCallback)
+                .def("setPressedCallback", &ColorWidget::setPressedCallback);
         }
     }
 }

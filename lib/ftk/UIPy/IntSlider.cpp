@@ -34,13 +34,13 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def_property("value", &IntSlider::getValue, &IntSlider::setValue)
                 .def("setCallback", &IntSlider::setCallback)
+                .def("setPressedCallback", &IntSlider::setPressedCallback)
                 .def_property("range", &IntSlider::getRange, py::overload_cast<const RangeI&>(&IntSlider::setRange))
                 .def("setRange", py::overload_cast<int, int>(&IntSlider::setRange))
                 .def_property("step", &IntSlider::getStep, &IntSlider::setStep)
                 .def_property("largeStep", &IntSlider::getLargeStep, &IntSlider::setLargeStep)
                 .def_property("defaultValue", &IntSlider::getDefaultValue, &IntSlider::setDefaultValue)
-                .def("getModel", &IntSlider::getModel)
-                .def("setPressedCallback", &IntSlider::setPressedCallback);
+                .def("getModel", &IntSlider::getModel);
         }
     }
 }

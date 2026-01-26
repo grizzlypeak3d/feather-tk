@@ -17,9 +17,6 @@ namespace ftk
         std::shared_ptr<FloatSlider> slider;
         std::shared_ptr<FloatResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
-
-        std::function<void(float)> callback;
-        std::shared_ptr<Observer<float> > valueObserver;
     };
 
     void FloatEditSlider::_init(
@@ -46,16 +43,6 @@ namespace ftk
         p.slider->setParent(p.layout);
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
-
-        p.valueObserver = Observer<float>::create(
-            p.model->observeValue(),
-            [this](float value)
-            {
-                if (_p->callback)
-                {
-                    _p->callback(value);
-                }
-            });
     }
 
     FloatEditSlider::FloatEditSlider() :
@@ -96,7 +83,12 @@ namespace ftk
 
     void FloatEditSlider::setCallback(const std::function<void(float)>& value)
     {
-        _p->callback = value;
+        _p->slider->setCallback(value);
+    }
+
+    void FloatEditSlider::setPressedCallback(const std::function<void(float, bool) > & value)
+    {
+        _p->slider->setPressedCallback(value);
     }
 
     const RangeF& FloatEditSlider::getRange() const
@@ -147,11 +139,6 @@ namespace ftk
     const std::shared_ptr<FloatModel>& FloatEditSlider::getModel() const
     {
         return _p->model;
-    }
-
-    void FloatEditSlider::setPressedCallback(const std::function<void(bool)>& value)
-    {
-        _p->slider->setPressedCallback(value);
     }
 
     int FloatEditSlider::getPrecision() const

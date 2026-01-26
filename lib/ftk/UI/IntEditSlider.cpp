@@ -17,9 +17,6 @@ namespace ftk
         std::shared_ptr<IntSlider> slider;
         std::shared_ptr<IntResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
-
-        std::function<void(int)> callback;
-        std::shared_ptr<Observer<int> > valueObserver;
     };
 
     void IntEditSlider::_init(
@@ -46,16 +43,6 @@ namespace ftk
         p.slider->setParent(p.layout);
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
-
-        p.valueObserver = Observer<int>::create(
-            p.model->observeValue(),
-            [this](int value)
-            {
-                if (_p->callback)
-                {
-                    _p->callback(value);
-                }
-            });
     }
 
     IntEditSlider::IntEditSlider() :
@@ -96,7 +83,12 @@ namespace ftk
 
     void IntEditSlider::setCallback(const std::function<void(int)>& value)
     {
-        _p->callback = value;
+        _p->slider->setCallback(value);
+    }
+
+    void IntEditSlider::setPressedCallback(const std::function<void(int, bool)>& value)
+    {
+        _p->slider->setPressedCallback(value);
     }
 
     const RangeI& IntEditSlider::getRange() const
@@ -147,11 +139,6 @@ namespace ftk
     const std::shared_ptr<IntModel>& IntEditSlider::getModel() const
     {
         return _p->model;
-    }
-
-    void IntEditSlider::setPressedCallback(const std::function<void(bool)>& value)
-    {
-        _p->slider->setPressedCallback(value);
     }
 
     FontRole IntEditSlider::getFontRole() const

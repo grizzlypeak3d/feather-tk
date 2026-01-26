@@ -25,6 +25,7 @@ namespace ftk
                 .def_property("color", &ColorSwatch::getColor, &ColorSwatch::setColor)
                 .def_property("editable", &ColorSwatch::isEditable, &ColorSwatch::setEditable)
                 .def("setCallback", &ColorSwatch::setCallback)
+                .def("setPressedCallback", &ColorSwatch::setPressedCallback)
                 .def_property("sizeRole", &ColorSwatch::getSizeRole, &ColorSwatch::setSizeRole);
         }
     }

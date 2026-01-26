@@ -12,7 +12,6 @@ namespace ftk
     {
         std::shared_ptr<ColorWidget> widget;
         std::shared_ptr<VerticalLayout> layout;
-        std::function<void(const Color4F&)> callback;
     };
 
     void ColorPopup::_init(
@@ -30,15 +29,6 @@ namespace ftk
         p.layout->setMarginRole(SizeRole::MarginSmall);
         p.widget->setParent(p.layout);
         setWidget(p.layout);
-
-        p.widget->setCallback(
-            [this](const Color4F& value)
-            {
-                if (_p->callback)
-                {
-                    _p->callback(value);
-                }
-            });
     }
 
     ColorPopup::ColorPopup() :
@@ -60,6 +50,11 @@ namespace ftk
 
     void ColorPopup::setCallback(const std::function<void(const Color4F&)>& value)
     {
-        _p->callback = value;
+        _p->widget->setCallback(value);
+    }
+
+    void ColorPopup::setPressedCallback(const std::function<void(const Color4F&, bool)>& value)
+    {
+        _p->widget->setPressedCallback(value);
     }
 }

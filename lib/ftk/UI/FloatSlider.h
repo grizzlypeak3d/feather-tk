@@ -42,6 +42,9 @@ namespace ftk
         FTK_API float getValue() const;
         FTK_API void setValue(float);
         FTK_API void setCallback(const std::function<void(float)>&);
+
+        //! Set the value callback with a flag for whether the slider is presssed.
+        FTK_API void setPressedCallback(const std::function<void(float, bool)>&);
         
         ///@}
 
@@ -75,9 +78,6 @@ namespace ftk
 
         //! Get the model.
         FTK_API const std::shared_ptr<FloatModel>& getModel() const;
-
-        //! Set the pressed callback.
-        FTK_API void setPressedCallback(const std::function<void(bool)>&);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;

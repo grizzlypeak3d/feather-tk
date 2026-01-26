@@ -46,8 +46,11 @@ namespace ftk
         //! Set the color.
         FTK_API void setColor(const Color4F&);
 
-        //! Set the color callback.
+        //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Color4F&)>&);
+
+        //! Set the callback with a flag for whether the widget is presssed.
+        FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the widget mode.
         FTK_API ColorWidgetMode getMode() const;

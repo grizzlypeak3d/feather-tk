@@ -10,6 +10,8 @@
 #include <ftk/UI/MenuBar.h>
 #include <ftk/UI/RowLayout.h>
 
+#include <ftk/Core/Format.h>
+
 using namespace ftk;
 
 namespace widgets
@@ -132,15 +134,12 @@ namespace widgets
             auto colorSwatch = ColorSwatch::create(context, hLayout);
             colorSwatch->setColor(color);
             colorSwatch->setEditable(true);
-            colorSwatch->setCallback(
-                [](const Color4F& value)
+            colorSwatch->setPressedCallback(
+                [](const Color4F& value, bool pressed)
                 {
-                    std::cout << "Color: " << value << std::endl;
-                });
-            colorSwatch->setFinishedCallback(
-                [](const Color4F& value)
-                {
-                    std::cout << "Finished: " << value << std::endl;
+                    std::cout << Format("Color: {0} {1}").
+                        arg(value).
+                        arg(pressed ? "(pressed)" : "") << std::endl;
                 });
         }
     }

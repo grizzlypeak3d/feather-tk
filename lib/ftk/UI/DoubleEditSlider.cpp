@@ -18,9 +18,6 @@ namespace ftk
         std::shared_ptr<DoubleSlider> slider;
         std::shared_ptr<DoubleResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
-
-        std::function<void(double)> callback;
-        std::shared_ptr<Observer<double> > valueObserver;
     };
 
     void DoubleEditSlider::_init(
@@ -47,16 +44,6 @@ namespace ftk
         p.slider->setParent(p.layout);
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
-
-        p.valueObserver = Observer<double>::create(
-            p.model->observeValue(),
-            [this](double value)
-            {
-                if (_p->callback)
-                {
-                    _p->callback(value);
-                }
-            });
     }
 
     DoubleEditSlider::DoubleEditSlider() :
@@ -97,7 +84,12 @@ namespace ftk
 
     void DoubleEditSlider::setCallback(const std::function<void(double)>& value)
     {
-        _p->callback = value;
+        _p->slider->setCallback(value);
+    }
+
+    void DoubleEditSlider::setPressedCallback(const std::function<void(double, bool)>& value)
+    {
+        _p->slider->setPressedCallback(value);
     }
 
     const RangeD& DoubleEditSlider::getRange() const
@@ -148,11 +140,6 @@ namespace ftk
     const std::shared_ptr<DoubleModel>& DoubleEditSlider::getModel() const
     {
         return _p->model;
-    }
-
-    void DoubleEditSlider::setPressedCallback(const std::function<void(bool)>& value)
-    {
-        _p->slider->setPressedCallback(value);
     }
 
     int DoubleEditSlider::getPrecision() const

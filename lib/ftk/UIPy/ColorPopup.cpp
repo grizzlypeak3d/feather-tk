@@ -23,7 +23,8 @@ namespace ftk
                     py::arg("context"),
                     py::arg("color"),
                     py::arg("parent") = nullptr)
-                .def("setCallback", &ColorPopup::setCallback);
+                .def("setCallback", &ColorPopup::setCallback)
+                .def("setPressedCallback", &ColorPopup::setPressedCallback);
         }
     }
 }

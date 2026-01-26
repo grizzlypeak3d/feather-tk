@@ -157,7 +157,7 @@ namespace ftk
             const Box2I&,
             const DrawEvent&);
 
-        bool _key(Key, bool press, int modifiers);
+        void _key(Key, bool press, int modifiers);
         void _text(const std::string&);
         void _cursorEnter(bool enter);
         void _cursorPos(const V2I&);

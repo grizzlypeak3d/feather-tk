@@ -31,86 +31,104 @@ namespace widgets
         auto groupBox = GroupBox::create(context, "Integer Sliders", layout);
         auto vLayout = VerticalLayout::create(context, groupBox);
         auto intEditSlider = IntEditSlider::create(context, vLayout);
-        intEditSlider->setCallback(
-            [](int value)
+        intEditSlider->setPressedCallback(
+            [](int value, bool pressed)
             {
-                std::cout << Format("Int: {0}").arg(value) << std::endl;
+                std::cout << Format("Int: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
         intEditSlider = IntEditSlider::create(context, vLayout);
         intEditSlider->setRange(100, 200);
         intEditSlider->setDefaultValue(100);
-        intEditSlider->setCallback(
-            [](int value)
+        intEditSlider->setPressedCallback(
+            [](int value, bool pressed)
             {
-                std::cout << Format("Int: {0}").arg(value) << std::endl;
+                std::cout << Format("Int: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
         intEditSlider = IntEditSlider::create(context, vLayout);
         intEditSlider->setRange(-100, 100);
         intEditSlider->setDefaultValue(-100);
-        intEditSlider->setCallback(
-            [](int value)
+        intEditSlider->setPressedCallback(
+            [](int value, bool pressed)
             {
-                std::cout << Format("Int: {0}").arg(value) << std::endl;
+                std::cout << Format("Int: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
 
         // Create float sliders.
         groupBox = GroupBox::create(context, "Float Sliders", layout);
         vLayout = VerticalLayout::create(context, groupBox);
         auto floatEditSlider = FloatEditSlider::create(context, vLayout);
-        floatEditSlider->setCallback(
-            [](float value)
+        floatEditSlider->setPressedCallback(
+            [](float value, bool pressed)
             {
-                std::cout << Format("Float: {0}").arg(value) << std::endl;
+                std::cout << Format("Float: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
         floatEditSlider = FloatEditSlider::create(context, vLayout);
         floatEditSlider->setRange(100.F, 200.F);
         floatEditSlider->setDefaultValue(100.F);
         floatEditSlider->setStep(1.F);
         floatEditSlider->setLargeStep(10.F);
-        floatEditSlider->setCallback(
-            [](float value)
+        floatEditSlider->setPressedCallback(
+            [](float value, bool pressed)
             {
-                std::cout << Format("Float: {0}").arg(value) << std::endl;
+                std::cout << Format("Float: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
         floatEditSlider = FloatEditSlider::create(context, vLayout);
         floatEditSlider->setRange(-100.F, 100.F);
         floatEditSlider->setDefaultValue(-100.F);
         floatEditSlider->setStep(1.F);
         floatEditSlider->setLargeStep(10.F);
-        floatEditSlider->setCallback(
-            [](float value)
+        floatEditSlider->setPressedCallback(
+            [](float value, bool pressed)
             {
-                std::cout << Format("Float: {0}").arg(value) << std::endl;
+                std::cout << Format("Float: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
 
         // Create double sliders.
         groupBox = GroupBox::create(context, "Double Sliders", layout);
         vLayout = VerticalLayout::create(context, groupBox);
         auto doubleEditSlider = DoubleEditSlider::create(context, vLayout);
-        doubleEditSlider->setCallback(
-            [](double value)
+        doubleEditSlider->setPressedCallback(
+            [](double value, bool pressed)
             {
-                std::cout << Format("Double: {0}").arg(value) << std::endl;
+                std::cout << Format("Double: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
         doubleEditSlider = DoubleEditSlider::create(context, vLayout);
         doubleEditSlider->setRange(100.0, 200.0);
         doubleEditSlider->setDefaultValue(100.0);
         doubleEditSlider->setStep(1.F);
         doubleEditSlider->setLargeStep(10.F);
-        doubleEditSlider->setCallback(
-            [](double value)
+        doubleEditSlider->setPressedCallback(
+            [](double value, bool pressed)
             {
-                std::cout << Format("Double: {0}").arg(value) << std::endl;
+                std::cout << Format("Double: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
         doubleEditSlider = DoubleEditSlider::create(context, vLayout);
         doubleEditSlider->setRange(-100.0, 100.0);
         doubleEditSlider->setDefaultValue(-100.0);
         doubleEditSlider->setStep(1.F);
         doubleEditSlider->setLargeStep(10.F);
-        doubleEditSlider->setCallback(
-            [](double value)
+        doubleEditSlider->setPressedCallback(
+            [](double value, bool pressed)
             {
-                std::cout << Format("Double: {0}").arg(value) << std::endl;
+                std::cout << Format("Double: {0} {1}").
+                    arg(value).
+                    arg(pressed ? "(pressed)" : "") << std::endl;
             });
     }
 

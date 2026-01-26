@@ -36,6 +36,7 @@ namespace ftk
         std::shared_ptr<GridLayout> hsvLayout;
 
         std::function<void(const Color4F&)> callback;
+        std::function<void(const Color4F&, bool)> pressedCallback;
     };
 
     void ColorWidget::_init(
@@ -116,8 +117,8 @@ namespace ftk
                 _p->mode = static_cast<ColorWidgetMode>(value);
             });
 
-        p.sliders["RGB/R"]->setCallback(
-            [this](float value)
+        p.sliders["RGB/R"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.rgbLayout == p.tabWidget->getCurrentWidget())
@@ -130,10 +131,14 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
-        p.sliders["RGB/G"]->setCallback(
-            [this](float value)
+        p.sliders["RGB/G"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.rgbLayout == p.tabWidget->getCurrentWidget())
@@ -146,10 +151,14 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
-        p.sliders["RGB/B"]->setCallback(
-            [this](float value)
+        p.sliders["RGB/B"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.rgbLayout == p.tabWidget->getCurrentWidget())
@@ -162,10 +171,14 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
-        p.sliders["RGB/A"]->setCallback(
-            [this](float value)
+        p.sliders["RGB/A"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.rgbLayout == p.tabWidget->getCurrentWidget())
@@ -176,11 +189,15 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
 
-        p.sliders["HSV/H"]->setCallback(
-            [this](float value)
+        p.sliders["HSV/H"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.hsvLayout == p.tabWidget->getCurrentWidget())
@@ -196,10 +213,14 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
-        p.sliders["HSV/S"]->setCallback(
-            [this](float value)
+        p.sliders["HSV/S"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.hsvLayout == p.tabWidget->getCurrentWidget())
@@ -215,10 +236,14 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
-        p.sliders["HSV/V"]->setCallback(
-            [this](float value)
+        p.sliders["HSV/V"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.hsvLayout == p.tabWidget->getCurrentWidget())
@@ -234,10 +259,14 @@ namespace ftk
                     {
                         p.callback(p.color);
                     }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
+                    }
                 }
             });
-        p.sliders["HSV/A"]->setCallback(
-            [this](float value)
+        p.sliders["HSV/A"]->setPressedCallback(
+            [this](float value, bool pressed)
             {
                 FTK_P();
                 if (p.hsvLayout == p.tabWidget->getCurrentWidget())
@@ -247,6 +276,10 @@ namespace ftk
                     if (p.callback)
                     {
                         p.callback(p.color);
+                    }
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(p.color, pressed);
                     }
                 }
             });
@@ -288,6 +321,11 @@ namespace ftk
     void ColorWidget::setCallback(const std::function<void(const Color4F&)>& value)
     {
         _p->callback = value;
+    }
+
+    void ColorWidget::setPressedCallback(const std::function<void(const Color4F&, bool)>& value)
+    {
+        _p->pressedCallback = value;
     }
 
     ColorWidgetMode ColorWidget::getMode() const

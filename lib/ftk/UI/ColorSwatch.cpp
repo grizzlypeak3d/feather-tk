@@ -15,7 +15,7 @@ namespace ftk
         Color4F color;
         bool editable = false;
         std::function<void(const Color4F&)> callback;
-        std::function<void(const Color4F&)> finishedCallback;
+        std::function<void(const Color4F&, bool)> pressedCallback;
         SizeRole sizeRole = SizeRole::Swatch;
         std::shared_ptr<ColorPopup> popup;
 
@@ -92,9 +92,9 @@ namespace ftk
         _p->callback = value;
     }
 
-    void ColorSwatch::setFinishedCallback(const std::function<void(const Color4F&)>& value)
+    void ColorSwatch::setPressedCallback(const std::function<void(const Color4F&, bool)>& value)
     {
-        _p->finishedCallback = value;
+        _p->pressedCallback = value;
     }
 
     SizeRole ColorSwatch::getSizeRole() const
@@ -197,8 +197,8 @@ namespace ftk
             {
                 p.popup = ColorPopup::create(context, p.color);
                 p.popup->open(getWindow(), getGeometry());
-                p.popup->setCallback(
-                    [this](const Color4F& value)
+                p.popup->setPressedCallback(
+                    [this](const Color4F& value, bool pressed)
                     {
                         FTK_P();
                         p.color = value;
@@ -207,16 +207,15 @@ namespace ftk
                         {
                             p.callback(value);
                         }
+                        if (p.pressedCallback)
+                        {
+                            p.pressedCallback(value, pressed);
+                        }
                     });
                 p.popup->setCloseCallback(
                     [this]
                     {
-                        FTK_P();
-                        if (p.finishedCallback)
-                        {
-                            p.finishedCallback(p.color);
-                        }
-                        p.popup.reset();
+                        _p->popup.reset();
                     });
             }
             else
