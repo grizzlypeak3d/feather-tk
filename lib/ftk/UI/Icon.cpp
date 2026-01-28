@@ -126,8 +126,8 @@ namespace ftk
             p.size.sizeHint = Size2I();
             if (p.iconImage)
             {
-                p.size.sizeHint.w = p.iconImage->getWidth();
-                p.size.sizeHint.h = p.iconImage->getHeight();
+                p.size.sizeHint.w = p.iconImage->getWidth() + p.size.margin * 2;
+                p.size.sizeHint.h = p.iconImage->getHeight() + p.size.margin * 2;
             }
         }
     }
