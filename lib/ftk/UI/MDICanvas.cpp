@@ -20,7 +20,6 @@ namespace ftk
         struct SizeData
         {
             Size2I gridSize;
-            int shadow = 0;
             Size2I sizeHint;
         };
         SizeData size;
@@ -349,7 +348,6 @@ namespace ftk
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
         p.size.gridSize = p.gridSize * static_cast<int>(event.displayScale);
-        p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
         p.size.sizeHint = p.canvasSize * static_cast<int>(event.displayScale);
     }
 
