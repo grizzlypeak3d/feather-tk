@@ -28,12 +28,11 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void addSample(int);
+        void addSample(int, ColorRole = ColorRole::Cyan);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:

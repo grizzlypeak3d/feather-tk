@@ -28,25 +28,30 @@ namespace widgets
         _scrollWidget->setWidget(layout);
 
         // Create graph widgets.
-        const std::vector<std::string> graphs =
-        {
-            "Images",
-            "ImagesSize",
-            "Meshes",
-            "MeshesSize",
-            "Textures",
-            "TexturesSize",
-            "OffscreenBuffers",
-            "Shaders",
-            "Widgets"
-        };
-        for (const auto& graph : graphs)
-        {
-            auto vLayout = VerticalLayout::create(context, layout);
-            layout->setSpacingRole(SizeRole::SpacingSmall);
-            _labels[graph] = Label::create(context, vLayout);
-            _graphs[graph] = GraphWidget::create(context, vLayout);
-        }
+        auto vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["Images"] = Label::create(context, vLayout);
+        _graphs["Images"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["ImagesSize"] = Label::create(context, vLayout);
+        _graphs["ImagesSize"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["GL"] = Label::create(context, vLayout);
+        _graphs["GL"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["GLSize"] = Label::create(context, vLayout);
+        _graphs["GLSize"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["Widgets"] = Label::create(context, vLayout);
+        _graphs["Widgets"] = GraphWidget::create(context, vLayout);
 
         _widgetUpdate();
 
@@ -83,40 +88,40 @@ namespace widgets
 
     void Graphs::_widgetUpdate()
     {
-        size_t count = Image::getObjectCount();
-        _labels["Images"]->setText(Format("Images: {0}").arg(count));
-        _graphs["Images"]->addSample(count);
+        const size_t images = Image::getObjectCount();
+        _labels["Images"]->setText(Format("Images: {0}").arg(images));
+        _graphs["Images"]->addSample(images);
 
-        count = Image::getTotalByteCount() / megabyte;
-        _labels["ImagesSize"]->setText(Format("Total images size: {0}MB").arg(count));
-        _graphs["ImagesSize"]->addSample(count);
+        const size_t imagesSize = Image::getTotalByteCount() / megabyte;
+        _labels["ImagesSize"]->setText(Format("Images size: {0}MB").arg(imagesSize));
+        _graphs["ImagesSize"]->addSample(imagesSize);
 
-        count = gl::VBO::getObjectCount();
-        _labels["Meshes"]->setText(Format("Meshes: {0}").arg(count));
-        _graphs["Meshes"]->addSample(count);
+        const size_t meshes = gl::VBO::getObjectCount();
+        const size_t textures = gl::Texture::getObjectCount();
+        const size_t buffers = gl::OffscreenBuffer::getObjectCount();
+        const size_t shaders = gl::Shader::getObjectCount();
+        _labels["GL"]->setText(
+            Format("Meshes: {0}, textures: {1}, buffers: {2}, shaders: {3}").
+            arg(meshes).
+            arg(textures).
+            arg(buffers).
+            arg(shaders));
+        _graphs["GL"]->addSample(meshes);
+        _graphs["GL"]->addSample(textures, ColorRole::Red);
+        _graphs["GL"]->addSample(buffers, ColorRole::Green);
+        _graphs["GL"]->addSample(shaders, ColorRole::Yellow);
 
-        count = gl::VBO::getTotalByteCount() / megabyte;
-        _labels["MeshesSize"]->setText(Format("Total meshes size: {0}MB").arg(count));
-        _graphs["MeshesSize"]->addSample(count);
+        const size_t meshesSize = gl::VBO::getTotalByteCount() / megabyte;
+        const size_t texturesSize = gl::Texture::getTotalByteCount() / megabyte;
+        _labels["GLSize"]->setText(
+            Format("Meshes size: {0}MB, textures size: {1}MB").
+            arg(meshesSize).
+            arg(texturesSize));
+        _graphs["GLSize"]->addSample(meshesSize);
+        _graphs["GLSize"]->addSample(texturesSize, ColorRole::Red);
 
-        count = gl::Texture::getObjectCount();
-        _labels["Textures"]->setText(Format("Textures: {0}").arg(count));
-        _graphs["Textures"]->addSample(count);
-
-        count = gl::Texture::getTotalByteCount() / megabyte;
-        _labels["TexturesSize"]->setText(Format("Total textures size: {0}MB").arg(count));
-        _graphs["TexturesSize"]->addSample(count);
-
-        count = gl::OffscreenBuffer::getObjectCount();
-        _labels["OffscreenBuffers"]->setText(Format("Offscreen buffers: {0}").arg(count));
-        _graphs["OffscreenBuffers"]->addSample(count);
-
-        count = gl::OffscreenBuffer::getObjectCount();
-        _labels["Shaders"]->setText(Format("Shaders: {0}").arg(count));
-        _graphs["Shaders"]->addSample(count);
-
-        count = IWidget::getObjectCount();
-        _labels["Widgets"]->setText(Format("Widgets: {0}").arg(count));
-        _graphs["Widgets"]->addSample(count);
+        const size_t widgets = IWidget::getObjectCount();
+        _labels["Widgets"]->setText(Format("Widgets: {0}").arg(widgets));
+        _graphs["Widgets"]->addSample(widgets);
     }
 }

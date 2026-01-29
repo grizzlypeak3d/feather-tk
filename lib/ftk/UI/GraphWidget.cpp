@@ -15,7 +15,7 @@ namespace ftk
 {
     struct GraphWidget::Private
     {
-        std::list<int> samples;
+        std::map<ColorRole, std::list<int> > samples;
         int samplesMax = 0;
 
         struct SizeData
@@ -26,14 +26,6 @@ namespace ftk
             int border = 0;
         };
         SizeData size;
-
-        struct DrawData
-        {
-            Box2I g;
-            TriMesh2F border;
-            TriMesh2F mesh;
-        };
-        std::optional<DrawData> draw;
     };
 
     void GraphWidget::_init(
@@ -59,13 +51,12 @@ namespace ftk
         out->_init(context, parent);
         return out;
     }
-    
-    void GraphWidget::addSample(int value)
+
+    void GraphWidget::addSample(int value, ColorRole colorRole)
     {
         FTK_P();
-        p.samples.push_back(value);
+        p.samples[colorRole].push_back(value);
         _samplesUpdate();
-        p.draw.reset();
         setDrawUpdate();
     }
 
@@ -83,7 +74,6 @@ namespace ftk
         if (changed)
         {
             _samplesUpdate();
-            p.draw.reset();
         }
     }
 
@@ -100,16 +90,6 @@ namespace ftk
         }
     }
 
-    void GraphWidget::clipEvent(const Box2I& clipRect, bool clipped)
-    {
-        IWidget::clipEvent(clipRect, clipped);
-        FTK_P();
-        if (clipped)
-        {
-            p.draw.reset();
-        }
-    }
-
     void GraphWidget::drawEvent(
         const Box2I& drawRect,
         const DrawEvent& event)
@@ -118,50 +98,33 @@ namespace ftk
         FTK_P();
 
         const Box2I& g = getGeometry();
-        const Box2I g2 = margin(g, -p.size.border);
-        if (!p.draw.has_value())
+        event.render->drawMesh(
+            border(g, p.size.border),
+            event.style->getColorRole(ColorRole::Border));
+
+        for (const auto& i : p.samples)
         {
-            p.draw = Private::DrawData();
-
-            int w = g.w();
-            int h = g.h();
-            p.draw->border = border(Box2I(0, 0, w, h), p.size.border);
-
-            w = g2.w();
-            h = g2.h();
-            int j = 0;
-            for (auto i = p.samples.begin(); i != p.samples.end() && j < w; ++i, j = j + p.size.sampleSize)
+            const std::vector<int> samples(i.second.begin(), i.second.end());
+            std::vector<std::pair<ftk::V2I, ftk::V2I> > lines;
+            const Box2I g2 = margin(g, -p.size.border);
+            int x = g2.min.x;
+            int y = g2.min.y;
+            int h = g2.h();
+            for (int i = 1; i < samples.size(); ++i, x += p.size.sampleSize)
             {
-                const int v = *i / static_cast<float>(p.samplesMax) * h;
-                const Box2I b = margin(Box2I(j, h - v, p.size.sampleSize, v), -p.size.border);
-                p.draw->mesh.v.push_back(V2F(b.min.x, b.min.y));
-                p.draw->mesh.v.push_back(V2F(b.min.x, b.max.y + 1));
-                p.draw->mesh.v.push_back(V2F(b.max.x + 1, b.min.y));
-                p.draw->mesh.v.push_back(V2F(b.max.x + 1, b.max.y + 1));
+                const float v0 = samples[i - 1] / static_cast<float>(p.samplesMax);
+                const float v1 = samples[i] / static_cast<float>(p.samplesMax);
+                lines.push_back(std::make_pair(
+                    ftk::V2I(x, y + h - 1 - v0 * h),
+                    ftk::V2I(x + p.size.sampleSize, y + h - 1 - v1 * h)));
             }
-            for (int i = 0; p.draw->mesh.v.size() >= 4 && i < p.draw->mesh.v.size() - 4; i += 4)
-            {
-                Triangle2 t;
-                t.v[0].v = i + 0 + 1;
-                t.v[1].v = i + 1 + 1;
-                t.v[2].v = i + 3 + 1;
-                p.draw->mesh.triangles.push_back(t);
-                t.v[0].v = i + 0 + 1;
-                t.v[1].v = i + 3 + 1;
-                t.v[2].v = i + 2 + 1;
-                p.draw->mesh.triangles.push_back(t);
-            }
+            LineOptions lineOptions;
+            lineOptions.width = p.size.border * 2;
+            event.render->drawLines(
+                lines,
+                event.style->getColorRole(i.first),
+                lineOptions);
         }
-
-        event.render->drawMesh(
-            p.draw->border,
-            event.style->getColorRole(ColorRole::Border),
-            V2F(g.min.x, g.min.y));
-
-        event.render->drawMesh(
-            p.draw->mesh,
-            event.style->getColorRole(ColorRole::Cyan),
-            V2F(g2.min.x, g2.min.y));
     }
 
     void GraphWidget::_samplesUpdate()
@@ -173,16 +136,22 @@ namespace ftk
         const Box2I& g = getGeometry();
         const Box2I g2 = margin(g, -p.size.border);
         const int w = g2.w();
-        while (p.samples.size() * p.size.sampleSize > (w + p.size.sampleSize))
+        for (auto i = p.samples.begin(); i != p.samples.end(); ++i)
         {
-            changed = true;
-            p.samples.pop_front();
+            while (i->second.size() * p.size.sampleSize > (w + p.size.sampleSize))
+            {
+                changed = true;
+                i->second.pop_front();
+            }
         }
 
         int samplesMax = p.samplesMax;
-        for (auto i : p.samples)
+        for (const auto& i : p.samples)
         {
-            samplesMax = std::max(samplesMax, i);
+            for (auto j : i.second)
+            {
+                samplesMax = std::max(samplesMax, j);
+            }
         }
         if (samplesMax != p.samplesMax)
         {
@@ -192,7 +161,6 @@ namespace ftk
 
         if (changed)
         {
-            p.draw.reset();
             setDrawUpdate();
         }
     }
