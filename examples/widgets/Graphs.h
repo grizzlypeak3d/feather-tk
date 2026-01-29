@@ -29,6 +29,8 @@ namespace widgets
         void setGeometry(const Box2I&) override;
 
     private:
+        void _widgetUpdate();
+
         std::shared_ptr<Label> _imagesLabel;
         std::map<std::string, std::shared_ptr<GraphWidget> > _graphs;
         std::map<std::string, std::shared_ptr<Label> > _labels;
