@@ -30,28 +30,39 @@ namespace widgets
         // Create graph widgets.
         auto vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _labels["Images"] = Label::create(context, vLayout);
-        _graphs["Images"] = GraphWidget::create(context, vLayout);
-
-        vLayout = VerticalLayout::create(context, layout);
-        layout->setSpacingRole(SizeRole::SpacingSmall);
-        _labels["ImagesSize"] = Label::create(context, vLayout);
-        _graphs["ImagesSize"] = GraphWidget::create(context, vLayout);
-
-        vLayout = VerticalLayout::create(context, layout);
-        layout->setSpacingRole(SizeRole::SpacingSmall);
-        _labels["GL"] = Label::create(context, vLayout);
-        _graphs["GL"] = GraphWidget::create(context, vLayout);
-
-        vLayout = VerticalLayout::create(context, layout);
-        layout->setSpacingRole(SizeRole::SpacingSmall);
-        _labels["GLSize"] = Label::create(context, vLayout);
-        _graphs["GLSize"] = GraphWidget::create(context, vLayout);
-
-        vLayout = VerticalLayout::create(context, layout);
-        layout->setSpacingRole(SizeRole::SpacingSmall);
-        _labels["Widgets"] = Label::create(context, vLayout);
-        _graphs["Widgets"] = GraphWidget::create(context, vLayout);
+        _graphs["GLObjects"] = GraphWidget::create(
+            context,
+            "OpenGL Objects",
+            {
+                { ColorRole::Cyan, "Meshes: {0}" },
+                { ColorRole::Magenta, "Textures: {0}" },
+                { ColorRole::Yellow, "Buffers: {0}" },
+                { ColorRole::Red, "Shaders: {0}" }
+            },
+            vLayout);
+        _graphs["GLMemory"] = GraphWidget::create(
+            context,
+            "OpenGL Memory",
+            {
+                { ColorRole::Cyan, "Meshes: {0}MB" },
+                { ColorRole::Magenta, "Textures: {0}MB" }
+            },
+            vLayout);
+        _graphs["Objects"] = GraphWidget::create(
+            context,
+            "Objects",
+            {
+                { ColorRole::Cyan, "Images: {0}" },
+                { ColorRole::Magenta, "Widgets: {0}" }
+            },
+            vLayout);
+        _graphs["Memory"] = GraphWidget::create(
+            context,
+            "Memory",
+            {
+                { ColorRole::Cyan, "Images: {0}MB" }
+            },
+            vLayout);
 
         _widgetUpdate();
 
@@ -88,40 +99,17 @@ namespace widgets
 
     void Graphs::_widgetUpdate()
     {
-        const size_t images = Image::getObjectCount();
-        _labels["Images"]->setText(Format("Images: {0}").arg(images));
-        _graphs["Images"]->addSample(images);
+        _graphs["GLObjects"]->addSample(ColorRole::Cyan, gl::VBO::getObjectCount());
+        _graphs["GLObjects"]->addSample(ColorRole::Magenta, gl::Texture::getObjectCount());
+        _graphs["GLObjects"]->addSample(ColorRole::Yellow, gl::OffscreenBuffer::getObjectCount());
+        _graphs["GLObjects"]->addSample(ColorRole::Red, gl::Shader::getObjectCount());
 
-        const size_t imagesSize = Image::getTotalByteCount() / megabyte;
-        _labels["ImagesSize"]->setText(Format("Images size: {0}MB").arg(imagesSize));
-        _graphs["ImagesSize"]->addSample(imagesSize);
+        _graphs["GLMemory"]->addSample(ColorRole::Cyan, gl::VBO::getTotalByteCount() / megabyte);
+        _graphs["GLMemory"]->addSample(ColorRole::Magenta, gl::Texture::getTotalByteCount() / megabyte);
 
-        const size_t meshes = gl::VBO::getObjectCount();
-        const size_t textures = gl::Texture::getObjectCount();
-        const size_t buffers = gl::OffscreenBuffer::getObjectCount();
-        const size_t shaders = gl::Shader::getObjectCount();
-        _labels["GL"]->setText(
-            Format("Meshes: {0}, textures: {1}, buffers: {2}, shaders: {3}").
-            arg(meshes).
-            arg(textures).
-            arg(buffers).
-            arg(shaders));
-        _graphs["GL"]->addSample(meshes);
-        _graphs["GL"]->addSample(textures, ColorRole::Red);
-        _graphs["GL"]->addSample(buffers, ColorRole::Green);
-        _graphs["GL"]->addSample(shaders, ColorRole::Yellow);
+        _graphs["Objects"]->addSample(ColorRole::Cyan, Image::getObjectCount());
+        _graphs["Objects"]->addSample(ColorRole::Magenta, IWidget::getObjectCount());
 
-        const size_t meshesSize = gl::VBO::getTotalByteCount() / megabyte;
-        const size_t texturesSize = gl::Texture::getTotalByteCount() / megabyte;
-        _labels["GLSize"]->setText(
-            Format("Meshes size: {0}MB, textures size: {1}MB").
-            arg(meshesSize).
-            arg(texturesSize));
-        _graphs["GLSize"]->addSample(meshesSize);
-        _graphs["GLSize"]->addSample(texturesSize, ColorRole::Red);
-
-        const size_t widgets = IWidget::getObjectCount();
-        _labels["Widgets"]->setText(Format("Widgets: {0}").arg(widgets));
-        _graphs["Widgets"]->addSample(widgets);
+        _graphs["Memory"]->addSample(ColorRole::Cyan, Image::getTotalByteCount() / megabyte);
     }
 }

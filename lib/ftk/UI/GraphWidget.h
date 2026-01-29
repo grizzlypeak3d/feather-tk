@@ -16,6 +16,8 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
+            const std::string& title,
+            const std::map<ColorRole, std::string>& labels,
             const std::shared_ptr<IWidget>& parent);
 
         GraphWidget();
@@ -26,18 +28,17 @@ namespace ftk
         //! Create a new widget.
         FTK_API static std::shared_ptr<GraphWidget> create(
             const std::shared_ptr<Context>&,
+            const std::string& title,
+            const std::map<ColorRole, std::string>& labels,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void addSample(int, ColorRole = ColorRole::Cyan);
+        void addSample(ColorRole, int);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
-        void _samplesUpdate();
-
         FTK_PRIVATE();
     };
 
