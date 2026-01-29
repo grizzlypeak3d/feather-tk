@@ -83,6 +83,12 @@ namespace ftk
 
             ///@}
 
+            //! Get the number of objects currenty instantiated.
+            FTK_API static size_t getObjectCount();
+
+            //! Get the total number of bytes currently used.
+            FTK_API static size_t getTotalByteCount();
+
         private:
             FTK_PRIVATE();
         };

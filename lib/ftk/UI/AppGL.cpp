@@ -10,6 +10,10 @@
 #include <ftk/UI/Window.h>
 
 #include <ftk/GL/Init.h>
+#include <ftk/GL/Mesh.h>
+#include <ftk/GL/OffscreenBuffer.h>
+#include <ftk/GL/Shader.h>
+#include <ftk/GL/Texture.h>
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
@@ -1414,6 +1418,12 @@ namespace ftk
         lines.push_back(Format("    * Average tick time: {0}ms").arg(tickAverage));
         lines.push_back(Format("    * Image count: {0}").arg(Image::getObjectCount()));
         lines.push_back(Format("    * Image byte count: {0}").arg(Image::getTotalByteCount()));
+        lines.push_back(Format("    * Mesh count: {0}").arg(gl::VBO::getObjectCount()));
+        lines.push_back(Format("    * Mesh byte count: {0}").arg(gl::VBO::getTotalByteCount()));
+        lines.push_back(Format("    * Texture count: {0}").arg(gl::Texture::getObjectCount()));
+        lines.push_back(Format("    * Texture byte count: {0}").arg(gl::Texture::getTotalByteCount()));
+        lines.push_back(Format("    * Offscreen buffer count: {0}").arg(gl::OffscreenBuffer::getObjectCount()));
+        lines.push_back(Format("    * Shader count: {0}").arg(gl::Shader::getObjectCount()));
         lines.push_back(Format("    * Widget count: {0}").arg(IWidget::getObjectCount()));
 
         auto logSystem = _context->getSystem<LogSystem>();

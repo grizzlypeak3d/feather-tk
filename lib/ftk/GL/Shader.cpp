@@ -24,9 +24,16 @@ namespace ftk
             GLuint program = 0;
         };
 
+        namespace
+        {
+            std::atomic<size_t> objectCount = 0;
+        }
+
         void Shader::_init()
         {
             FTK_P();
+
+            ++objectCount;
 
             p.vertex = glCreateShader(GL_VERTEX_SHADER);
             if (!p.vertex)
@@ -116,6 +123,8 @@ namespace ftk
                 glDeleteShader(p.fragment);
                 p.fragment = 0;
             }
+
+            --objectCount;
         }
 
         std::shared_ptr<Shader> Shader::create(
@@ -292,6 +301,11 @@ namespace ftk
         {
             const GLint location = glGetUniformLocation(_p->program, name.c_str());
             setUniform(location, value);
+        }
+
+        size_t Shader::getObjectCount()
+        {
+            return objectCount;
         }
     }
 }

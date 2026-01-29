@@ -30,11 +30,8 @@ namespace widgets
 
     private:
         std::shared_ptr<Label> _imagesLabel;
-        std::shared_ptr<GraphWidget> _imagesGraph;
-        std::shared_ptr<Label> _imagesSizeLabel;
-        std::shared_ptr<GraphWidget> _imageSizeGraph;
-        std::shared_ptr<Label> _widgetsLabel;
-        std::shared_ptr<GraphWidget> _widgetsGraph;
+        std::map<std::string, std::shared_ptr<GraphWidget> > _graphs;
+        std::map<std::string, std::shared_ptr<Label> > _labels;
         std::shared_ptr<ScrollWidget> _scrollWidget;
         std::shared_ptr<Timer> _timer;
     };

@@ -565,10 +565,20 @@ namespace ftk
             GLuint vbo = 0;
         };
 
+        namespace
+        {
+            std::atomic<size_t> objectCount = 0;
+            std::atomic<size_t> totalByteCount = 0;
+        }
+
         VBO::VBO(std::size_t size, VBOType type) :
             _p(new Private)
         {
             FTK_P();
+
+            ++objectCount;
+            totalByteCount += size * getByteCount(type);
+
             p.size = size;
             p.type = type;
             glGenBuffers(1, &p.vbo);
@@ -584,6 +594,9 @@ namespace ftk
                 glDeleteBuffers(1, &p.vbo);
                 p.vbo = 0;
             }
+
+            --objectCount;
+            totalByteCount -= p.size * getByteCount(p.type);
         }
 
         std::shared_ptr<VBO> VBO::create(std::size_t size, VBOType type)
@@ -616,6 +629,16 @@ namespace ftk
         {
             glBindBuffer(GL_ARRAY_BUFFER, _p->vbo);
             glBufferSubData(GL_ARRAY_BUFFER, offset, static_cast<GLsizei>(size), (void*)data.data());
+        }
+
+        size_t VBO::getObjectCount()
+        {
+            return objectCount;
+        }
+
+        size_t VBO::getTotalByteCount()
+        {
+            return totalByteCount;
         }
 
         struct VAO::Private

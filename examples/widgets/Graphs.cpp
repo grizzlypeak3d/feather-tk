@@ -5,6 +5,11 @@
 
 #include <ftk/UI/RowLayout.h>
 
+#include <ftk/gl/Mesh.h>
+#include <ftk/gl/OffscreenBuffer.h>
+#include <ftk/gl/Shader.h>
+#include <ftk/gl/Texture.h>
+
 #include <ftk/Core/Format.h>
 
 using namespace ftk;
@@ -25,18 +30,45 @@ namespace widgets
         // Create graph widgets.
         auto vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _imagesLabel = Label::create(context, vLayout);
-        _imagesGraph = GraphWidget::create(context, vLayout);
+        _labels["Images"] = Label::create(context, vLayout);
+        _graphs["Images"] = GraphWidget::create(context, vLayout);
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["ImagesSize"] = Label::create(context, vLayout);
+        _graphs["ImagesSize"] = GraphWidget::create(context, vLayout);
 
         vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _imagesSizeLabel = Label::create(context, vLayout);
-        _imageSizeGraph = GraphWidget::create(context, vLayout);
-        
+        _labels["Meshes"] = Label::create(context, vLayout);
+        _graphs["Meshes"] = GraphWidget::create(context, vLayout);
         vLayout = VerticalLayout::create(context, layout);
         layout->setSpacingRole(SizeRole::SpacingSmall);
-        _widgetsLabel = Label::create(context, vLayout);
-        _widgetsGraph = GraphWidget::create(context, vLayout);
+        _labels["MeshesSize"] = Label::create(context, vLayout);
+        _graphs["MeshesSize"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["Textures"] = Label::create(context, vLayout);
+        _graphs["Textures"] = GraphWidget::create(context, vLayout);
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["TexturesSize"] = Label::create(context, vLayout);
+        _graphs["TexturesSize"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["OffscreenBuffers"] = Label::create(context, vLayout);
+        _graphs["OffscreenBuffers"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["Shaders"] = Label::create(context, vLayout);
+        _graphs["Shaders"] = GraphWidget::create(context, vLayout);
+
+        vLayout = VerticalLayout::create(context, layout);
+        layout->setSpacingRole(SizeRole::SpacingSmall);
+        _labels["Widgets"] = Label::create(context, vLayout);
+        _graphs["Widgets"] = GraphWidget::create(context, vLayout);
 
         _timer = Timer::create(context);
         _timer->setRepeating(true);
@@ -45,16 +77,37 @@ namespace widgets
             [this]
             {
                 size_t count = Image::getObjectCount();
-                _imagesLabel->setText(Format("Images: {0}").arg(count));
-                _imagesGraph->addSample(count);
-
+                _labels["Images"]->setText(Format("Images: {0}").arg(count));
+                _graphs["Images"]->addSample(count);
                 count = Image::getTotalByteCount() / megabyte;
-                _imagesSizeLabel->setText(Format("Total image size: {0}MB").arg(count));
-                _imageSizeGraph->addSample(count);
+                _labels["ImagesSize"]->setText(Format("Total image size: {0}MB").arg(count));
+                _graphs["ImagesSize"]->addSample(count);
+
+                count = gl::VBO::getObjectCount();
+                _labels["Meshes"]->setText(Format("Meshes: {0}").arg(count));
+                _graphs["Meshes"]->addSample(count);
+                count = gl::VBO::getTotalByteCount() / megabyte;
+                _labels["MeshesSize"]->setText(Format("Total mesh size: {0}MB").arg(count));
+                _graphs["MeshesSize"]->addSample(count);
+
+                count = gl::Texture::getObjectCount();
+                _labels["Textures"]->setText(Format("Textures: {0}").arg(count));
+                _graphs["Textures"]->addSample(count);
+                count = gl::Texture::getTotalByteCount() / megabyte;
+                _labels["TexturesSize"]->setText(Format("Total texture size: {0}MB").arg(count));
+                _graphs["TexturesSize"]->addSample(count);
+
+                count = gl::OffscreenBuffer::getObjectCount();
+                _labels["OffscreenBuffers"]->setText(Format("Offscreen buffers: {0}").arg(count));
+                _graphs["OffscreenBuffers"]->addSample(count);
+
+                count = gl::OffscreenBuffer::getObjectCount();
+                _labels["Shaders"]->setText(Format("Shaders: {0}").arg(count));
+                _graphs["Shaders"]->addSample(count);
 
                 count = IWidget::getObjectCount();
-                _widgetsLabel->setText(Format("Widgets: {0}").arg(count));
-                _widgetsGraph->addSample(count);
+                _labels["Widgets"]->setText(Format("Widgets: {0}").arg(count));
+                _graphs["Widgets"]->addSample(count);
             });
     }
 

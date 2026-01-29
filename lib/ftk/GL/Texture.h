@@ -83,6 +83,12 @@ namespace ftk
             //! Bind the texture.
             FTK_API void bind();
 
+            //! Get the number of objects currenty instantiated.
+            FTK_API static size_t getObjectCount();
+
+            //! Get the total number of bytes currently used.
+            FTK_API static size_t getTotalByteCount();
+
         private:
             FTK_PRIVATE();
         };

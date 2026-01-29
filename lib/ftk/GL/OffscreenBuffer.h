@@ -120,6 +120,9 @@ namespace ftk
             //! Bind the offscreen buffer.
             FTK_API void bind();
 
+            //! Get the number of objects currenty instantiated.
+            FTK_API static size_t getObjectCount();
+
         private:
             FTK_PRIVATE();
         };

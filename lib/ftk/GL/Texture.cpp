@@ -277,6 +277,12 @@ namespace ftk
             return data[static_cast<size_t>(value)];
         }
 
+        namespace
+        {
+            std::atomic<size_t> objectCount = 0;
+            std::atomic<size_t> totalByteCount = 0;
+        }
+
         struct Texture::Private
         {
             ImageInfo info;
@@ -288,6 +294,9 @@ namespace ftk
             _p(new Private)
         {
             FTK_P();
+
+            ++objectCount;
+            totalByteCount += info.getByteCount();
 
             p.info = info;
             if (!p.info.isValid())
@@ -340,6 +349,9 @@ namespace ftk
                 glDeleteTextures(1, &p.id);
                 p.id = 0;
             }
+
+            --objectCount;
+            totalByteCount -= p.info.getByteCount();
         }
 
         std::shared_ptr<Texture> Texture::create(const ImageInfo& info, const TextureOptions& options)
@@ -537,6 +549,16 @@ namespace ftk
         void Texture::bind()
         {
             glBindTexture(GL_TEXTURE_2D, _p->id);
+        }
+
+        size_t Texture::getObjectCount()
+        {
+            return objectCount;
+        }
+
+        size_t Texture::getTotalByteCount()
+        {
+            return totalByteCount;
         }
     }
 }

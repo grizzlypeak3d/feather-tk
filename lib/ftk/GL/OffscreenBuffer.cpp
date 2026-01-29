@@ -144,11 +144,18 @@ namespace ftk
             GLuint depthStencilID = 0;
         };
 
+        namespace
+        {
+            std::atomic<size_t> objectCount = 0;
+        }
+
         void OffscreenBuffer::_init(
             const Size2I& size,
             const OffscreenBufferOptions& options)
         {
             FTK_P();
+
+            ++objectCount;
 
             p.size = size;
             p.options = options;
@@ -316,6 +323,8 @@ namespace ftk
                 glDeleteRenderbuffers(1, &p.depthStencilID);
                 p.depthStencilID = 0;
             }
+
+            --objectCount;
         }
 
         std::shared_ptr<OffscreenBuffer> OffscreenBuffer::create(
@@ -360,6 +369,11 @@ namespace ftk
         void OffscreenBuffer::bind()
         {
             glBindFramebuffer(GL_FRAMEBUFFER, _p->id);
+        }
+
+        size_t OffscreenBuffer::getObjectCount()
+        {
+            return objectCount;
         }
 
         bool doCreate(
