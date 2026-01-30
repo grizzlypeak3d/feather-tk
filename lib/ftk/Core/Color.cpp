@@ -9,60 +9,60 @@
 
 namespace ftk
 {
-    M44F brightness(const V3F& value)
+    M44F brightness(const V3F& v)
     {
         return M44F(
-            value.x, 0.F, 0.F, 0.F,
-            0.F, value.y, 0.F, 0.F,
-            0.F, 0.F, value.z, 0.F,
+            v.x, 0.F, 0.F, 0.F,
+            0.F, v.y, 0.F, 0.F,
+            0.F, 0.F, v.z, 0.F,
             0.F, 0.F, 0.F, 1.F);
     }
 
-    M44F contrast(const V3F& value)
+    M44F contrast(const V3F& v)
     {
         return
             M44F(
-                1.F, 0.F, 0.F, 0.F,
-                0.F, 1.F, 0.F, 0.F,
-                0.F, 0.F, 1.F, 0.F,
-                .5F, .5F, .5F, 1.F) *
-            M44F(
-                value.x, 0.F, 0.F, 0.F,
-                0.F, value.y, 0.F, 0.F,
-                0.F, 0.F, value.z, 0.F,
+                1.F, 0.F, 0.F, .5F,
+                0.F, 1.F, 0.F, .5F,
+                0.F, 0.F, 1.F, .5F,
                 0.F, 0.F, 0.F, 1.F) *
             M44F(
-                1.F, 0.F, 0.F, 0.F,
-                0.F, 1.F, 0.F, 0.F,
-                0.F, 0.F, 1.F, 0.F,
-                -.5F, -.5F, -.5F, 1.F);
+                v.x, 0.F, 0.F, 0.F,
+                0.F, v.y, 0.F, 0.F,
+                0.F, 0.F, v.z, 0.F,
+                0.F, 0.F, 0.F, 1.F) *
+            M44F(
+                1.F, 0.F, 0.F, -.5F,
+                0.F, 1.F, 0.F, -.5F,
+                0.F, 0.F, 1.F, -.5F,
+                0.F, 0.F, 0.F, 1.F);
     }
 
-    M44F saturation(const V3F& value)
+    M44F saturation(const V3F& v)
     {
         const V3F s(
-            (1.F - value.x) * .3086F,
-            (1.F - value.y) * .6094F,
-            (1.F - value.z) * .0820F);
+            (1.F - v.x) * .3086F,
+            (1.F - v.y) * .6094F,
+            (1.F - v.z) * .0820F);
         return M44F(
-            s.x + value.x, s.x, s.x, 0.F,
-            s.y, s.y + value.y, s.y, 0.F,
-            s.z, s.z, s.z + value.z, 0.F,
-            0.F, 0.F, 0.F, 1.F);
+            s.x + v.x, s.y,       s.z,       0.F,
+            s.x,       s.y + v.y, s.z,       0.F,
+            s.x,       s.y,       s.z + v.z, 0.F,
+            0.F,       0.F,       0.F,       1.F);
     }
 
     M44F tint(float v)
     {
-        const float c = cos(v * pi * 2.F);
+        const float c  = cos(v * pi * 2.F);
         const float c2 = 1.F - c;
         const float c3 = 1.F / 3.F * c2;
-        const float s = sin(v * pi * 2.F);
+        const float s  = sin(v * pi * 2.F);
         const float sq = sqrtf(1.F / 3.F);
         return M44F(
-            c + c2 / 3.F, c3 - sq * s, c3 + sq * s, 0.F,
-            c3 + sq * s, c + c3, c3 - sq * s, 0.F,
-            c3 - sq * s, c3 + sq * s, c + c3, 0.F,
-            0.F, 0.F, 0.F, 1.F);
+            c + c2 / 3.F, c3 + sq * s, c3 - sq * s, 0.F,
+            c3 - sq * s,  c + c3,      c3 + sq * s, 0.F,
+            c3 + sq * s,  c3 - sq * s, c + c3,      0.F,
+            0.F,          0.F,         0.F,         1.F);
     }
 
     void rgbToHSV(const float in[3], float out[3])
