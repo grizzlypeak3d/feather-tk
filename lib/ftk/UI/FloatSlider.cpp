@@ -420,29 +420,22 @@ namespace ftk
     {
         FTK_P();
         const Box2I g = _getSliderGeometry();
+        const RangeF& range = p.model->getRange();
         const float v = (pos - g.x()) / static_cast<float>(g.w());
-        float out = 0.F;
-        if (p.model)
-        {
-            const RangeF& range = p.model->getRange();
-            out = range.min() + (range.max() - range.min()) * v;
-        }
-        return out;
+        const float out = range.min() + (range.max() - range.min()) * v;
+        return clamp(out, range.min(), range.max());
     }
 
     int FloatSlider::_valueToPos(float value) const
     {
         FTK_P();
         const Box2I g = _getSliderGeometry();
+        const RangeF& range = p.model->getRange();
         float v = 0.F;
-        if (p.model)
+        if (range.min() != range.max())
         {
-            const RangeF& range = p.model->getRange();
-            if (range.min() != range.max())
-            {
-                v = (value - range.min()) /
-                    static_cast<float>(range.max() - range.min());
-            }
+            v = (value - range.min()) /
+                static_cast<float>(range.max() - range.min());
         }
         return g.x() + g.w() * v;
     }
