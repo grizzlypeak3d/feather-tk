@@ -18,8 +18,8 @@ namespace ftk
         std::shared_ptr<IntResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
-        std::function<void(double)> callback;
-        std::function<void(double, bool)> pressedCallback;
+        std::function<void(int)> callback;
+        std::function<void(int, bool)> pressedCallback;
         bool blockCallbacks = false;
     };
 
