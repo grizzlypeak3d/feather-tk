@@ -10,6 +10,7 @@
 #include <ftk/Core/String.h>
 
 #include <array>
+#include <atomic>
 #include <sstream>
 
 namespace ftk
