@@ -22,20 +22,20 @@ namespace ftk
     {
         return
             M44F(
-                1.F, 0.F, 0.F, .5F,
-                0.F, 1.F, 0.F, .5F,
-                0.F, 0.F, 1.F, .5F,
-                0.F, 0.F, 0.F, 1.F) *
+                1.F, 0.F, 0.F, 0.F,
+                0.F, 1.F, 0.F, 0.F,
+                0.F, 0.F, 1.F, 0.F,
+                .5F, .5F, .5F, 1.F) *
             M44F(
                 value.x, 0.F, 0.F, 0.F,
                 0.F, value.y, 0.F, 0.F,
                 0.F, 0.F, value.z, 0.F,
                 0.F, 0.F, 0.F, 1.F) *
             M44F(
-                1.F, 0.F, 0.F, -.5F,
-                0.F, 1.F, 0.F, -.5F,
-                0.F, 0.F, 1.F, -.5F,
-                0.F, 0.F, 0.F, 1.F);
+                1.F, 0.F, 0.F, 0.F,
+                0.F, 1.F, 0.F, 0.F,
+                0.F, 0.F, 1.F, 0.F,
+                -.5F, -.5F, -.5F, 1.F);
     }
 
     M44F saturation(const V3F& value)
