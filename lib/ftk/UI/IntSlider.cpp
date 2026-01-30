@@ -260,11 +260,7 @@ namespace ftk
 
         // Draw the handle.
         const Box2I g2 = _getSliderGeometry();
-        int pos = 0;
-        if (p.model)
-        {
-            pos = _valueToPos(p.model->getValue());
-        }
+        const int pos = _valueToPos(p.model->getValue());
         const Box2I handle(
             pos - p.size.handle / 2,
             g2.y(),
@@ -306,7 +302,7 @@ namespace ftk
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
-        if (_isMousePressed() && p.model)
+        if (_isMousePressed())
         {
             p.model->setValue(_posToValue(_getMousePos().x));
         }
@@ -317,10 +313,7 @@ namespace ftk
         IMouseWidget::mousePressEvent(event);
         FTK_P();
         takeKeyFocus();
-        if (p.model)
-        {
-            p.model->setValue(_posToValue(_getMousePos().x));
-        }
+        p.model->setValue(_posToValue(_getMousePos().x));
         setDrawUpdate();
     }
 
@@ -328,9 +321,10 @@ namespace ftk
     {
         IMouseWidget::mouseReleaseEvent(event);
         FTK_P();
+        p.model->setValue(_posToValue(_getMousePos().x));
         if (p.pressedCallback)
         {
-            p.pressedCallback(_posToValue(_getMousePos().x), false);
+            p.pressedCallback(p.model->getValue(), false);
         }
         setDrawUpdate();
     }
@@ -348,7 +342,7 @@ namespace ftk
     void IntSlider::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
-        if (isEnabled() && p.model)
+        if (isEnabled() && 0 == event.modifiers)
         {
             switch (event.key)
             {
@@ -424,7 +418,7 @@ namespace ftk
         const float inc = g.w() / static_cast<float>(range.max() - range.min());
         const float v = (pos + inc / 2 - g.x()) / static_cast<float>(g.w());
         const int out = range.min() + (range.max() - range.min()) * v;
-        return clamp(out, range.min(), range.max());
+        return out;
     }
 
     int IntSlider::_valueToPos(int value) const
