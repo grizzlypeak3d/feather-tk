@@ -208,13 +208,16 @@ namespace ftk
         for (const auto i : labels)
         {
             p.swatches[i.first] = ColorSwatch::create(context);
-            p.labels[i.first] = Label::create(context);
+            auto label = Label::create(context);
+            label->setTextRole(ColorRole::TextDisabled);
+            p.labels[i.first] = label;
             p.labelText[i.first] = i.second;
         }
 
         p.layout = VerticalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
         auto label = Label::create(context, title, p.layout);
+        label->setFontRole(FontRole::Title);
         p.graph->setParent(p.layout);
         p.labelLayout = HorizontalLayout::create(context, p.layout);
         p.labelLayout->setSpacingRole(SizeRole::SpacingSmall);
