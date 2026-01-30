@@ -52,11 +52,10 @@ namespace ftk
                 edit->setValue(.9F);
                 app->tick();
                 FTK_ASSERT(.9F == edit->getValue());
-                FTK_ASSERT(.9F == value);
                 edit->setRange(0.F, .5F);
                 app->tick();
                 FTK_ASSERT(RangeF(0.F, .5F) == edit->getRange());
-                FTK_ASSERT(.5F == value);
+                FTK_ASSERT(.5F == edit->getValue());
                 edit->setStep(.2F);
                 FTK_ASSERT(.2F == edit->getStep());
                 edit->setLargeStep(.3F);

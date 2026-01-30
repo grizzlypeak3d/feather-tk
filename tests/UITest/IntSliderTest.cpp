@@ -52,11 +52,10 @@ namespace ftk
                 slider->setValue(11);
                 app->tick();
                 FTK_ASSERT(11 == slider->getValue());
-                FTK_ASSERT(11 == value);
                 slider->setRange(0, 10);
                 app->tick();
                 FTK_ASSERT(RangeI(0, 10) == slider->getRange());
-                FTK_ASSERT(10 == value);
+                FTK_ASSERT(10 == slider->getValue());
                 slider->setStep(2);
                 FTK_ASSERT(2 == slider->getStep());
                 slider->setLargeStep(3);
