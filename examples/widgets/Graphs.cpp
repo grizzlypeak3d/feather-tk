@@ -5,10 +5,10 @@
 
 #include <ftk/UI/RowLayout.h>
 
-#include <ftk/gl/Mesh.h>
-#include <ftk/gl/OffscreenBuffer.h>
-#include <ftk/gl/Shader.h>
-#include <ftk/gl/Texture.h>
+#include <ftk/GL/Mesh.h>
+#include <ftk/GL/OffscreenBuffer.h>
+#include <ftk/GL/Shader.h>
+#include <ftk/GL/Texture.h>
 
 #include <ftk/Core/Format.h>
 
