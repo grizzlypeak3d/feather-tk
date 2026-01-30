@@ -23,6 +23,7 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(double)> callback;
+        bool blockCallbacks = false;
         std::shared_ptr<Observer<double> > valueObserver;
         std::shared_ptr<Observer<RangeD> > rangeObserver;
     };
@@ -77,10 +78,11 @@ namespace ftk
             p.model->observeValue(),
             [this](double value)
             {
+                FTK_P();
                 _textUpdate();
-                if (_p->callback)
+                if (p.callback && !p.blockCallbacks)
                 {
-                    _p->callback(value);
+                    p.callback(value);
                 }
             });
 
@@ -129,7 +131,10 @@ namespace ftk
 
     void DoubleEdit::setValue(double value)
     {
-        _p->model->setValue(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setValue(value);
+        p.blockCallbacks = false;
     }
 
     void DoubleEdit::setCallback(const std::function<void(double)>& value)
@@ -144,12 +149,15 @@ namespace ftk
 
     void DoubleEdit::setRange(const RangeD& value)
     {
-        _p->model->setRange(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setRange(value);
+        p.blockCallbacks = false;
     }
 
     void DoubleEdit::setRange(double min, double max)
     {
-        _p->model->setRange(RangeD(min, max));
+        setRange(RangeD(min, max));
     }
 
     double DoubleEdit::getStep() const

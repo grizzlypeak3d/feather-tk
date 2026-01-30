@@ -14,6 +14,7 @@ namespace ftk
         std::shared_ptr<DoubleModel> model;
         std::function<void(double)> callback;
         std::function<void(double, bool)> pressedCallback;
+        bool blockCallbacks = false;
         std::shared_ptr<Observer<double> > valueObserver;
         std::shared_ptr<Observer<RangeD> > rangeObserver;
 
@@ -58,15 +59,16 @@ namespace ftk
             p.model->observeValue(),
             [this](double value)
             {
+                FTK_P();
                 setSizeUpdate();
                 setDrawUpdate();
-                if (_p->callback)
+                if (p.callback && !p.blockCallbacks)
                 {
-                    _p->callback(value);
+                    p.callback(value);
                 }
-                if (_p->pressedCallback)
+                if (p.pressedCallback && !p.blockCallbacks)
                 {
-                    _p->pressedCallback(value, _isMousePressed());
+                    p.pressedCallback(value, _isMousePressed());
                 }
             });
 
@@ -112,7 +114,10 @@ namespace ftk
 
     void DoubleSlider::setValue(double value)
     {
-        _p->model->setValue(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setValue(value);
+        p.blockCallbacks = false;
     }
 
     void DoubleSlider::setCallback(const std::function<void(double)>& value)
@@ -132,12 +137,15 @@ namespace ftk
 
     void DoubleSlider::setRange(const RangeD& value)
     {
-        _p->model->setRange(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setRange(value);
+        p.blockCallbacks = false;
     }
 
     void DoubleSlider::setRange(double min, double max)
     {
-        _p->model->setRange(RangeD(min, max));
+        setRange(RangeD(min, max));
     }
 
     double DoubleSlider::getStep() const
