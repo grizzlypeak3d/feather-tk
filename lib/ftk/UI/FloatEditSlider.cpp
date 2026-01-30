@@ -17,6 +17,10 @@ namespace ftk
         std::shared_ptr<FloatSlider> slider;
         std::shared_ptr<FloatResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(double)> callback;
+        std::function<void(double, bool)> pressedCallback;
+        bool blockCallbacks = false;
     };
 
     void FloatEditSlider::_init(
@@ -43,6 +47,26 @@ namespace ftk
         p.slider->setParent(p.layout);
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
+
+        p.slider->setCallback(
+            [this](float value)
+            {
+                FTK_P();
+                if (p.callback && !p.blockCallbacks)
+                {
+                    p.callback(value);
+                }
+            });
+
+        p.slider->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                if (p.pressedCallback && !p.blockCallbacks)
+                {
+                    p.pressedCallback(value, pressed);
+                }
+            });
     }
 
     FloatEditSlider::FloatEditSlider() :
@@ -78,17 +102,20 @@ namespace ftk
 
     void FloatEditSlider::setValue(float value)
     {
-        _p->model->setValue(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setValue(value);
+        p.blockCallbacks = false;
     }
 
     void FloatEditSlider::setCallback(const std::function<void(float)>& value)
     {
-        _p->slider->setCallback(value);
+        _p->callback = value;
     }
 
     void FloatEditSlider::setPressedCallback(const std::function<void(float, bool) > & value)
     {
-        _p->slider->setPressedCallback(value);
+        _p->pressedCallback = value;
     }
 
     const RangeF& FloatEditSlider::getRange() const
@@ -98,12 +125,15 @@ namespace ftk
 
     void FloatEditSlider::setRange(const RangeF& value)
     {
-        _p->model->setRange(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setRange(value);
+        p.blockCallbacks = false;
     }
 
     void FloatEditSlider::setRange(float min, float max)
     {
-        _p->model->setRange(RangeF(min, max));
+        setRange(RangeF(min, max));
     }
 
     float FloatEditSlider::getStep() const

@@ -18,6 +18,10 @@ namespace ftk
         std::shared_ptr<DoubleSlider> slider;
         std::shared_ptr<DoubleResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(double)> callback;
+        std::function<void(double, bool)> pressedCallback;
+        bool blockCallbacks = false;
     };
 
     void DoubleEditSlider::_init(
@@ -44,6 +48,26 @@ namespace ftk
         p.slider->setParent(p.layout);
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
+
+        p.slider->setCallback(
+            [this](double value)
+            {
+                FTK_P();
+                if (p.callback && !p.blockCallbacks)
+                {
+                    p.callback(value);
+                }
+            });
+
+        p.slider->setPressedCallback(
+            [this](double value, bool pressed)
+            {
+                FTK_P();
+                if (p.pressedCallback && !p.blockCallbacks)
+                {
+                    p.pressedCallback(value, pressed);
+                }
+            });
     }
 
     DoubleEditSlider::DoubleEditSlider() :
@@ -79,17 +103,20 @@ namespace ftk
 
     void DoubleEditSlider::setValue(double value)
     {
-        _p->model->setValue(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setValue(value);
+        p.blockCallbacks = false;
     }
 
     void DoubleEditSlider::setCallback(const std::function<void(double)>& value)
     {
-        _p->slider->setCallback(value);
+        _p->callback = value;
     }
 
     void DoubleEditSlider::setPressedCallback(const std::function<void(double, bool)>& value)
     {
-        _p->slider->setPressedCallback(value);
+        _p->pressedCallback = value;
     }
 
     const RangeD& DoubleEditSlider::getRange() const
@@ -99,12 +126,15 @@ namespace ftk
 
     void DoubleEditSlider::setRange(const RangeD& value)
     {
-        _p->model->setRange(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setRange(value);
+        p.blockCallbacks = false;
     }
 
     void DoubleEditSlider::setRange(double min, double max)
     {
-        _p->model->setRange(RangeD(min, max));
+        setRange(RangeD(min, max));
     }
 
     double DoubleEditSlider::getStep() const

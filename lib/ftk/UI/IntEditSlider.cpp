@@ -17,6 +17,10 @@ namespace ftk
         std::shared_ptr<IntSlider> slider;
         std::shared_ptr<IntResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(double)> callback;
+        std::function<void(double, bool)> pressedCallback;
+        bool blockCallbacks = false;
     };
 
     void IntEditSlider::_init(
@@ -43,6 +47,26 @@ namespace ftk
         p.slider->setParent(p.layout);
         p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
+
+        p.slider->setCallback(
+            [this](int value)
+            {
+                FTK_P();
+                if (p.callback && !p.blockCallbacks)
+                {
+                    p.callback(value);
+                }
+            });
+
+        p.slider->setPressedCallback(
+            [this](int value, bool pressed)
+            {
+                FTK_P();
+                if (p.pressedCallback && !p.blockCallbacks)
+                {
+                    p.pressedCallback(value, pressed);
+                }
+            });
     }
 
     IntEditSlider::IntEditSlider() :
@@ -78,17 +102,20 @@ namespace ftk
 
     void IntEditSlider::setValue(int value)
     {
-        _p->model->setValue(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setValue(value);
+        p.blockCallbacks = false;
     }
 
     void IntEditSlider::setCallback(const std::function<void(int)>& value)
     {
-        _p->slider->setCallback(value);
+        _p->callback = value;
     }
 
     void IntEditSlider::setPressedCallback(const std::function<void(int, bool)>& value)
     {
-        _p->slider->setPressedCallback(value);
+        _p->pressedCallback = value;
     }
 
     const RangeI& IntEditSlider::getRange() const
@@ -98,12 +125,15 @@ namespace ftk
 
     void IntEditSlider::setRange(const RangeI& value)
     {
-        _p->model->setRange(value);
+        FTK_P();
+        p.blockCallbacks = true;
+        p.model->setRange(value);
+        p.blockCallbacks = false;
     }
 
     void IntEditSlider::setRange(int min, int max)
     {
-        _p->model->setRange(RangeI(min, max));
+        setRange(RangeI(min, max));
     }
 
     int IntEditSlider::getStep() const
