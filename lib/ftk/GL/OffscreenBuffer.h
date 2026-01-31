@@ -14,7 +14,7 @@ namespace ftk
         //! \name Offscreen Buffers
         ///@{
         
-        //! Default offscreen buffer color type.
+        //! Default offscreen color buffer.
 #if defined(FTK_API_GL_4_1)
         const ImageType offscreenColorDefault = ImageType::RGBA_F32;
 #elif defined(FTK_API_GLES_2)
@@ -34,7 +34,7 @@ namespace ftk
         };
         FTK_ENUM(OffscreenDepth);
 
-        //! Default offscreen buffer color type.
+        //! Default offscreen depth buffer.
 #if defined(FTK_API_GL_4_1)
         const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_16;
 #elif defined(FTK_API_GLES_2)
@@ -69,7 +69,6 @@ namespace ftk
         //! Offscreen buffer options.
         struct FTK_API_TYPE OffscreenBufferOptions
         {
-            ImageType color = ImageType::None;
             ImageFilters colorFilters;
             OffscreenDepth depth = OffscreenDepth::None;
             OffscreenStencil stencil = OffscreenStencil::None;
@@ -87,6 +86,7 @@ namespace ftk
         protected:
             void _init(
                 const Size2I&,
+                ImageType,
                 const OffscreenBufferOptions&);
 
             OffscreenBuffer();
@@ -97,7 +97,8 @@ namespace ftk
             //! Create a new offscreen buffer.
             FTK_API static std::shared_ptr<OffscreenBuffer> create(
                 const Size2I&,
-                const OffscreenBufferOptions&);
+                ImageType = offscreenColorDefault,
+                const OffscreenBufferOptions& = OffscreenBufferOptions());
 
             //! Get the offscreen buffer size.
             FTK_API const Size2I& getSize() const;
@@ -108,7 +109,10 @@ namespace ftk
             //! Get the offscreen buffer height.
             FTK_API int getHeight() const;
 
-            //! Get the options.
+            //! Get the offscreen color buffer type.
+            FTK_API ImageType getType() const;
+
+            //! Get the offscreen buffer options.
             FTK_API const OffscreenBufferOptions& getOptions() const;
 
             //! Get the offscreen buffer ID.
@@ -131,7 +135,8 @@ namespace ftk
         FTK_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
             const Size2I&,
-            const OffscreenBufferOptions&);
+            ImageType = offscreenColorDefault,
+            const OffscreenBufferOptions& = OffscreenBufferOptions());
 
         //! Offscreen buffer binding.
         class FTK_API_TYPE OffscreenBufferBinding

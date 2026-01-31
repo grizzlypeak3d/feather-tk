@@ -313,9 +313,7 @@ namespace objview
                 const Size2I gridSize(
                     gridCell * gridCells + gridLine,
                     gridCell * gridCells + gridLine);
-                gl::OffscreenBufferOptions offscreenBufferOptions;
-                offscreenBufferOptions.color = ImageType::RGBA_F32;
-                _gridBuffer = gl::OffscreenBuffer::create(gridSize, offscreenBufferOptions);
+                _gridBuffer = gl::OffscreenBuffer::create(gridSize);
                 gl::OffscreenBufferBinding binding(_gridBuffer);
 
                 // Save render state.
@@ -424,16 +422,18 @@ namespace objview
             // Create the offscreen buffer.
             const Size2I size = g.size();
             gl::OffscreenBufferOptions offscreenBufferOptions;
-            offscreenBufferOptions.color = ImageType::RGBA_F32;
 #if defined(FTK_API_GL_4_1)
             offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
 #elif defined(FTK_API_GLES_2)
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
 #endif // FTK_API_GL_4_1
-            if (gl::doCreate(_buffer, size, offscreenBufferOptions))
+            if (gl::doCreate(_buffer, size, gl::offscreenColorDefault, offscreenBufferOptions))
             {
-                _buffer = gl::OffscreenBuffer::create(size, offscreenBufferOptions);
+                _buffer = gl::OffscreenBuffer::create(
+                    size,
+                    gl::offscreenColorDefault,
+                    offscreenBufferOptions);
             }
 
             // Render the scene.

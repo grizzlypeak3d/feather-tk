@@ -255,11 +255,9 @@ namespace ftk
         {
             p.window->makeCurrent();
 
-            gl::OffscreenBufferOptions bufferOptions;
-            bufferOptions.color = getFrameBufferType();
-            if (gl::doCreate(p.buffer, frameBufferSize, bufferOptions))
+            if (gl::doCreate(p.buffer, frameBufferSize, getFrameBufferType()))
             {
-                p.buffer = gl::OffscreenBuffer::create(frameBufferSize, bufferOptions);
+                p.buffer = gl::OffscreenBuffer::create(frameBufferSize, getFrameBufferType());
             }
 
             if (p.buffer && (drawUpdate || sizeUpdate))

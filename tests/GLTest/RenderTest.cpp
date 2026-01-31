@@ -41,13 +41,6 @@ namespace ftk
                     Size2I(100, 100),
                     static_cast<int>(WindowOptions::MakeCurrent));
             }
-            
-            std::shared_ptr<OffscreenBuffer> createBuffer(const Size2I& size)
-            {
-                OffscreenBufferOptions options;
-                options.color = offscreenColorDefault;
-                return OffscreenBuffer::create(size, options);
-            }
         }
         
         void RenderTest::run()
@@ -58,7 +51,7 @@ namespace ftk
             {
                 auto window = createWindow(context);
                 Size2I size(1920, 1080);
-                auto buffer = createBuffer(size);
+                auto buffer = OffscreenBuffer::create(size);
                 OffscreenBufferBinding bufferBinding(buffer);
 
                 auto render = Render::create(logSystem, fontSystem);
@@ -90,7 +83,7 @@ namespace ftk
             {
                 auto window = createWindow(context);
                 Size2I size(1920, 1080);
-                auto buffer = createBuffer(size);
+                auto buffer = OffscreenBuffer::create(size);
                 OffscreenBufferBinding bufferBinding(buffer);
 
                 auto render = Render::create(logSystem, fontSystem);
