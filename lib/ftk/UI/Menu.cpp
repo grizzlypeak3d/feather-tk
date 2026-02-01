@@ -54,7 +54,7 @@ namespace ftk
         return _p->actions;
     }
 
-    void Menu::addAction(std::shared_ptr<Action> action)
+    void Menu::addAction(const std::shared_ptr<Action>& action)
     {
         FTK_P();
         if (auto context = getContext())
@@ -453,10 +453,11 @@ namespace ftk
     void Menu::_accept()
     {
         FTK_P();
-        if (auto parentMenu = p.parentMenu.lock())
+        auto parentMenu = p.parentMenu.lock();
+        close();
+        if (parentMenu)
         {
             parentMenu->_accept();
         }
-        close();
     }
 }

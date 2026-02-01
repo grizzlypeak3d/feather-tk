@@ -35,7 +35,7 @@ namespace ftk
         FTK_API const std::vector<std::shared_ptr<Action> >& getActions() const;
 
         //! Add an action to the menu.
-        FTK_API void addAction(std::shared_ptr<Action>);
+        FTK_API void addAction(const std::shared_ptr<Action>&);
 
         //! Set whether a menu item is checked.
         //! 
