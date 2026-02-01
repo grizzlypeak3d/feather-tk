@@ -12,7 +12,7 @@ namespace ftk
     {
         std::vector<std::shared_ptr<Action> > actions;
         std::vector<std::shared_ptr<MenuButton> > buttons;
-        std::map< std::shared_ptr<Action>, std::shared_ptr<MenuButton> > actionToButton;
+        std::map<std::shared_ptr<Action>, std::shared_ptr<MenuButton> > actionToButton;
         std::shared_ptr<MenuButton> current;
         std::weak_ptr<Menu> parentMenu;
         std::vector<std::shared_ptr<Menu> > subMenus;
@@ -54,7 +54,7 @@ namespace ftk
         return _p->actions;
     }
 
-    void Menu::addAction(const std::shared_ptr<Action>& action)
+    void Menu::addAction(std::shared_ptr<Action> action)
     {
         FTK_P();
         if (auto context = getContext())
