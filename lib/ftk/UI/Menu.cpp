@@ -82,16 +82,16 @@ namespace ftk
                 [this, action, buttonWeak]
                 {
                     _setCurrent(buttonWeak.lock());
-                    _accept();
                     action->doCallback();
+                    _accept();
                 });
             button->setCheckedCallback(
                 [this, action, buttonWeak](bool value)
                 {
-                    action->setChecked(value);
                     _setCurrent(buttonWeak.lock());
-                    _accept();
+                    action->setChecked(value);
                     action->doCheckedCallback(value);
+                    _accept();
                 });
             button->setEnabledCallback(
                 [this, buttonWeak](bool value)
