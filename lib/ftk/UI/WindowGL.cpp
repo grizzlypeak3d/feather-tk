@@ -222,6 +222,21 @@ namespace ftk
         IWindow::drawEvent(drawRect, event);
     }
     
+    namespace
+    {
+        gl::TextureType getTextureType(WindowFrameBufferType value)
+        {
+            gl::TextureType out = gl::TextureType::None;
+            switch (value)
+            {
+            case WindowFrameBufferType::U8: out = gl::TextureType::RGBA_U8; break;
+            case WindowFrameBufferType::F32: out = gl::TextureType::RGBA_F32; break;
+            default: break;
+            }
+            return out;
+        }
+    }
+
     void Window::_update(
         const std::shared_ptr<FontSystem>& fontSystem,
         const std::shared_ptr<IconSystem>& iconSystem,
@@ -255,9 +270,10 @@ namespace ftk
         {
             p.window->makeCurrent();
 
-            if (gl::doCreate(p.buffer, frameBufferSize, getFrameBufferType()))
+            const gl::TextureType textureType = getTextureType(getFrameBufferType());
+            if (gl::doCreate(p.buffer, frameBufferSize, textureType))
             {
-                p.buffer = gl::OffscreenBuffer::create(frameBufferSize, getFrameBufferType());
+                p.buffer = gl::OffscreenBuffer::create(frameBufferSize, textureType);
             }
 
             if (p.buffer && (drawUpdate || sizeUpdate))

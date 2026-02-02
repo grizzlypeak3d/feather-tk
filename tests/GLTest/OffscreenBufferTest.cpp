@@ -65,13 +65,13 @@ namespace ftk
                 struct Test
                 {
                     Size2I size;
-                    ImageType type = ImageType::None;
+                    TextureType type = TextureType::None;
                     OffscreenBufferOptions options;
                 };
                 std::vector<Test> testData;
-                for (auto imageType : getImageTypeEnums())
+                for (auto type : getTextureTypeEnums())
                 {
-                    testData.push_back({ Size2I(1920, 1080), imageType, OffscreenBufferOptions()});
+                    testData.push_back({ Size2I(1920, 1080), type, OffscreenBufferOptions()});
                 }
                 for (auto depth : getOffscreenDepthEnums())
                 {
@@ -125,7 +125,7 @@ namespace ftk
                         FTK_ASSERT(test.type == offscreen->getType());
                         FTK_ASSERT(test.options == offscreen->getOptions());
                         FTK_ASSERT(offscreen->getID());
-                        if (test.type != ImageType::None)
+                        if (test.type != TextureType::None)
                         {
                             FTK_ASSERT(offscreen->getColorID());
                             offscreen->bind();

@@ -17,33 +17,39 @@ namespace ftk
     FTK_ENUM_IMPL(
         ImageType,
         "None",
+
         "L U8",
         "L U16",
         "L U32",
         "L F16",
         "L F32",
+
         "LA U8",
         "LA U16",
         "LA U32",
         "LA F16",
         "LA F32",
+
         "RGB U8",
         "RGB U10",
         "RGB U16",
         "RGB U32",
         "RGB F16",
         "RGB F32",
+
         "RGBA U8",
         "RGBA U16",
         "RGBA U32",
         "RGBA F16",
         "RGBA F32",
+
         "YUV 420P U8",
         "YUV 422P U8",
         "YUV 444P U8",
         "YUV 420P U16",
         "YUV 422P U16",
         "YUV 444P U16",
+
         "ARGB 4444 Premult");
 
     int getChannelCount(ImageType value)

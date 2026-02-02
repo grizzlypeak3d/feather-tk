@@ -19,9 +19,108 @@ namespace ftk
 {
     namespace gl
     {
-        unsigned int getTextureFormat(ImageType value)
+        FTK_ENUM_IMPL(
+            TextureType,
+            "None",
+
+            "L_U8",
+            "L_U16",
+            "L_U32",
+            "L_F16",
+            "L_F32",
+
+            "LA_U8",
+            "LA_U16",
+            "LA_U32",
+            "LA_F16",
+            "LA_F32",
+
+            "RGB_U8",
+            "RGB_U10",
+            "RGB_U16",
+            "RGB_U32",
+            "RGB_F16",
+            "RGB_F32",
+
+            "RGBA_U8",
+            "RGBA_U16",
+            "RGBA_U32",
+            "RGBA_F16",
+            "RGBA_F32");
+
+        TextureType getTextureType(ImageType value)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
+            TextureType out = TextureType::None;
+            switch (value)
+            {
+            case ImageType::L_U8:     out = TextureType::L_U8;     break;
+            case ImageType::L_U16:    out = TextureType::L_U16;    break;
+            case ImageType::L_U32:    out = TextureType::L_U32;    break;
+            case ImageType::L_F16:    out = TextureType::L_F16;    break;
+            case ImageType::L_F32:    out = TextureType::L_F32;    break;
+
+            case ImageType::LA_U8:    out = TextureType::LA_U8;    break;
+            case ImageType::LA_U16:   out = TextureType::LA_U16;   break;
+            case ImageType::LA_U32:   out = TextureType::LA_U32;   break;
+            case ImageType::LA_F16:   out = TextureType::LA_F16;   break;
+            case ImageType::LA_F32:   out = TextureType::LA_F32;   break;
+
+            case ImageType::RGB_U8:   out = TextureType::RGB_U8;   break;
+            case ImageType::RGB_U10:  out = TextureType::RGB_U10;  break;
+            case ImageType::RGB_U16:  out = TextureType::RGB_U16;  break;
+            case ImageType::RGB_U32:  out = TextureType::RGB_U32;  break;
+            case ImageType::RGB_F16:  out = TextureType::RGB_F16;  break;
+            case ImageType::RGB_F32:  out = TextureType::RGB_F32;  break;
+
+            case ImageType::RGBA_U8:  out = TextureType::RGBA_U8;  break;
+            case ImageType::RGBA_U16: out = TextureType::RGBA_U16; break;
+            case ImageType::RGBA_U32: out = TextureType::RGBA_U32; break;
+            case ImageType::RGBA_F16: out = TextureType::RGBA_F16; break;
+            case ImageType::RGBA_F32: out = TextureType::RGBA_F32; break;
+
+            default: break;
+            }
+            return out;
+        }
+        
+        size_t getByteCount(const Size2I& size, TextureType type)
+        {
+            size_t out = 0;
+            switch (type)
+            {
+            case TextureType::L_U8:     out = size.w * size.h;         break;
+            case TextureType::L_U16:    out = size.w * size.h * 2;     break;
+            case TextureType::L_U32:    out = size.w * size.h * 4;     break;
+            case TextureType::L_F16:    out = size.w * size.h * 2;     break;
+            case TextureType::L_F32:    out = size.w * size.h * 4;     break;
+
+            case TextureType::LA_U8:    out = size.w * size.h * 2;     break;
+            case TextureType::LA_U16:   out = size.w * size.h * 2 * 2; break;
+            case TextureType::LA_U32:   out = size.w * size.h * 2 * 4; break;
+            case TextureType::LA_F16:   out = size.w * size.h * 2 * 2; break;
+            case TextureType::LA_F32:   out = size.w * size.h * 2 * 4; break;
+
+            case TextureType::RGB_U8:   out = size.w * size.h * 3;     break;
+            case TextureType::RGB_U10:  out = size.w * size.h * 4;     break;
+            case TextureType::RGB_U16:  out = size.w * size.h * 3 * 2; break;
+            case TextureType::RGB_U32:  out = size.w * size.h * 3 * 4; break;
+            case TextureType::RGB_F16:  out = size.w * size.h * 3 * 2; break;
+            case TextureType::RGB_F32:  out = size.w * size.h * 3 * 4; break;
+
+            case TextureType::RGBA_U8:  out = size.w * size.h * 4;     break;
+            case TextureType::RGBA_U16: out = size.w * size.h * 4 * 2; break;
+            case TextureType::RGBA_U32: out = size.w * size.h * 4 * 4; break;
+            case TextureType::RGBA_F16: out = size.w * size.h * 4 * 2; break;
+            case TextureType::RGBA_F32: out = size.w * size.h * 4 * 4; break;
+
+            default: break;
+            }
+            return out;
+        }
+
+        unsigned int getTextureFormat(TextureType value)
+        {
+            const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =
             {
                 GL_NONE,
 
@@ -49,16 +148,7 @@ namespace ftk
                 GL_RGBA,
                 GL_RGBA,
                 GL_RGBA,
-                GL_RGBA,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_BGRA
+                GL_RGBA
 #elif defined(FTK_API_GLES_2)
                 GL_LUMINANCE,
                 GL_NONE,
@@ -83,24 +173,15 @@ namespace ftk
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
                 GL_NONE
 #endif // FTK_API_GL_4_1
             };
             return data[static_cast<size_t>(value)];
         }
 
-        unsigned int getTextureInternalFormat(ImageType type)
+        unsigned int getTextureInternalFormat(TextureType type)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
+            const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =
             {
                 GL_NONE,
 
@@ -128,16 +209,7 @@ namespace ftk
                 GL_RGBA16,
                 GL_RGBA32I,
                 GL_RGBA16F,
-                GL_RGBA32F,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_RGBA
+                GL_RGBA32F
 #elif defined(FTK_API_GLES_2)
                 GL_LUMINANCE,
                 GL_NONE,
@@ -162,24 +234,15 @@ namespace ftk
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
                 GL_NONE
 #endif // FTK_API_GL_4_1
             };
             return data[static_cast<size_t>(type)];
         }
 
-        unsigned int getTextureType(ImageType value)
+        unsigned int getTextureType(TextureType value)
         {
-            const std::array<GLenum, static_cast<size_t>(ImageType::Count)> data =
+            const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =
             {
                 GL_NONE,
 
@@ -207,16 +270,7 @@ namespace ftk
                 GL_UNSIGNED_SHORT,
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
-                GL_FLOAT,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_UNSIGNED_SHORT_4_4_4_4_REV
+                GL_FLOAT
 #elif defined(FTK_API_GLES_2)
                 GL_UNSIGNED_BYTE,
                 GL_NONE,
@@ -241,15 +295,6 @@ namespace ftk
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
                 GL_NONE
 #endif // FTK_API_GL_4_1
             };
@@ -287,20 +332,25 @@ namespace ftk
         struct Texture::Private
         {
             ImageInfo info;
+            TextureType type = TextureType::None;
             GLuint pbo = 0;
             GLuint id = 0;
         };
 
-        Texture::Texture(const ImageInfo& info, const TextureOptions& options) :
+        Texture::Texture(
+            const ImageInfo& info,
+            const TextureOptions& options) :
             _p(new Private)
         {
             FTK_P();
 
-            ++objectCount;
-            totalByteCount += info.getByteCount();
-
             p.info = info;
-            if (!p.info.isValid())
+            p.type = getTextureType(info.type);
+
+            ++objectCount;
+            totalByteCount += getByteCount(p.info.size, p.type);
+
+            if (!p.info.size.isValid() || TextureType::None == p.type)
             {
                 throw std::runtime_error("Invalid texture");
             }
@@ -328,12 +378,12 @@ namespace ftk
             glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
-                getTextureInternalFormat(p.info.type),
+                getTextureInternalFormat(p.type),
                 p.info.size.w,
                 p.info.size.h,
                 0,
-                getTextureFormat(p.info.type),
-                getTextureType(p.info.type),
+                getTextureFormat(p.type),
+                getTextureType(p.type),
                 NULL);
         }
 
@@ -352,10 +402,12 @@ namespace ftk
             }
 
             --objectCount;
-            totalByteCount -= p.info.getByteCount();
+            totalByteCount -= getByteCount(p.info.size, p.type);
         }
 
-        std::shared_ptr<Texture> Texture::create(const ImageInfo& info, const TextureOptions& options)
+        std::shared_ptr<Texture> Texture::create(
+            const ImageInfo& info,
+            const TextureOptions& options)
         {
             return std::shared_ptr<Texture>(new Texture(info, options));
         }
@@ -380,9 +432,9 @@ namespace ftk
             return _p->info.size.h;
         }
 
-        ImageType Texture::getType() const
+        TextureType Texture::getType() const
         {
-            return _p->info.type;
+            return _p->type;
         }
 
         unsigned int Texture::getID() const
@@ -390,9 +442,12 @@ namespace ftk
             return _p->id;
         }
 
-        void Texture::copy(const std::shared_ptr<Image>& data)
+        bool Texture::copy(const std::shared_ptr<Image>& data)
         {
             FTK_P();
+            const auto& info = data->getInfo();
+            if (!_isCompatible(info))
+                return false;
 #if defined(FTK_API_GL_4_1)
             if (p.pbo)
             {
@@ -404,10 +459,9 @@ namespace ftk
                         data->getData(),
                         data->getByteCount());
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-                    const auto& info = data->getInfo();
                     glBindTexture(GL_TEXTURE_2D, p.id);
-                    glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, p.info.layout.alignment);
+                    glPixelStorei(GL_UNPACK_SWAP_BYTES, p.info.layout.endian != getEndian());
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -415,8 +469,8 @@ namespace ftk
                         0,
                         info.size.w,
                         info.size.h,
-                        getTextureFormat(info.type),
-                        getTextureType(info.type),
+                        getTextureFormat(p.type),
+                        getTextureType(p.type),
                         NULL);
                 }
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -424,11 +478,10 @@ namespace ftk
             else
 #endif // FTK_API_GL_4_1
             {
-                const auto& info = data->getInfo();
                 glBindTexture(GL_TEXTURE_2D, p.id);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
+                glPixelStorei(GL_UNPACK_ALIGNMENT, p.info.layout.alignment);
 #if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                glPixelStorei(GL_UNPACK_SWAP_BYTES, p.info.layout.endian != getEndian());
 #endif // FTK_API_GL_4_1
                 glTexSubImage2D(
                     GL_TEXTURE_2D,
@@ -437,15 +490,19 @@ namespace ftk
                     0,
                     info.size.w,
                     info.size.h,
-                    getTextureFormat(info.type),
-                    getTextureType(info.type),
+                    getTextureFormat(p.type),
+                    getTextureType(p.type),
                     data->getData());
             }
+            return true;
         }
 
-        void Texture::copy(const std::shared_ptr<Image>& data, int x, int y)
+        bool Texture::copy(const std::shared_ptr<Image>& data, int x, int y)
         {
             FTK_P();
+            const auto& info = data->getInfo();
+            if (!_isCompatible(info))
+                return false;
 #if defined(FTK_API_GL_4_1)
             if (p.pbo)
             {
@@ -457,10 +514,9 @@ namespace ftk
                         data->getData(),
                         data->getByteCount());
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-                    const auto& info = data->getInfo();
                     glBindTexture(GL_TEXTURE_2D, p.id);
-                    glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, p.info.layout.alignment);
+                    glPixelStorei(GL_UNPACK_SWAP_BYTES, p.info.layout.endian != getEndian());
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -468,8 +524,8 @@ namespace ftk
                         y,
                         info.size.w,
                         info.size.h,
-                        getTextureFormat(info.type),
-                        getTextureType(info.type),
+                        getTextureFormat(p.type),
+                        getTextureType(p.type),
                         NULL);
                 }
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -477,11 +533,10 @@ namespace ftk
             else
 #endif // FTK_API_GL_4_1
             {
-                const auto& info = data->getInfo();
                 glBindTexture(GL_TEXTURE_2D, p.id);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
+                glPixelStorei(GL_UNPACK_ALIGNMENT, p.info.layout.alignment);
 #if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                glPixelStorei(GL_UNPACK_SWAP_BYTES, p.info.layout.endian != getEndian());
 #endif // FTK_API_GL_4_1
                 glTexSubImage2D(
                     GL_TEXTURE_2D,
@@ -490,15 +545,18 @@ namespace ftk
                     y,
                     info.size.w,
                     info.size.h,
-                    getTextureFormat(info.type),
-                    getTextureType(info.type),
+                    getTextureFormat(p.type),
+                    getTextureType(p.type),
                     data->getData());
             }
+            return false;
         }
 
-        void Texture::copy(const uint8_t* data, const ImageInfo& info)
+        bool Texture::copy(const uint8_t* data, const ImageInfo& info)
         {
             FTK_P();
+            if (!_isCompatible(info))
+                return false;
 #if defined(FTK_API_GL_4_1)
             if (p.pbo)
             {
@@ -511,8 +569,8 @@ namespace ftk
                         info.getByteCount());
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
-                    glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, p.info.layout.alignment);
+                    glPixelStorei(GL_UNPACK_SWAP_BYTES, p.info.layout.endian != getEndian());
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -520,8 +578,8 @@ namespace ftk
                         0,
                         info.size.w,
                         info.size.h,
-                        getTextureFormat(info.type),
-                        getTextureType(info.type),
+                        getTextureFormat(p.type),
+                        getTextureType(p.type),
                         NULL);
                 }
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -530,9 +588,9 @@ namespace ftk
 #endif // FTK_API_GL_4_1
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
+                glPixelStorei(GL_UNPACK_ALIGNMENT, p.info.layout.alignment);
 #if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                glPixelStorei(GL_UNPACK_SWAP_BYTES, p.info.layout.endian != getEndian());
 #endif // FTK_API_GL_4_1
                 glTexSubImage2D(
                     GL_TEXTURE_2D,
@@ -541,10 +599,11 @@ namespace ftk
                     0,
                     info.size.w,
                     info.size.h,
-                    getTextureFormat(info.type),
-                    getTextureType(info.type),
+                    getTextureFormat(p.type),
+                    getTextureType(p.type),
                     data);
             }
+            return true;
         }
 
         void Texture::bind()
@@ -560,6 +619,16 @@ namespace ftk
         size_t Texture::getTotalByteCount()
         {
             return totalByteCount;
+        }
+
+        bool Texture::_isCompatible(const ImageInfo& other) const
+        {
+            FTK_P();
+            return
+                other.size.w <= p.info.size.w &&
+                other.size.h <= p.info.size.h &&
+                (p.pbo ? other.type == p.info.type : true) &&
+                other.layout == p.info.layout;
         }
     }
 }

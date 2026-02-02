@@ -5,9 +5,29 @@
 
 #include <ftk/UI/IWidget.h>
 
+#include <ftk/Core/Util.h>
+
 namespace ftk
 {
     class App;
+
+    //! Window frame buffer types.
+    enum class FTK_API_TYPE WindowFrameBufferType
+    {
+        U8,
+        F32,
+
+        Count,
+        First = U8
+    };
+    FTK_ENUM(WindowFrameBufferType);
+
+    //! Default window frame buffer.
+#if defined(FTK_API_GL_4_1)
+    const WindowFrameBufferType windowFrameBufferTypeDefault = WindowFrameBufferType::F32;
+#elif defined(FTK_API_GLES_2)
+    const WindowFrameBufferType windowFrameBufferTypeDefault = WindowFrameBufferType::U8;
+#endif // FTK_API_GL_4_1
 
     //! Base class for windows.
     class FTK_API_TYPE IWindow : public IWidget
@@ -74,9 +94,9 @@ namespace ftk
 
         FTK_API const Size2I& getFrameBufferSize() const;
 
-        FTK_API ImageType getFrameBufferType() const;
-        FTK_API std::shared_ptr<IObservable<ImageType> > observeFrameBufferType() const;
-        FTK_API void setFrameBufferType(ImageType);
+        FTK_API WindowFrameBufferType getFrameBufferType() const;
+        FTK_API std::shared_ptr<IObservable<WindowFrameBufferType> > observeFrameBufferType() const;
+        FTK_API void setFrameBufferType(WindowFrameBufferType);
 
         ///@}
 

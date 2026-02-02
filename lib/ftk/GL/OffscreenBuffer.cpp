@@ -138,7 +138,7 @@ namespace ftk
         struct OffscreenBuffer::Private
         {
             Size2I size;
-            ImageType type = ImageType::None;
+            TextureType type = TextureType::None;
             OffscreenBufferOptions options;
             GLuint id = 0;
             GLuint colorID = 0;
@@ -152,7 +152,7 @@ namespace ftk
 
         void OffscreenBuffer::_init(
             const Size2I& size,
-            ImageType type,
+            TextureType type,
             const OffscreenBufferOptions& options)
         {
             FTK_P();
@@ -190,7 +190,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
             // Create the color texture.
-            if (p.type != ImageType::None)
+            if (p.type != TextureType::None)
             {
                 glGenTextures(1, &p.colorID);
                 if (!p.colorID)
@@ -332,7 +332,7 @@ namespace ftk
 
         std::shared_ptr<OffscreenBuffer> OffscreenBuffer::create(
             const Size2I& size,
-            ImageType type,
+            TextureType type,
             const OffscreenBufferOptions& options)
         {
             auto out = std::shared_ptr<OffscreenBuffer>(new OffscreenBuffer);
@@ -355,7 +355,7 @@ namespace ftk
             return _p->size.h;
         }
 
-        ImageType OffscreenBuffer::getType() const
+        TextureType OffscreenBuffer::getType() const
         {
             return _p->type;
         }
@@ -388,7 +388,7 @@ namespace ftk
         bool doCreate(
             const std::shared_ptr<OffscreenBuffer>& offscreenBuffer,
             const Size2I& size,
-            ImageType type,
+            TextureType type,
             const OffscreenBufferOptions& options)
         {
             bool out = false;

@@ -96,16 +96,12 @@ namespace ftk
                         FTK_ASSERT(data.info.size == texture->getSize());
                         FTK_ASSERT(data.info.size.w == texture->getWidth());
                         FTK_ASSERT(data.info.size.h == texture->getHeight());
-                        FTK_ASSERT(data.info.type == texture->getType());
-                        if (data.info.type != ImageType::None)
-                        {
-                            FTK_ASSERT(texture->getID());
-                            auto image = Image::create(data.info);
-                            texture->copy(image);
-                            texture->copy(image, 0, 0);
-                            texture->copy(image->getData(), image->getInfo());
-                            texture->bind();
-                        }
+                        FTK_ASSERT(texture->getID());
+                        auto image = Image::create(data.info);
+                        texture->copy(image);
+                        texture->copy(image, 0, 0);
+                        texture->copy(image->getData(), image->getInfo());
+                        texture->bind();
                     }
                     catch (const std::exception& e)
                     {

@@ -16,9 +16,9 @@ namespace ftk
         
         //! Default offscreen color buffer.
 #if defined(FTK_API_GL_4_1)
-        const ImageType offscreenColorDefault = ImageType::RGBA_F32;
+        const TextureType offscreenColorDefault = TextureType::RGBA_F32;
 #elif defined(FTK_API_GLES_2)
-        const ImageType offscreenColorDefault = ImageType::RGBA_U8;
+        const TextureType offscreenColorDefault = TextureType::RGBA_U8;
 #endif // FTK_API_GL_4_1
 
         //! Offscreen buffer depth size.
@@ -86,7 +86,7 @@ namespace ftk
         protected:
             void _init(
                 const Size2I&,
-                ImageType,
+                TextureType,
                 const OffscreenBufferOptions&);
 
             OffscreenBuffer();
@@ -97,7 +97,7 @@ namespace ftk
             //! Create a new offscreen buffer.
             FTK_API static std::shared_ptr<OffscreenBuffer> create(
                 const Size2I&,
-                ImageType = offscreenColorDefault,
+                TextureType = offscreenColorDefault,
                 const OffscreenBufferOptions& = OffscreenBufferOptions());
 
             //! Get the offscreen buffer size.
@@ -110,7 +110,7 @@ namespace ftk
             FTK_API int getHeight() const;
 
             //! Get the offscreen color buffer type.
-            FTK_API ImageType getType() const;
+            FTK_API TextureType getType() const;
 
             //! Get the offscreen buffer options.
             FTK_API const OffscreenBufferOptions& getOptions() const;
@@ -135,7 +135,7 @@ namespace ftk
         FTK_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
             const Size2I&,
-            ImageType = offscreenColorDefault,
+            TextureType = offscreenColorDefault,
             const OffscreenBufferOptions& = OffscreenBufferOptions());
 
         //! Offscreen buffer binding.

@@ -13,6 +13,11 @@
 
 namespace ftk
 {
+    FTK_ENUM_IMPL(
+        WindowFrameBufferType,
+        "U8",
+        "F32");
+
     struct IWindow::Private
     {
         std::weak_ptr<App> app;
@@ -22,7 +27,7 @@ namespace ftk
         Size2I frameBufferSize;
         std::shared_ptr<Observable<bool> > fullScreen;
         std::shared_ptr<Observable<bool> > floatOnTop;
-        std::shared_ptr<Observable<ImageType> > bufferType;
+        std::shared_ptr<Observable<WindowFrameBufferType> > frameBufferType;
         std::shared_ptr<Observable<float> > displayScale;
         std::function<void(void)> closeCallback;
 
@@ -65,7 +70,7 @@ namespace ftk
         p.title = title;
         p.fullScreen = Observable<bool>::create(false);
         p.floatOnTop = Observable<bool>::create(false);
-        p.bufferType = Observable<ImageType>::create(gl::offscreenColorDefault);
+        p.frameBufferType = Observable<WindowFrameBufferType>::create(windowFrameBufferTypeDefault);
         p.displayScale = Observable<float>::create(1.F);
 
         setBackgroundRole(ColorRole::Window);
@@ -153,19 +158,19 @@ namespace ftk
         return _p->frameBufferSize;
     }
 
-    ImageType IWindow::getFrameBufferType() const
+    WindowFrameBufferType IWindow::getFrameBufferType() const
     {
-        return _p->bufferType->get();
+        return _p->frameBufferType->get();
     }
 
-    std::shared_ptr<IObservable<ImageType> > IWindow::observeFrameBufferType() const
+    std::shared_ptr<IObservable<WindowFrameBufferType> > IWindow::observeFrameBufferType() const
     {
-        return _p->bufferType;
+        return _p->frameBufferType;
     }
 
-    void IWindow::setFrameBufferType(ImageType value)
+    void IWindow::setFrameBufferType(WindowFrameBufferType value)
     {
-        if (_p->bufferType->setIfChanged(value))
+        if (_p->frameBufferType->setIfChanged(value))
         {
             setDrawUpdate();
         }
