@@ -137,8 +137,7 @@ namespace ftk
 
         struct OffscreenBuffer::Private
         {
-            Size2I size;
-            TextureType type = TextureType::None;
+            TextureInfo info;
             OffscreenBufferOptions options;
             GLuint id = 0;
             GLuint colorID = 0;
@@ -148,20 +147,25 @@ namespace ftk
         namespace
         {
             std::atomic<size_t> objectCount = 0;
+            std::atomic<size_t> totalByteCount = 0;
         }
 
         void OffscreenBuffer::_init(
-            const Size2I& size,
-            TextureType type,
+            const TextureInfo& info,
             const OffscreenBufferOptions& options)
         {
             FTK_P();
 
             ++objectCount;
+            totalByteCount += info.getByteCount();
 
-            p.size = size;
-            p.type = type;
+            p.info = info;
             p.options = options;
+
+            if (!p.info.isValid())
+            {
+                throw std::runtime_error("Invalid offscreen buffer");
+            }
 
             GLenum target = GL_TEXTURE_2D;
 
@@ -190,7 +194,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
             // Create the color texture.
-            if (p.type != TextureType::None)
+            if (p.info.type != TextureType::None)
             {
                 glGenTextures(1, &p.colorID);
                 if (!p.colorID)
@@ -208,9 +212,9 @@ namespace ftk
                     glTexImage2DMultisample(
                         target,
                         static_cast<GLsizei>(samples),
-                        getTextureInternalFormat(p.type),
-                        p.size.w,
-                        p.size.h,
+                        getTextureInternalFormat(p.info.type),
+                        p.info.size.w,
+                        p.info.size.h,
                         false);
                     break;
 #endif // FTK_API_GL_4_1
@@ -222,12 +226,12 @@ namespace ftk
                     glTexImage2D(
                         target,
                         0,
-                        getTextureInternalFormat(p.type),
-                        p.size.w,
-                        p.size.h,
+                        getTextureInternalFormat(p.info.type),
+                        p.info.size.w,
+                        p.info.size.h,
                         0,
-                        getTextureFormat(p.type),
-                        getTextureType(p.type),
+                        getTextureFormat(p.info.type),
+                        getTextureType(p.info.type),
                         0);
                     break;
                 }
@@ -248,8 +252,8 @@ namespace ftk
                     GL_RENDERBUFFER,
                     static_cast<GLsizei>(samples),
                     getBufferInternalFormat(p.options.depth, p.options.stencil),
-                    p.size.w,
-                    p.size.h);
+                    p.info.size.w,
+                    p.info.size.h);
 #elif defined(FTK_API_GLES_2)
                 glRenderbufferStorage(
                     GL_RENDERBUFFER,
@@ -328,6 +332,16 @@ namespace ftk
             }
 
             --objectCount;
+            totalByteCount -= p.info.getByteCount();
+        }
+
+        std::shared_ptr<OffscreenBuffer> OffscreenBuffer::create(
+            const TextureInfo& info,
+            const OffscreenBufferOptions& options)
+        {
+            auto out = std::shared_ptr<OffscreenBuffer>(new OffscreenBuffer);
+            out->_init(info, options);
+            return out;
         }
 
         std::shared_ptr<OffscreenBuffer> OffscreenBuffer::create(
@@ -336,28 +350,33 @@ namespace ftk
             const OffscreenBufferOptions& options)
         {
             auto out = std::shared_ptr<OffscreenBuffer>(new OffscreenBuffer);
-            out->_init(size, type, options);
+            out->_init(TextureInfo(size, type), options);
             return out;
+        }
+
+        const TextureInfo& OffscreenBuffer::getInfo() const
+        {
+            return _p->info;
         }
 
         const Size2I& OffscreenBuffer::getSize() const
         {
-            return _p->size;
+            return _p->info.size;
         }
 
         int OffscreenBuffer::getWidth() const
         {
-            return _p->size.w;
+            return _p->info.size.w;
         }
 
         int OffscreenBuffer::getHeight() const
         {
-            return _p->size.h;
+            return _p->info.size.h;
         }
 
         TextureType OffscreenBuffer::getType() const
         {
-            return _p->type;
+            return _p->info.type;
         }
 
         const OffscreenBufferOptions& OffscreenBuffer::getOptions() const
@@ -387,16 +406,23 @@ namespace ftk
 
         bool doCreate(
             const std::shared_ptr<OffscreenBuffer>& offscreenBuffer,
+            const TextureInfo& info,
+            const OffscreenBufferOptions& options)
+        {
+            bool out = false;
+            out |= info.size.isValid() && !offscreenBuffer;
+            out |= info.size.isValid() && offscreenBuffer && offscreenBuffer->getInfo() != info;
+            out |= info.size.isValid() && offscreenBuffer && offscreenBuffer->getOptions() != options;
+            return out;
+        }
+
+        bool doCreate(
+            const std::shared_ptr<OffscreenBuffer>& offscreenBuffer,
             const Size2I& size,
             TextureType type,
             const OffscreenBufferOptions& options)
         {
-            bool out = false;
-            out |= size.isValid() && !offscreenBuffer;
-            out |= size.isValid() && offscreenBuffer && offscreenBuffer->getSize() != size;
-            out |= size.isValid() && offscreenBuffer && offscreenBuffer->getType() != type;
-            out |= size.isValid() && offscreenBuffer && offscreenBuffer->getOptions() != options;
-            return out;
+            return doCreate(offscreenBuffer, TextureInfo(size, type), options);
         }
 
         struct OffscreenBufferBinding::Private

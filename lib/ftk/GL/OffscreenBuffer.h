@@ -85,8 +85,7 @@ namespace ftk
 
         protected:
             void _init(
-                const Size2I&,
-                TextureType,
+                const TextureInfo&,
                 const OffscreenBufferOptions&);
 
             OffscreenBuffer();
@@ -96,9 +95,17 @@ namespace ftk
 
             //! Create a new offscreen buffer.
             FTK_API static std::shared_ptr<OffscreenBuffer> create(
+                const TextureInfo&,
+                const OffscreenBufferOptions& = OffscreenBufferOptions());
+
+            //! Create a new offscreen buffer.
+            FTK_API static std::shared_ptr<OffscreenBuffer> create(
                 const Size2I&,
                 TextureType = offscreenColorDefault,
                 const OffscreenBufferOptions& = OffscreenBufferOptions());
+
+            //! Get the offscreen buffer information.
+            FTK_API const TextureInfo& getInfo() const;
 
             //! Get the offscreen buffer size.
             FTK_API const Size2I& getSize() const;
@@ -127,6 +134,9 @@ namespace ftk
             //! Get the number of objects currenty instantiated.
             FTK_API static size_t getObjectCount();
 
+            //! Get the total number of bytes currently used.
+            FTK_API static size_t getTotalByteCount();
+
         private:
             FTK_PRIVATE();
         };
@@ -134,9 +144,15 @@ namespace ftk
         //! Check whether the offscreen buffer should be created or re-created.
         FTK_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
+            const TextureInfo&,
+            const OffscreenBufferOptions & = OffscreenBufferOptions());
+
+        //! Check whether the offscreen buffer should be created or re-created.
+        FTK_API bool doCreate(
+            const std::shared_ptr<OffscreenBuffer>&,
             const Size2I&,
             TextureType = offscreenColorDefault,
-            const OffscreenBufferOptions& = OffscreenBufferOptions());
+            const OffscreenBufferOptions & = OffscreenBufferOptions());
 
         //! Offscreen buffer binding.
         class FTK_API_TYPE OffscreenBufferBinding
