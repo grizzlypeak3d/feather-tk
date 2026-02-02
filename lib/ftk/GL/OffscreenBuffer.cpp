@@ -404,6 +404,11 @@ namespace ftk
             return objectCount;
         }
 
+        size_t OffscreenBuffer::getTotalByteCount()
+        {
+            return totalByteCount;
+        }
+
         bool doCreate(
             const std::shared_ptr<OffscreenBuffer>& offscreenBuffer,
             const TextureInfo& info,

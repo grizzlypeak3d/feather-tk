@@ -1421,6 +1421,7 @@ namespace ftk
         lines.push_back(Format("    * Textures: {0}").arg(gl::Texture::getObjectCount()));
         lines.push_back(Format("    * Texture memory: {0}MB").arg(gl::Texture::getTotalByteCount() / megabyte));
         lines.push_back(Format("    * Offscreen buffers: {0}").arg(gl::OffscreenBuffer::getObjectCount()));
+        lines.push_back(Format("    * Offscreen buffer memory: {0}MB").arg(gl::OffscreenBuffer::getTotalByteCount()));
         lines.push_back(Format("    * Shaders: {0}").arg(gl::Shader::getObjectCount()));
         lines.push_back(Format("    * Images: {0}").arg(Image::getObjectCount()));
         lines.push_back(Format("    * Image memory: {0}MB").arg(Image::getTotalByteCount() / megabyte));
