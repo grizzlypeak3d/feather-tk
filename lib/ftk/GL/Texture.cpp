@@ -8,6 +8,7 @@
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Error.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
 #include <array>
@@ -276,6 +277,11 @@ namespace ftk
             return size.isValid() && type != TextureType::None;
         }
 
+        float TextureInfo::getAspect() const
+        {
+            return size.h > 0 ? (size.w / static_cast<float>(size.h)) : 0;
+        }
+
         size_t TextureInfo::getByteCount() const
         {
             size_t out = 0;
@@ -321,6 +327,15 @@ namespace ftk
         bool TextureInfo::operator != (const TextureInfo& other) const
         {
             return !(*this == other);
+        }
+
+        std::string getLabel(const TextureInfo& info)
+        {
+            return ftk::Format("{0}x{1}:{2} {3}").
+                arg(info.size.w).
+                arg(info.size.h).
+                arg(info.getAspect(), 2).
+                arg(info.type);
         }
 
         bool TextureOptions::operator == (const TextureOptions& other) const

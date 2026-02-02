@@ -72,11 +72,15 @@ namespace ftk
             TextureType type = TextureType::None;
 
             FTK_API bool isValid() const;
+            FTK_API float getAspect() const;
             FTK_API size_t getByteCount() const;
 
             FTK_API bool operator == (const TextureInfo&) const;
             FTK_API bool operator != (const TextureInfo&) const;
         };
+
+        //! Get a texture information label.
+        std::string getLabel(const TextureInfo&);
 
         //! Texture options.
         struct FTK_API_TYPE TextureOptions
@@ -104,7 +108,7 @@ namespace ftk
             //! Create a new texture.
             FTK_API static std::shared_ptr<Texture> create(
                 const ImageInfo&,
-                const TextureOptions & = TextureOptions());
+                const TextureOptions& = TextureOptions());
 
             //! Get the texture information.
             FTK_API const TextureInfo& getInfo() const;
