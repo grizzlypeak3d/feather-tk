@@ -92,7 +92,7 @@ namespace ftk
                             arg(data.options.filters.magnify).
                             arg(data.options.pbo));
                         auto texture = Texture::create(data.info, data.options);
-                        FTK_ASSERT(data.info == texture->getInfo());
+                        FTK_ASSERT(data.info == texture->getImageInfo());
                         FTK_ASSERT(data.info.size == texture->getSize());
                         FTK_ASSERT(data.info.size.w == texture->getWidth());
                         FTK_ASSERT(data.info.size.h == texture->getHeight());

@@ -13,7 +13,7 @@ namespace ftk
         ///@{
 
         //! OpenGL texture types.
-        enum class TextureType
+        enum class FTK_API_TYPE TextureType
         {
             None,
 
@@ -49,9 +49,6 @@ namespace ftk
 
         //! Get a texture type for the given image type.
         FTK_API TextureType getTextureType(ImageType);
-
-        //! Get the byte count for the given texture.
-        FTK_API size_t getByteCount(const Size2I&, TextureType);
         
         //! Get the OpenGL texture format.
         FTK_API unsigned int getTextureFormat(TextureType);
@@ -65,14 +62,30 @@ namespace ftk
         //! Get the texture filter.
         FTK_API unsigned int getTextureFilter(ImageFilter);
 
+        //! Texture information.
+        struct FTK_API_TYPE TextureInfo
+        {
+            TextureInfo() = default;
+            FTK_API TextureInfo(const Size2I&, TextureType);
+
+            Size2I      size;
+            TextureType type = TextureType::None;
+
+            FTK_API bool isValid() const;
+            FTK_API size_t getByteCount() const;
+
+            FTK_API bool operator == (const TextureInfo&) const;
+            FTK_API bool operator != (const TextureInfo&) const;
+        };
+
         //! Texture options.
         struct FTK_API_TYPE TextureOptions
         {
             ImageFilters filters;
-            bool pbo = false;
+            bool         pbo     = false;
 
-            bool operator == (const TextureOptions&) const;
-            bool operator != (const TextureOptions&) const;
+            FTK_API bool operator == (const TextureOptions&) const;
+            FTK_API bool operator != (const TextureOptions&) const;
         };
 
         //! Texture.
@@ -93,8 +106,11 @@ namespace ftk
                 const ImageInfo&,
                 const TextureOptions & = TextureOptions());
 
+            //! Get the texture information.
+            FTK_API const TextureInfo& getInfo() const;
+
             //! Get the image information.
-            FTK_API const ImageInfo& getInfo() const;
+            FTK_API const ImageInfo& getImageInfo() const;
 
             //! Get the size.
             FTK_API const Size2I& getSize() const;
