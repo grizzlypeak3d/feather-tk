@@ -183,7 +183,9 @@ namespace ftk
     Size2I TextEdit::getSizeHint() const
     {
         FTK_P();
-        return margin(_p->scrollWidget->getSizeHint(), std::max(p.size.margin, p.size.keyFocus));
+        return margin(
+            _p->scrollWidget->getSizeHint(),
+            p.size.margin + std::max(p.size.border, p.size.keyFocus));
     }
 
     void TextEdit::setGeometry(const Box2I& value)
@@ -191,7 +193,9 @@ namespace ftk
         const bool changed = value != getGeometry();
         IWidget::setGeometry(value);
         FTK_P();
-        p.scrollWidget->setGeometry(margin(value, -p.size.margin));
+        p.scrollWidget->setGeometry(margin(
+            value,
+            -(p.size.margin + std::max(p.size.border, p.size.keyFocus))));
         if (changed)
         {
             p.draw.reset();
@@ -222,8 +226,12 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             const Box2I& g = getGeometry();
-            p.draw->border = border(margin(g, -p.size.margin + p.size.border), p.size.border);
-            p.draw->keyFocus = border(margin(g, -p.size.margin + p.size.keyFocus), p.size.keyFocus);
+            p.draw->border = border(
+                margin(g, -(p.size.margin + std::max(p.size.border, p.size.keyFocus)) + p.size.border),
+                p.size.border);
+            p.draw->keyFocus = border(
+                margin(g, -(p.size.margin + std::max(p.size.border, p.size.keyFocus)) + p.size.keyFocus),
+                p.size.keyFocus);
         }
 
         // Draw the focus and border.
