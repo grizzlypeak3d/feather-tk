@@ -18,9 +18,10 @@ namespace ftk
     {
         std::vector<std::string> out;
         bool word = false;
+        const size_t size = s.size();
         std::size_t wordStart = 0;
         std::size_t i = 0;
-        for (; i < s.size(); ++i)
+        for (; i < size; ++i)
         {
             if (s[i] != delimeter)
             {
@@ -37,11 +38,16 @@ namespace ftk
                     word = false;
                     out.push_back(s.substr(wordStart, i - wordStart));
                 }
-                if (SplitOptions::KeepEmpty == options &&
-                    i > 0 &&
-                    s[i - 1] == delimeter)
+                if (SplitOptions::KeepEmpty == options)
                 {
-                    out.push_back(std::string());
+                    if ((i > 0 && s[i - 1] == delimeter) || (i == 0))
+                    {
+                        out.push_back(std::string());
+                    }
+                    if (i == size - 1)
+                    {
+                        out.push_back(std::string());
+                    }
                 }
             }
         }
@@ -59,9 +65,10 @@ namespace ftk
     {
         std::vector<std::string> out;
         bool word = false;
+        const size_t size = s.size();
         std::size_t wordStart = 0;
         std::size_t i = 0;
-        for (; i < s.size(); ++i)
+        for (; i < size; ++i)
         {
             if (std::find(delimeters.begin(), delimeters.end(), s[i]) == delimeters.end())
             {
@@ -78,11 +85,18 @@ namespace ftk
                     word = false;
                     out.push_back(s.substr(wordStart, i - wordStart));
                 }
-                if (SplitOptions::KeepEmpty == options &&
-                    i > 0 &&
-                    std::find(delimeters.begin(), delimeters.end(), s[i - 1]) != delimeters.end())
+                if (SplitOptions::KeepEmpty == options)
                 {
-                    out.push_back(std::string());
+                    if ((i > 0 &&
+                        std::find(delimeters.begin(), delimeters.end(), s[i - 1]) != delimeters.end()) ||
+                        (i == 0))
+                    {
+                        out.push_back(std::string());
+                    }
+                    if (i == size - 1)
+                    {
+                        out.push_back(std::string());
+                    }
                 }
             }
         }

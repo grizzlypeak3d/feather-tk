@@ -35,26 +35,56 @@ namespace ftk
         void StringTest::_split()
         {
             {
-                FTK_ASSERT(
-                    split("a,b,c", ',') ==
-                    std::vector<std::string>({ "a", "b", "c" }));
-                FTK_ASSERT(
-                    split("a,,c", ',', SplitOptions::DiscardEmpty) ==
-                    std::vector<std::string>({ "a", "c" }));
-                FTK_ASSERT(
-                    split("a,,c", ',', SplitOptions::KeepEmpty) ==
-                    std::vector<std::string>({ "a", "", "c" }));
+                std::string a = "a,b,c";
+                auto b = split(a, ',');
+                std::string c = join(b, ',');
+                FTK_ASSERT(a == c);
+
+                a = "a,,c";
+                b = split(a, ',', SplitOptions::DiscardEmpty);
+                c = join(b, ',');
+                FTK_ASSERT("a,c" == c);
+
+                a = "a,,c";
+                b = split(a, ',', SplitOptions::KeepEmpty);
+                c = join(b, ',');
+                FTK_ASSERT(a == c);
+
+                a = ",a,,c";
+                b = split(a, ',', SplitOptions::KeepEmpty);
+                c = join(b, ',');
+                FTK_ASSERT(a == c);
+
+                a = "a,,c,";
+                b = split(a, ',', SplitOptions::KeepEmpty);
+                c = join(b, ',');
+                FTK_ASSERT(a == c);
+
+                a = ",,a,,,c,,";
+                b = split(a, ',', SplitOptions::KeepEmpty);
+                c = join(b, ',');
+                FTK_ASSERT(a == c);
             }
             {
-                FTK_ASSERT(
-                    split("a,b.c", { ',', '.' } ) ==
-                    std::vector<std::string>({ "a", "b", "c" }));
-                FTK_ASSERT(
-                    split("a,.c", { ',', '.' }, SplitOptions::DiscardEmpty) ==
-                    std::vector<std::string>({ "a", "c" }));
-                FTK_ASSERT(
-                    split("a,.c", { ',', '.' }, SplitOptions::KeepEmpty) ==
-                    std::vector<std::string>({ "a", "", "c" }));
+                std::string a = "a,b.c";
+                auto b = split(a, { ',', '.' });
+                FTK_ASSERT(std::vector<std::string>({ "a", "b", "c" }) == b);
+
+                a = "a,.c";
+                b = split(a, { ',', '.' }, SplitOptions::DiscardEmpty);
+                FTK_ASSERT(std::vector<std::string>({ "a", "c" }) == b);
+
+                a = "a,.c";
+                b = split(a, { ',', '.' }, SplitOptions::KeepEmpty);
+                FTK_ASSERT(std::vector<std::string>({ "a", "", "c" }) == b);
+
+                a = ".a,.c,";
+                b = split(a, { ',', '.' }, SplitOptions::KeepEmpty);
+                FTK_ASSERT(std::vector<std::string>({ "", "a", "", "c", "" }) == b);
+
+                a = "..a,.,c,,";
+                b = split(a, { ',', '.' }, SplitOptions::KeepEmpty);
+                FTK_ASSERT(std::vector<std::string>({ "", "", "a", "", "", "c", "", "" }) == b);
             }
             {
                 FTK_ASSERT(join({ "a", "b", "c" }, ',') == "a,b,c");

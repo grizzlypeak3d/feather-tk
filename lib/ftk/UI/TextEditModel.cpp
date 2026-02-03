@@ -696,7 +696,7 @@ namespace ftk
         {
             // Insert a line.
             p.text->insertItem(cursor.line, std::string());
-            ++cursor.line;
+            cursor.line = std::min(cursor.line + 1, static_cast<int>(text.size()) - 1);
         }
         else
         {
@@ -706,7 +706,7 @@ namespace ftk
                 cursor.line,
                 cursor.line + 1,
                 { line.substr(0, cursor.chr), line.substr(cursor.chr) });
-            ++cursor.line;
+            cursor.line = std::min(cursor.line + 1, static_cast<int>(text.size()) - 1);
             cursor.chr = 0;
         }
         p.cursor->setIfChanged(cursor);
