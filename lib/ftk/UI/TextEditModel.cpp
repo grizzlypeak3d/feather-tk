@@ -147,10 +147,12 @@ namespace ftk
     void TextEditModel::setText(const std::vector<std::string>& value)
     {
         FTK_P();
-        if (p.text->setIfChanged(!value.empty() ? value : textEditClear))
+        const bool changed = value != p.text->get();
+        if (changed)
         {
             p.cursor->setIfChanged(TextEditPos(0, 0));
             p.selection->setIfChanged(TextEditSelection());
+            p.text->setIfChanged(!value.empty() ? value : textEditClear);
         }
     }
 
