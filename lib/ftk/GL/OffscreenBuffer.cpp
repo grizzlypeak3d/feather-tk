@@ -258,8 +258,8 @@ namespace ftk
                 glRenderbufferStorage(
                     GL_RENDERBUFFER,
                     getBufferInternalFormat(p.options.depth, p.options.stencil),
-                    p.size.w,
-                    p.size.h);
+                    p.info.size.w,
+                    p.info.size.h);
 #endif // FTK_API_GL_4_1
                 glBindRenderbuffer(GL_RENDERBUFFER, 0);
             }
