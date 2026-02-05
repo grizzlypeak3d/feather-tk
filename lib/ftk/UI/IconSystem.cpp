@@ -53,6 +53,7 @@ namespace ftk_resource
     extern std::vector<uint8_t> FramePrev;
     extern std::vector<uint8_t> FrameStart;
     extern std::vector<uint8_t> Increment;
+    extern std::vector<uint8_t> Info;
     extern std::vector<uint8_t> MenuArrow;
     extern std::vector<uint8_t> MenuChecked;
     extern std::vector<uint8_t> Mute;
@@ -73,8 +74,7 @@ namespace ftk_resource
     extern std::vector<uint8_t> Search;
     extern std::vector<uint8_t> Settings;
     extern std::vector<uint8_t> SubMenuArrow;
-    extern std::vector<uint8_t> TimeEnd;
-    extern std::vector<uint8_t> TimeStart;
+    extern std::vector<uint8_t> Time;
     extern std::vector<uint8_t> Undo;
     extern std::vector<uint8_t> ViewFrame;
     extern std::vector<uint8_t> ViewZoomIn;
@@ -170,6 +170,7 @@ namespace ftk
         p.iconData["FramePrev"] = ftk_resource::FramePrev;
         p.iconData["FrameStart"] = ftk_resource::FrameStart;
         p.iconData["Increment"] = ftk_resource::Increment;
+        p.iconData["Info"] = ftk_resource::Info;
         p.iconData["MenuArrow"] = ftk_resource::MenuArrow;
         p.iconData["MenuChecked"] = ftk_resource::MenuChecked;
         p.iconData["Mute"] = ftk_resource::Mute;
@@ -190,8 +191,7 @@ namespace ftk
         p.iconData["Search"] = ftk_resource::Search;
         p.iconData["Settings"] = ftk_resource::Settings;
         p.iconData["SubMenuArrow"] = ftk_resource::SubMenuArrow;
-        p.iconData["TimeEnd"] = ftk_resource::TimeEnd;
-        p.iconData["TimeStart"] = ftk_resource::TimeStart;
+        p.iconData["Time"] = ftk_resource::Time;
         p.iconData["Undo"] = ftk_resource::Undo;
         p.iconData["ViewFrame"] = ftk_resource::ViewFrame;
         p.iconData["ViewZoomIn"] = ftk_resource::ViewZoomIn;

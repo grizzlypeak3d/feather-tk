@@ -38,6 +38,7 @@ set(RESOURCES
     etc/Icons/FramePrev.svg
     etc/Icons/FrameStart.svg
     etc/Icons/Increment.svg
+    etc/Icons/Info.svg
     etc/Icons/MenuArrow.svg
     etc/Icons/MenuChecked.svg
     etc/Icons/Mute.svg
@@ -58,8 +59,7 @@ set(RESOURCES
     etc/Icons/Search.svg
     etc/Icons/Settings.svg
     etc/Icons/SubMenuArrow.svg
-    etc/Icons/TimeEnd.svg
-    etc/Icons/TimeStart.svg
+    etc/Icons/Time.svg
     etc/Icons/Undo.svg
     etc/Icons/ViewFrame.svg
     etc/Icons/ViewZoomIn.svg
