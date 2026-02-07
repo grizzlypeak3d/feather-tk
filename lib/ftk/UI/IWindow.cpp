@@ -544,14 +544,14 @@ namespace ftk
         }
     }
 
-    void IWindow::_key(
+    bool IWindow::_key(
         Key key,
         bool press,
         int modifiers)
     {
         FTK_P();
         if (p.mousePress.lock())
-            return;
+            return false;
         _closeTooltip();
         p.keyEvent = KeyEvent(key, modifiers, p.cursorPos);
         if (press)
@@ -609,6 +609,7 @@ namespace ftk
         {
             widget->keyReleaseEvent(p.keyEvent);
         }
+        return p.keyEvent.accept;
     }
 
     void IWindow::_text(const std::string& value)
