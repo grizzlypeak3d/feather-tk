@@ -332,11 +332,14 @@ namespace ftk
     void FloatSlider::scrollEvent(ScrollEvent& event)
     {
         FTK_P();
-        event.accept = true;
-        const float step = event.modifiers & static_cast<int>(KeyModifier::Shift) ?
-            p.model->getLargeStep() :
-            p.model->getStep();
-        p.model->setValue(p.model->getValue() + step * event.value.y);
+        if (hasKeyFocus())
+        {
+            event.accept = true;
+            const float step = event.modifiers & static_cast<int>(KeyModifier::Shift) ?
+                p.model->getLargeStep() :
+                p.model->getStep();
+            p.model->setValue(p.model->getValue() + step * event.value.y);
+        }
     }
 
     void FloatSlider::keyPressEvent(KeyEvent& event)

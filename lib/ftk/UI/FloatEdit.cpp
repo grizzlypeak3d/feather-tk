@@ -231,11 +231,14 @@ namespace ftk
     void FloatEdit::scrollEvent(ScrollEvent& event)
     {
         FTK_P();
-        event.accept = true;
-        const float step = event.modifiers & static_cast<int>(KeyModifier::Shift) ?
-            p.model->getLargeStep() :
-            p.model->getStep();
-        p.model->setValue(p.model->getValue() + step * event.value.y);
+        if (p.lineEdit->hasKeyFocus())
+        {
+            event.accept = true;
+            const float step = event.modifiers & static_cast<int>(KeyModifier::Shift) ?
+                p.model->getLargeStep() :
+                p.model->getStep();
+            p.model->setValue(p.model->getValue() + step * event.value.y);
+        }
     }
 
     void FloatEdit::keyPressEvent(KeyEvent& event)

@@ -799,14 +799,37 @@ namespace ftk
     {
         FTK_P();
         _closeTooltip();
+
+        // Send event to the focused widget or parent.
         ScrollEvent event(value, modifiers, p.cursorPos);
-        auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
-        for (auto i = widgets.begin(); i != widgets.end(); ++i)
+        if (auto widget = p.keyFocus.lock())
         {
-            (*i)->scrollEvent(event);
-            if (event.accept)
+            while (widget)
             {
-                break;
+                widget->scrollEvent(event);
+                if (event.accept)
+                {
+                    break;
+                }
+                if (auto dialog = std::dynamic_pointer_cast<IDialog>(widget))
+                {
+                    break;
+                }
+                widget = widget->getParent();
+            }
+        }
+
+        // Send event to the hovered widget.
+        if (!event.accept)
+        {
+            auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
+            for (auto i = widgets.begin(); i != widgets.end(); ++i)
+            {
+                (*i)->scrollEvent(event);
+                if (event.accept)
+                {
+                    break;
+                }
             }
         }
     }
