@@ -12,7 +12,7 @@ namespace ftk
 {
     namespace
     {
-        class FTK_API_TYPE MDIMiniMapWidget : public IMouseWidget
+        class MDIMiniMapWidget : public IMouseWidget
         {
         protected:
             void _init(
@@ -34,7 +34,7 @@ namespace ftk
             ColorRole getChildColorRole() const;
             void setChildColorRole(ColorRole);
 
-            FTK_API Size2I getSizeHint() const override;
+            Size2I getSizeHint() const override;
             void sizeHintEvent(const SizeHintEvent&) override;
             void drawEvent(const Box2I&, const DrawEvent&) override;
             void mouseMoveEvent(MouseMoveEvent&) override;
