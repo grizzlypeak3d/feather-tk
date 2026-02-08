@@ -15,8 +15,8 @@ namespace ftk
         std::shared_ptr<TabBar> tabs;
         std::shared_ptr<StackLayout> stack;
         std::shared_ptr<RowLayout> layout;
-        std::function<void(int)> currentTabCallback;
-        std::function<void(const std::shared_ptr<IWidget>&)> currentWidgetCallback;
+        std::function<void(int)> callback;
+        std::function<void(const std::shared_ptr<IWidget>&)> widgetCallback;
     };
 
     void TabWidget::_init(
@@ -38,22 +38,22 @@ namespace ftk
 
         _widgetUpdate();
 
-        p.tabs->setCurrentTabCallback(
+        p.tabs->setCallback(
             [this](int value)
             {
                 FTK_P();
                 _widgetUpdate();
-                if (p.currentTabCallback)
+                if (p.callback)
                 {
-                    p.currentTabCallback(value);
+                    p.callback(value);
                 }
-                if (p.currentWidgetCallback)
+                if (p.widgetCallback)
                 {
                     const auto& children = p.stack->getChildren();
                     auto i = children.begin();
                     for (int j = 0; j < value; ++j, ++i)
                         ;
-                    p.currentWidgetCallback(i != children.end() ? *i : nullptr);
+                    p.widgetCallback(i != children.end() ? *i : nullptr);
                 }
             });
     }
@@ -133,21 +133,21 @@ namespace ftk
         }
     }
 
-    int TabWidget::getCurrentTab() const
+    int TabWidget::getCurrent() const
     {
-        return _p->tabs->getCurrentTab();
+        return _p->tabs->getCurrent();
     }
 
-    void TabWidget::setCurrentTab(int value)
+    void TabWidget::setCurrent(int value)
     {
         FTK_P();
-        p.tabs->setCurrentTab(value);
+        p.tabs->setCurrent(value);
         _widgetUpdate();
     }
 
-    void TabWidget::setCurrentTabCallback(const std::function<void(int)>& value)
+    void TabWidget::setCallback(const std::function<void(int)>& value)
     {
-        _p->currentTabCallback = value;
+        _p->callback = value;
     }
 
     std::shared_ptr<IWidget> TabWidget::getCurrentWidget() const
@@ -158,7 +158,7 @@ namespace ftk
         int i = 0;
         for (auto j = children.begin(); j != children.end(); ++j, ++i)
         {
-            if (i == p.tabs->getCurrentTab())
+            if (i == p.tabs->getCurrent())
             {
                 out = *j;
                 break;
@@ -176,23 +176,23 @@ namespace ftk
         {
             if (*j == value)
             {
-                setCurrentTab(i);
+                setCurrent(i);
                 break;
             }
         }
     }
 
-    void TabWidget::setCurrentWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>& value)
+    void TabWidget::setWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>& value)
     {
-        _p->currentWidgetCallback = value;
+        _p->widgetCallback = value;
     }
 
-    void TabWidget::setTabText(int index, const std::string& text)
+    void TabWidget::setText(int index, const std::string& text)
     {
-        _p->tabs->setTabText(index, text);
+        _p->tabs->setText(index, text);
     }
 
-    void TabWidget::setTabText(const std::shared_ptr<IWidget>& widget, const std::string& text)
+    void TabWidget::setText(const std::shared_ptr<IWidget>& widget, const std::string& text)
     {
         FTK_P();
         const auto& children = p.stack->getChildren();
@@ -204,7 +204,7 @@ namespace ftk
                 break;
             }
         }
-        setTabText(i, text);
+        setText(i, text);
     }
 
     void TabWidget::setTabTooltip(int index, const std::string& tooltip)
@@ -227,19 +227,19 @@ namespace ftk
         setTabTooltip(i, tooltip);
     }
 
-    bool TabWidget::areTabsClosable() const
+    bool TabWidget::isClosable() const
     {
-        return _p->tabs->areTabsClosable();
+        return _p->tabs->isClosable();
     }
 
-    void TabWidget::setTabsClosable(bool value)
+    void TabWidget::setClosable(bool value)
     {
-        _p->tabs->setTabsClosable(value);
+        _p->tabs->setClosable(value);
     }
 
-    void TabWidget::setTabCloseCallback(const std::function<void(int)>& value)
+    void TabWidget::setCloseCallback(const std::function<void(int)>& value)
     {
-        _p->tabs->setTabCloseCallback(value);
+        _p->tabs->setCloseCallback(value);
     }
     
     Size2I TabWidget::getSizeHint() const
@@ -256,7 +256,7 @@ namespace ftk
     void TabWidget::_widgetUpdate()
     {
         FTK_P();
-        const int index = p.tabs->getCurrentTab();
+        const int index = p.tabs->getCurrent();
         p.stack->setCurrentIndex(index);
     }
 }

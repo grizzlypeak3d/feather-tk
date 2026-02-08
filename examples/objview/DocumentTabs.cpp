@@ -20,19 +20,19 @@ namespace objview
         IWidget::_init(context, "examples::objview::DocumentTabs", parent);
 
         _tabWidget = TabWidget::create(context, shared_from_this());
-        _tabWidget->setTabsClosable(true);
+        _tabWidget->setClosable(true);
 
         _currentView = Observable<std::shared_ptr<ObjView> >::create();
 
         // Set tab callbacks.
         auto appWeak = std::weak_ptr<App>(app);
-        _tabWidget->setCurrentTabCallback(
+        _tabWidget->setCallback(
             [appWeak](int index)
             {
                 auto app = appWeak.lock();
                 app->getDocumentModel()->setCurrentIndex(index);
             });
-        _tabWidget->setTabCloseCallback(
+        _tabWidget->setCloseCallback(
             [appWeak](int index)
             {
                 auto app = appWeak.lock();
@@ -99,7 +99,7 @@ namespace objview
             app->getDocumentModel()->observeCurrentIndex(),
             [this](int index)
             {
-                _tabWidget->setCurrentTab(index);
+                _tabWidget->setCurrent(index);
             });
     }
 

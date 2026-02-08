@@ -72,14 +72,14 @@ namespace ftk
                 app->tick();
                 widget->setTabs(tabs);
                 int tab = 0;
-                widget->setCurrentTabCallback(
+                widget->setCallback(
                     [&tab](int value)
                     {
                         tab = value;
                     });
-                widget->setCurrentTab(2);
-                widget->setCurrentTab(2);
-                FTK_ASSERT(2 == widget->getCurrentTab());
+                widget->setCurrent(2);
+                widget->setCurrent(2);
+                FTK_ASSERT(2 == widget->getCurrent());
                 app->tick();
             }
         }
@@ -119,14 +119,14 @@ namespace ftk
                 widget->addTab(tabs[0], label0);
                 widget->addTab(tabs[1], label1);
                 int tab = 0;
-                widget->setCurrentTabCallback(
+                widget->setCallback(
                     [&tab](int value)
                     {
                         tab = value;
                     });
-                widget->setCurrentTab(1);
-                widget->setCurrentTab(1);
-                FTK_ASSERT(1 == widget->getCurrentTab());
+                widget->setCurrent(1);
+                widget->setCurrent(1);
+                FTK_ASSERT(1 == widget->getCurrent());
                 app->tick();
             }
         }

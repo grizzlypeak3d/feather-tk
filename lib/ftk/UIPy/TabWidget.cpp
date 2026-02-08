@@ -30,21 +30,21 @@ namespace ftk
                     py::arg("widget"),
                     py::arg("tooltip") = std::string())
                 .def("clear", &TabWidget::clear)
-                .def_property("currentTab", &TabWidget::getCurrentTab, &TabWidget::setCurrentTab)
-                .def("setCurrentTabCallback", &TabWidget::setCurrentTabCallback)
+                .def_property("current", &TabWidget::getCurrent, &TabWidget::setCurrent)
+                .def("setCallback", &TabWidget::setCallback)
                 .def_property("currentWidget", &TabWidget::getCurrentWidget, &TabWidget::setCurrentWidget)
-                .def("setCurrentWidgetCallback", &TabWidget::setCurrentWidgetCallback)
+                .def("setWidgetCallback", &TabWidget::setWidgetCallback)
                 .def(
                     "setTabText",
                     [](const std::shared_ptr<TabWidget> self, int index, const std::string& text)
                     {
-                        self->setTabText(index, text);
+                        self->setText(index, text);
                     })
                 .def(
                     "setTabText",
                     [](const std::shared_ptr<TabWidget> self, const std::shared_ptr<IWidget>& widget, const std::string& text)
                     {
-                        self->setTabText(widget, text);
+                        self->setText(widget, text);
                     })
                 .def(
                     "setTabTooltip",
@@ -58,8 +58,8 @@ namespace ftk
                     {
                         self->setTabTooltip(widget, tooltip);
                     })
-                .def_property("tabsClosable", &TabWidget::areTabsClosable, &TabWidget::setTabsClosable)
-                .def("setTabCloseCallback", &TabWidget::setTabCloseCallback);
+                .def_property("closable", &TabWidget::isClosable, &TabWidget::setClosable)
+                .def("setCloseCallback", &TabWidget::setCloseCallback);
         }
     }
 }

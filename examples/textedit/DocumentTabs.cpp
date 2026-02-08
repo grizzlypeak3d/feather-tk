@@ -19,17 +19,17 @@ namespace textedit
         IWidget::_init(context, "examples::textedit::DocumentTabs", parent);
 
         _tabWidget = TabWidget::create(context, shared_from_this());
-        _tabWidget->setTabsClosable(true);
+        _tabWidget->setClosable(true);
 
         // Set tab callbacks.
         auto appWeak = std::weak_ptr<App>(app);
-        _tabWidget->setCurrentTabCallback(
+        _tabWidget->setCallback(
             [appWeak](int index)
             {
                 auto app = appWeak.lock();
                 app->getDocumentModel()->setCurrentIndex(index);
             });
-        _tabWidget->setTabCloseCallback(
+        _tabWidget->setCloseCallback(
             [appWeak](int index)
             {
                 auto app = appWeak.lock();
@@ -59,7 +59,7 @@ namespace textedit
                         doc->observeName(),
                         [this, textEdit](const std::string& value)
                         {
-                            _tabWidget->setTabText(textEdit, value);
+                            _tabWidget->setText(textEdit, value);
                         });
                     _tooltipObservers[doc] = Observer<std::string>::create(
                         doc->observeTooltip(),
@@ -118,7 +118,7 @@ namespace textedit
             app->getDocumentModel()->observeCurrentIndex(),
             [this, appWeak](int index)
             {
-                _tabWidget->setCurrentTab(index);
+                _tabWidget->setCurrent(index);
             });
 
         // Observe text editor options.

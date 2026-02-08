@@ -47,13 +47,13 @@ namespace ftk
         FTK_API void clear();
 
         //! Get the current tab.
-        FTK_API int getCurrentTab() const;
+        FTK_API int getCurrent() const;
 
         //! Set the current tab.
-        FTK_API void setCurrentTab(int);
+        FTK_API void setCurrent(int);
 
         //! Set the current tab callback.
-        FTK_API void setCurrentTabCallback(const std::function<void(int)>&);
+        FTK_API void setCallback(const std::function<void(int)>&);
 
         //! Get the current widget.
         FTK_API std::shared_ptr<IWidget> getCurrentWidget() const;
@@ -62,13 +62,13 @@ namespace ftk
         FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 
         //! Set the current widget callback.
-        FTK_API void setCurrentWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>&);
+        FTK_API void setWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>&);
 
         //! Set the tab text.
-        FTK_API void setTabText(int index, const std::string&);
+        FTK_API void setText(int index, const std::string&);
 
         //! Set the tab text.
-        FTK_API void setTabText(const std::shared_ptr<IWidget>&, const std::string&);
+        FTK_API void setText(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Set the tab tooltip.
         FTK_API void setTabTooltip(int index, const std::string&);
@@ -77,13 +77,13 @@ namespace ftk
         FTK_API void setTabTooltip(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Get whether the tabs are closable.
-        FTK_API bool areTabsClosable() const;
+        FTK_API bool isClosable() const;
 
         //! Set whether the tabs are closable.
-        FTK_API void setTabsClosable(bool);
+        FTK_API void setClosable(bool);
 
         //! Set the tab close callback.
-        FTK_API void setTabCloseCallback(const std::function<void(int)>&);
+        FTK_API void setCloseCallback(const std::function<void(int)>&);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;

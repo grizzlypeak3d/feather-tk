@@ -16,7 +16,7 @@ namespace ftk
     {
         std::vector<std::string> text;
         std::vector<std::string> tooltips;
-        int currentTab = -1;
+        int current = -1;
         bool closable = false;
 
         std::vector<std::shared_ptr<TabBarButton> > buttons;
@@ -29,8 +29,8 @@ namespace ftk
         std::shared_ptr<ComboBoxMenu> menu;
         std::shared_ptr<HorizontalLayout> layout;
 
-        std::function<void(int)> currentTabCallback;
-        std::function<void(int)> tabCloseCallback;
+        std::function<void(int)> callback;
+        std::function<void(int)> closeCallback;
 
         int currentFocus = -1;
     };
@@ -71,11 +71,11 @@ namespace ftk
             [this](int index)
             {
                 takeKeyFocus();
-                _p->currentTab = index;
+                _p->current = index;
                 _p->currentFocus = index;
-                if (_p->currentTabCallback)
+                if (_p->callback)
                 {
-                    _p->currentTabCallback(index);
+                    _p->callback(index);
                 }
                 _currentUpdate();
             });
@@ -83,9 +83,9 @@ namespace ftk
         p.closeButtonGroup->setClickedCallback(
             [this](int index)
             {
-                if (_p->tabCloseCallback)
+                if (_p->closeCallback)
                 {
-                    _p->tabCloseCallback(index);
+                    _p->closeCallback(index);
                 }
             });
 
@@ -101,7 +101,7 @@ namespace ftk
                         {
                             items.push_back(ComboBoxItem(text));
                         }
-                        _p->menu = ComboBoxMenu::create(context, items, _p->currentTab);
+                        _p->menu = ComboBoxMenu::create(context, items, _p->current);
                         _p->menu->open(getWindow(), _p->menuButton->getGeometry());
                         auto weak = std::weak_ptr<TabBar>(std::dynamic_pointer_cast<TabBar>(shared_from_this()));
                         _p->menu->setCallback(
@@ -112,10 +112,10 @@ namespace ftk
                                     widget->_p->menu->close();
                                     if (index != -1)
                                     {
-                                        widget->setCurrentTab(index);
-                                        if (widget->_p->currentTabCallback)
+                                        widget->setCurrent(index);
+                                        if (widget->_p->callback)
                                         {
-                                            widget->_p->currentTabCallback(index);
+                                            widget->_p->callback(index);
                                         }
                                     }
                                 }
@@ -169,8 +169,8 @@ namespace ftk
         p.text = value;
         p.tooltips = tooltips;
         p.tooltips.resize(p.text.size());
-        p.currentTab = !p.text.empty() ?
-            clamp(p.currentTab, 0, static_cast<int>(p.text.size()) - 1) :
+        p.current = !p.text.empty() ?
+            clamp(p.current, 0, static_cast<int>(p.text.size()) - 1) :
             -1;
         p.currentFocus = !p.text.empty() ?
             clamp(p.currentFocus, 0, static_cast<int>(p.text.size()) - 1) :
@@ -186,9 +186,9 @@ namespace ftk
         FTK_P();
         p.text.push_back(value);
         p.tooltips.push_back(tooltip);
-        if (-1 == p.currentTab)
+        if (-1 == p.current)
         {
-            p.currentTab = 0;
+            p.current = 0;
         }
         if (-1 == p.currentFocus)
         {
@@ -205,9 +205,9 @@ namespace ftk
         {
             p.text.erase(p.text.begin() + index);
             p.tooltips.erase(p.tooltips.begin() + index);
-            if (p.currentTab >= p.text.size())
+            if (p.current >= p.text.size())
             {
-                p.currentTab = p.currentTab - 1;
+                p.current = p.current - 1;
             }
             if (p.currentFocus >= p.text.size())
             {
@@ -223,37 +223,37 @@ namespace ftk
         FTK_P();
         p.text.clear();
         p.tooltips.clear();
-        p.currentTab = -1;
+        p.current = -1;
         p.currentFocus = -1;
         _widgetUpdate();
         _currentUpdate();
     }
 
-    int TabBar::getCurrentTab() const
+    int TabBar::getCurrent() const
     {
-        return _p->currentTab;
+        return _p->current;
     }
 
-    void TabBar::setCurrentTab(int value)
+    void TabBar::setCurrent(int value)
     {
         FTK_P();
         const int tmp = !p.text.empty() ?
             clamp(value, 0, static_cast<int>(p.text.size()) - 1) :
             -1;
-        if (tmp == p.currentTab)
+        if (tmp == p.current)
             return;
-        p.currentTab = tmp;
-        p.buttonGroup->setChecked(p.currentTab, true);
+        p.current = tmp;
+        p.buttonGroup->setChecked(p.current, true);
         p.currentFocus = tmp;
         _currentUpdate();
     }
 
-    void TabBar::setCurrentTabCallback(const std::function<void(int)>& value)
+    void TabBar::setCallback(const std::function<void(int)>& value)
     {
-        _p->currentTabCallback = value;
+        _p->callback = value;
     }
 
-    void TabBar::setTabText(int index, const std::string& text)
+    void TabBar::setText(int index, const std::string& text)
     {
         FTK_P();
         if (index >= 0 &&
@@ -277,12 +277,12 @@ namespace ftk
         }
     }
 
-    bool TabBar::areTabsClosable() const
+    bool TabBar::isClosable() const
     {
         return _p->closable;
     }
 
-    void TabBar::setTabsClosable(bool value)
+    void TabBar::setClosable(bool value)
     {
         FTK_P();
         if (value == p.closable)
@@ -291,9 +291,9 @@ namespace ftk
         _widgetUpdate();
     }
 
-    void TabBar::setTabCloseCallback(const std::function<void(int)>& value)
+    void TabBar::setCloseCallback(const std::function<void(int)>& value)
     {
-        _p->tabCloseCallback = value;
+        _p->closeCallback = value;
     }
 
     bool TabBar::isScrollBarVisible() const
@@ -416,7 +416,7 @@ namespace ftk
                 Divider::create(context, Orientation::Horizontal, p.buttonLayout);
             }
         }
-        p.buttonGroup->setChecked(p.currentTab, true);
+        p.buttonGroup->setChecked(p.current, true);
         p.menuButton->setEnabled(!p.text.empty());
     }
 
@@ -442,7 +442,7 @@ namespace ftk
         }
         for (size_t i = 0; i < p.closeButtons.size(); ++i)
         {
-            p.closeButtons[i]->setButtonRole(p.currentTab == i ? ColorRole::Button : ColorRole::None);
+            p.closeButtons[i]->setButtonRole(p.current == i ? ColorRole::Button : ColorRole::None);
         }
         if (p.currentFocus >= 0 && p.currentFocus < p.buttons.size())
         {

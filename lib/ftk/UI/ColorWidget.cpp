@@ -111,7 +111,7 @@ namespace ftk
         _modeUpdate();
         _colorUpdate();
 
-        p.tabWidget->setCurrentTabCallback(
+        p.tabWidget->setCallback(
             [this](int value)
             {
                 _p->mode = static_cast<ColorWidgetMode>(value);
@@ -356,7 +356,7 @@ namespace ftk
     void ColorWidget::_modeUpdate()
     {
         FTK_P();
-        p.tabWidget->setCurrentTab(static_cast<int>(p.mode));
+        p.tabWidget->setCurrent(static_cast<int>(p.mode));
     }
 
     void ColorWidget::_colorUpdate()
