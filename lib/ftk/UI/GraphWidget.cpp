@@ -191,7 +191,6 @@ namespace ftk
         std::map<ColorRole, std::shared_ptr<ColorSwatch> > swatches;
         std::map<ColorRole, std::shared_ptr<Label> > labels;
         std::map<ColorRole, std::string> labelText;
-        std::shared_ptr<HorizontalLayout> labelLayout;
         std::shared_ptr<VerticalLayout> layout;
     };
 
@@ -210,6 +209,7 @@ namespace ftk
             p.swatches[i.first] = ColorSwatch::create(context);
             auto label = Label::create(context);
             label->setTextRole(ColorRole::TextDisabled);
+            label->setMarginRole(SizeRole::MarginInside);
             p.labels[i.first] = label;
             p.labelText[i.first] = i.second;
         }
@@ -219,12 +219,13 @@ namespace ftk
         auto label = Label::create(context, title, p.layout);
         label->setFontRole(FontRole::Title);
         p.graph->setParent(p.layout);
-        p.labelLayout = HorizontalLayout::create(context, p.layout);
-        p.labelLayout->setSpacingRole(SizeRole::SpacingSmall);
+        auto labelLayout = HorizontalLayout::create(context, p.layout);
         for (const auto i : labels)
         {
-            p.swatches[i.first]->setParent(p.labelLayout);
-            p.labels[i.first]->setParent(p.labelLayout);
+            auto hLayout = HorizontalLayout::create(context, labelLayout);
+            hLayout->setSpacingRole(SizeRole::SpacingTool);
+            p.swatches[i.first]->setParent(hLayout);
+            p.labels[i.first]->setParent(hLayout);
         }
     }
 
