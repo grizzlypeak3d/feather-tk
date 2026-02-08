@@ -3,7 +3,6 @@
 
 #include <ftk/UI/GraphWidget.h>
 
-#include <ftk/UI/ColorSwatch.h>
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/LayoutUtil.h>
@@ -188,7 +187,6 @@ namespace ftk
     struct GraphWidget::Private
     {
         std::shared_ptr<GraphSubWidget> graph;
-        std::map<ColorRole, std::shared_ptr<ColorSwatch> > swatches;
         std::map<ColorRole, std::shared_ptr<Label> > labels;
         std::map<ColorRole, std::string> labelText;
         std::shared_ptr<VerticalLayout> layout;
@@ -206,10 +204,10 @@ namespace ftk
         p.graph = GraphSubWidget::create(context);
         for (const auto i : labels)
         {
-            p.swatches[i.first] = ColorSwatch::create(context);
             auto label = Label::create(context);
-            label->setTextRole(ColorRole::TextDisabled);
+            label->setTextRole(i.first);
             label->setMarginRole(SizeRole::MarginInside);
+            label->setBackgroundRole(ColorRole::Base);
             p.labels[i.first] = label;
             p.labelText[i.first] = i.second;
         }
@@ -217,14 +215,10 @@ namespace ftk
         p.layout = VerticalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
         auto label = Label::create(context, title, p.layout);
-        label->setFontRole(FontRole::Title);
         p.graph->setParent(p.layout);
-        auto labelLayout = HorizontalLayout::create(context, p.layout);
+        auto hLayout = HorizontalLayout::create(context, p.layout);
         for (const auto i : labels)
         {
-            auto hLayout = HorizontalLayout::create(context, labelLayout);
-            hLayout->setSpacingRole(SizeRole::SpacingTool);
-            p.swatches[i.first]->setParent(hLayout);
             p.labels[i.first]->setParent(hLayout);
         }
     }
@@ -268,14 +262,5 @@ namespace ftk
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
-    }
-    
-    void GraphWidget::drawEvent(const Box2I& drawRect, const DrawEvent& event)
-    {
-        FTK_P();
-        for (const auto i : p.swatches)
-        {
-            i.second->setColor(event.style->getColorRole(i.first));
-        }
     }
 }
