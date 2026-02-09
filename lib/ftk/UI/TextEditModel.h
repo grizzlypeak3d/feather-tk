@@ -92,8 +92,11 @@ namespace ftk
         //! beginning and clear the selection.
         FTK_API void setText(const std::vector<std::string>&);
 
-        //! Clear the text.
         FTK_API void clearText();
+
+        FTK_API bool isReadOnly() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeReadOnly() const;
+        FTK_API void setReadOnly(bool);
 
         ///@}
 

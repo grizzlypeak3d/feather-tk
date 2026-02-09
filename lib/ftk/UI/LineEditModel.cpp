@@ -50,6 +50,7 @@ namespace ftk
     {
         std::weak_ptr<Context> context;
         std::shared_ptr<Observable<std::string> > text;
+        std::shared_ptr<Observable<bool> > readOnly;
         std::shared_ptr<Observable<int> > cursor;
         std::shared_ptr<Observable<LineEditSelection> > selection;
     };
@@ -61,6 +62,7 @@ namespace ftk
         FTK_P();
         p.context = context;
         p.text = Observable<std::string>::create(text);
+        p.readOnly = Observable<bool>::create(false);
         p.cursor = Observable<int>::create(0);
         p.selection = Observable<LineEditSelection>::create();
     }
@@ -104,6 +106,21 @@ namespace ftk
     void LineEditModel::clearText()
     {
         setText(std::string());
+    }
+
+    bool LineEditModel::isReadOnly() const
+    {
+        return _p->readOnly->get();
+    }
+
+    std::shared_ptr<IObservable<bool> > LineEditModel::observeReadOnly() const
+    {
+        return _p->readOnly;
+    }
+
+    void LineEditModel::setReadOnly(bool value)
+    {
+        _p->readOnly->setIfChanged(value);
     }
 
     int LineEditModel::getCursor() const
@@ -167,14 +184,24 @@ namespace ftk
     }
 
     void LineEditModel::undo()
-    {}
+    {
+        FTK_P();
+        if (p.readOnly)
+            return;
+    }
 
     void LineEditModel::redo()
-    {}
+    {
+        FTK_P();
+        if (p.readOnly)
+            return;
+    }
 
     void LineEditModel::cut()
     {
         FTK_P();
+        if (p.readOnly)
+            return;
         if (auto context = p.context.lock())
         {
             auto clipboard = context->getSystem<ClipboardSystem>();
@@ -217,6 +244,8 @@ namespace ftk
     void LineEditModel::paste()
     {
         FTK_P();
+        if (p.readOnly)
+            return;
         if (auto context = p.context.lock())
         {
             auto clipboard = context->getSystem<ClipboardSystem>();
@@ -247,6 +276,8 @@ namespace ftk
     void LineEditModel::input(const std::string& value)
     {
         FTK_P();
+        if (p.readOnly)
+            return;
         int cursor = p.cursor->get();
         LineEditSelection selection = p.selection->get();
 
@@ -285,12 +316,18 @@ namespace ftk
             break;
 
         case Key::Backspace:
-            _backspace();
-            out = true;
+            if (!p.readOnly)
+            {
+                _backspace();
+                out = true;
+            }
             break;
         case Key::Delete:
-            _delete();
-            out = true;
+            if (!p.readOnly)
+            {
+                _delete();
+                out = true;
+            }
             break;
 
         case Key::A:
@@ -310,7 +347,8 @@ namespace ftk
             break;
 
         case Key::X:
-            if (static_cast<int>(commandKeyModifier) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers &&
+                !p.readOnly)
             {
                 cut();
                 out = true;
@@ -318,7 +356,8 @@ namespace ftk
             break;
 
         case Key::V:
-            if (static_cast<int>(commandKeyModifier) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers &&
+                !p.readOnly)
             {
                 paste();
                 out = true;
@@ -326,7 +365,8 @@ namespace ftk
             break;
 
         case Key::Y:
-            if (static_cast<int>(commandKeyModifier) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers &&
+                !p.readOnly)
             {
                 redo();
                 out = true;
@@ -334,7 +374,8 @@ namespace ftk
             break;
 
         case Key::Z:
-            if (static_cast<int>(commandKeyModifier) == modifiers)
+            if (static_cast<int>(commandKeyModifier) == modifiers &&
+                !p.readOnly)
             {
                 undo();
                 out = true;

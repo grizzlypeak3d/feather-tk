@@ -55,6 +55,9 @@ namespace ftk
         FTK_API void clearText();
         FTK_API void setCallback(const std::function<void(const std::vector<std::string>&)>&);
 
+        FTK_API bool isReadOnly() const;
+        FTK_API void setReadOnly(bool);
+
         ///@}
 
         //! \name Selection

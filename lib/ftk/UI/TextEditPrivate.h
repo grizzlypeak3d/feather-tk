@@ -29,6 +29,9 @@ namespace ftk
         void setCallback(const std::function<void(const std::vector<std::string>&)>&);
         void setFocusCallback(const std::function<void(bool)>&);
 
+        bool isReadOnly() const;
+        void setReadOnly(bool);
+
         void setOptions(const TextEditOptions&);
 
         Box2I getCursorBox(bool margin = false) const;

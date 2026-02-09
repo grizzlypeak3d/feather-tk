@@ -72,6 +72,9 @@ namespace ftk
         //! Set the focus callback.
         FTK_API void setFocusCallback(const std::function<void(bool)>&);
 
+        FTK_API bool isReadOnly() const;
+        FTK_API void setReadOnly(bool);
+
         ///@}
 
         //! \name Selection

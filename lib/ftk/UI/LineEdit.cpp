@@ -209,6 +209,16 @@ namespace ftk
         _p->focusCallback = value;
     }
 
+    bool LineEdit::isReadOnly() const
+    {
+        return _p->model->isReadOnly();
+    }
+
+    void LineEdit::setReadOnly(bool value)
+    {
+        _p->model->setReadOnly(value);
+    }
+
     void LineEdit::selectAll()
     {
         _p->model->selectAll();
@@ -519,10 +529,13 @@ namespace ftk
             switch (event.key)
             {
             case Key::Return:
-                event.accept = true;
-                if (p.callback)
+                if (!p.model->isReadOnly())
                 {
-                    p.callback(p.model->getText());
+                    event.accept = true;
+                    if (p.callback)
+                    {
+                        p.callback(p.model->getText());
+                    }
                 }
                 break;
             case Key::Escape:
@@ -548,8 +561,12 @@ namespace ftk
 
     void LineEdit::textEvent(TextEvent& event)
     {
-        event.accept = true;
-        _p->model->input(event.text);
+        FTK_P();
+        if (!p.model->isReadOnly())
+        {
+            event.accept = true;
+            p.model->input(event.text);
+        }
     }
 
     int LineEdit::_toCursor(int value) const

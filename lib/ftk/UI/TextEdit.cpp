@@ -131,6 +131,16 @@ namespace ftk
         _p->widget->setCallback(value);
     }
 
+    bool TextEdit::isReadOnly() const
+    {
+        return _p->widget->isReadOnly();
+    }
+
+    void TextEdit::setReadOnly(bool value)
+    {
+        _p->widget->setReadOnly(value);
+    }
+
     void TextEdit::selectAll()
     {
         _p->model->selectAll();

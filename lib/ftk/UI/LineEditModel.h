@@ -35,7 +35,7 @@ namespace ftk
         FTK_API bool operator != (const LineEditSelection&) const;
     };
         
-    //! Text line edit model.
+    //! Line edit model.
     //! 
     //! \todo Implement undo/redo.
     class FTK_API_TYPE LineEditModel : public std::enable_shared_from_this<LineEditModel>
@@ -65,8 +65,11 @@ namespace ftk
         //! beginning and clear the selection.
         FTK_API void setText(const std::string&);
 
-        //! Clear the text.
         FTK_API void clearText();
+
+        FTK_API bool isReadOnly() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeReadOnly() const;
+        FTK_API void setReadOnly(bool);
 
         ///@}
 

@@ -24,6 +24,7 @@ namespace ftk
         std::shared_ptr<FontSystem> fontSystem;
         std::function<void(const std::vector<std::string>&)> callback;
         std::function<void(bool)> focusCallback;
+
         TextEditPos cursorStart;
         bool cursorVisible = false;
         std::chrono::steady_clock::time_point cursorTimer;
@@ -120,6 +121,16 @@ namespace ftk
     void TextEditWidget::setFocusCallback(const std::function<void(bool)>& value)
     {
         _p->focusCallback = value;
+    }
+
+    bool TextEditWidget::isReadOnly() const
+    {
+        return _p->model->isReadOnly();
+    }
+
+    void TextEditWidget::setReadOnly(bool value)
+    {
+        _p->model->setReadOnly(value);
     }
 
     void TextEditWidget::setOptions(const TextEditOptions& value)
