@@ -195,15 +195,13 @@ namespace ftk
         //! Does this widget accept key focus?
         bool acceptsKeyFocus() const;
 
-        //! Set whether the widget accepts key focus. If this method is
-        //! overridden the base method should be called.
+        //! Set whether the widget accepts key focus.
         FTK_API virtual void setAcceptsKeyFocus(bool);
 
         //! Does this widget have key focus?
         bool hasKeyFocus() const;
 
-        //! Take the key focus. If this method is overridden the base method
-        //! should be called.
+        //! Take the key focus.
         FTK_API virtual void takeKeyFocus();
 
         //! Release the key focus.

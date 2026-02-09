@@ -82,6 +82,7 @@ namespace ftk
         //! Set the font role.
         FTK_API void setFontRole(FontRole);
 
+        FTK_API void takeKeyFocus() override;
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void scrollEvent(ScrollEvent&) override;

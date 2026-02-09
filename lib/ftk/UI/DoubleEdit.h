@@ -94,6 +94,7 @@ namespace ftk
         //! Set the border role.
         FTK_API void setBorderRole(ColorRole);
 
+        FTK_API void takeKeyFocus() override;
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void scrollEvent(ScrollEvent&) override;

@@ -229,6 +229,11 @@ namespace ftk
         _p->lineEdit->setBorderRole(value);
     }
 
+    void DoubleEdit::takeKeyFocus()
+    {
+        _p->lineEdit->takeKeyFocus();
+    }
+
     Size2I DoubleEdit::getSizeHint() const
     {
         return _p->layout->getSizeHint();

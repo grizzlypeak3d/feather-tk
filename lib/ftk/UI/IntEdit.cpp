@@ -202,6 +202,11 @@ namespace ftk
         _p->lineEdit->setFontRole(value);
     }
 
+    void IntEdit::takeKeyFocus()
+    {
+        _p->lineEdit->takeKeyFocus();
+    }
+
     Size2I IntEdit::getSizeHint() const
     {
         return _p->layout->getSizeHint();

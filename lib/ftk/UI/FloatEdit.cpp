@@ -216,6 +216,11 @@ namespace ftk
     {
         _p->lineEdit->setFontRole(value);
     }
+
+    void FloatEdit::takeKeyFocus()
+    {
+        _p->lineEdit->takeKeyFocus();
+    }
     
     Size2I FloatEdit::getSizeHint() const
     {
