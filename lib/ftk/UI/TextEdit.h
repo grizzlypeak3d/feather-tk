@@ -47,38 +47,40 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<TextEditModel>& getModel() const;
 
-        //! Get the text.
+        //! \name Text
+        ///@{
+
         FTK_API const std::vector<std::string>& getText() const;
-
-        //! Set the text.
         FTK_API void setText(const std::vector<std::string>&);
-
-        //! Clear the text.
         FTK_API void clearText();
+        FTK_API void setCallback(const std::function<void(const std::vector<std::string>&)>&);
 
-        //! Set the text callback.
-        FTK_API void setTextCallback(const std::function<void(const std::vector<std::string>&)>&);
+        ///@}
 
-        //! Select all.
+        //! \name Selection
+        ///@{
+
         FTK_API void selectAll();
-
-        //! Clear the selection.
         FTK_API void clearSelection();
 
-        //! Get the options.
+        ///@}
+
+        //! \name Options
+        ///@{
+
         FTK_API const TextEditOptions& getOptions() const;
-
-        //! Observe the options.
         FTK_API std::shared_ptr<IObservable<TextEditOptions> > observeOptions() const;
-
-        //! Set the options.
         FTK_API void setOptions(const TextEditOptions&);
 
-        //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        ///@}
 
-        //! Set the margin role.
+        //! \name Margin
+        ///@{
+
+        FTK_API SizeRole getMarginRole() const;
         FTK_API void setMarginRole(SizeRole);
+
+        ///@}
 
         FTK_API void takeKeyFocus() override;
         FTK_API Size2I getSizeHint() const override;

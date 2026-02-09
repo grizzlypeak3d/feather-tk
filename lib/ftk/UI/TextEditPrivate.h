@@ -26,7 +26,7 @@ namespace ftk
             const std::shared_ptr<TextEditModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setTextCallback(const std::function<void(const std::vector<std::string>&)>&);
+        void setCallback(const std::function<void(const std::vector<std::string>&)>&);
         void setFocusCallback(const std::function<void(bool)>&);
 
         void setOptions(const TextEditOptions&);

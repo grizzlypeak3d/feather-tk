@@ -94,7 +94,7 @@ namespace ftk
                 }
             });
 
-        p.lineEdit->setTextCallback(
+        p.lineEdit->setCallback(
             [this](const std::string& value)
             {
                 _p->path = value;

@@ -126,9 +126,9 @@ namespace ftk
         _p->model->clearText();
     }
 
-    void TextEdit::setTextCallback(const std::function<void(const std::vector<std::string>&)>& value)
+    void TextEdit::setCallback(const std::function<void(const std::vector<std::string>&)>& value)
     {
-        _p->widget->setTextCallback(value);
+        _p->widget->setCallback(value);
     }
 
     void TextEdit::selectAll()

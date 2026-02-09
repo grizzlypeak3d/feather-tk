@@ -22,7 +22,7 @@ namespace ftk
         TextEditOptions options;
         std::shared_ptr<TextEditModel> model;
         std::shared_ptr<FontSystem> fontSystem;
-        std::function<void(const std::vector<std::string>&)> textCallback;
+        std::function<void(const std::vector<std::string>&)> callback;
         std::function<void(bool)> focusCallback;
         TextEditPos cursorStart;
         bool cursorVisible = false;
@@ -69,9 +69,9 @@ namespace ftk
             [this](const std::vector<std::string>& value)
             {
                 FTK_P();
-                if (p.textCallback)
+                if (p.callback)
                 {
-                    p.textCallback(value);
+                    p.callback(value);
                 }
                 p.size.textSize.reset();
                 setSizeUpdate();
@@ -112,9 +112,9 @@ namespace ftk
         return out;
     }
 
-    void TextEditWidget::setTextCallback(const std::function<void(const std::vector<std::string>&)>& value)
+    void TextEditWidget::setCallback(const std::function<void(const std::vector<std::string>&)>& value)
     {
-        _p->textCallback = value;
+        _p->callback = value;
     }
 
     void TextEditWidget::setFocusCallback(const std::function<void(bool)>& value)

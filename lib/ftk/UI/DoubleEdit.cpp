@@ -48,7 +48,7 @@ namespace ftk
         p.lineEdit->setParent(p.layout);
         p.incButtons->setParent(p.layout);
 
-        p.lineEdit->setTextCallback(
+        p.lineEdit->setCallback(
             [this](const std::string& value)
             {
                 _p->model->setValue(std::atof(value.c_str()));

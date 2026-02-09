@@ -51,7 +51,7 @@ namespace ftk
 
         _widgetUpdate();
 
-        p.lineEdit->setTextCallback(
+        p.lineEdit->setCallback(
             [this](const std::string& value)
             {
                 FTK_P();

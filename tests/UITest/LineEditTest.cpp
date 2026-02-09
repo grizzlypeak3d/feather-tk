@@ -47,7 +47,7 @@ namespace ftk
 
                 auto edit = LineEdit::create(context, layout);
                 std::string text;
-                edit->setTextCallback(
+                edit->setCallback(
                     [&text](const std::string& value)
                     {
                         text = value;

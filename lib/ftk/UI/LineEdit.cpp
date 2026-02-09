@@ -19,8 +19,8 @@ namespace ftk
     {
         std::shared_ptr<LineEditModel> model;
         std::shared_ptr<FontSystem> fontSystem;
-        std::function<void(const std::string&)> textCallback;
-        bool textCallbackOnFocusLost = true;
+        std::function<void(const std::string&)> callback;
+        bool callbackOnFocusLost = true;
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = "                    ";
         std::function<void(bool)> focusCallback;
@@ -168,19 +168,19 @@ namespace ftk
         _p->model->clearText();
     }
 
-    void LineEdit::setTextCallback(const std::function<void(const std::string&)>& value)
+    void LineEdit::setCallback(const std::function<void(const std::string&)>& value)
     {
-        _p->textCallback = value;
+        _p->callback = value;
     }
 
-    bool LineEdit::hasTextCallbackOnFocusLost() const
+    bool LineEdit::hasCallbackOnFocusLost() const
     {
-        return _p->textCallbackOnFocusLost;
+        return _p->callbackOnFocusLost;
     }
 
-    void LineEdit::setTextCallbackOnFocusLost(bool value)
+    void LineEdit::setCallbackOnFocusLost(bool value)
     {
-        _p->textCallbackOnFocusLost = value;
+        _p->callbackOnFocusLost = value;
     }
 
     void LineEdit::setTextChangedCallback(const std::function<void(const std::string&)>& value)
@@ -500,9 +500,9 @@ namespace ftk
             p.model->clearSelection();
             p.cursorVisible = false;
             setDrawUpdate();
-            if (p.textCallback && p.textCallbackOnFocusLost)
+            if (p.callback && p.callbackOnFocusLost)
             {
-                p.textCallback(p.model->getText());
+                p.callback(p.model->getText());
             }
         }
         if (p.focusCallback)
@@ -520,9 +520,9 @@ namespace ftk
             {
             case Key::Return:
                 event.accept = true;
-                if (p.textCallback)
+                if (p.callback)
                 {
-                    p.textCallback(p.model->getText());
+                    p.callback(p.model->getText());
                 }
                 break;
             case Key::Escape:

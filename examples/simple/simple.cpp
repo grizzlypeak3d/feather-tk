@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     auto textEdit = TextEdit::create(context);
     textEdit->setText({ "Hello world" });
     textEdit->setMarginRole(SizeRole::MarginSmall);
-    textEdit->setTextCallback(
+    textEdit->setCallback(
         [textEdit](const std::vector<std::string>& text)
         {
             std::string s = ftk::join(text, '\n');

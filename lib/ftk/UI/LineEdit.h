@@ -42,26 +42,25 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<LineEditModel>& getModel() const;
 
-        //! Get the text.
+        //! \name Text
+        ///@{
+
         FTK_API const std::string& getText() const;
-
-        //! Set the text.
         FTK_API void setText(const std::string&);
-
-        //! Clear the text.
         FTK_API void clearText();
 
-        //! Set the text callback. The text callback is called when the enter
-        //! key is clicked, and optionally when the text focus is lost.
-        FTK_API void setTextCallback(const std::function<void(const std::string&)>&);
+        //! Set the callback. The callback is triggered when the enter
+        //! key is clicked and optionally when key focus is lost.
+        FTK_API void setCallback(const std::function<void(const std::string&)>&);
 
-        //! Get whether the text callback is called when focus is lost.
-        FTK_API bool hasTextCallbackOnFocusLost() const;
+        //! Get whether the callback is triggered when focus is lost.
+        FTK_API bool hasCallbackOnFocusLost() const;
 
-        //! Set whether the text callback is called when focus is lost.
-        FTK_API void setTextCallbackOnFocusLost(bool);
+        //! Set whether the callback is triggered when focus is lost.
+        FTK_API void setCallbackOnFocusLost(bool);
 
-        //! Set the text changed callback.
+        //! Set the text changed callback. This callback is triggered
+        //! whenever the text is changed.
         FTK_API void setTextChangedCallback(const std::function<void(const std::string&)>&);
 
         //! Get the formatting text.
@@ -73,23 +72,31 @@ namespace ftk
         //! Set the focus callback.
         FTK_API void setFocusCallback(const std::function<void(bool)>&);
 
-        //! Select all.
-        FTK_API void selectAll();
+        ///@}
 
-        //! Clear the selection.
+        //! \name Selection
+        ///@{
+
+        FTK_API void selectAll();
         FTK_API void clearSelection();
 
-        //! Get the font role.
-        FTK_API FontRole getFontRole() const;
+        ///@}
 
-        //! Set the font role.
+        //! \name Font
+        ///@{
+
+        FTK_API FontRole getFontRole() const;
         FTK_API void setFontRole(FontRole);
 
-        //! Get the border role.
-        FTK_API ColorRole getBorderRole() const;
+        ///@}
 
-        //! Set the border role.
+        //! \name Border
+        ///@{
+
+        FTK_API ColorRole getBorderRole() const;
         FTK_API void setBorderRole(ColorRole);
+
+        ///@}
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
