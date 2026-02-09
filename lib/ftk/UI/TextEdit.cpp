@@ -63,10 +63,6 @@ namespace ftk
         p.options = Observable<TextEditOptions>::create();
 
         p.model = model;
-        if (!p.model)
-        {
-            p.model = TextEditModel::create(context);
-        }
 
         p.widget = TextEditWidget::create(context, p.model);
         p.widget->setStretch(Stretch::Expanding);
@@ -95,6 +91,15 @@ namespace ftk
 
     TextEdit::~TextEdit()
     {}
+
+    std::shared_ptr<TextEdit> TextEdit::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<TextEdit>(new TextEdit);
+        out->_init(context, TextEditModel::create(context), parent);
+        return out;
+    }
 
     std::shared_ptr<TextEdit> TextEdit::create(
         const std::shared_ptr<Context>& context,

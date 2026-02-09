@@ -78,10 +78,6 @@ namespace ftk
         _setMousePressEnabled(true);
 
         p.model = model;
-        if (!p.model)
-        {
-            p.model = LineEditModel::create(context);
-        }
 
         p.fontSystem = context->getSystem<FontSystem>();
 
@@ -134,7 +130,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<LineEdit>(new LineEdit);
-        out->_init(context, nullptr, parent);
+        out->_init(context, LineEditModel::create(context), parent);
         return out;
     }
 

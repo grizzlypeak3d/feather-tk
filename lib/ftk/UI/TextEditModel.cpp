@@ -244,21 +244,21 @@ namespace ftk
     void TextEditModel::undo()
     {
         FTK_P();
-        if (p.readOnly)
+        if (p.readOnly->get())
             return;
     }
 
     void TextEditModel::redo()
     {
         FTK_P();
-        if (p.readOnly)
+        if (p.readOnly->get())
             return;
     }
 
     void TextEditModel::cut()
     {
         FTK_P();
-        if (p.readOnly)
+        if (p.readOnly->get())
             return;
         if (auto context = p.context.lock())
         {
@@ -300,7 +300,7 @@ namespace ftk
     void TextEditModel::paste()
     {
         FTK_P();
-        if (p.readOnly)
+        if (p.readOnly->get())
             return;
         if (auto context = p.context.lock())
         {
@@ -339,7 +339,7 @@ namespace ftk
     void TextEditModel::input(const std::string& value)
     {
         FTK_P();
-        if (p.readOnly)
+        if (p.readOnly->get())
             return;
         const auto& text = p.text->get();
         TextEditPos cursor = p.cursor->get();
@@ -395,14 +395,14 @@ namespace ftk
             break;
 
         case Key::Backspace:
-            if (!p.readOnly)
+            if (!p.readOnly->get())
             {
                 _backspace();
                 out = true;
             }
             break;
         case Key::Delete:
-            if (!p.readOnly)
+            if (!p.readOnly->get())
             {
                 _delete();
                 out = true;
@@ -411,7 +411,7 @@ namespace ftk
 
         case Key::Return:
         case Key::KeypadEnter:
-            if (!p.readOnly)
+            if (!p.readOnly->get())
             {
                 _return();
                 out = true;
@@ -436,7 +436,7 @@ namespace ftk
 
         case Key::X:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly)
+                !p.readOnly->get())
             {
                 cut();
                 out = true;
@@ -445,7 +445,7 @@ namespace ftk
 
         case Key::V:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly)
+                !p.readOnly->get())
             {
                 paste();
                 out = true;
@@ -454,7 +454,7 @@ namespace ftk
 
         case Key::Y:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly)
+                !p.readOnly->get())
             {
                 redo();
                 out = true;
@@ -463,7 +463,7 @@ namespace ftk
 
         case Key::Z:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly)
+                !p.readOnly->get())
             {
                 undo();
                 out = true;
@@ -471,7 +471,7 @@ namespace ftk
             break;
 
         case Key::Tab:
-            if (!p.readOnly)
+            if (!p.readOnly->get())
             {
                 _tab(modifiers);
                 out = true;
