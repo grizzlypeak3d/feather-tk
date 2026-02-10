@@ -84,6 +84,41 @@ namespace ftk
             return out;
         }
 
+        ImageType getImageType(TextureType value)
+        {
+            ImageType out = ImageType::None;
+            switch (value)
+            {
+            case TextureType::L_U8:     out = ImageType::L_U8;     break;
+            case TextureType::L_U16:    out = ImageType::L_U16;    break;
+            case TextureType::L_U32:    out = ImageType::L_U32;    break;
+            case TextureType::L_F16:    out = ImageType::L_F16;    break;
+            case TextureType::L_F32:    out = ImageType::L_F32;    break;
+
+            case TextureType::LA_U8:    out = ImageType::LA_U8;    break;
+            case TextureType::LA_U16:   out = ImageType::LA_U16;   break;
+            case TextureType::LA_U32:   out = ImageType::LA_U32;   break;
+            case TextureType::LA_F16:   out = ImageType::LA_F16;   break;
+            case TextureType::LA_F32:   out = ImageType::LA_F32;   break;
+
+            case TextureType::RGB_U8:   out = ImageType::RGB_U8;   break;
+            case TextureType::RGB_U10:  out = ImageType::RGB_U10;  break;
+            case TextureType::RGB_U16:  out = ImageType::RGB_U16;  break;
+            case TextureType::RGB_U32:  out = ImageType::RGB_U32;  break;
+            case TextureType::RGB_F16:  out = ImageType::RGB_F16;  break;
+            case TextureType::RGB_F32:  out = ImageType::RGB_F32;  break;
+
+            case TextureType::RGBA_U8:  out = ImageType::RGBA_U8;  break;
+            case TextureType::RGBA_U16: out = ImageType::RGBA_U16; break;
+            case TextureType::RGBA_U32: out = ImageType::RGBA_U32; break;
+            case TextureType::RGBA_F16: out = ImageType::RGBA_F16; break;
+            case TextureType::RGBA_F32: out = ImageType::RGBA_F32; break;
+
+            default: break;
+            }
+            return out;
+        }
+
         unsigned int getTextureFormat(TextureType value)
         {
             const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =

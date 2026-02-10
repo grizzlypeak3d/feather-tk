@@ -49,6 +49,9 @@ namespace ftk
 
         //! Get a texture type for the given image type.
         FTK_API TextureType getTextureType(ImageType);
+
+        //! Get an image type for the given texture type.
+        FTK_API ImageType getImageType(TextureType);
         
         //! Get the OpenGL texture format.
         FTK_API unsigned int getTextureFormat(TextureType);
