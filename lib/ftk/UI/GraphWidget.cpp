@@ -17,6 +17,88 @@ namespace ftk
 {
     namespace
     {
+        class ColorWidget : public IWidget
+        {
+        protected:
+            void _init(
+                const std::shared_ptr<Context>&,
+                ColorRole,
+                const std::shared_ptr<IWidget>& parent);
+
+            ColorWidget() = default;
+
+        public:
+            virtual ~ColorWidget();
+
+            FTK_API static std::shared_ptr<ColorWidget> create(
+                const std::shared_ptr<Context>&,
+                ColorRole,
+                const std::shared_ptr<IWidget>& parent = nullptr);
+
+            Size2I getSizeHint() const override;
+            void sizeHintEvent(const SizeHintEvent&) override;
+            void drawEvent(const Box2I&, const DrawEvent&) override;
+
+        private:
+            ColorRole _colorRole = ColorRole::None;
+
+            struct SizeData
+            {
+                std::optional<float> displayScale;
+                int margin = 0;
+                int handle = 0;
+            };
+            SizeData _size;
+        };
+
+        void ColorWidget::_init(
+            const std::shared_ptr<Context>& context,
+            ColorRole colorRole,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            IWidget::_init(context, "ftk::ColorWidget", parent);
+            _colorRole = colorRole;
+        }
+
+        ColorWidget::~ColorWidget()
+        {}
+
+        std::shared_ptr<ColorWidget> ColorWidget::create(
+            const std::shared_ptr<Context>& context,
+            ColorRole colorRole,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            auto out = std::shared_ptr<ColorWidget>(new ColorWidget);
+            out->_init(context, colorRole, parent);
+            return out;
+        }
+
+        Size2I ColorWidget::getSizeHint() const
+        {
+            return Size2I(_size.handle, _size.handle) + _size.margin * 2;
+        }
+
+        void ColorWidget::sizeHintEvent(const SizeHintEvent& event)
+        {
+            if (!_size.displayScale.has_value() ||
+                (_size.displayScale.has_value() && _size.displayScale.value() != event.displayScale))
+            {
+                _size.displayScale = event.displayScale;
+                _size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+                _size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            }
+        }
+
+        void ColorWidget::drawEvent(
+            const Box2I& drawRect,
+            const DrawEvent& event)
+        {
+            const Box2I g = margin(getGeometry(), -_size.margin);
+            event.render->drawMesh(
+                circle(center(g), g.w() / 2),
+                event.style->getColorRole(_colorRole));
+        }
+
         class GraphSubWidget : public IWidget
         {
         protected:
@@ -205,9 +287,8 @@ namespace ftk
         for (const auto i : labels)
         {
             auto label = Label::create(context);
-            label->setTextRole(i.first);
+            label->setTextRole(ColorRole::TextDisabled);
             label->setMarginRole(SizeRole::MarginInside);
-            label->setBackgroundRole(ColorRole::Base);
             p.labels[i.first] = label;
             p.labelText[i.first] = i.second;
         }
@@ -219,7 +300,10 @@ namespace ftk
         auto hLayout = HorizontalLayout::create(context, p.layout);
         for (const auto i : labels)
         {
-            p.labels[i.first]->setParent(hLayout);
+            auto hLayout2 = HorizontalLayout::create(context, hLayout);
+            hLayout2->setSpacingRole(SizeRole::SpacingTool);
+            ColorWidget::create(context, i.first, hLayout2);
+            p.labels[i.first]->setParent(hLayout2);
         }
     }
 
