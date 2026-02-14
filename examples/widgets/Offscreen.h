@@ -17,14 +17,18 @@ namespace widgets
     class Offscreen : public ftk::IWidget
     {
     protected:
-        void _init(const std::shared_ptr<Context>&);
+        void _init(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
 
         Offscreen() = default;
 
     public:
         virtual ~Offscreen();
 
-        static std::shared_ptr<Offscreen> create(const std::shared_ptr<Context>&);
+        static std::shared_ptr<IWidget> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
 
         void drawEvent(const Box2I&, const DrawEvent&) override;
 

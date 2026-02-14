@@ -12,9 +12,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Lists::_init(const std::shared_ptr<Context>& context)
+    void Lists::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Lists", nullptr);
+        ftk::IWidget::_init(context, "Lists", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -90,10 +92,12 @@ namespace widgets
     Lists::~Lists()
     {}
 
-    std::shared_ptr<Lists> Lists::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Lists::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Lists>(new Lists);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

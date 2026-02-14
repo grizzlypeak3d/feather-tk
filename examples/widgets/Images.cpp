@@ -19,9 +19,11 @@ namespace ftk_resource
 
 namespace widgets
 {
-    void Images::_init(const std::shared_ptr<Context>& context)
+    void Images::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Images", nullptr);
+        ftk::IWidget::_init(context, "Images", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -48,10 +50,12 @@ namespace widgets
     Images::~Images()
     {}
 
-    std::shared_ptr<Images> Images::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Images::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Images>(new Images);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

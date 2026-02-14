@@ -14,9 +14,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Offscreen::_init(const std::shared_ptr<Context>& context)
+    void Offscreen::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Offscreen", nullptr);
+        ftk::IWidget::_init(context, "Offscreen", parent);
 
         _timer = Timer::create(context);
         _timer->setRepeating(true);
@@ -33,10 +35,12 @@ namespace widgets
     Offscreen::~Offscreen()
     {}
 
-    std::shared_ptr<Offscreen> Offscreen::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Offscreen::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Offscreen>(new Offscreen);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
 

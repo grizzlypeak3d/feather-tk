@@ -18,9 +18,11 @@ namespace widgets
 {
     void Popups::_init(
         const std::shared_ptr<Context>& context,
-        const std::shared_ptr<MenuBar>& menuBar)
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Popups", nullptr);
+        ftk::IWidget::_init(context, "Popups", parent);
+
+        auto menuBar = std::dynamic_pointer_cast<MainWindow>(parent)->getMenuBar();
 
         // Create menus.
         auto menu = Menu::create(context);
@@ -147,12 +149,12 @@ namespace widgets
     Popups::~Popups()
     {}
 
-    std::shared_ptr<Popups> Popups::create(
+    std::shared_ptr<IWidget> Popups::create(
         const std::shared_ptr<Context>& context,
-        const std::shared_ptr<MenuBar>& menuBar)
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Popups>(new Popups);
-        out->_init(context, menuBar);
+        out->_init(context, parent);
         return out;
     }
     

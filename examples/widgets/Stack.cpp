@@ -13,9 +13,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Stack::_init(const std::shared_ptr<Context>& context)
+    void Stack::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Stack", nullptr);
+        ftk::IWidget::_init(context, "Stack", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -77,10 +79,12 @@ namespace widgets
     Stack::~Stack()
     {}
 
-    std::shared_ptr<Stack> Stack::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Stack::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Stack>(new Stack);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

@@ -18,9 +18,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Buttons::_init(const std::shared_ptr<Context>& context)
+    void Buttons::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Buttons", nullptr);
+        ftk::IWidget::_init(context, "Buttons", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -131,10 +133,12 @@ namespace widgets
     Buttons::~Buttons()
     {}
 
-    std::shared_ptr<Buttons> Buttons::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Buttons::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Buttons>(new Buttons);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

@@ -14,9 +14,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void MDI::_init(const std::shared_ptr<Context>& context)
+    void MDI::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "MDI", nullptr);
+        ftk::IWidget::_init(context, "MDI", parent);
 
         // Create a scroll widget.
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
@@ -68,10 +70,12 @@ namespace widgets
     MDI::~MDI()
     {}
 
-    std::shared_ptr<MDI> MDI::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> MDI::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<MDI>(new MDI);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

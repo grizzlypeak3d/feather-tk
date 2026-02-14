@@ -12,9 +12,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Icons::_init(const std::shared_ptr<Context>& context)
+    void Icons::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Icons", nullptr);
+        ftk::IWidget::_init(context, "Icons", parent);
 
         // Create a layout.
         auto layout = GridLayout::create(context);
@@ -41,10 +43,12 @@ namespace widgets
     Icons::~Icons()
     {}
 
-    std::shared_ptr<Icons> Icons::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Icons::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Icons>(new Icons);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

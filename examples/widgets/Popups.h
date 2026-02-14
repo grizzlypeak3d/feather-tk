@@ -15,16 +15,16 @@ namespace widgets
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::shared_ptr<MenuBar>&);
+            const std::shared_ptr<IWidget>& parent);
 
         Popups() = default;
 
     public:
         virtual ~Popups();
 
-        static std::shared_ptr<Popups> create(
+        static std::shared_ptr<IWidget> create(
             const std::shared_ptr<Context>&,
-            const std::shared_ptr<MenuBar>&);
+            const std::shared_ptr<IWidget>& parent);
 
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;

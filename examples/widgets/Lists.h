@@ -12,14 +12,18 @@ namespace widgets
     class Lists : public ftk::IWidget
     {
     protected:
-        void _init(const std::shared_ptr<Context>&);
+        void _init(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
 
         Lists() = default;
 
     public:
         virtual ~Lists();
 
-        static std::shared_ptr<Lists> create(const std::shared_ptr<Context>&);
+        static std::shared_ptr<IWidget> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
 
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;

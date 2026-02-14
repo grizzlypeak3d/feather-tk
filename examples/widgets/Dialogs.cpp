@@ -15,9 +15,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Dialogs::_init(const std::shared_ptr<Context>& context)
+    void Dialogs::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Dialogs", nullptr);
+        ftk::IWidget::_init(context, "Dialogs", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -113,10 +115,12 @@ namespace widgets
     Dialogs::~Dialogs()
     {}
 
-    std::shared_ptr<Dialogs> Dialogs::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Dialogs::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Dialogs>(new Dialogs);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

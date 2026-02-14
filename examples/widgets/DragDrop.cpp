@@ -271,9 +271,11 @@ namespace widgets
         return out;
     }
 
-    void DragDrop::_init(const std::shared_ptr<Context>& context)
+    void DragDrop::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "DragDrop", nullptr);
+        ftk::IWidget::_init(context, "DragDrop", parent);
 
         // Create a layout.
         _layout = HorizontalLayout::create(context, shared_from_this());
@@ -301,10 +303,12 @@ namespace widgets
     DragDrop::~DragDrop()
     {}
 
-    std::shared_ptr<DragDrop> DragDrop::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> DragDrop::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<DragDrop>(new DragDrop);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
 

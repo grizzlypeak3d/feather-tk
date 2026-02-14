@@ -16,9 +16,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Graphs::_init(const std::shared_ptr<Context>& context)
+    void Graphs::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Graphs", nullptr);
+        ftk::IWidget::_init(context, "Graphs", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -79,10 +81,12 @@ namespace widgets
     Graphs::~Graphs()
     {}
 
-    std::shared_ptr<Graphs> Graphs::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Graphs::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Graphs>(new Graphs);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
 

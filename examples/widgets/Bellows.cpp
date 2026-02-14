@@ -15,9 +15,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Bellows::_init(const std::shared_ptr<Context>& context)
+    void Bellows::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Bellows", nullptr);
+        ftk::IWidget::_init(context, "Bellows", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -81,10 +83,12 @@ namespace widgets
     Bellows::~Bellows()
     {}
 
-    std::shared_ptr<Bellows> Bellows::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Bellows::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Bellows>(new Bellows);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
 

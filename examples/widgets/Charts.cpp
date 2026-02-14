@@ -10,9 +10,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Charts::_init(const std::shared_ptr<Context>& context)
+    void Charts::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Charts", nullptr);
+        ftk::IWidget::_init(context, "Charts", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -48,10 +50,12 @@ namespace widgets
     Charts::~Charts()
     {}
 
-    std::shared_ptr<Charts> Charts::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Charts::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Charts>(new Charts);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
 

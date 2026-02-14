@@ -16,9 +16,11 @@ using namespace ftk;
 
 namespace widgets
 {
-    void Sliders::_init(const std::shared_ptr<Context>& context)
+    void Sliders::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
-        ftk::IWidget::_init(context, "Sliders", nullptr);
+        ftk::IWidget::_init(context, "Sliders", parent);
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
@@ -135,10 +137,12 @@ namespace widgets
     Sliders::~Sliders()
     {}
 
-    std::shared_ptr<Sliders> Sliders::create(const std::shared_ptr<Context>& context)
+    std::shared_ptr<IWidget> Sliders::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Sliders>(new Sliders);
-        out->_init(context);
+        out->_init(context, parent);
         return out;
     }
     

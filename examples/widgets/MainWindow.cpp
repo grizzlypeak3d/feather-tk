@@ -20,6 +20,8 @@
 #include "Splitters.h"
 #include "Stack.h"
 
+#include <ftk/UI/Divider.h>
+
 using namespace ftk;
 
 namespace widgets
@@ -30,24 +32,45 @@ namespace widgets
     {
         ftk::MainWindow::_init(context, app, Size2I(1920, 1080));
 
-        _tabWidget = TabWidget::create(context);
-        _tabWidget->addTab("Bellows", Bellows::create(context));
-        _tabWidget->addTab("Buttons", Buttons::create(context));
-        _tabWidget->addTab("Charts", Charts::create(context));
-        _tabWidget->addTab("Dialogs", Dialogs::create(context));
-        _tabWidget->addTab("DragDrop", DragDrop::create(context));
-        _tabWidget->addTab("Graphs", Graphs::create(context));
-        _tabWidget->addTab("Icons", Icons::create(context));
-        _tabWidget->addTab("Images", Images::create(context));
-        _tabWidget->addTab("Layouts", Layouts::create(context));
-        _tabWidget->addTab("Lists", Lists::create(context));
-        _tabWidget->addTab("MDI", MDI::create(context));
-        _tabWidget->addTab("Offscreen", Offscreen::create(context));
-        _tabWidget->addTab("Popups", Popups::create(context, getMenuBar()));
-        _tabWidget->addTab("Sliders", Sliders::create(context));
-        _tabWidget->addTab("Splitters", Splitters::create(context));
-        _tabWidget->addTab("Stack", Stack::create(context));
-        setWidget(_tabWidget);
+        _widgets["Bellows"] = &Bellows::create;
+        _widgets["Buttons"] = &Buttons::create;
+        _widgets["Charts"] = &Charts::create;
+        _widgets["Dialogs"] = &Dialogs::create;
+        _widgets["DragDrop"] = &DragDrop::create;
+        _widgets["Graphs"] = &Graphs::create;
+        _widgets["Icons"] = &Icons::create;
+        _widgets["Images"] = &Images::create;
+        _widgets["Layouts"] = &Layouts::create;
+        _widgets["Lists"] = &Lists::create;
+        _widgets["MDI"] = &MDI::create;
+        _widgets["Offscreen"] = &Offscreen::create;
+        _widgets["Popups"] = &Popups::create;
+        _widgets["Sliders"] = &Sliders::create;
+        _widgets["Splitters"] = &Splitters::create;
+        _widgets["Stack"] = &Stack::create;
+
+        _tabBar = TabBar::create(context);
+        for (const auto& i : _widgets)
+        {
+            _tabBar->addTab(i.first);
+        }
+
+        auto layout = VerticalLayout::create(context);
+        layout->setSpacingRole(SizeRole::None);
+        _tabBar->setParent(layout);
+        Divider::create(context, Orientation::Vertical, layout);
+        _layout = VerticalLayout::create(context, layout);
+        _layout->setSpacingRole(SizeRole::None);
+        _layout->setVStretch(Stretch::Expanding);
+        setWidget(layout);
+
+        _tabUpdate(0);
+
+        _tabBar->setCallback(
+            [this](int index)
+            {
+                _tabUpdate(index);
+            });
     }
 
     MainWindow::~MainWindow()
@@ -60,5 +83,20 @@ namespace widgets
         auto out = std::shared_ptr<MainWindow>(new MainWindow);
         out->_init(context, app);
         return out;
+    }
+
+    void MainWindow::_tabUpdate(int index)
+    {
+        _layout->clear();
+        std::vector<std::string> tmp;
+        for (const auto& i : _widgets)
+        {
+            tmp.push_back(i.first);
+        }
+        if (index >= 0 && index < tmp.size())
+        {
+            auto widget = _widgets[tmp[index]](getContext(), _layout);
+            widget->setVStretch(Stretch::Expanding);
+        }
     }
 }

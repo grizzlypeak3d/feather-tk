@@ -5,7 +5,8 @@
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/MainWindow.h>
-#include <ftk/UI/TabWidget.h>
+#include <ftk/UI/RowLayout.h>
+#include <ftk/UI/TabBar.h>
 
 using namespace ftk;
 
@@ -28,6 +29,12 @@ namespace widgets
             const std::shared_ptr<App>&);
 
     private:
-        std::shared_ptr<ftk::TabWidget> _tabWidget;
+        void _tabUpdate(int);
+
+        std::map<std::string, std::function<std::shared_ptr<IWidget>(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>&)> > _widgets;
+        std::shared_ptr<TabBar> _tabBar;
+        std::shared_ptr<VerticalLayout> _layout;
     };
 }

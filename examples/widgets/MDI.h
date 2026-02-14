@@ -14,14 +14,18 @@ namespace widgets
     class MDI : public IWidget
     {
     protected:
-        void _init(const std::shared_ptr<Context>&);
+        void _init(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
 
         MDI() = default;
 
     public:
         virtual ~MDI();
 
-        static std::shared_ptr<MDI> create(const std::shared_ptr<Context>&);
+        static std::shared_ptr<IWidget> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
 
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
