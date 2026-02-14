@@ -11,8 +11,8 @@ namespace ftk
 {
     class App;
 
-    //! Window frame buffer types.
-    enum class FTK_API_TYPE WindowFrameBufferType
+    //! Window offscreen buffer types.
+    enum class FTK_API_TYPE WindowBufferType
     {
         U8,
         F32,
@@ -20,13 +20,13 @@ namespace ftk
         Count,
         First = U8
     };
-    FTK_ENUM(WindowFrameBufferType);
+    FTK_ENUM(WindowBufferType);
 
-    //! Default window frame buffer.
+    //! Default window buffer type.
 #if defined(FTK_API_GL_4_1)
-    const WindowFrameBufferType windowFrameBufferTypeDefault = WindowFrameBufferType::F32;
+    const WindowBufferType windowBufferTypeDefault = WindowBufferType::F32;
 #elif defined(FTK_API_GLES_2)
-    const WindowFrameBufferType windowFrameBufferTypeDefault = WindowFrameBufferType::U8;
+    const WindowBufferType windowBufferTypeDefault = WindowBufferType::U8;
 #endif // FTK_API_GL_4_1
 
     //! Base class for windows.
@@ -89,14 +89,14 @@ namespace ftk
 
         ///@}
 
-        //! Frame Buffer
+        //! Buffer
         ///@{
 
-        FTK_API const Size2I& getFrameBufferSize() const;
+        FTK_API const Size2I& getBufferSize() const;
 
-        FTK_API WindowFrameBufferType getFrameBufferType() const;
-        FTK_API std::shared_ptr<IObservable<WindowFrameBufferType> > observeFrameBufferType() const;
-        FTK_API void setFrameBufferType(WindowFrameBufferType);
+        FTK_API WindowBufferType getBufferType() const;
+        FTK_API std::shared_ptr<IObservable<WindowBufferType> > observeBufferType() const;
+        FTK_API void setBufferType(WindowBufferType);
 
         ///@}
 
@@ -160,7 +160,7 @@ namespace ftk
     protected:
         virtual void _sizeUpdate(
             const Size2I& windowSize, 
-            const Size2I& frameBufferSize);
+            const Size2I& bufferSize);
         virtual void _update(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,

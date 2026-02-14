@@ -53,10 +53,8 @@ namespace ftk
                         window->setSize(Size2I(1280, 960));
 
                         _print(Format("Window size: {0}").arg(window->getSize()));
-                        _print(Format("Frame buffer size: {0}").
-                            arg(window->getFrameBufferSize()));
-                        _print(Format("Display scale: {0}").
-                            arg(window->getDisplayScale()));
+                        _print(Format("Buffer size: {0}").arg(window->getBufferSize()));
+                        _print(Format("Display scale: {0}").arg(window->getDisplayScale()));
 
                         app->run();
                         app->exit();

@@ -34,6 +34,7 @@ namespace ftk
         std::vector<std::shared_ptr<Action> > windowSizeActions;
         std::vector<std::shared_ptr<Action> > displayScaleActions;
         std::map<ColorStyle, std::shared_ptr<Action> > colorStyleActions;
+        std::map<WindowBufferType, std::shared_ptr<Action> > bufferActions;
         std::shared_ptr<Action> tooltipsAction;
         std::shared_ptr<Divider> menuBarDivider;
         std::shared_ptr<IWidget> centralWidget;
@@ -41,6 +42,7 @@ namespace ftk
 
         std::shared_ptr<Observer<float> > displayScaleObserver;
         std::shared_ptr<Observer<ColorStyle> > colorStyleObserver;
+        std::shared_ptr<Observer<WindowBufferType> > bufferObserver;
         std::shared_ptr<Observer<bool> > tooltipsObserver;
     };
 
@@ -91,6 +93,23 @@ namespace ftk
             p.menus["WindowSize"]->addAction(action);
         }
 
+        p.menus["DisplayScale"] = p.menus["Window"]->addSubMenu("Display Scale");
+        for (size_t i = 0; i < displayScales.size(); ++i)
+        {
+            const float displayScale = displayScales[i];
+            auto action = Action::create(
+                Format("{0}").arg(displayScale).str(),
+                [appWeak, displayScale](bool)
+                {
+                    if (auto app = appWeak.lock())
+                    {
+                        app->setDisplayScale(displayScale);
+                    }
+                });
+            p.displayScaleActions.push_back(action);
+            p.menus["DisplayScale"]->addAction(action);
+        }
+
         p.menus["ColorStyle"] = p.menus["Window"]->addSubMenu("Color Style");
         for (auto colorStyle : getColorStyleEnums())
         {
@@ -107,21 +126,17 @@ namespace ftk
             p.menus["ColorStyle"]->addAction(action);
         }
 
-        p.menus["DisplayScale"] = p.menus["Window"]->addSubMenu("Display Scale");
-        for (size_t i = 0; i < displayScales.size(); ++i)
+        p.menus["BufferType"] = p.menus["Window"]->addSubMenu("Buffer Type");
+        for (auto bufferType : getWindowBufferTypeEnums())
         {
-            const float displayScale = displayScales[i];
             auto action = Action::create(
-                Format("{0}").arg(displayScale).str(),
-                [appWeak, displayScale](bool)
+                getLabel(bufferType),
+                [this, bufferType]
                 {
-                    if (auto app = appWeak.lock())
-                    {
-                        app->setDisplayScale(displayScale);
-                    }
+                    setBufferType(bufferType);
                 });
-            p.displayScaleActions.push_back(action);
-            p.menus["DisplayScale"]->addAction(action);
+            p.bufferActions[bufferType] = action;
+            p.menus["BufferType"]->addAction(action);
         }
 
         p.tooltipsAction = Action::create(
@@ -144,6 +159,19 @@ namespace ftk
         p.menuBar->setParent(p.layout);
         p.menuBarDivider->setParent(p.layout);
 
+        p.displayScaleObserver = Observer<float>::create(
+            app->observeDisplayScale(),
+            [this](float value)
+            {
+                FTK_P();
+                for (size_t i = 0; i < displayScales.size() && i < p.displayScaleActions.size(); ++i)
+                {
+                    p.menus["DisplayScale"]->setChecked(
+                        p.displayScaleActions[i],
+                        displayScales[i] == value);
+                }
+            });
+
         p.colorStyleObserver = Observer<ColorStyle>::create(
             app->observeColorStyle(),
             [this](ColorStyle value)
@@ -157,16 +185,16 @@ namespace ftk
                 }
             });
 
-        p.displayScaleObserver = Observer<float>::create(
-            app->observeDisplayScale(),
-            [this](float value)
+        p.bufferObserver = Observer<WindowBufferType>::create(
+            observeBufferType(),
+            [this](WindowBufferType value)
             {
                 FTK_P();
-                for (size_t i = 0; i < displayScales.size() && i < p.displayScaleActions.size(); ++i)
+                for (auto bufferType : getWindowBufferTypeEnums())
                 {
-                    p.menus["DisplayScale"]->setChecked(
-                        p.displayScaleActions[i],
-                        displayScales[i] == value);
+                    p.menus["BufferType"]->setChecked(
+                        p.bufferActions[bufferType],
+                        bufferType == value);
                 }
             });
 

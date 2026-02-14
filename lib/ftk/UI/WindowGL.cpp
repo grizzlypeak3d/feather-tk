@@ -224,13 +224,13 @@ namespace ftk
     
     namespace
     {
-        gl::TextureType getTextureType(WindowFrameBufferType value)
+        gl::TextureType getTextureType(WindowBufferType value)
         {
             gl::TextureType out = gl::TextureType::None;
             switch (value)
             {
-            case WindowFrameBufferType::U8: out = gl::TextureType::RGBA_U8; break;
-            case WindowFrameBufferType::F32: out = gl::TextureType::RGBA_F32; break;
+            case WindowBufferType::U8: out = gl::TextureType::RGBA_U8; break;
+            case WindowBufferType::F32: out = gl::TextureType::RGBA_F32; break;
             default: break;
             }
             return out;
@@ -244,7 +244,7 @@ namespace ftk
     {
         FTK_P();
 
-        const Size2I& frameBufferSize = getFrameBufferSize();
+        const Size2I& bufferSize = getBufferSize();
         const float displayScale = getDisplayScale();
 
         const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
@@ -257,7 +257,7 @@ namespace ftk
                 style);
             _sizeHintEventRecursive(shared_from_this(), sizeHintEvent);
 
-            setGeometry(Box2I(V2I(), frameBufferSize));
+            setGeometry(Box2I(V2I(), bufferSize));
 
             _clipEventRecursive(
                 shared_from_this(),
@@ -270,16 +270,16 @@ namespace ftk
         {
             p.window->makeCurrent();
 
-            const gl::TextureType textureType = getTextureType(getFrameBufferType());
-            if (gl::doCreate(p.buffer, frameBufferSize, textureType))
+            const gl::TextureType textureType = getTextureType(getBufferType());
+            if (gl::doCreate(p.buffer, bufferSize, textureType))
             {
-                p.buffer = gl::OffscreenBuffer::create(frameBufferSize, textureType);
+                p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
             }
 
             if (p.buffer && (drawUpdate || sizeUpdate))
             {
                 gl::OffscreenBufferBinding bufferBinding(p.buffer);
-                p.render->begin(frameBufferSize);
+                p.render->begin(bufferSize);
                 p.render->setClipRectEnabled(true);
                 DrawEvent drawEvent(
                     fontSystem,
@@ -289,7 +289,7 @@ namespace ftk
                     p.render);
                 _drawEventRecursive(
                     shared_from_this(),
-                    Box2I(V2I(), frameBufferSize),
+                    Box2I(V2I(), bufferSize),
                     drawEvent);
                 p.render->setClipRectEnabled(false);
                 p.render->end();
@@ -304,12 +304,12 @@ namespace ftk
                 glBlitFramebuffer(
                     0,
                     0,
-                    frameBufferSize.w,
-                    frameBufferSize.h,
+                    bufferSize.w,
+                    bufferSize.h,
                     0,
                     0,
-                    frameBufferSize.w,
-                    frameBufferSize.h,
+                    bufferSize.w,
+                    bufferSize.h,
                     GL_COLOR_BUFFER_BIT,
                     GL_LINEAR);
             }
@@ -372,9 +372,9 @@ namespace ftk
                     "transform.mvp",
                     ortho(
                         0.F,
-                        static_cast<float>(frameBufferSize.w),
+                        static_cast<float>(bufferSize.w),
                         0.F,
-                        static_cast<float>(frameBufferSize.h),
+                        static_cast<float>(bufferSize.h),
                         -1.F,
                         1.F));
                 p.shader->setUniform("textureSampler", 0);
@@ -385,8 +385,8 @@ namespace ftk
                 auto mesh = ftk::mesh(Box2I(
                     0,
                     0,
-                    frameBufferSize.w,
-                    frameBufferSize.h));
+                    bufferSize.w,
+                    bufferSize.h));
                 auto vboData = gl::convert(
                     mesh,
                     gl::VBOType::Pos2_F32_UV_U16,

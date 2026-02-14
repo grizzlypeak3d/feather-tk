@@ -14,7 +14,7 @@
 namespace ftk
 {
     FTK_ENUM_IMPL(
-        WindowFrameBufferType,
+        WindowBufferType,
         "U8",
         "F32");
 
@@ -24,10 +24,10 @@ namespace ftk
         std::string title;
         Size2I windowSize;
         Size2I minSize;
-        Size2I frameBufferSize;
+        Size2I bufferSize;
         std::shared_ptr<Observable<bool> > fullScreen;
         std::shared_ptr<Observable<bool> > floatOnTop;
-        std::shared_ptr<Observable<WindowFrameBufferType> > frameBufferType;
+        std::shared_ptr<Observable<WindowBufferType> > bufferType;
         std::shared_ptr<Observable<float> > displayScale;
         std::function<void(void)> closeCallback;
 
@@ -70,7 +70,7 @@ namespace ftk
         p.title = title;
         p.fullScreen = Observable<bool>::create(false);
         p.floatOnTop = Observable<bool>::create(false);
-        p.frameBufferType = Observable<WindowFrameBufferType>::create(windowFrameBufferTypeDefault);
+        p.bufferType = Observable<WindowBufferType>::create(windowBufferTypeDefault);
         p.displayScale = Observable<float>::create(1.F);
 
         setBackgroundRole(ColorRole::Window);
@@ -153,24 +153,24 @@ namespace ftk
         _p->floatOnTop->setIfChanged(value);
     }
 
-    const Size2I& IWindow::getFrameBufferSize() const
+    const Size2I& IWindow::getBufferSize() const
     {
-        return _p->frameBufferSize;
+        return _p->bufferSize;
     }
 
-    WindowFrameBufferType IWindow::getFrameBufferType() const
+    WindowBufferType IWindow::getBufferType() const
     {
-        return _p->frameBufferType->get();
+        return _p->bufferType->get();
     }
 
-    std::shared_ptr<IObservable<WindowFrameBufferType> > IWindow::observeFrameBufferType() const
+    std::shared_ptr<IObservable<WindowBufferType> > IWindow::observeBufferType() const
     {
-        return _p->frameBufferType;
+        return _p->bufferType;
     }
 
-    void IWindow::setFrameBufferType(WindowFrameBufferType value)
+    void IWindow::setBufferType(WindowBufferType value)
     {
-        if (_p->frameBufferType->setIfChanged(value))
+        if (_p->bufferType->setIfChanged(value))
         {
             setDrawUpdate();
         }
@@ -200,7 +200,7 @@ namespace ftk
     {
         FTK_P();
         return p.windowSize.w > 0 ?
-            (p.frameBufferSize.w / static_cast<float>(p.windowSize.w)) :
+            (p.bufferSize.w / static_cast<float>(p.windowSize.w)) :
             0.F;
     }
 
@@ -452,11 +452,11 @@ namespace ftk
 
     void IWindow::_sizeUpdate(
         const Size2I& windowSize,
-        const Size2I& frameBufferSize)
+        const Size2I& bufferSize)
     {
         FTK_P();
         p.windowSize = windowSize;
-        p.frameBufferSize = frameBufferSize;
+        p.bufferSize = bufferSize;
         setSizeUpdate();
         setDrawUpdate();
     }
