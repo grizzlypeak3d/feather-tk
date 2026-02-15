@@ -3,9 +3,11 @@ include(ExternalProject)
 set(SDL3_GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git")
 set(SDL3_GIT_TAG "release-3.2.28")
 
+set(SDL3_STATIC NOT ${BUILD_SHARED_LIBS})
 set(SDL3_ARGS
     ${ftk_DEPS_ARGS}
-    -DSDL_STATIC=${BUILD_SHARED_LIBS}
+    -DSDL_SHARED=${BUILD_SHARED_LIBS}
+    -DSDL_STATIC=${SDL3_STATIC}
     -DSDL_DUMMYVIDEO=OFF
     -DSDL_OPENGL=ON
     -DSDL_OPENGLES=OFF
