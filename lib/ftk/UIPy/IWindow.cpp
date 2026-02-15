@@ -75,9 +75,9 @@ namespace ftk
                 .def_property_readonly("observeFullScreen", &IWindow::observeFullScreen)
                 .def_property("floatOnTop", &IWindow::isFloatOnTop, &IWindow::setFloatOnTop)
                 .def_property_readonly("observeFloatOnTop", &IWindow::observeFloatOnTop)
-                .def_property_readonly("frameBufferSize", &IWindow::getFrameBufferSize)
-                .def_property("frameBufferType", &IWindow::getFrameBufferType, &IWindow::setFrameBufferType)
-                .def_property_readonly("observeFrameBufferType", &IWindow::observeFrameBufferType)
+                .def_property_readonly("bufferSize", &IWindow::getBufferSize)
+                .def_property("bufferType", &IWindow::getBufferType, &IWindow::setBufferType)
+                .def_property_readonly("observeBufferType", &IWindow::observeBufferType)
                 .def_property_readonly("contentScale", &IWindow::getContentScale)
                 .def_property("displayScale", &IWindow::getDisplayScale, &IWindow::setDisplayScale)
                 .def_property_readonly("observeDisplayScale", &IWindow::observeDisplayScale).
