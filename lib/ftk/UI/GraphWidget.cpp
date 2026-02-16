@@ -248,19 +248,28 @@ namespace ftk
 
         void GraphSubWidget::_samplesUpdate()
         {
+            int64_t max = 0;
+            bool maxInit = true;
             bool changed = false;
-            int64_t samplesMax = _samplesMax;
             for (const auto& i : _samples)
             {
                 for (auto j : i.second)
                 {
-                    samplesMax = std::max(samplesMax, j);
+                    if (maxInit)
+                    {
+                        max = j;
+                        maxInit = false;
+                    }
+                    else
+                    {
+                        max = std::max(max, j);
+                    }
                 }
             }
-            if (samplesMax != _samplesMax)
+            if (max != _samplesMax)
             {
+                _samplesMax = max;
                 changed = true;
-                _samplesMax = samplesMax;
             }
             if (changed)
             {
