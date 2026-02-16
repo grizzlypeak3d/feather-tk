@@ -17,14 +17,12 @@
 
 #include <nlohmann/json.hpp>
 
-#include <set>
-
 namespace ftk
 {
     struct DiagModel::Private
     {
-        std::map<std::string, std::function<int64_t(void)> > samplers;
-        std::set<std::string> groups;
+        std::vector<std::pair<std::string, std::function<int64_t(void)> > > samplers;
+        std::vector<std::string> groups;
         std::map<std::string, std::vector<std::string> > names;
         std::shared_ptr<Observable<size_t> > samplesMax;
         std::shared_ptr<ObservableMap<std::string, std::vector<int64_t> > > samples;
@@ -41,36 +39,38 @@ namespace ftk
         p.samplesInc = ObservableMap<std::string, int64_t>::create();
 
         addSampler(
-            "ftk Memory/Images (MB)",
+            "feather-tk Memory/Images (MB)",
             [] { return Image::getTotalByteCount() / megabyte; });
+
         addSampler(
-            "ftk Objects/Images",
+            "feather-tk Objects/Images",
             [] { return Image::getObjectCount(); });
         addSampler(
-            "ftk Objects/IWidgets",
+            "feather-tk Objects/IWidgets",
             [] { return IWidget::getObjectCount(); });
 
         addSampler(
-            "ftkGL Objects/Buffers",
-            [] { return gl::OffscreenBuffer::getObjectCount(); });
-        addSampler(
-            "ftkGL Objects/Meshes",
-            [] { return gl::VBO::getObjectCount(); });
-        addSampler(
-            "ftkGL Objects/Shaders",
-            [] { return gl::Shader::getObjectCount(); });
-        addSampler(
-            "ftkGL Objects/Textures",
-            [] { return gl::Texture::getObjectCount(); });
-        addSampler(
-            "ftkGL Memory/Buffers (MB)",
+            "feather-tk GL Memory/Buffers (MB)",
             [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
         addSampler(
-            "ftkGL Memory/Meshes (MB)",
+            "feather-tk GL Memory/Meshes (MB)",
             [] { return gl::VBO::getTotalByteCount() / megabyte; });
         addSampler(
-            "ftkGL Memory/Textures (MB)",
+            "feather-tk GL Memory/Textures (MB)",
             [] { return gl::Texture::getTotalByteCount() / megabyte; });
+
+        addSampler(
+            "feather-tk GL Objects/Buffers",
+            [] { return gl::OffscreenBuffer::getObjectCount(); });
+        addSampler(
+            "feather-tk GL Objects/Meshes",
+            [] { return gl::VBO::getObjectCount(); });
+        addSampler(
+            "feather-tk GL Objects/Shaders",
+            [] { return gl::Shader::getObjectCount(); });
+        addSampler(
+            "feather-tk GL Objects/Textures",
+            [] { return gl::Texture::getObjectCount(); });
 
         p.timer = Timer::create(context);
         p.timer->setRepeating(true);
@@ -129,16 +129,19 @@ namespace ftk
         const auto s = ftk::split(id, '/');
         if (2 == s.size())
         {
-            p.samplers[id] = sampler;
-            p.groups.insert(s[0]);
+            p.samplers.push_back(std::make_pair(id, sampler));
+            auto i = std::find(p.groups.begin(), p.groups.end(), s[0]);
+            if (i == p.groups.end())
+            {
+                p.groups.push_back(s[0]);
+            }
             p.names[s[0]].push_back(s[1]);
         }
     }
 
-    std::vector<std::string> DiagModel::getGroups() const
+    const std::vector<std::string>& DiagModel::getGroups() const
     {
-        FTK_P();
-        return std::vector<std::string>(p.groups.begin(), p.groups.end());
+        return _p->groups;
     }
 
     std::vector<std::string> DiagModel::getNames(const std::string& group) const

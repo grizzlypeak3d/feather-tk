@@ -17,7 +17,7 @@ namespace ftk
         void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const std::map<ColorRole, std::string>& labels,
+            const std::vector<std::pair<ColorRole, std::string> >& labels,
             const std::shared_ptr<IWidget>& parent);
 
         GraphWidget();
@@ -29,7 +29,7 @@ namespace ftk
         FTK_API static std::shared_ptr<GraphWidget> create(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const std::map<ColorRole, std::string>& labels,
+            const std::vector<std::pair<ColorRole, std::string> >& labels,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the samples.

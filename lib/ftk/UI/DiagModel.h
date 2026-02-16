@@ -35,7 +35,7 @@ namespace ftk
         FTK_API void addSampler(const std::string&, const std::function<int64_t(void)>&);
 
         //! Get the sampler groups.
-        FTK_API std::vector<std::string> getGroups() const;
+        FTK_API const std::vector<std::string>& getGroups() const;
 
         //! Get the sampler names in a group.
         FTK_API std::vector<std::string> getNames(const std::string& group) const;

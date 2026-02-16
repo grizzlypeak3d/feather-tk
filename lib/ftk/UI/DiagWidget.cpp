@@ -40,21 +40,25 @@ namespace ftk
             ColorRole::Green,
             ColorRole::Blue
         };
-        for (const auto& group : model->getGroups())
+
+        const auto& groups = model->getGroups();
+        for (auto i = groups.rbegin(); i != groups.rend(); ++i)
         {
-            std::map<ColorRole, std::string> labels;
+            const auto& group = *i;
+            std::vector<std::pair<ColorRole, std::string> > labels;
             const auto& names = model->getNames(group);
-            for (size_t i = 0; i < names.size() && i < colors.size(); ++i)
+            for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
             {
-                labels[colors[i]] = names[i] + ": {0}";
+                labels.push_back(std::make_pair(colors[j], names[j] + ": {0}"));
             }
             auto graph = GraphWidget::create(context, group, labels, p.layout);
-            for (size_t i = 0; i < names.size() && i < colors.size(); ++i)
+            for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
             {
-                p.samples[group + "/" + names[i]] = std::make_pair(graph, colors[i]);
+                p.samples[group + "/" + names[j]] = std::make_pair(graph, colors[j]);
             }
             p.graphs[group] = graph;
         }
+
         const auto& samples = model->getSamples();
         for (const auto& i : samples)
         {

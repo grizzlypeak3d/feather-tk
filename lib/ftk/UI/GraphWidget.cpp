@@ -280,7 +280,7 @@ namespace ftk
     void GraphWidget::_init(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::map<ColorRole, std::string>& labels,
+        const std::vector<std::pair<ColorRole, std::string> >& labels,
         const std::shared_ptr<IWidget>& parent)
     {
         IWidget::_init(context, "ftk::GraphWidget", parent);
@@ -301,6 +301,7 @@ namespace ftk
         auto label = Label::create(context, title, p.layout);
         p.graph->setParent(p.layout);
         auto hLayout = HorizontalLayout::create(context, p.layout);
+        hLayout->setSpacingRole(SizeRole::SpacingSmall);
         for (const auto i : labels)
         {
             auto hLayout2 = HorizontalLayout::create(context, hLayout);
@@ -320,7 +321,7 @@ namespace ftk
     std::shared_ptr<GraphWidget> GraphWidget::create(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::map<ColorRole, std::string>& labels,
+        const std::vector<std::pair<ColorRole, std::string> >& labels,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<GraphWidget>(new GraphWidget);
