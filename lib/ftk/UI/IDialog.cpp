@@ -22,12 +22,13 @@ namespace ftk
             int margin = 0;
             int border = 0;
             int shadow = 0;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
             TriMesh2F shadow;
             TriMesh2F border;
         };
@@ -106,10 +107,6 @@ namespace ftk
         const bool changed = value != getGeometry();
         IPopup::setGeometry(value);
         FTK_P();
-        if (changed)
-        {
-            p.draw.reset();
-        }
 
         const auto& children = getChildren();
         if (!children.empty())
@@ -148,6 +145,25 @@ namespace ftk
                 p.draw.reset();
             }
             children.front()->setGeometry(g2);
+        }
+
+        if (changed)
+        {
+            if (!children.empty())
+            {
+                p.size.g = children.front()->getGeometry();
+                p.size.g2 = Box2I(
+                    p.size.g.min.x - p.size.shadow,
+                    p.size.g.min.y,
+                    p.size.g.w() + p.size.shadow * 2,
+                    p.size.g.h() + p.size.shadow);
+            }
+            else
+            {
+                p.size.g = Box2I();
+                p.size.g2 = Box2I();
+            }
+            p.draw.reset();
         }
     }
 
@@ -189,31 +205,24 @@ namespace ftk
             if (!children.empty())
             {
                 p.draw = Private::DrawData();
-                p.draw->g = children.front()->getGeometry();
-                const Box2I g2(
-                    p.draw->g.min.x - p.size.shadow,
-                    p.draw->g.min.y,
-                    p.draw->g.w() + p.size.shadow * 2,
-                    p.draw->g.h() + p.size.shadow);
-                p.draw->shadow = shadow(g2, p.size.shadow);
-                p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
+                p.draw->shadow = shadow(p.size.g2, p.size.shadow);
+                p.draw->border = border(margin(p.size.g, p.size.border), p.size.border);
             }
             else
             {
-                p.draw->g = Box2I();
                 p.draw->shadow = TriMesh2F();
                 p.draw->border = TriMesh2F();
             }
         }
 
-        if (!getChildren().empty())
+        if (p.size.g.isValid())
         {
             event.render->drawColorMesh(p.draw->shadow);
             event.render->drawMesh(
                 p.draw->border,
                 event.style->getColorRole(ColorRole::Border));
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Window));
         }
     }

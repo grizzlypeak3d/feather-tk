@@ -49,7 +49,7 @@ namespace ftk
             const auto& names = model->getNames(group);
             for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
             {
-                labels.push_back(std::make_pair(colors[j], names[j] + ": {0}"));
+                labels.push_back(std::make_pair(colors[j], names[j]));
             }
             auto graph = GraphWidget::create(context, group, labels, p.layout);
             for (size_t j = 0; j < names.size() && j < colors.size(); ++j)

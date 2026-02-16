@@ -94,8 +94,6 @@ namespace ftk
         FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
-        Box2I _getSliderGeometry() const;
-
         int _posToValue(int) const;
         int _valueToPos(int) const;
 

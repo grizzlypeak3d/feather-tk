@@ -129,6 +129,9 @@ namespace ftk
             int handle = 0;
             int shadow = 0;
             std::array<int, 4> margins;
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
         };
         SizeData size;
 
@@ -267,60 +270,21 @@ namespace ftk
         const bool changed = value != getGeometry();
         IMouseWidget::setGeometry(value);
         FTK_P();
+
         if (changed)
         {
+            p.size.g = getGeometry();
+            p.size.g2 = ftk::margin(
+                p.size.g,
+                -p.size.margins[0],
+                -p.size.margins[1],
+                -p.size.margins[2],
+                -p.size.margins[3]);
+            p.size.g3 = ftk::margin(p.size.g2, -p.size.border);
             p.draw.reset();
         }
 
-        const Box2I g = ftk::margin(
-            value,
-            -(p.size.margins[0] + p.size.border),
-            -(p.size.margins[1] + p.size.border),
-            -(p.size.margins[2] + p.size.border),
-            -(p.size.margins[3] + p.size.border));
-        p.layout->setGeometry(g);
-
-        /*p.mouse.resizeBoxes.clear();
-        p.mouse.resizeBoxes[MDIResize::North] = Box2I(
-            g.min.x + p.size.handle,
-            g.min.y - p.size.handle,
-            g.w() - p.size.handle * 2,
-            p.size.handle);
-        p.mouse.resizeBoxes[MDIResize::NorthEast] = Box2I(
-            g.max.x - p.size.handle,
-            g.min.y - p.size.handle,
-            p.size.handle * 2,
-            p.size.handle * 2);
-        p.mouse.resizeBoxes[MDIResize::East] = Box2I(
-            g.max.x,
-            g.min.y + p.size.handle,
-            p.size.handle,
-            g.h() - p.size.handle * 2);
-        p.mouse.resizeBoxes[MDIResize::SouthEast] = Box2I(
-            g.max.x - p.size.handle,
-            g.max.y - p.size.handle,
-            p.size.handle * 2,
-            p.size.handle * 2);
-        p.mouse.resizeBoxes[MDIResize::South] = Box2I(
-            g.min.x + p.size.handle,
-            g.max.y,
-            g.w() - p.size.handle * 2,
-            p.size.handle);
-        p.mouse.resizeBoxes[MDIResize::SouthWest] = Box2I(
-            g.min.x - p.size.handle,
-            g.max.y - p.size.handle,
-            p.size.handle * 2,
-            p.size.handle * 2);
-        p.mouse.resizeBoxes[MDIResize::West] = Box2I(
-            g.min.x - p.size.handle,
-            g.min.y + p.size.handle,
-            p.size.handle,
-            g.h() - p.size.handle * 2);
-        p.mouse.resizeBoxes[MDIResize::NorthWest] = Box2I(
-            g.min.x - p.size.handle,
-            g.min.y - p.size.handle,
-            p.size.handle * 2,
-            p.size.handle * 2);*/
+        p.layout->setGeometry(p.size.g3);
     }
 
     void MDIWidget::sizeHintEvent(const SizeHintEvent& event)
@@ -359,20 +323,12 @@ namespace ftk
         IMouseWidget::drawEvent(drawRect, event);
         FTK_P();
 
-        const Box2I& g = getGeometry();
-        const Box2I g2 = ftk::margin(
-            g,
-            -p.size.margins[0],
-            -p.size.margins[1],
-            -p.size.margins[2],
-            -p.size.margins[3]);
-        const Box2I g3 = ftk::margin(g2, -p.size.border);
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(g3, p.size.border);
+            p.draw->border = border(p.size.g2, p.size.border);
             p.draw->shadow = shadow(
-                ftk::margin(g2, p.size.shadow, 0, p.size.shadow, p.size.shadow),
+                ftk::margin(p.size.g2, p.size.shadow, 0, p.size.shadow, p.size.shadow),
                 p.size.shadow);
         }
 
@@ -381,7 +337,7 @@ namespace ftk
         if (p.mouse.resize != MDIResize::None)
         {
             event.render->drawRect(
-                getResizeBox(p.mouse.resize, g2, p.size.handle),
+                getResizeBox(p.mouse.resize, p.size.g2, p.size.handle),
                 event.style->getColorRole(ColorRole::Checked));
         }
 
@@ -390,7 +346,7 @@ namespace ftk
             event.style->getColorRole(ColorRole::Border));
 
         event.render->drawRect(
-            g3,
+            p.size.g3,
             event.style->getColorRole(ColorRole::Window));
     }
 

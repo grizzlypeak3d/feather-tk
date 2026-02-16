@@ -40,12 +40,12 @@ namespace ftk
         {
             std::optional<float> displayScale;
             FontMetrics fontMetrics;
+            Box2I g;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
             std::vector<TriMesh2F> meshes;
         };
         std::optional<DrawData> draw;
@@ -118,6 +118,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = value;
             p.draw.reset();
         }
     }
@@ -155,10 +156,8 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            const Box2I& g = getGeometry();
-            p.draw->g = g;
             p.draw->meshes.clear();
-            const float r = g.w() / 2.F;
+            const float r = p.size.g.w() / 2.F;
             float a = 0.F;
             for (size_t i = 0; i < p.data.size(); ++i)
             {
@@ -182,7 +181,7 @@ namespace ftk
             }
         }
 
-        const V2I c = center(p.draw->g);
+        const V2I c = center(p.size.g);
         for (size_t i = 0; i < p.data.size(); ++i)
         {
             event.render->drawMesh(

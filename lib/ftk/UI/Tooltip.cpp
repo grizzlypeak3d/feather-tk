@@ -23,12 +23,13 @@ namespace ftk
             int border = 0;
             int handle = 0;
             int shadow = 0;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
             TriMesh2F shadow;
             TriMesh2F border;
         };
@@ -147,17 +148,15 @@ namespace ftk
         const bool changed = g != p.label->getGeometry();
         p.label->setGeometry(g);
 
-        if (!p.draw.has_value() || changed)
+        if (changed)
         {
-            p.draw = Private::DrawData();
-            p.draw->g = g;
-            const Box2I g2(
+            p.size.g = g;
+            p.size.g2 = Box2I(
                 g.min.x - p.size.shadow,
                 g.min.y,
                 g.w() + p.size.shadow * 2,
                 g.h() + p.size.shadow);
-            p.draw->shadow = shadow(g2, p.size.shadow);
-            p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
+            p.draw.reset();
         }
     }
 
@@ -193,6 +192,13 @@ namespace ftk
         IPopup::drawEvent(drawRect, event);
         FTK_P();
 
+        if (!p.draw.has_value())
+        {
+            p.draw = Private::DrawData();
+            p.draw->shadow = shadow(p.size.g2, p.size.shadow);
+            p.draw->border = border(margin(p.size.g, p.size.border), p.size.border);
+        }
+
         if (p.draw.has_value())
         {
             event.render->drawColorMesh(p.draw->shadow);
@@ -200,7 +206,7 @@ namespace ftk
                 p.draw->border,
                 event.style->getColorRole(ColorRole::Border));
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::TooltipWindow));
         }
     }

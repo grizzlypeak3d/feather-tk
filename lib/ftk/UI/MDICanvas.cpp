@@ -380,7 +380,7 @@ namespace ftk
         }
         event.render->drawLines(
             lines,
-            event.style->getColorRole(ColorRole::Border),
+            event.style->getColorRole(ColorRole::Button),
             options);
     }
 

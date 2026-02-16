@@ -51,13 +51,13 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
             TriMesh2F background;
             TriMesh2F border;
             TriMesh2F keyFocus;
@@ -207,6 +207,8 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = value;
+            p.size.g2 = margin(p.size.g, -(p.size.margin + p.size.keyFocus));
             p.draw.reset();
         }
     }
@@ -297,11 +299,9 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->background = rect(p.draw->g);
-            p.draw->border = border(p.draw->g, p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->background = rect(p.size.g);
+            p.draw->border = border(p.size.g, p.size.border);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
         }
 
         // Draw the background.
@@ -330,7 +330,7 @@ namespace ftk
         }
 
         // Draw the icon.
-        int x = p.draw->g2.x();
+        int x = p.size.g2.x();
         if (p.iconImage)
         {
             const Size2I& iconSize = p.iconImage->getSize();
@@ -338,7 +338,7 @@ namespace ftk
                 p.iconImage,
                 Box2I(
                     x,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.size.g2.y() + p.size.g2.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(isEnabled() ?
@@ -358,7 +358,7 @@ namespace ftk
                 p.draw->glyphs,
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+                    p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(isEnabled() ?
                     ColorRole::Text :
                     ColorRole::TextDisabled));
@@ -371,8 +371,8 @@ namespace ftk
             event.render->drawImage(
                 p.arrowIconImage,
                 Box2I(
-                    p.draw->g2.x() + p.draw->g2.w() - iconSize.w,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.size.g2.x() + p.size.g2.w() - iconSize.w,
+                    p.size.g2.y() + p.size.g2.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(isEnabled() ?

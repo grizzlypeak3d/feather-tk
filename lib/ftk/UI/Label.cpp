@@ -29,13 +29,13 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
         std::optional<DrawData> draw;
@@ -212,6 +212,8 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
+            p.size.g2 = margin(p.size.g, -p.size.hMargin, -p.size.vMargin, -p.size.hMargin, -p.size.vMargin);
             p.draw.reset();
         }
     }
@@ -259,18 +261,16 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
-            p.draw->g2 = margin(p.draw->g, -p.size.hMargin, -p.size.vMargin, -p.size.hMargin, -p.size.vMargin);
+            if (!p.text.empty())
+            {
+                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
+            }
         }
 
-        if (!p.text.empty() && p.draw->glyphs.empty())
-        {
-            p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
-        }
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            p.draw->g2.min,
+            p.size.g2.min,
             event.style->getColorRole(
                 isEnabled() ?
                 p.textRole :

@@ -89,12 +89,14 @@ namespace ftk
             std::optional<float> displayScale;
             int border = 0;
             int shadow = 0;
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
             TriMesh2F shadow;
             TriMesh2F border;
         };
@@ -247,18 +249,16 @@ namespace ftk
         const bool changed = g != p.containerWidget->getGeometry();
         p.containerWidget->setGeometry(g);
 
-        if (!p.draw.has_value() || changed)
+        if (changed)
         {
-            p.draw = Private::DrawData();
-            p.draw->g = g;
-            const Box2I g2 = margin(g, p.size.border);
-            const Box2I g3 = Box2I(
+            p.size.g = g;
+            p.size.g2 = margin(g, p.size.border);
+            p.size.g3 = Box2I(
                 g.min.x - p.size.shadow,
                 g.min.y,
                 g.w() + p.size.shadow * 2,
                 g.h() + p.size.shadow);
-            p.draw->shadow = shadow(g3, p.size.shadow);
-            p.draw->border = border(g2, p.size.border);
+            p.draw.reset();
         }
     }
 
@@ -294,16 +294,20 @@ namespace ftk
         IPopup::drawEvent(drawRect, event);
         FTK_P();
 
-        if (p.draw.has_value())
+        if (!p.draw.has_value())
         {
-            event.render->drawColorMesh(p.draw->shadow);
-            event.render->drawMesh(
-                p.draw->border,
-                event.style->getColorRole(ColorRole::Border));
-            event.render->drawRect(
-                p.draw->g,
-                event.style->getColorRole(p.popupRole));
+            p.draw = Private::DrawData();
+            p.draw->shadow = shadow(p.size.g3, p.size.shadow);
+            p.draw->border = border(p.size.g2, p.size.border);
         }
+
+        event.render->drawColorMesh(p.draw->shadow);
+        event.render->drawMesh(
+            p.draw->border,
+            event.style->getColorRole(ColorRole::Border));
+        event.render->drawRect(
+            p.size.g,
+            event.style->getColorRole(p.popupRole));
     }
 
     void IWidgetPopup::mousePressEvent(MouseClickEvent& event)

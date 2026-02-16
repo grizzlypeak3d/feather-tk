@@ -24,13 +24,13 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -88,6 +88,8 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = value;
+            p.size.g2 = margin(p.size.g, -(p.size.margin + p.size.keyFocus));
             p.draw.reset();
         }
     }
@@ -135,9 +137,7 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
         }
 
         // Draw the background.
@@ -145,7 +145,7 @@ namespace ftk
         if (colorRole != ColorRole::None)
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(colorRole));
         }
 
@@ -161,13 +161,13 @@ namespace ftk
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
@@ -179,7 +179,7 @@ namespace ftk
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            V2I(p.draw->g2.x() + p.size.pad, p.draw->g2.y()),
+            V2I(p.size.g2.x() + p.size.pad, p.size.g2.y()),
             event.style->getColorRole(ColorRole::Text));
     }
 }

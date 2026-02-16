@@ -24,13 +24,13 @@ namespace ftk
             std::optional<float> displayScale;
             int border = 0;
             Size2I sizeHint;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
             TriMesh2F border;
-            Box2I g2;
         };
         std::optional<DrawData> draw;
     };
@@ -125,6 +125,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g2 = margin(value, -p.size.border);
             p.draw.reset();
         }
     }
@@ -168,14 +169,13 @@ namespace ftk
             p.draw = Private::DrawData();
             const Box2I& g = getGeometry();
             p.draw->border = border(g, p.size.border);
-            p.draw->g2 = margin(g, -p.size.border);
         }
 
         event.render->drawMesh(
             p.draw->border,
             event.style->getColorRole(ColorRole::Border));
-        event.render->drawRect(p.draw->g2, Color4F(0.F, 0.F, 0.F));
-        event.render->drawRect(p.draw->g2, p.color);
+        event.render->drawRect(p.size.g2, Color4F(0.F, 0.F, 0.F));
+        event.render->drawRect(p.size.g2, p.color);
     }
 
     void ColorSwatch::mousePressEvent(MouseClickEvent& event)

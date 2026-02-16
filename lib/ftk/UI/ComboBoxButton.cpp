@@ -23,13 +23,13 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -92,6 +92,8 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = value;
+            p.size.g2 = margin(p.size.g, -(p.size.margin + p.size.keyFocus));
             p.draw.reset();
         }
     }
@@ -146,16 +148,14 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
         }
 
         // Draw the background.
         if (_buttonRole != ColorRole::None)
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(_buttonRole));
         }
 
@@ -171,24 +171,24 @@ namespace ftk
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
         // Draw the icon.
-        int x = p.draw->g2.x();
+        int x = p.size.g2.x();
         if (auto image = _checked && _checkedIconImage ? _checkedIconImage : _iconImage)
         {
             const Size2I& iconSize = _iconImage->getSize();
             const Box2I iconBox(
                 x,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                p.size.g2.y() + p.size.g2.h() / 2 - iconSize.h / 2,
                 iconSize.w,
                 iconSize.h);
             if (_checked)
@@ -215,7 +215,7 @@ namespace ftk
                 p.draw->glyphs,
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+                    p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(ColorRole::Text));
         }
     }

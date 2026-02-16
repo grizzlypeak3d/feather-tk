@@ -39,37 +39,37 @@ namespace ftk
         p.samplesInc = ObservableMap<std::string, int64_t>::create();
 
         addSampler(
-            "feather-tk Memory/Images (MB)",
+            "feather-tk Memory/Images: {0}MB",
             [] { return Image::getTotalByteCount() / megabyte; });
 
         addSampler(
-            "feather-tk Objects/Images",
+            "feather-tk Objects/Images: {0}",
             [] { return Image::getObjectCount(); });
         addSampler(
-            "feather-tk Objects/IWidgets",
+            "feather-tk Objects/IWidgets: {0}",
             [] { return IWidget::getObjectCount(); });
 
         addSampler(
-            "feather-tk GL Memory/Buffers (MB)",
+            "feather-tk GL Memory/Buffers: {0}MB",
             [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
         addSampler(
-            "feather-tk GL Memory/Meshes (MB)",
+            "feather-tk GL Memory/Meshes: {0}MB",
             [] { return gl::VBO::getTotalByteCount() / megabyte; });
         addSampler(
-            "feather-tk GL Memory/Textures (MB)",
+            "feather-tk GL Memory/Textures: {0}MB",
             [] { return gl::Texture::getTotalByteCount() / megabyte; });
 
         addSampler(
-            "feather-tk GL Objects/Buffers",
+            "feather-tk GL Objects/Buffers: {0}",
             [] { return gl::OffscreenBuffer::getObjectCount(); });
         addSampler(
-            "feather-tk GL Objects/Meshes",
+            "feather-tk GL Objects/Meshes: {0}",
             [] { return gl::VBO::getObjectCount(); });
         addSampler(
-            "feather-tk GL Objects/Shaders",
+            "feather-tk GL Objects/Shaders: {0}",
             [] { return gl::Shader::getObjectCount(); });
         addSampler(
-            "feather-tk GL Objects/Textures",
+            "feather-tk GL Objects/Textures: {0}",
             [] { return gl::Texture::getObjectCount(); });
 
         p.timer = Timer::create(context);

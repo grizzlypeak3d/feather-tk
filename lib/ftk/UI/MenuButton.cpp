@@ -42,13 +42,13 @@ namespace ftk
             Size2I textSize;
             Size2I shortcutSize;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > textGlyphs;
             std::vector<std::shared_ptr<Glyph> > shortcutGlyphs;
@@ -220,6 +220,8 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = value;
+            p.size.g2 = margin(p.size.g, -(p.size.margin + p.size.keyFocus));
             p.draw.reset();
         }
     }
@@ -302,16 +304,14 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
         }
 
         // Draw the background.
         if (_buttonRole != ColorRole::None)
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(_buttonRole));
         }
 
@@ -327,24 +327,24 @@ namespace ftk
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
         // Draw the icon.
-        int x = p.draw->g2.x();
+        int x = p.size.g2.x();
         if (auto image = _checked && _checkedIconImage ? _checkedIconImage : _iconImage)
         {
             const Size2I& iconSize = _iconImage->getSize();
             const Box2I iconRect(
                 x,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                p.size.g2.y() + p.size.g2.h() / 2 - iconSize.h / 2,
                 iconSize.w,
                 iconSize.h);
             if (_checked)
@@ -373,7 +373,7 @@ namespace ftk
                 p.draw->textGlyphs,
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+                    p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(isEnabled() ?
                     ColorRole::Text :
                     ColorRole::TextDisabled));
@@ -387,8 +387,8 @@ namespace ftk
                 p.draw->shortcutGlyphs = event.fontSystem->getGlyphs(p.shortcutText, p.size.fontInfo);
             }
             const V2I pos(
-                p.draw->g2.max.x - p.size.shortcutSize.w - p.size.pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.shortcutSize.h / 2);
+                p.size.g2.max.x - p.size.shortcutSize.w - p.size.pad,
+                p.size.g2.y() + p.size.g2.h() / 2 - p.size.shortcutSize.h / 2);
             event.render->drawText(
                 p.draw->shortcutGlyphs,
                 p.size.fontMetrics,
@@ -405,8 +405,8 @@ namespace ftk
             event.render->drawImage(
                 p.subMenuImage,
                 Box2I(
-                    p.draw->g2.max.x - iconSize.w,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.size.g2.max.x - iconSize.w,
+                    p.size.g2.y() + p.size.g2.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(isEnabled() ?

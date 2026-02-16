@@ -49,14 +49,14 @@ namespace ftk
             Size2I formatSize;
             std::vector<Box2I> glyphBoxes;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
             TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
@@ -266,8 +266,12 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
+            p.size.g2 = margin(p.size.g, -p.size.keyFocus);
+            p.size.g3 = margin(p.size.g2, -p.size.margin * 2, -p.size.margin);
+
             // Adjust scroll position if necessary.
-            const Box2I textBox = _getTextBox();
+            const Box2I textBox = p.size.g3;
             const int diff = textBox.w() - p.textBox.w();
             if (diff > 0)
             {
@@ -367,23 +371,6 @@ namespace ftk
         }
     }
 
-    Box2I LineEdit::_getBorderBox() const
-    {
-        return align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
-    }
-
-    Box2I LineEdit::_getBackgroundBox() const
-    {
-        FTK_P();
-        return margin(_getBorderBox(), -p.size.keyFocus);
-    }
-
-    Box2I LineEdit::_getTextBox() const
-    {
-        FTK_P();
-        return margin(_getBackgroundBox(), -p.size.margin * 2, -p.size.margin);
-    }
-
     void LineEdit::drawEvent(
         const Box2I& drawRect,
         const DrawEvent& event)
@@ -394,14 +381,16 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = _getBorderBox();
-            p.draw->g2 = _getBackgroundBox();
-            p.draw->g3 = _getTextBox();
-            p.draw->border = border(p.draw->g, p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->border = border(p.size.g, p.size.border);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
         }
 
         const bool enabled = isEnabled();
+
+        // Draw the background.
+        event.render->drawRect(
+            p.size.g,
+            event.style->getColorRole(ColorRole::Base));
 
         // Draw the focus and border.
         const bool keyFocus = hasKeyFocus();
@@ -409,17 +398,11 @@ namespace ftk
             keyFocus ? p.draw->keyFocus : p.draw->border,
             event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
 
-
-        // Draw the background.
-        event.render->drawRect(
-            p.draw->g2,
-            event.style->getColorRole(ColorRole::Base));
-
         // Enable clipping.
         const ClipRectEnabledState clipRectEnabledState(event.render);
         const ClipRectState clipRectState(event.render);
         event.render->setClipRectEnabled(true);
-        event.render->setClipRect(intersect(p.draw->g2, drawRect));
+        event.render->setClipRect(intersect(p.size.g2, drawRect));
 
         // Draw the selection.
         const std::string& text = p.model->getText();
@@ -431,17 +414,17 @@ namespace ftk
             const std::string text1 = text.substr(0, selection.max());
             const int x1 = event.fontSystem->getSize(text1, p.size.fontInfo).w;
             event.render->drawRect(
-                Box2I(p.draw->g3.x() - p.scroll + x0,
-                    p.draw->g3.y(),
+                Box2I(p.size.g3.x() - p.scroll + x0,
+                    p.size.g3.y(),
                     x1 - x0 + 1,
-                    p.draw->g3.h()),
+                    p.size.g3.h()),
                 event.style->getColorRole(ColorRole::Checked));
         }
 
         // Draw the text.
         const V2I pos(
-            p.draw->g3.x() - p.scroll,
-            p.draw->g3.y() + p.draw->g3.h() / 2 - p.size.fontMetrics.lineHeight / 2);
+            p.size.g3.x() - p.scroll,
+            p.size.g3.y() + p.size.g3.h() / 2 - p.size.fontMetrics.lineHeight / 2);
         if (!text.empty() && p.draw->glyphs.empty())
         {
             p.draw->glyphs = event.fontSystem->getGlyphs(text, p.size.fontInfo);
@@ -459,10 +442,10 @@ namespace ftk
         {
             event.render->drawRect(
                 Box2I(
-                    p.draw->g3.x() - p.scroll + _toPos(p.model->getCursor()),
-                    p.draw->g3.y(),
+                    p.size.g3.x() - p.scroll + _toPos(p.model->getCursor()),
+                    p.size.g3.y(),
                     p.size.border,
-                    p.draw->g3.h()),
+                    p.size.g3.h()),
                 event.style->getColorRole(ColorRole::Text));
         }
     }
@@ -471,9 +454,9 @@ namespace ftk
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
-        if (_isMousePressed() && p.draw.has_value())
+        if (_isMousePressed())
         {
-            const int cursor = _toCursor(event.pos.x - p.draw->g3.min.x + p.scroll);
+            const int cursor = _toCursor(event.pos.x - p.size.g3.min.x + p.scroll);
             p.model->setCursor(cursor);
             p.model->setSelection(LineEditSelection(p.cursorStart, cursor));
         }
@@ -483,11 +466,8 @@ namespace ftk
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
-        if (p.draw.has_value())
-        {
-            p.cursorStart = _toCursor(event.pos.x - p.draw->g3.min.x + p.scroll);
-            p.model->setCursor(p.cursorStart);
-        }
+        p.cursorStart = _toCursor(event.pos.x - p.size.g3.min.x + p.scroll);
+        p.model->setCursor(p.cursorStart);
         takeKeyFocus();
     }
 
@@ -594,19 +574,16 @@ namespace ftk
     void LineEdit::_scrollUpdate(int value)
     {
         FTK_P();
-        if (p.draw.has_value())
+        const int pos = _toPos(value);
+        if (pos > p.scroll + p.size.g3.w())
         {
-            const int pos = _toPos(value);
-            if (pos > p.scroll + p.draw->g3.w())
-            {
-                p.scroll = pos - p.draw->g3.w();
-                setDrawUpdate();
-            }
-            else if (pos < p.scroll)
-            {
-                p.scroll = pos;
-                setDrawUpdate();
-            }
+            p.scroll = pos - p.size.g3.w();
+            setDrawUpdate();
+        }
+        else if (pos < p.scroll)
+        {
+            p.scroll = pos;
+            setDrawUpdate();
         }
     }
 }

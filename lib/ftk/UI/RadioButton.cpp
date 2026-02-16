@@ -24,15 +24,14 @@ namespace ftk
             Size2I textSize;
             int diameter = 0;
             Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
-            Box2I g4;
             TriMesh2F keyFocus;
             TriMesh2F button0;
             TriMesh2F button1;
@@ -115,6 +114,13 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = value;
+            p.size.g2 = margin(p.size.g, -(p.size.margin + p.size.keyFocus));
+            p.size.g3 = Box2I(
+                p.size.g2.x(),
+                p.size.g2.y() + p.size.g2.h() / 2 - p.size.diameter / 2,
+                p.size.diameter,
+                p.size.diameter);
             p.draw.reset();
         }
     }
@@ -168,16 +174,9 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->g3 = Box2I(
-                p.draw->g2.x(),
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.diameter / 2,
-                p.size.diameter,
-                p.size.diameter);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
-            p.draw->button0 = circle(center(p.draw->g3), p.size.diameter / 2);
-            p.draw->button1 = circle(center(p.draw->g3), p.size.diameter / 2 - p.size.border);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
+            p.draw->button0 = circle(center(p.size.g3), p.size.diameter / 2);
+            p.draw->button1 = circle(center(p.size.g3), p.size.diameter / 2 - p.size.border);
         }
 
         // Draw the focus.
@@ -192,13 +191,13 @@ namespace ftk
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.size.g,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
@@ -218,8 +217,8 @@ namespace ftk
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            V2I(p.draw->g2.x() + p.size.diameter + p.size.spacing + p.size.pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+            V2I(p.size.g2.x() + p.size.diameter + p.size.spacing + p.size.pad,
+                p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
             event.style->getColorRole(isEnabled() ?
                 ColorRole::Text :
                 ColorRole::TextDisabled));

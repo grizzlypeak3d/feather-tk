@@ -91,12 +91,13 @@ namespace ftk
         {
             std::optional<float> displayScale;
             int shadow = 0;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
             TriMesh2F shadow;
         };
         std::optional<DrawData> draw;
@@ -259,16 +260,15 @@ namespace ftk
         const bool changed = g != p.menuPopupWidget->getGeometry();
         p.menuPopupWidget->setGeometry(g);
 
-        if (!p.draw.has_value() || changed)
+        if (changed)
         {
-            p.draw = Private::DrawData();
-            p.draw->g = g;
-            const Box2I g2(
+            p.size.g = g;
+            p.size.g2 = Box2I(
                 g.min.x - p.size.shadow,
                 g.min.y,
                 g.w() + p.size.shadow * 2,
                 g.h() + p.size.shadow);
-            p.draw->shadow = shadow(g2, p.size.shadow);
+            p.draw.reset();
         }
     }
 
@@ -302,13 +302,17 @@ namespace ftk
     {
         IPopup::drawEvent(drawRect, event);
         FTK_P();
-        if (p.draw.has_value())
+
+        if (!p.draw.has_value())
         {
-            event.render->drawColorMesh(p.draw->shadow);
-            event.render->drawRect(
-                p.draw->g,
-                event.style->getColorRole(p.popupRole));
+            p.draw = Private::DrawData();
+            p.draw->shadow = shadow(p.size.g2, p.size.shadow);
         }
+
+        event.render->drawColorMesh(p.draw->shadow);
+        event.render->drawRect(
+            p.size.g,
+            event.style->getColorRole(p.popupRole));
     }
 
     void IMenuPopup::mousePressEvent(MouseClickEvent& event)

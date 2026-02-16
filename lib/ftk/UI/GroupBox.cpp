@@ -23,13 +23,13 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Box2I g;
+            Box2I g2;
         };
         SizeData size;
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
             TriMesh2F border;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -133,6 +133,12 @@ namespace ftk
         FTK_P();
         if (changed)
         {
+            p.size.g = getGeometry();
+            p.size.g2 = Box2I(
+                V2I(
+                    p.size.g.min.x,
+                    p.size.g.min.y + p.size.fontMetrics.lineHeight + p.size.spacing),
+                p.size.g.max);
             p.draw.reset();
         }
 
@@ -152,7 +158,7 @@ namespace ftk
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(SizeRole::MarginSmall, event.displayScale);
+            p.size.margin = event.style->getSizeRole(SizeRole::Margin, event.displayScale);
             p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
@@ -182,13 +188,7 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = Box2I(
-                V2I(
-                    p.draw->g.min.x,
-                    p.draw->g.min.y + p.size.fontMetrics.lineHeight + p.size.spacing),
-                p.draw->g.max);
-            p.draw->border = border(p.draw->g2, p.size.border, p.size.margin);
+            p.draw->border = border(p.size.g2, p.size.border, p.size.margin);
         }
 
         if (!p.text.empty() && p.draw->glyphs.empty())
@@ -198,7 +198,7 @@ namespace ftk
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            p.draw->g.min,
+            p.size.g.min,
             event.style->getColorRole(ColorRole::Text));
 
         event.render->drawMesh(
