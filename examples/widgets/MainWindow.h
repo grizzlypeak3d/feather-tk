@@ -4,6 +4,7 @@
 #pragma once
 
 #include <ftk/UI/App.h>
+#include <ftk/UI/DiagModel.h>
 #include <ftk/UI/MainWindow.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/TabBar.h>
@@ -28,9 +29,12 @@ namespace widgets
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&);
 
+        std::shared_ptr<DiagModel> getDiagModel() const;
+
     private:
         void _tabUpdate(int);
 
+        std::shared_ptr<DiagModel> _diagModel;
         std::map<std::string, std::function<std::shared_ptr<IWidget>(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>&)> > _widgets;

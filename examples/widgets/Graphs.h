@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include <ftk/UI/GraphWidget.h>
-#include <ftk/UI/Label.h>
+#include <ftk/UI/DiagWidget.h>
 #include <ftk/UI/ScrollWidget.h>
 
 #include <ftk/Core/Timer.h>
@@ -33,12 +32,7 @@ namespace widgets
         void setGeometry(const Box2I&) override;
 
     private:
-        void _widgetUpdate();
-
-        std::shared_ptr<Label> _imagesLabel;
-        std::map<std::string, std::shared_ptr<GraphWidget> > _graphs;
-        std::map<std::string, std::shared_ptr<Label> > _labels;
+        std::shared_ptr<DiagWidget> _widget;
         std::shared_ptr<ScrollWidget> _scrollWidget;
-        std::shared_ptr<Timer> _timer;
     };
 }

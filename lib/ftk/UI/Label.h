@@ -58,7 +58,7 @@ namespace ftk
         //! Get the vertical margin role.
         FTK_API SizeRole getVMarginRole() const;
 
-        //! Set the margin roles.
+        //! Set the margin role.
         FTK_API void setMarginRole(SizeRole);
 
         //! Set the margin roles.

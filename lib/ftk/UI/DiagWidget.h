@@ -7,36 +7,36 @@
 
 namespace ftk
 {
-    //! \name Graph Widgets
-    ///@{
+    class DiagModel;
 
-    //! Graph widget.
-    class FTK_API_TYPE GraphWidget : public IWidget
+    //! \name Debugging
+    ///@{
+        
+    //! Diagnostics widget.
+    class FTK_API_TYPE DiagWidget : public IWidget
     {
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::string& title,
-            const std::map<ColorRole, std::string>& labels,
+            const std::shared_ptr<DiagModel>&,
             const std::shared_ptr<IWidget>& parent);
 
-        GraphWidget();
+        DiagWidget();
 
     public:
-        FTK_API virtual ~GraphWidget();
+        FTK_API virtual ~DiagWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<GraphWidget> create(
+        FTK_API static std::shared_ptr<DiagWidget> create(
             const std::shared_ptr<Context>&,
-            const std::string& title,
-            const std::map<ColorRole, std::string>& labels,
+            const std::shared_ptr<DiagModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        //! Set the samples.
-        void setSamples(ColorRole, const std::vector<int64_t>&);
+        //! Get the margin role.
+        FTK_API SizeRole getMarginRole() const;
 
-        //! Add a sample.
-        void addSample(ColorRole, int64_t);
+        //! Set the margin role.
+        FTK_API void setMarginRole(SizeRole);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
@@ -44,6 +44,6 @@ namespace ftk
     private:
         FTK_PRIVATE();
     };
-
+        
     ///@}
 }

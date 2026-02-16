@@ -10,6 +10,8 @@ set(HEADERS
     ColorWidget.h
     ComboBox.h
     ConfirmDialog.h
+    DiagModel.h
+    DiagWidget.h
     DialogSystem.h
     Divider.h
     DocumentModel.h
@@ -114,6 +116,8 @@ set(SOURCE
     ComboBoxButton.cpp
     ComboBoxMenu.cpp
     ConfirmDialog.cpp
+    DiagModel.cpp
+    DiagWidget.cpp
     DialogSystem.cpp
     Divider.cpp
     DocumentModel.cpp

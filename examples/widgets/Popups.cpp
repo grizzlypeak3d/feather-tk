@@ -22,7 +22,7 @@ namespace widgets
     {
         ftk::IWidget::_init(context, "Popups", parent);
 
-        auto menuBar = std::dynamic_pointer_cast<MainWindow>(parent)->getMenuBar();
+        auto menuBar = getParentT<MainWindow>()->getMenuBar();
 
         // Create menus.
         auto menu = Menu::create(context);

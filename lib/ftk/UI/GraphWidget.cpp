@@ -115,7 +115,8 @@ namespace ftk
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
-            void addSample(ColorRole, int);
+            void setSamples(ColorRole, const std::vector<int64_t>&);
+            void addSample(ColorRole, int64_t);
 
             Size2I getSizeHint() const override;
             void setGeometry(const Box2I&) override;
@@ -125,8 +126,8 @@ namespace ftk
         private:
             void _samplesUpdate();
 
-            std::map<ColorRole, std::list<int> > _samples;
-            int _samplesMax = 0;
+            std::map<ColorRole, std::list<int64_t> > _samples;
+            int64_t _samplesMax = 0;
 
             struct SizeData
             {
@@ -157,7 +158,14 @@ namespace ftk
             return out;
         }
 
-        void GraphSubWidget::addSample(ColorRole colorRole, int value)
+        void GraphSubWidget::setSamples(ColorRole colorRole, const std::vector<int64_t>& value)
+        {
+            _samples[colorRole] = std::list<int64_t>(value.begin(), value.end());
+            _samplesUpdate();
+            setDrawUpdate();
+        }
+
+        void GraphSubWidget::addSample(ColorRole colorRole, int64_t value)
         {
             _samples[colorRole].push_back(value);
             _samplesUpdate();
@@ -205,9 +213,18 @@ namespace ftk
                 g2,
                 event.style->getColorRole(ColorRole::Base));
 
+            const int w = g2.w();
+            for (auto i = _samples.begin(); i != _samples.end(); ++i)
+            {
+                while (i->second.size() * _size.sampleSize > (w + _size.sampleSize))
+                {
+                    i->second.pop_front();
+                }
+            }
+
             for (const auto& i : _samples)
             {
-                const std::vector<int> samples(i.second.begin(), i.second.end());
+                const std::vector<int64_t> samples(i.second.begin(), i.second.end());
                 std::vector<std::pair<ftk::V2I, ftk::V2I> > lines;
                 int x = g2.min.x;
                 int y = g2.min.y;
@@ -232,20 +249,7 @@ namespace ftk
         void GraphSubWidget::_samplesUpdate()
         {
             bool changed = false;
-
-            const Box2I& g = getGeometry();
-            const Box2I g2 = margin(g, -_size.border);
-            const int w = g2.w();
-            for (auto i = _samples.begin(); i != _samples.end(); ++i)
-            {
-                while (i->second.size() * _size.sampleSize > (w + _size.sampleSize))
-                {
-                    changed = true;
-                    i->second.pop_front();
-                }
-            }
-
-            int samplesMax = _samplesMax;
+            int64_t samplesMax = _samplesMax;
             for (const auto& i : _samples)
             {
                 for (auto j : i.second)
@@ -258,7 +262,6 @@ namespace ftk
                 changed = true;
                 _samplesMax = samplesMax;
             }
-
             if (changed)
             {
                 setDrawUpdate();
@@ -325,7 +328,19 @@ namespace ftk
         return out;
     }
 
-    void GraphWidget::addSample(ColorRole colorRole, int value)
+    void GraphWidget::setSamples(ColorRole colorRole, const std::vector<int64_t>& value)
+    {
+        FTK_P();
+        p.graph->setSamples(colorRole, value);
+        const auto i = p.labels.find(colorRole);
+        const auto j = p.labelText.find(colorRole);
+        if (i != p.labels.end() && j != p.labelText.end())
+        {
+            i->second->setText(Format(j->second).arg(!value.empty() ? value.back() : 0));
+        }
+    }
+
+    void GraphWidget::addSample(ColorRole colorRole, int64_t value)
     {
         FTK_P();
         p.graph->addSample(colorRole, value);

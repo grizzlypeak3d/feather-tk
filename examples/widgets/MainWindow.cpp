@@ -32,6 +32,8 @@ namespace widgets
     {
         ftk::MainWindow::_init(context, app, Size2I(1920, 1080));
 
+        _diagModel = DiagModel::create(context);
+
         _widgets["Bellows"] = &Bellows::create;
         _widgets["Buttons"] = &Buttons::create;
         _widgets["Charts"] = &Charts::create;
@@ -83,6 +85,11 @@ namespace widgets
         auto out = std::shared_ptr<MainWindow>(new MainWindow);
         out->_init(context, app);
         return out;
+    }
+
+    std::shared_ptr<DiagModel> MainWindow::getDiagModel() const
+    {
+        return _diagModel;
     }
 
     void MainWindow::_tabUpdate(int index)
