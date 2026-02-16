@@ -5,9 +5,7 @@
 
 #include <ftk/Core/ObservableMap.h>
 
-#include <iostream>
 #include <string>
-#include <vector>
 
 namespace ftk
 {
@@ -15,25 +13,6 @@ namespace ftk
 
     //! \name Debugging
     ///@{
-
-    //! Diagnostics data.
-    enum class FTK_API_TYPE DiagData
-    {
-        GLBuffers,
-        GLBuffersMB,
-        GLMeshes,
-        GLShaders,
-        GLMeshesMB,
-        GLTextures,
-        GLTexturesMB,
-        Images,
-        ImagesMB,
-        Widgets,
-
-        Count,
-        First = GLBuffers
-    };
-    FTK_ENUM(DiagData);
 
     //! Diagnostics model.
     class FTK_API_TYPE DiagModel : public std::enable_shared_from_this<DiagModel>
@@ -52,6 +31,15 @@ namespace ftk
         FTK_API static std::shared_ptr<DiagModel> create(
             const std::shared_ptr<Context>&);
 
+        //! Add a sampler function.
+        FTK_API void addSampler(const std::string&, const std::function<int64_t(void)>&);
+
+        //! Get the sampler groups.
+        FTK_API std::vector<std::string> getGroups() const;
+
+        //! Get the sampler names in a group.
+        FTK_API std::vector<std::string> getNames(const std::string& group) const;
+
         //! Get the maximum number of samples.
         FTK_API size_t getSamplesMax() const;
 
@@ -62,13 +50,13 @@ namespace ftk
         FTK_API void setSamplesMax(size_t);
 
         //! Get the samples.
-        FTK_API const std::map<DiagData, std::vector<int64_t> >& getSamples() const;
+        FTK_API const std::map<std::string, std::vector<int64_t> >& getSamples() const;
 
         //! Observe the samples.
-        FTK_API std::shared_ptr<IObservableMap<DiagData, std::vector<int64_t> > > observeSamples() const;
+        FTK_API std::shared_ptr<IObservableMap<std::string, std::vector<int64_t> > > observeSamples() const;
 
         //! Observe the samples increments.
-        FTK_API std::shared_ptr<IObservableMap<DiagData, int64_t> > observeSamplesInc() const;
+        FTK_API std::shared_ptr<IObservableMap<std::string, int64_t> > observeSamplesInc() const;
 
     private:
         FTK_PRIVATE();

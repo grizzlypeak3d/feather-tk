@@ -7,14 +7,17 @@
 #include <ftk/UI/GraphWidget.h>
 #include <ftk/UI/RowLayout.h>
 
+#include <ftk/Core/Format.h>
+
 namespace ftk
 {
     struct DiagWidget::Private
     {
         std::map<std::string, std::shared_ptr<GraphWidget> > graphs;
+        std::map<std::string, std::pair<std::shared_ptr<GraphWidget>, ColorRole> > samples;
         std::shared_ptr<RowLayout> layout;
 
-        std::shared_ptr<MapObserver<DiagData, int64_t> > sampleIncObserver;
+        std::shared_ptr<MapObserver<std::string, int64_t> > sampleIncObserver;
     };
 
     void DiagWidget::_init(
@@ -28,76 +31,51 @@ namespace ftk
         p.layout = VerticalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
 
-        p.graphs["GLObjects"] = GraphWidget::create(
-            context,
-            "OpenGL Objects",
-            {
-                { ColorRole::Cyan, "Buffers: {0}" },
-                { ColorRole::Magenta, "Meshes: {0}" },
-                { ColorRole::Yellow, "Shaders: {0}" },
-                { ColorRole::Red, "Textures: {0}" }
-            },
-            p.layout);
-        p.graphs["GLMemory"] = GraphWidget::create(
-            context,
-            "OpenGL Memory",
-            {
-                { ColorRole::Cyan, "Buffers: {0}MB" },
-                { ColorRole::Magenta, "Meshes: {0}MB" },
-                { ColorRole::Yellow, "Textures: {0}MB" }
-            },
-            p.layout);
-        p.graphs["Objects"] = GraphWidget::create(
-            context,
-            "Objects",
-            {
-                { ColorRole::Cyan, "Images: {0}" },
-                { ColorRole::Magenta, "Widgets: {0}" }
-            },
-            p.layout);
-        p.graphs["Memory"] = GraphWidget::create(
-            context,
-            "Memory",
-            {
-                { ColorRole::Cyan, "Images: {0}MB" }
-            },
-            p.layout);
-
-        const std::map<DiagData, std::pair<std::shared_ptr<GraphWidget>, ColorRole> > graphData =
+        const std::vector<ColorRole> colors =
         {
-            { DiagData::GLBuffers, std::make_pair(p.graphs["GLObjects"], ColorRole::Cyan) },
-            { DiagData::GLMeshes, std::make_pair(p.graphs["GLObjects"], ColorRole::Magenta) },
-            { DiagData::GLShaders, std::make_pair(p.graphs["GLObjects"], ColorRole::Yellow) },
-            { DiagData::GLTextures, std::make_pair(p.graphs["GLObjects"], ColorRole::Red) },
-            { DiagData::GLBuffersMB, std::make_pair(p.graphs["GLMemory"], ColorRole::Cyan) },
-            { DiagData::GLMeshesMB, std::make_pair(p.graphs["GLMemory"], ColorRole::Magenta) },
-            { DiagData::GLTexturesMB, std::make_pair(p.graphs["GLMemory"], ColorRole::Yellow) },
-            { DiagData::Images, std::make_pair(p.graphs["Objects"], ColorRole::Cyan) },
-            { DiagData::Widgets, std::make_pair(p.graphs["Objects"], ColorRole::Magenta) },
-            { DiagData::ImagesMB, std::make_pair(p.graphs["Memory"], ColorRole::Cyan) }
+            ColorRole::Cyan,
+            ColorRole::Magenta,
+            ColorRole::Yellow,
+            ColorRole::Red,
+            ColorRole::Green,
+            ColorRole::Blue
         };
-
-        const auto& samples = model->getSamples();
-        for (const auto& i : graphData)
+        for (const auto& group : model->getGroups())
         {
-            const auto j = samples.find(i.first);
-            if (j != samples.end())
+            std::map<ColorRole, std::string> labels;
+            const auto& names = model->getNames(group);
+            for (size_t i = 0; i < names.size() && i < colors.size(); ++i)
             {
-                i.second.first->setSamples(i.second.second, j->second);
+                labels[colors[i]] = names[i] + ": {0}";
+            }
+            auto graph = GraphWidget::create(context, group, labels, p.layout);
+            for (size_t i = 0; i < names.size() && i < colors.size(); ++i)
+            {
+                p.samples[group + "/" + names[i]] = std::make_pair(graph, colors[i]);
+            }
+            p.graphs[group] = graph;
+        }
+        const auto& samples = model->getSamples();
+        for (const auto& i : samples)
+        {
+            const auto j = p.samples.find(i.first);
+            if (j != p.samples.end())
+            {
+                j->second.first->setSamples(j->second.second, i.second);
             }
         }
 
-        p.sampleIncObserver = MapObserver<DiagData, int64_t>::create(
+        p.sampleIncObserver = MapObserver<std::string, int64_t>::create(
             model->observeSamplesInc(),
-            [this, graphData](const std::map<DiagData, int64_t>& value)
+            [this](const std::map<std::string, int64_t>& value)
             {
                 FTK_P();
-                for (const auto& i : graphData)
+                for (const auto& i : value)
                 {
-                    const auto j = value.find(i.first);
-                    if (j != value.end())
+                    const auto j = p.samples.find(i.first);
+                    if (j != p.samples.end())
                     {
-                        i.second.first->addSample(i.second.second, j->second);
+                        j->second.first->addSample(j->second.second, i.second);
                     }
                 }
             });

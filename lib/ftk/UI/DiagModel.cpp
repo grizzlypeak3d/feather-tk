@@ -17,30 +17,18 @@
 
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
-#include <array>
-#include <sstream>
+#include <set>
 
 namespace ftk
 {
-    FTK_ENUM_IMPL(
-        DiagData,
-        "GLBuffers",
-        "GLBuffersMB"
-        "GLMeshes"
-        "GLMeshesMB",
-        "GLShaders",
-        "GLTextures"
-        "GLTexturesMB",
-        "Images"
-        "ImagesMB",
-        "Widgets");
-
     struct DiagModel::Private
     {
+        std::map<std::string, std::function<int64_t(void)> > samplers;
+        std::set<std::string> groups;
+        std::map<std::string, std::vector<std::string> > names;
         std::shared_ptr<Observable<size_t> > samplesMax;
-        std::shared_ptr<ObservableMap<DiagData, std::vector<int64_t> > > samples;
-        std::shared_ptr<ObservableMap<DiagData, int64_t> > samplesInc;
+        std::shared_ptr<ObservableMap<std::string, std::vector<int64_t> > > samples;
+        std::shared_ptr<ObservableMap<std::string, int64_t> > samplesInc;
         std::shared_ptr<Timer> timer;
     };
 
@@ -49,8 +37,40 @@ namespace ftk
         FTK_P();
 
         p.samplesMax = Observable<size_t>::create(100);
-        p.samples = ObservableMap<DiagData, std::vector<int64_t> >::create();
-        p.samplesInc = ObservableMap<DiagData, int64_t>::create();
+        p.samples = ObservableMap<std::string, std::vector<int64_t> >::create();
+        p.samplesInc = ObservableMap<std::string, int64_t>::create();
+
+        addSampler(
+            "ftk Memory/Images (MB)",
+            [] { return Image::getTotalByteCount() / megabyte; });
+        addSampler(
+            "ftk Objects/Images",
+            [] { return Image::getObjectCount(); });
+        addSampler(
+            "ftk Objects/IWidgets",
+            [] { return IWidget::getObjectCount(); });
+
+        addSampler(
+            "ftkGL Objects/Buffers",
+            [] { return gl::OffscreenBuffer::getObjectCount(); });
+        addSampler(
+            "ftkGL Objects/Meshes",
+            [] { return gl::VBO::getObjectCount(); });
+        addSampler(
+            "ftkGL Objects/Shaders",
+            [] { return gl::Shader::getObjectCount(); });
+        addSampler(
+            "ftkGL Objects/Textures",
+            [] { return gl::Texture::getObjectCount(); });
+        addSampler(
+            "ftkGL Memory/Buffers (MB)",
+            [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
+        addSampler(
+            "ftkGL Memory/Meshes (MB)",
+            [] { return gl::VBO::getTotalByteCount() / megabyte; });
+        addSampler(
+            "ftkGL Memory/Textures (MB)",
+            [] { return gl::Texture::getTotalByteCount() / megabyte; });
 
         p.timer = Timer::create(context);
         p.timer->setRepeating(true);
@@ -59,20 +79,14 @@ namespace ftk
             [this]
             {
                 FTK_P();
-                std::map<DiagData, int64_t> samplesInc;
-                samplesInc[DiagData::GLBuffers] = gl::OffscreenBuffer::getObjectCount();
-                samplesInc[DiagData::GLBuffersMB] = gl::OffscreenBuffer::getTotalByteCount() / megabyte;
-                samplesInc[DiagData::GLMeshes] = gl::VBO::getObjectCount();
-                samplesInc[DiagData::GLMeshesMB] = gl::VBO::getTotalByteCount() / megabyte;
-                samplesInc[DiagData::GLShaders] = gl::Shader::getObjectCount();
-                samplesInc[DiagData::GLTextures] = gl::Texture::getObjectCount();
-                samplesInc[DiagData::GLTexturesMB] = gl::Texture::getTotalByteCount() / megabyte;
-                samplesInc[DiagData::Images] = Image::getObjectCount();
-                samplesInc[DiagData::ImagesMB] = Image::getTotalByteCount() / megabyte;
-                samplesInc[DiagData::Widgets] = IWidget::getObjectCount();
+                std::map<std::string, int64_t> samplesInc;
+                for (const auto& i : p.samplers)
+                {
+                    samplesInc[i.first] = i.second();
+                }
                 p.samplesInc->setAlways(samplesInc);
 
-                std::map<DiagData, std::vector<int64_t> > samples = p.samples->get();
+                std::map<std::string, std::vector<int64_t> > samples = p.samples->get();
                 for (auto i : samplesInc)
                 {
                     samples[i.first].push_back(i.second);
@@ -109,6 +123,31 @@ namespace ftk
         return out;
     }
 
+    void DiagModel::addSampler(const std::string& id, const std::function<int64_t(void)>& sampler)
+    {
+        FTK_P();
+        const auto s = ftk::split(id, '/');
+        if (2 == s.size())
+        {
+            p.samplers[id] = sampler;
+            p.groups.insert(s[0]);
+            p.names[s[0]].push_back(s[1]);
+        }
+    }
+
+    std::vector<std::string> DiagModel::getGroups() const
+    {
+        FTK_P();
+        return std::vector<std::string>(p.groups.begin(), p.groups.end());
+    }
+
+    std::vector<std::string> DiagModel::getNames(const std::string& group) const
+    {
+        FTK_P();
+        const auto i = p.names.find(group);
+        return i != p.names.end() ? i->second : std::vector<std::string>();
+    }
+
     size_t DiagModel::getSamplesMax() const
     {
         return _p->samplesMax->get();
@@ -141,17 +180,17 @@ namespace ftk
         }
     }
 
-    const std::map<DiagData, std::vector<int64_t> >& DiagModel::getSamples() const
+    const std::map<std::string, std::vector<int64_t> >& DiagModel::getSamples() const
     {
         return _p->samples->get();
     }
 
-    std::shared_ptr<IObservableMap<DiagData, std::vector<int64_t> > > DiagModel::observeSamples() const
+    std::shared_ptr<IObservableMap<std::string, std::vector<int64_t> > > DiagModel::observeSamples() const
     {
         return _p->samples;
     }
 
-    std::shared_ptr<IObservableMap<DiagData, int64_t> > DiagModel::observeSamplesInc() const
+    std::shared_ptr<IObservableMap<std::string, int64_t> > DiagModel::observeSamplesInc() const
     {
         return _p->samplesInc;
     }
