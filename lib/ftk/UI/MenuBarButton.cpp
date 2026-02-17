@@ -178,6 +178,6 @@ namespace ftk
             p.draw->glyphs,
             p.size.fontMetrics,
             V2I(p.size.g2.x() + p.size.pad, p.size.g2.y()),
-            event.style->getColorRole(ColorRole::Text));
+            event.style->getColorRole(_textRole));
     }
 }

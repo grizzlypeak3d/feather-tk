@@ -443,6 +443,7 @@ namespace ftk
         for (size_t i = 0; i < p.closeButtons.size(); ++i)
         {
             p.closeButtons[i]->setButtonRole(p.current == i ? ColorRole::Button : ColorRole::None);
+            p.closeButtons[i]->setTextRole(p.current == i ? ColorRole::Text : ColorRole::TextDisabled);
         }
         if (p.currentFocus >= 0 && p.currentFocus < p.buttons.size())
         {

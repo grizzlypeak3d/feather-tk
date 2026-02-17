@@ -151,6 +151,19 @@ namespace ftk
         setDrawUpdate();
     }
 
+    ColorRole IButton::getTextRole() const
+    {
+        return _textRole;
+    }
+
+    void IButton::setTextRole(ColorRole value)
+    {
+        if (value == _textRole)
+            return;
+        _textRole = value;
+        setDrawUpdate();
+    }
+
     bool IButton::hasRepeatClick() const
     {
         return _p->repeatClick;

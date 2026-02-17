@@ -81,11 +81,6 @@ namespace ftk
         "Tooltip Window",
         "Tooltip Text",
 
-        "Video Clip",
-        "Video Gap",
-        "Audio Clip",
-        "Audio Gap",
-
         "Red",
         "Green",
         "Blue",
@@ -112,11 +107,6 @@ namespace ftk
         out[ColorRole::TooltipWindow] = Color4F(1.F, .95F, .7F);
         out[ColorRole::TooltipText] = Color4F(0.F, 0.F, 0.F);
 
-        out[ColorRole::VideoClip] = Color4F(.2F, .4F, .4F);
-        out[ColorRole::VideoGap] = Color4F(.25F, .31F, .31F);
-        out[ColorRole::AudioClip] = Color4F(.3F, .25F, .4F);
-        out[ColorRole::AudioGap] = Color4F(.25F, .24F, .3F);
-
         out[ColorRole::Red] = Color4F(.6F, .3F, .3F);
         out[ColorRole::Green] = Color4F(.3F, .6F, .3F);
         out[ColorRole::Blue] = Color4F(.3F, .3F, .6F);
@@ -142,11 +132,6 @@ namespace ftk
         out[ColorRole::Checked] = Color4F(.6F, .7F, .85F);
         out[ColorRole::KeyFocus] = Color4F(0.F, .5F, 1.F);
         out[ColorRole::Overlay] = Color4F(1.F, 1.F, 1.F, .5F);
-
-        out[ColorRole::VideoClip] = Color4F(.5F, .7F, .7F);
-        out[ColorRole::VideoGap] = Color4F(.55F, .61F, .61F);
-        out[ColorRole::AudioClip] = Color4F(.6F, .55F, .7F);
-        out[ColorRole::AudioGap] = Color4F(.55F, .54F, .6F);
 
         return out;
     }

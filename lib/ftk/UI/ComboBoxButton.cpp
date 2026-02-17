@@ -200,7 +200,7 @@ namespace ftk
             event.render->drawImage(
                 image,
                 iconBox,
-                event.style->getColorRole(ColorRole::Text));
+                event.style->getColorRole(_textRole));
             x += iconSize.w;
         }
 
@@ -216,7 +216,7 @@ namespace ftk
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
                     p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
-                event.style->getColorRole(ColorRole::Text));
+                event.style->getColorRole(_textRole));
         }
     }
 }

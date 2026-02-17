@@ -66,11 +66,6 @@ namespace ftk
         TooltipWindow,
         TooltipText,
 
-        VideoClip,
-        VideoGap,
-        AudioClip,
-        AudioGap,
-
         Red,
         Green,
         Blue,

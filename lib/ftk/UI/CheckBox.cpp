@@ -218,7 +218,7 @@ namespace ftk
             V2I(p.size.g2.x() + p.size.checkBox + p.size.spacing + p.size.pad,
                 p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
             event.style->getColorRole(isEnabled() ?
-                ColorRole::Text :
+                _textRole :
                 ColorRole::TextDisabled));
     }
 

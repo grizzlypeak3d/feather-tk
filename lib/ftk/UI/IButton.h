@@ -72,6 +72,12 @@ namespace ftk
         //! Set the checked color role.
         FTK_API void setCheckedRole(ColorRole);
 
+        //! Get the text color role.
+        FTK_API ColorRole getTextRole() const;
+
+        //! Set the text color role.
+        FTK_API void setTextRole(ColorRole);
+
         //! Set the hovered callback.
         FTK_API void setHoveredCallback(const std::function<void(bool)>&);
 
@@ -114,6 +120,7 @@ namespace ftk
 
         ColorRole _buttonRole = ColorRole::Button;
         ColorRole _checkedRole = ColorRole::Checked;
+        ColorRole _textRole = ColorRole::Text;
         bool _checked = false;
 
         std::function<void(bool)> _hoveredCallback;

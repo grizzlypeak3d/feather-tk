@@ -181,7 +181,7 @@ namespace ftk
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(isEnabled() ?
-                    ColorRole::Text :
+                    _textRole :
                     ColorRole::TextDisabled));
             x += iconSize.w;
         }
@@ -199,7 +199,7 @@ namespace ftk
                 V2I(x + p.size.pad,
                     p.size.g2.y() + p.size.g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(isEnabled() ?
-                    ColorRole::Text :
+                    _textRole :
                     ColorRole::TextDisabled));
         }
     }
