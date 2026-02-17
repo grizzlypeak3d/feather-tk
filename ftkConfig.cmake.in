@@ -10,23 +10,31 @@ find_dependency(nlohmann_json)
 find_dependency(PNG)
 find_dependency(Freetype)
 find_dependency(lunasvg)
+
 if(@ftk_API@ STREQUAL "GL_4_1" OR
     @ftk_API@ STREQUAL "GL_4_1_Debug" OR
     @ftk_API@ STREQUAL "GLES_2")
     find_dependency(OpenGL)
-    find_dependency(SDL2)
 endif()
 set(ftk_API @ftk_API@)
 add_definitions(-DFTK_API_@ftk_API@)
 if(@ftk_API@ STREQUAL "GL_4_1_Debug")
     add_definitions(-DFTK_API_GL_4_1)
 endif()
+
+if(@ftk_SDL2@)
+    find_dependency(SDL2)
+elseif(@ftk_SDL3@)
+    find_dependency(SDL3)
+endif()
+
 if(@ftk_nfd@)
     find_dependency(nfd)
     if(nfd_FOUND)
         add_definitions(-DFTK_NFD)
     endif()
 endif()
+
 if(@ftk_PYTHON@)
     add_definitions(-DFTK_PYTHON)
     find_dependency(Python3)
