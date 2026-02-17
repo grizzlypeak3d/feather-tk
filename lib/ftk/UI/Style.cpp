@@ -131,12 +131,12 @@ namespace ftk
     {
         std::map<ColorRole, Color4F> out = getDefaultColorRoles();
 
-        out[ColorRole::Window] = Color4F(.8F, .8F, .8F);
-        out[ColorRole::Base] = Color4F(.9F, .9F, .9F);
-        out[ColorRole::Button] = Color4F(.7F, .7F, .7F);
+        out[ColorRole::Window] = Color4F(.85F, .85F, .85F);
+        out[ColorRole::Base] = Color4F(.95F, .95F, .95F);
+        out[ColorRole::Button] = Color4F(.75F, .75F, .75F);
         out[ColorRole::Text] = Color4F(0.F, 0.F, 0.F);
-        out[ColorRole::TextDisabled] = Color4F(.5F, .5F, .5F);
-        out[ColorRole::Border] = Color4F(.6F, .6F, .6F);
+        out[ColorRole::TextDisabled] = Color4F(.4F, .4F, .4F);
+        out[ColorRole::Border] = Color4F(.65F, .65F, .65F);
         out[ColorRole::Hover] = Color4F(0.F, 0.F, 0.F, .1F);
         out[ColorRole::Pressed] = Color4F(0.F, 0.F, 0.F, .2F);
         out[ColorRole::Checked] = Color4F(.6F, .7F, .85F);
