@@ -98,7 +98,7 @@ namespace ftk
         out[ColorRole::Button] = Color4F(.2F, .2F, .2F);
         out[ColorRole::Text] = Color4F(1.F, 1.F, 1.F);
         out[ColorRole::TextDisabled] = Color4F(.5F, .5F, .5F);
-        out[ColorRole::Border] = Color4F(0.F, 0.F, 0.F);
+        out[ColorRole::Border] = Color4F(.05F, .05F, .05F);
         out[ColorRole::Hover] = Color4F(1.F, 1.F, 1.F, .1F);
         out[ColorRole::Pressed] = Color4F(1.F, 1.F, 1.F, .2F);
         out[ColorRole::Checked] = Color4F(.56F, .36F, .15F);
