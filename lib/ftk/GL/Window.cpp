@@ -394,6 +394,7 @@ namespace ftk
             if (value == p.floatOnTop)
                 return;
             p.floatOnTop = value;
+            SDL_SetWindowAlwaysOnTop(p.sdlWindow, value ? SDL_TRUE : SDL_FALSE);
         }
 
         void Window::swap()
