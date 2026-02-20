@@ -526,11 +526,14 @@ namespace ftk
             return out;
         }
 #elif defined(FTK_SDL3)
-        std::string fromSDLEvent(SDL_EventType event)
+        std::string fromSDLEvent(uint32_t event)
         {
             std::string out = "Unknown";
             switch (event)
             {
+            case SDL_EVENT_QUIT: out = "Quit"; break;
+            case SDL_EVENT_TEXT_EDITING: out = "Text editing"; break;
+            case SDL_EVENT_TEXT_INPUT: out = "Text input"; break;
             default: break;
             }
             return out;

@@ -111,6 +111,12 @@ namespace ftk
             //! Set whether the window is floating on top.
             FTK_API void setFloatOnTop(bool);
 
+            //! Get whether the window has text input.
+            FTK_API bool hasTextInput() const;
+
+            //! Set whether the window has text input.
+            FTK_API void setTextInput(bool);
+
             //! Swap the buffers.
             FTK_API void swap();
 

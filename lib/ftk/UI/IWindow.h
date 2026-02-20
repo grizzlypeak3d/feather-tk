@@ -111,13 +111,16 @@ namespace ftk
 
         ///@}
 
-        //! Key Focus
+        //! Key Focus and Text Input
         ///@{
 
         FTK_API std::shared_ptr<IWidget> getKeyFocus() const;
         FTK_API void setKeyFocus(const std::shared_ptr<IWidget>&);
         FTK_API std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
         FTK_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
+
+        FTK_API bool hasTextInput() const;
+        FTK_API virtual void setTextInput(bool);
 
         ///@}
 

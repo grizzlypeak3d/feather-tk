@@ -40,6 +40,7 @@ namespace ftk
         std::weak_ptr<IWidget> keyFocus;
         std::weak_ptr<IWidget> keyPress;
         KeyEvent keyEvent;
+        bool textInput = false;
 
         std::shared_ptr<IDragDropData> dragDropData;
         std::shared_ptr<Image> dragDropCursor;
@@ -284,6 +285,16 @@ namespace ftk
             }
         }
         return out;
+    }
+
+    bool IWindow::hasTextInput() const
+    {
+        return _p->textInput;
+    }
+
+    void IWindow::setTextInput(bool value)
+    {
+        _p->textInput = value;
     }
 
     bool IWindow::getTooltipsEnabled() const

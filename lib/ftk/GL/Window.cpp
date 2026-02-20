@@ -38,6 +38,7 @@ namespace ftk
             bool fullScreen = false;
             Size2I restoreSize;
             bool floatOnTop = false;
+            bool textInput = false;
         };
         
         Window::Window(
@@ -322,7 +323,11 @@ namespace ftk
         void Window::makeCurrent()
         {
             FTK_P();
+#if defined(FTK_SDL2)
             if (SDL_GL_MakeCurrent(p.sdlWindow, p.sdlGLContext) < 0)
+#elif defined(FTK_SDL3)
+            if (!SDL_GL_MakeCurrent(p.sdlWindow, p.sdlGLContext))
+#endif // FTK_SDL2
             {
                 if (auto logSystem = p.logSystem.lock())
                 {
@@ -337,7 +342,11 @@ namespace ftk
         void Window::clearCurrent()
         {
             FTK_P();
+#if defined(FTK_SDL2)
             if (SDL_GL_MakeCurrent(p.sdlWindow, nullptr) < 0)
+#elif defined(FTK_SDL3)
+            if (!SDL_GL_MakeCurrent(p.sdlWindow, nullptr))
+#endif // FTK_SDL2
             {
                 if (auto logSystem = p.logSystem.lock())
                 {
@@ -399,6 +408,29 @@ namespace ftk
 #elif defined(FTK_SDL3)
             SDL_SetWindowAlwaysOnTop(p.sdlWindow, value ? true : false);
 #endif // FTK_SDL2
+        }
+
+        bool Window::hasTextInput() const
+        {
+            return _p->textInput;
+        }
+
+        void Window::setTextInput(bool value)
+        {
+            FTK_P();
+            if (value == p.textInput)
+                return;
+            p.textInput = value;
+#if defined(FTK_SDL3)
+            if (value)
+            {
+                SDL_StartTextInput(p.sdlWindow);
+            }
+            else
+            {
+                SDL_StopTextInput(p.sdlWindow);
+            }
+#endif // FTK_SDL3
         }
 
         void Window::swap()

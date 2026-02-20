@@ -6,6 +6,7 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/ClipboardSystem.h>
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/IWindow.h>
 #include <ftk/UI/LayoutUtil.h>
 #include <ftk/UI/LineEditModel.h>
 
@@ -490,6 +491,10 @@ namespace ftk
             {
                 p.callback(p.model->getText());
             }
+        }
+        if (auto window = getWindow())
+        {
+            window->setTextInput(value);
         }
         if (p.focusCallback)
         {

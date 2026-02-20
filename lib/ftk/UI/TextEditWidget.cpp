@@ -457,6 +457,10 @@ namespace ftk
     {
         IMouseWidget::keyFocusEvent(value);
         FTK_P();
+        if (auto window = getWindow())
+        {
+            window->setTextInput(value);
+        }
         if (p.focusCallback)
         {
             p.focusCallback(value);
