@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 set(SDL3_GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git")
-set(SDL3_GIT_TAG "release-3.2.28")
+set(SDL3_GIT_TAG "release-3.4.0")
 
 set(SDL3_STATIC NOT ${BUILD_SHARED_LIBS})
 set(SDL3_ARGS
