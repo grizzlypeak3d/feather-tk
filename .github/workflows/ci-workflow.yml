@@ -9,6 +9,53 @@ jobs:
     env:
       JOBS: 4
       FTK_API: GL_4_1
+      FTK_SDL2: ON
+      FTK_SDL3: OFF
+      FTK_NFD: OFF
+      FTK_PYTHON: ON
+      FTK_TESTS: ON
+      FTK_EXAMPLES: ON
+      FTK_GCOV: ON
+      BUILD_SHARED_LIBS: OFF
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: feather-tk
+        submodules: recursive
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Setup environment
+      run: |
+        echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
+        sh feather-tk/etc/Linux/linux-setup-gha.sh
+
+    - name: Build
+      run: sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+
+    - name: Run tests
+      run: |
+        cd build-Debug
+        xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
+    
+    - name: Code coverage
+      if: env.FTK_GCOV == 'ON'
+      run: |
+        cd build-Debug
+        sh ../feather-tk/etc/Linux/lcov.sh
+
+  linux-sdl3-build:
+    runs-on: ubuntu-latest
+
+    env:
+      JOBS: 4
+      FTK_API: GL_4_1
+      FTK_SDL2: OFF
+      FTK_SDL3: ON
       FTK_NFD: OFF
       FTK_PYTHON: ON
       FTK_TESTS: ON
@@ -52,6 +99,8 @@ jobs:
     env:
       JOBS: 4
       FTK_API: GLES_2
+      FTK_SDL2: ON
+      FTK_SDL3: OFF
       FTK_NFD: OFF
       FTK_PYTHON: ON
       FTK_TESTS: ON
@@ -89,6 +138,8 @@ jobs:
     env:
       JOBS: 4
       FTK_API: GL_4_1
+      FTK_SDL2: ON
+      FTK_SDL3: OFF
       FTK_NFD: OFF
       FTK_PYTHON: ON
       FTK_TESTS: ON
@@ -133,6 +184,8 @@ jobs:
     env:
       JOBS: 4
       FTK_API: GL_4_1
+      FTK_SDL2: ON
+      FTK_SDL3: OFF
       FTK_NFD: OFF
       FTK_PYTHON: ON
       FTK_TESTS: ON
@@ -177,6 +230,8 @@ jobs:
     env:
       JOBS: 4
       FTK_API: GL_4_1
+      FTK_SDL2: ON
+      FTK_SDL3: OFF
       FTK_NFD: OFF
       FTK_PYTHON: ON
       FTK_TESTS: ON

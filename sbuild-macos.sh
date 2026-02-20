@@ -9,6 +9,8 @@ fi
 
 export JOBS=4
 export FTK_API=GL_4_1
+export FTK_SDL2=ON
+export FTK_SDL3=OFF
 export FTK_NFD=OFF
 export FTK_PYTHON=OFF
 export FTK_TESTS=ON

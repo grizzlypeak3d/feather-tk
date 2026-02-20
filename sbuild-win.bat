@@ -3,6 +3,8 @@ IF "%BUILD_TYPE%"=="" set BUILD_TYPE=Release
 
 set JOBS=4
 set FTK_API=GL_4_1
+set FTK_SDL2=ON
+set FTK_SDL3=OFF
 set FTK_NFD=OFF
 set FTK_PYTHON=ON
 set FTK_TESTS=ON

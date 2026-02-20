@@ -8,6 +8,8 @@ cmake \
     -S feather-tk/etc/SuperBuild \
     -B sbuild-$BUILD_TYPE \
     -Dftk_API=$FTK_API \
+    -Dftk_SDL2=$FTK_SDL2 \
+    -Dftk_SDL3=$FTK_SDL3 \
     -Dftk_nfd=$FTK_NFD \
     -Dftk_PYTHON=$FTK_PYTHON \
     -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
@@ -20,6 +22,8 @@ cmake \
     -S feather-tk \
     -B build-$BUILD_TYPE \
     -Dftk_API=$FTK_API \
+    -Dftk_SDL2=$FTK_SDL2 \
+    -Dftk_SDL3=$FTK_SDL3 \
     -Dftk_nfd=$FTK_NFD \
     -Dftk_PYTHON=$FTK_PYTHON \
     -Dftk_TESTS=$FTK_TESTS \
