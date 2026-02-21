@@ -82,6 +82,7 @@ set(HEADERS
     Splitter.h
     StackLayout.h
     Style.h
+    SysLogModel.h
     TabBar.h
     TabWidget.h
     TextEdit.h
@@ -194,6 +195,7 @@ set(SOURCE
     Splitter.cpp
     StackLayout.cpp
     Style.cpp
+    SysLogModel.cpp
     TabBar.cpp
     TabBarButton.cpp
     TabWidget.cpp
