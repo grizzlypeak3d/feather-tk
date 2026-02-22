@@ -185,8 +185,23 @@ namespace ftk
             }
 
 #if defined(_WINDOWS)
+
             //! \bug Make sure the window fits the monitor.
-            auto sdlDisplayMode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(p.sdlWindow));
+#if defined(FTK_SDL2)
+            SDL_DisplayMode sdlDisplayMode;
+            SDL_GetCurrentDisplayMode(
+                SDL_GetWindowDisplayIndex(p.sdlWindow),
+                &sdlDisplayMode);
+            if (size.w > sdlDisplayMode.w || size.h > sdlDisplayMode.h)
+            {
+                SDL_SetWindowSize(
+                    p.sdlWindow,
+                    std::min(size.w, sdlDisplayMode.w),
+                    std::min(size.h, sdlDisplayMode.h));
+            }
+#elif defined(FTK_SDL3)
+            const SDL_DisplayMode* sdlDisplayMode = SDL_GetCurrentDisplayMode(
+                SDL_GetDisplayForWindow(p.sdlWindow));
             if (size.w > sdlDisplayMode->w || size.h > sdlDisplayMode->h)
             {
                 SDL_SetWindowSize(
@@ -194,6 +209,7 @@ namespace ftk
                     std::min(size.w, sdlDisplayMode->w),
                     std::min(size.h, sdlDisplayMode->h));
             }
+#endif // FTK_SDL2
 
             //! \bug Make sure the window title bar does not go off screen.
             V2I pos;
