@@ -1347,18 +1347,18 @@ namespace ftk
             for (int i = 0; i < sdlDisplayCount; ++i)
             {
                 MonitorInfo monitor;
-                if (const char* sdlName = SDL_GetDisplayName(i))
+                if (const char* sdlName = SDL_GetDisplayName(sdlDisplays[i]))
                 {
                     monitor.name = sdlName;
                 }
-                if (const SDL_DisplayMode* sdlDisplayMode = SDL_GetCurrentDisplayMode(i))
+                if (const SDL_DisplayMode* sdlDisplayMode = SDL_GetCurrentDisplayMode(sdlDisplays[i]))
                 {
                     monitor.size.w = sdlDisplayMode->w;
                     monitor.size.h = sdlDisplayMode->h;
                     monitor.refreshRate = sdlDisplayMode->refresh_rate;
                     //! \todo DPI
                     SDL_Rect sdlRect;
-                    SDL_GetDisplayBounds(i, &sdlRect);
+                    SDL_GetDisplayBounds(sdlDisplays[i], &sdlRect);
                     monitor.bounds = Box2I(sdlRect.x, sdlRect.y, sdlRect.w, sdlRect.h);
                     monitors.push_back(monitor);
                 }

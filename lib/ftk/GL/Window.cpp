@@ -185,15 +185,25 @@ namespace ftk
             }
 
 #if defined(_WINDOWS)
+            //! \bug Make sure the window fits the monitor.
+            auto sdlDisplayMode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(p.sdlWindow));
+            if (size.w > sdlDisplayMode->w || size.h > sdlDisplayMode->h)
+            {
+                SDL_SetWindowSize(
+                    p.sdlWindow,
+                    std::min(size.w, sdlDisplayMode->w),
+                    std::min(size.h, sdlDisplayMode->h));
+            }
+
             //! \bug Make sure the window title bar does not go off screen.
-            /*V2I pos;
+            V2I pos;
             SDL_GetWindowPosition(p.sdlWindow, &pos.x, &pos.y);
             if (pos.x <= 0 || pos.y <= 0)
             {
                 pos.x = std::max(pos.x, 100);
                 pos.y = std::max(pos.y, 100);
                 SDL_SetWindowPosition(p.sdlWindow, pos.x, pos.y);
-            }*/
+            }
 #endif // _WINDOWS
         }
         
