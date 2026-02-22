@@ -111,7 +111,7 @@ Dependencies:
 
 Install system packages:
 ```
-sudo apt-get install xorg-dev libglu1-mesa-dev mesa-common-dev mesa-utils
+sudo apt-get install build-essential git cmake xorg-dev libglu1-mesa-dev mesa-common-dev mesa-utils
 ```
 
 #### Rocky 9
