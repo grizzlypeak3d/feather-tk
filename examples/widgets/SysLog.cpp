@@ -21,6 +21,7 @@ namespace widgets
         ftk::IWidget::_init(context, "SysLog", parent);
 
         _textEdit = TextEdit::create(context, shared_from_this());
+        _textEdit->setReadOnly(true);
         _textEdit->setMarginRole(SizeRole::Margin);
 
         _logObserver = ListObserver<std::string>::create(
