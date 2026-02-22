@@ -7,15 +7,16 @@
 #include <ftk/UI/MDIMiniMap.h>
 #include <ftk/UI/ScrollWidget.h>
 
-using namespace ftk;
-
 namespace widgets
 {
-    class MDI : public IWidget
+    class App;
+
+    class MDI : public ftk::IWidget
     {
     protected:
         void _init(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
         MDI() = default;
@@ -24,15 +25,16 @@ namespace widgets
         virtual ~MDI();
 
         static std::shared_ptr<IWidget> create(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
-        Size2I getSizeHint() const override;
-        void setGeometry(const Box2I&) override;
+        ftk::Size2I getSizeHint() const override;
+        void setGeometry(const ftk::Box2I&) override;
 
     private:
-        std::shared_ptr<ScrollWidget> _scrollWidget;
-        std::shared_ptr<MDICanvas> _canvas;
-        std::shared_ptr<MDIMiniMap> _miniMap;
+        std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
+        std::shared_ptr<ftk::MDICanvas> _canvas;
+        std::shared_ptr<ftk::MDIMiniMap> _miniMap;
     };
 }

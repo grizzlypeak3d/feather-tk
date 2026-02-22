@@ -16,6 +16,7 @@ namespace widgets
 {
     void MDI::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "MDI", parent);
@@ -72,10 +73,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> MDI::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<MDI>(new MDI);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     

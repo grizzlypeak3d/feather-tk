@@ -3,7 +3,7 @@
 
 #include "Graphs.h"
 
-#include "MainWindow.h"
+#include "App.h"
 
 using namespace ftk;
 
@@ -11,12 +11,12 @@ namespace widgets
 {
     void Graphs::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Graphs", parent);
 
-        auto diagModel = getParentT<MainWindow>()->getDiagModel();
-        _widget = DiagWidget::create(context, diagModel);
+        _widget = DiagWidget::create(context, app->getDiagModel());
         _widget->setMarginRole(SizeRole::Margin);
 
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
@@ -29,10 +29,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Graphs::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Graphs>(new Graphs);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
 

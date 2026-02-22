@@ -18,6 +18,7 @@ namespace widgets
 {
     void Popups::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Popups", parent);
@@ -151,10 +152,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Popups::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Popups>(new Popups);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     

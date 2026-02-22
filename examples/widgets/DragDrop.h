@@ -8,10 +8,9 @@
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ScrollWidget.h>
 
-using namespace ftk;
-
 namespace widgets
 {
+    class App;
     class DragWidget;
 
     class DragDropData : public ftk::IDragDropData
@@ -45,7 +44,7 @@ namespace widgets
             int,
             const std::shared_ptr<ftk::IWidget>& parent = nullptr);
 
-        Size2I getSizeHint() const override;
+        ftk::Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
         void sizeHintEvent(const ftk::SizeHintEvent&) override;
         void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
@@ -77,7 +76,7 @@ namespace widgets
 
         void addWidget(const std::shared_ptr<DragWidget>&);
 
-        Size2I getSizeHint() const override;
+        ftk::Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
         void sizeHintEvent(const ftk::SizeHintEvent&) override;
         void drawOverlayEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
@@ -99,7 +98,8 @@ namespace widgets
     {
     protected:
         void _init(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
         DragDrop() = default;
@@ -108,11 +108,12 @@ namespace widgets
         virtual ~DragDrop();
 
         static std::shared_ptr<IWidget> create(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
-        Size2I getSizeHint() const override;
-        void setGeometry(const Box2I&) override;
+        ftk::Size2I getSizeHint() const override;
+        void setGeometry(const ftk::Box2I&) override;
 
     private:
         std::shared_ptr<ftk::HorizontalLayout> _layout;

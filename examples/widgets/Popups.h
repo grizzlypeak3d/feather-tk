@@ -6,15 +6,16 @@
 #include <ftk/UI/MainWindow.h>
 #include <ftk/UI/ScrollWidget.h>
 
-using namespace ftk;
-
 namespace widgets
 {
+    class App;
+
     class Popups : public ftk::IWidget
     {
     protected:
         void _init(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
         Popups() = default;
@@ -23,11 +24,12 @@ namespace widgets
         virtual ~Popups();
 
         static std::shared_ptr<IWidget> create(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
-        Size2I getSizeHint() const override;
-        void setGeometry(const Box2I&) override;
+        ftk::Size2I getSizeHint() const override;
+        void setGeometry(const ftk::Box2I&) override;
 
     private:
         std::shared_ptr<ftk::ScrollWidget> _scrollWidget;

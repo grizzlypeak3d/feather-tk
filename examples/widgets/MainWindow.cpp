@@ -3,6 +3,7 @@
 
 #include "MainWindow.h"
 
+#include "App.h"
 #include "Bellows.h"
 #include "Buttons.h"
 #include "Charts.h"
@@ -19,6 +20,7 @@
 #include "Sliders.h"
 #include "Splitters.h"
 #include "Stack.h"
+#include "SysLog.h"
 
 #include <ftk/UI/Divider.h>
 
@@ -32,7 +34,7 @@ namespace widgets
     {
         ftk::MainWindow::_init(context, app, Size2I(1920, 1080));
 
-        _diagModel = DiagModel::create(context);
+        _app = app;
 
         _widgets["Bellows"] = &Bellows::create;
         _widgets["Buttons"] = &Buttons::create;
@@ -50,6 +52,7 @@ namespace widgets
         _widgets["Sliders"] = &Sliders::create;
         _widgets["Splitters"] = &Splitters::create;
         _widgets["Stack"] = &Stack::create;
+        _widgets["SysLog"] = &SysLog::create;
 
         _tabBar = TabBar::create(context);
         for (const auto& i : _widgets)
@@ -87,11 +90,6 @@ namespace widgets
         return out;
     }
 
-    std::shared_ptr<DiagModel> MainWindow::getDiagModel() const
-    {
-        return _diagModel;
-    }
-
     void MainWindow::_tabUpdate(int index)
     {
         _layout->clear();
@@ -102,7 +100,7 @@ namespace widgets
         }
         if (index >= 0 && index < tmp.size())
         {
-            auto widget = _widgets[tmp[index]](getContext(), _layout);
+            auto widget = _widgets[tmp[index]](getContext(), _app.lock(), _layout);
             widget->setVStretch(Stretch::Expanding);
         }
     }

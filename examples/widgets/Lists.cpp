@@ -14,6 +14,7 @@ namespace widgets
 {
     void Lists::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Lists", parent);
@@ -94,10 +95,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Lists::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Lists>(new Lists);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     

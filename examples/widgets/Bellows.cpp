@@ -17,6 +17,7 @@ namespace widgets
 {
     void Bellows::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Bellows", parent);
@@ -85,10 +86,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Bellows::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Bellows>(new Bellows);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
 

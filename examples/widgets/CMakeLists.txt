@@ -1,4 +1,5 @@
 set(HEADERS
+    App.h
     Bellows.h
     Buttons.h
     Charts.h
@@ -15,9 +16,11 @@ set(HEADERS
     Popups.h
     Sliders.h
     Splitters.h
-    Stack.h)
+    Stack.h
+    SysLog.h)
 
 set(SOURCE
+    App.cpp
     Bellows.cpp
     Buttons.cpp
     Charts.cpp
@@ -35,6 +38,7 @@ set(SOURCE
     Sliders.cpp
     Splitters.cpp
     Stack.cpp
+    SysLog.cpp
     main.cpp)
 
 add_executable(widgets ${HEADERS} ${SOURCE})

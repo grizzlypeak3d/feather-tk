@@ -8,15 +8,16 @@
 
 #include <ftk/Core/Timer.h>
 
-using namespace ftk;
-
 namespace widgets
 {
-    class Graphs : public IWidget
+    class App;
+
+    class Graphs : public ftk::IWidget
     {
     protected:
         void _init(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
         Graphs() = default;
@@ -25,14 +26,15 @@ namespace widgets
         virtual ~Graphs();
 
         static std::shared_ptr<IWidget> create(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
-        Size2I getSizeHint() const override;
-        void setGeometry(const Box2I&) override;
+        ftk::Size2I getSizeHint() const override;
+        void setGeometry(const ftk::Box2I&) override;
 
     private:
-        std::shared_ptr<DiagWidget> _widget;
-        std::shared_ptr<ScrollWidget> _scrollWidget;
+        std::shared_ptr<ftk::DiagWidget> _widget;
+        std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
     };
 }

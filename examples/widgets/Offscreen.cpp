@@ -16,6 +16,7 @@ namespace widgets
 {
     void Offscreen::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Offscreen", parent);
@@ -37,10 +38,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Offscreen::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Offscreen>(new Offscreen);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
 

@@ -20,6 +20,7 @@ namespace widgets
 {
     void Buttons::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Buttons", parent);
@@ -135,10 +136,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Buttons::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Buttons>(new Buttons);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     

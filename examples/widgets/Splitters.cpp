@@ -13,6 +13,7 @@ namespace widgets
 {
     void Splitters::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Splitters", parent);
@@ -33,10 +34,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Splitters::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Splitters>(new Splitters);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     

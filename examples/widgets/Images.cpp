@@ -21,6 +21,7 @@ namespace widgets
 {
     void Images::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Images", parent);
@@ -52,10 +53,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Images::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Images>(new Images);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     

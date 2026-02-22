@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <ftk/UI/ScrollWidget.h>
+#include <ftk/UI/TextEdit.h>
 
 namespace widgets
 {
     class App;
 
-    class Sliders : public ftk::IWidget
+    class SysLog : public ftk::IWidget
     {
     protected:
         void _init(
@@ -17,10 +17,10 @@ namespace widgets
             const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
-        Sliders() = default;
+        SysLog() = default;
 
     public:
-        virtual ~Sliders();
+        virtual ~SysLog();
 
         static std::shared_ptr<IWidget> create(
             const std::shared_ptr<ftk::Context>&,
@@ -31,6 +31,8 @@ namespace widgets
         void setGeometry(const ftk::Box2I&) override;
 
     private:
-        std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
+        std::shared_ptr<ftk::TextEdit> _textEdit;
+
+        std::shared_ptr<ftk::ListObserver<std::string> > _logObserver;
     };
 }

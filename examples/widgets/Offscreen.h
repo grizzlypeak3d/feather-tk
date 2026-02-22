@@ -10,15 +10,16 @@
 
 #include <ftk/Core/Timer.h>
 
-using namespace ftk;
-
 namespace widgets
 {
+    class App;
+
     class Offscreen : public ftk::IWidget
     {
     protected:
         void _init(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
         Offscreen() = default;
@@ -27,16 +28,17 @@ namespace widgets
         virtual ~Offscreen();
 
         static std::shared_ptr<IWidget> create(
-            const std::shared_ptr<Context>&,
+            const std::shared_ptr<ftk::Context>&,
+            const std::shared_ptr<App>&,
             const std::shared_ptr<IWidget>& parent);
 
-        void drawEvent(const Box2I&, const DrawEvent&) override;
+        void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
 
     private:
         float _rotation = 0.F;
-        std::shared_ptr<Timer> _timer;
+        std::shared_ptr<ftk::Timer> _timer;
         bool _doRender = true;
-        std::shared_ptr<gl::Shader> _shader;
-        std::shared_ptr<gl::OffscreenBuffer> _buffer;
+        std::shared_ptr<ftk::gl::Shader> _shader;
+        std::shared_ptr<ftk::gl::OffscreenBuffer> _buffer;
     };
 }

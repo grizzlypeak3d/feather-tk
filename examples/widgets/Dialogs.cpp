@@ -17,6 +17,7 @@ namespace widgets
 {
     void Dialogs::_init(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         ftk::IWidget::_init(context, "Dialogs", parent);
@@ -117,10 +118,11 @@ namespace widgets
 
     std::shared_ptr<IWidget> Dialogs::create(
         const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<Dialogs>(new Dialogs);
-        out->_init(context, parent);
+        out->_init(context, app, parent);
         return out;
     }
     
