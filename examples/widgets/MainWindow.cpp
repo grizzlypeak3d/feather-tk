@@ -23,6 +23,7 @@
 #include "SysLog.h"
 
 #include <ftk/UI/Divider.h>
+#include <ftk/UI/MenuBar.h>
 
 using namespace ftk;
 
@@ -53,6 +54,81 @@ namespace widgets
         _widgets["Splitters"] = &Splitters::create;
         _widgets["Stack"] = &Stack::create;
         _widgets["SysLog"] = &SysLog::create;
+
+        // Create test menus.
+        auto menuBar = getMenuBar();
+        auto menu = Menu::create(context);
+        menu->addAction(Action::create(
+            "Action 1",
+            [] { std::cout << "Action 1" << std::endl; }));
+        menu->addAction(Action::create(
+            "Action 2",
+            "FileOpen",
+            [] { std::cout << "Action 2" << std::endl; }));
+        menu->addDivider();
+        menu->addAction(Action::create(
+            "Action 3",
+            KeyShortcut(Key::_3, KeyModifier::Control),
+            [] { std::cout << "Action 3" << std::endl; }));
+        menu->addDivider();
+        menu->addAction(Action::create(
+            "Action 4",
+            "FileClose",
+            KeyShortcut(Key::_4, KeyModifier::Control),
+            [] { std::cout << "Action 4" << std::endl; }));
+        menuBar->addMenu("Menu 1", menu);
+        menu = Menu::create(context);
+        menu->addAction(Action::create(
+            "Action 5",
+            [](bool value) { std::cout << "Action 5: " << value << std::endl; }));
+        menu->addAction(Action::create(
+            "Action 6",
+            "Next",
+            [](bool value) { std::cout << "Action 6: " << value << std::endl; }));
+        menu->addAction(Action::create(
+            "Action 7",
+            KeyShortcut(Key::_7),
+            [](bool value) { std::cout << "Action 7: " << value << std::endl; }));
+        menu->addAction(Action::create(
+            "Action 8",
+            "Prev",
+            KeyShortcut(Key::_8),
+            [](bool value) { std::cout << "Action 8: " << value << std::endl; }));
+        menuBar->addMenu("Menu 2", menu);
+
+        menu = Menu::create(context);
+        menu->addAction(Action::create(
+            "Action 9",
+            [] { std::cout << "Action 9" << std::endl; }));
+        auto subMenu = menu->addSubMenu("Sub Menu 1");
+        subMenu->addAction(Action::create(
+            "Action 10",
+            [] { std::cout << "Action 10" << std::endl; }));
+        subMenu = menu->addSubMenu("Sub Menu 2");
+        subMenu->addAction(Action::create(
+            "Action 11",
+            [] { std::cout << "Action 11" << std::endl; }));
+        subMenu->addAction(Action::create(
+            "Action 12",
+            [] { std::cout << "Action 12" << std::endl; }));
+        subMenu = menu->addSubMenu("Sub Menu 3");
+        subMenu->addAction(Action::create(
+            "Action 13",
+            [] { std::cout << "Action 13" << std::endl; }));
+        subMenu->addAction(Action::create(
+            "Action 14",
+            [] { std::cout << "Action 14" << std::endl; }));
+        subMenu->addAction(Action::create(
+            "Action 15",
+            [] { std::cout << "Action 15" << std::endl; }));
+        subMenu = menu->addSubMenu("Sub Menu 4");
+        menu->addAction(Action::create(
+            "Action 16",
+            [] { std::cout << "Action 16" << std::endl; }));
+        menuBar->addMenu("Menu 3", menu);
+
+        menu = Menu::create(context);
+        menuBar->addMenu("Menu 4", menu);
 
         _tabBar = TabBar::create(context);
         for (const auto& i : _widgets)
