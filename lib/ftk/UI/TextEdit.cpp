@@ -116,6 +116,11 @@ namespace ftk
         return _p->model;
     }
 
+    const std::shared_ptr<ScrollWidget>& TextEdit::getScrollWidget() const
+    {
+        return _p->scrollWidget;
+    }
+
     const std::vector<std::string>& TextEdit::getText() const
     {
         return _p->model->getText();

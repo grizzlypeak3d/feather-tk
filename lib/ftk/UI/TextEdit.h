@@ -8,6 +8,8 @@
 
 namespace ftk
 {
+    class ScrollWidget;
+
     //! \name Text Widgets
     ///@{
 
@@ -51,6 +53,9 @@ namespace ftk
 
         //! Get the model.
         FTK_API const std::shared_ptr<TextEditModel>& getModel() const;
+
+        //! Get the scroll widget.
+        FTK_API const std::shared_ptr<ScrollWidget>& getScrollWidget() const;
 
         //! \name Text
         ///@{
