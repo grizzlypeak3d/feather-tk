@@ -380,6 +380,7 @@ namespace ftk
     {
         FTK_P();
         bool out = false;
+        const bool readOnly = p.readOnly->get();
         switch (key)
         {
         case Key::Left:
@@ -395,14 +396,14 @@ namespace ftk
             break;
 
         case Key::Backspace:
-            if (!p.readOnly->get())
+            if (!readOnly)
             {
                 _backspace();
                 out = true;
             }
             break;
         case Key::Delete:
-            if (!p.readOnly->get())
+            if (!readOnly)
             {
                 _delete();
                 out = true;
@@ -411,7 +412,7 @@ namespace ftk
 
         case Key::Return:
         case Key::KeypadEnter:
-            if (!p.readOnly->get())
+            if (!readOnly)
             {
                 _return();
                 out = true;
@@ -436,7 +437,7 @@ namespace ftk
 
         case Key::X:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly->get())
+                !readOnly)
             {
                 cut();
                 out = true;
@@ -445,7 +446,7 @@ namespace ftk
 
         case Key::V:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly->get())
+                !readOnly)
             {
                 paste();
                 out = true;
@@ -454,7 +455,7 @@ namespace ftk
 
         case Key::Y:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly->get())
+                !readOnly)
             {
                 redo();
                 out = true;
@@ -463,7 +464,7 @@ namespace ftk
 
         case Key::Z:
             if (static_cast<int>(commandKeyModifier) == modifiers &&
-                !p.readOnly->get())
+                !readOnly)
             {
                 undo();
                 out = true;
@@ -471,7 +472,7 @@ namespace ftk
             break;
 
         case Key::Tab:
-            if (!p.readOnly->get())
+            if (!readOnly)
             {
                 _tab(modifiers);
                 out = true;
@@ -480,7 +481,7 @@ namespace ftk
 
         default: break;
         }
-        if (!out && 0 == modifiers)
+        if (!out && !readOnly && 0 == modifiers)
         {
             out = !isControlKey(key);
         }
