@@ -51,7 +51,7 @@ namespace ftk
             0.F,       0.F,       0.F,       1.F);
     }
 
-    M44F tint(float v)
+    M44F hue(float v)
     {
         const float c  = cos(v * pi * 2.F);
         const float c2 = 1.F - c;

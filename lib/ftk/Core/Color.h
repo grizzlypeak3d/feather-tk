@@ -149,8 +149,8 @@ namespace ftk
     //! Get a saturation color matrix.
     FTK_API M44F saturation(const V3F&);
 
-    //! Get a tint color matrix.
-    FTK_API M44F tint(float);
+    //! Get a color matrix for changing the hue.
+    FTK_API M44F hue(float);
 
     //! Convert RGB to HSV.
     FTK_API void rgbToHSV(const float in[3], float out[3]);
