@@ -11,8 +11,8 @@ namespace ftk
     //! \name Numeric Widgets
     ///@{
         
-    //! Integer value slider.
-    class FTK_API_TYPE IntSlider : public IMouseWidget
+    //! Base class for integer sliders.
+    class FTK_API_TYPE IIntSlider : public IMouseWidget
     {
     protected:
         void _init(
@@ -20,21 +20,10 @@ namespace ftk
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent);
 
-        IntSlider();
+        IIntSlider();
 
     public:
-        FTK_API virtual ~IntSlider();
-
-        //! Create a new widget.
-        FTK_API static std::shared_ptr<IntSlider> create(
-            const std::shared_ptr<Context>&,
-            const std::shared_ptr<IWidget>& parent = nullptr);
-
-        //! Create a new widget.
-        FTK_API static std::shared_ptr<IntSlider> create(
-            const std::shared_ptr<Context>&,
-            const std::shared_ptr<IntModel>&,
-            const std::shared_ptr<IWidget>& parent = nullptr);
+        FTK_API virtual ~IIntSlider() = 0;
 
         //! \name Value
         ///@{
@@ -79,11 +68,6 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<IntModel>& getModel() const;
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
         FTK_API void mouseLeaveEvent() override;
         FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
@@ -93,10 +77,51 @@ namespace ftk
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
 
-    private:
-        int _posToValue(int) const;
-        int _valueToPos(int) const;
+    protected:
+        FTK_API virtual Box2I _getSliderGeometry() const = 0;
 
+        FTK_API int _posToValue(int) const;
+        FTK_API int _valueToPos(int) const;
+
+    private:
+        FTK_PRIVATE();
+    };
+
+    //! Integer slider.
+    class FTK_API_TYPE IntSlider : public IIntSlider
+    {
+    protected:
+        void _init(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IntModel>&,
+            const std::shared_ptr<IWidget>& parent);
+
+        IntSlider();
+
+    public:
+        FTK_API virtual ~IntSlider();
+
+        //! Create a new widget.
+        FTK_API static std::shared_ptr<IntSlider> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent = nullptr);
+
+        //! Create a new widget.
+        FTK_API static std::shared_ptr<IntSlider> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IntModel>&,
+            const std::shared_ptr<IWidget>& parent = nullptr);
+
+        FTK_API Size2I getSizeHint() const override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+
+    protected:
+        FTK_API virtual Box2I _getSliderGeometry() const override;
+
+    private:
         FTK_PRIVATE();
     };
         

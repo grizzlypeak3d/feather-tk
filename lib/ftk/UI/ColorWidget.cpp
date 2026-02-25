@@ -3,12 +3,15 @@
 
 #include <ftk/UI/ColorWidget.h>
 
+#include <ftk/UI/ColorSlider.h>
 #include <ftk/UI/ColorSwatch.h>
-#include <ftk/UI/FloatEditSlider.h>
+#include <ftk/UI/Divider.h>
+#include <ftk/UI/FloatEdit.h>
 #include <ftk/UI/GridLayout.h>
+#include <ftk/UI/IntEdit.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
-#include <ftk/UI/TabWidget.h>
+#include <ftk/UI/TabBar.h>
 
 #include <ftk/Core/Error.h>
 #include <ftk/Core/String.h>
@@ -17,6 +20,446 @@
 
 namespace ftk
 {
+    struct RGBColorWidget::Private
+    {
+        Color4F color;
+
+        std::shared_ptr<ColorSwatch> swatch;
+        std::map<std::string, std::shared_ptr<FloatEdit> > editors;
+        std::map<std::string, std::shared_ptr<ColorFloatSlider> > sliders;
+        std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(const Color4F&)> callback;
+        std::function<void(const Color4F&, bool)> pressedCallback;
+    };
+
+    void RGBColorWidget::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IWidget::_init(context, "ftk::RGBColorWidget", parent);
+        FTK_P();
+
+        p.swatch = ColorSwatch::create(context);
+        p.swatch->setSizeRole(SizeRole::SwatchLarge);
+
+        p.editors["R"] = FloatEdit::create(context);
+        p.editors["G"] = FloatEdit::create(context);
+        p.editors["B"] = FloatEdit::create(context);
+        p.editors["A"] = FloatEdit::create(context);
+        p.sliders["R"] = ColorFloatSlider::create(context, p.editors["R"]->getModel());
+        p.sliders["R"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 0.F, 0.F) });
+        p.sliders["G"] = ColorFloatSlider::create(context, p.editors["G"]->getModel());
+        p.sliders["G"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(0.F, 1.F, 0.F) });
+        p.sliders["B"] = ColorFloatSlider::create(context, p.editors["B"]->getModel());
+        p.sliders["B"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(0.F, 0.F, 1.F) });
+        p.sliders["A"] = ColorFloatSlider::create(context, p.editors["A"]->getModel());
+        p.sliders["A"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
+
+        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout->setSpacingRole(SizeRole::SpacingSmall);
+        p.swatch->setParent(p.layout);
+
+        auto gridLayout = GridLayout::create(context, p.layout);
+        gridLayout->setMarginRole(SizeRole::MarginSmall);
+        gridLayout->setSpacingRole(SizeRole::SpacingSmall);
+        gridLayout->setHStretch(Stretch::Expanding);
+
+        auto label = Label::create(context, "R:", gridLayout);
+        gridLayout->setGridPos(label, 0, 0);
+        p.editors["R"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["R"], 0, 1);
+        p.sliders["R"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["R"], 0, 2);
+
+        label = Label::create(context, "G:", gridLayout);
+        gridLayout->setGridPos(label, 1, 0);
+        p.editors["G"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["G"], 1, 1);
+        p.sliders["G"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["G"], 1, 2);
+
+        label = Label::create(context, "B:", gridLayout);
+        gridLayout->setGridPos(label, 2, 0);
+        p.editors["B"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["B"], 2, 1);
+        p.sliders["B"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["B"], 2, 2);
+
+        label = Label::create(context, "A:", gridLayout);
+        gridLayout->setGridPos(label, 3, 0);
+        p.editors["A"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["A"], 3, 1);
+        p.sliders["A"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["A"], 3, 2);
+
+        _colorUpdate();
+
+        p.sliders["R"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.color.r = value;
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+
+        p.sliders["G"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.color.g = value;
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+
+        p.sliders["B"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.color.b = value;
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+
+        p.sliders["A"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.color.a = value;
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+    }
+
+    RGBColorWidget::RGBColorWidget() :
+        _p(new Private)
+    {}
+
+    RGBColorWidget::~RGBColorWidget()
+    {}
+
+    std::shared_ptr<RGBColorWidget> RGBColorWidget::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<RGBColorWidget>(new RGBColorWidget);
+        out->_init(context, parent);
+        return out;
+    }
+
+    const Color4F& RGBColorWidget::getColor() const
+    {
+        return _p->color;
+    }
+
+    void RGBColorWidget::setColor(const Color4F& value)
+    {
+        FTK_P();
+        if (value == p.color)
+            return;
+        p.color = value;
+        _colorUpdate();
+        setDrawUpdate();
+    }
+
+    void RGBColorWidget::setCallback(const std::function<void(const Color4F&)>& value)
+    {
+        _p->callback = value;
+    }
+
+    void RGBColorWidget::setPressedCallback(const std::function<void(const Color4F&, bool)>& value)
+    {
+        _p->pressedCallback = value;
+    }
+
+    Size2I RGBColorWidget::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
+    void RGBColorWidget::setGeometry(const Box2I& value)
+    {
+        IWidget::setGeometry(value);
+        _p->layout->setGeometry(value);
+    }
+
+    void RGBColorWidget::_colorUpdate()
+    {
+        FTK_P();
+
+        p.swatch->setColor(p.color);
+
+        p.sliders["R"]->setValue(p.color.r);
+        p.sliders["G"]->setValue(p.color.g);
+        p.sliders["B"]->setValue(p.color.b);
+        p.sliders["A"]->setValue(p.color.a);
+    }
+
+    struct HSVColorWidget::Private
+    {
+        Color4F color;
+        float hsv[3] = { 0.F, 0.F, 0.F };
+
+        std::shared_ptr<ColorSwatch> swatch;
+        std::shared_ptr<IntEdit> hueEditor;
+        std::map<std::string, std::shared_ptr<FloatEdit> > editors;
+        std::shared_ptr<ColorIntSlider> hueSlider;
+        std::map<std::string, std::shared_ptr<ColorFloatSlider> > sliders;
+        std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(const Color4F&)> callback;
+        std::function<void(const Color4F&, bool)> pressedCallback;
+    };
+
+    void HSVColorWidget::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IWidget::_init(context, "ftk::HSVColorWidget", parent);
+        FTK_P();
+
+        p.swatch = ColorSwatch::create(context);
+        p.swatch->setSizeRole(SizeRole::SwatchLarge);
+
+        p.hueEditor = IntEdit::create(context);
+        p.hueEditor->setRange(0, 360);
+        p.hueEditor->setStep(10);
+        p.hueEditor->setLargeStep(60);
+        p.editors["S"] = FloatEdit::create(context);
+        p.editors["V"] = FloatEdit::create(context);
+        p.editors["A"] = FloatEdit::create(context);
+        p.hueSlider = ColorIntSlider::create(context, p.hueEditor->getModel());
+        p.hueSlider->setColors({
+            hue(6.0 / 6.0) * V4F(1.F, 0.F, 0.F),
+            hue(5.0 / 6.0) * V4F(1.F, 0.F, 0.F),
+            hue(4.0 / 6.0) * V4F(1.F, 0.F, 0.F),
+            hue(3.0 / 6.0) * V4F(1.F, 0.F, 0.F),
+            hue(2.0 / 6.0) * V4F(1.F, 0.F, 0.F),
+            hue(1.0 / 6.0) * V4F(1.F, 0.F, 0.F),
+            hue(0.0 / 6.0) * V4F(1.F, 0.F, 0.F) });
+        p.sliders["S"] = ColorFloatSlider::create(context, p.editors["S"]->getModel());
+        p.sliders["V"] = ColorFloatSlider::create(context, p.editors["V"]->getModel());
+        p.sliders["V"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
+        p.sliders["A"] = ColorFloatSlider::create(context, p.editors["A"]->getModel());
+        p.sliders["A"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
+
+        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout->setSpacingRole(SizeRole::SpacingSmall);
+        p.swatch->setParent(p.layout);
+
+        auto gridLayout = GridLayout::create(context, p.layout);
+        gridLayout->setMarginRole(SizeRole::MarginSmall);
+        gridLayout->setSpacingRole(SizeRole::SpacingSmall);
+        gridLayout->setHStretch(Stretch::Expanding);
+
+        auto label = Label::create(context, "H:", gridLayout);
+        gridLayout->setGridPos(label, 0, 0);
+        p.hueEditor->setParent(gridLayout);
+        gridLayout->setGridPos(p.hueEditor, 0, 1);
+        p.hueSlider->setParent(gridLayout);
+        gridLayout->setGridPos(p.hueSlider, 0, 2);
+
+        label = Label::create(context, "S:", gridLayout);
+        gridLayout->setGridPos(label, 1, 0);
+        p.editors["S"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["S"], 1, 1);
+        p.sliders["S"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["S"], 1, 2);
+
+        label = Label::create(context, "V:", gridLayout);
+        gridLayout->setGridPos(label, 2, 0);
+        p.editors["V"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["V"], 2, 1);
+        p.sliders["V"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["V"], 2, 2);
+
+        label = Label::create(context, "A:", gridLayout);
+        gridLayout->setGridPos(label, 3, 0);
+        p.editors["A"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.editors["A"], 3, 1);
+        p.sliders["A"]->setParent(gridLayout);
+        gridLayout->setGridPos(p.sliders["A"], 3, 2);
+
+        _colorUpdate();
+
+        p.hueSlider->setPressedCallback(
+            [this](int value, bool pressed)
+            {
+                FTK_P();
+                p.hsv[0] = value / 360.F;
+                float rgb[3] = { 0.F, 0.F, 0.F };
+                hsvToRGB(p.hsv, rgb);
+                p.color.r = rgb[0];
+                p.color.g = rgb[1];
+                p.color.b = rgb[2];
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+
+        p.sliders["S"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.hsv[1] = value;
+                float rgb[3] = { 0.F, 0.F, 0.F };
+                hsvToRGB(p.hsv, rgb);
+                p.color.r = rgb[0];
+                p.color.g = rgb[1];
+                p.color.b = rgb[2];
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+        p.sliders["V"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.hsv[2] = value;
+                float rgb[3] = { 0.F, 0.F, 0.F };
+                hsvToRGB(p.hsv, rgb);
+                p.color.r = rgb[0];
+                p.color.g = rgb[1];
+                p.color.b = rgb[2];
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+
+        p.sliders["A"]->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                p.color.a = value;
+                _colorUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                if (p.pressedCallback)
+                {
+                    p.pressedCallback(p.color, pressed);
+                }
+            });
+    }
+
+    HSVColorWidget::HSVColorWidget() :
+        _p(new Private)
+    {}
+
+    HSVColorWidget::~HSVColorWidget()
+    {}
+
+    std::shared_ptr<HSVColorWidget> HSVColorWidget::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<HSVColorWidget>(new HSVColorWidget);
+        out->_init(context, parent);
+        return out;
+    }
+
+    const Color4F& HSVColorWidget::getColor() const
+    {
+        return _p->color;
+    }
+
+    void HSVColorWidget::setColor(const Color4F& value)
+    {
+        FTK_P();
+        if (value == p.color)
+            return;
+        p.color = value;
+        float rgb[3] = { p.color.r, p.color.g, p.color.b };
+        rgbToHSV(rgb, p.hsv);
+        _colorUpdate();
+        setDrawUpdate();
+    }
+
+    void HSVColorWidget::setCallback(const std::function<void(const Color4F&)>& value)
+    {
+        _p->callback = value;
+    }
+
+    void HSVColorWidget::setPressedCallback(const std::function<void(const Color4F&, bool)>& value)
+    {
+        _p->pressedCallback = value;
+    }
+
+    Size2I HSVColorWidget::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
+    void HSVColorWidget::setGeometry(const Box2I& value)
+    {
+        IWidget::setGeometry(value);
+        _p->layout->setGeometry(value);
+    }
+
+    void HSVColorWidget::_colorUpdate()
+    {
+        FTK_P();
+
+        p.swatch->setColor(p.color);
+
+        p.hueSlider->setValue(p.hsv[0] * 360);
+        float hsv[3] = { p.hsv[0], 1.F, 1.F };
+        float rgb[3] = { 0.F, 0.F, 0.F };
+        hsvToRGB(hsv, rgb);
+        p.sliders["S"]->setColors({ V4F(1.F, 1.F, 1.F), V4F(rgb[0], rgb[1], rgb[2])});
+        p.sliders["S"]->setValue(p.hsv[1]);
+        p.sliders["V"]->setValue(p.hsv[2]);
+        p.sliders["A"]->setValue(p.color.a);
+    }
+
     FTK_ENUM_IMPL(
         ColorWidgetMode,
         "RGB",
@@ -25,15 +468,12 @@ namespace ftk
     struct ColorWidget::Private
     {
         Color4F color;
-        float hsv[3] = { 0.F, 0.F, 0.F };
         ColorWidgetMode mode = ColorWidgetMode::RGB;
 
-        std::shared_ptr<ColorSwatch> swatch;
-        std::map<std::string, std::shared_ptr<FloatEditSlider> > sliders;
-        std::shared_ptr<HorizontalLayout> layout;
-        std::shared_ptr<TabWidget> tabWidget;
-        std::shared_ptr<GridLayout> rgbLayout;
-        std::shared_ptr<GridLayout> hsvLayout;
+        std::shared_ptr<RGBColorWidget> rgbWidget;
+        std::shared_ptr<HSVColorWidget> hsvWidget;
+        std::shared_ptr<TabBar> tabBar;
+        std::shared_ptr<VerticalLayout> layout;
 
         std::function<void(const Color4F&)> callback;
         std::function<void(const Color4F&, bool)> pressedCallback;
@@ -46,242 +486,25 @@ namespace ftk
         IWidget::_init(context, "ftk::ColorWidget", parent);
         FTK_P();
 
-        p.swatch = ColorSwatch::create(context);
-        p.swatch->setSizeRole(SizeRole::SwatchLarge);
+        p.tabBar = TabBar::create(context);
+        for (const auto& mode : getColorWidgetModeLabels())
+        {
+            p.tabBar->addTab(mode);
+        }
 
-        p.sliders["RGB/R"] = FloatEditSlider::create(context);
-        p.sliders["RGB/G"] = FloatEditSlider::create(context);
-        p.sliders["RGB/B"] = FloatEditSlider::create(context);
-        p.sliders["RGB/A"] = FloatEditSlider::create(context);
-
-        p.sliders["HSV/H"] = FloatEditSlider::create(context);
-        p.sliders["HSV/S"] = FloatEditSlider::create(context);
-        p.sliders["HSV/V"] = FloatEditSlider::create(context);
-        p.sliders["HSV/A"] = FloatEditSlider::create(context);
-
-        p.layout = HorizontalLayout::create(context, shared_from_this());
-        p.layout->setSpacingRole(SizeRole::SpacingSmall);
-        p.swatch->setParent(p.layout);
-
-        p.tabWidget = TabWidget::create(context, p.layout);
-        p.tabWidget->setHStretch(Stretch::Expanding);
-
-        p.rgbLayout = GridLayout::create(context);
-        p.rgbLayout->setMarginRole(SizeRole::MarginSmall);
-        p.rgbLayout->setSpacingRole(SizeRole::SpacingSmall);
-        p.tabWidget->addTab("RGB", p.rgbLayout);
-        auto label = Label::create(context, "R:", p.rgbLayout);
-        p.rgbLayout->setGridPos(label, 0, 0);
-        p.sliders["RGB/R"]->setParent(p.rgbLayout);
-        p.rgbLayout->setGridPos(p.sliders["RGB/R"], 0, 1);
-        label = Label::create(context, "G:", p.rgbLayout);
-        p.rgbLayout->setGridPos(label, 1, 0);
-        p.sliders["RGB/G"]->setParent(p.rgbLayout);
-        p.rgbLayout->setGridPos(p.sliders["RGB/G"], 1, 1);
-        label = Label::create(context, "B:", p.rgbLayout);
-        p.rgbLayout->setGridPos(label, 2, 0);
-        p.sliders["RGB/B"]->setParent(p.rgbLayout);
-        p.rgbLayout->setGridPos(p.sliders["RGB/B"], 2, 1);
-        label = Label::create(context, "A:", p.rgbLayout);
-        p.rgbLayout->setGridPos(label, 3, 0);
-        p.sliders["RGB/A"]->setParent(p.rgbLayout);
-        p.rgbLayout->setGridPos(p.sliders["RGB/A"], 3, 1);
-
-        p.hsvLayout = GridLayout::create(context);
-        p.hsvLayout->setMarginRole(SizeRole::MarginSmall);
-        p.hsvLayout->setSpacingRole(SizeRole::SpacingSmall);
-        p.tabWidget->addTab("HSV", p.hsvLayout);
-        label = Label::create(context, "H:", p.hsvLayout);
-        p.hsvLayout->setGridPos(label, 0, 0);
-        p.sliders["HSV/H"]->setParent(p.hsvLayout);
-        p.hsvLayout->setGridPos(p.sliders["HSV/H"], 0, 1);
-        label = Label::create(context, "S:", p.hsvLayout);
-        p.hsvLayout->setGridPos(label, 1, 0);
-        p.sliders["HSV/S"]->setParent(p.hsvLayout);
-        p.hsvLayout->setGridPos(p.sliders["HSV/S"], 1, 1);
-        label = Label::create(context, "V:", p.hsvLayout);
-        p.hsvLayout->setGridPos(label, 2, 0);
-        p.sliders["HSV/V"]->setParent(p.hsvLayout);
-        p.hsvLayout->setGridPos(p.sliders["HSV/V"], 2, 1);
-        label = Label::create(context, "A:", p.hsvLayout);
-        p.hsvLayout->setGridPos(label, 3, 0);
-        p.sliders["HSV/A"]->setParent(p.hsvLayout);
-        p.hsvLayout->setGridPos(p.sliders["HSV/A"], 3, 1);
+        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout->setSpacingRole(SizeRole::None);
+        p.tabBar->setParent(p.layout);
+        Divider::create(context, Orientation::Vertical, p.layout);
 
         _modeUpdate();
         _colorUpdate();
 
-        p.tabWidget->setCallback(
+        p.tabBar->setCallback(
             [this](int value)
             {
                 _p->mode = static_cast<ColorWidgetMode>(value);
-            });
-
-        p.sliders["RGB/R"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.rgbLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.color.r = value;
-                    float rgb[3] = { p.color.r, p.color.g, p.color.b };
-                    rgbToHSV(rgb, p.hsv);
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-        p.sliders["RGB/G"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.rgbLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.color.g = value;
-                    float rgb[3] = { p.color.r, p.color.g, p.color.b };
-                    rgbToHSV(rgb, p.hsv);
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-        p.sliders["RGB/B"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.rgbLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.color.b = value;
-                    float rgb[3] = { p.color.r, p.color.g, p.color.b };
-                    rgbToHSV(rgb, p.hsv);
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-        p.sliders["RGB/A"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.rgbLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.color.a = value;
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-
-        p.sliders["HSV/H"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.hsvLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.hsv[0] = value;
-                    float rgb[3] = { 0.F, 0.F, 0.F };
-                    hsvToRGB(p.hsv, rgb);
-                    p.color.r = rgb[0];
-                    p.color.g = rgb[1];
-                    p.color.b = rgb[2];
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-        p.sliders["HSV/S"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.hsvLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.hsv[1] = value;
-                    float rgb[3] = { 0.F, 0.F, 0.F };
-                    hsvToRGB(p.hsv, rgb);
-                    p.color.r = rgb[0];
-                    p.color.g = rgb[1];
-                    p.color.b = rgb[2];
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-        p.sliders["HSV/V"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.hsvLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.hsv[2] = value;
-                    float rgb[3] = { 0.F, 0.F, 0.F };
-                    hsvToRGB(p.hsv, rgb);
-                    p.color.r = rgb[0];
-                    p.color.g = rgb[1];
-                    p.color.b = rgb[2];
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
-            });
-        p.sliders["HSV/A"]->setPressedCallback(
-            [this](float value, bool pressed)
-            {
-                FTK_P();
-                if (p.hsvLayout == p.tabWidget->getCurrentWidget())
-                {
-                    p.color.a = value;
-                    _colorUpdate();
-                    if (p.callback)
-                    {
-                        p.callback(p.color);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(p.color, pressed);
-                    }
-                }
+                _modeUpdate();
             });
     }
 
@@ -312,8 +535,6 @@ namespace ftk
         if (value == p.color)
             return;
         p.color = value;
-        float rgb[3] = { p.color.r, p.color.g, p.color.b };
-        rgbToHSV(rgb, p.hsv);
         _colorUpdate();
         setDrawUpdate();
     }
@@ -356,23 +577,82 @@ namespace ftk
     void ColorWidget::_modeUpdate()
     {
         FTK_P();
-        p.tabWidget->setCurrent(static_cast<int>(p.mode));
+        p.tabBar->setCurrent(static_cast<int>(p.mode));
+        if (p.rgbWidget)
+        {
+            p.rgbWidget->setParent(nullptr);
+            p.rgbWidget.reset();
+        }
+        if (p.hsvWidget)
+        {
+            p.hsvWidget->setParent(nullptr);
+            p.hsvWidget.reset();
+        }
+        auto context = getContext();
+        switch (p.mode)
+        {
+        case ColorWidgetMode::RGB:
+            p.rgbWidget = RGBColorWidget::create(context, p.layout);
+            p.rgbWidget->setColor(p.color);
+            p.rgbWidget->setCallback(
+                [this](const Color4F& value)
+                {
+                    FTK_P();
+                    p.color = value;
+                    if (p.callback)
+                    {
+                        p.callback(value);
+                    }
+                });
+            p.rgbWidget->setPressedCallback(
+                [this](const Color4F& value, bool pressed)
+                {
+                    FTK_P();
+                    p.color = value;
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(value, pressed);
+                    }
+                });
+            break;
+        case ColorWidgetMode::HSV:
+            p.hsvWidget = HSVColorWidget::create(context, p.layout);
+            p.hsvWidget->setColor(p.color);
+            p.hsvWidget->setCallback(
+                [this](const Color4F& value)
+                {
+                    FTK_P();
+                    p.color = value;
+                    if (p.callback)
+                    {
+                        p.callback(value);
+                    }
+                });
+            p.hsvWidget->setPressedCallback(
+                [this](const Color4F& value, bool pressed)
+                {
+                    FTK_P();
+                    p.color = value;
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(value, pressed);
+                    }
+                });
+            break;
+        default: break;
+        }
     }
 
     void ColorWidget::_colorUpdate()
     {
         FTK_P();
-
-        p.swatch->setColor(p.color);
-
-        p.sliders["RGB/R"]->setValue(p.color.r);
-        p.sliders["RGB/G"]->setValue(p.color.g);
-        p.sliders["RGB/B"]->setValue(p.color.b);
-        p.sliders["RGB/A"]->setValue(p.color.a);
-
-        p.sliders["HSV/H"]->setValue(p.hsv[0]);
-        p.sliders["HSV/S"]->setValue(p.hsv[1]);
-        p.sliders["HSV/V"]->setValue(p.hsv[2]);
-        p.sliders["HSV/A"]->setValue(p.color.a);
+        if (p.rgbWidget)
+        {
+            p.rgbWidget->setColor(p.color);
+        }
+        if (p.hsvWidget)
+        {
+            p.hsvWidget->setColor(p.color);
+        }
     }
 }

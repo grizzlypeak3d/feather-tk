@@ -11,8 +11,8 @@ namespace ftk
     //! \name Numeric Widgets
     ///@{
         
-    //! Double precision floating point value slider.
-    class FTK_API_TYPE DoubleSlider : public IMouseWidget
+    //! Base class for double precision floating point sliders.
+    class FTK_API_TYPE IDoubleSlider : public IMouseWidget
     {
     protected:
         void _init(
@@ -20,21 +20,10 @@ namespace ftk
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent);
 
-        DoubleSlider();
+        IDoubleSlider();
 
     public:
-        FTK_API virtual ~DoubleSlider();
-
-        //! Create a new widget.
-        FTK_API static std::shared_ptr<DoubleSlider> create(
-            const std::shared_ptr<Context>&,
-            const std::shared_ptr<IWidget>& parent = nullptr);
-
-        //! Create a new widget.
-        FTK_API static std::shared_ptr<DoubleSlider> create(
-            const std::shared_ptr<Context>&,
-            const std::shared_ptr<DoubleModel>&,
-            const std::shared_ptr<IWidget>& parent = nullptr);
+        FTK_API virtual ~IDoubleSlider() = 0;
 
         //! \name Value
         ///@{
@@ -79,11 +68,6 @@ namespace ftk
         //! Get the model.
         FTK_API const std::shared_ptr<DoubleModel>& getModel() const;
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
         FTK_API void mouseLeaveEvent() override;
         FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
@@ -93,10 +77,51 @@ namespace ftk
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
 
-    private:
-        double _posToValue(int) const;
-        int _valueToPos(double) const;
+    protected:
+        FTK_API virtual Box2I _getSliderGeometry() const = 0;
 
+        FTK_API double _posToValue(int) const;
+        FTK_API int _valueToPos(double) const;
+
+    private:
+        FTK_PRIVATE();
+    };
+        
+    //! Double precision floating point slider.
+    class FTK_API_TYPE DoubleSlider : public IDoubleSlider
+    {
+    protected:
+        void _init(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<DoubleModel>&,
+            const std::shared_ptr<IWidget>& parent);
+
+        DoubleSlider();
+
+    public:
+        FTK_API virtual ~DoubleSlider();
+
+        //! Create a new widget.
+        FTK_API static std::shared_ptr<DoubleSlider> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent = nullptr);
+
+        //! Create a new widget.
+        FTK_API static std::shared_ptr<DoubleSlider> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<DoubleModel>&,
+            const std::shared_ptr<IWidget>& parent = nullptr);
+
+        FTK_API Size2I getSizeHint() const override;
+        FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+
+    protected:
+        FTK_API virtual Box2I _getSliderGeometry() const override;
+
+    private:
         FTK_PRIVATE();
     };
         

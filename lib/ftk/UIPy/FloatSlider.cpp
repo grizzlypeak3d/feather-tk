@@ -17,7 +17,18 @@ namespace ftk
     {
         void floatSlider(py::module_& m)
         {
-            py::class_<FloatSlider, IWidget, std::shared_ptr<FloatSlider> >(m, "FloatSlider")
+            py::class_<IFloatSlider, IMouseWidget, std::shared_ptr<IFloatSlider> >(m, "IFloatSlider")
+                .def_property("value", &IFloatSlider::getValue, &IFloatSlider::setValue)
+                .def("setCallback", &IFloatSlider::setCallback)
+                .def("setPressedCallback", &IFloatSlider::setPressedCallback)
+                .def_property("range", &IFloatSlider::getRange, py::overload_cast<const RangeF&>(&IFloatSlider::setRange))
+                .def("setRange", py::overload_cast<float, float>(&IFloatSlider::setRange))
+                .def_property("step", &IFloatSlider::getStep, &IFloatSlider::setStep)
+                .def_property("largeStep", &IFloatSlider::getLargeStep, &IFloatSlider::setLargeStep)
+                .def_property("defaultValue", &IFloatSlider::getDefaultValue, &IFloatSlider::setDefaultValue)
+                .def("getModel", &IFloatSlider::getModel);
+
+            py::class_<FloatSlider, IFloatSlider, std::shared_ptr<FloatSlider> >(m, "FloatSlider")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,
@@ -31,16 +42,7 @@ namespace ftk
                         const std::shared_ptr<IWidget>&>(&FloatSlider::create)),
                     py::arg("context"),
                     py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &FloatSlider::getValue, &FloatSlider::setValue)
-                .def("setCallback", &FloatSlider::setCallback)
-                .def("setPressedCallback", &FloatSlider::setPressedCallback)
-                .def_property("range", &FloatSlider::getRange, py::overload_cast<const RangeF&>(&FloatSlider::setRange))
-                .def("setRange", py::overload_cast<float, float>(&FloatSlider::setRange))
-                .def_property("step", &FloatSlider::getStep, &FloatSlider::setStep)
-                .def_property("largeStep", &FloatSlider::getLargeStep, &FloatSlider::setLargeStep)
-                .def_property("defaultValue", &FloatSlider::getDefaultValue, &FloatSlider::setDefaultValue)
-                .def("getModel", &FloatSlider::getModel);
+                    py::arg("parent") = nullptr);
         }
     }
 }

@@ -2,7 +2,8 @@
 // Copyright Contributors to the feather-tk project.
 
 #include <ftk/UI/App.h>
-#include <ftk/UI/TextEdit.h>
+#include <ftk/UI/ColorWidget.h>
+#include <ftk/UI/Label.h>
 #include <ftk/UI/MainWindow.h>
 
 using namespace ftk;
@@ -19,16 +20,10 @@ int main(int argc, char** argv)
     auto window = MainWindow::create(context, app, Size2I(1280, 960));
 
     // Create a label.
-    auto textEdit = TextEdit::create(context);
-    textEdit->setText({ "Hello world" });
-    textEdit->setMarginRole(SizeRole::MarginSmall);
-    textEdit->setCallback(
-        [textEdit](const std::vector<std::string>& text)
-        {
-            std::string s = ftk::join(text, '\n');
-            textEdit->setText(ftk::split(s, '\n', SplitOptions::KeepEmpty));
-        });
-    window->setWidget(textEdit);
+    auto label = Label::create(context, "Hello world");
+    label->setMarginRole(SizeRole::MarginSmall);
+    label->setHAlign(HAlign::Center);
+    window->setWidget(label);
 
     // Run the application.
     app->run();

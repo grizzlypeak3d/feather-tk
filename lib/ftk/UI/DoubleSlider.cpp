@@ -9,7 +9,7 @@
 
 namespace ftk
 {
-    struct DoubleSlider::Private
+    struct IDoubleSlider::Private
     {
         std::shared_ptr<DoubleModel> model;
         std::function<void(double)> callback;
@@ -17,35 +17,14 @@ namespace ftk
         bool blockCallbacks = false;
         std::shared_ptr<Observer<double> > valueObserver;
         std::shared_ptr<Observer<RangeD> > rangeObserver;
-
-        struct SizeData
-        {
-            std::optional<float> displayScale;
-            int size = 0;
-            int border = 0;
-            int keyFocus = 0;
-            int handle = 0;
-            Size2I sizeHint;
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
-        };
-        SizeData size;
-
-        struct DrawData
-        {
-            TriMesh2F border;
-            TriMesh2F keyFocus;
-        };
-        std::optional<DrawData> draw;
     };
 
-    void DoubleSlider::_init(
+    void IDoubleSlider::_init(
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<DoubleModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IMouseWidget::_init(context, "ftk::DoubleSlider", parent);
+        IMouseWidget::_init(context, "ftk::IDoubleSlider", parent);
         FTK_P();
 
         setAcceptsKeyFocus(true);
@@ -81,38 +60,19 @@ namespace ftk
             });
     }
 
-    DoubleSlider::DoubleSlider() :
+    IDoubleSlider::IDoubleSlider() :
         _p(new Private)
     {}
 
-    DoubleSlider::~DoubleSlider()
+    IDoubleSlider::~IDoubleSlider()
     {}
 
-    std::shared_ptr<DoubleSlider> DoubleSlider::create(
-        const std::shared_ptr<Context>& context,
-        const std::shared_ptr<IWidget>& parent)
-    {
-        auto out = std::shared_ptr<DoubleSlider>(new DoubleSlider);
-        out->_init(context, DoubleModel::create(context), parent);
-        return out;
-    }
-
-    std::shared_ptr<DoubleSlider> DoubleSlider::create(
-        const std::shared_ptr<Context>& context,
-        const std::shared_ptr<DoubleModel>& model,
-        const std::shared_ptr<IWidget>& parent)
-    {
-        auto out = std::shared_ptr<DoubleSlider>(new DoubleSlider);
-        out->_init(context, model, parent);
-        return out;
-    }
-
-    double DoubleSlider::getValue() const
+    double IDoubleSlider::getValue() const
     {
         return _p->model->getValue();
     }
 
-    void DoubleSlider::setValue(double value)
+    void IDoubleSlider::setValue(double value)
     {
         FTK_P();
         p.blockCallbacks = true;
@@ -120,22 +80,22 @@ namespace ftk
         p.blockCallbacks = false;
     }
 
-    void DoubleSlider::setCallback(const std::function<void(double)>& value)
+    void IDoubleSlider::setCallback(const std::function<void(double)>& value)
     {
         _p->callback = value;
     }
 
-    void DoubleSlider::setPressedCallback(const std::function<void(double, bool)>& value)
+    void IDoubleSlider::setPressedCallback(const std::function<void(double, bool)>& value)
     {
         _p->pressedCallback = value;
     }
 
-    const RangeD& DoubleSlider::getRange() const
+    const RangeD& IDoubleSlider::getRange() const
     {
         return _p->model->getRange();
     }
 
-    void DoubleSlider::setRange(const RangeD& value)
+    void IDoubleSlider::setRange(const RangeD& value)
     {
         FTK_P();
         p.blockCallbacks = true;
@@ -143,161 +103,59 @@ namespace ftk
         p.blockCallbacks = false;
     }
 
-    void DoubleSlider::setRange(double min, double max)
+    void IDoubleSlider::setRange(double min, double max)
     {
         setRange(RangeD(min, max));
     }
 
-    double DoubleSlider::getStep() const
+    double IDoubleSlider::getStep() const
     {
         return _p->model->getStep();
     }
 
-    void DoubleSlider::setStep(double value)
+    void IDoubleSlider::setStep(double value)
     {
         _p->model->setStep(value);
     }
 
-    double DoubleSlider::getLargeStep() const
+    double IDoubleSlider::getLargeStep() const
     {
         return _p->model->getLargeStep();
     }
 
-    void DoubleSlider::setLargeStep(double value)
+    void IDoubleSlider::setLargeStep(double value)
     {
         _p->model->setLargeStep(value);
     }
 
-    double DoubleSlider::getDefaultValue() const
+    double IDoubleSlider::getDefaultValue() const
     {
         return _p->model->getDefaultValue();
     }
 
-    void DoubleSlider::setDefaultValue(double value)
+    void IDoubleSlider::setDefaultValue(double value)
     {
         _p->model->setDefaultValue(value);
     }
 
-    const std::shared_ptr<DoubleModel>& DoubleSlider::getModel() const
+    const std::shared_ptr<DoubleModel>& IDoubleSlider::getModel() const
     {
         return _p->model;
     }
 
-    Size2I DoubleSlider::getSizeHint() const
-    {
-        return _p->size.sizeHint;
-    }
-
-    void DoubleSlider::setGeometry(const Box2I& value)
-    {
-        const bool changed = value != getGeometry();
-        IMouseWidget::setGeometry(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.g = value;
-            p.size.g2 = margin(p.size.g, -p.size.keyFocus);
-            p.size.g3 = margin(p.size.g2, -p.size.handle / 2, 0, -p.size.handle / 2, 0);
-            p.draw.reset();
-        }
-    }
-
-    void DoubleSlider::sizeHintEvent(const SizeHintEvent& event)
-    {
-        IMouseWidget::sizeHintEvent(event);
-        FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
-        {
-            p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-
-            const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
-
-            p.draw.reset();
-        }
-    }
-
-    void DoubleSlider::clipEvent(const Box2I& clipRect, bool clipped)
-    {
-        IMouseWidget::clipEvent(clipRect, clipped);
-        FTK_P();
-        if (clipped)
-        {
-            p.draw.reset();
-        }
-    }
-
-    void DoubleSlider::drawEvent(
-        const Box2I& drawRect,
-        const DrawEvent& event)
-    {
-        IMouseWidget::drawEvent(drawRect, event);
-        FTK_P();
-
-        if (!p.draw.has_value())
-        {
-            p.draw = Private::DrawData();
-            p.draw->border = border(p.size.g, p.size.border);
-            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
-        }
-
-        // Draw the background.
-        event.render->drawRect(
-            p.size.g,
-            event.style->getColorRole(ColorRole::Base));
-
-        // Draw the focus and border.
-        const bool keyFocus = hasKeyFocus();
-        event.render->drawMesh(
-            keyFocus ? p.draw->keyFocus : p.draw->border,
-            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
-
-        // Draw the handle.
-        const int pos = _valueToPos(p.model->getValue());
-        const Box2I handle(
-            pos - p.size.handle / 2,
-            p.size.g3.min.y,
-            p.size.handle,
-            p.size.g3.h());
-        event.render->drawRect(
-            handle,
-            event.style->getColorRole(ColorRole::Button));
-        if (_isMousePressed())
-        {
-            event.render->drawRect(
-                handle,
-                event.style->getColorRole(ColorRole::Pressed));
-        }
-        else if (_isMouseInside())
-        {
-            event.render->drawRect(
-                handle,
-                event.style->getColorRole(ColorRole::Hover));
-        }
-        event.render->drawMesh(
-            border(handle, p.size.border),
-            event.style->getColorRole(ColorRole::Border));
-    }
-
-    void DoubleSlider::mouseEnterEvent(MouseEnterEvent& event)
+    void IDoubleSlider::mouseEnterEvent(MouseEnterEvent& event)
     {
         IMouseWidget::mouseEnterEvent(event);
         setDrawUpdate();
     }
 
-    void DoubleSlider::mouseLeaveEvent()
+    void IDoubleSlider::mouseLeaveEvent()
     {
         IMouseWidget::mouseLeaveEvent();
         setDrawUpdate();
     }
 
-    void DoubleSlider::mouseMoveEvent(MouseMoveEvent& event)
+    void IDoubleSlider::mouseMoveEvent(MouseMoveEvent& event)
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
@@ -307,7 +165,7 @@ namespace ftk
         }
     }
 
-    void DoubleSlider::mousePressEvent(MouseClickEvent& event)
+    void IDoubleSlider::mousePressEvent(MouseClickEvent& event)
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
@@ -316,19 +174,19 @@ namespace ftk
         setDrawUpdate();
     }
 
-    void DoubleSlider::mouseReleaseEvent(MouseClickEvent& event)
+    void IDoubleSlider::mouseReleaseEvent(MouseClickEvent& event)
     {
         IMouseWidget::mouseReleaseEvent(event);
         FTK_P();
         p.model->setValue(_posToValue(_getMousePos().x));
-        if (p.pressedCallback)
+        if (p.pressedCallback && !p.blockCallbacks)
         {
             p.pressedCallback(p.model->getValue(), false);
         }
         setDrawUpdate();
     }
 
-    void DoubleSlider::scrollEvent(ScrollEvent& event)
+    void IDoubleSlider::scrollEvent(ScrollEvent& event)
     {
         FTK_P();
         if (hasKeyFocus())
@@ -341,7 +199,7 @@ namespace ftk
         }
     }
 
-    void DoubleSlider::keyPressEvent(KeyEvent& event)
+    void IDoubleSlider::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
         if (isEnabled() && 0 == event.modifiers)
@@ -390,22 +248,23 @@ namespace ftk
         }
     }
 
-    void DoubleSlider::keyReleaseEvent(KeyEvent& event)
+    void IDoubleSlider::keyReleaseEvent(KeyEvent& event)
     {
         IMouseWidget::keyReleaseEvent(event);
         event.accept = true;
     }
 
-    double DoubleSlider::_posToValue(int pos) const
+    double IDoubleSlider::_posToValue(int pos) const
     {
         FTK_P();
+        const Box2I g = _getSliderGeometry();
         const RangeD& range = p.model->getRange();
-        const double v = (pos - p.size.g3.min.x) / static_cast<double>(p.size.g3.w());
+        const double v = (pos - g.min.x) / static_cast<double>(g.w());
         const double out = range.min() + (range.max() - range.min()) * v;
         return out;
     }
 
-    int DoubleSlider::_valueToPos(double value) const
+    int IDoubleSlider::_valueToPos(double value) const
     {
         FTK_P();
         const RangeD& range = p.model->getRange();
@@ -415,6 +274,173 @@ namespace ftk
             v = (value - range.min()) /
                 static_cast<double>(range.max() - range.min());
         }
-        return p.size.g3.min.x + p.size.g3.w() * v;
+        const Box2I g = _getSliderGeometry();
+        return g.min.x + g.w() * v;
+    }
+
+    struct DoubleSlider::Private
+    {
+        struct SizeData
+        {
+            std::optional<float> displayScale;
+            int size = 0;
+            int border = 0;
+            int keyFocus = 0;
+            int handle = 0;
+            Size2I sizeHint;
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
+        };
+        SizeData size;
+
+        struct DrawData
+        {
+            TriMesh2F border;
+            TriMesh2F keyFocus;
+        };
+        std::optional<DrawData> draw;
+    };
+
+    void DoubleSlider::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<DoubleModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IDoubleSlider::_init(context, model, parent);
+        FTK_P();
+    }
+
+    DoubleSlider::DoubleSlider() :
+        _p(new Private)
+    {}
+
+    DoubleSlider::~DoubleSlider()
+    {}
+
+    std::shared_ptr<DoubleSlider> DoubleSlider::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<DoubleSlider>(new DoubleSlider);
+        out->_init(context, DoubleModel::create(context), parent);
+        return out;
+    }
+
+    std::shared_ptr<DoubleSlider> DoubleSlider::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<DoubleModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<DoubleSlider>(new DoubleSlider);
+        out->_init(context, model, parent);
+        return out;
+    }
+
+    Size2I DoubleSlider::getSizeHint() const
+    {
+        return _p->size.sizeHint;
+    }
+
+    void DoubleSlider::setGeometry(const Box2I& value)
+    {
+        const bool changed = value != getGeometry();
+        IDoubleSlider::setGeometry(value);
+        FTK_P();
+        if (changed)
+        {
+            p.size.g = value;
+            p.size.g2 = margin(p.size.g, -p.size.keyFocus);
+            p.size.g3 = margin(p.size.g2, -p.size.handle / 2, 0, -p.size.handle / 2, 0);
+            p.draw.reset();
+        }
+    }
+
+    void DoubleSlider::sizeHintEvent(const SizeHintEvent& event)
+    {
+        IDoubleSlider::sizeHintEvent(event);
+        FTK_P();
+        if (!p.size.displayScale.has_value() ||
+            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        {
+            p.size.displayScale = event.displayScale;
+            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+
+            const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
+
+            p.draw.reset();
+        }
+    }
+
+    void DoubleSlider::clipEvent(const Box2I& clipRect, bool clipped)
+    {
+        IDoubleSlider::clipEvent(clipRect, clipped);
+        FTK_P();
+        if (clipped)
+        {
+            p.draw.reset();
+        }
+    }
+
+    void DoubleSlider::drawEvent(
+        const Box2I& drawRect,
+        const DrawEvent& event)
+    {
+        IDoubleSlider::drawEvent(drawRect, event);
+        FTK_P();
+
+        if (!p.draw.has_value())
+        {
+            p.draw = Private::DrawData();
+            p.draw->border = border(p.size.g, p.size.border);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
+        }
+
+        // Draw the background.
+        event.render->drawRect(
+            p.size.g,
+            event.style->getColorRole(ColorRole::Base));
+
+        // Draw the focus and border.
+        const bool keyFocus = hasKeyFocus();
+        event.render->drawMesh(
+            keyFocus ? p.draw->keyFocus : p.draw->border,
+            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
+
+        // Draw the handle.
+        const int pos = _valueToPos(getValue());
+        const Box2I handle(
+            pos - p.size.handle / 2,
+            p.size.g3.min.y,
+            p.size.handle,
+            p.size.g3.h());
+        event.render->drawRect(
+            handle,
+            event.style->getColorRole(ColorRole::Button));
+        if (_isMousePressed())
+        {
+            event.render->drawRect(
+                handle,
+                event.style->getColorRole(ColorRole::Pressed));
+        }
+        else if (_isMouseInside())
+        {
+            event.render->drawRect(
+                handle,
+                event.style->getColorRole(ColorRole::Hover));
+        }
+        event.render->drawMesh(
+            border(handle, p.size.border),
+            event.style->getColorRole(ColorRole::Border));
+    }
+
+    Box2I DoubleSlider::_getSliderGeometry() const
+    {
+        return _p->size.g3;
     }
 }

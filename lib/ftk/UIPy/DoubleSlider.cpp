@@ -17,7 +17,18 @@ namespace ftk
     {
         void doubleSlider(py::module_& m)
         {
-            py::class_<DoubleSlider, IWidget, std::shared_ptr<DoubleSlider> >(m, "DoubleSlider")
+            py::class_<IDoubleSlider, IMouseWidget, std::shared_ptr<IDoubleSlider> >(m, "IDoubleSlider")
+                .def_property("value", &IDoubleSlider::getValue, &IDoubleSlider::setValue)
+                .def("setCallback", &IDoubleSlider::setCallback)
+                .def("setPressedCallback", &IDoubleSlider::setPressedCallback)
+                .def_property("range", &IDoubleSlider::getRange, py::overload_cast<const RangeD&>(&IDoubleSlider::setRange))
+                .def("setRange", py::overload_cast<double, double>(&IDoubleSlider::setRange))
+                .def_property("step", &IDoubleSlider::getStep, &IDoubleSlider::setStep)
+                .def_property("largeStep", &IDoubleSlider::getLargeStep, &IDoubleSlider::setLargeStep)
+                .def_property("defaultValue", &IDoubleSlider::getDefaultValue, &IDoubleSlider::setDefaultValue)
+                .def("getModel", &IDoubleSlider::getModel);
+
+            py::class_<DoubleSlider, IDoubleSlider, std::shared_ptr<DoubleSlider> >(m, "DoubleSlider")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,
@@ -31,16 +42,7 @@ namespace ftk
                         const std::shared_ptr<IWidget>&>(&DoubleSlider::create)),
                     py::arg("context"),
                     py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &DoubleSlider::getValue, &DoubleSlider::setValue)
-                .def("setCallback", &DoubleSlider::setCallback)
-                .def("setPressedCallback", &DoubleSlider::setPressedCallback)
-                .def_property("range", &DoubleSlider::getRange, py::overload_cast<const RangeD&>(&DoubleSlider::setRange))
-                .def("setRange", py::overload_cast<double, double>(&DoubleSlider::setRange))
-                .def_property("step", &DoubleSlider::getStep, &DoubleSlider::setStep)
-                .def_property("largeStep", &DoubleSlider::getLargeStep, &DoubleSlider::setLargeStep)
-                .def_property("defaultValue", &DoubleSlider::getDefaultValue, &DoubleSlider::setDefaultValue)
-                .def("getModel", &DoubleSlider::getModel);
+                    py::arg("parent") = nullptr);
         }
     }
 }

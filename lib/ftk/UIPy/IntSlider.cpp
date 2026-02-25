@@ -17,7 +17,18 @@ namespace ftk
     {
         void intSlider(py::module_& m)
         {
-            py::class_<IntSlider, IWidget, std::shared_ptr<IntSlider> >(m, "IntSlider")
+            py::class_<IIntSlider, IMouseWidget, std::shared_ptr<IIntSlider> >(m, "IIntSlider")
+                .def_property("value", &IIntSlider::getValue, &IIntSlider::setValue)
+                .def("setCallback", &IIntSlider::setCallback)
+                .def("setPressedCallback", &IIntSlider::setPressedCallback)
+                .def_property("range", &IIntSlider::getRange, py::overload_cast<const RangeI&>(&IIntSlider::setRange))
+                .def("setRange", py::overload_cast<int, int>(&IIntSlider::setRange))
+                .def_property("step", &IIntSlider::getStep, &IIntSlider::setStep)
+                .def_property("largeStep", &IIntSlider::getLargeStep, &IIntSlider::setLargeStep)
+                .def_property("defaultValue", &IIntSlider::getDefaultValue, &IIntSlider::setDefaultValue)
+                .def("getModel", &IIntSlider::getModel);
+
+            py::class_<IntSlider, IIntSlider, std::shared_ptr<IntSlider> >(m, "IntSlider")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,
@@ -31,16 +42,7 @@ namespace ftk
                         const std::shared_ptr<IWidget>&>(&IntSlider::create)),
                     py::arg("context"),
                     py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &IntSlider::getValue, &IntSlider::setValue)
-                .def("setCallback", &IntSlider::setCallback)
-                .def("setPressedCallback", &IntSlider::setPressedCallback)
-                .def_property("range", &IntSlider::getRange, py::overload_cast<const RangeI&>(&IntSlider::setRange))
-                .def("setRange", py::overload_cast<int, int>(&IntSlider::setRange))
-                .def_property("step", &IntSlider::getStep, &IntSlider::setStep)
-                .def_property("largeStep", &IntSlider::getLargeStep, &IntSlider::setLargeStep)
-                .def_property("defaultValue", &IntSlider::getDefaultValue, &IntSlider::setDefaultValue)
-                .def("getModel", &IntSlider::getModel);
+                    py::arg("parent") = nullptr);
         }
     }
 }
