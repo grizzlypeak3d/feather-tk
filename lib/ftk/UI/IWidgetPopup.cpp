@@ -327,6 +327,16 @@ namespace ftk
         event.accept = true;
     }
 
+    void IWidgetPopup::scrollEvent(ScrollEvent& event)
+    {
+        IPopup::scrollEvent(event);
+        FTK_P();
+        if (contains(p.containerWidget->getGeometry(), event.pos))
+        {
+            event.accept = true;
+        }
+    }
+
     void IWidgetPopup::keyPressEvent(KeyEvent& event)
     {
         if (0 == event.modifiers)

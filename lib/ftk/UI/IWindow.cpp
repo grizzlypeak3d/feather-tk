@@ -578,7 +578,7 @@ namespace ftk
                         p.keyPress = widget;
                         break;
                     }
-                    if (auto dialog = std::dynamic_pointer_cast<IDialog>(widget))
+                    if (std::dynamic_pointer_cast<IDialog>(widget))
                     {
                         break;
                     }
@@ -822,9 +822,13 @@ namespace ftk
                 {
                     break;
                 }
-                if (auto dialog = std::dynamic_pointer_cast<IDialog>(widget))
+                if (std::dynamic_pointer_cast<IDialog>(widget))
                 {
                     break;
+                }
+                if (auto popup = std::dynamic_pointer_cast<IPopup>(widget))
+                {
+                    popup->close();
                 }
                 widget = widget->getParent();
             }
@@ -840,6 +844,14 @@ namespace ftk
                 if (event.accept)
                 {
                     break;
+                }
+                if (std::dynamic_pointer_cast<IDialog>(*i))
+                {
+                    break;
+                }
+                if (auto popup = std::dynamic_pointer_cast<IPopup>(*i))
+                {
+                    popup->close();
                 }
             }
         }
