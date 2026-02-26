@@ -189,10 +189,11 @@ namespace ftk
 
         std::shared_ptr<IntEdit> edit;
         std::shared_ptr<ColorIntSlider> slider;
+        std::shared_ptr<IntResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
-        std::function<void(float)> callback;
-        std::function<void(float, bool)> pressedCallback;
+        std::function<void(int)> callback;
+        std::function<void(int, bool)> pressedCallback;
         int blockCallbacks = 0;
     };
 
@@ -209,11 +210,15 @@ namespace ftk
         p.edit = IntEdit::create(context, p.model);
 
         p.slider = ColorIntSlider::create(context, p.model);
+        p.slider->setHStretch(Stretch::Expanding);
+
+        p.resetButton = IntResetButton::create(context, p.model);
 
         p.layout = HorizontalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
+        p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](int value)
@@ -503,6 +508,7 @@ namespace ftk
 
         std::shared_ptr<FloatEdit> edit;
         std::shared_ptr<ColorFloatSlider> slider;
+        std::shared_ptr<FloatResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(float)> callback;
@@ -523,11 +529,15 @@ namespace ftk
         p.edit = FloatEdit::create(context, p.model);
 
         p.slider = ColorFloatSlider::create(context, p.model);
+        p.slider->setHStretch(Stretch::Expanding);
+
+        p.resetButton = FloatResetButton::create(context, p.model);
 
         p.layout = HorizontalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
+        p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](float value)

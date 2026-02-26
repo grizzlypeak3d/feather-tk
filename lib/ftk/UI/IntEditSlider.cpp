@@ -38,6 +38,7 @@ namespace ftk
         p.edit = IntEdit::create(context, p.model);
 
         p.slider = IntSlider::create(context, p.model);
+        p.slider->setHStretch(Stretch::Expanding);
 
         p.resetButton = IntResetButton::create(context, p.model);
 
@@ -45,7 +46,6 @@ namespace ftk
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
-        p.slider->setHStretch(Stretch::Expanding);
         p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
