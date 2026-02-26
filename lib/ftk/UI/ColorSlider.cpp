@@ -6,6 +6,7 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/FloatEdit.h>
 #include <ftk/UI/IntEdit.h>
+#include <ftk/UI/RowLayout.h>
 
 namespace ftk
 {
@@ -182,6 +183,147 @@ namespace ftk
         return _p->size.g2;
     }
 
+    struct ColorIntEditSlider::Private
+    {
+        std::shared_ptr<IntModel> model;
+
+        std::shared_ptr<IntEdit> edit;
+        std::shared_ptr<ColorIntSlider> slider;
+        std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(float)> callback;
+        std::function<void(float, bool)> pressedCallback;
+        int blockCallbacks = 0;
+    };
+
+    void ColorIntEditSlider::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IntModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IWidget::_init(context, "ftk::ColorIntEditSlider", parent);
+        FTK_P();
+
+        p.model = model;
+
+        p.edit = IntEdit::create(context, p.model);
+
+        p.slider = ColorIntSlider::create(context, p.model);
+
+        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout->setSpacingRole(SizeRole::SpacingTool);
+        p.edit->setParent(p.layout);
+        p.slider->setParent(p.layout);
+
+        p.slider->setCallback(
+            [this](int value)
+            {
+                FTK_P();
+                if (p.callback && !p.blockCallbacks)
+                {
+                    p.callback(value);
+                }
+            });
+
+        p.slider->setPressedCallback(
+            [this](int value, bool pressed)
+            {
+                FTK_P();
+                if (p.pressedCallback && !p.blockCallbacks)
+                {
+                    p.pressedCallback(value, pressed);
+                }
+            });
+    }
+
+    ColorIntEditSlider::ColorIntEditSlider() :
+        _p(new Private)
+    {}
+
+    ColorIntEditSlider::~ColorIntEditSlider()
+    {}
+
+    std::shared_ptr<ColorIntEditSlider> ColorIntEditSlider::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        std::shared_ptr<ColorIntEditSlider> out(new ColorIntEditSlider);
+        out->_init(context, IntModel::create(context), parent);
+        return out;
+    }
+
+    std::shared_ptr<ColorIntEditSlider> ColorIntEditSlider::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IntModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        std::shared_ptr<ColorIntEditSlider> out(new ColorIntEditSlider);
+        out->_init(context, model, parent);
+        return out;
+    }
+
+    const std::shared_ptr<IntModel>& ColorIntEditSlider::getModel() const
+    {
+        return _p->model;
+    }
+
+    void ColorIntEditSlider::setColors(const std::vector<V4F>& value)
+    {
+        _p->slider->setColors(value);
+    }
+
+    int ColorIntEditSlider::getValue() const
+    {
+        return _p->model->getValue();
+    }
+
+    void ColorIntEditSlider::setValue(int value)
+    {
+        FTK_P();
+        ++(p.blockCallbacks);
+        p.model->setValue(value);
+        --(p.blockCallbacks);
+    }
+
+    void ColorIntEditSlider::setCallback(const std::function<void(int)>& value)
+    {
+        _p->callback = value;
+    }
+
+    void ColorIntEditSlider::setPressedCallback(const std::function<void(int, bool) >& value)
+    {
+        _p->pressedCallback = value;
+    }
+
+    const RangeI& ColorIntEditSlider::getRange() const
+    {
+        return _p->model->getRange();
+    }
+
+    void ColorIntEditSlider::setRange(const RangeI& value)
+    {
+        FTK_P();
+        ++(p.blockCallbacks);
+        p.model->setRange(value);
+        --(p.blockCallbacks);
+    }
+
+    void ColorIntEditSlider::setRange(int min, int max)
+    {
+        setRange(RangeI(min, max));
+    }
+
+    Size2I ColorIntEditSlider::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
+    void ColorIntEditSlider::setGeometry(const Box2I& value)
+    {
+        IWidget::setGeometry(value);
+        _p->layout->setGeometry(value);
+    }
+
     struct ColorFloatSlider::Private
     {
         std::vector<V4F> colors;
@@ -353,5 +495,146 @@ namespace ftk
     Box2I ColorFloatSlider::_getSliderGeometry() const
     {
         return _p->size.g2;
+    }
+
+    struct ColorFloatEditSlider::Private
+    {
+        std::shared_ptr<FloatModel> model;
+
+        std::shared_ptr<FloatEdit> edit;
+        std::shared_ptr<ColorFloatSlider> slider;
+        std::shared_ptr<HorizontalLayout> layout;
+
+        std::function<void(float)> callback;
+        std::function<void(float, bool)> pressedCallback;
+        int blockCallbacks = 0;
+    };
+
+    void ColorFloatEditSlider::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<FloatModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IWidget::_init(context, "ftk::ColorFloatEditSlider", parent);
+        FTK_P();
+
+        p.model = model;
+
+        p.edit = FloatEdit::create(context, p.model);
+
+        p.slider = ColorFloatSlider::create(context, p.model);
+
+        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout->setSpacingRole(SizeRole::SpacingTool);
+        p.edit->setParent(p.layout);
+        p.slider->setParent(p.layout);
+
+        p.slider->setCallback(
+            [this](float value)
+            {
+                FTK_P();
+                if (p.callback && !p.blockCallbacks)
+                {
+                    p.callback(value);
+                }
+            });
+
+        p.slider->setPressedCallback(
+            [this](float value, bool pressed)
+            {
+                FTK_P();
+                if (p.pressedCallback && !p.blockCallbacks)
+                {
+                    p.pressedCallback(value, pressed);
+                }
+            });
+    }
+
+    ColorFloatEditSlider::ColorFloatEditSlider() :
+        _p(new Private)
+    {}
+
+    ColorFloatEditSlider::~ColorFloatEditSlider()
+    {}
+
+    std::shared_ptr<ColorFloatEditSlider> ColorFloatEditSlider::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        std::shared_ptr<ColorFloatEditSlider> out(new ColorFloatEditSlider);
+        out->_init(context, FloatModel::create(context), parent);
+        return out;
+    }
+
+    std::shared_ptr<ColorFloatEditSlider> ColorFloatEditSlider::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<FloatModel>& model,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        std::shared_ptr<ColorFloatEditSlider> out(new ColorFloatEditSlider);
+        out->_init(context, model, parent);
+        return out;
+    }
+
+    const std::shared_ptr<FloatModel>& ColorFloatEditSlider::getModel() const
+    {
+        return _p->model;
+    }
+
+    void ColorFloatEditSlider::setColors(const std::vector<V4F>& value)
+    {
+        _p->slider->setColors(value);
+    }
+
+    float ColorFloatEditSlider::getValue() const
+    {
+        return _p->model->getValue();
+    }
+
+    void ColorFloatEditSlider::setValue(float value)
+    {
+        FTK_P();
+        ++(p.blockCallbacks);
+        p.model->setValue(value);
+        --(p.blockCallbacks);
+    }
+
+    void ColorFloatEditSlider::setCallback(const std::function<void(float)>& value)
+    {
+        _p->callback = value;
+    }
+
+    void ColorFloatEditSlider::setPressedCallback(const std::function<void(float, bool) >& value)
+    {
+        _p->pressedCallback = value;
+    }
+
+    const RangeF& ColorFloatEditSlider::getRange() const
+    {
+        return _p->model->getRange();
+    }
+
+    void ColorFloatEditSlider::setRange(const RangeF& value)
+    {
+        FTK_P();
+        ++(p.blockCallbacks);
+        p.model->setRange(value);
+        --(p.blockCallbacks);
+    }
+
+    void ColorFloatEditSlider::setRange(float min, float max)
+    {
+        setRange(RangeF(min, max));
+    }
+
+    Size2I ColorFloatEditSlider::getSizeHint() const
+    {
+        return _p->layout->getSizeHint();
+    }
+
+    void ColorFloatEditSlider::setGeometry(const Box2I& value)
+    {
+        IWidget::setGeometry(value);
+        _p->layout->setGeometry(value);
     }
 }

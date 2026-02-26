@@ -25,8 +25,7 @@ namespace ftk
         Color4F color;
 
         std::shared_ptr<ColorSwatch> swatch;
-        std::map<std::string, std::shared_ptr<FloatEdit> > editors;
-        std::map<std::string, std::shared_ptr<ColorFloatSlider> > sliders;
+        std::map<std::string, std::shared_ptr<ColorFloatEditSlider> > sliders;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(const Color4F&)> callback;
@@ -43,17 +42,13 @@ namespace ftk
         p.swatch = ColorSwatch::create(context);
         p.swatch->setSizeRole(SizeRole::SwatchLarge);
 
-        p.editors["R"] = FloatEdit::create(context);
-        p.editors["G"] = FloatEdit::create(context);
-        p.editors["B"] = FloatEdit::create(context);
-        p.editors["A"] = FloatEdit::create(context);
-        p.sliders["R"] = ColorFloatSlider::create(context, p.editors["R"]->getModel());
+        p.sliders["R"] = ColorFloatEditSlider::create(context);
         p.sliders["R"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 0.F, 0.F) });
-        p.sliders["G"] = ColorFloatSlider::create(context, p.editors["G"]->getModel());
+        p.sliders["G"] = ColorFloatEditSlider::create(context);
         p.sliders["G"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(0.F, 1.F, 0.F) });
-        p.sliders["B"] = ColorFloatSlider::create(context, p.editors["B"]->getModel());
+        p.sliders["B"] = ColorFloatEditSlider::create(context);
         p.sliders["B"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(0.F, 0.F, 1.F) });
-        p.sliders["A"] = ColorFloatSlider::create(context, p.editors["A"]->getModel());
+        p.sliders["A"] = ColorFloatEditSlider::create(context);
         p.sliders["A"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
 
         p.layout = HorizontalLayout::create(context, shared_from_this());
@@ -67,31 +62,23 @@ namespace ftk
 
         auto label = Label::create(context, "R:", gridLayout);
         gridLayout->setGridPos(label, 0, 0);
-        p.editors["R"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["R"], 0, 1);
         p.sliders["R"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["R"], 0, 2);
+        gridLayout->setGridPos(p.sliders["R"], 0, 1);
 
         label = Label::create(context, "G:", gridLayout);
         gridLayout->setGridPos(label, 1, 0);
-        p.editors["G"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["G"], 1, 1);
         p.sliders["G"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["G"], 1, 2);
+        gridLayout->setGridPos(p.sliders["G"], 1, 1);
 
         label = Label::create(context, "B:", gridLayout);
         gridLayout->setGridPos(label, 2, 0);
-        p.editors["B"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["B"], 2, 1);
         p.sliders["B"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["B"], 2, 2);
+        gridLayout->setGridPos(p.sliders["B"], 2, 1);
 
         label = Label::create(context, "A:", gridLayout);
         gridLayout->setGridPos(label, 3, 0);
-        p.editors["A"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["A"], 3, 1);
         p.sliders["A"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["A"], 3, 2);
+        gridLayout->setGridPos(p.sliders["A"], 3, 1);
 
         _colorUpdate();
 
@@ -230,10 +217,8 @@ namespace ftk
         float hsv[3] = { 0.F, 0.F, 0.F };
 
         std::shared_ptr<ColorSwatch> swatch;
-        std::shared_ptr<IntEdit> hueEditor;
-        std::map<std::string, std::shared_ptr<FloatEdit> > editors;
-        std::shared_ptr<ColorIntSlider> hueSlider;
-        std::map<std::string, std::shared_ptr<ColorFloatSlider> > sliders;
+        std::shared_ptr<ColorIntEditSlider> hueSlider;
+        std::map<std::string, std::shared_ptr<ColorFloatEditSlider> > sliders;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(const Color4F&)> callback;
@@ -250,14 +235,7 @@ namespace ftk
         p.swatch = ColorSwatch::create(context);
         p.swatch->setSizeRole(SizeRole::SwatchLarge);
 
-        p.hueEditor = IntEdit::create(context);
-        p.hueEditor->setRange(0, 360);
-        p.hueEditor->setStep(10);
-        p.hueEditor->setLargeStep(60);
-        p.editors["S"] = FloatEdit::create(context);
-        p.editors["V"] = FloatEdit::create(context);
-        p.editors["A"] = FloatEdit::create(context);
-        p.hueSlider = ColorIntSlider::create(context, p.hueEditor->getModel());
+        p.hueSlider = ColorIntEditSlider::create(context);
         p.hueSlider->setColors({
             hue(6.0 / 6.0) * V4F(1.F, 0.F, 0.F),
             hue(5.0 / 6.0) * V4F(1.F, 0.F, 0.F),
@@ -266,10 +244,13 @@ namespace ftk
             hue(2.0 / 6.0) * V4F(1.F, 0.F, 0.F),
             hue(1.0 / 6.0) * V4F(1.F, 0.F, 0.F),
             hue(0.0 / 6.0) * V4F(1.F, 0.F, 0.F) });
-        p.sliders["S"] = ColorFloatSlider::create(context, p.editors["S"]->getModel());
-        p.sliders["V"] = ColorFloatSlider::create(context, p.editors["V"]->getModel());
+        p.hueSlider->setRange(0, 360);
+        p.hueSlider->getModel()->setStep(10);
+        p.hueSlider->getModel()->setLargeStep(60);
+        p.sliders["S"] = ColorFloatEditSlider::create(context);
+        p.sliders["V"] = ColorFloatEditSlider::create(context);
         p.sliders["V"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
-        p.sliders["A"] = ColorFloatSlider::create(context, p.editors["A"]->getModel());
+        p.sliders["A"] = ColorFloatEditSlider::create(context);
         p.sliders["A"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
 
         p.layout = HorizontalLayout::create(context, shared_from_this());
@@ -283,31 +264,23 @@ namespace ftk
 
         auto label = Label::create(context, "H:", gridLayout);
         gridLayout->setGridPos(label, 0, 0);
-        p.hueEditor->setParent(gridLayout);
-        gridLayout->setGridPos(p.hueEditor, 0, 1);
         p.hueSlider->setParent(gridLayout);
-        gridLayout->setGridPos(p.hueSlider, 0, 2);
+        gridLayout->setGridPos(p.hueSlider, 0, 1);
 
         label = Label::create(context, "S:", gridLayout);
         gridLayout->setGridPos(label, 1, 0);
-        p.editors["S"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["S"], 1, 1);
         p.sliders["S"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["S"], 1, 2);
+        gridLayout->setGridPos(p.sliders["S"], 1, 1);
 
         label = Label::create(context, "V:", gridLayout);
         gridLayout->setGridPos(label, 2, 0);
-        p.editors["V"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["V"], 2, 1);
         p.sliders["V"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["V"], 2, 2);
+        gridLayout->setGridPos(p.sliders["V"], 2, 1);
 
         label = Label::create(context, "A:", gridLayout);
         gridLayout->setGridPos(label, 3, 0);
-        p.editors["A"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.editors["A"], 3, 1);
         p.sliders["A"]->setParent(gridLayout);
-        gridLayout->setGridPos(p.sliders["A"], 3, 2);
+        gridLayout->setGridPos(p.sliders["A"], 3, 1);
 
         _colorUpdate();
 
@@ -352,6 +325,7 @@ namespace ftk
                     p.pressedCallback(p.color, pressed);
                 }
             });
+
         p.sliders["V"]->setPressedCallback(
             [this](float value, bool pressed)
             {
