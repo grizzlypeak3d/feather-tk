@@ -4,6 +4,8 @@
 #include <ftk/UI/ColorSlider.h>
 
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/FloatEdit.h>
+#include <ftk/UI/IntEdit.h>
 
 namespace ftk
 {

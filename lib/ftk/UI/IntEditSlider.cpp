@@ -20,7 +20,7 @@ namespace ftk
 
         std::function<void(int)> callback;
         std::function<void(int, bool)> pressedCallback;
-        bool blockCallbacks = false;
+        int blockCallbacks = 0;
     };
 
     void IntEditSlider::_init(
@@ -103,9 +103,9 @@ namespace ftk
     void IntEditSlider::setValue(int value)
     {
         FTK_P();
-        p.blockCallbacks = true;
+        ++(p.blockCallbacks);
         p.model->setValue(value);
-        p.blockCallbacks = false;
+        --(p.blockCallbacks);
     }
 
     void IntEditSlider::setCallback(const std::function<void(int)>& value)
@@ -126,9 +126,9 @@ namespace ftk
     void IntEditSlider::setRange(const RangeI& value)
     {
         FTK_P();
-        p.blockCallbacks = true;
+        ++(p.blockCallbacks);
         p.model->setRange(value);
-        p.blockCallbacks = false;
+        --(p.blockCallbacks);
     }
 
     void IntEditSlider::setRange(int min, int max)
