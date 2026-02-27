@@ -7,8 +7,6 @@
 
 namespace ftk
 {
-    class DiagModel;
-
     //! \name Debugging
     ///@{
         
@@ -18,7 +16,6 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::shared_ptr<DiagModel>&,
             const std::shared_ptr<IWidget>& parent);
 
         DiagWidget();
@@ -29,7 +26,6 @@ namespace ftk
         //! Create a new widget.
         FTK_API static std::shared_ptr<DiagWidget> create(
             const std::shared_ptr<Context>&,
-            const std::shared_ptr<DiagModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the margin role.

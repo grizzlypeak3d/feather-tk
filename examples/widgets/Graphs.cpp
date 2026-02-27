@@ -16,7 +16,7 @@ namespace widgets
     {
         ftk::IWidget::_init(context, "Graphs", parent);
 
-        _widget = DiagWidget::create(context, app->getDiagModel());
+        _widget = DiagWidget::create(context);
         _widget->setMarginRole(SizeRole::Margin);
 
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());

@@ -3,6 +3,7 @@
 
 #include <ftk/Core/Context.h>
 
+#include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/FontSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/ImageIO.h>
@@ -32,6 +33,7 @@ namespace ftk
             arg(sysInfo.cores).
             arg(sysInfo.ramGB));
 
+        addSystem(DiagSystem::create(shared_from_this()));
         addSystem(FontSystem::create(shared_from_this()));
         addSystem(ImageIO::create(shared_from_this()));
         addSystem(TimerSystem::create(shared_from_this()));

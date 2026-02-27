@@ -42,16 +42,7 @@ namespace ftk
             std::map<std::string, std::shared_ptr<gl::VAO> > vaos;
 
             std::chrono::time_point<std::chrono::steady_clock> startTime;
-            struct Stats
-            {
-                int renderTime = 0;
-                size_t triCount = 0;
-                size_t textureCount = 0;
-                size_t glyphCount = 0;
-            };
-            Stats stats;
-            std::list<Stats> statsList;
-            size_t statsCounter = 0;
+            RenderDiag diag;
         };
     }
 }

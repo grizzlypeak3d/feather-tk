@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/ISystem.h>
 #include <ftk/Core/ObservableMap.h>
 
 #include <string>
@@ -14,22 +15,19 @@ namespace ftk
     //! \name Debugging
     ///@{
 
-    //! Diagnostics model.
-    class FTK_API_TYPE DiagModel : public std::enable_shared_from_this<DiagModel>
+    //! Diagnostics system.
+    class FTK_API_TYPE DiagSystem : public ISystem
     {
-        FTK_NON_COPYABLE(DiagModel);
+        FTK_NON_COPYABLE(DiagSystem);
 
     protected:
-        void _init(const std::shared_ptr<Context>&);
-
-        DiagModel();
+        DiagSystem(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API ~DiagModel();
+        FTK_API virtual ~DiagSystem();
 
-        //! Create a new model.
-        FTK_API static std::shared_ptr<DiagModel> create(
-            const std::shared_ptr<Context>&);
+        //! Create a new system.
+        FTK_API static std::shared_ptr<DiagSystem> create(const std::shared_ptr<Context>&);
 
         //! Add a sampler function.
         FTK_API void addSampler(const std::string&, const std::function<int64_t(void)>&);
@@ -57,6 +55,9 @@ namespace ftk
 
         //! Observe the samples increments.
         FTK_API std::shared_ptr<IObservableMap<std::string, int64_t> > observeSamplesInc() const;
+
+        FTK_API void tick() override;
+        FTK_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         FTK_PRIVATE();

@@ -66,8 +66,8 @@ namespace ftk
             FTK_P();
 
             p.startTime = std::chrono::steady_clock::now();
-            p.stats = Private::Stats();
-            
+            p.diag = RenderDiag();
+
             p.size = size;
             p.options = options;
             p.textureCache->setMax(options.textureCacheByteCount);
@@ -159,21 +159,7 @@ namespace ftk
             FTK_P();
             const auto now = std::chrono::steady_clock::now();
             const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(now - p.startTime);
-            p.stats.renderTime = diff.count();
-            p.statsList.push_back(p.stats);
-            while (p.statsList.size() > statsAverageCount)
-            {
-                p.statsList.pop_front();
-            }
-            p.statsCounter = p.statsCounter + 1;
-            if (p.statsCounter > statsTimer)
-            {
-                p.statsCounter = 0;
-                if (p.options.log)
-                {
-                    _log();
-                }
-            }
+            p.diag.time = diff.count();
         }
 
         Size2I Render::getRenderSize() const
@@ -266,6 +252,11 @@ namespace ftk
                 i.second->bind();
                 i.second->setUniform("transform.mvp", value);
             }
+        }
+
+        RenderDiag Render::getDiag() const
+        {
+            return _p->diag;
         }
 
         std::vector<std::shared_ptr<Texture> > Render::_getTextures(
@@ -521,43 +512,6 @@ namespace ftk
             }
         }
         
-        void Render::_log()
-        {
-            FTK_P();
-            if (auto logSystem = _logSystem.lock())
-            {
-                Private::Stats average;
-                const size_t size = p.statsList.size();
-                if (size)
-                {
-                    for (auto i : p.statsList)
-                    {
-                        average.renderTime   += i.renderTime;
-                        average.triCount     += i.triCount;
-                        average.textureCount += i.textureCount;
-                        average.glyphCount   += i.glyphCount;
-                    }
-                    average.renderTime   /= size;
-                    average.triCount     /= size;
-                    average.textureCount /= size;
-                    average.glyphCount   /= size;
-                }
-                logSystem->print(
-                    "ftk::gl::Render",
-                    Format(
-                        "\n"
-                        "    Averages:\n"
-                        "    * Render time:    {0}ms\n"
-                        "    * Triangle count: {1}\n"
-                        "    * Texture count:  {2}\n"
-                        "    * Glyph count:    {3}").
-                        arg(average.renderTime).
-                        arg(average.triCount).
-                        arg(average.textureCount).
-                        arg(average.glyphCount));
-            }
-        }
-
         std::shared_ptr<IRender> RenderFactory::createRender(
             const std::shared_ptr<LogSystem>& logSystem,
             const std::shared_ptr<FontSystem>& fontSystem)

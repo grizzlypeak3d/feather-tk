@@ -108,6 +108,7 @@ namespace ftk
                 const Box2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const ImageOptions& = ImageOptions()) override;
+            FTK_API RenderDiag getDiag() const override;
 
         private:
             std::vector<std::shared_ptr<Texture> > _getTextures(
@@ -124,8 +125,6 @@ namespace ftk
                 size_t offset = 0);
 
             void _drawTextMesh(const TriMesh2F&);
-            
-            void _log();
 
             FTK_PRIVATE();
         };
@@ -135,8 +134,8 @@ namespace ftk
         {
         public:
             FTK_API std::shared_ptr<IRender> createRender(
-                const std::shared_ptr<LogSystem>& logSystem,
-                const std::shared_ptr<FontSystem>& fontSystem) override;
+                const std::shared_ptr<LogSystem>&,
+                const std::shared_ptr<FontSystem>&) override;
         };
         
         ///@}

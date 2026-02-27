@@ -9,11 +9,17 @@
 #include <ftk/UI/IconSystem.h>
 
 #include <ftk/Core/Context.h>
+#include <ftk/Core/DiagSystem.h>
 
 namespace ftk
 {
     void uiInit(const std::shared_ptr<Context>& context)
     {
+        auto diagSystem = context->getSystem<DiagSystem>();
+        diagSystem->addSampler(
+            "feather-tk Objects/IWidgets: {0}",
+            [] { return IWidget::getObjectCount(); });
+
         if (!context->getSystem<ClipboardSystem>())
         {
             context->addSystem(ClipboardSystem::create(context));

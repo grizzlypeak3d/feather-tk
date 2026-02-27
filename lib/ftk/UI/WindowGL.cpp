@@ -17,6 +17,7 @@
 #endif // FTK_API_GLES_2
 
 #include <ftk/Core/Context.h>
+#include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/FontSystem.h>
@@ -60,6 +61,37 @@ namespace ftk
         p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(
             context->getLogSystem(),
             context->getSystem<FontSystem>());
+
+        auto diagSystem = context->getSystem<DiagSystem>();
+        std::weak_ptr<Window> windowWeak(std::dynamic_pointer_cast<Window>(shared_from_this()));
+        diagSystem->addSampler(
+            "feather-tk UI/Render time: {0}ms",
+            [windowWeak]
+            {
+                auto window = windowWeak.lock();
+                return window ? window->_p->render->getDiag().time : 0;
+            });
+        diagSystem->addSampler(
+            "feather-tk UI Objects/Triangles: {0}",
+            [windowWeak]
+            {
+                auto window = windowWeak.lock();
+                return window ? window->_p->render->getDiag().triangles : 0;
+            });
+        diagSystem->addSampler(
+            "feather-tk UI Objects/Textures: {0}",
+            [windowWeak]
+            {
+                auto window = windowWeak.lock();
+                return window ? window->_p->render->getDiag().textures : 0;
+            });
+        diagSystem->addSampler(
+            "feather-tk UI Objects/Glyphs: {0}",
+            [windowWeak]
+            {
+                auto window = windowWeak.lock();
+                return window ? window->_p->render->getDiag().glyphs : 0;
+            });
 
         setVisible(false);
     }

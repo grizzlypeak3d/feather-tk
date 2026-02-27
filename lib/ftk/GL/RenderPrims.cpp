@@ -24,7 +24,7 @@ namespace ftk
             {
                 const auto mesh = ftk::mesh(rect);
                 p.vbos["rect"]->copy(convert(mesh, p.vbos["rect"]->getType()));
-                p.stats.triCount += mesh.triangles.size();
+                p.diag.triangles += mesh.triangles.size();
             }
             if (p.vaos["rect"])
             {
@@ -85,7 +85,7 @@ namespace ftk
             if (p.vbos["line"])
             {
                 p.vbos["line"]->copy(convert(mesh, p.vbos["line"]->getType()));
-                p.stats.triCount += mesh.triangles.size();
+                p.diag.triangles += mesh.triangles.size();
             }
             if (p.vaos["line"])
             {
@@ -148,7 +148,7 @@ namespace ftk
                 if (p.vbos["mesh"])
                 {
                     p.vbos["mesh"]->copy(convert(mesh, VBOType::Pos2_F32));
-                    p.stats.triCount += mesh.triangles.size();
+                    p.diag.triangles += mesh.triangles.size();
                 }
 
                 if (!p.vaos["mesh"] && p.vbos["mesh"])
@@ -189,7 +189,7 @@ namespace ftk
                 if (p.vbos["colorMesh"])
                 {
                     p.vbos["colorMesh"]->copy(convert(mesh, VBOType::Pos2_F32_Color_F32));
-                    p.stats.triCount += mesh.triangles.size();
+                    p.diag.triangles += mesh.triangles.size();
                 }
 
                 if (!p.vaos["colorMesh"] && p.vbos["colorMesh"])
@@ -265,7 +265,7 @@ namespace ftk
                     ++glyphCount;
                 }
             }
-            p.stats.glyphCount += glyphCount;
+            p.diag.glyphs += glyphCount;
 
             int x = 0;
             int y = 0;
@@ -392,7 +392,7 @@ namespace ftk
                 p.textureCache->add(image, textures, image->getByteCount());
             }
             _setActiveTextures(info, textures);
-            p.stats.textureCount += textures.size();
+            p.diag.textures += textures.size();
 
             p.shaders["image"]->bind();
             p.shaders["image"]->setUniform("color", color);
@@ -448,7 +448,7 @@ namespace ftk
             if (p.vbos["image"])
             {
                 p.vbos["image"]->copy(convert(mesh, VBOType::Pos2_F32_UV_U16));
-                p.stats.triCount += mesh.triangles.size();
+                p.diag.triangles += mesh.triangles.size();
             }
 
             if (!p.vaos["image"] && p.vbos["image"])
@@ -485,7 +485,7 @@ namespace ftk
                 if (p.vbos["text"])
                 {
                     p.vbos["text"]->copy(convert(mesh, p.vbos["text"]->getType()));
-                    p.stats.triCount += mesh.triangles.size();
+                    p.diag.triangles += mesh.triangles.size();
                 }
                 if (!p.vaos["text"] && p.vbos["text"])
                 {

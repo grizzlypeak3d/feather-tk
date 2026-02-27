@@ -3,10 +3,10 @@
 
 #include <ftk/UI/DiagWidget.h>
 
-#include <ftk/UI/DiagModel.h>
 #include <ftk/UI/GraphWidget.h>
 #include <ftk/UI/RowLayout.h>
 
+#include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 
 namespace ftk
@@ -22,7 +22,6 @@ namespace ftk
 
     void DiagWidget::_init(
         const std::shared_ptr<Context>& context,
-        const std::shared_ptr<DiagModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
         IWidget::_init(context, "ftk::DiagWidget", parent);
@@ -41,12 +40,13 @@ namespace ftk
             ColorRole::Blue
         };
 
-        const auto& groups = model->getGroups();
+        const auto system = context->getSystem<DiagSystem>();
+        const auto& groups = system->getGroups();
         for (auto i = groups.rbegin(); i != groups.rend(); ++i)
         {
             const auto& group = *i;
             std::vector<std::pair<ColorRole, std::string> > labels;
-            const auto& names = model->getNames(group);
+            const auto& names = system->getNames(group);
             for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
             {
                 labels.push_back(std::make_pair(colors[j], names[j]));
@@ -59,7 +59,7 @@ namespace ftk
             p.graphs[group] = graph;
         }
 
-        const auto& samples = model->getSamples();
+        const auto& samples = system->getSamples();
         for (const auto& i : samples)
         {
             const auto j = p.samples.find(i.first);
@@ -70,7 +70,7 @@ namespace ftk
         }
 
         p.sampleIncObserver = MapObserver<std::string, int64_t>::create(
-            model->observeSamplesInc(),
+            system->observeSamplesInc(),
             [this](const std::map<std::string, int64_t>& value)
             {
                 FTK_P();
@@ -94,11 +94,10 @@ namespace ftk
 
     std::shared_ptr<DiagWidget> DiagWidget::create(
         const std::shared_ptr<Context>& context,
-        const std::shared_ptr<DiagModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<DiagWidget>(new DiagWidget);
-        out->_init(context, model, parent);
+        out->_init(context, parent);
         return out;
     }
 

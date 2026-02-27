@@ -10,6 +10,7 @@ set(HEADERS
     Command.h
     Context.h
     ContextInline.h
+    DiagSystem.h
     Error.h
     Export.h
     FileIO.h
@@ -74,6 +75,7 @@ set(SOURCE
     Command.cpp
     Color.cpp
     Context.cpp
+    DiagSystem.cpp
     Error.cpp
     FileIO.cpp
     FileLogSystem.cpp

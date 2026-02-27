@@ -4,7 +4,6 @@
 #pragma once
 
 #include <ftk/UI/App.h>
-#include <ftk/UI/DiagModel.h>
 #include <ftk/UI/SysLogModel.h>
 
 namespace widgets
@@ -28,13 +27,11 @@ namespace widgets
             const std::vector<std::string>&);
 
         const std::shared_ptr<ftk::SysLogModel>& getSysLogModel() const;
-        const std::shared_ptr<ftk::DiagModel>& getDiagModel() const;
 
         void run() override;
 
     private:
         std::shared_ptr<ftk::SysLogModel> _sysLogModel;
-        std::shared_ptr<ftk::DiagModel> _diagModel;
         std::shared_ptr<MainWindow> _mainWindow;
     };
 }

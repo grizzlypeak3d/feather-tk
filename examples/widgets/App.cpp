@@ -37,16 +37,9 @@ namespace widgets
         return _sysLogModel;
     }
 
-    const std::shared_ptr<DiagModel>& App::getDiagModel() const
-    {
-        return _diagModel;
-    }
-
     void App::run()
     {
         _sysLogModel = SysLogModel::create(_context);
-
-        _diagModel = DiagModel::create(_context);
 
         _mainWindow = MainWindow::create(
             _context,

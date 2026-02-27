@@ -19,7 +19,16 @@ namespace ftk
 
     //! \name Rendering
     ///@{
-        
+
+    //! Render diagnostics.
+    struct FTK_API_TYPE RenderDiag
+    {
+        int64_t time = 0;
+        int64_t triangles = 0;
+        int64_t textures = 0;
+        int64_t glyphs = 0;
+    };
+
     //! Base class for renderers.
     class FTK_API_TYPE IRender : public std::enable_shared_from_this<IRender>
     {
@@ -179,6 +188,9 @@ namespace ftk
             const Box2I&,
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
             const ImageOptions& = ImageOptions());
+
+        //! Get diagnostics for the last render.
+        FTK_API virtual RenderDiag getDiag() const = 0;
 
     protected:
         std::weak_ptr<LogSystem> _logSystem;

@@ -98,6 +98,7 @@ namespace ftk
                     const Box2F&,
                     const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                     const ImageOptions& = ImageOptions()) override {}
+                RenderDiag getDiag() const override { return RenderDiag(); }
 
             private:
                 Size2I _renderSize;
