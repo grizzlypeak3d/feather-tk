@@ -90,6 +90,11 @@ namespace ftk
         return _clipped;
     }
 
+    inline bool IWidget::doesClipChildren() const
+    {
+        return _clipChildren;
+    }
+
     inline bool IWidget::isEnabled(bool andParentsEnabled) const
     {
         bool out = _enabled;

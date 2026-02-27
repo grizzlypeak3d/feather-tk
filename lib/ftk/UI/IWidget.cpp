@@ -291,6 +291,11 @@ namespace ftk
         setVisible(false);
     }
 
+    void IWidget::setClipChildren(bool value)
+    {
+        _clipChildren = value;
+    }
+
     Box2I IWidget::getChildrenClipRect() const
     {
         return _geometry;

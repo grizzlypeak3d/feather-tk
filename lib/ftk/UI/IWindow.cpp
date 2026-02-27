@@ -533,12 +533,16 @@ namespace ftk
         const Box2I& g = widget->getGeometry();
         if (!widget->isClipped() && g.w() > 0 && g.h() > 0)
         {
-            event.render->setClipRect(drawRect);
             widget->drawEvent(drawRect, event);
             widget->setDrawUpdate(false);
             const Box2I childrenClipRect = intersect(
                 widget->getChildrenClipRect(),
                 drawRect);
+            if (widget->doesClipChildren())
+            {
+                event.render->setClipRectEnabled(true);
+                event.render->setClipRect(childrenClipRect);
+            }
             for (const auto& child : widget->getChildren())
             {
                 const Box2I& childGeometry = child->getGeometry();
@@ -550,7 +554,10 @@ namespace ftk
                         event);
                 }
             }
-            event.render->setClipRect(drawRect);
+            if (widget->doesClipChildren())
+            {
+                event.render->setClipRectEnabled(false);
+            }
             widget->drawOverlayEvent(drawRect, event);
         }
     }

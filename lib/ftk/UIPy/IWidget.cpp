@@ -131,6 +131,7 @@ namespace ftk
                 .def("show", &IWidget::show)
                 .def("hide", &IWidget::hide)
                 .def_property_readonly("clipped", &IWidget::isClipped)
+                .def_property("clipChildren", &IWidget::doesClipChildren, &IWidget::setClipChildren)
                 .def_property_readonly("childrenClipRect", &IWidget::getChildrenClipRect)
 
                 .def_property("enabled", &IWidget::isEnabled, &IWidget::setEnabled)

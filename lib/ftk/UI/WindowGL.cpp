@@ -312,7 +312,9 @@ namespace ftk
             {
                 gl::OffscreenBufferBinding bufferBinding(p.buffer);
                 p.render->begin(bufferSize);
-                p.render->setClipRectEnabled(true);
+                const Box2I drawRect(V2I(), bufferSize);
+                p.render->setClipRectEnabled(false);
+                p.render->setClipRect(drawRect);
                 DrawEvent drawEvent(
                     fontSystem,
                     iconSystem,
@@ -321,7 +323,7 @@ namespace ftk
                     p.render);
                 _drawEventRecursive(
                     shared_from_this(),
-                    Box2I(V2I(), bufferSize),
+                    drawRect,
                     drawEvent);
                 p.render->setClipRectEnabled(false);
                 p.render->end();

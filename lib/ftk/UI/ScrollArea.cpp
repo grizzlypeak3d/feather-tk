@@ -46,6 +46,7 @@ namespace ftk
         IWidget::_init(context, "ftk::ScrollArea", parent);
         FTK_P();
 
+        setClipChildren(true);
         setBackgroundRole(ColorRole::Window);
 
         p.scrollType = scrollType;

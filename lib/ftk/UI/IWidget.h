@@ -153,6 +153,12 @@ namespace ftk
         //! Is the widget clipped?
         bool isClipped() const;
 
+        //! Does the widget clip it's children?
+        bool doesClipChildren() const;
+
+        //! Set whether the widget clips it's children (e.g., scroll areas).
+        FTK_API void setClipChildren(bool);
+
         //! Get the clipping rect applied to the child widgets. By
         //! default this is the same as the widget geometry.
         FTK_API virtual Box2I getChildrenClipRect() const;
@@ -317,6 +323,7 @@ namespace ftk
         bool _visible = true;
         bool _parentsVisible = true;
         bool _clipped = false;
+        bool _clipChildren = false;
         bool _enabled = true;
 
         bool _parentsEnabled = true;
