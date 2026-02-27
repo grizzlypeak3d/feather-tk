@@ -38,6 +38,9 @@ namespace ftk
         //! Get the sampler names in a group.
         FTK_API std::vector<std::string> getNames(const std::string& group) const;
 
+        //! Get whether the sampler exists.
+        FTK_API bool hasSampler(const std::string&) const;
+
         //! Get the maximum number of samples.
         FTK_API size_t getSamplesMax() const;
 

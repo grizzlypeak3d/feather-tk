@@ -50,16 +50,19 @@ namespace ftk
     void DiagSystem::addSampler(const std::string& id, const std::function<int64_t(void)>& sampler)
     {
         FTK_P();
-        const auto s = ftk::split(id, '/');
-        if (2 == s.size())
+        if (!hasSampler(id))
         {
-            p.samplers.push_back(std::make_pair(id, sampler));
-            auto i = std::find(p.groups.begin(), p.groups.end(), s[0]);
-            if (i == p.groups.end())
+            const auto s = ftk::split(id, '/');
+            if (2 == s.size())
             {
-                p.groups.push_back(s[0]);
+                p.samplers.push_back(std::make_pair(id, sampler));
+                auto i = std::find(p.groups.begin(), p.groups.end(), s[0]);
+                if (i == p.groups.end())
+                {
+                    p.groups.push_back(s[0]);
+                }
+                p.names[s[0]].push_back(s[1]);
             }
-            p.names[s[0]].push_back(s[1]);
         }
     }
 
@@ -73,6 +76,19 @@ namespace ftk
         FTK_P();
         const auto i = p.names.find(group);
         return i != p.names.end() ? i->second : std::vector<std::string>();
+    }
+
+    bool DiagSystem::hasSampler(const std::string& id) const
+    {
+        FTK_P();
+        const auto i = std::find_if(
+            p.samplers.begin(),
+            p.samplers.end(),
+            [id](const std::pair<std::string, std::function<int64_t(void)> >& value)
+            {
+                return id == value.first;
+            });
+        return i != p.samplers.end();
     }
 
     size_t DiagSystem::getSamplesMax() const

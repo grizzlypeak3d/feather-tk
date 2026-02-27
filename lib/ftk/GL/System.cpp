@@ -4,9 +4,14 @@
 #include <ftk/GL/System.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Mesh.h>
+#include <ftk/GL/OffscreenBuffer.h>
+#include <ftk/GL/Shader.h>
 #include <ftk/GL/Render.h>
+#include <ftk/GL/Texture.h>
 
 #include <ftk/Core/Context.h>
+#include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
@@ -75,6 +80,31 @@ namespace ftk
 
             // Create default render factory.
             p.renderFactory = std::make_shared<RenderFactory>();
+
+            // Diagnostics.
+            auto diagSystem = context->getSystem<DiagSystem>();
+            diagSystem->addSampler(
+                "feather-tk GL Memory/Buffers: {0}MB",
+                [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "feather-tk GL Memory/Meshes: {0}MB",
+                [] { return gl::VBO::getTotalByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "feather-tk GL Memory/Textures: {0}MB",
+                [] { return gl::Texture::getTotalByteCount() / megabyte; });
+
+            diagSystem->addSampler(
+                "feather-tk GL Objects/Buffers: {0}",
+                [] { return gl::OffscreenBuffer::getObjectCount(); });
+            diagSystem->addSampler(
+                "feather-tk GL Objects/Meshes: {0}",
+                [] { return gl::VBO::getObjectCount(); });
+            diagSystem->addSampler(
+                "feather-tk GL Objects/Shaders: {0}",
+                [] { return gl::Shader::getObjectCount(); });
+            diagSystem->addSampler(
+                "feather-tk GL Objects/Textures: {0}",
+                [] { return gl::Texture::getObjectCount(); });
         }
 
         System::~System()
