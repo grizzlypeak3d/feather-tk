@@ -63,6 +63,8 @@ namespace ftk
         FTK_API std::chrono::milliseconds getTickTime() const override;
 
     private:
+        void _log();
+
         FTK_PRIVATE();
     };
 }

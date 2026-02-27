@@ -33,10 +33,10 @@ namespace ftk
             arg(sysInfo.cores).
             arg(sysInfo.ramGB));
 
+        addSystem(TimerSystem::create(shared_from_this()));
         addSystem(DiagSystem::create(shared_from_this()));
         addSystem(FontSystem::create(shared_from_this()));
         addSystem(ImageIO::create(shared_from_this()));
-        addSystem(TimerSystem::create(shared_from_this()));
     }
 
     Context::~Context()

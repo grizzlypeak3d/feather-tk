@@ -1406,9 +1406,6 @@ namespace ftk
     void App::_log()
     {
         FTK_P();
-
-        std::vector<std::string> lines;
-        lines.push_back(std::string());
         double tickAverage = 0.0;
         if (!p.tickTimes.empty())
         {
@@ -1418,19 +1415,7 @@ namespace ftk
             }
             tickAverage /= static_cast<double>(p.tickTimes.size());
         }
-        lines.push_back(Format("    * Average tick time: {0}ms").arg(tickAverage));
-        lines.push_back(Format("    * Meshes: {0}").arg(gl::VBO::getObjectCount()));
-        lines.push_back(Format("    * Mesh memory: {0}MB").arg(gl::VBO::getTotalByteCount() / megabyte));
-        lines.push_back(Format("    * Textures: {0}").arg(gl::Texture::getObjectCount()));
-        lines.push_back(Format("    * Texture memory: {0}MB").arg(gl::Texture::getTotalByteCount() / megabyte));
-        lines.push_back(Format("    * Offscreen buffers: {0}").arg(gl::OffscreenBuffer::getObjectCount()));
-        lines.push_back(Format("    * Offscreen buffer memory: {0}MB").arg(gl::OffscreenBuffer::getTotalByteCount() / megabyte));
-        lines.push_back(Format("    * Shaders: {0}").arg(gl::Shader::getObjectCount()));
-        lines.push_back(Format("    * Images: {0}").arg(Image::getObjectCount()));
-        lines.push_back(Format("    * Image memory: {0}MB").arg(Image::getTotalByteCount() / megabyte));
-        lines.push_back(Format("    * Widgets: {0}").arg(IWidget::getObjectCount()));
-
         auto logSystem = _context->getSystem<LogSystem>();
-        logSystem->print("ftk::App", join(lines, '\n'));
+        logSystem->print("ftk::App", Format("Average tick time: {0}ms").arg(tickAverage));
     }
 }

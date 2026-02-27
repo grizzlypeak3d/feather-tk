@@ -5,11 +5,18 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Timer.h>
 
 namespace ftk
 {
+    namespace
+    {
+        const std::chrono::seconds tickTime = std::chrono::seconds(3);
+        const std::chrono::seconds logTickTime = std::chrono::seconds(9);
+    }
     struct DiagSystem::Private
     {
         std::vector<std::pair<std::string, std::function<int64_t(void)> > > samplers;
@@ -18,6 +25,7 @@ namespace ftk
         std::shared_ptr<Observable<size_t> > samplesMax;
         std::shared_ptr<ObservableMap<std::string, std::vector<int64_t> > > samples;
         std::shared_ptr<ObservableMap<std::string, int64_t> > samplesInc;
+        std::shared_ptr<Timer> logTimer;
     };
 
     DiagSystem::DiagSystem(const std::shared_ptr<Context>& context) :
@@ -36,6 +44,10 @@ namespace ftk
         addSampler(
             "feather-tk Objects/Images: {0}",
             [] { return Image::getObjectCount(); });
+
+        p.logTimer = Timer::create(context);
+        p.logTimer->setRepeating(true);
+        p.logTimer->start(logTickTime, [this] { _log(); });
     }
 
     DiagSystem::~DiagSystem()
@@ -175,6 +187,25 @@ namespace ftk
 
     std::chrono::milliseconds DiagSystem::getTickTime() const
     {
-        return std::chrono::seconds(3);
+        return std::chrono::seconds(tickTime);
+    }
+
+    void DiagSystem::_log()
+    {
+        FTK_P();
+        const auto samples = p.samples->get();
+        std::vector<std::string> lines;
+        lines.push_back(std::string());
+        for (const auto& group : p.groups)
+        {
+            lines.push_back(Format("    {0}:").arg(group));
+            for (const auto& name : p.names[group])
+            {
+                const auto i = samples.find(group + "/" + name);
+                lines.push_back(Format("    * {0}").arg(
+                    Format(name).arg(!i->second.empty() ? i->second.back() : 0)));
+            }
+        }
+        ISystem::_log(join(lines, '\n'));
     }
 }
