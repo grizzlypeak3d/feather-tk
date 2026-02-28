@@ -833,10 +833,6 @@ namespace ftk
                 {
                     break;
                 }
-                if (auto popup = std::dynamic_pointer_cast<IPopup>(widget))
-                {
-                    popup->close();
-                }
                 widget = widget->getParent();
             }
         }

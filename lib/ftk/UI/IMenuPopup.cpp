@@ -234,6 +234,16 @@ namespace ftk
                 p.buttonGeometry.min.y,
                 sizeHint.w,
                 sizeHint.h));
+            boxes.push_back(Box2I(
+                p.buttonGeometry.max.x,
+                p.buttonGeometry.max.y + 1 - sizeHint.h,
+                sizeHint.w,
+                sizeHint.h));
+            boxes.push_back(Box2I(
+                p.buttonGeometry.min.x - sizeHint.w,
+                p.buttonGeometry.max.y + 1 - sizeHint.h,
+                sizeHint.w,
+                sizeHint.h));
             break;
         default: break;
         }
