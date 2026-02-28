@@ -83,7 +83,10 @@ namespace ftk
                 {
                     _setCurrent(buttonWeak.lock());
                     action->doCallback();
-                    _accept();
+                    if (!action->isCheckable())
+                    {
+                        _accept();
+                    }
                 });
             button->setCheckedCallback(
                 [this, action, buttonWeak](bool value)
