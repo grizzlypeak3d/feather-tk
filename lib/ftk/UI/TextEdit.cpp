@@ -180,6 +180,16 @@ namespace ftk
         }
     }
 
+    SizeRole TextEdit::getSizeHintRole() const
+    {
+        return _p->scrollWidget->getSizeHintRole();
+    }
+
+    void TextEdit::setSizeHintRole(SizeRole value)
+    {
+        _p->scrollWidget->setSizeHintRole(value);
+    }
+
     SizeRole TextEdit::getMarginRole() const
     {
         return _p->marginRole;

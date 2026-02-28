@@ -90,6 +90,9 @@ namespace ftk
         //! \name Margin
         ///@{
 
+        FTK_API SizeRole getSizeHintRole() const;
+        FTK_API void setSizeHintRole(SizeRole);
+
         FTK_API SizeRole getMarginRole() const;
         FTK_API void setMarginRole(SizeRole);
 
