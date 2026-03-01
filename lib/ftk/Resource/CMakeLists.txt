@@ -58,6 +58,14 @@ set(RESOURCES
     etc/Icons/ReverseSort.svg
     etc/Icons/Search.svg
     etc/Icons/Settings.svg
+    etc/Icons/Shuttle0.svg
+    etc/Icons/Shuttle1.svg
+    etc/Icons/Shuttle2.svg
+    etc/Icons/Shuttle3.svg
+    etc/Icons/Shuttle4.svg
+    etc/Icons/Shuttle5.svg
+    etc/Icons/Shuttle6.svg
+    etc/Icons/Shuttle7.svg
     etc/Icons/SubMenuArrow.svg
     etc/Icons/Time.svg
     etc/Icons/Undo.svg

@@ -78,6 +78,7 @@ set(HEADERS
     SearchBox.h
     Settings.h
     SettingsInline.h
+    ShuttleWidget.h
     Spacer.h
     Splitter.h
     StackLayout.h
@@ -191,6 +192,7 @@ set(SOURCE
     ScrollWidget.cpp
     SearchBox.cpp
     Settings.cpp
+    ShuttleWidget.cpp
     Spacer.cpp
     Splitter.cpp
     StackLayout.cpp
