@@ -55,6 +55,10 @@ namespace ftk
                 {
                     p.callback(value);
                 }
+                if (p.pressedCallback && !p.blockCallbacks)
+                {
+                    p.pressedCallback(value, false);
+                }
             });
 
         p.shuttle->setDeltaCallback(
