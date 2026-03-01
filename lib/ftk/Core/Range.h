@@ -26,6 +26,8 @@ namespace ftk
         constexpr T min() const;
         constexpr T max() const;
 
+        constexpr T size() const;
+
         constexpr bool equal() const;
 
         constexpr bool operator == (const Range<T>&) const;
@@ -39,7 +41,7 @@ namespace ftk
 
     typedef Range<int> RangeI;
     typedef Range<int64_t> RangeI64;
-    typedef Range<std::size_t> RangeSizeT;
+    typedef Range<size_t> RangeSizeT;
     typedef Range<float> RangeF;
     typedef Range<double> RangeD;
 

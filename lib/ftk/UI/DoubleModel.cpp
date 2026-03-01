@@ -88,6 +88,16 @@ namespace ftk
         _p->step = value;
     }
 
+    double DoubleModel::getLargeStep() const
+    {
+        return _p->largeStep;
+    }
+
+    void DoubleModel::setLargeStep(double value)
+    {
+        _p->largeStep = value;
+    }
+
     void DoubleModel::step()
     {
         FTK_P();
@@ -98,16 +108,6 @@ namespace ftk
     {
         FTK_P();
         setValue(p.value->get() - p.step);
-    }
-
-    double DoubleModel::getLargeStep() const
-    {
-        return _p->largeStep;
-    }
-
-    void DoubleModel::setLargeStep(double value)
-    {
-        _p->largeStep = value;
     }
 
     void DoubleModel::largeStep()

@@ -88,6 +88,16 @@ namespace ftk
         _p->step = value;
     }
 
+    float FloatModel::getLargeStep() const
+    {
+        return _p->largeStep;
+    }
+
+    void FloatModel::setLargeStep(float value)
+    {
+        _p->largeStep = value;
+    }
+
     void FloatModel::step()
     {
         FTK_P();
@@ -98,16 +108,6 @@ namespace ftk
     {
         FTK_P();
         setValue(p.value->get() - p.step);
-    }
-
-    float FloatModel::getLargeStep() const
-    {
-        return _p->largeStep;
-    }
-
-    void FloatModel::setLargeStep(float value)
-    {
-        _p->largeStep = value;
     }
 
     void FloatModel::largeStep()

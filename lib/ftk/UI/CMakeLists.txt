@@ -56,6 +56,7 @@ set(HEADERS
     Init.h
     Label.h
     LayoutUtil.h
+    LevelsSlider.h
     LineEdit.h
     LineEditModel.h
     ListItemsWidget.h
@@ -171,6 +172,7 @@ set(SOURCE
     Init.cpp
     Label.cpp
     LayoutUtil.cpp
+    LevelsSlider.cpp
     LineEdit.cpp
     LineEditModel.cpp
     ListItemButton.cpp

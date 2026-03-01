@@ -30,6 +30,30 @@ namespace ftk
     }
 
     template<typename T>
+    constexpr T Range<T>::size() const
+    {
+        return _max - _min;
+    }
+
+    template<>
+    constexpr int Range<int>::size() const
+    {
+        return _max - _min + 1;
+    }
+
+    template<>
+    constexpr int64_t Range<int64_t>::size() const
+    {
+        return _max - _min + 1;
+    }
+
+    template<>
+    constexpr size_t Range<size_t>::size() const
+    {
+        return _max - _min + 1;
+    }
+
+    template<typename T>
     constexpr bool Range<T>::equal() const
     {
         return _min == _max;

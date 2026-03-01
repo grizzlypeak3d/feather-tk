@@ -51,23 +51,17 @@ namespace ftk
         //! \name Increment
         ///@{
 
-        //! Get the increment step.
         int getStep() const;
-
-        //! Set the increment step.
         void setStep(int);
+
+        int getLargeStep() const;
+        void setLargeStep(int);
 
         //! Increment the value by a step.
         void step();
 
         //! Decrement the value by a step.
         void stepDec();
-
-        //! Get the increment large step.
-        int getLargeStep() const;
-
-        //! Set the increment large step.
-        void setLargeStep(int);
 
         //! Increment the value by a large step.
         void largeStep();
@@ -86,11 +80,11 @@ namespace ftk
         //! Observe whether there is a default value.
         std::shared_ptr<IObservable<bool> > observeHasDefault() const;
 
-        //! Observe the default value.
-        std::shared_ptr<IObservable<int> > observeDefault() const;
-
         //! Get the default value.
         int getDefault() const;
+
+        //! Observe the default value.
+        std::shared_ptr<IObservable<int> > observeDefault() const;
 
         //! Set the default value.
         void setDefault(int);
