@@ -16,6 +16,7 @@ set(HEADERS
     Divider.h
     DocumentModel.h
     DoubleEdit.h
+    DoubleEditShuttle.h
     DoubleEditSlider.h
     DoubleModel.h
     DoubleSlider.h
@@ -26,6 +27,7 @@ set(HEADERS
     FileBrowserWidgets.h
     FileEdit.h
     FloatEdit.h
+    FloatEditShuttle.h
     FloatEditSlider.h
     FloatModel.h
     FloatSlider.h
@@ -45,6 +47,7 @@ set(HEADERS
     ImageWidget.h
     IncButtons.h
     IntEdit.h
+    IntEditShuttle.h
     IntEditSlider.h
     IntModel.h
     IntSlider.h
@@ -124,6 +127,7 @@ set(SOURCE
     Divider.cpp
     DocumentModel.cpp
     DoubleEdit.cpp
+    DoubleEditShuttle.cpp
     DoubleEditSlider.cpp
     DoubleModel.cpp
     DoubleSlider.cpp
@@ -139,6 +143,7 @@ set(SOURCE
     FileBrowserWidget.cpp
     FileEdit.cpp
     FloatEdit.cpp
+    FloatEditShuttle.cpp
     FloatEditSlider.cpp
     FloatModel.cpp
     FloatSlider.cpp
@@ -157,6 +162,7 @@ set(SOURCE
     ImageWidget.cpp
     IncButtons.cpp
     IntEdit.cpp
+    IntEditShuttle.cpp
     IntEditSlider.cpp
     IntModel.cpp
     IntSlider.cpp
