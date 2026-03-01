@@ -227,11 +227,6 @@ namespace ftk
         }
     }
 
-    void IDialog::scrollEvent(ScrollEvent& event)
-    {
-        event.accept = true;
-    }
-
     void IDialog::keyPressEvent(KeyEvent& event)
     {
         event.accept = event.key != Key::Tab;

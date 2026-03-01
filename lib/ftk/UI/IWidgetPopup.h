@@ -60,7 +60,6 @@ namespace ftk
         FTK_API void clipEvent(const Box2I&, bool) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_API void mousePressEvent(MouseClickEvent&) override;
-        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
         FTK_API void scrollEvent(ScrollEvent&) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;

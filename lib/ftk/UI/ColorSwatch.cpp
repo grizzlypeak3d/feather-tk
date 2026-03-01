@@ -191,38 +191,35 @@ namespace ftk
     void ColorSwatch::_showPopup()
     {
         FTK_P();
-        if (auto context = getContext())
+        if (!p.popup)
         {
-            if (!p.popup)
-            {
-                p.popup = ColorPopup::create(context, p.color);
-                p.popup->open(getWindow(), getGeometry());
-                p.popup->setPressedCallback(
-                    [this](const Color4F& value, bool pressed)
+            auto context = getContext();
+            p.popup = ColorPopup::create(context, p.color);
+            p.popup->open(getWindow(), getGeometry());
+            p.popup->setPressedCallback(
+                [this](const Color4F& value, bool pressed)
+                {
+                    FTK_P();
+                    p.color = value;
+                    setDrawUpdate();
+                    if (p.callback)
                     {
-                        FTK_P();
-                        p.color = value;
-                        setDrawUpdate();
-                        if (p.callback)
-                        {
-                            p.callback(value);
-                        }
-                        if (p.pressedCallback)
-                        {
-                            p.pressedCallback(value, pressed);
-                        }
-                    });
-                p.popup->setCloseCallback(
-                    [this]
+                        p.callback(value);
+                    }
+                    if (p.pressedCallback)
                     {
-                        _p->popup.reset();
-                    });
-            }
-            else
-            {
-                p.popup->close();
-                p.popup.reset();
-            }
+                        p.pressedCallback(value, pressed);
+                    }
+                });
+            p.popup->setCloseCallback(
+                [this]
+                {
+                    _p->popup.reset();
+                });
+        }
+        else
+        {
+            p.popup->close();
         }
     }
 }

@@ -771,10 +771,6 @@ namespace ftk
                     p.mousePress = *i;
                     break;
                 }
-                if (auto popup = std::dynamic_pointer_cast<IPopup>(*i))
-                {
-                    popup->close();
-                }
             }
             if (!p.mouseClickEvent.accept)
             {
@@ -851,10 +847,6 @@ namespace ftk
                 if (std::dynamic_pointer_cast<IDialog>(*i))
                 {
                     break;
-                }
-                if (auto popup = std::dynamic_pointer_cast<IPopup>(*i))
-                {
-                    popup->close();
                 }
             }
         }

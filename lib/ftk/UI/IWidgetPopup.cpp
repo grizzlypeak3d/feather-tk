@@ -314,26 +314,20 @@ namespace ftk
     {
         IPopup::mousePressEvent(event);
         FTK_P();
-        if (contains(p.buttonGeometry, event.pos))
+        if (!contains(p.containerWidget->getGeometry(), event.pos) &&
+            !contains(p.buttonGeometry, event.pos))
         {
-            event.accept = true;
             close();
         }
-    }
-
-    void IWidgetPopup::mouseReleaseEvent(MouseClickEvent& event)
-    {
-        IPopup::mouseReleaseEvent(event);
-        event.accept = true;
     }
 
     void IWidgetPopup::scrollEvent(ScrollEvent& event)
     {
         IPopup::scrollEvent(event);
         FTK_P();
-        if (contains(p.containerWidget->getGeometry(), event.pos))
+        if (!contains(p.containerWidget->getGeometry(), event.pos))
         {
-            event.accept = true;
+            close();
         }
     }
 
