@@ -38,6 +38,7 @@ namespace ftk
         p.mode = mode;
 
         p.lineEdit = LineEdit::create(context);
+        p.lineEdit->setFormat(std::string(30, '#'));
         p.lineEdit->setHStretch(Stretch::Expanding);
 
         p.browseButton = ToolButton::create(context);

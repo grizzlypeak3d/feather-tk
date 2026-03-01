@@ -23,7 +23,7 @@ namespace ftk
         std::function<void(const std::string&)> callback;
         bool callbackOnFocusLost = true;
         std::function<void(const std::string&)> textChangedCallback;
-        std::string format = "                    ";
+        std::string format = std::string(20, '#');
         std::function<void(bool)> focusCallback;
         FontRole fontRole = FontRole::Label;
         ColorRole borderRole = ColorRole::Border;
