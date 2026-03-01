@@ -13,6 +13,7 @@ namespace ftk
     struct DoubleEditShuttle::Private
     {
         std::shared_ptr<DoubleModel> model;
+        bool pressed = false;
 
         std::shared_ptr<DoubleEdit> edit;
         std::shared_ptr<ShuttleWidget> shuttle;
@@ -58,7 +59,7 @@ namespace ftk
                 }
                 if (p.pressedCallback && !p.blockCallbacks)
                 {
-                    p.pressedCallback(value, false);
+                    p.pressedCallback(value, p.pressed);
                 }
             });
 
@@ -66,10 +67,17 @@ namespace ftk
             [this](int value, bool pressed)
             {
                 FTK_P();
-                p.model->setValue(p.model->getValue() + p.model->getStep() * value);
-                if (p.pressedCallback && !p.blockCallbacks)
+                p.pressed = pressed;
+                if (pressed)
                 {
-                    p.pressedCallback(p.model->getValue(), pressed);
+                    p.model->setValue(p.model->getValue() + p.model->getStep() * value);
+                }
+                else
+                {
+                    if (p.pressedCallback && !p.blockCallbacks)
+                    {
+                        p.pressedCallback(p.model->getValue(), p.pressed);
+                    }
                 }
             });
     }
