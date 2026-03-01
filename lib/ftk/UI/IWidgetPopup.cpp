@@ -78,6 +78,7 @@ namespace ftk
     {
         ColorRole popupRole = ColorRole::Window;
         Box2I buttonGeometry;
+        std::optional<Box2I> widgetGeometry;
         bool open = false;
         std::function<void(void)> closeCallback;
         std::shared_ptr<IWidget> widget;
@@ -122,10 +123,12 @@ namespace ftk
 
     void IWidgetPopup::open(
         const std::shared_ptr<IWindow>& window,
-        const Box2I& buttonGeometry)
+        const Box2I& buttonGeometry,
+        const std::optional<Box2I>& widgetGeometry)
     {
         FTK_P();
         p.buttonGeometry = buttonGeometry;
+        p.widgetGeometry = widgetGeometry;
         p.open = true;
         p.restoreFocus = window->getKeyFocus();
         setParent(window);
@@ -204,26 +207,30 @@ namespace ftk
         IPopup::setGeometry(value);
         FTK_P();
 
+        const Box2I popupGeometry =
+            p.widgetGeometry.has_value() ?
+            p.widgetGeometry.value() :
+            p.buttonGeometry;
         Size2I sizeHint = p.containerWidget->getSizeHint();
         std::list<Box2I> boxes;
         boxes.push_back(Box2I(
-            p.buttonGeometry.min.x,
-            p.buttonGeometry.max.y + 1,
+            popupGeometry.min.x,
+            popupGeometry.max.y + 1,
             sizeHint.w,
             sizeHint.h));
         boxes.push_back(Box2I(
-            p.buttonGeometry.max.x + 1 - sizeHint.w,
-            p.buttonGeometry.max.y + 1,
+            popupGeometry.max.x + 1 - sizeHint.w,
+            popupGeometry.max.y + 1,
             sizeHint.w,
             sizeHint.h));
         boxes.push_back(Box2I(
-            p.buttonGeometry.min.x,
-            p.buttonGeometry.min.y - sizeHint.h,
+            popupGeometry.min.x,
+            popupGeometry.min.y - sizeHint.h,
             sizeHint.w,
             sizeHint.h));
         boxes.push_back(Box2I(
-            p.buttonGeometry.max.x + 1 - sizeHint.w,
-            p.buttonGeometry.min.y - sizeHint.h,
+            popupGeometry.max.x + 1 - sizeHint.w,
+            popupGeometry.min.y - sizeHint.h,
             sizeHint.w,
             sizeHint.h));
         struct Intersect

@@ -32,7 +32,8 @@ namespace ftk
         //! close()?
         FTK_API void open(
             const std::shared_ptr<IWindow>&,
-            const Box2I& buttonGeometry);
+            const Box2I& buttonGeometry,
+            const std::optional<Box2I>& widgetGeometry = std::optional<Box2I>());
 
         //! Get whether the popup is open.
         FTK_API bool isOpen() const;
