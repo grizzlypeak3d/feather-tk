@@ -26,8 +26,9 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setCallback(const std::function<void(int, bool) >&);
-        void setDeltaCallback(const std::function<void(int, bool) >&);
+        void setCallback(const std::function<void(int)>&);
+        void setDeltaCallback(const std::function<void(int)>&);
+        void setActiveCallback(const std::function<void(bool)>&);
 
         Size2I getSizeHint() const override;
         void sizeHintEvent(const SizeHintEvent&) override;

@@ -14,8 +14,9 @@ namespace ftk
         std::vector<std::shared_ptr<Image> > iconImages;
         int value = 0;
         int iconIndex = 0;
-        std::function<void(int, bool)> callback;
-        std::function<void(int, bool)> deltaCallback;
+        std::function<void(int)> callback;
+        std::function<void(int)> deltaCallback;
+        std::function<void(bool)> activeCallback;
 
         struct SizeData
         {
@@ -38,12 +39,10 @@ namespace ftk
 
     ShuttleWidget::ShuttleWidget() :
         _p(new Private)
-    {
-    }
+    {}
 
     ShuttleWidget::~ShuttleWidget()
-    {
-    }
+    {}
 
     std::shared_ptr<ShuttleWidget> ShuttleWidget::create(
         const std::shared_ptr<Context>& context,
@@ -54,14 +53,19 @@ namespace ftk
         return out;
     }
 
-    void ShuttleWidget::setCallback(const std::function<void(int, bool)>& value)
+    void ShuttleWidget::setCallback(const std::function<void(int)>& value)
     {
         _p->callback = value;
     }
 
-    void ShuttleWidget::setDeltaCallback(const std::function<void(int, bool)>& value)
+    void ShuttleWidget::setDeltaCallback(const std::function<void(int)>& value)
     {
         _p->deltaCallback = value;
+    }
+
+    void ShuttleWidget::setActiveCallback(const std::function<void(bool)>& value)
+    {
+        _p->activeCallback = value;
     }
 
     Size2I ShuttleWidget::getSizeHint() const
@@ -158,11 +162,11 @@ namespace ftk
                 setDrawUpdate();
                 if (p.callback)
                 {
-                    p.callback(p.value, true);
+                    p.callback(p.value);
                 }
                 if (p.deltaCallback)
                 {
-                    p.deltaCallback(delta, true);
+                    p.deltaCallback(delta);
                 }
             }
         }
@@ -174,13 +178,9 @@ namespace ftk
         FTK_P();
         setDrawUpdate();
         p.value = 0;
-        if (p.callback)
+        if (p.activeCallback)
         {
-            p.callback(p.value, true);
-        }
-        if (p.deltaCallback)
-        {
-            p.deltaCallback(0, true);
+            p.activeCallback(true);
         }
     }
 
@@ -190,13 +190,9 @@ namespace ftk
         FTK_P();
         p.iconIndex = 0;
         setDrawUpdate();
-        if (p.callback)
+        if (p.activeCallback)
         {
-            p.callback(p.value, false);
-        }
-        if (p.deltaCallback)
-        {
-            p.deltaCallback(0, false);
+            p.activeCallback(false);
         }
     }
 }

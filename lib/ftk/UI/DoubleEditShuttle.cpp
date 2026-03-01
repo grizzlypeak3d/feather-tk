@@ -64,20 +64,19 @@ namespace ftk
             });
 
         p.shuttle->setDeltaCallback(
-            [this](int value, bool pressed)
+            [this](int value)
+            {
+                FTK_P();
+                p.model->setValue(p.model->getValue() + p.model->getStep() * value);
+            });
+        p.shuttle->setActiveCallback(
+            [this](bool pressed)
             {
                 FTK_P();
                 p.pressed = pressed;
-                if (pressed)
+                if (!pressed && p.pressedCallback && !p.blockCallbacks)
                 {
-                    p.model->setValue(p.model->getValue() + p.model->getStep() * value);
-                }
-                else
-                {
-                    if (p.pressedCallback && !p.blockCallbacks)
-                    {
-                        p.pressedCallback(p.model->getValue(), p.pressed);
-                    }
+                    p.pressedCallback(p.model->getValue(), p.pressed);
                 }
             });
     }
