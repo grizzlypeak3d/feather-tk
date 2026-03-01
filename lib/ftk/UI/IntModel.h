@@ -58,10 +58,10 @@ namespace ftk
         void setStep(int);
 
         //! Increment the value by a step.
-        void incrementStep();
+        void step();
 
         //! Decrement the value by a step.
-        void decrementStep();
+        void stepDec();
 
         //! Get the increment large step.
         int getLargeStep() const;
@@ -70,10 +70,10 @@ namespace ftk
         void setLargeStep(int);
 
         //! Increment the value by a large step.
-        void incrementLargeStep();
+        void largeStep();
 
         //! Decrement the value by a large step.
-        void decrementLargeStep();
+        void largeStepDec();
 
         ///@}
 
@@ -81,25 +81,25 @@ namespace ftk
         ///@{
 
         //! Get whether there is a default value.
-        bool hasDefaultValue() const;
+        bool hasDefault() const;
 
         //! Observe whether there is a default value.
-        std::shared_ptr<IObservable<bool> > observeHasDefaultValue() const;
+        std::shared_ptr<IObservable<bool> > observeHasDefault() const;
 
         //! Observe the default value.
-        std::shared_ptr<IObservable<int> > observeDefaultValue() const;
+        std::shared_ptr<IObservable<int> > observeDefault() const;
 
         //! Get the default value.
-        int getDefaultValue() const;
+        int getDefault() const;
 
         //! Set the default value.
-        void setDefaultValue(int);
+        void setDefault(int);
 
         //! Set the value to the default value.
-        void setDefaultValue();
+        void setDefault();
 
         //! Clear the default value.
-        void clearDefaultValue();
+        void clearDefault();
 
         ///@}
 

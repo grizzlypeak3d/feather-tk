@@ -157,14 +157,14 @@ namespace ftk
         _p->model->setLargeStep(value);
     }
 
-    double DoubleEditSlider::getDefaultValue() const
+    double DoubleEditSlider::getDefault() const
     {
-        return _p->model->getDefaultValue();
+        return _p->model->getDefault();
     }
 
-    void DoubleEditSlider::setDefaultValue(double value)
+    void DoubleEditSlider::setDefault(double value)
     {
-        _p->model->setDefaultValue(value);
+        _p->model->setDefault(value);
     }
 
     const std::shared_ptr<DoubleModel>& DoubleEditSlider::getModel() const

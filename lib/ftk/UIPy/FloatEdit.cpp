@@ -38,7 +38,7 @@ namespace ftk
                 .def("setRange", py::overload_cast<float, float>(&FloatEdit::setRange))
                 .def_property("step", &FloatEdit::getStep, &FloatEdit::setStep)
                 .def_property("largeStep", &FloatEdit::getLargeStep, &FloatEdit::setLargeStep)
-                .def_property("defaultValue", &FloatEdit::getDefaultValue, &FloatEdit::setDefaultValue)
+                .def_property("defaultValue", &FloatEdit::getDefault, &FloatEdit::setDefault)
                 .def("getModel", &FloatEdit::getModel)
                 .def_property("precision", &FloatEdit::getPrecision, &FloatEdit::setPrecision)
                 .def_property("fontRole", &FloatEdit::getFontRole, &FloatEdit::setFontRole);

@@ -34,7 +34,7 @@ namespace ftk
 
                 double value = 0.0;
                 RangeD range;
-                bool hasDefaultValue = false;
+                bool hasDefault = false;
                 auto valueObserver = Observer<double>::create(
                     model->observeValue(),
                     [&value](double v)
@@ -48,10 +48,10 @@ namespace ftk
                         range = r;
                     });
                 auto defaultObserver = Observer<bool>::create(
-                    model->observeHasDefaultValue(),
-                    [&hasDefaultValue](bool value)
+                    model->observeHasDefault(),
+                    [&hasDefault](bool value)
                     {
-                        hasDefaultValue = value;
+                        hasDefault = value;
                     });
 
                 model->setValue(0.9);
@@ -65,25 +65,25 @@ namespace ftk
 
                 model->setStep(0.2);
                 FTK_ASSERT(0.2 == model->getStep());
-                model->decrementStep();
+                model->stepDec();
                 FTK_ASSERT(fuzzyCompare(0.3, value));
-                model->incrementStep();
+                model->step();
                 FTK_ASSERT(fuzzyCompare(0.5, value));
 
                 model->setLargeStep(0.3);
                 FTK_ASSERT(0.3 == model->getLargeStep());
-                model->decrementLargeStep();
+                model->largeStepDec();
                 FTK_ASSERT(fuzzyCompare(0.2, value));
-                model->incrementLargeStep();
+                model->largeStep();
                 FTK_ASSERT(fuzzyCompare(0.5, value));
 
-                model->setDefaultValue(0.0);
-                FTK_ASSERT(0.0 == model->getDefaultValue());
-                FTK_ASSERT(hasDefaultValue);
-                model->setDefaultValue();
+                model->setDefault(0.0);
+                FTK_ASSERT(0.0 == model->getDefault());
+                FTK_ASSERT(hasDefault);
+                model->setDefault();
                 FTK_ASSERT(0.0 == value);
-                model->clearDefaultValue();
-                FTK_ASSERT(!hasDefaultValue);
+                model->clearDefault();
+                FTK_ASSERT(!hasDefault);
             }
         }
     }

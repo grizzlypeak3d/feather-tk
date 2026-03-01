@@ -68,8 +68,8 @@ namespace ftk
         //! \name Default Value
         ///@{
 
-        FTK_API int getDefaultValue() const;
-        FTK_API void setDefaultValue(int);
+        FTK_API int getDefault() const;
+        FTK_API void setDefault(int);
         
         ///@}
 

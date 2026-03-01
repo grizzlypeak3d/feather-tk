@@ -63,12 +63,12 @@ namespace ftk
         p.incButtons->setIncCallback(
             [this]
             {
-                _p->model->incrementStep();
+                _p->model->step();
             });
         p.incButtons->setDecCallback(
             [this]
             {
-                _p->model->decrementStep();
+                _p->model->stepDec();
             });
 
         p.valueObserver = Observer<int>::create(
@@ -177,14 +177,14 @@ namespace ftk
         _p->model->setLargeStep(value);
     }
 
-    int IntEdit::getDefaultValue() const
+    int IntEdit::getDefault() const
     {
-        return _p->model->getDefaultValue();
+        return _p->model->getDefault();
     }
 
-    void IntEdit::setDefaultValue(int value)
+    void IntEdit::setDefault(int value)
     {
-        _p->model->setDefaultValue(value);
+        _p->model->setDefault(value);
     }
 
     const std::shared_ptr<IntModel>& IntEdit::getModel() const
@@ -243,19 +243,19 @@ namespace ftk
             {
             case Key::Down:
                 event.accept = true;
-                p.model->decrementStep();
+                p.model->stepDec();
                 break;
             case Key::Up:
                 event.accept = true;
-                p.model->incrementStep();
+                p.model->step();
                 break;
             case Key::PageUp:
                 event.accept = true;
-                p.model->incrementLargeStep();
+                p.model->largeStep();
                 break;
             case Key::PageDown:
                 event.accept = true;
-                p.model->decrementLargeStep();
+                p.model->largeStepDec();
                 break;
             default: break;
             }
@@ -315,7 +315,7 @@ namespace ftk
         p.resetButton->setClickedCallback(
             [this]
             {
-                _p->model->setDefaultValue();
+                _p->model->setDefault();
             });
 
         p.valueObserver = Observer<int>::create(
@@ -326,14 +326,14 @@ namespace ftk
             });
 
         p.hasDefaultObserver = Observer<bool>::create(
-            p.model->observeHasDefaultValue(),
+            p.model->observeHasDefault(),
             [this](bool)
             {
                 _widgetUpdate();
             });
 
         p.defaultObserver = Observer<int>::create(
-            p.model->observeDefaultValue(),
+            p.model->observeDefault(),
             [this](int)
             {
                 _widgetUpdate();
@@ -371,7 +371,7 @@ namespace ftk
     void IntResetButton::_widgetUpdate()
     {
         FTK_P();
-        setVisible(p.model->hasDefaultValue());
-        setEnabled(p.model->getValue() != p.model->getDefaultValue());
+        setVisible(p.model->hasDefault());
+        setEnabled(p.model->getValue() != p.model->getDefault());
     }
 }

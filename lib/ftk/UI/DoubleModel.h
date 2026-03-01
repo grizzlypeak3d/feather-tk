@@ -58,10 +58,10 @@ namespace ftk
         FTK_API void setStep(double);
 
         //! Increment the value by a step.
-        FTK_API void incrementStep();
+        FTK_API void step();
 
         //! Decrement the value by a step.
-        FTK_API void decrementStep();
+        FTK_API void stepDec();
 
         //! Get the increment large step.
         FTK_API double getLargeStep() const;
@@ -70,10 +70,10 @@ namespace ftk
         FTK_API void setLargeStep(double);
 
         //! Increment the value by a large step.
-        FTK_API void incrementLargeStep();
+        FTK_API void largeStep();
 
         //! Decrement the value by a large step.
-        FTK_API void decrementLargeStep();
+        FTK_API void largeStepDec();
 
         ///@}
 
@@ -81,25 +81,25 @@ namespace ftk
         ///@{
 
         //! Get whether there is a default value.
-        FTK_API bool hasDefaultValue() const;
+        FTK_API bool hasDefault() const;
 
         //! Observe whether there is a default value.
-        FTK_API std::shared_ptr<IObservable<bool> > observeHasDefaultValue() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasDefault() const;
 
         //! Observe the default value.
-        FTK_API std::shared_ptr<IObservable<double> > observeDefaultValue() const;
+        FTK_API std::shared_ptr<IObservable<double> > observeDefault() const;
 
         //! Get the default value.
-        FTK_API double getDefaultValue() const;
+        FTK_API double getDefault() const;
 
         //! Set the default value.
-        FTK_API void setDefaultValue(double);
+        FTK_API void setDefault(double);
 
         //! Set the value to the default value.
-        FTK_API void setDefaultValue();
+        FTK_API void setDefault();
 
         //! Clear the default value.
-        FTK_API void clearDefaultValue();
+        FTK_API void clearDefault();
 
         ///@}
 

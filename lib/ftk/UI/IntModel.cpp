@@ -13,7 +13,7 @@ namespace ftk
         std::shared_ptr<Observable<RangeI> > range;
         int step = 1;
         int largeStep = 10;
-        std::shared_ptr<Observable<bool> > hasDefaultValue;
+        std::shared_ptr<Observable<bool> > hasDefault;
         std::shared_ptr<Observable<int> > defaultValue;
     };
 
@@ -22,7 +22,7 @@ namespace ftk
         FTK_P();
         p.value = Observable<int>::create(0);
         p.range = Observable<RangeI>::create(RangeI(0, 100));
-        p.hasDefaultValue = Observable<bool>::create(false);
+        p.hasDefault = Observable<bool>::create(false);
         p.defaultValue = Observable<int>::create(0);
     }
 
@@ -88,13 +88,13 @@ namespace ftk
         _p->step = value;
     }
 
-    void IntModel::incrementStep()
+    void IntModel::step()
     {
         FTK_P();
         setValue(p.value->get() + p.step);
     }
 
-    void IntModel::decrementStep()
+    void IntModel::stepDec()
     {
         FTK_P();
         setValue(p.value->get() - p.step);
@@ -110,51 +110,51 @@ namespace ftk
         _p->largeStep = value;
     }
 
-    void IntModel::incrementLargeStep()
+    void IntModel::largeStep()
     {
         FTK_P();
         setValue(p.value->get() + p.largeStep);
     }
 
-    void IntModel::decrementLargeStep()
+    void IntModel::largeStepDec()
     {
         FTK_P();
         setValue(p.value->get() - p.largeStep);
     }
 
-    bool IntModel::hasDefaultValue() const
+    bool IntModel::hasDefault() const
     {
-        return _p->hasDefaultValue->get();
+        return _p->hasDefault->get();
     }
 
-    std::shared_ptr<IObservable<bool> > IntModel::observeHasDefaultValue() const
+    std::shared_ptr<IObservable<bool> > IntModel::observeHasDefault() const
     {
-        return _p->hasDefaultValue;
+        return _p->hasDefault;
     }
 
-    int IntModel::getDefaultValue() const
+    int IntModel::getDefault() const
     {
         return _p->defaultValue->get();
     }
 
-    std::shared_ptr<IObservable<int> > IntModel::observeDefaultValue() const
+    std::shared_ptr<IObservable<int> > IntModel::observeDefault() const
     {
         return _p->defaultValue;
     }
 
-    void IntModel::setDefaultValue(int value)
+    void IntModel::setDefault(int value)
     {
         _p->defaultValue->setIfChanged(value);
-        _p->hasDefaultValue->setIfChanged(true);
+        _p->hasDefault->setIfChanged(true);
     }
 
-    void IntModel::setDefaultValue()
+    void IntModel::setDefault()
     {
         setValue(_p->defaultValue->get());
     }
 
-    void IntModel::clearDefaultValue()
+    void IntModel::clearDefault()
     {
-        _p->hasDefaultValue->setIfChanged(false);
+        _p->hasDefault->setIfChanged(false);
     }
 }

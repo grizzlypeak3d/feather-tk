@@ -128,14 +128,14 @@ namespace ftk
         _p->model->setLargeStep(value);
     }
 
-    float IFloatSlider::getDefaultValue() const
+    float IFloatSlider::getDefault() const
     {
-        return _p->model->getDefaultValue();
+        return _p->model->getDefault();
     }
 
-    void IFloatSlider::setDefaultValue(float value)
+    void IFloatSlider::setDefault(float value)
     {
-        _p->model->setDefaultValue(value);
+        _p->model->setDefault(value);
     }
 
     const std::shared_ptr<FloatModel>& IFloatSlider::getModel() const
@@ -209,20 +209,20 @@ namespace ftk
             case Key::Left:
             case Key::Down:
                 event.accept = true;
-                p.model->decrementStep();
+                p.model->stepDec();
                 break;
             case Key::Right:
             case Key::Up:
                 event.accept = true;
-                p.model->incrementStep();
+                p.model->step();
                 break;
             case Key::PageUp:
                 event.accept = true;
-                p.model->incrementLargeStep();
+                p.model->largeStep();
                 break;
             case Key::PageDown:
                 event.accept = true;
-                p.model->decrementLargeStep();
+                p.model->largeStepDec();
                 break;
             case Key::Home:
                 event.accept = true;

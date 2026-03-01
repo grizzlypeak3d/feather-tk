@@ -71,8 +71,8 @@ namespace ftk
         //! \name Default Value
         ///@{
 
-        FTK_API float getDefaultValue() const;
-        FTK_API void setDefaultValue(float);
+        FTK_API float getDefault() const;
+        FTK_API void setDefault(float);
         
         ///@}
 

@@ -168,14 +168,14 @@ namespace ftk
         _p->model->setLargeStep(value);
     }
 
-    float FloatEditShuttle::getDefaultValue() const
+    float FloatEditShuttle::getDefault() const
     {
-        return _p->model->getDefaultValue();
+        return _p->model->getDefault();
     }
 
-    void FloatEditShuttle::setDefaultValue(float value)
+    void FloatEditShuttle::setDefault(float value)
     {
-        _p->model->setDefaultValue(value);
+        _p->model->setDefault(value);
     }
 
     const std::shared_ptr<FloatModel>& FloatEditShuttle::getModel() const

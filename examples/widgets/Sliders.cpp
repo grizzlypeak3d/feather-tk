@@ -43,7 +43,7 @@ namespace widgets
             });
         intEditSlider = IntEditSlider::create(context, vLayout);
         intEditSlider->setRange(100, 200);
-        intEditSlider->setDefaultValue(100);
+        intEditSlider->setDefault(100);
         intEditSlider->setPressedCallback(
             [](int value, bool pressed)
             {
@@ -53,7 +53,7 @@ namespace widgets
             });
         intEditSlider = IntEditSlider::create(context, vLayout);
         intEditSlider->setRange(-100, 100);
-        intEditSlider->setDefaultValue(-100);
+        intEditSlider->setDefault(-100);
         intEditSlider->setPressedCallback(
             [](int value, bool pressed)
             {
@@ -75,7 +75,7 @@ namespace widgets
             });
         floatEditSlider = FloatEditSlider::create(context, vLayout);
         floatEditSlider->setRange(100.F, 200.F);
-        floatEditSlider->setDefaultValue(100.F);
+        floatEditSlider->setDefault(100.F);
         floatEditSlider->setStep(1.F);
         floatEditSlider->setLargeStep(10.F);
         floatEditSlider->setPressedCallback(
@@ -87,7 +87,7 @@ namespace widgets
             });
         floatEditSlider = FloatEditSlider::create(context, vLayout);
         floatEditSlider->setRange(-100.F, 100.F);
-        floatEditSlider->setDefaultValue(-100.F);
+        floatEditSlider->setDefault(-100.F);
         floatEditSlider->setStep(1.F);
         floatEditSlider->setLargeStep(10.F);
         floatEditSlider->setPressedCallback(
@@ -111,7 +111,7 @@ namespace widgets
             });
         doubleEditSlider = DoubleEditSlider::create(context, vLayout);
         doubleEditSlider->setRange(100.0, 200.0);
-        doubleEditSlider->setDefaultValue(100.0);
+        doubleEditSlider->setDefault(100.0);
         doubleEditSlider->setStep(1.F);
         doubleEditSlider->setLargeStep(10.F);
         doubleEditSlider->setPressedCallback(
@@ -123,7 +123,7 @@ namespace widgets
             });
         doubleEditSlider = DoubleEditSlider::create(context, vLayout);
         doubleEditSlider->setRange(-100.0, 100.0);
-        doubleEditSlider->setDefaultValue(-100.0);
+        doubleEditSlider->setDefault(-100.0);
         doubleEditSlider->setStep(1.F);
         doubleEditSlider->setLargeStep(10.F);
         doubleEditSlider->setPressedCallback(

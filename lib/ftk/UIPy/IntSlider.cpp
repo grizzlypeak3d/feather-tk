@@ -25,7 +25,7 @@ namespace ftk
                 .def("setRange", py::overload_cast<int, int>(&IIntSlider::setRange))
                 .def_property("step", &IIntSlider::getStep, &IIntSlider::setStep)
                 .def_property("largeStep", &IIntSlider::getLargeStep, &IIntSlider::setLargeStep)
-                .def_property("defaultValue", &IIntSlider::getDefaultValue, &IIntSlider::setDefaultValue)
+                .def_property("defaultValue", &IIntSlider::getDefault, &IIntSlider::setDefault)
                 .def("getModel", &IIntSlider::getModel);
 
             py::class_<IntSlider, IIntSlider, std::shared_ptr<IntSlider> >(m, "IntSlider")

@@ -13,7 +13,7 @@ namespace ftk
         std::shared_ptr<Observable<RangeF> > range;
         float step = .1F;
         float largeStep = 1.F;
-        std::shared_ptr<Observable<bool> > hasDefaultValue;
+        std::shared_ptr<Observable<bool> > hasDefault;
         std::shared_ptr<Observable<float> > defaultValue;
     };
 
@@ -22,7 +22,7 @@ namespace ftk
         FTK_P();
         p.value = Observable<float>::create(0.F);
         p.range = Observable<RangeF>::create(RangeF(0.F, 1.F));
-        p.hasDefaultValue = Observable<bool>::create(false);
+        p.hasDefault = Observable<bool>::create(false);
         p.defaultValue = Observable<float>::create(0.F);
     }
 
@@ -88,13 +88,13 @@ namespace ftk
         _p->step = value;
     }
 
-    void FloatModel::incrementStep()
+    void FloatModel::step()
     {
         FTK_P();
         setValue(p.value->get() + p.step);
     }
 
-    void FloatModel::decrementStep()
+    void FloatModel::stepDec()
     {
         FTK_P();
         setValue(p.value->get() - p.step);
@@ -110,51 +110,51 @@ namespace ftk
         _p->largeStep = value;
     }
 
-    void FloatModel::incrementLargeStep()
+    void FloatModel::largeStep()
     {
         FTK_P();
         setValue(p.value->get() + p.largeStep);
     }
 
-    void FloatModel::decrementLargeStep()
+    void FloatModel::largeStepDec()
     {
         FTK_P();
         setValue(p.value->get() - p.largeStep);
     }
 
-    bool FloatModel::hasDefaultValue() const
+    bool FloatModel::hasDefault() const
     {
-        return _p->hasDefaultValue->get();
+        return _p->hasDefault->get();
     }
 
-    std::shared_ptr<IObservable<bool> > FloatModel::observeHasDefaultValue() const
+    std::shared_ptr<IObservable<bool> > FloatModel::observeHasDefault() const
     {
-        return _p->hasDefaultValue;
+        return _p->hasDefault;
     }
 
-    float FloatModel::getDefaultValue() const
+    float FloatModel::getDefault() const
     {
         return _p->defaultValue->get();
     }
 
-    std::shared_ptr<IObservable<float> > FloatModel::observeDefaultValue() const
+    std::shared_ptr<IObservable<float> > FloatModel::observeDefault() const
     {
         return _p->defaultValue;
     }
 
-    void FloatModel::setDefaultValue(float value)
+    void FloatModel::setDefault(float value)
     {
         _p->defaultValue->setIfChanged(value);
-        _p->hasDefaultValue->setIfChanged(true);
+        _p->hasDefault->setIfChanged(true);
     }
 
-    void FloatModel::setDefaultValue()
+    void FloatModel::setDefault()
     {
         setValue(_p->defaultValue->get());
     }
 
-    void FloatModel::clearDefaultValue()
+    void FloatModel::clearDefault()
     {
-        _p->hasDefaultValue->setIfChanged(false);
+        _p->hasDefault->setIfChanged(false);
     }
 }

@@ -38,7 +38,7 @@ namespace ftk
                 .def("setRange", py::overload_cast<double, double>(&DoubleEditSlider::setRange))
                 .def_property("step", &DoubleEditSlider::getStep, &DoubleEditSlider::setStep)
                 .def_property("largeStep", &DoubleEditSlider::getLargeStep, &DoubleEditSlider::setLargeStep)
-                .def_property("defaultValue", &DoubleEditSlider::getDefaultValue, &DoubleEditSlider::setDefaultValue)
+                .def_property("defaultValue", &DoubleEditSlider::getDefault, &DoubleEditSlider::setDefault)
                 .def("getModel", &DoubleEditSlider::getModel)
                 .def("setPressedCallback", &DoubleEditSlider::setPressedCallback)
                 .def_property("precision", &DoubleEditSlider::getPrecision, &DoubleEditSlider::setPrecision)

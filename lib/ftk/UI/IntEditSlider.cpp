@@ -156,14 +156,14 @@ namespace ftk
         _p->model->setLargeStep(value);
     }
 
-    int IntEditSlider::getDefaultValue() const
+    int IntEditSlider::getDefault() const
     {
-        return _p->model->getDefaultValue();
+        return _p->model->getDefault();
     }
 
-    void IntEditSlider::setDefaultValue(int value)
+    void IntEditSlider::setDefault(int value)
     {
-        _p->model->setDefaultValue(value);
+        _p->model->setDefault(value);
     }
 
     const std::shared_ptr<IntModel>& IntEditSlider::getModel() const

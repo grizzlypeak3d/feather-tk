@@ -60,8 +60,8 @@ namespace ftk
         //! \name Default Value
         ///@{
 
-        FTK_API double getDefaultValue() const;
-        FTK_API void setDefaultValue(double);
+        FTK_API double getDefault() const;
+        FTK_API void setDefault(double);
         
         ///@}
 

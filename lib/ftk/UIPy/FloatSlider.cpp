@@ -25,7 +25,7 @@ namespace ftk
                 .def("setRange", py::overload_cast<float, float>(&IFloatSlider::setRange))
                 .def_property("step", &IFloatSlider::getStep, &IFloatSlider::setStep)
                 .def_property("largeStep", &IFloatSlider::getLargeStep, &IFloatSlider::setLargeStep)
-                .def_property("defaultValue", &IFloatSlider::getDefaultValue, &IFloatSlider::setDefaultValue)
+                .def_property("defaultValue", &IFloatSlider::getDefault, &IFloatSlider::setDefault)
                 .def("getModel", &IFloatSlider::getModel);
 
             py::class_<FloatSlider, IFloatSlider, std::shared_ptr<FloatSlider> >(m, "FloatSlider")

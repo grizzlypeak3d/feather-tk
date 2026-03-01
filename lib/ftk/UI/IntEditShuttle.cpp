@@ -167,14 +167,14 @@ namespace ftk
         _p->model->setLargeStep(value);
     }
 
-    int IntEditShuttle::getDefaultValue() const
+    int IntEditShuttle::getDefault() const
     {
-        return _p->model->getDefaultValue();
+        return _p->model->getDefault();
     }
 
-    void IntEditShuttle::setDefaultValue(int value)
+    void IntEditShuttle::setDefault(int value)
     {
-        _p->model->setDefaultValue(value);
+        _p->model->setDefault(value);
     }
 
     const std::shared_ptr<IntModel>& IntEditShuttle::getModel() const

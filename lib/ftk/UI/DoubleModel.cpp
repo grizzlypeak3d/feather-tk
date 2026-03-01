@@ -13,7 +13,7 @@ namespace ftk
         std::shared_ptr<Observable<RangeD> > range;
         double step = 0.1;
         double largeStep = 1.0;
-        std::shared_ptr<Observable<bool> > hasDefaultValue;
+        std::shared_ptr<Observable<bool> > hasDefault;
         std::shared_ptr<Observable<double> > defaultValue;
     };
 
@@ -22,7 +22,7 @@ namespace ftk
         FTK_P();
         p.value = Observable<double>::create(0.0);
         p.range = Observable<RangeD>::create(RangeD(0.0, 1.0));
-        p.hasDefaultValue = Observable<bool>::create(false);
+        p.hasDefault = Observable<bool>::create(false);
         p.defaultValue = Observable<double>::create(0.0);
     }
 
@@ -88,13 +88,13 @@ namespace ftk
         _p->step = value;
     }
 
-    void DoubleModel::incrementStep()
+    void DoubleModel::step()
     {
         FTK_P();
         setValue(p.value->get() + p.step);
     }
 
-    void DoubleModel::decrementStep()
+    void DoubleModel::stepDec()
     {
         FTK_P();
         setValue(p.value->get() - p.step);
@@ -110,51 +110,51 @@ namespace ftk
         _p->largeStep = value;
     }
 
-    void DoubleModel::incrementLargeStep()
+    void DoubleModel::largeStep()
     {
         FTK_P();
         setValue(p.value->get() + p.largeStep);
     }
 
-    void DoubleModel::decrementLargeStep()
+    void DoubleModel::largeStepDec()
     {
         FTK_P();
         setValue(p.value->get() - p.largeStep);
     }
 
-    bool DoubleModel::hasDefaultValue() const
+    bool DoubleModel::hasDefault() const
     {
-        return _p->hasDefaultValue->get();
+        return _p->hasDefault->get();
     }
 
-    std::shared_ptr<IObservable<bool> > DoubleModel::observeHasDefaultValue() const
+    std::shared_ptr<IObservable<bool> > DoubleModel::observeHasDefault() const
     {
-        return _p->hasDefaultValue;
+        return _p->hasDefault;
     }
 
-    double DoubleModel::getDefaultValue() const
+    double DoubleModel::getDefault() const
     {
         return _p->defaultValue->get();
     }
 
-    std::shared_ptr<IObservable<double> > DoubleModel::observeDefaultValue() const
+    std::shared_ptr<IObservable<double> > DoubleModel::observeDefault() const
     {
         return _p->defaultValue;
     }
 
-    void DoubleModel::setDefaultValue(double value)
+    void DoubleModel::setDefault(double value)
     {
         _p->defaultValue->setIfChanged(value);
-        _p->hasDefaultValue->setIfChanged(true);
+        _p->hasDefault->setIfChanged(true);
     }
 
-    void DoubleModel::setDefaultValue()
+    void DoubleModel::setDefault()
     {
         setValue(_p->defaultValue->get());
     }
 
-    void DoubleModel::clearDefaultValue()
+    void DoubleModel::clearDefault()
     {
-        _p->hasDefaultValue->setIfChanged(false);
+        _p->hasDefault->setIfChanged(false);
     }
 }
