@@ -19,8 +19,7 @@ namespace ftk
         void intModel(py::module_& m)
         {
             py::class_<IntModel, std::shared_ptr<IntModel> >(m, "IntModel")
-                .def(py::init(&IntModel::create),
-                    py::arg("context"));
+                .def(py::init(&IntModel::create));
         }
     }
 }

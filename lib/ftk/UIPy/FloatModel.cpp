@@ -19,8 +19,7 @@ namespace ftk
         void floatModel(py::module_& m)
         {
             py::class_<FloatModel, std::shared_ptr<FloatModel> >(m, "FloatModel")
-                .def(py::init(&FloatModel::create),
-                    py::arg("context"));
+                .def(py::init(&FloatModel::create));
         }
     }
 }
