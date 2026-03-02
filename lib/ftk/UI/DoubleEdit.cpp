@@ -110,7 +110,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<DoubleEdit>(new DoubleEdit);
-        out->_init(context, DoubleModel::create(context), parent);
+        out->_init(context, DoubleModel::create(), parent);
         return out;
     }
 

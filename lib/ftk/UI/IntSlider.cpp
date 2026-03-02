@@ -324,7 +324,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<IntSlider>(new IntSlider);
-        out->_init(context, IntModel::create(context), parent);
+        out->_init(context, IntModel::create(), parent);
         return out;
     }
 

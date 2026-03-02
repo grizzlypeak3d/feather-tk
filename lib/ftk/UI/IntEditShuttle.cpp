@@ -92,7 +92,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<IntEditShuttle>(new IntEditShuttle);
-        out->_init(context, IntModel::create(context), parent);
+        out->_init(context, IntModel::create(), parent);
         return out;
     }
 

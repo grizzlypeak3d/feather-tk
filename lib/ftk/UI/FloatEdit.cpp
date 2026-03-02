@@ -108,7 +108,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<FloatEdit>(new FloatEdit);
-        out->_init(context, FloatModel::create(context), parent);
+        out->_init(context, FloatModel::create(), parent);
         return out;
     }
 

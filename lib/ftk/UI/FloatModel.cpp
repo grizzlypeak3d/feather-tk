@@ -17,7 +17,8 @@ namespace ftk
         std::shared_ptr<Observable<float> > defaultValue;
     };
 
-    void FloatModel::_init(const std::shared_ptr<Context>&)
+    FloatModel::FloatModel() :
+        _p(new Private)
     {
         FTK_P();
         p.value = Observable<float>::create(0.F);
@@ -26,19 +27,12 @@ namespace ftk
         p.defaultValue = Observable<float>::create(0.F);
     }
 
-    FloatModel::FloatModel() :
-        _p(new Private)
-    {}
-
     FloatModel::~FloatModel()
     {}
 
-    std::shared_ptr<FloatModel> FloatModel::create(
-        const std::shared_ptr<Context>& context)
+    std::shared_ptr<FloatModel> FloatModel::create()
     {
-        auto out = std::shared_ptr<FloatModel>(new FloatModel);
-        out->_init(context);
-        return out;
+        return std::shared_ptr<FloatModel>(new FloatModel);
     }
 
     float FloatModel::getValue() const

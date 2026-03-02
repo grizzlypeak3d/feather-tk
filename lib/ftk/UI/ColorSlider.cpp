@@ -253,7 +253,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         std::shared_ptr<ColorIntEditSlider> out(new ColorIntEditSlider);
-        out->_init(context, IntModel::create(context), parent);
+        out->_init(context, IntModel::create(), parent);
         return out;
     }
 
@@ -572,7 +572,7 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         std::shared_ptr<ColorFloatEditSlider> out(new ColorFloatEditSlider);
-        out->_init(context, FloatModel::create(context), parent);
+        out->_init(context, FloatModel::create(), parent);
         return out;
     }
 

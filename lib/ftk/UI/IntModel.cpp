@@ -17,7 +17,8 @@ namespace ftk
         std::shared_ptr<Observable<int> > defaultValue;
     };
 
-    void IntModel::_init(const std::shared_ptr<Context>&)
+    IntModel::IntModel() :
+        _p(new Private)
     {
         FTK_P();
         p.value = Observable<int>::create(0);
@@ -26,19 +27,12 @@ namespace ftk
         p.defaultValue = Observable<int>::create(0);
     }
 
-    IntModel::IntModel() :
-        _p(new Private)
-    {}
-
     IntModel::~IntModel()
     {}
 
-    std::shared_ptr<IntModel> IntModel::create(
-        const std::shared_ptr<Context>& context)
+    std::shared_ptr<IntModel> IntModel::create()
     {
-        auto out = std::shared_ptr<IntModel>(new IntModel);
-        out->_init(context);
-        return out;
+        return std::shared_ptr<IntModel>(new IntModel);
     }
 
     int IntModel::getValue() const

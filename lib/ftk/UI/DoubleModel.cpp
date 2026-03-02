@@ -17,7 +17,8 @@ namespace ftk
         std::shared_ptr<Observable<double> > defaultValue;
     };
 
-    void DoubleModel::_init(const std::shared_ptr<Context>&)
+    DoubleModel::DoubleModel() :
+        _p(new Private)
     {
         FTK_P();
         p.value = Observable<double>::create(0.0);
@@ -26,19 +27,12 @@ namespace ftk
         p.defaultValue = Observable<double>::create(0.0);
     }
 
-    DoubleModel::DoubleModel() :
-        _p(new Private)
-    {}
-
     DoubleModel::~DoubleModel()
     {}
 
-    std::shared_ptr<DoubleModel> DoubleModel::create(
-        const std::shared_ptr<Context>& context)
+    std::shared_ptr<DoubleModel> DoubleModel::create()
     {
-        auto out = std::shared_ptr<DoubleModel>(new DoubleModel);
-        out->_init(context);
-        return out;
+        return std::shared_ptr<DoubleModel>(new DoubleModel);
     }
 
     double DoubleModel::getValue() const

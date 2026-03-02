@@ -8,8 +8,6 @@
 
 namespace ftk
 {
-    class Context;
-    
     //! \name Numeric Widgets
     ///@{
         
@@ -18,8 +16,6 @@ namespace ftk
     {
         FTK_NON_COPYABLE(DoubleModel);
 
-        void _init(const std::shared_ptr<Context>&);
-
     protected:
         DoubleModel();
 
@@ -27,8 +23,7 @@ namespace ftk
         FTK_API ~DoubleModel();
 
         //! Create a new model.
-        FTK_API static std::shared_ptr<DoubleModel> create(
-            const std::shared_ptr<Context>&);
+        FTK_API static std::shared_ptr<DoubleModel> create();
 
         //! \name Value
         ///@{
