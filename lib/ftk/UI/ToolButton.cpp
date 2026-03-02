@@ -13,9 +13,11 @@ namespace ftk
     struct ToolButton::Private
     {
         std::shared_ptr<Action> action;
+        SizeRole marginRole = SizeRole::MarginInside;
         bool popupIcon = false;
         float popupIconScale = 1.F;
         std::shared_ptr<Image> popupImage;
+
         std::shared_ptr<Observer<std::string> > iconObserver;
         std::shared_ptr<Observer<std::string> > checkedIconObserver;
         std::shared_ptr<Observer<bool> > checkableObserver;
@@ -151,6 +153,22 @@ namespace ftk
         return out;
     }
 
+    SizeRole ToolButton::getMarginRole() const
+    {
+        return _p->marginRole;
+    }
+
+    void ToolButton::setMarginRole(SizeRole value)
+    {
+        FTK_P();
+        if (value == p.marginRole)
+            return;
+        p.marginRole = value;
+        p.size.displayScale.reset();
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     bool ToolButton::hasPopupIcon() const
     {
         return _p->popupIcon;
@@ -236,7 +254,7 @@ namespace ftk
             (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
         {
             p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);

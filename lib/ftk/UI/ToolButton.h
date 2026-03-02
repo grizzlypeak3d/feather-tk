@@ -43,6 +43,12 @@ namespace ftk
             const std::shared_ptr<Action>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Get the margin role.
+        SizeRole getMarginRole() const;
+
+        //! Set the margin role.
+        void setMarginRole(SizeRole);
+
         //! Get whether the button has a popup icon.
         bool hasPopupIcon() const;
 
