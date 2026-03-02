@@ -58,7 +58,6 @@ namespace ftk
             const int index = p.buttons.size();
             p.buttons.push_back(button);
 
-            auto menuWeak = std::weak_ptr<Menu>(menu);
             button->setHoveredCallback(
                 [this, index](bool value)
                 {
@@ -70,12 +69,23 @@ namespace ftk
                         }
                     }
                 });
+
+            auto menuWeak = std::weak_ptr<Menu>(menu);
             button->setPressedCallback(
-                [this, index]
+                [this, menuWeak, index]
                 {
-                    takeKeyFocus();
-                    _setCurrent(index);
-                    _openMenu(index);
+                    FTK_P();
+                    auto menu = _getOpenMenu();
+                    if (menu && menu == menuWeak.lock())
+                    {
+                        menu->close();
+                    }
+                    else
+                    {
+                        takeKeyFocus();
+                        _setCurrent(index);
+                        _openMenu(index);
+                    }
                 });
 
             if (-1 == p.current)
