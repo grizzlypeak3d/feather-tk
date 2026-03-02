@@ -212,6 +212,8 @@ namespace ftk
         FTK_API void setGeometry(const Box2I&) override;
 
     private:
+        void _widgetUpdate();
+
         FTK_PRIVATE();
     };
 

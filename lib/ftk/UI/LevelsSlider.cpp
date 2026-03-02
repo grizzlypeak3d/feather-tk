@@ -6,6 +6,7 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/FloatEdit.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/UI/ToolButton.h>
 
 namespace ftk
 {
@@ -534,6 +535,7 @@ namespace ftk
         std::shared_ptr<LevelsSlider> slider;
         std::shared_ptr<FloatEdit> minEdit;
         std::shared_ptr<FloatEdit> maxEdit;
+        std::shared_ptr<ToolButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(const RangeF&)> callback;
@@ -542,6 +544,8 @@ namespace ftk
 
         std::shared_ptr<Observer<RangeF> > valueObserver;
         std::shared_ptr<Observer<RangeF> > rangeObserver;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
+        std::shared_ptr<Observer<RangeF> > defaultObserver;
     };
 
     void LevelsEditSlider::_init(
@@ -564,11 +568,16 @@ namespace ftk
         p.maxEdit = FloatEdit::create(context);
         p.maxEdit->setRange(p.model->getRange());
 
+        p.resetButton = ToolButton::create(context);
+        p.resetButton->setIcon("Reset");
+        p.resetButton->setTooltip("Reset to the default value");
+
         p.layout = HorizontalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.minEdit->setParent(p.layout);
         p.slider->setParent(p.layout);
         p.maxEdit->setParent(p.layout);
+        p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](const RangeF& value)
@@ -606,6 +615,12 @@ namespace ftk
                 p.model->setValue(RangeF(min, value));
             });
 
+        p.resetButton->setClickedCallback(
+            [this]
+            {
+                _p->model->setDefault();
+            });
+
         p.valueObserver = Observer<RangeF>::create(
             p.model->observeValue(),
             [this](const RangeF& value)
@@ -615,6 +630,7 @@ namespace ftk
                 p.minEdit->setValue(value.min());
                 p.maxEdit->setValue(value.max());
                 --(p.blockCallbacks);
+                _widgetUpdate();
             });
 
         p.rangeObserver = Observer<RangeF>::create(
@@ -626,6 +642,20 @@ namespace ftk
                 p.minEdit->setRange(value);
                 p.maxEdit->setRange(value);
                 --(p.blockCallbacks);
+            });
+
+        p.hasDefaultObserver = Observer<bool>::create(
+            p.model->observeHasDefault(),
+            [this](bool)
+            {
+                _widgetUpdate();
+            });
+
+        p.defaultObserver = Observer<RangeF>::create(
+            p.model->observeDefault(),
+            [this](const RangeF&)
+            {
+                _widgetUpdate();
             });
     }
 
@@ -722,5 +752,12 @@ namespace ftk
     {
         IWidget::setGeometry(value);
         _p->layout->setGeometry(value);
+    }
+
+    void LevelsEditSlider::_widgetUpdate()
+    {
+        FTK_P();
+        p.resetButton->setVisible(p.model->hasDefault());
+        p.resetButton->setEnabled(p.model->getValue() != p.model->getDefault());
     }
 }
