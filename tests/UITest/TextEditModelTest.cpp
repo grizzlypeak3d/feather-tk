@@ -56,6 +56,13 @@ namespace ftk
             if (auto context = _context.lock())
             {
                 auto model = TextEditModel::create(context);
+                FTK_ASSERT(model->key(Key::A));
+                FTK_ASSERT(model->key(Key::A, static_cast<int>(KeyModifier::Shift)));
+                FTK_ASSERT(model->key(Key::A, static_cast<int>(KeyModifier::Control)));
+            }
+            if (auto context = _context.lock())
+            {
+                auto model = TextEditModel::create(context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",

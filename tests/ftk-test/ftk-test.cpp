@@ -120,7 +120,7 @@ namespace ftk
     {
         struct App::Private
         {
-            std::shared_ptr<CmdLineArg<std::string> > testName;
+            std::shared_ptr<CmdLineListArg<std::string> > testNames;
             std::vector<std::shared_ptr<test::ITest> > tests;
             std::chrono::steady_clock::time_point startTime;
         };
@@ -130,16 +130,16 @@ namespace ftk
             std::vector<std::string>& argv)
         {
             FTK_P();
-            p.testName = CmdLineArg<std::string>::create(
+            p.testNames = CmdLineListArg<std::string>::create(
                 "Test",
-                "Name of the test to run.",
+                "Names of the tests to run.",
                 true);
             IApp::_init(
                 context,
                 argv,
                 "ftk-test",
                 "Test application",
-                { p.testName });
+                { p.testNames });
             p.startTime = std::chrono::steady_clock::now();                
 #if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
             gl::init(context);
@@ -265,15 +265,31 @@ namespace ftk
 
             // Get the tests to run.
             std::vector<std::shared_ptr<test::ITest> > runTests;
-            for (const auto& test : p.tests)
+            const auto& cmdLineTests = p.testNames->getList();
+            if (!cmdLineTests.empty())
             {
-                if (!p.testName->hasValue() ||
-                    (p.testName->hasValue() &&
-                        contains(test->getName(), p.testName->getValue())))
+                for (const auto& test : cmdLineTests)
+                {
+                    const auto i = std::find_if(
+                        p.tests.begin(),
+                        p.tests.end(),
+                        [test](const std::shared_ptr<test::ITest>& other)
+                        {
+                            return contains(other->getName(), test, CaseCompare::Insensitive);
+                        });
+                    if (i != p.tests.end())
+                    {
+                        runTests.push_back(*i);
+                    }
+                }
+            }
+            else
+            {
+                for (const auto& test : p.tests)
                 {
                     runTests.push_back(test);
                 }
-            }     
+            }
 
             // Run the tests.
             for (const auto& test : runTests)
