@@ -2,11 +2,9 @@
 // Copyright Contributors to the feather-tk project.
 
 #include <ftk/UI/App.h>
-#include <ftk/UI/ColorSwatch.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/MainWindow.h>
 #include <ftk/UI/RowLayout.h>
-#include <ftk/UI/ToolButton.h>
 
 using namespace ftk;
 
@@ -22,19 +20,10 @@ int main(int argc, char** argv)
     auto window = MainWindow::create(context, app, Size2I(1280, 960));
 
     // Create a label.
-    /*auto label = Label::create(context, "Hello world");
+    auto label = Label::create(context, "Hello world");
     label->setMarginRole(SizeRole::MarginSmall);
     label->setHAlign(HAlign::Center);
-    window->setWidget(label);*/
-    auto layout = VerticalLayout::create(context);
-    window->setWidget(layout);
-    auto hLayout = HorizontalLayout::create(context, layout);
-
-    auto swatch = ColorSwatch::create(context, hLayout);
-    swatch->setEditable(true);
-
-    auto button = ToolButton::create(context, "Check", hLayout);
-    button->setCheckable(true);
+    window->setWidget(label);
 
     // Run the application.
     app->run();
