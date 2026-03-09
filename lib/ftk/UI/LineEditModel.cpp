@@ -384,7 +384,9 @@ namespace ftk
 
         default: break;
         }
-        if (!out && key != Key::Tab && 0 == modifiers)
+        if (!out &&
+            key != Key::Tab &&
+            (0 == modifiers || static_cast<int>(KeyModifier::Shift) == modifiers))
         {
             out = !isControlKey(key);
         }

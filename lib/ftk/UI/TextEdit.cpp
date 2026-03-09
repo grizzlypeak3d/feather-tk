@@ -58,8 +58,6 @@ namespace ftk
         IWidget::_init(context, "ftk::TextEdit", parent);
         FTK_P();
 
-        setAcceptsKeyFocus(true);
-
         p.options = Observable<TextEditOptions>::create();
 
         p.model = model;
@@ -203,11 +201,6 @@ namespace ftk
         p.marginRole = value;
         setSizeUpdate();
         setDrawUpdate();
-    }
-
-    void TextEdit::takeKeyFocus()
-    {
-        _p->widget->takeKeyFocus();
     }
     
     Size2I TextEdit::getSizeHint() const

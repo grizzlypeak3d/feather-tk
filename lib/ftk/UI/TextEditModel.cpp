@@ -481,7 +481,9 @@ namespace ftk
 
         default: break;
         }
-        if (!out && !readOnly && 0 == modifiers)
+        if (!out &&
+            !readOnly &&
+            (0 == modifiers || static_cast<int>(KeyModifier::Shift) == modifiers))
         {
             out = !isControlKey(key);
         }
