@@ -5,6 +5,7 @@
 
 #include <ftk/UI/IncButtons.h>
 #include <ftk/UI/LineEdit.h>
+#include <ftk/UI/LineEditModel.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
@@ -36,6 +37,7 @@ namespace ftk
         p.model = model;
 
         p.lineEdit = LineEdit::create(context, shared_from_this());
+        p.lineEdit->getModel()->setRegex("[0-9\\-]+");
         p.lineEdit->setFontRole(FontRole::Mono);
 
         p.incButtons = IncButtons::create(context);

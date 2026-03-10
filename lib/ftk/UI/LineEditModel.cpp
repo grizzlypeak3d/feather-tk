@@ -5,6 +5,8 @@
 
 #include <ftk/UI/ClipboardSystem.h>
 
+#include <regex>
+
 namespace ftk
 {
     LineEditSelection::LineEditSelection(int first) :
@@ -53,6 +55,7 @@ namespace ftk
         std::shared_ptr<Observable<bool> > readOnly;
         std::shared_ptr<Observable<int> > cursor;
         std::shared_ptr<Observable<LineEditSelection> > selection;
+        std::string regex;
     };
 
     void LineEditModel::_init(
@@ -278,27 +281,31 @@ namespace ftk
         FTK_P();
         if (p.readOnly->get())
             return;
-        int cursor = p.cursor->get();
-        LineEditSelection selection = p.selection->get();
-
-        if (selection.isValid())
+        const std::regex r(p.regex);
+        if (p.regex.empty() || std::regex_match(value, r))
         {
-            // Replace the selection.
-            _replace(selection, value);
-            cursor = selection.min() + value.size();
-            selection = LineEditSelection();
-        }
-        else
-        {
-            // Insert text at the cursor.
-            std::string text = p.text->get();
-            text.insert(cursor, value);
-            cursor += value.size();
-            p.text->setIfChanged(text);
-        }
+            int cursor = p.cursor->get();
+            LineEditSelection selection = p.selection->get();
 
-        p.cursor->setIfChanged(cursor);
-        p.selection->setIfChanged(selection);
+            if (selection.isValid())
+            {
+                // Replace the selection.
+                _replace(selection, value);
+                cursor = selection.min() + value.size();
+                selection = LineEditSelection();
+            }
+            else
+            {
+                // Insert text at the cursor.
+                std::string text = p.text->get();
+                text.insert(cursor, value);
+                cursor += value.size();
+                p.text->setIfChanged(text);
+            }
+
+            p.cursor->setIfChanged(cursor);
+            p.selection->setIfChanged(selection);
+        }
     }
 
     bool LineEditModel::key(Key key, int modifiers)
@@ -391,6 +398,16 @@ namespace ftk
             out = !isControlKey(key);
         }
         return out;
+    }
+    
+    const std::string& LineEditModel::setRegex() const
+    {
+        return _p->regex;
+    }
+
+    FTK_API void LineEditModel::setRegex(const std::string& value)
+    {
+        _p->regex = value;
     }
 
     void LineEditModel::_move(Key key, int modifiers)
