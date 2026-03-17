@@ -104,10 +104,10 @@ namespace ftk
 
     void IDialog::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
         IPopup::setGeometry(value);
         FTK_P();
 
+        bool changed = false;
         const auto& children = getChildren();
         if (!children.empty())
         {
@@ -140,10 +140,7 @@ namespace ftk
                 g.y() + g.h() / 2 - size.h / 2,
                 size.w,
                 size.h);
-            if (g2 != children.front()->getGeometry())
-            {
-                p.draw.reset();
-            }
+            changed = g2 != children.front()->getGeometry();
             children.front()->setGeometry(g2);
         }
 
