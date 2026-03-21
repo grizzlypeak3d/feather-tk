@@ -11,9 +11,6 @@ target_link_libraries(ftk-resource)
 set_target_properties(ftk-resource PROPERTIES FOLDER bin)
 
 set(RUNTIME_DESTINATION "bin")
-if(ftk_BUILD STREQUAL "vcpkg")
-    set(RUNTIME_DESTINATION "tools/feather-tk")
-endif()
 install(TARGETS ftk-resource
     EXPORT ftk-resourceTargets
     RUNTIME DESTINATION ${RUNTIME_DESTINATION})

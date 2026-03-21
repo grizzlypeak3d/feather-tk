@@ -38,16 +38,11 @@ if(APPLE)
     set(ftk_IGNORE_PREFIX_PATH_DEFAULT /opt/homebrew)
 endif()
 set(ftk_IGNORE_PREFIX_PATH ${ftk_IGNORE_PREFIX_PATH_DEFAULT} CACHE STRING "Ignore the given prefix path")
-set(ftk_BUILD "default" CACHE STRING "Build configuration: 'default', 'SuperBuild', 'vcpkg'")
 set(ftk_GCOV OFF CACHE BOOL "Enable gcov code coverage")
 set(ftk_GPROF OFF CACHE BOOL "Enable gprof code profiling")
 
 #-------------------------------------------------------------------------------
 # Configuration
-
-if(ftk_BUILD STREQUAL "SuperBuild")
-    set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
-endif()
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
@@ -176,22 +171,8 @@ endif()
 if(ftk_EXAMPLES)
     add_subdirectory(examples)
 endif()
+add_subdirectory(etc/Legal)
 
-install(
-    FILES LICENSE.txt
-    DESTINATION share/ftk)
-
-if(ftk_BUILD STREQUAL "SuperBuild")
-    install(
-        FILES cmake/Modules/FindZLIB.cmake
-        DESTINATION share/ftk)
-    install(
-        FILES cmake/Modules/FindPNG.cmake
-        DESTINATION share/ftk)
-    install(
-        FILES cmake/Modules/Findnfd.cmake
-        DESTINATION share/ftk)
-endif()
 include(CMakePackageConfigHelpers)
 set(INCLUDE_INSTALL_DIR include)
 configure_package_config_file(
@@ -199,6 +180,3 @@ configure_package_config_file(
     ${CMAKE_CURRENT_BINARY_DIR}/ftkConfig.cmake
     INSTALL_DESTINATION share/ftk
     PATH_VARS INCLUDE_INSTALL_DIR)
-install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/ftkConfig.cmake
-    DESTINATION share/ftk)

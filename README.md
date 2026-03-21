@@ -150,7 +150,7 @@ sh feather-tk/sbuild-linux.sh
 
 Try running the `objview` example:
 ```
-build-Release/examples/objview/objview feather-tk\etc\Objects\Bolt.obj
+build-Release/examples/objview/objview feather-tk/etc/Objects/Bolt.obj
 ```
 
 
@@ -172,7 +172,7 @@ sh feather-tk/sbuild-macos.sh
 
 Try running the `objview` example:
 ```
-build-Release/examples/objview/objview feather-tk\etc\Objects\Bolt.obj
+build-Release/examples/objview/objview feather-tk/etc/Objects/Bolt.obj
 ```
 
 These aliases are convenient for switching between architectures:
