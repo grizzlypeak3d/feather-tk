@@ -18,7 +18,7 @@ install(
 install(
     EXPORT ftkgladTargets
     FILE ftkgladTargets.cmake
-    DESTINATION "share/ftk"
+    DESTINATION "lib/cmake/ftk"
     NAMESPACE ftk::)
 install(
     DIRECTORY
