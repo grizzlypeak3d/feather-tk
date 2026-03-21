@@ -42,7 +42,9 @@ set(ftk_GCOV OFF CACHE BOOL "Enable gcov code coverage")
 set(ftk_GPROF OFF CACHE BOOL "Enable gprof code profiling")
 
 #-------------------------------------------------------------------------------
-# Configuration
+# Internal configuration
+
+list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
@@ -178,5 +180,5 @@ set(INCLUDE_INSTALL_DIR include)
 configure_package_config_file(
     ftkConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/ftkConfig.cmake
-    INSTALL_DESTINATION share/ftk
+    INSTALL_DESTINATION lib/cmake/ftk
     PATH_VARS INCLUDE_INSTALL_DIR)
