@@ -252,5 +252,5 @@ install(
 install(
     EXPORT ftkUITargets
     FILE ftkUITargets.cmake
-    DESTINATION "share/ftk"
+    DESTINATION "lib/cmake/ftk"
     NAMESPACE ftk::)

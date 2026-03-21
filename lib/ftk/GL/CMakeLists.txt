@@ -55,5 +55,5 @@ install(
 install(
     EXPORT ftkGLTargets
     FILE ftkGLTargets.cmake
-    DESTINATION "share/ftk"
+    DESTINATION "lib/cmake/ftk"
     NAMESPACE ftk::)

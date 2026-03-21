@@ -155,5 +155,5 @@ install(
 install(
     EXPORT ftkCoreTargets
     FILE ftkCoreTargets.cmake
-    DESTINATION "share/ftk"
+    DESTINATION "lib/cmake/ftk"
     NAMESPACE ftk::)
