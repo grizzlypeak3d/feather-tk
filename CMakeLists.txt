@@ -182,3 +182,6 @@ configure_package_config_file(
     ${CMAKE_CURRENT_BINARY_DIR}/ftkConfig.cmake
     INSTALL_DESTINATION lib/cmake/ftk
     PATH_VARS INCLUDE_INSTALL_DIR)
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/ftkConfig.cmake
+    DESTINATION lib/cmake/ftk)
