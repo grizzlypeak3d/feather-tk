@@ -19,6 +19,7 @@ namespace ftk
         SizeRole vMarginRole = SizeRole::None;
         FontRole fontRole = FontRole::Label;
         FontInfo fontInfo;
+        bool clipText = false;
 
         struct SizeData
         {
@@ -200,6 +201,20 @@ namespace ftk
         setDrawUpdate();
     }
 
+    bool Label::getClipText() const
+    {
+        return _p->clipText;
+    }
+
+    void Label::setClipText(bool value)
+    {
+        FTK_P();
+        if (value == p.clipText)
+            return;
+        p.clipText = value;
+        setDrawUpdate();
+    }
+
     Size2I Label::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -267,6 +282,14 @@ namespace ftk
             }
         }
 
+        bool clipRectEnabledPrev = event.render->getClipRectEnabled();
+        const Box2I clipRectPrev = event.render->getClipRect();
+        if (p.clipText)
+        {
+            event.render->setClipRectEnabled(true);
+            event.render->setClipRect(getGeometry());
+        }
+
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
@@ -275,5 +298,11 @@ namespace ftk
                 isEnabled() ?
                 p.textRole :
                 ColorRole::TextDisabled));
+
+        if (p.clipText)
+        {
+            event.render->setClipRectEnabled(clipRectEnabledPrev);
+            event.render->setClipRect(clipRectPrev);
+        }
     }
 }

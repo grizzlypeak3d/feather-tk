@@ -82,6 +82,12 @@ namespace ftk
         //! Set the font information.
         FTK_API void setFontInfo(const FontInfo&);
 
+        //! Get whether the text is clipped.
+        FTK_API bool getClipText() const;
+
+        //! Set whether the text is clipped.
+        FTK_API void setClipText(bool);
+
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
