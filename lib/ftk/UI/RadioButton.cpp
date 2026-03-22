@@ -145,8 +145,11 @@ namespace ftk
 
             p.size.sizeHint = Size2I();
             p.size.sizeHint.w += p.size.diameter;
-            p.size.sizeHint.w += p.size.spacing;
-            p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
+            if (!_text.empty())
+            {
+                p.size.sizeHint.w += p.size.spacing;
+                p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
+            }
             p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
             p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
 
