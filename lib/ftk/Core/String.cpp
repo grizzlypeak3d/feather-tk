@@ -285,6 +285,11 @@ namespace ftk
         return converter.to_bytes(value);
     }
 
+    std::string boolLabel(bool value)
+    {
+        return value ? "True" : "False";
+    }
+
     std::vector<std::string> getLoremIpsum()
     {
         return

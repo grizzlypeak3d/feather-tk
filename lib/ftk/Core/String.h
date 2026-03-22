@@ -84,6 +84,9 @@ namespace ftk
     //! Convert a wide string to a regular string.
     FTK_API std::string fromWide(const std::wstring&);
 
+    //! Get a boolean label.
+    FTK_API std::string boolLabel(bool);
+
     //! Get filler text.
     FTK_API std::vector<std::string> getLoremIpsum();
 
