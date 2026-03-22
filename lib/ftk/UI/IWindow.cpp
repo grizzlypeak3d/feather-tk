@@ -538,6 +538,8 @@ namespace ftk
             const Box2I childrenClipRect = intersect(
                 widget->getChildrenClipRect(),
                 drawRect);
+            bool clipRectEnabledPrev = event.render->getClipRectEnabled();
+            const Box2I clipRectPrev = event.render->getClipRect();
             if (widget->doesClipChildren())
             {
                 event.render->setClipRectEnabled(true);
@@ -556,7 +558,8 @@ namespace ftk
             }
             if (widget->doesClipChildren())
             {
-                event.render->setClipRectEnabled(false);
+                event.render->setClipRectEnabled(clipRectEnabledPrev);
+                event.render->setClipRect(clipRectPrev);
             }
             widget->drawOverlayEvent(drawRect, event);
         }
