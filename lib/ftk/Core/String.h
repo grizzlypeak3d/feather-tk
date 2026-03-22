@@ -87,6 +87,9 @@ namespace ftk
     //! Get a boolean label.
     FTK_API std::string boolLabel(bool);
 
+    //! Convert a boolean label.
+    FTK_API bool toBool(const std::string&);
+
     //! Get filler text.
     FTK_API std::vector<std::string> getLoremIpsum();
 

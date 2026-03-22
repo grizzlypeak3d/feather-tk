@@ -290,6 +290,11 @@ namespace ftk
         return value ? "True" : "False";
     }
 
+    bool toBool(const std::string& value)
+    {
+        return compare(value, "True", CaseCompare::Insensitive);
+    }
+
     std::vector<std::string> getLoremIpsum()
     {
         return
