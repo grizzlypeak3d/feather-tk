@@ -984,7 +984,7 @@ namespace ftk
                             Size2I frameBufferSize;
                             SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
                             SDL_GetWindowSizeInPixels(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
-                            window->_sizeUpdate(windowSize, frameBufferSize);
+                            window->_windowUpdate(windowSize, frameBufferSize);
                         }
                     }
                     break;
