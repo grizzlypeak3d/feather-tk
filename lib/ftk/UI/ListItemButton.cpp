@@ -77,8 +77,7 @@ namespace ftk
     
     Size2I ListItemButton::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void ListItemButton::setGeometry(const Box2I& value)

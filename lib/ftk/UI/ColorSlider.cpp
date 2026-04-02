@@ -71,8 +71,7 @@ namespace ftk
 
     Size2I ColorIntSlider::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void ColorIntSlider::setGeometry(const Box2I& value)
@@ -416,8 +415,7 @@ namespace ftk
 
     Size2I ColorFloatSlider::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void ColorFloatSlider::setGeometry(const Box2I& value)

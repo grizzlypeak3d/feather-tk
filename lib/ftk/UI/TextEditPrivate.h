@@ -39,6 +39,7 @@ namespace ftk
         void setGeometry(const Box2I&) override;
         void setVisible(bool) override;
         void setEnabled(bool) override;
+        void styleEvent(const StyleEvent&) override;
         void tickEvent(
             bool,
             bool,

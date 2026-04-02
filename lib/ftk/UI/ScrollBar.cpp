@@ -18,12 +18,11 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int handle = 0;
             int border = 0;
             Size2I sizeHint;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct MouseData
         {
@@ -99,28 +98,36 @@ namespace ftk
     
     Size2I ScrollBar::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        return _p->size->sizeHint;
+    }
+
+    void ScrollBar::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
     }
 
     void ScrollBar::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
 
-            p.size.sizeHint = Size2I(p.size.handle, p.size.handle);
+            p.size->sizeHint = Size2I(p.size->handle, p.size->handle);
             switch (p.orientation)
             {
             case Orientation::Horizontal:
-                p.size.sizeHint.w += p.size.handle;
+                p.size->sizeHint.w += p.size->handle;
                 break;
             case Orientation::Vertical:
-                p.size.sizeHint.h += p.size.handle;
+                p.size->sizeHint.h += p.size->handle;
                 break;
             default: break;
             }
@@ -137,7 +144,7 @@ namespace ftk
         const int scrollPosMax = _getScrollPosMax();
         if (scrollPosMax > 0)
         {
-            const Box2I g = margin(_getHandleGeometry(), -p.size.border);
+            const Box2I g = margin(_getHandleGeometry(), -p.size->border);
             event.render->drawRect(
                 g,
                 event.style->getColorRole(ColorRole::Button));
@@ -259,7 +266,7 @@ namespace ftk
             const int w = p.scrollSize - g.w();
             const int w2 = std::max(
                 static_cast<int>(g.w() / static_cast<float>(p.scrollSize) * g.w()),
-                p.size.handle * 2);
+                p.size->handle * 2);
             const int x = p.scrollPos / static_cast<float>(w) * (g.w() - w2);
             out = Box2I(
                 g.x() + x,
@@ -273,7 +280,7 @@ namespace ftk
             const int h = p.scrollSize - g.h();
             const int h2 = std::max(
                 static_cast<int>(g.h() / static_cast<float>(p.scrollSize) * g.h()),
-                p.size.handle * 2);
+                p.size->handle * 2);
             const int y = p.scrollPos / static_cast<float>(h) * (g.h() - h2);
             out = Box2I(
                 g.x(),

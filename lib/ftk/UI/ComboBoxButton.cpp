@@ -81,8 +81,7 @@ namespace ftk
     
     Size2I ComboBoxButton::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void ComboBoxButton::setGeometry(const Box2I& value)

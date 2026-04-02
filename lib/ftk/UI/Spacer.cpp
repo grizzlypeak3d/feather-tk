@@ -14,10 +14,9 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             Size2I sizeHint;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void Spacer::_init(
@@ -58,32 +57,39 @@ namespace ftk
         if (value == p.spacingRole)
             return;
         p.spacingRole = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
     }
     
     Size2I Spacer::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        return _p->size->sizeHint;
+    }
+
+    void Spacer::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
     }
 
     void Spacer::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
+            p.size = Private::SizeData();
             const int size = event.style->getSizeRole(p.spacingRole, event.displayScale);
-
-            p.size.sizeHint = Size2I();
+            p.size->sizeHint = Size2I();
             switch (p.orientation)
             {
             case Orientation::Horizontal:
-                p.size.sizeHint.w = size;
+                p.size->sizeHint.w = size;
                 break;
             case Orientation::Vertical:
-                p.size.sizeHint.h = size;
+                p.size->sizeHint.h = size;
                 break;
             default: break;
             }

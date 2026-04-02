@@ -8,7 +8,7 @@
 namespace ftk
 {
     //! Shuttle widget.
-    class ShuttleWidget : public IMouseWidget
+    class FTK_API_TYPE ShuttleWidget : public IMouseWidget
     {
         FTK_NON_COPYABLE(ShuttleWidget);
 
@@ -20,24 +20,25 @@ namespace ftk
         ShuttleWidget();
 
     public:
-        ~ShuttleWidget();
+        FTK_API ~ShuttleWidget();
 
-        static std::shared_ptr<ShuttleWidget> create(
+        FTK_API static std::shared_ptr<ShuttleWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setCallback(const std::function<void(int)>&);
-        void setDeltaCallback(const std::function<void(int)>&);
-        void setActiveCallback(const std::function<void(bool)>&);
+        FTK_API void setCallback(const std::function<void(int)>&);
+        FTK_API void setDeltaCallback(const std::function<void(int)>&);
+        FTK_API void setActiveCallback(const std::function<void(bool)>&);
 
-        Size2I getSizeHint() const override;
-        void sizeHintEvent(const SizeHintEvent&) override;
-        void drawEvent(const Box2I&, const DrawEvent&) override;
-        void mouseEnterEvent(MouseEnterEvent&) override;
-        void mouseLeaveEvent() override;
-        void mouseMoveEvent(MouseMoveEvent&) override;
-        void mousePressEvent(MouseClickEvent&) override;
-        void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_API Size2I getSizeHint() const override;
+        FTK_API void styleEvent(const StyleEvent&) override;
+        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_API void mouseLeaveEvent() override;
+        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
         FTK_PRIVATE();

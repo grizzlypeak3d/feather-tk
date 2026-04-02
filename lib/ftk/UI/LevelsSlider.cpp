@@ -280,8 +280,7 @@ namespace ftk
 
     Size2I LevelsSlider::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void LevelsSlider::setGeometry(const Box2I& value)

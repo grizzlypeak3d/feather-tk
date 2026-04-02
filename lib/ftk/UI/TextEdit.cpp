@@ -35,12 +35,11 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             int border = 0;
             int keyFocus = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
@@ -208,19 +207,28 @@ namespace ftk
         FTK_P();
         return margin(
             _p->scrollWidget->getSizeHint(),
-            p.size.margin + std::max(p.size.border, p.size.keyFocus));
+            p.size->margin + std::max(p.size->border, p.size->keyFocus));
     }
 
     void TextEdit::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
+        if (value != getGeometry())
+        {
+            _p->draw.reset();
+        }
         IWidget::setGeometry(value);
         FTK_P();
         p.scrollWidget->setGeometry(margin(
             value,
-            -(p.size.margin + std::max(p.size.border, p.size.keyFocus))));
-        if (changed)
+            -(p.size->margin + std::max(p.size->border, p.size->keyFocus))));
+    }
+
+    void TextEdit::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
         {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -228,13 +236,12 @@ namespace ftk
     void TextEdit::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.draw.reset();
         }
     }
@@ -250,11 +257,11 @@ namespace ftk
             p.draw = Private::DrawData();
             const Box2I& g = getGeometry();
             p.draw->border = border(
-                margin(g, -(p.size.margin + std::max(p.size.border, p.size.keyFocus)) + p.size.border),
-                p.size.border);
+                margin(g, -(p.size->margin + std::max(p.size->border, p.size->keyFocus)) + p.size->border),
+                p.size->border);
             p.draw->keyFocus = border(
-                margin(g, -(p.size.margin + std::max(p.size.border, p.size.keyFocus)) + p.size.keyFocus),
-                p.size.keyFocus);
+                margin(g, -(p.size->margin + std::max(p.size->border, p.size->keyFocus)) + p.size->keyFocus),
+                p.size->keyFocus);
         }
 
         // Draw the focus and border.

@@ -17,15 +17,13 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int handle = 0;
             int border = 0;
-
             Box2I g = Box2I(0, 0, -1, -1);
             Box2I g2;
             Box2I g3;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct MouseData
         {
@@ -111,10 +109,10 @@ namespace ftk
             switch (p.orientation)
             {
             case Orientation::Horizontal:
-                out.w += p.size.handle;
+                out.w += p.size->handle;
                 break;
             case Orientation::Vertical:
-                out.h += p.size.handle;
+                out.h += p.size->handle;
                 break;
             default: break;
             }
@@ -141,7 +139,7 @@ namespace ftk
         }
 
         std::vector<Box2I> childGeometry;
-        p.size.g = Box2I(0, 0, -1, -1);
+        p.size->g = Box2I(0, 0, -1, -1);
         if (1 == children.size())
         {
             childGeometry.push_back(g);
@@ -156,28 +154,28 @@ namespace ftk
                 childGeometry.push_back(Box2I(
                     g.min.x,
                     g.min.y,
-                    s - p.size.handle / 2,
+                    s - p.size->handle / 2,
                     g.h()));
                 childGeometry.push_back(Box2I(
-                    g.min.x + s + p.size.handle / 2,
+                    g.min.x + s + p.size->handle / 2,
                     g.min.y,
-                    g.w() - (s + p.size.handle / 2),
+                    g.w() - (s + p.size->handle / 2),
                     g.h()));
-                p.size.g = Box2I(
-                    g.min.x + s - p.size.handle / 2,
+                p.size->g = Box2I(
+                    g.min.x + s - p.size->handle / 2,
                     g.min.y,
-                    p.size.handle,
+                    p.size->handle,
                     g.h());
-                p.size.g2 = Box2I(
-                    p.size.g.min.x,
-                    p.size.g.min.y,
-                    p.size.border,
-                    p.size.g.h());
-                p.size.g3 = Box2I(
-                    p.size.g.max.x + 1 - p.size.border,
-                    p.size.g.min.y,
-                    p.size.border,
-                    p.size.g.h());
+                p.size->g2 = Box2I(
+                    p.size->g.min.x,
+                    p.size->g.min.y,
+                    p.size->border,
+                    p.size->g.h());
+                p.size->g3 = Box2I(
+                    p.size->g.max.x + 1 - p.size->border,
+                    p.size->g.min.y,
+                    p.size->border,
+                    p.size->g.h());
                 break;
             }
             case Orientation::Vertical:
@@ -187,27 +185,27 @@ namespace ftk
                     g.min.x,
                     g.min.y,
                     g.w(),
-                    s - p.size.handle / 2));
+                    s - p.size->handle / 2));
                 childGeometry.push_back(Box2I(
                     g.min.x,
-                    g.min.y + s + p.size.handle / 2,
+                    g.min.y + s + p.size->handle / 2,
                     g.w(),
-                    g.h() - (s + p.size.handle / 2)));
-                p.size.g = Box2I(
+                    g.h() - (s + p.size->handle / 2)));
+                p.size->g = Box2I(
                     g.min.x,
-                    g.min.y + s - p.size.handle / 2,
+                    g.min.y + s - p.size->handle / 2,
                     g.w(),
-                    p.size.handle);
-                p.size.g2 = Box2I(
-                    p.size.g.min.x,
-                    p.size.g.min.y,
-                    p.size.g.w(),
-                    p.size.border);
-                p.size.g3 = Box2I(
-                    p.size.g.min.x,
-                    p.size.g.max.y + 1 - p.size.border,
-                    p.size.g.w(),
-                    p.size.border);
+                    p.size->handle);
+                p.size->g2 = Box2I(
+                    p.size->g.min.x,
+                    p.size->g.min.y,
+                    p.size->g.w(),
+                    p.size->border);
+                p.size->g3 = Box2I(
+                    p.size->g.min.x,
+                    p.size->g.max.y + 1 - p.size->border,
+                    p.size->g.w(),
+                    p.size->border);
                 break;
             }
             default: break;
@@ -220,15 +218,23 @@ namespace ftk
         }
     }
 
+    void Splitter::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
+    }
+
     void Splitter::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
     }
 
@@ -238,27 +244,27 @@ namespace ftk
     {
         IWidget::drawEvent(drawRect, event);
         FTK_P();
-        if (p.size.g.isValid())
+        if (p.size->g.isValid())
         {
             if (p.mouse.pressedHandle)
             {
                 event.render->drawRect(
-                    p.size.g,
+                    p.size->g,
                     event.style->getColorRole(ColorRole::Pressed));
             }
             else if (p.mouse.hoverHandle)
             {
                 event.render->drawRect(
-                    p.size.g,
+                    p.size->g,
                     event.style->getColorRole(ColorRole::Hover));
             }
             if (p.border)
             {
                 event.render->drawRect(
-                    p.size.g2,
+                    p.size->g2,
                     event.style->getColorRole(ColorRole::Border));
                 event.render->drawRect(
-                    p.size.g3,
+                    p.size->g3,
                     event.style->getColorRole(ColorRole::Border));
             }
         }
@@ -268,7 +274,7 @@ namespace ftk
     {
         IWidget::mouseEnterEvent(event);
         FTK_P();
-        if (contains(p.size.g, event.pos) && !p.mouse.hoverHandle)
+        if (contains(p.size->g, event.pos) && !p.mouse.hoverHandle)
         {
             event.accept = true;
             p.mouse.hoverHandle = true;
@@ -308,12 +314,12 @@ namespace ftk
             setSizeUpdate();
             setDrawUpdate();
         }
-        else if (contains(p.size.g, event.pos) && !p.mouse.hoverHandle)
+        else if (contains(p.size->g, event.pos) && !p.mouse.hoverHandle)
         {
             p.mouse.hoverHandle = true;
             setDrawUpdate();
         }
-        else if (!contains(p.size.g, event.pos) && p.mouse.hoverHandle)
+        else if (!contains(p.size->g, event.pos) && p.mouse.hoverHandle)
         {
             p.mouse.hoverHandle = false;
             setDrawUpdate();
@@ -323,7 +329,7 @@ namespace ftk
     void Splitter::mousePressEvent(MouseClickEvent& event)
     {
         FTK_P();
-        if (contains(p.size.g, event.pos))
+        if (contains(p.size->g, event.pos))
         {
             event.accept = true;
             p.mouse.pressedHandle = true;

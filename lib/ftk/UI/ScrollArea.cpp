@@ -32,10 +32,9 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int sizeHint = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void ScrollArea::_init(
@@ -175,7 +174,7 @@ namespace ftk
         if (value == p.sizeHintRole)
             return;
         p.sizeHintRole = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -193,13 +192,13 @@ namespace ftk
         switch (p.scrollType)
         {
         case ScrollType::Horizontal:
-            out.w = p.size.sizeHint;
+            out.w = p.size->sizeHint;
             break;
         case ScrollType::Vertical:
-            out.h = p.size.sizeHint;
+            out.h = p.size->sizeHint;
             break;
         case ScrollType::Both:
-            out.w = out.h = p.size.sizeHint;
+            out.w = out.h = p.size->sizeHint;
             break;
         default: break;
         }
@@ -273,14 +272,22 @@ namespace ftk
         }
     }
 
+    void ScrollArea::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
+    }
+
     void ScrollArea::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.sizeHint = event.style->getSizeRole(p.sizeHintRole, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->sizeHint = event.style->getSizeRole(p.sizeHintRole, event.displayScale);
         }
     }
 }

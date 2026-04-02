@@ -401,6 +401,11 @@ namespace ftk
         }
     }
 
+    void IWindow::childAddEvent(const ChildAddEvent& event)
+    {
+        _styleEventRecursive(event.child, StyleEvent(true));
+    }
+
     void IWindow::tickEvent(
         bool parentsVisible,
         bool parentsEnabled,

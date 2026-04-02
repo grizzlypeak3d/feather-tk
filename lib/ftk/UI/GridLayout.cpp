@@ -187,38 +187,37 @@ namespace ftk
     {
         FTK_P();
         Size2I out;
-        if (p.size.has_value())
+
+        // Get size hints.
+        std::vector<int> rowSizeHints;
+        std::vector<int> columnSizeHints;
+        p.getSizeHints(rowSizeHints, columnSizeHints);
+        for (int i : rowSizeHints)
         {
-            // Get size hints.
-            std::vector<int> rowSizeHints;
-            std::vector<int> columnSizeHints;
-            p.getSizeHints(rowSizeHints, columnSizeHints);
-            for (int i : rowSizeHints)
-            {
-                out.h += i;
-            }
-            for (int i : columnSizeHints)
-            {
-                out.w += i;
-            }
-
-            // Add spacing.
-            int rowsVisibleCount = 0;
-            int columnsVisibleCount = 0;
-            p.getVisible(rowsVisibleCount, columnsVisibleCount);
-            if (rowsVisibleCount > 0)
-            {
-                out.h += (rowsVisibleCount - 1) * p.size->spacing;
-            }
-            if (columnsVisibleCount > 0)
-            {
-                out.w += (columnsVisibleCount - 1) * p.size->spacing;
-            }
-
-            // Add the margin.
-            out.w += p.size->margin * 2;
-            out.h += p.size->margin * 2;
+            out.h += i;
         }
+        for (int i : columnSizeHints)
+        {
+            out.w += i;
+        }
+
+        // Add spacing.
+        int rowsVisibleCount = 0;
+        int columnsVisibleCount = 0;
+        p.getVisible(rowsVisibleCount, columnsVisibleCount);
+        if (rowsVisibleCount > 0)
+        {
+            out.h += (rowsVisibleCount - 1) * p.size->spacing;
+        }
+        if (columnsVisibleCount > 0)
+        {
+            out.w += (columnsVisibleCount - 1) * p.size->spacing;
+        }
+
+        // Add the margin.
+        out.w += p.size->margin * 2;
+        out.h += p.size->margin * 2;
+
         return out;
     }
 

@@ -20,12 +20,11 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             float iconScale = 1.F;
             Size2I sizeHint;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void ShuttleWidget::_init(
@@ -70,18 +69,27 @@ namespace ftk
 
     Size2I ShuttleWidget::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        return _p->size->sizeHint;
+    }
+
+    void ShuttleWidget::styleEvent(const StyleEvent& event)
+    {
+        IMouseWidget::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
     }
 
     void ShuttleWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size.iconScale = event.displayScale;
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size->iconScale = event.displayScale;
             p.iconImages.clear();
             for (int i = 0; i < 8; ++i)
             {
@@ -90,12 +98,12 @@ namespace ftk
                     arg(i),
                     event.displayScale));
             }
-            p.size.sizeHint = Size2I();
+            p.size->sizeHint = Size2I();
             if (!p.iconImages.empty())
             {
-                p.size.sizeHint = p.iconImages.front()->getSize();
+                p.size->sizeHint = p.iconImages.front()->getSize();
             }
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin);
+            p.size->sizeHint = margin(p.size->sizeHint, p.size->margin);
         }
     }
 

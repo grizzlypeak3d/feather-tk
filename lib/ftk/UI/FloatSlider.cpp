@@ -338,8 +338,7 @@ namespace ftk
     
     Size2I FloatSlider::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void FloatSlider::setGeometry(const Box2I& value)

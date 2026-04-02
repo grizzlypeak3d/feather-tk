@@ -41,6 +41,8 @@ namespace ftk
     //! Style event.
     struct FTK_API_TYPE StyleEvent
     {
+        FTK_API StyleEvent(bool changes = false);
+
         bool displayScaleChange = false;
         bool sizeRoleChange     = false;
         bool colorRoleChange    = false;

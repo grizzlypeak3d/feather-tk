@@ -19,6 +19,13 @@ namespace ftk
         index(index)
     {}
 
+    StyleEvent::StyleEvent(bool changes) :
+        displayScaleChange(changes),
+        sizeRoleChange(changes),
+        colorRoleChange(changes),
+        fontChange(changes)
+    {}
+
     bool StyleEvent::hasChanges() const
     {
         return

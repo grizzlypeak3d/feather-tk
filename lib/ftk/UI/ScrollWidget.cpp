@@ -49,11 +49,11 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
+            float displayScale = 1.F;
             int margin = 0;
             int border = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void ScrollWidget::_init(
@@ -329,7 +329,7 @@ namespace ftk
         if (value == p.marginRole)
             return;
         p.marginRole = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -356,10 +356,10 @@ namespace ftk
     Size2I ScrollWidget::getSizeHint() const
     {
         FTK_P();
-        Size2I out = _p->layout->getSizeHint();
+        Size2I out = p.layout->getSizeHint();
         if (p.border || p.marginRole != SizeRole::None)
         {
-            out = margin(out, std::max(p.size.margin, p.size.border));
+            out = margin(out, std::max(p.size->margin, p.size->border));
         }
         return out;
     }
@@ -374,7 +374,7 @@ namespace ftk
         Box2I g = value;
         if (p.border || p.marginRole != SizeRole::None)
         {
-            g = margin(g, -std::max(p.size.margin, p.size.border));
+            g = margin(g, -std::max(p.size->margin, p.size->border));
         }
         p.layout->setGeometry(g);
         _scrollBarsUpdate();
@@ -386,16 +386,24 @@ namespace ftk
         }
     }
 
+    void ScrollWidget::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
+    }
+
     void ScrollWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale != event.displayScale))
+        if (!p.size.has_value())
         {
             p.size = Private::SizeData();
-            p.size.displayScale = event.displayScale;
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size->displayScale = event.displayScale;
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
     }
 
@@ -411,10 +419,10 @@ namespace ftk
             Box2I g2 = g;
             if (p.marginRole != SizeRole::None)
             {
-                g2 = margin(g2, -(p.size.margin - p.size.border));
+                g2 = margin(g2, -(p.size->margin - p.size->border));
             }
             event.render->drawMesh(
-                border(g2, p.size.border),
+                border(g2, p.size->border),
                 event.style->getColorRole(ColorRole::Border));
         }
     }
@@ -426,11 +434,7 @@ namespace ftk
         if (p.scrollEventsEnabled)
         {
             event.accept = true;
-            int lineStep = p.lineStep;
-            if (p.size.displayScale.has_value())
-            {
-                lineStep *= p.size.displayScale.value();
-            }
+            int lineStep = p.lineStep * p.size->displayScale;
             V2I scrollPos = getScrollPos();
             switch (p.scrollArea->getScrollType())
             {

@@ -38,14 +38,13 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             FontMetrics fontMetrics;
-            Box2I g;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
             std::vector<TriMesh2F> meshes;
         };
         std::optional<DrawData> draw;
@@ -107,18 +106,25 @@ namespace ftk
     Size2I PieChart::getSizeHint() const
     {
         FTK_P();
-        const int d = p.size.fontMetrics.lineHeight * p.sizeMult;
+        const int d = p.size->fontMetrics.lineHeight * p.sizeMult;
         return Size2I(d, d);
     }
 
     void PieChart::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IWidget::setGeometry(value);
-        FTK_P();
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g = value;
+            _p->draw.reset();
+        }
+        IWidget::setGeometry(value);
+    }
+
+    void PieChart::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -126,12 +132,11 @@ namespace ftk
     void PieChart::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
+            p.size = Private::SizeData();
             const FontInfo fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.fontMetrics = event.fontSystem->getMetrics(fontInfo);
+            p.size->fontMetrics = event.fontSystem->getMetrics(fontInfo);
             p.draw.reset();
         }
     }
@@ -156,8 +161,9 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
+            p.draw->g = getGeometry();
             p.draw->meshes.clear();
-            const float r = p.size.g.w() / 2.F;
+            const float r = p.draw->g.w() / 2.F;
             float a = 0.F;
             for (size_t i = 0; i < p.data.size(); ++i)
             {
@@ -181,7 +187,7 @@ namespace ftk
             }
         }
 
-        const V2I c = center(p.size.g);
+        const V2I c = center(p.draw->g);
         for (size_t i = 0; i < p.data.size(); ++i)
         {
             event.render->drawMesh(

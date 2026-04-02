@@ -255,8 +255,7 @@ namespace ftk
 
     Size2I LineEdit::getSizeHint() const
     {
-        FTK_P();
-        return p.size.has_value() ? p.size->sizeHint : Size2I();
+        return _p->size->sizeHint;
     }
 
     void LineEdit::setGeometry(const Box2I& value)
