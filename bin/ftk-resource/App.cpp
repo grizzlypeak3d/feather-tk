@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <filesystem>
+#include <regex>
 #include <vector>
 
 void App::_init(int argc, char** argv)
@@ -92,7 +93,8 @@ void App::run()
         file.read(data.data(), size);
     }
 
-    const std::string var = std::filesystem::path(_input).stem().string();
+    std::string var = std::filesystem::path(_input).stem().string();
+    var = std::regex_replace(var, std::regex("[^A-Za-z0-9_]"), "_");
     {
         std::filesystem::path sourceOutput = _output;
         sourceOutput.replace_extension(".cpp");

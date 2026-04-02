@@ -107,6 +107,7 @@ namespace widgets
             {
                 std::cout << Format("Checked 1: {0}").arg(value) << std::endl;
             });
+        checkBox = CheckBox::create(context, vLayout);
         checkBox = CheckBox::create(context, "Disabled", vLayout);
         checkBox->setEnabled(false);
 

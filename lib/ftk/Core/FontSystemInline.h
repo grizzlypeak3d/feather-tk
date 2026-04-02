@@ -3,14 +3,14 @@
 
 namespace ftk
 {
-    inline FontInfo::FontInfo(const std::string& family, int size) :
-        family(family),
+    inline FontInfo::FontInfo(FontType type, int size) :
+        type(type),
         size(size)
     {}
 
     inline bool FontInfo::operator == (const FontInfo & other) const
     {
-        return family == other.family && size == other.size;
+        return type == other.type && size == other.size;
     }
 
     inline bool FontInfo::operator != (const FontInfo& other) const
@@ -20,7 +20,7 @@ namespace ftk
 
     inline bool FontInfo::operator < (const FontInfo& other) const
     {
-        return std::tie(family, size) < std::tie(other.family, other.size);
+        return std::tie(type, size) < std::tie(other.type, other.size);
     }
 
     inline GlyphInfo::GlyphInfo(uint32_t code, const FontInfo& fontInfo) :

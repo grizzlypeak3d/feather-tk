@@ -23,10 +23,12 @@ namespace ftk
         const std::shared_ptr<FontSystem>& fontSystem,
         const std::shared_ptr<IconSystem>& iconSystem,
         float                              displayScale,
+        bool                               displayScaleChanged,
         const std::shared_ptr<Style>&      style) :
         fontSystem(fontSystem),
         iconSystem(iconSystem),
         displayScale(displayScale),
+        displayScaleChanged(displayScaleChanged),
         style(style)
     {}
 

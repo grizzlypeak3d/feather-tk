@@ -58,7 +58,16 @@ namespace ftk
                     parentsEnabled,
                     event);
             }
-            
+
+            void styleEvent(const StyleEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWidget,
+                    styleEvent,
+                    event);
+            }
+
             void sizeHintEvent(const SizeHintEvent& event) override
             {
                 PYBIND11_OVERRIDE(
@@ -151,6 +160,7 @@ namespace ftk
                     py::arg("parentsVisible"),
                     py::arg("parentsEnabled"),
                     py::arg("event"))
+                .def("styleEvent", &IWidget::styleEvent, py::arg("event"))
                 .def("sizeHintEvent", &IWidget::sizeHintEvent, py::arg("event"))
                 .def(
                     "clipEvent",

@@ -1,9 +1,10 @@
 set(HEADERS)
 set(SOURCE)
 set(RESOURCES
-    etc/Fonts/NotoSansBold.ttf
-    etc/Fonts/NotoSansRegular.ttf
-    etc/Fonts/NotoMonoRegular.ttf
+    etc/Fonts/NotoMono-Regular.ttf
+    etc/Fonts/NotoSans-Bold.ttf
+    etc/Fonts/NotoSans-Regular.ttf
+    etc/Fonts/NotoSansSymbols2-Regular.ttf
     etc/Icons/ArrowDown.svg
     etc/Icons/ArrowLeft.svg
     etc/Icons/ArrowRight.svg

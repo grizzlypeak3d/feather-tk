@@ -158,10 +158,10 @@ namespace ftk
     std::map<FontRole, FontInfo> getDefaultFontRoles()
     {
         std::map<FontRole, FontInfo> out;
-        out[FontRole::None]  = FontInfo(std::string(), 0);
-        out[FontRole::Label] = FontInfo(getFont(Font::Regular), 12);
-        out[FontRole::Mono]  = FontInfo(getFont(Font::Mono),    12);
-        out[FontRole::Title] = FontInfo(getFont(Font::Bold),    12);
+        out[FontRole::None] = FontInfo();
+        out[FontRole::Label] = FontInfo(FontType::Regular, 12);
+        out[FontRole::Mono]  = FontInfo(FontType::Mono, 12);
+        out[FontRole::Title] = FontInfo(FontType::Bold, 12);
         return out;
     }
 

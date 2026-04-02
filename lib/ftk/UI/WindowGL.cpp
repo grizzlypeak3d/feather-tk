@@ -33,6 +33,7 @@ namespace ftk
 
         int modifiers = 0;
         std::shared_ptr<gl::Window> window;
+        float displayScale = 0.F;
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
@@ -275,7 +276,6 @@ namespace ftk
         const std::shared_ptr<Style>& style)
     {
         FTK_P();
-
         const Size2I& bufferSize = getBufferSize();
         const float displayScale = getDisplayScale();
 
@@ -286,6 +286,7 @@ namespace ftk
                 fontSystem,
                 iconSystem,
                 displayScale,
+                displayScale != p.displayScale,
                 style);
             _sizeHintEventRecursive(shared_from_this(), sizeHintEvent);
 
@@ -296,6 +297,7 @@ namespace ftk
                 getGeometry(),
                 !isVisible(false));
         }
+        p.displayScale = displayScale;
 
         const bool drawUpdate = _hasDrawUpdate(shared_from_this());
         if (drawUpdate || sizeUpdate)

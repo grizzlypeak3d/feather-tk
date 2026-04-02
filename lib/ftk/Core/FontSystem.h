@@ -14,29 +14,30 @@ namespace ftk
     //! \name Fonts
     ///@{
 
-    //! Built-in fonts.
-    enum class FTK_API_TYPE Font
+    //! Font types.
+    enum class FTK_API_TYPE FontType
     {
         Regular,
         Bold,
         Mono,
+        Symbols,
 
         Count,
         First = Regular
     };
-    FTK_ENUM(Font);
+    FTK_ENUM(FontType);
 
     //! Get a built-in font.
-    FTK_API std::string getFont(Font);
+    FTK_API std::string getDefaultFont(FontType);
 
     //! Font information.
     struct FTK_API_TYPE FontInfo
     {
         FontInfo() = default;
-        FontInfo(const std::string& family, int size);
+        FontInfo(FontType, int size);
 
-        std::string family = getFont(Font::Regular);
-        int         size   = 12;
+        FontType type = FontType::Regular;
+        int      size = 12;
 
         bool operator == (const FontInfo&) const;
         bool operator != (const FontInfo&) const;
@@ -94,8 +95,25 @@ namespace ftk
         //! Create a new system.
         FTK_API static std::shared_ptr<FontSystem> create(const std::shared_ptr<Context>&);
 
+        //! \name Fonts
+        ///@{
+
+        //! Get the font names.
+        FTK_API std::vector<std::string> getFontNames();
+
+        //! Add a font.
+        FTK_API bool addFont(const std::string& name, const std::string& fileName);
+
         //! Add a font.
         FTK_API bool addFont(const std::string& name, const uint8_t*, size_t);
+
+        //! Get the font types.
+        FTK_API std::map<FontType, std::string> getFontTypes();
+
+        //! Set the font types.
+        FTK_API void setFontTypes(const std::map<FontType, std::string>&);
+
+        ///@}
 
         //! \name Information
         ///@{

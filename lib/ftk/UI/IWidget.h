@@ -242,6 +242,9 @@ namespace ftk
             bool parentsEnabled,
             const TickEvent&);
 
+        //! Style event.
+        FTK_API virtual void styleEvent(const StyleEvent&);
+
         //! Size hint event.
         FTK_API virtual void sizeHintEvent(const SizeHintEvent&);
 

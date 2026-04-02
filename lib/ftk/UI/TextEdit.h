@@ -16,7 +16,7 @@ namespace ftk
     //! Text edit options.
     struct FTK_API_TYPE TextEditOptions
     {
-        FontInfo fontInfo          = FontInfo(getFont(Font::Mono), 12);
+        FontInfo fontInfo;
         float    cursorBlink       = .5F;
         float    autoScrollTimeout = .05F;
 

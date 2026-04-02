@@ -53,6 +53,7 @@ namespace ftk
         case LogType::Error:
             ss << "ERROR: " << item.message;
             break;
+        default: break;
         }
         return ss.str();
     }

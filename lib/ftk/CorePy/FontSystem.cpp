@@ -18,10 +18,17 @@ namespace ftk
     {
         void fontSystem(py::module_& m)
         {
+            py::enum_<FontType>(m, "FontType")
+                .value("Regular", FontType::Regular)
+                .value("Bold", FontType::Bold)
+                .value("Mono", FontType::Mono)
+                .value("Symbols", FontType::Symbols);
+            FTK_ENUM_BIND(m, FontType);
+
             py::class_<FontInfo>(m, "FontInfo")
                 .def(py::init<>())
-                .def(py::init<const std::string&, int>())
-                .def_readwrite("family", &FontInfo::family)
+                .def(py::init<FontType, int>())
+                .def_readwrite("type", &FontInfo::type)
                 .def_readwrite("size", &FontInfo::size)
                 .def(py::self == py::self)
                 .def(py::self != py::self)
@@ -53,6 +60,7 @@ namespace ftk
                 .def(
                     py::init(&FontSystem::create),
                     py::arg("context"))
+                .def_property("fontTypes", &FontSystem::getFontTypes, &FontSystem::setFontTypes)
                 .def_property_readonly("glyphCacheSize", &FontSystem::getGlyphCacheSize)
                 .def_property_readonly("glyphCachePercentage", &FontSystem::getGlyphCachePercentage)
                 .def("getMetrics", &FontSystem::getMetrics, py::arg("fontInfo"))

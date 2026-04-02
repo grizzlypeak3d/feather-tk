@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
+#include <ftk/Core/FileIO.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LRUCache.h>
 #include <ftk/Core/LogSystem.h>
@@ -23,26 +24,29 @@
 
 namespace ftk_resource
 {
-    extern std::vector<uint8_t> NotoSansBold;
-    extern std::vector<uint8_t> NotoMonoRegular;
-    extern std::vector<uint8_t> NotoSansRegular;
+    extern std::vector<uint8_t> NotoSans_Bold;
+    extern std::vector<uint8_t> NotoMono_Regular;
+    extern std::vector<uint8_t> NotoSans_Regular;
+    extern std::vector<uint8_t> NotoSansSymbols2_Regular;
 }
 
 namespace ftk
 {
     FTK_ENUM_IMPL(
-        Font,
+        FontType,
         "Regular",
         "Bold",
-        "Mono");
+        "Mono",
+        "Symbols");
 
-    std::string getFont(Font value)
+    std::string getDefaultFont(FontType value)
     {
-        const std::array<std::string, static_cast<size_t>(Font::Count)> data =
+        const std::array<std::string, static_cast<size_t>(FontType::Count)> data =
         {
             "NotoSans-Regular",
             "NotoSans-Bold",
-            "NotoMono-Regular"
+            "NotoMono-Regular",
+            "NotoSansSymbols2-Regular"
         };
         return data[static_cast<size_t>(value)];
     }
@@ -80,6 +84,7 @@ namespace ftk
 
         std::mutex mutex;
         std::map<std::string, std::vector<uint8_t> > fontData;
+        std::map<FontType, std::string> fontTypes;
         std::map<std::string, FT_Face> faces;
         std::wstring_convert<std::codecvt_utf8<ftk_char_t>, ftk_char_t> utf32Convert;
         LRUCache<GlyphInfo, std::shared_ptr<Glyph> > glyphCache;
@@ -91,9 +96,15 @@ namespace ftk
     {
         FTK_P();
 
-        p.fontData[getFont(Font::Regular)] = ftk_resource::NotoSansRegular;
-        p.fontData[getFont(Font::Bold)] = ftk_resource::NotoSansBold;
-        p.fontData[getFont(Font::Mono)] = ftk_resource::NotoMonoRegular;
+        p.fontData[getDefaultFont(FontType::Regular)] = ftk_resource::NotoSans_Regular;
+        p.fontData[getDefaultFont(FontType::Bold)] = ftk_resource::NotoSans_Bold;
+        p.fontData[getDefaultFont(FontType::Mono)] = ftk_resource::NotoMono_Regular;
+        p.fontData[getDefaultFont(FontType::Symbols)] = ftk_resource::NotoSansSymbols2_Regular;
+
+        for (const auto font : getFontTypeEnums())
+        {
+            p.fontTypes[font] = getDefaultFont(font);
+        }
 
         if (FT_Init_FreeType(&p.ftLibrary))
         {
@@ -143,25 +154,67 @@ namespace ftk
         return std::shared_ptr<FontSystem>(new FontSystem(context));
     }
 
+    std::vector<std::string> FontSystem::getFontNames()
+    {
+        FTK_P();
+        std::vector<std::string> out;
+        std::unique_lock<std::mutex> lock(p.mutex);
+        for (const auto& i : p.fontData)
+        {
+            out.push_back(i.first);
+        }
+        return out;
+    }
+
+    bool FontSystem::addFont(const std::string& name, const std::string& fileName)
+    {
+        bool out = false;
+        try
+        {
+            auto io = FileIO::create(fileName, FileMode::Read);
+            std::vector<uint8_t> data(io->getSize());
+            io->read(data.data(), io->getSize());
+            addFont(name, data.data(), data.size());
+        }
+        catch (const std::exception&)
+        {}
+        return out;
+    }
+
     bool FontSystem::addFont(const std::string& name, const uint8_t* data, size_t size)
     {
         FTK_P();
-        bool out = true;
+        bool out = false;
         {
             std::unique_lock<std::mutex> lock(p.mutex);
             p.fontData[name].resize(size);
             memcpy(p.fontData[name].data(), data, size);
-            if (FT_New_Memory_Face(
+            if (0 == FT_New_Memory_Face(
                 p.ftLibrary,
                 p.fontData[name].data(),
                 size,
                 0,
                 &p.faces[name]))
             {
-                out = false;
+                out = true;
             }
         }
         return out;
+    }
+
+    std::map<FontType, std::string> FontSystem::getFontTypes()
+    {
+        FTK_P();
+        std::unique_lock<std::mutex> lock(p.mutex);
+        return p.fontTypes;
+    }
+
+    void FontSystem::setFontTypes(const std::map<FontType, std::string>& value)
+    {
+        FTK_P();
+        std::unique_lock<std::mutex> lock(p.mutex);
+        p.fontTypes = value;
+        p.glyphCache.clear();
     }
 
     size_t FontSystem::getGlyphCacheSize() const
@@ -192,13 +245,17 @@ namespace ftk
         FontMetrics out;
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            const auto faceIt = p.faces.find(info.family);
-            if (faceIt != p.faces.end())
+            const auto fontIt = p.fontTypes.find(info.type);
+            if (fontIt != p.fontTypes.end())
             {
-                FT_Set_Pixel_Sizes(faceIt->second, 0, info.size);
-                out.ascender = faceIt->second->size->metrics.ascender / 64;
-                out.descender = faceIt->second->size->metrics.descender / 64;
-                out.lineHeight = faceIt->second->size->metrics.height / 64;
+                const auto faceIt = p.faces.find(fontIt->second);
+                if (faceIt != p.faces.end())
+                {
+                    FT_Set_Pixel_Sizes(faceIt->second, 0, info.size);
+                    out.ascender = faceIt->second->size->metrics.ascender / 64;
+                    out.descender = faceIt->second->size->metrics.descender / 64;
+                    out.lineHeight = faceIt->second->size->metrics.height / 64;
+                }
             }
         }
         return out;
@@ -265,7 +322,12 @@ namespace ftk
             out = std::make_shared<Glyph>();
             out->info = GlyphInfo(code, fontInfo);
 
-            const auto faceIt = faces.find(fontInfo.family);
+            const auto fontIt = fontTypes.find(fontInfo.type);
+            if (fontIt == fontTypes.end())
+            {
+                break;
+            }
+            const auto faceIt = faces.find(fontIt->second);
             if (faceIt == faces.end())
             {
                 break;
@@ -360,7 +422,12 @@ namespace ftk
         Size2I& size,
         std::vector<Box2I>* glyphGeom)
     {
-        const auto faceIt = faces.find(fontInfo.family);
+        const auto fontIt = fontTypes.find(fontInfo.type);
+        if (fontIt == fontTypes.end())
+        {
+            return;
+        }
+        const auto faceIt = faces.find(fontIt->second);
         if (faceIt == faces.end())
         {
             return;
@@ -465,19 +532,19 @@ namespace ftk
 
     void to_json(nlohmann::json& json, const FontInfo& value)
     {
-        json["Family"] = value.family;
+        json["Type"] = value.type;
         json["Size"] = value.size;
     }
 
     void from_json(const nlohmann::json& json, FontInfo& value)
     {
-        json.at("Family").get_to(value.family);
+        json.at("Type").get_to(value.type);
         json.at("Size").get_to(value.size);
     }
 
     std::ostream& operator << (std::ostream& os, const FontInfo& value)
     {
-        os << value.family << ":" << value.size;
+        os << value.type << ":" << value.size;
         return os;
     }
 }

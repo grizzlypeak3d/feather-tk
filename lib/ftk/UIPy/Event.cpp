@@ -35,6 +35,7 @@ namespace ftk
                     const std::shared_ptr<FontSystem>&,
                     const std::shared_ptr<IconSystem>&,
                     float,
+                    bool,
                     const std::shared_ptr<Style>&>())
                 .def_readwrite("fontSystem", &SizeHintEvent::fontSystem)
                 .def_readwrite("iconSystem", &SizeHintEvent::iconSystem)

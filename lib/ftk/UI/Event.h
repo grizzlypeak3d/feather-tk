@@ -35,7 +35,16 @@ namespace ftk
 
     //! Tick event.
     struct FTK_API_TYPE TickEvent
-    {};
+    {
+    };
+
+    //! Style event.
+    struct FTK_API_TYPE StyleEvent
+    {
+        bool sizeRoleChange  = false;
+        bool colorRoleChange = false;
+        bool fontChange      = false;
+    };
 
     //! Size hint event.
     struct FTK_API_TYPE SizeHintEvent
@@ -44,11 +53,13 @@ namespace ftk
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             float displayScale,
+            bool displayScaleChanged,
             const std::shared_ptr<Style>&);
 
         std::shared_ptr<FontSystem> fontSystem;
         std::shared_ptr<IconSystem> iconSystem;
         float                       displayScale = 1.F;
+        bool                        displayScaleChanged = false;
         std::shared_ptr<Style>      style;
     };
 

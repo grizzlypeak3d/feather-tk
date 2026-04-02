@@ -33,7 +33,7 @@ namespace textedit
 
         // Create the font widgets.
         _fontComboBox = ComboBox::create(context);
-        _fontComboBox->setItems(getFontLabels());
+        _fontComboBox->setItems(getFontTypeLabels());
         _fontComboBox->setHStretch(Stretch::Expanding);
         _fontSizeEdit = ftk::IntEdit::create(context);
         _fontSizeEdit->setRange(6, 64);
@@ -99,7 +99,7 @@ namespace textedit
                 if (auto app = appWeak.lock())
                 {
                     auto options = app->getSettingsModel()->getTextEditOptions();
-                    options.fontInfo.family = getFont(static_cast<Font>(index));
+                    options.fontInfo.type = static_cast<FontType>(index);
                     app->getSettingsModel()->setTextEditOptions(options);
                 }
             });
@@ -153,16 +153,7 @@ namespace textedit
             app->getSettingsModel()->observeTextEditOptions(),
             [this](const TextEditOptions& value)
             {
-                int index = -1;
-                for (int i = 0; i < static_cast<int>(Font::Count); ++i)
-                {
-                    if (value.fontInfo.family == getFont(static_cast<Font>(i)))
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                _fontComboBox->setCurrentIndex(index);
+                _fontComboBox->setCurrentIndex(static_cast<int>(value.fontInfo.type));
                 _fontSizeEdit->setValue(value.fontInfo.size);
             });
         _textEditModelOptionsObserver = Observer<TextEditModelOptions>::create(

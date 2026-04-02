@@ -226,7 +226,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(FontRole::Mono, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             const int imageHeight = p.directoryImage ?
                 p.directoryImage->getHeight() :

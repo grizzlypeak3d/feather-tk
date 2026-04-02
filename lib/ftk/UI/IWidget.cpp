@@ -373,8 +373,11 @@ namespace ftk
         _parentsVisible = parentsVisible;
         _parentsEnabled = parentsEnabled;
     }
+    
+    void IWidget::styleEvent(const StyleEvent&)
+    {}
 
-    void IWidget::sizeHintEvent(const SizeHintEvent& event)
+    void IWidget::sizeHintEvent(const SizeHintEvent&)
     {}
 
     void IWidget::clipEvent(const Box2I&, bool clipped)
