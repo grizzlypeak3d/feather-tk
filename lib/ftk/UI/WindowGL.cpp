@@ -33,7 +33,6 @@ namespace ftk
 
         int modifiers = 0;
         std::shared_ptr<gl::Window> window;
-        float displayScale = 0.F;
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
@@ -275,42 +274,19 @@ namespace ftk
         const std::shared_ptr<IconSystem>& iconSystem,
         const std::shared_ptr<Style>& style)
     {
+        IWindow::_update(fontSystem, iconSystem, style);
         FTK_P();
-        const Size2I& bufferSize = getBufferSize();
-        const float displayScale = getDisplayScale();
-
-        const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
-        if (sizeUpdate)
-        {
-            SizeHintEvent sizeHintEvent(
-                fontSystem,
-                iconSystem,
-                displayScale,
-                displayScale != p.displayScale,
-                style);
-            _sizeHintEventRecursive(shared_from_this(), sizeHintEvent);
-
-            setGeometry(Box2I(V2I(), bufferSize));
-
-            _clipEventRecursive(
-                shared_from_this(),
-                getGeometry(),
-                !isVisible(false));
-        }
-        p.displayScale = displayScale;
-
-        const bool drawUpdate = _hasDrawUpdate(shared_from_this());
-        if (drawUpdate || sizeUpdate)
+        if (_hasDrawUpdate(shared_from_this()))
         {
             p.window->makeCurrent();
 
+            const Size2I& bufferSize = getBufferSize();
             const gl::TextureType textureType = getTextureType(getBufferType());
             if (gl::doCreate(p.buffer, bufferSize, textureType))
             {
                 p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
             }
-
-            if (p.buffer && (drawUpdate || sizeUpdate))
+            if (p.buffer)
             {
                 gl::OffscreenBufferBinding bufferBinding(p.buffer);
                 p.render->begin(bufferSize);
@@ -320,7 +296,7 @@ namespace ftk
                 DrawEvent drawEvent(
                     fontSystem,
                     iconSystem,
-                    displayScale,
+                    getDisplayScale(),
                     style,
                     p.render);
                 _drawEventRecursive(

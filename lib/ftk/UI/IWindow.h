@@ -161,13 +161,18 @@ namespace ftk
         FTK_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
-        virtual void _sizeUpdate(
+        virtual void _windowUpdate(
             const Size2I& windowSize, 
             const Size2I& bufferSize);
+
         virtual void _update(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
-            const std::shared_ptr<Style>&) = 0;
+            const std::shared_ptr<Style>&);
+
+        void _styleEventRecursive(
+            const std::shared_ptr<IWidget>&,
+            const StyleEvent&);
 
         bool _hasSizeUpdate(const std::shared_ptr<IWidget>&) const;
         void _sizeHintEventRecursive(

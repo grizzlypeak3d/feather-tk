@@ -6,7 +6,6 @@
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FontSystem.h>
-#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -127,14 +126,23 @@ namespace ftk
         FTK_API static std::shared_ptr<Style> create(
             const std::shared_ptr<Context>&);
 
+        //! Get the size roles.
+        FTK_API const std::map<SizeRole, int>& getSizeRoles() const;
+
+        //! Set the size roles.
+        FTK_API void setSizeRoles(const std::map<SizeRole, int>&);
+
         //! Get a size role.
         FTK_API int getSizeRole(SizeRole, float scale) const;
 
         //! Set a size role.
         FTK_API void setSizeRole(SizeRole, int);
 
-        //! Set the size roles.
-        FTK_API void setSizeRoles(const std::map<SizeRole, int>&);
+        //! Get the color roles.
+        FTK_API const std::map<ColorRole, Color4F>& getColorRoles() const;
+
+        //! Set the color roles.
+        FTK_API void setColorRoles(const std::map<ColorRole, Color4F>&);
 
         //! Get a color role.
         FTK_API Color4F getColorRole(ColorRole) const;
@@ -142,26 +150,23 @@ namespace ftk
         //! Set a color role.
         FTK_API void setColorRole(ColorRole, const Color4F&);
 
-        //! Set the color roles.
-        FTK_API void setColorRoles(const std::map<ColorRole, Color4F>&);
-
         //! Get the color controls.
         FTK_API const ColorControls& getColorControls() const;
 
         //! Set the color controls.
         FTK_API void setColorControls(const ColorControls&);
 
+        //! Get the font roles.
+        FTK_API const std::map<FontRole, FontInfo>& getFontRoles() const;
+
+        //! Set the font roles.
+        FTK_API void setFontRoles(const std::map<FontRole, FontInfo>&);
+
         //! Get a font role.
         FTK_API FontInfo getFontRole(FontRole, float scale) const;
 
         //! Set a font role.
         FTK_API void setFontRole(FontRole, const FontInfo&);
-
-        //! Set the font roles.
-        FTK_API void setFontRoles(const std::map<FontRole, FontInfo>&);
-
-        //! Observe style changes.
-        FTK_API std::shared_ptr<IObservable<bool> > observeChanged() const;
 
     private:
         void _colorUpdate();

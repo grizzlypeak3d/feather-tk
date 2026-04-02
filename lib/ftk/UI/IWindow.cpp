@@ -52,6 +52,16 @@ namespace ftk
         V2I tooltipPos;
         std::chrono::steady_clock::time_point tooltipTimer;
 
+        struct StyleData
+        {
+            float displayScale = 0.F;
+            std::map<SizeRole, int> sizeRoles;
+            std::map<ColorRole, Color4F> colorRoles;
+            std::map<FontRole, FontInfo> fontRoles;
+            std::map<FontType, std::string> fontTypes;
+        };
+        StyleData style;
+
         struct SizeData
         {
             int dl = 0;
@@ -461,7 +471,7 @@ namespace ftk
         }
     }
 
-    void IWindow::_sizeUpdate(
+    void IWindow::_windowUpdate(
         const Size2I& windowSize,
         const Size2I& bufferSize)
     {
@@ -470,6 +480,64 @@ namespace ftk
         p.bufferSize = bufferSize;
         setSizeUpdate();
         setDrawUpdate();
+    }
+
+    void IWindow::_update(
+        const std::shared_ptr<FontSystem>& fontSystem,
+        const std::shared_ptr<IconSystem>& iconSystem,
+        const std::shared_ptr<Style>& style)
+    {
+        FTK_P();
+        const float displayScale = getDisplayScale();
+        const auto sizeRoles = style->getSizeRoles();
+        const auto colorRoles = style->getColorRoles();
+        const auto fontRoles = style->getFontRoles();
+        const auto fontTypes = fontSystem->getFontTypes();
+        StyleEvent styleEvent;
+        styleEvent.displayScaleChanged = displayScale != p.style.displayScale;
+        styleEvent.sizeRoleChange = sizeRoles != p.style.sizeRoles;
+        styleEvent.colorRoleChange = colorRoles != p.style.colorRoles;
+        styleEvent.fontChange =
+            fontRoles != p.style.fontRoles ||
+            fontTypes != p.style.fontTypes;
+        if (styleEvent.hasChanges())
+        {
+            _styleEventRecursive(shared_from_this(), styleEvent);
+            p.style.displayScale = displayScale;
+            p.style.sizeRoles = sizeRoles;
+            p.style.colorRoles = colorRoles;
+            p.style.fontRoles = fontRoles;
+            p.style.fontTypes = fontTypes;
+        }
+
+        const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
+        if (sizeUpdate)
+        {
+            SizeHintEvent sizeHintEvent(
+                fontSystem,
+                iconSystem,
+                displayScale,
+                style);
+            _sizeHintEventRecursive(shared_from_this(), sizeHintEvent);
+
+            setGeometry(Box2I(V2I(), getBufferSize()));
+
+            _clipEventRecursive(
+                shared_from_this(),
+                getGeometry(),
+                !isVisible(false));
+        }
+    }
+
+    void IWindow::_styleEventRecursive(
+        const std::shared_ptr<IWidget>& widget,
+        const StyleEvent& event)
+    {
+        widget->styleEvent(event);
+        for (const auto& child : widget->getChildren())
+        {
+            _styleEventRecursive(child, event);
+        }
     }
 
     bool IWindow::_hasSizeUpdate(const std::shared_ptr<IWidget>& widget) const

@@ -60,19 +60,10 @@ namespace ftk
                 window->show();
                 app->tick();
 
-                auto style = app->getStyle();
-                int changed = 0;
-                auto observer = Observer<bool>::create(
-                    style->observeChanged(),
-                    [&changed](bool)
-                    {
-                        ++changed;
-                    });
-                
+                auto style = app->getStyle();\
                 style->setSizeRole(SizeRole::Border, 10);
                 style->setSizeRole(SizeRole::Border, 10);
                 FTK_ASSERT(10 == style->getSizeRole(SizeRole::Border, 1.F));
-                FTK_ASSERT(2 == changed);
                 app->tick();
                 std::map<SizeRole, int> sizeRoles =
                 {
@@ -82,14 +73,13 @@ namespace ftk
                 };
                 style->setSizeRoles(sizeRoles);
                 style->setSizeRoles(sizeRoles);
-                FTK_ASSERT(3 == changed);
+                FTK_ASSERT(style->getSizeRoles() == sizeRoles);
                 app->tick();
 
                 Color4F color(1.F, 0.F, 0.F);
                 style->setColorRole(ColorRole::Window, color);
                 style->setColorRole(ColorRole::Window, color);
                 FTK_ASSERT(color == style->getColorRole(ColorRole::Window));
-                FTK_ASSERT(4 == changed);
                 app->tick();
                 std::map<ColorRole, Color4F> colorRoles =
                 {
@@ -99,7 +89,7 @@ namespace ftk
                 };
                 style->setColorRoles(colorRoles);
                 style->setColorRoles(colorRoles);
-                FTK_ASSERT(5 == changed);
+                FTK_ASSERT(style->getColorRoles() == colorRoles);
                 app->tick();
 
                 FontInfo fontInfo;
@@ -107,7 +97,6 @@ namespace ftk
                 style->setFontRole(FontRole::Label, fontInfo);
                 style->setFontRole(FontRole::Label, fontInfo);
                 FTK_ASSERT(fontInfo == style->getFontRole(FontRole::Label, 1.F));
-                FTK_ASSERT(6 == changed);
                 app->tick();
                 fontInfo.size = 16;
                 std::map<FontRole, FontInfo> fontRoles =
@@ -116,7 +105,7 @@ namespace ftk
                 };
                 style->setFontRoles(fontRoles);
                 style->setFontRoles(fontRoles);
-                FTK_ASSERT(7 == changed);
+                FTK_ASSERT(style->getFontRoles() == fontRoles);
                 app->tick();
             }
         }

@@ -173,7 +173,6 @@ namespace ftk
         ColorControls colorControls;
         M44F colorMatrix;
         std::map<FontRole, FontInfo> fontRoles;
-        std::shared_ptr<Observable<bool> > changed;
     };
 
     void Style::_init(
@@ -185,7 +184,6 @@ namespace ftk
         p.sizeRoles = getDefaultSizeRoles();
         p.colorRoles = getDefaultColorRoles();
         p.fontRoles = getDefaultFontRoles();
-        p.changed = Observable<bool>::create();
 
         _colorUpdate();
     }
@@ -205,6 +203,16 @@ namespace ftk
         return out;
     }
 
+    const std::map<SizeRole, int>& Style::getSizeRoles() const
+    {
+        return _p->sizeRoles;
+    }
+
+    void Style::setSizeRoles(const std::map<SizeRole, int>& value)
+    {
+        _p->sizeRoles = value;
+    }
+
     int Style::getSizeRole(SizeRole role, float scale) const
     {
         FTK_P();
@@ -218,16 +226,16 @@ namespace ftk
         if (value == p.sizeRoles[role])
             return;
         p.sizeRoles[role] = value;
-        p.changed->setAlways(true);
     }
 
-    void Style::setSizeRoles(const std::map<SizeRole, int>& value)
+    const std::map<ColorRole, Color4F>& Style::getColorRoles() const
     {
-        FTK_P();
-        if (value == p.sizeRoles)
-            return;
-        p.sizeRoles = value;
-        p.changed->setAlways(true);
+        return _p->colorRoles;
+    }
+
+    void Style::setColorRoles(const std::map<ColorRole, Color4F>& value)
+    {
+        _p->colorRoles = value;
     }
 
     Color4F Style::getColorRole(ColorRole role) const
@@ -249,16 +257,6 @@ namespace ftk
         if (value == p.colorRoles[role])
             return;
         p.colorRoles[role] = value;
-        p.changed->setAlways(true);
-    }
-
-    void Style::setColorRoles(const std::map<ColorRole, Color4F>& value)
-    {
-        FTK_P();
-        if (value == p.colorRoles)
-            return;
-        p.colorRoles = value;
-        p.changed->setAlways(true);
     }
 
     const ColorControls& Style::getColorControls() const
@@ -273,7 +271,16 @@ namespace ftk
             return;
         p.colorControls = value;
         _colorUpdate();
-        p.changed->setAlways(true);
+    }
+
+    const std::map<FontRole, FontInfo>& Style::getFontRoles() const
+    {
+        return _p->fontRoles;
+    }
+
+    void Style::setFontRoles(const std::map<FontRole, FontInfo>& value)
+    {
+        _p->fontRoles = value;
     }
 
     FontInfo Style::getFontRole(FontRole role, float scale) const
@@ -291,25 +298,7 @@ namespace ftk
 
     void Style::setFontRole(FontRole role, const FontInfo& value)
     {
-        FTK_P();
-        if (value == p.fontRoles[role])
-            return;
-        p.fontRoles[role] = value;
-        p.changed->setAlways(true);
-    }
-
-    void Style::setFontRoles(const std::map<FontRole, FontInfo>& value)
-    {
-        FTK_P();
-        if (value == p.fontRoles)
-            return;
-        p.fontRoles = value;
-        p.changed->setAlways(true);
-    }
-
-    std::shared_ptr<IObservable<bool> > Style::observeChanged() const
-    {
-        return _p->changed;
+        _p->fontRoles[role] = value;
     }
 
     void Style::_colorUpdate()
