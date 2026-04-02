@@ -529,49 +529,6 @@ namespace ftk
         }
     }
 
-    void IWindow::_styleEventRecursive(
-        const std::shared_ptr<IWidget>& widget,
-        const StyleEvent& event)
-    {
-        widget->styleEvent(event);
-        for (const auto& child : widget->getChildren())
-        {
-            _styleEventRecursive(child, event);
-        }
-    }
-
-    bool IWindow::_hasSizeUpdate(const std::shared_ptr<IWidget>& widget) const
-    {
-        bool out = widget->hasSizeUpdate();
-        if (widget->isVisible(false))
-        {
-            if (out)
-            {
-                //std::cout << "Size update: " << widget->getObjectName() << std::endl;
-            }
-            else
-            {
-                for (const auto& child : widget->getChildren())
-                {
-                    out |= _hasSizeUpdate(child);
-                }
-            }
-        }
-        return out;
-    }
-
-    void IWindow::_sizeHintEventRecursive(
-        const std::shared_ptr<IWidget>& widget,
-        const SizeHintEvent& event)
-    {
-        for (const auto& child : widget->getChildren())
-        {
-            _sizeHintEventRecursive(child, event);
-        }
-        widget->sizeHintEvent(event);
-        widget->setSizeUpdate(false);
-    }
-
     bool IWindow::_hasDrawUpdate(const std::shared_ptr<IWidget>& widget) const
     {
         bool out = false;
@@ -631,6 +588,49 @@ namespace ftk
             }
             widget->drawOverlayEvent(drawRect, event);
         }
+    }
+
+    void IWindow::_styleEventRecursive(
+        const std::shared_ptr<IWidget>& widget,
+        const StyleEvent& event)
+    {
+        widget->styleEvent(event);
+        for (const auto& child : widget->getChildren())
+        {
+            _styleEventRecursive(child, event);
+        }
+    }
+
+    bool IWindow::_hasSizeUpdate(const std::shared_ptr<IWidget>& widget) const
+    {
+        bool out = widget->hasSizeUpdate();
+        if (widget->isVisible(false))
+        {
+            if (out)
+            {
+                //std::cout << "Size update: " << widget->getObjectName() << std::endl;
+            }
+            else
+            {
+                for (const auto& child : widget->getChildren())
+                {
+                    out |= _hasSizeUpdate(child);
+                }
+            }
+        }
+        return out;
+    }
+
+    void IWindow::_sizeHintEventRecursive(
+        const std::shared_ptr<IWidget>& widget,
+        const SizeHintEvent& event)
+    {
+        for (const auto& child : widget->getChildren())
+        {
+            _sizeHintEventRecursive(child, event);
+        }
+        widget->sizeHintEvent(event);
+        widget->setSizeUpdate(false);
     }
 
     bool IWindow::_key(

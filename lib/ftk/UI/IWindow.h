@@ -170,6 +170,13 @@ namespace ftk
             const std::shared_ptr<IconSystem>&,
             const std::shared_ptr<Style>&);
 
+        bool _hasDrawUpdate(const std::shared_ptr<IWidget>&) const;
+        void _drawEventRecursive(
+            const std::shared_ptr<IWidget>&,
+            const Box2I&,
+            const DrawEvent&);
+
+    private:
         void _styleEventRecursive(
             const std::shared_ptr<IWidget>&,
             const StyleEvent&);
@@ -178,12 +185,6 @@ namespace ftk
         void _sizeHintEventRecursive(
             const std::shared_ptr<IWidget>&,
             const SizeHintEvent&);
-
-        bool _hasDrawUpdate(const std::shared_ptr<IWidget>&) const;
-        void _drawEventRecursive(
-            const std::shared_ptr<IWidget>&,
-            const Box2I&,
-            const DrawEvent&);
 
         bool _key(Key, bool press, int modifiers);
         void _text(const std::string&);
@@ -197,7 +198,6 @@ namespace ftk
             const Box2I&,
             bool clipped);
 
-    private:
         enum class UnderCursor
         {
             Hover,
