@@ -21,15 +21,14 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int border = 0;
             Size2I sizeHint;
-            Box2I g2;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g2;
             TriMesh2F border;
         };
         std::optional<DrawData> draw;
@@ -108,24 +107,33 @@ namespace ftk
         if (value == p.sizeRole)
             return;
         p.sizeRole = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
     
     Size2I ColorSwatch::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
     }
 
     void ColorSwatch::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IMouseWidget::setGeometry(value);
-        FTK_P();
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g2 = margin(value, -p.size.border);
+            _p->draw.reset();
+        }
+        IMouseWidget::setGeometry(value);
+    }
+
+    void ColorSwatch::styleEvent(const StyleEvent& event)
+    {
+        IMouseWidget::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -134,13 +142,12 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
 
-            p.size.sizeHint.w = p.size.sizeHint.h =
+            p.size->sizeHint.w = p.size->sizeHint.h =
                 event.style->getSizeRole(p.sizeRole, event.displayScale);
 
             p.draw.reset();
@@ -168,14 +175,15 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             const Box2I& g = getGeometry();
-            p.draw->border = border(g, p.size.border);
+            p.draw->g2 = margin(g, -p.size->border);
+            p.draw->border = border(g, p.size->border);
         }
 
         event.render->drawMesh(
             p.draw->border,
             event.style->getColorRole(ColorRole::Border));
-        event.render->drawRect(p.size.g2, Color4F(0.F, 0.F, 0.F));
-        event.render->drawRect(p.size.g2, p.color);
+        event.render->drawRect(p.draw->g2, Color4F(0.F, 0.F, 0.F));
+        event.render->drawRect(p.draw->g2, p.color);
     }
 
     void ColorSwatch::mousePressEvent(MouseClickEvent& event)

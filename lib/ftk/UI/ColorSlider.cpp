@@ -16,19 +16,18 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int size = 0;
             int border = 0;
             int keyFocus = 0;
             int handle = 0;
             Size2I sizeHint;
-            Box2I g;
-            Box2I g2;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
             TriMesh2F border;
             TriMesh2F keyFocus;
         };
@@ -72,18 +71,26 @@ namespace ftk
 
     Size2I ColorIntSlider::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
     }
 
     void ColorIntSlider::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IIntSlider::setGeometry(value);
-        FTK_P();
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g = margin(value, -p.size.handle / 2, 0, -p.size.handle / 2, -p.size.handle);
-            p.size.g2 = margin(p.size.g, -p.size.keyFocus);
+            _p->draw.reset();
+        }
+        IIntSlider::setGeometry(value);
+    }
+
+    void ColorIntSlider::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        IIntSlider::styleEvent(event);
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -92,18 +99,17 @@ namespace ftk
     {
         IIntSlider::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
+            p.size->sizeHint = Size2I(p.size->size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size->sizeHint = margin(p.size->sizeHint, p.size->keyFocus);
 
             p.draw.reset();
         }
@@ -126,8 +132,10 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(margin(p.size.g2, p.size.border), p.size.border);
-            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
+            p.draw->g = _getInsideGeometry();
+            p.draw->g2 = _getSliderGeometry();
+            p.draw->border = border(margin(p.draw->g2, p.size->border), p.size->border);
+            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
         }
 
         // Draw the focus and border.
@@ -138,13 +146,13 @@ namespace ftk
 
         // Draw the colors.
         TriMesh2F mesh;
-        int w = p.size.g2.w();
-        int h = p.size.g2.h();
+        int w = p.draw->g2.w();
+        int h = p.draw->g2.h();
         for (size_t i = 0; i < p.colors.size(); ++i)
         {
-            const int x = p.size.g2.min.x + i / (static_cast<float>(p.colors.size() - 1)) * w;
-            mesh.v.push_back(V2F(x, p.size.g2.min.y));
-            mesh.v.push_back(V2F(x, p.size.g2.max.y + 1));
+            const int x = p.draw->g2.min.x + i / (static_cast<float>(p.colors.size() - 1)) * w;
+            mesh.v.push_back(V2F(x, p.draw->g2.min.y));
+            mesh.v.push_back(V2F(x, p.draw->g2.max.y + 1));
             mesh.c.push_back(p.colors[i]);
         }
         for (size_t i = 0; i < p.colors.size(); ++i)
@@ -166,9 +174,9 @@ namespace ftk
         const Box2I& g = getGeometry();
         const int pos = _valueToPos(getValue());
         mesh = TriMesh2F();
-        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size.handle));
-        mesh.v.push_back(V2F(pos + p.size.handle / 2, g.max.y + 1));
-        mesh.v.push_back(V2F(pos - p.size.handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size->handle));
+        mesh.v.push_back(V2F(pos + p.size->handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos - p.size->handle / 2, g.max.y + 1));
         mesh.triangles.push_back({
             Vertex2(1),
             Vertex2(3),
@@ -180,7 +188,24 @@ namespace ftk
 
     Box2I ColorIntSlider::_getSliderGeometry() const
     {
-        return _p->size.g2;
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(_getInsideGeometry(), -p.size->keyFocus);
+        }
+        return out;
+    }
+
+    Box2I ColorIntSlider::_getInsideGeometry() const
+    {
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(getGeometry(), -p.size->handle / 2, 0, -p.size->handle / 2, -p.size->handle);
+        }
+        return out;
     }
 
     struct ColorIntEditSlider::Private
@@ -335,19 +360,18 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int size = 0;
             int border = 0;
             int keyFocus = 0;
             int handle = 0;
             Size2I sizeHint;
-            Box2I g;
-            Box2I g2;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
             TriMesh2F border;
             TriMesh2F keyFocus;
         };
@@ -391,18 +415,26 @@ namespace ftk
 
     Size2I ColorFloatSlider::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
     }
 
     void ColorFloatSlider::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IFloatSlider::setGeometry(value);
-        FTK_P();
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g = margin(value, -p.size.handle / 2, 0, -p.size.handle / 2, -p.size.handle);
-            p.size.g2 = margin(p.size.g, -p.size.keyFocus);
+            _p->draw.reset();
+        }
+        IFloatSlider::setGeometry(value);
+    }
+
+    void ColorFloatSlider::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        IFloatSlider::styleEvent(event);
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -411,18 +443,17 @@ namespace ftk
     {
         IFloatSlider::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
+            p.size->sizeHint = Size2I(p.size->size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size->sizeHint = margin(p.size->sizeHint, p.size->keyFocus);
 
             p.draw.reset();
         }
@@ -445,8 +476,10 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(margin(p.size.g2, p.size.border), p.size.border);
-            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
+            p.draw->g = _getInsideGeometry();
+            p.draw->g2 = _getSliderGeometry();
+            p.draw->border = border(margin(p.draw->g2, p.size->border), p.size->border);
+            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
         }
 
         // Draw the focus and border.
@@ -457,13 +490,13 @@ namespace ftk
 
         // Draw the colors.
         TriMesh2F mesh;
-        int w = p.size.g2.w();
-        int h = p.size.g2.h();
+        int w = p.draw->g2.w();
+        int h = p.draw->g2.h();
         for (size_t i = 0; i < p.colors.size(); ++i)
         {
-            const int x = p.size.g2.min.x + i / (static_cast<float>(p.colors.size() - 1)) * w;
-            mesh.v.push_back(V2F(x, p.size.g2.min.y));
-            mesh.v.push_back(V2F(x, p.size.g2.max.y + 1));
+            const int x = p.draw->g2.min.x + i / (static_cast<float>(p.colors.size() - 1)) * w;
+            mesh.v.push_back(V2F(x, p.draw->g2.min.y));
+            mesh.v.push_back(V2F(x, p.draw->g2.max.y + 1));
             mesh.c.push_back(p.colors[i]);
         }
         for (size_t i = 0; i < p.colors.size(); ++i)
@@ -485,9 +518,9 @@ namespace ftk
         const Box2I& g = getGeometry();
         const int pos = _valueToPos(getValue());
         mesh = TriMesh2F();
-        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size.handle));
-        mesh.v.push_back(V2F(pos + p.size.handle / 2, g.max.y + 1));
-        mesh.v.push_back(V2F(pos - p.size.handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size->handle));
+        mesh.v.push_back(V2F(pos + p.size->handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos - p.size->handle / 2, g.max.y + 1));
         mesh.triangles.push_back({
             Vertex2(1),
             Vertex2(3),
@@ -499,7 +532,24 @@ namespace ftk
 
     Box2I ColorFloatSlider::_getSliderGeometry() const
     {
-        return _p->size.g2;
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(_getInsideGeometry(), -p.size->keyFocus);
+        }
+        return out;
+    }
+
+    Box2I ColorFloatSlider::_getInsideGeometry() const
+    {
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(getGeometry(), -p.size->handle / 2, 0, -p.size->handle / 2, -p.size->handle);
+        }
+        return out;
     }
 
     struct ColorFloatEditSlider::Private

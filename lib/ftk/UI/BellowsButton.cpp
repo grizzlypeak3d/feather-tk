@@ -80,6 +80,7 @@ namespace ftk
     void BellowsButton::styleEvent(const StyleEvent& event)
     {
         FTK_P();
+        IButton::styleEvent(event);
         if (event.hasChanges())
         {
             p.size.reset();
