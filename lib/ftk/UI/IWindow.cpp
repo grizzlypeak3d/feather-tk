@@ -494,7 +494,7 @@ namespace ftk
         const auto fontRoles = style->getFontRoles();
         const auto fontTypes = fontSystem->getFontTypes();
         StyleEvent styleEvent;
-        styleEvent.displayScaleChanged = displayScale != p.style.displayScale;
+        styleEvent.displayScaleChange = displayScale != p.style.displayScale;
         styleEvent.sizeRoleChange = sizeRoles != p.style.sizeRoles;
         styleEvent.colorRoleChange = colorRoles != p.style.colorRoles;
         styleEvent.fontChange =

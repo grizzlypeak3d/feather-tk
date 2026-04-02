@@ -22,7 +22,7 @@ namespace ftk
     bool StyleEvent::hasChanges() const
     {
         return
-            displayScaleChanged ||
+            displayScaleChange ||
             sizeRoleChange ||
             colorRoleChange ||
             fontChange;

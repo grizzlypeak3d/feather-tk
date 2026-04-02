@@ -30,12 +30,17 @@ namespace ftk
 
             py::class_<TickEvent>(m, "TickEvent");
 
+            py::class_<StyleEvent>(m, "StyleEvent")
+                .def_readwrite("displayScaleChange", &StyleEvent::displayScaleChange)
+                .def_readwrite("sizeRoleChange", &StyleEvent::sizeRoleChange)
+                .def_readwrite("colorRoleChange", &StyleEvent::colorRoleChange)
+                .def_readwrite("fontChange", &StyleEvent::fontChange);
+
             py::class_<SizeHintEvent>(m, "SizeHintEvent")
                 .def(py::init<
                     const std::shared_ptr<FontSystem>&,
                     const std::shared_ptr<IconSystem>&,
                     float,
-                    bool,
                     const std::shared_ptr<Style>&>())
                 .def_readwrite("fontSystem", &SizeHintEvent::fontSystem)
                 .def_readwrite("iconSystem", &SizeHintEvent::iconSystem)
