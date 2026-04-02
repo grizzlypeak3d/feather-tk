@@ -49,14 +49,13 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             int keyFocus = 0;
             int pad = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct MouseData
         {
@@ -199,6 +198,16 @@ namespace ftk
         return out;
     }
 
+    void FileBrowserView::styleEvent(const StyleEvent& event)
+    {
+        IMouseWidget::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
+    }
+
     void FileBrowserView::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
@@ -219,15 +228,14 @@ namespace ftk
             p.fileImage = event.iconSystem->get("File", event.displayScale);
         }
 
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size->pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size->fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
             const int imageHeight = p.directoryImage ?
                 p.directoryImage->getHeight() :
                 (p.fileImage ? p.fileImage->getHeight() : 0);
@@ -239,12 +247,12 @@ namespace ftk
                 item.textSizes.clear();
                 for (const auto& text : item.text)
                 {
-                    const Size2I textSize = event.fontSystem->getSize(text, p.size.fontInfo);
+                    const Size2I textSize = event.fontSystem->getSize(text, p.size->fontInfo);
                     item.textSizes.push_back(textSize);
-                    item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
+                    item.size.w += textSize.w + p.size->pad * 2 + p.size->margin * 2 + p.size->keyFocus * 2;
                     item.size.h = std::max(
                         item.size.h,
-                        std::max(textSize.h + p.size.margin * 2, imageHeight) + p.size.keyFocus * 2);
+                        std::max(textSize.h + p.size->margin * 2, imageHeight) + p.size->keyFocus * 2);
                 }
             }
         }
@@ -263,7 +271,7 @@ namespace ftk
         {
             const Box2I g2 = move(getRect(p.current->get()), g.min);
             event.render->drawMesh(
-                border(g2, p.size.keyFocus),
+                border(g2, p.size->keyFocus),
                 event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::TextDisabled));
         }
 
@@ -280,7 +288,7 @@ namespace ftk
         int y = g.min.y;
         for (const auto& item : p.items)
         {
-            int x = g.min.x + p.size.pad;
+            int x = g.min.x + p.size->pad;
             const Box2I g2(x, y, item.size.w, item.size.h);
             if (intersects(g2, drawRect))
             {
@@ -300,15 +308,15 @@ namespace ftk
                 int rightColumnsSize = 0;
                 for (int i = 1; i < item.text.size() && i < item.textSizes.size(); ++i)
                 {
-                    rightColumnsSize += item.textSizes[i].w + p.size.pad * 2 + p.size.margin * 2;
+                    rightColumnsSize += item.textSizes[i].w + p.size->pad * 2 + p.size->margin * 2;
                 }
                 for (int i = 0; i < item.text.size() && i < item.textSizes.size(); ++i)
                 {
-                    const auto glyphs = event.fontSystem->getGlyphs(item.text[i], p.size.fontInfo);
+                    const auto glyphs = event.fontSystem->getGlyphs(item.text[i], p.size->fontInfo);
                     event.render->drawText(
                         glyphs,
-                        p.size.fontMetrics,
-                        V2I(x + p.size.pad + p.size.margin, y + item.size.h / 2 - item.textSizes[i].h / 2),
+                        p.size->fontMetrics,
+                        V2I(x + p.size->pad + p.size->margin, y + item.size.h / 2 - item.textSizes[i].h / 2),
                         event.style->getColorRole(isEnabled() ?
                             ColorRole::Text :
                             ColorRole::TextDisabled));
@@ -318,7 +326,7 @@ namespace ftk
                     }
                     else
                     {
-                        x += item.textSizes[i].w + +p.size.pad * 2 + p.size.margin * 2;
+                        x += item.textSizes[i].w + +p.size->pad * 2 + p.size->margin * 2;
                     }
                 }
             }
@@ -571,7 +579,7 @@ namespace ftk
 
         setSizeUpdate();
         setDrawUpdate();
-        p.size.displayScale.reset();
+        p.size.reset();
     }
 
     void FileBrowserView::_setCurrent(int index)

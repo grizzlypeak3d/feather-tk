@@ -18,11 +18,10 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             Size2I sizeHint;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void ImageWidget::_init(
@@ -76,31 +75,41 @@ namespace ftk
         if (value == p.marginRole)
             return;
         p.marginRole = value;
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
 
     Size2I ImageWidget::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
+    }
+
+    void ImageWidget::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
     }
 
     void ImageWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
 
-            p.size.sizeHint = Size2I();
+            p.size->sizeHint = Size2I();
             if (p.image)
             {
-                p.size.sizeHint.w = p.image->getWidth();
-                p.size.sizeHint.h = p.image->getHeight();
+                p.size->sizeHint.w = p.image->getWidth();
+                p.size->sizeHint.h = p.image->getHeight();
             }
-            p.size.sizeHint = p.size.sizeHint + p.size.margin * 2;
+            p.size->sizeHint = p.size->sizeHint + p.size->margin * 2;
         }
     }
 
@@ -112,7 +121,7 @@ namespace ftk
         FTK_P();
         if (p.image)
         {
-            const Box2I g = margin(getGeometry(), -p.size.margin);
+            const Box2I g = margin(getGeometry(), -p.size->margin);
             const Size2I& size = p.image->getSize();
             event.render->drawImage(
                 p.image,

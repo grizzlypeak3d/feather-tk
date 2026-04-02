@@ -57,11 +57,10 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             std::array<int, 4> margins = { 0, 0, 0, 0 };
             int spacing = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct GeomData
         {
@@ -110,6 +109,7 @@ namespace ftk
         if (value == p.margins)
             return;
         p.margins = value;
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -135,6 +135,7 @@ namespace ftk
         if (value == p.spacingRole)
             return;
         p.spacingRole = value;
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -205,16 +206,16 @@ namespace ftk
             switch (p.orientation)
             {
             case Orientation::Horizontal:
-                out.w += p.size.spacing * (visible - 1);
+                out.w += p.size->spacing * (visible - 1);
                 break;
             case Orientation::Vertical:
-                out.h += p.size.spacing * (visible - 1);
+                out.h += p.size->spacing * (visible - 1);
                 break;
             default: break;
             }
         }
-        out.w += p.size.margins[0] + p.size.margins[2];
-        out.h += p.size.margins[1] + p.size.margins[3];
+        out.w += p.size->margins[0] + p.size->margins[2];
+        out.h += p.size->margins[1] + p.size->margins[3];
         return out;
     }
 
@@ -226,10 +227,10 @@ namespace ftk
         p.geom.g = align(value, sizeHint, getHAlign(), getVAlign());
         p.geom.g2 = margin(
             p.geom.g,
-            -p.size.margins[0],
-            -p.size.margins[1],
-            -p.size.margins[2],
-            -p.size.margins[3]);
+            -p.size->margins[0],
+            -p.size->margins[1],
+            -p.size->margins[2],
+            -p.size->margins[3]);
 
         std::vector<Size2I> sizeHints;
         size_t expanding = 0;
@@ -323,10 +324,10 @@ namespace ftk
                 switch (p.orientation)
                 {
                 case Orientation::Horizontal:
-                    pos.x += size.w + p.size.spacing;
+                    pos.x += size.w + p.size->spacing;
                     break;
                 case Orientation::Vertical:
-                    pos.y += size.h + p.size.spacing;
+                    pos.y += size.h + p.size->spacing;
                     break;
                 default: break;
                 }
@@ -340,18 +341,26 @@ namespace ftk
         return _p->geom.g2;
     }
 
+    void RowLayout::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
+    }
+
     void RowLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margins[0] = event.style->getSizeRole(p.margins.left, event.displayScale);
-            p.size.margins[1] = event.style->getSizeRole(p.margins.top, event.displayScale);
-            p.size.margins[2] = event.style->getSizeRole(p.margins.right, event.displayScale);
-            p.size.margins[3] = event.style->getSizeRole(p.margins.bottom, event.displayScale);
-            p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->margins[0] = event.style->getSizeRole(p.margins.left, event.displayScale);
+            p.size->margins[1] = event.style->getSizeRole(p.margins.top, event.displayScale);
+            p.size->margins[2] = event.style->getSizeRole(p.margins.right, event.displayScale);
+            p.size->margins[3] = event.style->getSizeRole(p.margins.bottom, event.displayScale);
+            p.size->spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
     }
 

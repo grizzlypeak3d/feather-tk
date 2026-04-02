@@ -90,6 +90,7 @@ namespace ftk
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void styleEvent(const StyleEvent&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
@@ -99,11 +100,8 @@ namespace ftk
         FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
-        /*Box2I _addMargins(const Box2I&) const;
-        Box2I _removeMargins(const Box2I&) const;
-        Size2I _removeMargins(const Size2I&) const;
-
-        friend class MDICanvas;*/
+        Box2I _getMarginGeometry() const;
+        Box2I _getBorderGeometry() const;
 
         FTK_PRIVATE();
     };

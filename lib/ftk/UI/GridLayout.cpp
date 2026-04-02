@@ -27,11 +27,10 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             int spacing = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct GeomData
         {
@@ -188,37 +187,38 @@ namespace ftk
     {
         FTK_P();
         Size2I out;
-
-        // Get size hints.
-        std::vector<int> rowSizeHints;
-        std::vector<int> columnSizeHints;
-        p.getSizeHints(rowSizeHints, columnSizeHints);
-        for (int i : rowSizeHints)
+        if (p.size.has_value())
         {
-            out.h += i;
-        }
-        for (int i : columnSizeHints)
-        {
-            out.w += i;
-        }
+            // Get size hints.
+            std::vector<int> rowSizeHints;
+            std::vector<int> columnSizeHints;
+            p.getSizeHints(rowSizeHints, columnSizeHints);
+            for (int i : rowSizeHints)
+            {
+                out.h += i;
+            }
+            for (int i : columnSizeHints)
+            {
+                out.w += i;
+            }
 
-        // Add spacing.
-        int rowsVisibleCount = 0;
-        int columnsVisibleCount = 0;
-        p.getVisible(rowsVisibleCount, columnsVisibleCount);
-        if (rowsVisibleCount > 0)
-        {
-            out.h += (rowsVisibleCount - 1) * p.size.spacing;
-        }
-        if (columnsVisibleCount > 0)
-        {
-            out.w += (columnsVisibleCount - 1) * p.size.spacing;
-        }
+            // Add spacing.
+            int rowsVisibleCount = 0;
+            int columnsVisibleCount = 0;
+            p.getVisible(rowsVisibleCount, columnsVisibleCount);
+            if (rowsVisibleCount > 0)
+            {
+                out.h += (rowsVisibleCount - 1) * p.size->spacing;
+            }
+            if (columnsVisibleCount > 0)
+            {
+                out.w += (columnsVisibleCount - 1) * p.size->spacing;
+            }
 
-        // Add the margin.
-        out.w += p.size.margin * 2;
-        out.h += p.size.margin * 2;
-
+            // Add the margin.
+            out.w += p.size->margin * 2;
+            out.h += p.size->margin * 2;
+        }
         return out;
     }
 
@@ -251,7 +251,7 @@ namespace ftk
         p.getStretch(rowStretch, columnStretch);
 
         // Get the layout stretch size.
-        const Box2I g = margin(getGeometry(), -p.size.margin);
+        const Box2I g = margin(getGeometry(), -p.size->margin);
         size_t rowStretchCount = 0;
         size_t columnStretchCount = 0;
         for (bool i : rowStretch)
@@ -275,13 +275,13 @@ namespace ftk
         if (rowStretchCount > 0)
         {
             stretchSize.y = (g.h() -
-                (rowsVisibleCount - 1) * p.size.spacing -
+                (rowsVisibleCount - 1) * p.size->spacing -
                 totalSize.y) / rowStretchCount;
         }
         if (columnStretchCount > 0)
         {
             stretchSize.x = (g.w() -
-                (columnsVisibleCount - 1) * p.size.spacing -
+                (columnsVisibleCount - 1) * p.size->spacing -
                 totalSize.x) / columnStretchCount;
         }
 
@@ -316,14 +316,14 @@ namespace ftk
             {
                 if (p.geom.rowsVisible[j])
                 {
-                    pos.y += p.geom.rowSizes[j] + (visible ? p.size.spacing : 0);
+                    pos.y += p.geom.rowSizes[j] + (visible ? p.size->spacing : 0);
                 }
             }
             for (int j = 0; j < i.second.column && j < columnSizes.size(); ++j)
             {
                 if (columnsVisible[j])
                 {
-                    pos.x += columnSizes[j] + (visible ? p.size.spacing : 0);
+                    pos.x += columnSizes[j] + (visible ? p.size->spacing : 0);
                 }
             }
             Size2I size;
@@ -344,15 +344,23 @@ namespace ftk
         }
     }
 
+    void GridLayout::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
+    }
+
     void GridLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-            p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size->spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
     }
 
@@ -362,7 +370,7 @@ namespace ftk
         FTK_P();
         if (p.rowBackgroundRole != ColorRole::None)
         {
-            const Box2I g = margin(getGeometry(), -p.size.margin);
+            const Box2I g = margin(getGeometry(), -p.size->margin);
             int y = g.min.y;
             int row = 0;
             for (size_t i = 0;
@@ -377,7 +385,7 @@ namespace ftk
                             Box2I(g.min.x, y, g.w(), p.geom.rowSizes[i]),
                             event.style->getColorRole(p.rowBackgroundRole));
                     }
-                    y += p.geom.rowSizes[i] + p.size.spacing;
+                    y += p.geom.rowSizes[i] + p.size->spacing;
                     ++row;
                 }
             }

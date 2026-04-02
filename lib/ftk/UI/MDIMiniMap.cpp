@@ -35,6 +35,7 @@ namespace ftk
             void setChildColorRole(ColorRole);
 
             Size2I getSizeHint() const override;
+            void styleEvent(const StyleEvent&) override;
             void sizeHintEvent(const SizeHintEvent&) override;
             void drawEvent(const Box2I&, const DrawEvent&) override;
             void mouseMoveEvent(MouseMoveEvent&) override;
@@ -50,11 +51,10 @@ namespace ftk
 
             struct SizeData
             {
-                std::optional<float> displayScale;
                 int sizeHint = 0;
                 int border = 0;
             };
-            SizeData _size;
+            std::optional<SizeData> _size;
         };
 
         void MDIMiniMapWidget::_init(
@@ -113,23 +113,36 @@ namespace ftk
         
         Size2I MDIMiniMapWidget::getSizeHint() const
         {
-            float aspect = 1.F;
-            if (_scrollInfo.scrollSize.isValid())
+            Size2I out;
+            if (_size.has_value())
             {
-                aspect = _scrollInfo.scrollSize.w / static_cast<float>(_scrollInfo.scrollSize.h);
+                float aspect = 1.F;
+                if (_scrollInfo.scrollSize.isValid())
+                {
+                    aspect = _scrollInfo.scrollSize.w / static_cast<float>(_scrollInfo.scrollSize.h);
+                }
+                out = Size2I(_size->sizeHint * aspect, _size->sizeHint) + _size->border * 2;
             }
-            return Size2I(_size.sizeHint * aspect, _size.sizeHint) + _size.border * 2;
+            return out;
+        }
+
+        void MDIMiniMapWidget::styleEvent(const StyleEvent& event)
+        {
+            IMouseWidget::styleEvent(event);
+            if (event.hasChanges())
+            {
+                _size.reset();
+            }
         }
 
         void MDIMiniMapWidget::sizeHintEvent(const SizeHintEvent& event)
         {
             IMouseWidget::sizeHintEvent(event);
-            if (!_size.displayScale.has_value() ||
-                (_size.displayScale.has_value() && _size.displayScale.value() != event.displayScale))
+            if (!_size.has_value())
             {
-                _size.displayScale = event.displayScale;
-                _size.sizeHint = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale) / 2;
-                _size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+                _size = SizeData();
+                _size->sizeHint = event.style->getSizeRole(SizeRole::ScrollArea, event.displayScale) / 2;
+                _size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             }
         }
 
@@ -141,13 +154,13 @@ namespace ftk
 
             const Box2I& g = getGeometry();
             event.render->drawMesh(
-                border(g, _size.border),
+                border(g, _size->border),
                 event.style->getColorRole(ColorRole::Border));
 
             if (_scrollInfo.scrollSize.isValid())
             {
                 std::vector<Box2I> rects;
-                const Box2I g2 = margin(g, -_size.border);
+                const Box2I g2 = margin(g, -_size->border);
                 const float sw = static_cast<float>(_scrollInfo.scrollSize.w);
                 const float sh = static_cast<float>(_scrollInfo.scrollSize.h);
                 for (const auto& wg : _childGeometry)
@@ -168,7 +181,7 @@ namespace ftk
                     std::ceil(_scrollInfo.viewport.size().w / sw * g2.w()),
                     std::ceil(_scrollInfo.viewport.size().h / sh * g2.h()));
                 event.render->drawMesh(
-                    border(viewport, _size.border),
+                    border(viewport, _size->border),
                     event.style->getColorRole(ColorRole::Text));
             }
         }
@@ -176,10 +189,13 @@ namespace ftk
         void MDIMiniMapWidget::mouseMoveEvent(MouseMoveEvent& event)
         {
             IMouseWidget::mouseMoveEvent(event);
-            if (_isMousePressed() && _scrollInfo.scrollSize.isValid() && _callback)
+            if (_isMousePressed() &&
+                _scrollInfo.scrollSize.isValid() &&
+                _callback &&
+                _size.has_value())
             {
                 const Box2I& g = getGeometry();
-                const Box2I g2 = margin(g, -_size.border);
+                const Box2I g2 = margin(g, -_size->border);
                 const V2I& m = _getMousePos();
                 const V2I& mp = _getMousePressPos();
                 const V2I v(
@@ -202,10 +218,9 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int shadow = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
@@ -270,7 +285,7 @@ namespace ftk
         IWidget::setGeometry(value);
         FTK_P();
         const Size2I sizeHint = p.widget->getSizeHint();
-        const Size2I size = margin(sizeHint, p.size.shadow);
+        const Size2I size = margin(sizeHint, p.size->shadow);
         p.widget->setGeometry(Box2I(
             value.max.x - size.w,
             value.max.y - size.h,
@@ -282,14 +297,23 @@ namespace ftk
         }
     }
 
+    void MDIMiniMap::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+            p.draw.reset();
+        }
+    }
+
     void MDIMiniMap::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
         }
     }
 
@@ -304,7 +328,7 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             const Box2I& g = p.widget->getGeometry();
-            p.draw->shadow = shadow(ftk::margin(g, p.size.shadow, 0, p.size.shadow, p.size.shadow), p.size.shadow);
+            p.draw->shadow = shadow(ftk::margin(g, p.size->shadow, 0, p.size->shadow, p.size->shadow), p.size->shadow);
         }
 
         event.render->drawColorMesh(p.draw->shadow);

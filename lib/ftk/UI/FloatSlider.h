@@ -114,6 +114,7 @@ namespace ftk
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void styleEvent(const StyleEvent&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
@@ -122,6 +123,8 @@ namespace ftk
         FTK_API Box2I _getSliderGeometry() const override;
 
     private:
+        Box2I _getInsideGeometry() const;
+
         FTK_PRIVATE();
     };
         

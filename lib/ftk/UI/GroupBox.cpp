@@ -16,20 +16,19 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             int spacing = 0;
             int border = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
-            Box2I g;
-            Box2I g2;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
             TriMesh2F border;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -80,7 +79,7 @@ namespace ftk
         if (value == p.text)
             return;
         p.text = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -96,7 +95,7 @@ namespace ftk
         if (value == p.fontRole)
             return;
         p.fontRole = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -114,56 +113,61 @@ namespace ftk
     {
         FTK_P();
         Size2I out;
-        for (const auto& child : getChildren())
+        if (p.size.has_value())
         {
-            const Size2I& childSizeHint = child->getSizeHint();
-            out.w = std::max(out.w, childSizeHint.w);
-            out.h = std::max(out.h, childSizeHint.h);
+            for (const auto& child : getChildren())
+            {
+                const Size2I& childSizeHint = child->getSizeHint();
+                out.w = std::max(out.w, childSizeHint.w);
+                out.h = std::max(out.h, childSizeHint.h);
+            }
+            out = margin(out, p.size->margin + p.size->border);
+            out.w = std::max(out.w, p.size->textSize.w);
+            out.h += p.size->fontMetrics.lineHeight + p.size->spacing;
         }
-        out = margin(out, p.size.margin + p.size.border);
-        out.w = std::max(out.w, p.size.textSize.w);
-        out.h += p.size.fontMetrics.lineHeight + p.size.spacing;
         return out;
     }
 
     void GroupBox::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
+        if (value != getGeometry())
+        {
+            _p->draw.reset();
+        }
         IWidget::setGeometry(value);
         FTK_P();
-        if (changed)
-        {
-            p.size.g = getGeometry();
-            p.size.g2 = Box2I(
-                V2I(
-                    p.size.g.min.x,
-                    p.size.g.min.y + p.size.fontMetrics.lineHeight + p.size.spacing),
-                p.size.g.max);
-            p.draw.reset();
-        }
 
         Box2I g = value;
-        g.min.y += p.size.fontMetrics.lineHeight + p.size.spacing;
-        g = margin(g, -(p.size.border + p.size.margin));
+        g.min.y += p.size->fontMetrics.lineHeight + p.size->spacing;
+        g = margin(g, -(p.size->border + p.size->margin));
         for (const auto& child : getChildren())
         {
             child->setGeometry(g);
         }
     }
 
+    void GroupBox::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+            p.draw.reset();
+        }
+    }
+
     void GroupBox::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(SizeRole::Margin, event.displayScale);
-            p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
-            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
-            p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(SizeRole::Margin, event.displayScale);
+            p.size->spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
+            p.size->textSize = event.fontSystem->getSize(p.text, p.size->fontInfo);
             p.draw.reset();
         }
     }
@@ -188,17 +192,23 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(p.size.g2, p.size.border, p.size.margin);
+            p.draw->g = getGeometry();
+            p.draw->g2 = Box2I(
+                V2I(
+                    p.draw->g.min.x,
+                    p.draw->g.min.y + p.size->fontMetrics.lineHeight + p.size->spacing),
+                p.draw->g.max);
+            p.draw->border = border(p.draw->g2, p.size->border, p.size->margin);
         }
 
         if (!p.text.empty() && p.draw->glyphs.empty())
         {
-            p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
+            p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size->fontInfo);
         }
         event.render->drawText(
             p.draw->glyphs,
-            p.size.fontMetrics,
-            p.size.g.min,
+            p.size->fontMetrics,
+            p.draw->g.min,
             event.style->getColorRole(ColorRole::Text));
 
         event.render->drawMesh(

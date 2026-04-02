@@ -4,7 +4,6 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/MainWindow.h>
-#include <ftk/UI/RowLayout.h>
 
 using namespace ftk;
 

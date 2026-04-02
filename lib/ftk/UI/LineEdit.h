@@ -110,6 +110,7 @@ namespace ftk
             bool,
             const TickEvent&) override;
         FTK_API void clipEvent(const Box2I&, bool) override;
+        FTK_API void styleEvent(const StyleEvent&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
@@ -120,6 +121,10 @@ namespace ftk
         FTK_API void textEvent(TextEvent&) override;
 
     private:
+        Box2I _getAlignGeometry() const;
+        Box2I _getMarginGeometry() const;
+        Box2I _getTextGeometry() const;
+
         int _toCursor(int) const;
         int _toPos(int) const;
 

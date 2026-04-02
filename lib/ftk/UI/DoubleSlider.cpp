@@ -282,20 +282,19 @@ namespace ftk
     {
         struct SizeData
         {
-            std::optional<float> displayScale;
             int size = 0;
             int border = 0;
             int keyFocus = 0;
             int handle = 0;
             Size2I sizeHint;
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
             TriMesh2F border;
             TriMesh2F keyFocus;
         };
@@ -339,19 +338,26 @@ namespace ftk
 
     Size2I DoubleSlider::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
     }
 
     void DoubleSlider::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IDoubleSlider::setGeometry(value);
-        FTK_P();
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g = value;
-            p.size.g2 = margin(p.size.g, -p.size.keyFocus);
-            p.size.g3 = margin(p.size.g2, -p.size.handle / 2, 0, -p.size.handle / 2, 0);
+            _p->draw.reset();
+        }
+        IDoubleSlider::setGeometry(value);
+    }
+
+    void DoubleSlider::styleEvent(const StyleEvent& event)
+    {
+        IDoubleSlider::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -360,18 +366,17 @@ namespace ftk
     {
         IDoubleSlider::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
+            p.size->sizeHint = Size2I(p.size->size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size->sizeHint = margin(p.size->sizeHint, p.size->keyFocus);
 
             p.draw.reset();
         }
@@ -397,13 +402,16 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(p.size.g, p.size.border);
-            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
+            p.draw->g = getGeometry();
+            p.draw->g2 = _getInsideGeometry();
+            p.draw->g3 = _getSliderGeometry();
+            p.draw->border = border(p.draw->g, p.size->border);
+            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
         }
 
         // Draw the background.
         event.render->drawRect(
-            p.size.g,
+            p.draw->g,
             event.style->getColorRole(ColorRole::Base));
 
         // Draw the focus and border.
@@ -415,10 +423,10 @@ namespace ftk
         // Draw the handle.
         const int pos = _valueToPos(getValue());
         const Box2I handle(
-            pos - p.size.handle / 2,
-            p.size.g3.min.y,
-            p.size.handle,
-            p.size.g3.h());
+            pos - p.size->handle / 2,
+            p.draw->g3.min.y,
+            p.size->handle,
+            p.draw->g3.h());
         event.render->drawRect(
             handle,
             event.style->getColorRole(ColorRole::Button));
@@ -435,12 +443,29 @@ namespace ftk
                 event.style->getColorRole(ColorRole::Hover));
         }
         event.render->drawMesh(
-            border(handle, p.size.border),
+            border(handle, p.size->border),
             event.style->getColorRole(ColorRole::Border));
     }
 
     Box2I DoubleSlider::_getSliderGeometry() const
     {
-        return _p->size.g3;
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(_getInsideGeometry(), -p.size->handle / 2, 0, -p.size->handle / 2, 0);
+        }
+        return out;
+    }
+
+    Box2I DoubleSlider::_getInsideGeometry() const
+    {
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(getGeometry(), -p.size->keyFocus);
+        }
+        return out;
     }
 }

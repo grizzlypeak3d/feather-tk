@@ -87,17 +87,16 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int border = 0;
             int shadow = 0;
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
             TriMesh2F shadow;
             TriMesh2F border;
         };
@@ -258,13 +257,17 @@ namespace ftk
 
         if (changed)
         {
-            p.size.g = g;
-            p.size.g2 = margin(g, p.size.border);
-            p.size.g3 = Box2I(
-                g.min.x - p.size.shadow,
-                g.min.y,
-                g.w() + p.size.shadow * 2,
-                g.h() + p.size.shadow);
+            p.draw.reset();
+        }
+    }
+
+    void IWidgetPopup::styleEvent(const StyleEvent& event)
+    {
+        IPopup::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -273,13 +276,11 @@ namespace ftk
     {
         IPopup::sizeHintEvent(event);
         FTK_P();
-
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
     }
@@ -304,8 +305,15 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->shadow = shadow(p.size.g3, p.size.shadow);
-            p.draw->border = border(p.size.g2, p.size.border);
+            p.draw->g = p.containerWidget->getGeometry();
+            p.draw->g2 = margin(p.draw->g, p.size->border);
+            p.draw->g3 = Box2I(
+                p.draw->g.min.x - p.size->shadow,
+                p.draw->g.min.y,
+                p.draw->g.w() + p.size->shadow * 2,
+                p.draw->g.h() + p.size->shadow);
+            p.draw->shadow = shadow(p.draw->g3, p.size->shadow);
+            p.draw->border = border(p.draw->g2, p.size->border);
         }
 
         event.render->drawColorMesh(p.draw->shadow);
@@ -313,7 +321,7 @@ namespace ftk
             p.draw->border,
             event.style->getColorRole(ColorRole::Border));
         event.render->drawRect(
-            p.size.g,
+            p.draw->g,
             event.style->getColorRole(p.popupRole));
     }
 

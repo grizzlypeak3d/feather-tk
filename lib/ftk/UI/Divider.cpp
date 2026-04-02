@@ -11,10 +11,9 @@ namespace ftk
     {
         struct SizeData
         {
-            std::optional<float> displayScale;
             Size2I sizeHint;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void Divider::_init(
@@ -55,17 +54,26 @@ namespace ftk
 
     Size2I Divider::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
+    }
+
+    void Divider::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
     }
 
     void Divider::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.sizeHint.w = p.size.sizeHint.h =
+            p.size = Private::SizeData();
+            p.size->sizeHint.w = p.size->sizeHint.h =
                 event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
     }

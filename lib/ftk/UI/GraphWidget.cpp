@@ -36,6 +36,7 @@ namespace ftk
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             Size2I getSizeHint() const override;
+            void styleEvent(const StyleEvent&) override;
             void sizeHintEvent(const SizeHintEvent&) override;
             void drawEvent(const Box2I&, const DrawEvent&) override;
 
@@ -44,11 +45,11 @@ namespace ftk
 
             struct SizeData
             {
-                std::optional<float> displayScale;
                 int margin = 0;
                 int handle = 0;
+                Size2I sizeHint;
             };
-            SizeData _size;
+            std::optional<SizeData> _size;
         };
 
         void ColorWidget::_init(
@@ -75,17 +76,25 @@ namespace ftk
 
         Size2I ColorWidget::getSizeHint() const
         {
-            return Size2I(_size.handle, _size.handle) + _size.margin * 2;
+            return _size.has_value() ? _size->sizeHint : Size2I();
+        }
+
+        void ColorWidget::styleEvent(const StyleEvent& event)
+        {
+            if (event.hasChanges())
+            {
+                _size.reset();
+            }
         }
 
         void ColorWidget::sizeHintEvent(const SizeHintEvent& event)
         {
-            if (!_size.displayScale.has_value() ||
-                (_size.displayScale.has_value() && _size.displayScale.value() != event.displayScale))
+            if (!_size.has_value())
             {
-                _size.displayScale = event.displayScale;
-                _size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-                _size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+                _size = SizeData();
+                _size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+                _size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+                _size->sizeHint = Size2I(_size->handle, _size->handle) + _size->margin * 2;
             }
         }
 
@@ -93,7 +102,7 @@ namespace ftk
             const Box2I& drawRect,
             const DrawEvent& event)
         {
-            const Box2I g = margin(getGeometry(), -_size.margin);
+            const Box2I g = margin(getGeometry(), -_size->margin);
             event.render->drawMesh(
                 circle(center(g), g.w() / 2),
                 event.style->getColorRole(_colorRole));
@@ -120,6 +129,7 @@ namespace ftk
 
             Size2I getSizeHint() const override;
             void setGeometry(const Box2I&) override;
+            void styleEvent(const StyleEvent&) override;
             void sizeHintEvent(const SizeHintEvent&) override;
             void drawEvent(const Box2I&, const DrawEvent&) override;
 
@@ -131,12 +141,11 @@ namespace ftk
 
             struct SizeData
             {
-                std::optional<float> displayScale;
-                int sizeHint = 0;
                 int sampleSize = 1;
                 int border = 0;
+                int sizeHint = 0;
             };
-            SizeData _size;
+            std::optional<SizeData> _size;
         };
 
         void GraphSubWidget::_init(
@@ -174,7 +183,7 @@ namespace ftk
 
         Size2I GraphSubWidget::getSizeHint() const
         {
-            return Size2I(_size.sizeHint, _size.sizeHint);
+            return _size.has_value() ? Size2I(_size->sizeHint, _size->sizeHint) : Size2I();
         }
 
         void GraphSubWidget::setGeometry(const Box2I& value)
@@ -187,15 +196,22 @@ namespace ftk
             }
         }
 
+        void GraphSubWidget::styleEvent(const StyleEvent& event)
+        {
+            if (event.hasChanges())
+            {
+                _size.reset();
+            }
+        }
+
         void GraphSubWidget::sizeHintEvent(const SizeHintEvent& event)
         {
-            if (!_size.displayScale.has_value() ||
-                (_size.displayScale.has_value() && _size.displayScale.value() != event.displayScale))
+            if (!_size.has_value())
             {
-                _size.displayScale = event.displayScale;
-                _size.sizeHint = event.style->getSizeRole(SizeRole::ScrollAreaSmall, event.displayScale) / 2;
-                _size.sampleSize = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-                _size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+                _size = SizeData();
+                _size->sampleSize = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+                _size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+                _size->sizeHint = event.style->getSizeRole(SizeRole::ScrollAreaSmall, event.displayScale) / 2;
             }
         }
 
@@ -205,10 +221,10 @@ namespace ftk
         {
             const Box2I& g = getGeometry();
             event.render->drawMesh(
-                border(g, _size.border),
+                border(g, _size->border),
                 event.style->getColorRole(ColorRole::Border));
 
-            const Box2I g2 = margin(g, -_size.border);
+            const Box2I g2 = margin(g, -_size->border);
             event.render->drawRect(
                 g2,
                 event.style->getColorRole(ColorRole::Base));
@@ -216,7 +232,7 @@ namespace ftk
             const int w = g2.w();
             for (auto i = _samples.begin(); i != _samples.end(); ++i)
             {
-                while (i->second.size() * _size.sampleSize > (w + _size.sampleSize))
+                while (i->second.size() * _size->sampleSize > (w + _size->sampleSize))
                 {
                     i->second.pop_front();
                 }
@@ -229,16 +245,16 @@ namespace ftk
                 int x = g2.min.x;
                 int y = g2.min.y;
                 int h = g2.h();
-                for (int i = 1; i < samples.size(); ++i, x += _size.sampleSize)
+                for (int i = 1; i < samples.size(); ++i, x += _size->sampleSize)
                 {
                     const float v0 = samples[i - 1] / static_cast<float>(_samplesMax);
                     const float v1 = samples[i] / static_cast<float>(_samplesMax);
                     lines.push_back(std::make_pair(
                         ftk::V2I(x, y + h - 1 - v0 * h),
-                        ftk::V2I(x + _size.sampleSize, y + h - 1 - v1 * h)));
+                        ftk::V2I(x + _size->sampleSize, y + h - 1 - v1 * h)));
                 }
                 LineOptions lineOptions;
-                lineOptions.width = _size.border * 2;
+                lineOptions.width = _size->border * 2;
                 event.render->drawLines(
                     lines,
                     event.style->getColorRole(i.first),

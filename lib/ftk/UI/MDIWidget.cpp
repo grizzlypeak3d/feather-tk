@@ -124,19 +124,18 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int border = 0;
             int handle = 0;
             int shadow = 0;
             std::array<int, 4> margins;
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
+            Box2I g3;
             TriMesh2F border;
             TriMesh2F shadow;
         };
@@ -253,55 +252,63 @@ namespace ftk
 
     std::array<int, 4> MDIWidget::getMargins() const
     {
-        return _p->size.margins;
+        FTK_P();
+        std::array<int, 4> out;
+        if (p.size.has_value())
+        {
+            out = p.size->margins;
+        }
+        return out;
     }
 
     Size2I MDIWidget::getSizeHint() const
     {
         FTK_P();
-        Size2I out = p.layout->getSizeHint() + p.size.border * 2;
-        out.w += p.size.margins[0] + p.size.margins[2];
-        out.h += p.size.margins[1] + p.size.margins[3];
+        Size2I out;
+        if (p.size.has_value())
+        {
+            out = p.layout->getSizeHint() + p.size->border * 2;
+            out.w += p.size->margins[0] + p.size->margins[2];
+            out.h += p.size->margins[1] + p.size->margins[3];
+        }
         return out;
     }
 
     void MDIWidget::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IMouseWidget::setGeometry(value);
-        FTK_P();
-
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g = getGeometry();
-            p.size.g2 = ftk::margin(
-                p.size.g,
-                -p.size.margins[0],
-                -p.size.margins[1],
-                -p.size.margins[2],
-                -p.size.margins[3]);
-            p.size.g3 = ftk::margin(p.size.g2, -p.size.border);
+            _p->draw.reset();
+        }
+        IMouseWidget::setGeometry(value);
+        _p->layout->setGeometry(_getBorderGeometry());
+    }
+
+    void MDIWidget::styleEvent(const StyleEvent& event)
+    {
+        IMouseWidget::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
-
-        p.layout->setGeometry(p.size.g3);
     }
 
     void MDIWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
-            p.size.margins[0] = std::max(p.size.handle, p.size.shadow);
-            p.size.margins[1] = p.size.handle;
-            p.size.margins[2] = std::max(p.size.handle, p.size.shadow);
-            p.size.margins[3] = std::max(p.size.handle, p.size.shadow);
+            p.size = Private::SizeData();
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size->margins[0] = std::max(p.size->handle, p.size->shadow);
+            p.size->margins[1] = p.size->handle;
+            p.size->margins[2] = std::max(p.size->handle, p.size->shadow);
+            p.size->margins[3] = std::max(p.size->handle, p.size->shadow);
             p.draw.reset();
         }
     }
@@ -326,10 +333,13 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(p.size.g2, p.size.border);
+            p.draw->g = getGeometry();
+            p.draw->g2 = _getMarginGeometry();
+            p.draw->g3 = _getBorderGeometry();
+            p.draw->border = border(p.draw->g2, p.size->border);
             p.draw->shadow = shadow(
-                ftk::margin(p.size.g2, p.size.shadow, 0, p.size.shadow, p.size.shadow),
-                p.size.shadow);
+                ftk::margin(p.draw->g2, p.size->shadow, 0, p.size->shadow, p.size->shadow),
+                p.size->shadow);
         }
 
         event.render->drawColorMesh(p.draw->shadow);
@@ -337,7 +347,7 @@ namespace ftk
         if (p.mouse.resize != MDIResize::None)
         {
             event.render->drawRect(
-                getResizeBox(p.mouse.resize, p.size.g2, p.size.handle),
+                getResizeBox(p.mouse.resize, p.draw->g2, p.size->handle),
                 event.style->getColorRole(ColorRole::Checked));
         }
 
@@ -346,7 +356,7 @@ namespace ftk
             event.style->getColorRole(ColorRole::Border));
 
         event.render->drawRect(
-            p.size.g3,
+            p.draw->g3,
             event.style->getColorRole(ColorRole::Window));
     }
 
@@ -365,43 +375,40 @@ namespace ftk
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
-        if (!_isMousePressed())
+        if (p.size.has_value())
         {
-            const Box2I& g = getGeometry();
-            const Box2I g2 = ftk::margin(
-                g,
-                -p.size.margins[0],
-                -p.size.margins[1],
-                -p.size.margins[2],
-                -p.size.margins[3]);
-            MDIResize resize = MDIResize::None;
-            for (auto i : getMDIResizeEnums())
+            if (!_isMousePressed())
             {
-                if (contains(getResizeBox(i, g2, p.size.handle), event.pos))
+                const Box2I g = _getMarginGeometry();
+                MDIResize resize = MDIResize::None;
+                for (auto i : getMDIResizeEnums())
                 {
-                    resize = i;
-                    break;
+                    if (contains(getResizeBox(i, g, p.size->handle), event.pos))
+                    {
+                        resize = i;
+                        break;
+                    }
+                }
+                if (resize != p.mouse.resize)
+                {
+                    p.mouse.resize = resize;
+                    setDrawUpdate();
                 }
             }
-            if (resize != p.mouse.resize)
+            else
             {
-                p.mouse.resize = resize;
-                setDrawUpdate();
-            }
-        }
-        else
-        {
-            const V2I& mousePressPos = _getMousePressPos();
-            if (p.mouse.resize != MDIResize::None)
-            {
-                if (p.resizeCallback)
+                const V2I& mousePressPos = _getMousePressPos();
+                if (p.mouse.resize != MDIResize::None)
                 {
-                    p.resizeCallback(p.mouse.resize, event.pos - mousePressPos);
+                    if (p.resizeCallback)
+                    {
+                        p.resizeCallback(p.mouse.resize, event.pos - mousePressPos);
+                    }
                 }
-            }
-            else if (p.moveCallback)
-            {
-                p.moveCallback(event.pos - mousePressPos);
+                else if (p.moveCallback)
+                {
+                    p.moveCallback(event.pos - mousePressPos);
+                }
             }
         }
     }
@@ -426,21 +433,30 @@ namespace ftk
         }
     }
 
-    /*Box2I MDIWidget::_addMargins(const Box2I& value) const
+    Box2I MDIWidget::_getMarginGeometry() const
     {
         FTK_P();
-        return ftk::margin(value, p.size.handle);
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(
+                getGeometry(),
+                -p.size->margins[0],
+                -p.size->margins[1],
+                -p.size->margins[2],
+                -p.size->margins[3]);
+        }
+        return out;
     }
 
-    Box2I MDIWidget::_removeMargins(const Box2I& value) const
+    Box2I MDIWidget::_getBorderGeometry() const
     {
         FTK_P();
-        return ftk::margin(value, -p.size.handle);
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(_getMarginGeometry(), -p.size->border);
+        }
+        return out;
     }
-
-    Size2I MDIWidget::_removeMargins(const Size2I& value) const
-    {
-        FTK_P();
-        return Size2I(value.w - p.size.handle * 2, value.h - p.size.handle * 2);
-    }*/
 }

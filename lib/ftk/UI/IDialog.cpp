@@ -18,17 +18,16 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
             int border = 0;
             int shadow = 0;
-            Box2I g;
-            Box2I g2;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
             TriMesh2F shadow;
             TriMesh2F border;
         };
@@ -111,7 +110,7 @@ namespace ftk
         const auto& children = getChildren();
         if (!children.empty())
         {
-            const Box2I g = margin(value, -p.size.margin);
+            const Box2I g = margin(value, -p.size->margin);
             const Size2I sizeHint = children.front()->getSizeHint();
             Size2I size;
             switch (children.front()->getHStretch())
@@ -146,20 +145,17 @@ namespace ftk
 
         if (changed)
         {
-            if (!children.empty())
-            {
-                p.size.g = children.front()->getGeometry();
-                p.size.g2 = Box2I(
-                    p.size.g.min.x - p.size.shadow,
-                    p.size.g.min.y,
-                    p.size.g.w() + p.size.shadow * 2,
-                    p.size.g.h() + p.size.shadow);
-            }
-            else
-            {
-                p.size.g = Box2I();
-                p.size.g2 = Box2I();
-            }
+            p.draw.reset();
+        }
+    }
+
+    void IDialog::styleEvent(const StyleEvent& event)
+    {
+        IPopup::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -168,13 +164,12 @@ namespace ftk
     {
         IPopup::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(SizeRole::MarginDialog, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(SizeRole::MarginDialog, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
     }
@@ -202,24 +197,32 @@ namespace ftk
             if (!children.empty())
             {
                 p.draw = Private::DrawData();
-                p.draw->shadow = shadow(p.size.g2, p.size.shadow);
-                p.draw->border = border(margin(p.size.g, p.size.border), p.size.border);
+                p.draw->g = children.front()->getGeometry();
+                p.draw->g2 = Box2I(
+                    p.draw->g.min.x - p.size->shadow,
+                    p.draw->g.min.y,
+                    p.draw->g.w() + p.size->shadow * 2,
+                    p.draw->g.h() + p.size->shadow);
+                p.draw->shadow = shadow(p.draw->g2, p.size->shadow);
+                p.draw->border = border(margin(p.draw->g, p.size->border), p.size->border);
             }
             else
             {
+                p.draw->g = Box2I();
+                p.draw->g2 = Box2I();
                 p.draw->shadow = TriMesh2F();
                 p.draw->border = TriMesh2F();
             }
         }
 
-        if (p.size.g.isValid())
+        if (p.draw->g.isValid())
         {
             event.render->drawColorMesh(p.draw->shadow);
             event.render->drawMesh(
                 p.draw->border,
                 event.style->getColorRole(ColorRole::Border));
             event.render->drawRect(
-                p.size.g,
+                p.draw->g,
                 event.style->getColorRole(ColorRole::Window));
         }
     }

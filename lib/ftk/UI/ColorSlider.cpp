@@ -230,12 +230,13 @@ namespace ftk
         IWidget::_init(context, "ftk::ColorIntEditSlider", parent);
         FTK_P();
 
+        setHStretch(Stretch::Expanding);
+
         p.model = model;
 
         p.edit = IntEdit::create(context, p.model);
 
         p.slider = ColorIntSlider::create(context, p.model);
-        p.slider->setHStretch(Stretch::Expanding);
 
         p.resetButton = IntResetButton::create(context, p.model);
 
@@ -574,12 +575,13 @@ namespace ftk
         IWidget::_init(context, "ftk::ColorFloatEditSlider", parent);
         FTK_P();
 
+        setHStretch(Stretch::Expanding);
+
         p.model = model;
 
         p.edit = FloatEdit::create(context, p.model);
 
         p.slider = ColorFloatSlider::create(context, p.model);
-        p.slider->setHStretch(Stretch::Expanding);
 
         p.resetButton = FloatResetButton::create(context, p.model);
 

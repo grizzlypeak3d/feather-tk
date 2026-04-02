@@ -220,6 +220,7 @@ namespace ftk
         FTK_API Box2I getRect(int) const;
 
         FTK_API Size2I getSizeHint() const override;
+        FTK_API void styleEvent(const StyleEvent&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I& drawRect, const DrawEvent&) override;
         FTK_API void mouseEnterEvent(MouseEnterEvent&) override;

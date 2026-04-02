@@ -16,10 +16,9 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int margin = 0;
         };
-        SizeData size;
+        std::optional<SizeData> size;
     };
 
     void StackLayout::_init(
@@ -146,7 +145,7 @@ namespace ftk
         if (value == p.marginRole)
             return;
         p.marginRole = value;
-        p.size.displayScale.reset();
+        p.size.reset();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -161,8 +160,8 @@ namespace ftk
             out.w = std::max(out.w, childSizeHint.w);
             out.h = std::max(out.h, childSizeHint.h);
         }
-        out.w += p.size.margin * 2;
-        out.h += p.size.margin * 2;
+        out.w += p.size->margin * 2;
+        out.h += p.size->margin * 2;
         return out;
     }
 
@@ -170,7 +169,7 @@ namespace ftk
     {
         IWidget::setGeometry(value);
         FTK_P();
-        const Box2I g = margin(getGeometry(), -p.size.margin);
+        const Box2I g = margin(getGeometry(), -p.size->margin);
         for (const auto& child : getChildren())
         {
             child->setGeometry(g);
@@ -179,7 +178,16 @@ namespace ftk
 
     Box2I StackLayout::getChildrenClipRect() const
     {
-        return margin(getGeometry(), -_p->size.margin);
+        return margin(getGeometry(), -_p->size->margin);
+    }
+
+    void StackLayout::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
+        }
     }
 
     void StackLayout::childAddEvent(const ChildAddEvent& event)
@@ -202,11 +210,10 @@ namespace ftk
     void StackLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
     }
 

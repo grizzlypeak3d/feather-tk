@@ -144,18 +144,17 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale;
             int size = 0;
             int border = 0;
             int handle = 0;
             Size2I sizeHint;
-            Box2I g;
-            Box2I g2;
         };
-        SizeData size;
+        std::optional<SizeData> size;
 
         struct DrawData
         {
+            Box2I g;
+            Box2I g2;
             TriMesh2F border;
         };
         std::optional<DrawData> draw;
@@ -281,18 +280,26 @@ namespace ftk
 
     Size2I LevelsSlider::getSizeHint() const
     {
-        return _p->size.sizeHint;
+        FTK_P();
+        return p.size.has_value() ? p.size->sizeHint : Size2I();
     }
 
     void LevelsSlider::setGeometry(const Box2I& value)
     {
-        const bool changed = value != getGeometry();
-        IMouseWidget::setGeometry(value);
-        FTK_P();
-        if (changed)
+        if (value != getGeometry())
         {
-            p.size.g = margin(value, -p.size.handle / 2, 0, -p.size.handle / 2, -p.size.handle);
-            p.size.g2 = margin(p.size.g, -p.size.border);
+            _p->draw.reset();
+        }
+        IMouseWidget::setGeometry(value);
+    }
+
+    void LevelsSlider::styleEvent(const StyleEvent& event)
+    {
+        IMouseWidget::styleEvent(event);
+        FTK_P();
+        if (event.hasChanges())
+        {
+            p.size.reset();
             p.draw.reset();
         }
     }
@@ -301,17 +308,16 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (!p.size.has_value())
         {
-            p.size.displayScale = event.displayScale;
-            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size = Private::SizeData();
+            p.size->size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.border);
+            p.size->sizeHint = Size2I(p.size->size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size->sizeHint = margin(p.size->sizeHint, p.size->border);
 
             p.draw.reset();
         }
@@ -335,7 +341,9 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->border = border(margin(p.size.g2, p.size.border), p.size.border);
+            p.draw->g = _getInsideGeometry();
+            p.draw->g2 = _getSliderGeometry();
+            p.draw->border = border(margin(p.draw->g2, p.size->border), p.size->border);
         }
 
         // Draw the border.
@@ -345,21 +353,21 @@ namespace ftk
 
         // Draw the colors.
         TriMesh2F mesh;
-        int w = p.size.g2.w();
-        int h = p.size.g2.h();
+        int w = p.draw->g2.w();
+        int h = p.draw->g2.h();
         const int v0 = _valueToPos(getValue().min());
         const int v1 = _valueToPos(getValue().max());
-        mesh.v.push_back(V2F(p.size.g2.min.x, p.size.g2.min.y));
-        mesh.v.push_back(V2F(p.size.g2.min.x, p.size.g2.max.y + 1));
+        mesh.v.push_back(V2F(p.draw->g2.min.x, p.draw->g2.min.y));
+        mesh.v.push_back(V2F(p.draw->g2.min.x, p.draw->g2.max.y + 1));
         mesh.c.push_back(V4F(0.F, 0.F, 0.F, 1.F));
-        mesh.v.push_back(V2F(v0, p.size.g2.min.y));
-        mesh.v.push_back(V2F(v0, p.size.g2.max.y + 1));
+        mesh.v.push_back(V2F(v0, p.draw->g2.min.y));
+        mesh.v.push_back(V2F(v0, p.draw->g2.max.y + 1));
         mesh.c.push_back(V4F(0.F, 0.F, 0.F, 1.F));
-        mesh.v.push_back(V2F(v1, p.size.g2.min.y));
-        mesh.v.push_back(V2F(v1, p.size.g2.max.y + 1));
+        mesh.v.push_back(V2F(v1, p.draw->g2.min.y));
+        mesh.v.push_back(V2F(v1, p.draw->g2.max.y + 1));
         mesh.c.push_back(V4F(1.F, 1.F, 1.F, 1.F));
-        mesh.v.push_back(V2F(p.size.g2.max.x + 1, p.size.g2.min.y));
-        mesh.v.push_back(V2F(p.size.g2.max.x + 1, p.size.g2.max.y + 1));
+        mesh.v.push_back(V2F(p.draw->g2.max.x + 1, p.draw->g2.min.y));
+        mesh.v.push_back(V2F(p.draw->g2.max.x + 1, p.draw->g2.max.y + 1));
         mesh.c.push_back(V4F(1.F, 1.F, 1.F, 1.F));
         mesh.triangles.push_back({
             Vertex2(1, 0, 1),
@@ -393,9 +401,9 @@ namespace ftk
         const Box2I& g = getGeometry();
         int pos = _valueToPos(getValue().min());
         mesh = TriMesh2F();
-        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size.handle));
-        mesh.v.push_back(V2F(pos + p.size.handle / 2, g.max.y + 1));
-        mesh.v.push_back(V2F(pos - p.size.handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size->handle));
+        mesh.v.push_back(V2F(pos + p.size->handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos - p.size->handle / 2, g.max.y + 1));
         mesh.triangles.push_back({
             Vertex2(1),
             Vertex2(3),
@@ -406,9 +414,9 @@ namespace ftk
 
         pos = _valueToPos(getValue().max());
         mesh = TriMesh2F();
-        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size.handle));
-        mesh.v.push_back(V2F(pos + p.size.handle / 2, g.max.y + 1));
-        mesh.v.push_back(V2F(pos - p.size.handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size->handle));
+        mesh.v.push_back(V2F(pos + p.size->handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos - p.size->handle / 2, g.max.y + 1));
         mesh.triangles.push_back({
             Vertex2(1),
             Vertex2(3),
@@ -499,9 +507,26 @@ namespace ftk
         return g.min.x + g.w() * v;
     }
 
+    Box2I LevelsSlider::_getInsideGeometry() const
+    {
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(getGeometry(), -p.size->handle / 2, 0, -p.size->handle / 2, -p.size->handle);
+        }
+        return out;
+    }
+
     Box2I LevelsSlider::_getSliderGeometry() const
     {
-        return _p->size.g2;
+        FTK_P();
+        Box2I out;
+        if (p.size.has_value())
+        {
+            out = margin(_getInsideGeometry(), -p.size->border);
+        }
+        return out;
     }
 
     Box2I LevelsSlider::_getMinHandleGeometry() const
@@ -510,9 +535,9 @@ namespace ftk
         const int pos = _valueToPos(getValue().min());
         const Box2I& g = getGeometry();
         return Box2I(
-            pos - p.size.handle,
+            pos - p.size->handle,
             g.min.y,
-            p.size.handle * 2,
+            p.size->handle * 2,
             g.h());
     }
 
@@ -522,9 +547,9 @@ namespace ftk
         const int pos = _valueToPos(getValue().max());
         const Box2I& g = getGeometry();
         return Box2I(
-            pos - p.size.handle,
+            pos - p.size->handle,
             g.min.y,
-            p.size.handle * 2,
+            p.size->handle * 2,
             g.h());
     }
 
