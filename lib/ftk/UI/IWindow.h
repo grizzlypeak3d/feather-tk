@@ -177,7 +177,6 @@ namespace ftk
             const Box2I&,
             const DrawEvent&);
 
-    private:
         void _styleEventRecursive(
             const std::shared_ptr<IWidget>&,
             const StyleEvent&);
@@ -199,6 +198,7 @@ namespace ftk
             const Box2I&,
             bool clipped);
 
+    private:
         enum class UnderCursor
         {
             Hover,
