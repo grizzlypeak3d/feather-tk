@@ -100,6 +100,7 @@ namespace ftk
         Label,
         Mono,
         Title,
+        Symbols,
 
         Count,
         First = None

@@ -36,13 +36,13 @@ namespace ftk
         {
             {
                 const FontInfo a;
-                const FontInfo b(FontType::Bold, 16);
+                const FontInfo b(getDefaultFont(FontType::Bold), 16);
                 FTK_ASSERT(a == a);
                 FTK_ASSERT(a != b);
             }
             {
                 const GlyphInfo a;
-                const FontInfo fontInfo(FontType::Bold, 16);
+                const FontInfo fontInfo(getDefaultFont(FontType::Bold), 16);
                 const GlyphInfo b(1, fontInfo);
                 FTK_ASSERT(a == a);
                 FTK_ASSERT(a != b);
@@ -57,7 +57,7 @@ namespace ftk
                 auto fontSystem = context->getSystem<FontSystem>();
                 for (const auto font : getFontTypeEnums())
                 {
-                    const FontInfo info(font, 12);
+                    const FontInfo info(getDefaultFont(font), 12);
                     const FontMetrics metrics = fontSystem->getMetrics(info);
                     _print(Format("{0}: ascender={1}, descender={2}, lineHeight={3}").
                         arg(info).

@@ -135,13 +135,19 @@ namespace ftk
 
     void FileEdit::dropEvent(DragDropEvent& event)
     {
+        FTK_P();
         if (auto data = std::dynamic_pointer_cast<DragDropTextData>(event.data))
         {
             event.accept = true;
             const auto& text = data->getText();
             if (!text.empty())
             {
-                setPath(ftk::Path(text.front()));
+                p.path = Path(text.front());
+                _widgetUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.path);
+                }
             }
         }
     }

@@ -153,15 +153,17 @@ namespace ftk
         "None",
         "Label",
         "Mono",
-        "Title");
+        "Title",
+        "Symbols");
 
     std::map<FontRole, FontInfo> getDefaultFontRoles()
     {
         std::map<FontRole, FontInfo> out;
         out[FontRole::None] = FontInfo();
-        out[FontRole::Label] = FontInfo(FontType::Regular, 12);
-        out[FontRole::Mono]  = FontInfo(FontType::Mono, 12);
-        out[FontRole::Title] = FontInfo(FontType::Bold, 12);
+        out[FontRole::Label] = FontInfo(getDefaultFont(FontType::Regular), 12);
+        out[FontRole::Mono]  = FontInfo(getDefaultFont(FontType::Mono), 12);
+        out[FontRole::Title] = FontInfo(getDefaultFont(FontType::Bold), 12);
+        out[FontRole::Symbols] = FontInfo(getDefaultFont(FontType::Symbols), 12);
         return out;
     }
 

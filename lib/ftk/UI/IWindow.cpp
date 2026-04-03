@@ -497,14 +497,11 @@ namespace ftk
         const auto sizeRoles = style->getSizeRoles();
         const auto colorRoles = style->getColorRoles();
         const auto fontRoles = style->getFontRoles();
-        const auto fontTypes = fontSystem->getFontTypes();
         StyleEvent styleEvent;
         styleEvent.displayScaleChange = displayScale != p.style.displayScale;
         styleEvent.sizeRoleChange = sizeRoles != p.style.sizeRoles;
         styleEvent.colorRoleChange = colorRoles != p.style.colorRoles;
-        styleEvent.fontChange =
-            fontRoles != p.style.fontRoles ||
-            fontTypes != p.style.fontTypes;
+        styleEvent.fontChange = fontRoles != p.style.fontRoles;
         if (styleEvent.hasChanges())
         {
             _styleEventRecursive(shared_from_this(), styleEvent);
@@ -512,7 +509,6 @@ namespace ftk
             p.style.sizeRoles = sizeRoles;
             p.style.colorRoles = colorRoles;
             p.style.fontRoles = fontRoles;
-            p.style.fontTypes = fontTypes;
         }
 
         const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
@@ -872,9 +868,11 @@ namespace ftk
         auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
         for (auto i = widgets.begin(); i != widgets.end(); ++i)
         {
+            std::cout << "drop: " << (*i)->getObjectName() << std::endl;
             (*i)->dropEvent(event);
             if (event.accept)
             {
+                std::cout << "  accept!" << std::endl;
                 break;
             }
             if (std::dynamic_pointer_cast<IDialog>(*i))

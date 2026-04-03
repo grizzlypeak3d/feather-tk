@@ -34,10 +34,10 @@ namespace ftk
     struct FTK_API_TYPE FontInfo
     {
         FontInfo() = default;
-        FontInfo(FontType, int size);
+        FontInfo(const std::string&, int size);
 
-        FontType type = FontType::Regular;
-        int      size = 12;
+        std::string name = getDefaultFont(FontType::Regular);
+        int         size = 12;
 
         bool operator == (const FontInfo&) const;
         bool operator != (const FontInfo&) const;
@@ -108,12 +108,6 @@ namespace ftk
 
         //! Add a font.
         FTK_API bool addFont(const std::string& name, const uint8_t*, size_t);
-
-        //! Get the font types.
-        FTK_API std::map<FontType, std::string> getFontTypes();
-
-        //! Set the font types.
-        FTK_API void setFontTypes(const std::map<FontType, std::string>&);
 
         ///@}
 

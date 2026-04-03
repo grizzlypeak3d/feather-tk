@@ -84,7 +84,6 @@ namespace ftk
 
         std::mutex mutex;
         std::map<std::string, std::vector<uint8_t> > fontData;
-        std::map<FontType, std::string> fontTypes;
         std::map<std::string, FT_Face> faces;
         std::wstring_convert<std::codecvt_utf8<ftk_char_t>, ftk_char_t> utf32Convert;
         LRUCache<GlyphInfo, std::shared_ptr<Glyph> > glyphCache;
@@ -100,11 +99,6 @@ namespace ftk
         p.fontData[getDefaultFont(FontType::Bold)] = ftk_resource::NotoSans_Bold;
         p.fontData[getDefaultFont(FontType::Mono)] = ftk_resource::NotoMono_Regular;
         p.fontData[getDefaultFont(FontType::Symbols)] = ftk_resource::NotoSansSymbols2_Regular;
-
-        for (const auto font : getFontTypeEnums())
-        {
-            p.fontTypes[font] = getDefaultFont(font);
-        }
 
         if (FT_Init_FreeType(&p.ftLibrary))
         {
@@ -202,21 +196,6 @@ namespace ftk
         return out;
     }
 
-    std::map<FontType, std::string> FontSystem::getFontTypes()
-    {
-        FTK_P();
-        std::unique_lock<std::mutex> lock(p.mutex);
-        return p.fontTypes;
-    }
-
-    void FontSystem::setFontTypes(const std::map<FontType, std::string>& value)
-    {
-        FTK_P();
-        std::unique_lock<std::mutex> lock(p.mutex);
-        p.fontTypes = value;
-        p.glyphCache.clear();
-    }
-
     size_t FontSystem::getGlyphCacheSize() const
     {
         FTK_P();
@@ -245,17 +224,13 @@ namespace ftk
         FontMetrics out;
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            const auto fontIt = p.fontTypes.find(info.type);
-            if (fontIt != p.fontTypes.end())
+            const auto faceIt = p.faces.find(info.name);
+            if (faceIt != p.faces.end())
             {
-                const auto faceIt = p.faces.find(fontIt->second);
-                if (faceIt != p.faces.end())
-                {
-                    FT_Set_Pixel_Sizes(faceIt->second, 0, info.size);
-                    out.ascender = faceIt->second->size->metrics.ascender / 64;
-                    out.descender = faceIt->second->size->metrics.descender / 64;
-                    out.lineHeight = faceIt->second->size->metrics.height / 64;
-                }
+                FT_Set_Pixel_Sizes(faceIt->second, 0, info.size);
+                out.ascender = faceIt->second->size->metrics.ascender / 64;
+                out.descender = faceIt->second->size->metrics.descender / 64;
+                out.lineHeight = faceIt->second->size->metrics.height / 64;
             }
         }
         return out;
@@ -322,12 +297,7 @@ namespace ftk
             out = std::make_shared<Glyph>();
             out->info = GlyphInfo(code, fontInfo);
 
-            const auto fontIt = fontTypes.find(fontInfo.type);
-            if (fontIt == fontTypes.end())
-            {
-                break;
-            }
-            const auto faceIt = faces.find(fontIt->second);
+            const auto faceIt = faces.find(fontInfo.name);
             if (faceIt == faces.end())
             {
                 break;
@@ -422,12 +392,7 @@ namespace ftk
         Size2I& size,
         std::vector<Box2I>* glyphGeom)
     {
-        const auto fontIt = fontTypes.find(fontInfo.type);
-        if (fontIt == fontTypes.end())
-        {
-            return;
-        }
-        const auto faceIt = faces.find(fontIt->second);
+        const auto faceIt = faces.find(fontInfo.name);
         if (faceIt == faces.end())
         {
             return;
@@ -532,19 +497,19 @@ namespace ftk
 
     void to_json(nlohmann::json& json, const FontInfo& value)
     {
-        json["Type"] = value.type;
+        json["Name"] = value.name;
         json["Size"] = value.size;
     }
 
     void from_json(const nlohmann::json& json, FontInfo& value)
     {
-        json.at("Type").get_to(value.type);
+        json.at("Name").get_to(value.name);
         json.at("Size").get_to(value.size);
     }
 
     std::ostream& operator << (std::ostream& os, const FontInfo& value)
     {
-        os << value.type << ":" << value.size;
+        os << value.name << ":" << value.size;
         return os;
     }
 }

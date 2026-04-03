@@ -5,6 +5,7 @@ set(HEADERS
     Charts.h
     Dialogs.h
     DragDrop.h
+    Fonts.h
     Graphs.h
     Icons.h
     Images.h
@@ -26,6 +27,7 @@ set(SOURCE
     Charts.cpp
     Dialogs.cpp
     DragDrop.cpp
+    Fonts.cpp
     Graphs.cpp
     Icons.cpp
     Images.cpp

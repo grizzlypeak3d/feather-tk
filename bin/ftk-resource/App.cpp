@@ -10,6 +10,8 @@
 #include <regex>
 #include <vector>
 
+const size_t maxOutputSize = 4 * 1024 * 1024;
+
 void App::_init(int argc, char** argv)
 {
     if (argc != 4)
@@ -53,6 +55,7 @@ public:
         if (_f)
         {
             fclose(_f);
+            _f = nullptr;
         }
     }
 

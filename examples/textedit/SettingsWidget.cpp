@@ -33,7 +33,9 @@ namespace textedit
 
         // Create the font widgets.
         _fontComboBox = ComboBox::create(context);
-        _fontComboBox->setItems(getFontTypeLabels());
+        auto fontSystem = context->getSystem<FontSystem>();
+        const auto fontNames = fontSystem->getFontNames();
+        _fontComboBox->setItems(fontNames);
         _fontComboBox->setHStretch(Stretch::Expanding);
         _fontSizeEdit = ftk::IntEdit::create(context);
         _fontSizeEdit->setRange(6, 64);
@@ -94,12 +96,12 @@ namespace textedit
 
         // Set the font callbacks.
         _fontComboBox->setIndexCallback(
-            [appWeak](int index)
+            [appWeak, fontNames](int index)
             {
                 if (auto app = appWeak.lock())
                 {
                     auto options = app->getSettingsModel()->getTextEditOptions();
-                    options.fontInfo.type = static_cast<FontType>(index);
+                    options.fontInfo.name = fontNames[index];
                     app->getSettingsModel()->setTextEditOptions(options);
                 }
             });
@@ -151,9 +153,15 @@ namespace textedit
         // Observe text edit options and update the widgets.
         _textEditOptionsObserver = Observer<TextEditOptions>::create(
             app->getSettingsModel()->observeTextEditOptions(),
-            [this](const TextEditOptions& value)
+            [this, fontNames](const TextEditOptions& value)
             {
-                _fontComboBox->setCurrentIndex(static_cast<int>(value.fontInfo.type));
+                int index = -1;
+                const auto i = std::find(fontNames.begin(), fontNames.end(), value.fontInfo.name);
+                if (i != fontNames.end())
+                {
+                    index = i - fontNames.begin();
+                }
+                _fontComboBox->setCurrentIndex(index);
                 _fontSizeEdit->setValue(value.fontInfo.size);
             });
         _textEditModelOptionsObserver = Observer<TextEditModelOptions>::create(
