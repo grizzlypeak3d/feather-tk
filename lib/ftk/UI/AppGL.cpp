@@ -930,7 +930,7 @@ namespace ftk
                                 Size2I frameBufferSize;
                                 SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
                                 SDL_GL_GetDrawableSize(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
-                                window->_windowUpdate(windowSize, frameBufferSize);
+                                window->_setSize(windowSize, frameBufferSize);
                             }
                         }
                         break;
@@ -1191,8 +1191,7 @@ namespace ftk
                             {
                                 pos = i->second;
                             }
-                            DragDropEvent event(pos, pos, std::make_shared<DragDropTextData>(p.dropFiles));
-                            window->dropEvent(event);
+                            window->_drop(pos, std::make_shared<DragDropTextData>(p.dropFiles));
                             break;
                         }
                     }
@@ -1206,8 +1205,7 @@ namespace ftk
                             {
                                 pos = i->second;
                             }
-                            DragDropEvent event(pos, pos, std::make_shared<DragDropTextData>(p.dropFiles));
-                            window->dropEvent(event);
+                            window->_drop(pos, std::make_shared<DragDropTextData>(p.dropFiles));
                         }
                         else if (!p.windows.empty())
                         {
@@ -1217,8 +1215,7 @@ namespace ftk
                             {
                                 pos = i->second;
                             }
-                            DragDropEvent event(pos, pos, std::make_shared<DragDropTextData>(p.dropFiles));
-                            p.windows.front()->dropEvent(event);
+                            p.windows.front()->_drop(pos, std::make_shared<DragDropTextData>(p.dropFiles));
                         }
                     }
                     break;

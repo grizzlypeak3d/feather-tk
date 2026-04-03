@@ -48,6 +48,7 @@ namespace ftk
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void dropEvent(DragDropEvent&) override;
 
     private:
         void _openDialog();

@@ -133,6 +133,19 @@ namespace ftk
         _p->layout->setGeometry(value);
     }
 
+    void FileEdit::dropEvent(DragDropEvent& event)
+    {
+        if (auto data = std::dynamic_pointer_cast<DragDropTextData>(event.data))
+        {
+            event.accept = true;
+            const auto& text = data->getText();
+            if (!text.empty())
+            {
+                setPath(ftk::Path(text.front()));
+            }
+        }
+    }
+
     void FileEdit::_openDialog()
     {
         FTK_P();

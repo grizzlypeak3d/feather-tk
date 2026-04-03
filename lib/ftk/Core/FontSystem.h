@@ -82,6 +82,7 @@ namespace ftk
     //! \todo Add text elide functionality.
     //! \todo Add support for gamma correction?
     //! - https://www.freetype.org/freetype2/docs/text-rendering-general.html
+    //! \todo Use a text-shaping library.
     class FTK_API_TYPE FontSystem : public ISystem
     {
         FTK_NON_COPYABLE(FontSystem);
@@ -93,7 +94,8 @@ namespace ftk
         FTK_API virtual ~FontSystem();
 
         //! Create a new system.
-        FTK_API static std::shared_ptr<FontSystem> create(const std::shared_ptr<Context>&);
+        FTK_API static std::shared_ptr<FontSystem> create(
+            const std::shared_ptr<Context>&);
 
         //! \name Fonts
         ///@{

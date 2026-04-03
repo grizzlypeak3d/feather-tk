@@ -162,7 +162,7 @@ namespace ftk
         FTK_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
-        virtual void _windowUpdate(
+        virtual void _setSize(
             const Size2I& windowSize, 
             const Size2I& bufferSize);
 
@@ -172,19 +172,7 @@ namespace ftk
             const std::shared_ptr<Style>&);
 
         bool _hasDrawUpdate(const std::shared_ptr<IWidget>&) const;
-        void _drawEventRecursive(
-            const std::shared_ptr<IWidget>&,
-            const Box2I&,
-            const DrawEvent&);
-
-        void _styleEventRecursive(
-            const std::shared_ptr<IWidget>&,
-            const StyleEvent&);
-
         bool _hasSizeUpdate(const std::shared_ptr<IWidget>&) const;
-        void _sizeHintEventRecursive(
-            const std::shared_ptr<IWidget>&,
-            const SizeHintEvent&);
 
         bool _key(Key, bool press, int modifiers);
         void _text(const std::string&);
@@ -192,7 +180,18 @@ namespace ftk
         void _cursorPos(const V2I&);
         void _mouseButton(MouseButton, bool press, int modifiers);
         void _scroll(const V2F&, int modifiers);
+        void _drop(const V2I& pos, const std::shared_ptr<IDragDropData>&);
 
+        void _drawEventRecursive(
+            const std::shared_ptr<IWidget>&,
+            const Box2I&,
+            const DrawEvent&);
+        void _styleEventRecursive(
+            const std::shared_ptr<IWidget>&,
+            const StyleEvent&);
+        void _sizeHintEventRecursive(
+            const std::shared_ptr<IWidget>&,
+            const SizeHintEvent&);
         void _clipEventRecursive(
             const std::shared_ptr<IWidget>&,
             const Box2I&,
