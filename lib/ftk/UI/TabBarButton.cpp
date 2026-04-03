@@ -15,7 +15,7 @@ namespace ftk
 
         struct SizeData
         {
-            std::optional<float> displayScale = 0.F;
+            bool init = true;
             int margin = 0;
             int keyFocus = 0;
             int pad = 0;
@@ -83,7 +83,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
-            p.size.displayScale.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -107,14 +107,24 @@ namespace ftk
         }
     }
 
+    void TabBarButton::styleEvent(const StyleEvent& event)
+    {
+        FTK_P();
+        IButton::styleEvent(event);
+        if (event.hasChanges())
+        {
+            p.size.init = true;
+            p.draw.reset();
+        }
+    }
+
     void TabBarButton::sizeHintEvent(const SizeHintEvent& event)
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.displayScale.has_value() ||
-            (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+        if (p.size.init)
         {
-            p.size.displayScale = event.displayScale;
+            p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);

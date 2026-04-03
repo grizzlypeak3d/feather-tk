@@ -20,11 +20,12 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             float iconScale = 1.F;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
     };
 
     void ShuttleWidget::_init(
@@ -69,7 +70,7 @@ namespace ftk
 
     Size2I ShuttleWidget::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void ShuttleWidget::styleEvent(const StyleEvent& event)
@@ -78,18 +79,18 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
         }
     }
 
     void ShuttleWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->iconScale = event.displayScale;
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.iconScale = event.displayScale;
             p.iconImages.clear();
             for (int i = 0; i < 8; ++i)
             {
@@ -98,12 +99,12 @@ namespace ftk
                     arg(i),
                     event.displayScale));
             }
-            p.size->sizeHint = Size2I();
+            p.size.sizeHint = Size2I();
             if (!p.iconImages.empty())
             {
-                p.size->sizeHint = p.iconImages.front()->getSize();
+                p.size.sizeHint = p.iconImages.front()->getSize();
             }
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->margin);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin);
         }
     }
 

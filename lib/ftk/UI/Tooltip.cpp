@@ -19,11 +19,12 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int border = 0;
             int handle = 0;
             int shadow = 0;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -84,23 +85,23 @@ namespace ftk
         Size2I sizeHint = p.label->getSizeHint();
         std::list<Box2I> boxes;
         boxes.push_back(Box2I(
-            p.pos.x + p.size->handle,
-            p.pos.y + p.size->handle,
+            p.pos.x + p.size.handle,
+            p.pos.y + p.size.handle,
             sizeHint.w,
             sizeHint.h));
         boxes.push_back(Box2I(
-            p.pos.x - p.size->handle - sizeHint.w,
-            p.pos.y + p.size->handle,
+            p.pos.x - p.size.handle - sizeHint.w,
+            p.pos.y + p.size.handle,
             sizeHint.w,
             sizeHint.h));
         boxes.push_back(Box2I(
-            p.pos.x + p.size->handle,
-            p.pos.y - p.size->handle - sizeHint.h,
+            p.pos.x + p.size.handle,
+            p.pos.y - p.size.handle - sizeHint.h,
             sizeHint.w,
             sizeHint.h));
         boxes.push_back(Box2I(
-            p.pos.x - p.size->handle - sizeHint.w,
-            p.pos.y - p.size->handle - sizeHint.h,
+            p.pos.x - p.size.handle - sizeHint.w,
+            p.pos.y - p.size.handle - sizeHint.h,
             sizeHint.w,
             sizeHint.h));
         struct Intersect
@@ -158,7 +159,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -167,12 +168,12 @@ namespace ftk
     {
         IPopup::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.init = false;
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
     }
@@ -199,11 +200,11 @@ namespace ftk
             p.draw = Private::DrawData();
             p.draw->g = p.label->getGeometry();
             p.draw->shadow = shadow(Box2I(
-                p.draw->g.min.x - p.size->shadow,
+                p.draw->g.min.x - p.size.shadow,
                 p.draw->g.min.y,
-                p.draw->g.w() + p.size->shadow * 2,
-                p.draw->g.h() + p.size->shadow), p.size->shadow);
-            p.draw->border = border(margin(p.draw->g, p.size->border), p.size->border);
+                p.draw->g.w() + p.size.shadow * 2,
+                p.draw->g.h() + p.size.shadow), p.size.shadow);
+            p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
         }
 
         if (p.draw.has_value())

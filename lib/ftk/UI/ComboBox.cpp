@@ -42,6 +42,7 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int border = 0;
             int keyFocus = 0;
@@ -51,7 +52,7 @@ namespace ftk
             Size2I textSize;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -129,7 +130,7 @@ namespace ftk
         p.text = item.text;
         p.icon = item.icon;
         p.iconImage.reset();
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -163,7 +164,7 @@ namespace ftk
         p.text = item.text;
         p.icon = item.icon;
         p.iconImage.reset();
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -189,14 +190,14 @@ namespace ftk
         if (value == p.fontRole)
             return;
         p.fontRole = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
 
     Size2I ComboBox::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void ComboBox::setGeometry(const Box2I& value)
@@ -214,7 +215,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -225,24 +226,24 @@ namespace ftk
         FTK_P();
 
         bool init = false;
-        if (!p.size.has_value())
+        if (p.size.init)
         {
             init = true;
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size->pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size->fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-            p.size->textSize = Size2I();
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size.textSize = Size2I();
             for (const auto& i : p.items)
             {
                 if (!i.text.empty())
                 {
-                    const Size2I textSize = event.fontSystem->getSize(i.text, p.size->fontInfo);
-                    p.size->textSize.w = std::max(p.size->textSize.w, textSize.w);
-                    p.size->textSize.h = std::max(p.size->textSize.h, textSize.h);
+                    const Size2I textSize = event.fontSystem->getSize(i.text, p.size.fontInfo);
+                    p.size.textSize.w = std::max(p.size.textSize.w, textSize.w);
+                    p.size.textSize.h = std::max(p.size.textSize.h, textSize.h);
                 }
             }
             p.draw.reset();
@@ -268,19 +269,19 @@ namespace ftk
 
         if (init)
         {
-            p.size->sizeHint.w = p.size->textSize.w + p.size->pad * 2;
-            p.size->sizeHint.h = p.size->fontMetrics.lineHeight;
+            p.size.sizeHint.w = p.size.textSize.w + p.size.pad * 2;
+            p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
             if (p.iconImage)
             {
-                p.size->sizeHint.w += p.iconImage->getWidth();
-                p.size->sizeHint.h = std::max(p.size->sizeHint.h, p.iconImage->getHeight());
+                p.size.sizeHint.w += p.iconImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.iconImage->getHeight());
             }
             if (p.arrowIconImage)
             {
-                p.size->sizeHint.w += p.arrowIconImage->getWidth();
-                p.size->sizeHint.h = std::max(p.size->sizeHint.h, p.arrowIconImage->getHeight());
+                p.size.sizeHint.w += p.arrowIconImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.arrowIconImage->getHeight());
             }
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->margin + p.size->keyFocus);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
         }
     }
 
@@ -305,10 +306,10 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size->margin + p.size->keyFocus));
+            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
             p.draw->background = rect(p.draw->g);
-            p.draw->border = border(p.draw->g, p.size->border);
-            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
+            p.draw->border = border(p.draw->g, p.size.border);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         // Draw the background.
@@ -359,13 +360,13 @@ namespace ftk
         {
             if (p.draw->glyphs.empty())
             {
-                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size->fontInfo);
+                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
             }
             event.render->drawText(
                 p.draw->glyphs,
-                p.size->fontMetrics,
-                V2I(x + p.size->pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->textSize.h / 2),
+                p.size.fontMetrics,
+                V2I(x + p.size.pad,
+                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(isEnabled() ?
                     ColorRole::Text :
                     ColorRole::TextDisabled));

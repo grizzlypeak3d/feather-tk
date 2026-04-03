@@ -35,13 +35,14 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int border = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         std::shared_ptr<ListObserver<std::string> > textObserver;
         std::shared_ptr<Observer<TextEditPos> > cursorObserver;
@@ -73,7 +74,7 @@ namespace ftk
                 {
                     p.callback(value);
                 }
-                p.size.reset();
+                p.size.init = true;
                 setSizeUpdate();
                 setDrawUpdate();
             });
@@ -138,7 +139,7 @@ namespace ftk
         if (value == p.options)
             return;
         p.options = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -147,23 +148,21 @@ namespace ftk
     {
         FTK_P();
         Box2I out;
-        if (p.size.has_value())
-        {
-            const auto& text = p.model->getText();
-            const TextEditPos& cursor = p.model->getCursor();
-            V2I pos(p.size->margin, p.size->margin);
-            if (cursor.line >= 0 && cursor.line < text.size())
-            {
-                pos.y += p.size->fontMetrics.lineHeight * cursor.line;
-                const std::string& line = text[cursor.line];
-                pos.x += p.fontSystem->getSize(line.substr(0, cursor.chr), p.size->fontInfo).w;
-            }
 
-            out = Box2I(pos.x, pos.y, p.size->border, p.size->fontMetrics.lineHeight);
-            if (margin)
-            {
-                out = ftk::margin(out, p.size->margin);
-            }
+        const auto& text = p.model->getText();
+        const TextEditPos& cursor = p.model->getCursor();
+        V2I pos(p.size.margin, p.size.margin);
+        if (cursor.line >= 0 && cursor.line < text.size())
+        {
+            pos.y += p.size.fontMetrics.lineHeight * cursor.line;
+            const std::string& line = text[cursor.line];
+            pos.x += p.fontSystem->getSize(line.substr(0, cursor.chr), p.size.fontInfo).w;
+        }
+
+        out = Box2I(pos.x, pos.y, p.size.border, p.size.fontMetrics.lineHeight);
+        if (margin)
+        {
+            out = ftk::margin(out, p.size.margin);
         }
         return out;
     }
@@ -175,7 +174,7 @@ namespace ftk
         if (auto parent = getParentT<ScrollArea>())
         {
             const Size2I size = parent->getGeometry().size();
-            p.model->setPageRows(size.h / p.size->fontMetrics.lineHeight);
+            p.model->setPageRows(size.h / p.size.fontMetrics.lineHeight);
         }
     }
 
@@ -215,7 +214,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
         }
     }
 
@@ -263,29 +262,29 @@ namespace ftk
     Size2I TextEditWidget::getSizeHint() const
     {
         FTK_P();
-        return margin(p.size->textSize, p.size->margin);
+        return margin(p.size.textSize, p.size.margin);
     }
 
     void TextEditWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->fontInfo = p.options.fontInfo;
-            p.size->fontInfo.size *= event.displayScale;
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-            p.size->textSize = Size2I();
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.fontInfo = p.options.fontInfo;
+            p.size.fontInfo.size *= event.displayScale;
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size.textSize = Size2I();
             const auto& text = p.model->getText();
             for (size_t i = 0; i < text.size(); ++i)
             {
-                p.size->textSize.w = std::max(
-                    event.fontSystem->getSize(text[i], p.size->fontInfo).w,
-                    p.size->textSize.w);
-                p.size->textSize.h += p.size->fontMetrics.lineHeight;
+                p.size.textSize.w = std::max(
+                    event.fontSystem->getSize(text[i], p.size.fontInfo).w,
+                    p.size.textSize.w);
+                p.size.textSize.h += p.size.fontMetrics.lineHeight;
             }
         }
     }
@@ -302,10 +301,10 @@ namespace ftk
         // Draw the selection.
         const auto& text = p.model->getText();
         const Box2I g2(
-            g.min.x + p.size->margin,
-            g.min.y + p.size->margin,
-            g.w() - p.size->margin * 2,
-            g.h() - p.size->margin * 2);
+            g.min.x + p.size.margin,
+            g.min.y + p.size.margin,
+            g.w() - p.size.margin * 2,
+            g.h() - p.size.margin * 2);
         if (p.selection.isValid() &&
             p.selection.first.line >= 0 &&
             p.selection.first.line < static_cast<int>(text.size()) &&
@@ -318,38 +317,38 @@ namespace ftk
             if (min.line == max.line)
             {
                 const std::string& line = text[min.line];
-                const int w0 = event.fontSystem->getSize(line.substr(0, min.chr), p.size->fontInfo).w;
-                const int w1 = event.fontSystem->getSize(line.substr(0, max.chr), p.size->fontInfo).w;
+                const int w0 = event.fontSystem->getSize(line.substr(0, min.chr), p.size.fontInfo).w;
+                const int w1 = event.fontSystem->getSize(line.substr(0, max.chr), p.size.fontInfo).w;
                 boxes.push_back(Box2I(
                     g2.min.x + w0,
-                    g2.min.y + min.line * p.size->fontMetrics.lineHeight,
-                    std::max(w1 - w0, p.size->border * 2),
-                    p.size->fontMetrics.lineHeight));
+                    g2.min.y + min.line * p.size.fontMetrics.lineHeight,
+                    std::max(w1 - w0, p.size.border * 2),
+                    p.size.fontMetrics.lineHeight));
             }
             else
             {
-                int w0 = event.fontSystem->getSize(text[min.line].substr(0, min.chr), p.size->fontInfo).w;
-                int w1 = event.fontSystem->getSize(text[min.line], p.size->fontInfo).w;
+                int w0 = event.fontSystem->getSize(text[min.line].substr(0, min.chr), p.size.fontInfo).w;
+                int w1 = event.fontSystem->getSize(text[min.line], p.size.fontInfo).w;
                 boxes.push_back(Box2I(
                     g2.min.x + w0,
-                    g2.min.y + min.line * p.size->fontMetrics.lineHeight,
-                    std::max(w1 - w0, p.size->border * 2),
-                    p.size->fontMetrics.lineHeight));
+                    g2.min.y + min.line * p.size.fontMetrics.lineHeight,
+                    std::max(w1 - w0, p.size.border * 2),
+                    p.size.fontMetrics.lineHeight));
                 for (int i = min.line + 1; i < max.line; ++i)
                 {
-                    w0 = event.fontSystem->getSize(text[i], p.size->fontInfo).w;
+                    w0 = event.fontSystem->getSize(text[i], p.size.fontInfo).w;
                     boxes.push_back(Box2I(
                         g2.min.x,
-                        g2.min.y + i * p.size->fontMetrics.lineHeight,
-                        std::max(w0, p.size->border * 2),
-                        p.size->fontMetrics.lineHeight));
+                        g2.min.y + i * p.size.fontMetrics.lineHeight,
+                        std::max(w0, p.size.border * 2),
+                        p.size.fontMetrics.lineHeight));
                 }
-                w0 = event.fontSystem->getSize(text[max.line].substr(0, max.chr), p.size->fontInfo).w;
+                w0 = event.fontSystem->getSize(text[max.line].substr(0, max.chr), p.size.fontInfo).w;
                 boxes.push_back(Box2I(
                     g2.min.x,
-                    g2.min.y + max.line * p.size->fontMetrics.lineHeight,
-                    std::max(w0, p.size->border * 2),
-                    p.size->fontMetrics.lineHeight));
+                    g2.min.y + max.line * p.size.fontMetrics.lineHeight,
+                    std::max(w0, p.size.border * 2),
+                    p.size.fontMetrics.lineHeight));
             }
             for (const auto& box : boxes)
             {
@@ -368,16 +367,16 @@ namespace ftk
             ColorRole::TextDisabled);
         for (const auto& line : text)
         {
-            const Box2I g3(pos.x, pos.y, p.size->textSize.w, p.size->fontMetrics.lineHeight);
+            const Box2I g3(pos.x, pos.y, p.size.textSize.w, p.size.fontMetrics.lineHeight);
             if (intersects(g3, drawRect))
             {
                 event.render->drawText(
-                    event.fontSystem->getGlyphs(line, p.size->fontInfo),
-                    p.size->fontMetrics,
+                    event.fontSystem->getGlyphs(line, p.size.fontInfo),
+                    p.size.fontMetrics,
                     pos,
                     textColor);
             }
-            pos.y += p.size->fontMetrics.lineHeight;
+            pos.y += p.size.fontMetrics.lineHeight;
         }
 
         // Draw the cursor.
@@ -515,23 +514,20 @@ namespace ftk
     {
         FTK_P();
         TextEditPos out(0, 0);
-        if (p.size.has_value())
+        const Box2I& g = getGeometry();
+        const auto& text = p.model->getText();
+        out.line = clamp(
+            (value.y - g.min.y - p.size.margin) / p.size.fontMetrics.lineHeight,
+            0,
+            static_cast<int>(text.size()) - 1);
+        if (out.line >= 0 && out.line < text.size())
         {
-            const Box2I& g = getGeometry();
-            const auto& text = p.model->getText();
-            out.line = clamp(
-                (value.y - g.min.y - p.size->margin) / p.size->fontMetrics.lineHeight,
-                0,
-                static_cast<int>(text.size()) - 1);
-            if (out.line >= 0 && out.line < text.size())
-            {
-                const auto boxes = p.fontSystem->getBoxes(text[out.line], p.size->fontInfo);
-                int end = value.x - g.min.x - p.size->margin;
-                for (;
-                    out.chr < boxes.size() && boxes[out.chr].max.x < end;
-                    ++out.chr)
-                    ;
-            }
+            const auto boxes = p.fontSystem->getBoxes(text[out.line], p.size.fontInfo);
+            int end = value.x - g.min.x - p.size.margin;
+            for (;
+                out.chr < boxes.size() && boxes[out.chr].max.x < end;
+                ++out.chr)
+                ;
         }
         return out;
     }

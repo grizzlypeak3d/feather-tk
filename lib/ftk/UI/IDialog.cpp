@@ -18,11 +18,12 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int border = 0;
             int shadow = 0;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -110,7 +111,7 @@ namespace ftk
         const auto& children = getChildren();
         if (!children.empty())
         {
-            const Box2I g = margin(value, -p.size->margin);
+            const Box2I g = margin(value, -p.size.margin);
             const Size2I sizeHint = children.front()->getSizeHint();
             Size2I size;
             switch (children.front()->getHStretch())
@@ -155,7 +156,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -164,12 +165,12 @@ namespace ftk
     {
         IPopup::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginDialog, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginDialog, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
     }
@@ -199,12 +200,12 @@ namespace ftk
                 p.draw = Private::DrawData();
                 p.draw->g = children.front()->getGeometry();
                 p.draw->g2 = Box2I(
-                    p.draw->g.min.x - p.size->shadow,
+                    p.draw->g.min.x - p.size.shadow,
                     p.draw->g.min.y,
-                    p.draw->g.w() + p.size->shadow * 2,
-                    p.draw->g.h() + p.size->shadow);
-                p.draw->shadow = shadow(p.draw->g2, p.size->shadow);
-                p.draw->border = border(margin(p.draw->g, p.size->border), p.size->border);
+                    p.draw->g.w() + p.size.shadow * 2,
+                    p.draw->g.h() + p.size.shadow);
+                p.draw->shadow = shadow(p.draw->g2, p.size.shadow);
+                p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
             }
             else
             {

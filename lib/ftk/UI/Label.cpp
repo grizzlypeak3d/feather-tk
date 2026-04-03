@@ -23,6 +23,7 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int hMargin = 0;
             int vMargin = 0;
             FontInfo fontInfo;
@@ -30,7 +31,7 @@ namespace ftk
             Size2I textSize;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -87,7 +88,7 @@ namespace ftk
         if (value == p.text)
             return;
         p.text = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -128,7 +129,7 @@ namespace ftk
             return;
         p.hMarginRole = value;
         p.vMarginRole = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -140,7 +141,7 @@ namespace ftk
             return;
         p.hMarginRole = horizontal;
         p.vMarginRole = vertical;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -151,7 +152,7 @@ namespace ftk
         if (value == p.hMarginRole)
             return;
         p.hMarginRole = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -162,7 +163,7 @@ namespace ftk
         if (value == p.vMarginRole)
             return;
         p.vMarginRole = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -178,7 +179,7 @@ namespace ftk
         if (value == p.fontRole)
             return;
         p.fontRole = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -195,7 +196,7 @@ namespace ftk
             return;
         p.fontRole = FontRole::None;
         p.fontInfo = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -216,7 +217,7 @@ namespace ftk
 
     Size2I Label::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void Label::setGeometry(const Box2I& value)
@@ -233,7 +234,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -241,24 +242,24 @@ namespace ftk
     void Label::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->hMargin = event.style->getSizeRole(p.hMarginRole, event.displayScale);
-            p.size->vMargin = event.style->getSizeRole(p.vMarginRole, event.displayScale);
+            p.size.init = false;
+            p.size.hMargin = event.style->getSizeRole(p.hMarginRole, event.displayScale);
+            p.size.vMargin = event.style->getSizeRole(p.vMarginRole, event.displayScale);
             if (p.fontRole != FontRole::None)
             {
-                p.size->fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+                p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
             }
             else
             {
-                p.size->fontInfo = p.fontInfo;
-                p.size->fontInfo.size *= event.displayScale;
+                p.size.fontInfo = p.fontInfo;
+                p.size.fontInfo.size *= event.displayScale;
             }
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-            p.size->textSize = event.fontSystem->getSize(p.text, p.size->fontInfo);
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
 
-            p.size->sizeHint = margin(p.size->textSize, p.size->hMargin, p.size->vMargin);
+            p.size.sizeHint = margin(p.size.textSize, p.size.hMargin, p.size.vMargin);
 
             p.draw.reset();
         }
@@ -283,10 +284,10 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
-            p.draw->g2 = margin(p.draw->g, -p.size->hMargin, -p.size->vMargin, -p.size->hMargin, -p.size->vMargin);
+            p.draw->g2 = margin(p.draw->g, -p.size.hMargin, -p.size.vMargin, -p.size.hMargin, -p.size.vMargin);
             if (!p.text.empty())
             {
-                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size->fontInfo);
+                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
             }
         }
 
@@ -300,7 +301,7 @@ namespace ftk
 
         event.render->drawText(
             p.draw->glyphs,
-            p.size->fontMetrics,
+            p.size.fontMetrics,
             p.draw->g2.min,
             event.style->getColorRole(
                 isEnabled() ?

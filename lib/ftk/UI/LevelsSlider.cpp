@@ -144,12 +144,13 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int size = 0;
             int border = 0;
             int handle = 0;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -280,7 +281,7 @@ namespace ftk
 
     Size2I LevelsSlider::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void LevelsSlider::setGeometry(const Box2I& value)
@@ -298,7 +299,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -307,16 +308,16 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size.init = false;
+            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size->sizeHint = Size2I(p.size->size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->border);
+            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.border);
 
             p.draw.reset();
         }
@@ -342,7 +343,7 @@ namespace ftk
             p.draw = Private::DrawData();
             p.draw->g = _getInsideGeometry();
             p.draw->g2 = _getSliderGeometry();
-            p.draw->border = border(margin(p.draw->g2, p.size->border), p.size->border);
+            p.draw->border = border(margin(p.draw->g2, p.size.border), p.size.border);
         }
 
         // Draw the border.
@@ -400,9 +401,9 @@ namespace ftk
         const Box2I& g = getGeometry();
         int pos = _valueToPos(getValue().min());
         mesh = TriMesh2F();
-        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size->handle));
-        mesh.v.push_back(V2F(pos + p.size->handle / 2, g.max.y + 1));
-        mesh.v.push_back(V2F(pos - p.size->handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size.handle));
+        mesh.v.push_back(V2F(pos + p.size.handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos - p.size.handle / 2, g.max.y + 1));
         mesh.triangles.push_back({
             Vertex2(1),
             Vertex2(3),
@@ -413,9 +414,9 @@ namespace ftk
 
         pos = _valueToPos(getValue().max());
         mesh = TriMesh2F();
-        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size->handle));
-        mesh.v.push_back(V2F(pos + p.size->handle / 2, g.max.y + 1));
-        mesh.v.push_back(V2F(pos - p.size->handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos, g.max.y + 1 - p.size.handle));
+        mesh.v.push_back(V2F(pos + p.size.handle / 2, g.max.y + 1));
+        mesh.v.push_back(V2F(pos - p.size.handle / 2, g.max.y + 1));
         mesh.triangles.push_back({
             Vertex2(1),
             Vertex2(3),
@@ -509,23 +510,13 @@ namespace ftk
     Box2I LevelsSlider::_getInsideGeometry() const
     {
         FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = margin(getGeometry(), -p.size->handle / 2, 0, -p.size->handle / 2, -p.size->handle);
-        }
-        return out;
+        return margin(getGeometry(), -p.size.handle / 2, 0, -p.size.handle / 2, -p.size.handle);
     }
 
     Box2I LevelsSlider::_getSliderGeometry() const
     {
         FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = margin(_getInsideGeometry(), -p.size->border);
-        }
-        return out;
+        return margin(_getInsideGeometry(), -p.size.border);
     }
 
     Box2I LevelsSlider::_getMinHandleGeometry() const
@@ -534,9 +525,9 @@ namespace ftk
         const int pos = _valueToPos(getValue().min());
         const Box2I& g = getGeometry();
         return Box2I(
-            pos - p.size->handle,
+            pos - p.size.handle,
             g.min.y,
-            p.size->handle * 2,
+            p.size.handle * 2,
             g.h());
     }
 
@@ -546,9 +537,9 @@ namespace ftk
         const int pos = _valueToPos(getValue().max());
         const Box2I& g = getGeometry();
         return Box2I(
-            pos - p.size->handle,
+            pos - p.size.handle,
             g.min.y,
-            p.size->handle * 2,
+            p.size.handle * 2,
             g.h());
     }
 

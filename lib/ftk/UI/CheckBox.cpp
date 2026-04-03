@@ -13,6 +13,7 @@ namespace ftk
     {
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int spacing = 0;
             int border = 0;
@@ -24,7 +25,7 @@ namespace ftk
             int checkBox = 0;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -81,7 +82,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -94,7 +95,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -102,7 +103,7 @@ namespace ftk
     
     Size2I CheckBox::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void CheckBox::setGeometry(const Box2I& value)
@@ -120,7 +121,7 @@ namespace ftk
         IButton::styleEvent(event);
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -129,28 +130,28 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size->pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size->fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-            p.size->textSize = event.fontSystem->getSize(_text, p.size->fontInfo);
-            p.size->checkBox = p.size->fontMetrics.lineHeight * .8F;
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+            p.size.checkBox = p.size.fontMetrics.lineHeight * .8F;
 
-            p.size->sizeHint = Size2I();
-            p.size->sizeHint.w += p.size->checkBox;
+            p.size.sizeHint = Size2I();
+            p.size.sizeHint.w += p.size.checkBox;
             if (!_text.empty())
             {
-                p.size->sizeHint.w += p.size->spacing;
-                p.size->sizeHint.w += p.size->textSize.w + p.size->pad * 2;
+                p.size.sizeHint.w += p.size.spacing;
+                p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
             }
-            p.size->sizeHint.h = p.size->fontMetrics.lineHeight;
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->margin + p.size->keyFocus);
+            p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
 
             p.draw.reset();
         }
@@ -177,14 +178,14 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size->margin + p.size->keyFocus));
+            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
             p.draw->g3 = Box2I(
                 p.draw->g2.x(),
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->checkBox / 2,
-                p.size->checkBox,
-                p.size->checkBox);
-            p.draw->focus = border(p.draw->g, p.size->keyFocus);
-            p.draw->checkBox = border(p.draw->g3, p.size->border);
+                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.checkBox / 2,
+                p.size.checkBox,
+                p.size.checkBox);
+            p.draw->focus = border(p.draw->g, p.size.keyFocus);
+            p.draw->checkBox = border(p.draw->g3, p.size.border);
         }
 
         // Draw the focus.
@@ -214,19 +215,19 @@ namespace ftk
             p.draw->checkBox,
             event.style->getColorRole(ColorRole::Border));
         event.render->drawRect(
-            margin(p.draw->g3, -p.size->border),
+            margin(p.draw->g3, -p.size.border),
             event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Base));
 
         // Draw the text.
         if (!_text.empty() && p.draw->glyphs.empty())
         {
-            p.draw->glyphs = event.fontSystem->getGlyphs(_text, p.size->fontInfo);
+            p.draw->glyphs = event.fontSystem->getGlyphs(_text, p.size.fontInfo);
         }
         event.render->drawText(
             p.draw->glyphs,
-            p.size->fontMetrics,
-            V2I(p.draw->g2.x() + p.size->checkBox + p.size->spacing + p.size->pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->textSize.h / 2),
+            p.size.fontMetrics,
+            V2I(p.draw->g2.x() + p.size.checkBox + p.size.spacing + p.size.pad,
+                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
             event.style->getColorRole(isEnabled() ?
                 _textRole :
                 ColorRole::TextDisabled));

@@ -282,13 +282,14 @@ namespace ftk
     {
         struct SizeData
         {
+            bool init = true;
             int size = 0;
             int border = 0;
             int keyFocus = 0;
             int handle = 0;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -338,7 +339,7 @@ namespace ftk
     
     Size2I FloatSlider::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void FloatSlider::setGeometry(const Box2I& value)
@@ -356,7 +357,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -365,17 +366,17 @@ namespace ftk
     {
         IFloatSlider::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size->handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+            p.size.init = false;
+            p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size->sizeHint = Size2I(p.size->size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->keyFocus);
+            p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
 
             p.draw.reset();
         }
@@ -402,8 +403,8 @@ namespace ftk
             p.draw->g = getGeometry();
             p.draw->g2 = _getInsideGeometry();
             p.draw->g3 = _getSliderGeometry();
-            p.draw->border = border(p.draw->g, p.size->border);
-            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
+            p.draw->border = border(p.draw->g, p.size.border);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         // Draw the background.
@@ -420,9 +421,9 @@ namespace ftk
         // Draw the handle.
         const int pos = _valueToPos(getValue());
         const Box2I handle(
-            pos - p.size->handle / 2,
+            pos - p.size.handle / 2,
             p.draw->g3.min.y,
-            p.size->handle,
+            p.size.handle,
             p.draw->g3.h());
         event.render->drawRect(
             handle,
@@ -440,29 +441,19 @@ namespace ftk
                 event.style->getColorRole(ColorRole::Hover));
         }
         event.render->drawMesh(
-            border(handle, p.size->border),
+            border(handle, p.size.border),
             event.style->getColorRole(ColorRole::Border));
     }
 
     Box2I FloatSlider::_getSliderGeometry() const
     {
         FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = margin(_getInsideGeometry(), -p.size->handle / 2, 0, -p.size->handle / 2, 0);
-        }
-        return out;
+        return margin(_getInsideGeometry(), -p.size.handle / 2, 0, -p.size.handle / 2, 0);
     }
 
     Box2I FloatSlider::_getInsideGeometry() const
     {
         FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = margin(getGeometry(), -p.size->keyFocus);
-        }
-        return out;
+        return margin(getGeometry(), -p.size.keyFocus);
     }
 }

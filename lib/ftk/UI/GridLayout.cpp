@@ -27,10 +27,11 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int spacing = 0;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct GeomData
         {
@@ -207,16 +208,16 @@ namespace ftk
         p.getVisible(rowsVisibleCount, columnsVisibleCount);
         if (rowsVisibleCount > 0)
         {
-            out.h += (rowsVisibleCount - 1) * p.size->spacing;
+            out.h += (rowsVisibleCount - 1) * p.size.spacing;
         }
         if (columnsVisibleCount > 0)
         {
-            out.w += (columnsVisibleCount - 1) * p.size->spacing;
+            out.w += (columnsVisibleCount - 1) * p.size.spacing;
         }
 
         // Add the margin.
-        out.w += p.size->margin * 2;
-        out.h += p.size->margin * 2;
+        out.w += p.size.margin * 2;
+        out.h += p.size.margin * 2;
 
         return out;
     }
@@ -250,7 +251,7 @@ namespace ftk
         p.getStretch(rowStretch, columnStretch);
 
         // Get the layout stretch size.
-        const Box2I g = margin(getGeometry(), -p.size->margin);
+        const Box2I g = margin(getGeometry(), -p.size.margin);
         size_t rowStretchCount = 0;
         size_t columnStretchCount = 0;
         for (bool i : rowStretch)
@@ -274,13 +275,13 @@ namespace ftk
         if (rowStretchCount > 0)
         {
             stretchSize.y = (g.h() -
-                (rowsVisibleCount - 1) * p.size->spacing -
+                (rowsVisibleCount - 1) * p.size.spacing -
                 totalSize.y) / rowStretchCount;
         }
         if (columnStretchCount > 0)
         {
             stretchSize.x = (g.w() -
-                (columnsVisibleCount - 1) * p.size->spacing -
+                (columnsVisibleCount - 1) * p.size.spacing -
                 totalSize.x) / columnStretchCount;
         }
 
@@ -315,14 +316,14 @@ namespace ftk
             {
                 if (p.geom.rowsVisible[j])
                 {
-                    pos.y += p.geom.rowSizes[j] + (visible ? p.size->spacing : 0);
+                    pos.y += p.geom.rowSizes[j] + (visible ? p.size.spacing : 0);
                 }
             }
             for (int j = 0; j < i.second.column && j < columnSizes.size(); ++j)
             {
                 if (columnsVisible[j])
                 {
-                    pos.x += columnSizes[j] + (visible ? p.size->spacing : 0);
+                    pos.x += columnSizes[j] + (visible ? p.size.spacing : 0);
                 }
             }
             Size2I size;
@@ -348,18 +349,18 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
         }
     }
 
     void GridLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-            p.size->spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
         }
     }
 
@@ -369,7 +370,7 @@ namespace ftk
         FTK_P();
         if (p.rowBackgroundRole != ColorRole::None)
         {
-            const Box2I g = margin(getGeometry(), -p.size->margin);
+            const Box2I g = margin(getGeometry(), -p.size.margin);
             int y = g.min.y;
             int row = 0;
             for (size_t i = 0;
@@ -384,7 +385,7 @@ namespace ftk
                             Box2I(g.min.x, y, g.w(), p.geom.rowSizes[i]),
                             event.style->getColorRole(p.rowBackgroundRole));
                     }
-                    y += p.geom.rowSizes[i] + p.size->spacing;
+                    y += p.geom.rowSizes[i] + p.size.spacing;
                     ++row;
                 }
             }

@@ -38,9 +38,10 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             FontMetrics fontMetrics;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -106,7 +107,7 @@ namespace ftk
     Size2I PieChart::getSizeHint() const
     {
         FTK_P();
-        const int d = p.size->fontMetrics.lineHeight * p.sizeMult;
+        const int d = p.size.fontMetrics.lineHeight * p.sizeMult;
         return Size2I(d, d);
     }
 
@@ -124,7 +125,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -132,11 +133,11 @@ namespace ftk
     void PieChart::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
+            p.size.init = false;
             const FontInfo fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
-            p.size->fontMetrics = event.fontSystem->getMetrics(fontInfo);
+            p.size.fontMetrics = event.fontSystem->getMetrics(fontInfo);
             p.draw.reset();
         }
     }

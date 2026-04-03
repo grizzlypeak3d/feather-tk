@@ -40,6 +40,7 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int border = 0;
             int keyFocus = 0;
@@ -50,7 +51,7 @@ namespace ftk
             std::vector<Box2I> glyphBoxes;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -86,7 +87,7 @@ namespace ftk
             [this](const std::string& text)
             {
                 FTK_P();
-                p.size.reset();
+                p.size.init = true;
                 setSizeUpdate();
                 setDrawUpdate();
                 if (p.textChangedCallback)
@@ -194,7 +195,7 @@ namespace ftk
         if (value == p.format)
             return;
         p.format = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -255,7 +256,7 @@ namespace ftk
 
     Size2I LineEdit::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void LineEdit::setGeometry(const Box2I& value)
@@ -334,7 +335,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -343,24 +344,24 @@ namespace ftk
     {
         IMouseWidget::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size->fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             const auto& text = p.model->getText();
-            p.size->textSize = event.fontSystem->getSize(text, p.size->fontInfo);
-            p.size->formatSize = event.fontSystem->getSize(p.format, p.size->fontInfo);
-            p.size->glyphBoxes = p.fontSystem->getBoxes(text, p.size->fontInfo);
+            p.size.textSize = event.fontSystem->getSize(text, p.size.fontInfo);
+            p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
+            p.size.glyphBoxes = p.fontSystem->getBoxes(text, p.size.fontInfo);
 
-            p.size->sizeHint = Size2I(p.size->formatSize.w, p.size->fontMetrics.lineHeight);
-            p.size->sizeHint = margin(
-                p.size->sizeHint,
-                p.size->margin * 2 + p.size->keyFocus,
-                p.size->margin + p.size->keyFocus);
+            p.size.sizeHint = Size2I(p.size.formatSize.w, p.size.fontMetrics.lineHeight);
+            p.size.sizeHint = margin(
+                p.size.sizeHint,
+                p.size.margin * 2 + p.size.keyFocus,
+                p.size.margin + p.size.keyFocus);
 
             p.draw.reset();
         }
@@ -389,8 +390,8 @@ namespace ftk
             p.draw->g = _getAlignGeometry();
             p.draw->g2 = _getMarginGeometry();
             p.draw->g3 = _getTextGeometry();
-            p.draw->border = border(p.draw->g, p.size->border);
-            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
+            p.draw->border = border(p.draw->g, p.size.border);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         const bool enabled = isEnabled();
@@ -418,9 +419,9 @@ namespace ftk
         if (selection.isValid())
         {
             const std::string text0 = text.substr(0, selection.min());
-            const int x0 = event.fontSystem->getSize(text0, p.size->fontInfo).w;
+            const int x0 = event.fontSystem->getSize(text0, p.size.fontInfo).w;
             const std::string text1 = text.substr(0, selection.max());
-            const int x1 = event.fontSystem->getSize(text1, p.size->fontInfo).w;
+            const int x1 = event.fontSystem->getSize(text1, p.size.fontInfo).w;
             event.render->drawRect(
                 Box2I(p.draw->g3.x() - p.scroll + x0,
                     p.draw->g3.y(),
@@ -432,14 +433,14 @@ namespace ftk
         // Draw the text.
         const V2I pos(
             p.draw->g3.x() - p.scroll,
-            p.draw->g3.y() + p.draw->g3.h() / 2 - p.size->fontMetrics.lineHeight / 2);
+            p.draw->g3.y() + p.draw->g3.h() / 2 - p.size.fontMetrics.lineHeight / 2);
         if (!text.empty() && p.draw->glyphs.empty())
         {
-            p.draw->glyphs = event.fontSystem->getGlyphs(text, p.size->fontInfo);
+            p.draw->glyphs = event.fontSystem->getGlyphs(text, p.size.fontInfo);
         }
         event.render->drawText(
             p.draw->glyphs,
-            p.size->fontMetrics,
+            p.size.fontMetrics,
             pos,
             event.style->getColorRole(enabled ?
                 ColorRole::Text :
@@ -452,7 +453,7 @@ namespace ftk
                 Box2I(
                     p.draw->g3.x() - p.scroll + _toPos(p.model->getCursor()),
                     p.draw->g3.y(),
-                    p.size->border,
+                    p.size.border,
                     p.draw->g3.h()),
                 event.style->getColorRole(ColorRole::Text));
         }
@@ -559,48 +560,29 @@ namespace ftk
 
     Box2I LineEdit::_getAlignGeometry() const
     {
-        FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
-        }
-        return out;
+        return align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
     }
 
     Box2I LineEdit::_getMarginGeometry() const
     {
         FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = margin(_getAlignGeometry(), -p.size->keyFocus);
-        }
-        return out;
+        return margin(_getAlignGeometry(), -p.size.keyFocus);
     }
 
     Box2I LineEdit::_getTextGeometry() const
     {
         FTK_P();
-        Box2I out;
-        if (p.size.has_value())
-        {
-            out = margin(_getMarginGeometry(), -p.size->margin * 2, -p.size->margin);
-        }
-        return out;
+        return margin(_getMarginGeometry(), -p.size.margin * 2, -p.size.margin);
     }
 
     int LineEdit::_toCursor(int value) const
     {
         FTK_P();
         int out = 0;
-        if (p.size.has_value())
-        {
-            for (;
-                out < p.size->glyphBoxes.size() && p.size->glyphBoxes[out].max.x < value;
-                ++out)
-                ;
-        }
+        for (;
+            out < p.size.glyphBoxes.size() && p.size.glyphBoxes[out].max.x < value;
+            ++out)
+            ;
         return out;
     }
 
@@ -608,16 +590,13 @@ namespace ftk
     {
         FTK_P();
         int out = 0;
-        if (p.size.has_value())
+        if (value >= 0 && value < p.size.glyphBoxes.size())
         {
-            if (value >= 0 && value < p.size->glyphBoxes.size())
-            {
-                out = p.size->glyphBoxes[value].min.x;
-            }
-            else if (value >= p.size->glyphBoxes.size() && !p.size->glyphBoxes.empty())
-            {
-                out = p.size->glyphBoxes.back().max.x;
-            }
+            out = p.size.glyphBoxes[value].min.x;
+        }
+        else if (value >= p.size.glyphBoxes.size() && !p.size.glyphBoxes.empty())
+        {
+            out = p.size.glyphBoxes.back().max.x;
         }
         return out;
     }

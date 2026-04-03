@@ -22,10 +22,11 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
     };
 
     void SvgWidget::_init(
@@ -102,7 +103,7 @@ namespace ftk
     
     Size2I SvgWidget::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void SvgWidget::styleEvent(const StyleEvent& event)
@@ -110,7 +111,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
         }
     }
 
@@ -118,11 +119,11 @@ namespace ftk
     {
         FTK_P();
         bool init = false;
-        if (!p.size.has_value())
+        if (p.size.init)
         {
             init = true;
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
         if (!p.svgData.empty() && !p.image)
         {
@@ -155,13 +156,13 @@ namespace ftk
 
         if (init)
         {
-            p.size->sizeHint = Size2I();
+            p.size.sizeHint = Size2I();
             if (p.image)
             {
-                p.size->sizeHint.w = p.image->getWidth();
-                p.size->sizeHint.h = p.image->getHeight();
+                p.size.sizeHint.w = p.image->getWidth();
+                p.size.sizeHint.h = p.image->getHeight();
             }
-            p.size->sizeHint = p.size->sizeHint + p.size->margin * 2;
+            p.size.sizeHint = p.size.sizeHint + p.size.margin * 2;
         }
     }
 
@@ -173,7 +174,7 @@ namespace ftk
         FTK_P();
         if (p.image)
         {
-            const Box2I g = margin(getGeometry(), -p.size->margin);
+            const Box2I g = margin(getGeometry(), -p.size.margin);
             const Size2I& size = p.image->getSize();
             event.render->drawImage(
                 p.image,

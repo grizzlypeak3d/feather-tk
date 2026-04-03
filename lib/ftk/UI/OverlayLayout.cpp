@@ -13,9 +13,10 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
         };
-        std::optional<SizeData> size;
+        SizeData size;
     };
 
     void OverlayLayout::_init(
@@ -52,7 +53,7 @@ namespace ftk
         if (value == p.marginRole)
             return;
         p.marginRole = value;
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -67,8 +68,8 @@ namespace ftk
             out.w = std::max(out.w, childSizeHint.w);
             out.h = std::max(out.h, childSizeHint.h);
         }
-        out.w += p.size->margin * 2;
-        out.h += p.size->margin * 2;
+        out.w += p.size.margin * 2;
+        out.h += p.size.margin * 2;
         return out;
     }
 
@@ -76,7 +77,7 @@ namespace ftk
     {
         IWidget::setGeometry(value);
         FTK_P();
-        const Box2I g = margin(getGeometry(), -p.size->margin);
+        const Box2I g = margin(getGeometry(), -p.size.margin);
         for (const auto& child : getChildren())
         {
             child->setGeometry(g);
@@ -85,7 +86,7 @@ namespace ftk
 
     Box2I OverlayLayout::getChildrenClipRect() const
     {
-        return margin(getGeometry(), -_p->size->margin);
+        return margin(getGeometry(), -_p->size.margin);
     }
 
     void OverlayLayout::styleEvent(const StyleEvent& event)
@@ -93,17 +94,17 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
         }
     }
 
     void OverlayLayout::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
         }
     }
 }

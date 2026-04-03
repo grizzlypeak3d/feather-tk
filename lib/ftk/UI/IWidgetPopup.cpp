@@ -87,10 +87,11 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int border = 0;
             int shadow = 0;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -267,7 +268,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -276,11 +277,11 @@ namespace ftk
     {
         IPopup::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.init = false;
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.draw.reset();
         }
     }
@@ -306,14 +307,14 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->g = p.containerWidget->getGeometry();
-            p.draw->g2 = margin(p.draw->g, p.size->border);
+            p.draw->g2 = margin(p.draw->g, p.size.border);
             p.draw->g3 = Box2I(
-                p.draw->g.min.x - p.size->shadow,
+                p.draw->g.min.x - p.size.shadow,
                 p.draw->g.min.y,
-                p.draw->g.w() + p.size->shadow * 2,
-                p.draw->g.h() + p.size->shadow);
-            p.draw->shadow = shadow(p.draw->g3, p.size->shadow);
-            p.draw->border = border(p.draw->g2, p.size->border);
+                p.draw->g.w() + p.size.shadow * 2,
+                p.draw->g.h() + p.size.shadow);
+            p.draw->shadow = shadow(p.draw->g3, p.size.shadow);
+            p.draw->border = border(p.draw->g2, p.size.border);
         }
 
         event.render->drawColorMesh(p.draw->shadow);

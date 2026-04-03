@@ -33,6 +33,7 @@ namespace ftk
 
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
+        void styleEvent(const StyleEvent&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
         void clipEvent(const Box2I&, bool) override;
         void drawEvent(const Box2I&, const DrawEvent&) override;

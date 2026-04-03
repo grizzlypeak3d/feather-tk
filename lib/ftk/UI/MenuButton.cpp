@@ -33,6 +33,7 @@ namespace ftk
 
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int keyFocus = 0;
             int pad = 0;
@@ -42,7 +43,7 @@ namespace ftk
             Size2I shortcutSize;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -161,7 +162,7 @@ namespace ftk
             }
         }
         p.shortcutText = join(tmp, ", ");
-        p.size.reset();
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -187,7 +188,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -209,7 +210,7 @@ namespace ftk
     
     Size2I MenuButton::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void MenuButton::setGeometry(const Box2I& value)
@@ -227,7 +228,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -237,17 +238,17 @@ namespace ftk
         IButton::sizeHintEvent(event);
         FTK_P();
         bool init = false;
-        if (!p.size.has_value())
+        if (p.size.init)
         {
             init = true;
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size->pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size->fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-            p.size->textSize = event.fontSystem->getSize(_text, p.size->fontInfo);
-            p.size->shortcutSize = event.fontSystem->getSize(p.shortcutText, p.size->fontInfo);
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+            p.size.shortcutSize = event.fontSystem->getSize(p.shortcutText, p.size.fontInfo);
             p.draw.reset();
         }
         if (event.displayScale != p.iconScale)
@@ -264,28 +265,28 @@ namespace ftk
 
         if (init)
         {
-            p.size->sizeHint = Size2I();
+            p.size.sizeHint = Size2I();
             if (_iconImage)
             {
-                p.size->sizeHint.w = _iconImage->getWidth();
-                p.size->sizeHint.h = _iconImage->getHeight();
+                p.size.sizeHint.w = _iconImage->getWidth();
+                p.size.sizeHint.h = _iconImage->getHeight();
             }
             if (!_text.empty())
             {
-                p.size->sizeHint.w += p.size->textSize.w + p.size->pad * 2;
-                p.size->sizeHint.h = std::max(p.size->sizeHint.h, p.size->fontMetrics.lineHeight);
+                p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.size.fontMetrics.lineHeight);
             }
             if (!p.shortcutText.empty())
             {
-                p.size->sizeHint.w += p.size->shortcutSize.w + p.size->pad * 4;
-                p.size->sizeHint.h = std::max(p.size->sizeHint.h, p.size->shortcutSize.h);
+                p.size.sizeHint.w += p.size.shortcutSize.w + p.size.pad * 4;
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.size.shortcutSize.h);
             }
             if (p.subMenuImage)
             {
-                p.size->sizeHint.w += p.subMenuImage->getWidth();
-                p.size->sizeHint.h = std::max(p.size->sizeHint.h, p.subMenuImage->getHeight());
+                p.size.sizeHint.w += p.subMenuImage->getWidth();
+                p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.subMenuImage->getHeight());
             }
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->margin + p.size->keyFocus);
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
         }
     }
 
@@ -310,8 +311,8 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size->margin + p.size->keyFocus));
-            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
+            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         // Draw the background.
@@ -374,13 +375,13 @@ namespace ftk
         {
             if (p.draw->textGlyphs.empty())
             {
-                p.draw->textGlyphs = event.fontSystem->getGlyphs(_text, p.size->fontInfo);
+                p.draw->textGlyphs = event.fontSystem->getGlyphs(_text, p.size.fontInfo);
             }
             event.render->drawText(
                 p.draw->textGlyphs,
-                p.size->fontMetrics,
-                V2I(x + p.size->pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->textSize.h / 2),
+                p.size.fontMetrics,
+                V2I(x + p.size.pad,
+                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(isEnabled() ?
                     _textRole :
                     ColorRole::TextDisabled));
@@ -391,14 +392,14 @@ namespace ftk
         {
             if (p.draw->shortcutGlyphs.empty())
             {
-                p.draw->shortcutGlyphs = event.fontSystem->getGlyphs(p.shortcutText, p.size->fontInfo);
+                p.draw->shortcutGlyphs = event.fontSystem->getGlyphs(p.shortcutText, p.size.fontInfo);
             }
             const V2I pos(
-                p.draw->g2.max.x - p.size->shortcutSize.w - p.size->pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->shortcutSize.h / 2);
+                p.draw->g2.max.x - p.size.shortcutSize.w - p.size.pad,
+                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.shortcutSize.h / 2);
             event.render->drawText(
                 p.draw->shortcutGlyphs,
-                p.size->fontMetrics,
+                p.size.fontMetrics,
                 pos,
                 event.style->getColorRole(isEnabled() ?
                     _textRole :

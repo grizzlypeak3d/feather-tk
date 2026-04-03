@@ -13,6 +13,7 @@ namespace ftk
     {
         struct SizeData
         {
+            bool init = true;
             int margin = 0;
             int spacing = 0;
             int border = 0;
@@ -24,7 +25,7 @@ namespace ftk
             int diameter = 0;
             Size2I sizeHint;
         };
-        std::optional<SizeData> size;
+        SizeData size;
 
         struct DrawData
         {
@@ -82,7 +83,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -95,7 +96,7 @@ namespace ftk
         FTK_P();
         if (changed)
         {
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -103,7 +104,7 @@ namespace ftk
     
     Size2I RadioButton::getSizeHint() const
     {
-        return _p->size->sizeHint;
+        return _p->size.sizeHint;
     }
 
     void RadioButton::setGeometry(const Box2I& value)
@@ -120,7 +121,7 @@ namespace ftk
         FTK_P();
         if (event.hasChanges())
         {
-            p.size.reset();
+            p.size.init = true;
             p.draw.reset();
         }
     }
@@ -129,28 +130,28 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
-        if (!p.size.has_value())
+        if (p.size.init)
         {
-            p.size = Private::SizeData();
-            p.size->margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size->spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
-            p.size->border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size->keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size->pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size->fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
-            p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-            p.size->textSize = event.fontSystem->getSize(_text, p.size->fontInfo);
-            p.size->diameter = p.size->fontMetrics.lineHeight * .8F;
+            p.size.init = false;
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
+            p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+            p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+            p.size.diameter = p.size.fontMetrics.lineHeight * .8F;
 
-            p.size->sizeHint = Size2I();
-            p.size->sizeHint.w += p.size->diameter;
+            p.size.sizeHint = Size2I();
+            p.size.sizeHint.w += p.size.diameter;
             if (!_text.empty())
             {
-                p.size->sizeHint.w += p.size->spacing;
-                p.size->sizeHint.w += p.size->textSize.w + p.size->pad * 2;
+                p.size.sizeHint.w += p.size.spacing;
+                p.size.sizeHint.w += p.size.textSize.w + p.size.pad * 2;
             }
-            p.size->sizeHint.h = p.size->fontMetrics.lineHeight;
-            p.size->sizeHint = margin(p.size->sizeHint, p.size->margin + p.size->keyFocus);
+            p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
+            p.size.sizeHint = margin(p.size.sizeHint, p.size.margin + p.size.keyFocus);
 
             p.draw.reset();
         }
@@ -177,15 +178,15 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size->margin + p.size->keyFocus));
+            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
             p.draw->g3 = Box2I(
                 p.draw->g2.x(),
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->diameter / 2,
-                p.size->diameter,
-                p.size->diameter);
-            p.draw->keyFocus = border(p.draw->g, p.size->keyFocus);
-            p.draw->button0 = circle(center(p.draw->g3), p.size->diameter / 2);
-            p.draw->button1 = circle(center(p.draw->g3), p.size->diameter / 2 - p.size->border);
+                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.diameter / 2,
+                p.size.diameter,
+                p.size.diameter);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->button0 = circle(center(p.draw->g3), p.size.diameter / 2);
+            p.draw->button1 = circle(center(p.draw->g3), p.size.diameter / 2 - p.size.border);
         }
 
         // Draw the focus.
@@ -221,13 +222,13 @@ namespace ftk
         // Draw the text.
         if (!_text.empty() && p.draw->glyphs.empty())
         {
-            p.draw->glyphs = event.fontSystem->getGlyphs(_text, p.size->fontInfo);
+            p.draw->glyphs = event.fontSystem->getGlyphs(_text, p.size.fontInfo);
         }
         event.render->drawText(
             p.draw->glyphs,
-            p.size->fontMetrics,
-            V2I(p.draw->g2.x() + p.size->diameter + p.size->spacing + p.size->pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size->textSize.h / 2),
+            p.size.fontMetrics,
+            V2I(p.draw->g2.x() + p.size.diameter + p.size.spacing + p.size.pad,
+                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
             event.style->getColorRole(isEnabled() ?
                 _textRole :
                 ColorRole::TextDisabled));
