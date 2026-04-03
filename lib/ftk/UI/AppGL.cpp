@@ -1185,37 +1185,31 @@ namespace ftk
                         if (window->getID() == event.drop.windowID)
                         {
                             found = true;
-                            V2I pos;
-                            auto i = p.mousePos.find(window);
-                            if (i != p.mousePos.end())
-                            {
-                                pos = i->second;
-                            }
+                            V2I mousePos;
+                            SDL_GetGlobalMouseState(&mousePos.x, &mousePos.y);
+                            SDL_Window* sdlWindow = SDL_GetWindowFromID(event.drop.windowID);
+                            V2I windowPos;
+                            SDL_GetWindowPosition(sdlWindow, &windowPos.x, &windowPos.y);
+                            const float contentScale = window->getContentScale();
+                            const V2I pos(
+                                (mousePos.x - windowPos.x) * contentScale,
+                                (mousePos.y - windowPos.y) * contentScale);
+                            window->_cursorPos(pos);
+                            p.mousePos[window] = pos;
                             window->_drop(pos, std::make_shared<DragDropTextData>(p.dropFiles));
                             break;
                         }
                     }
                     if (!found)
                     {
+                        // This handles drops on the application icon.
                         if (auto window = p.activeWindow.lock())
                         {
-                            V2I pos;
-                            auto i = p.mousePos.find(window);
-                            if (i != p.mousePos.end())
-                            {
-                                pos = i->second;
-                            }
-                            window->_drop(pos, std::make_shared<DragDropTextData>(p.dropFiles));
+                            window->_drop(V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
                         }
                         else if (!p.windows.empty())
                         {
-                            V2I pos;
-                            auto i = p.mousePos.find(p.windows.front());
-                            if (i != p.mousePos.end())
-                            {
-                                pos = i->second;
-                            }
-                            p.windows.front()->_drop(pos, std::make_shared<DragDropTextData>(p.dropFiles));
+                            p.windows.front()->_drop(V2I(), std::make_shared<DragDropTextData>(p.dropFiles));
                         }
                     }
                     break;
