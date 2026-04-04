@@ -178,7 +178,6 @@ namespace ftk
         p.closeButton->setParent(hLayout);
         Divider::create(context, Orientation::Vertical, p.layout);
         p.widgetLayout = VerticalLayout::create(context, p.layout);
-        p.widgetLayout->setMarginRole(SizeRole::MarginInside);
         p.widgetLayout->setVStretch(Stretch::Expanding);
 
         p.closeButton->setClickedCallback(

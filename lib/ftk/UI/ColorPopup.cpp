@@ -11,7 +11,6 @@ namespace ftk
     struct ColorPopup::Private
     {
         std::shared_ptr<ColorWidget> widget;
-        std::shared_ptr<VerticalLayout> layout;
     };
 
     void ColorPopup::_init(
@@ -21,14 +20,9 @@ namespace ftk
     {
         IWidgetPopup::_init(context, "ftk::ColorPopup", parent);
         FTK_P();
-
         p.widget = ColorWidget::create(context);
         p.widget->setColor(color);
-
-        p.layout = VerticalLayout::create(context);
-        p.layout->setMarginRole(SizeRole::MarginSmall);
-        p.widget->setParent(p.layout);
-        setWidget(p.layout);
+        setWidget(p.widget);
     }
 
     ColorPopup::ColorPopup() :

@@ -11,69 +11,6 @@
 
 namespace ftk
 {
-    namespace
-    {
-        class ContainerWidget : public IMouseWidget
-        {
-        protected:
-            void _init(
-                const std::shared_ptr<Context>&,
-                const std::shared_ptr<IWidget>& parent = nullptr);
-
-            ContainerWidget();
-
-        public:
-            virtual ~ContainerWidget();
-
-            static std::shared_ptr<ContainerWidget> create(
-                const std::shared_ptr<Context>&,
-                const std::shared_ptr<IWidget>& parent = nullptr);
-
-            Size2I getSizeHint() const override;
-            void setGeometry(const Box2I&) override;
-        };
-
-        void ContainerWidget::_init(
-            const std::shared_ptr<Context>& context,
-            const std::shared_ptr<IWidget>& parent)
-        {
-            IMouseWidget::_init(context, "ftk::ContainerWidget", parent);
-            _setMouseHoverEnabled(true);
-            _setMousePressEnabled(true);
-        }
-
-        ContainerWidget::ContainerWidget()
-        {}
-
-        ContainerWidget::~ContainerWidget()
-        {}
-
-        std::shared_ptr<ContainerWidget> ContainerWidget::create(
-            const std::shared_ptr<Context>& context,
-            const std::shared_ptr<IWidget>& parent)
-        {
-            auto out = std::shared_ptr<ContainerWidget>(new ContainerWidget);
-            out->_init(context, parent);
-            return out;
-        }
-
-        Size2I ContainerWidget::getSizeHint() const
-        {
-            const auto& children = getChildren();
-            return !children.empty() ? children.front()->getSizeHint() : Size2I();
-        }
-
-        void ContainerWidget::setGeometry(const Box2I& value)
-        {
-            IMouseWidget::setGeometry(value);
-            const auto& children = getChildren();
-            if (!children.empty())
-            {
-                children.front()->setGeometry(value);
-            }
-        }
-    }
-
     struct IWidgetPopup::Private
     {
         ColorRole popupRole = ColorRole::Window;
@@ -82,7 +19,6 @@ namespace ftk
         bool open = false;
         std::function<void(void)> closeCallback;
         std::shared_ptr<IWidget> widget;
-        std::shared_ptr<ContainerWidget> containerWidget;
         std::weak_ptr<IWidget> restoreFocus;
 
         struct SizeData
@@ -110,8 +46,6 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         IPopup::_init(context, objectName, parent);
-        FTK_P();
-        p.containerWidget = ContainerWidget::create(context, shared_from_this());
     }
 
     IWidgetPopup::IWidgetPopup() :
@@ -198,7 +132,7 @@ namespace ftk
         p.widget = value;
         if (p.widget)
         {
-            p.widget->setParent(p.containerWidget);
+            p.widget->setParent(shared_from_this());
         }
     }
 
@@ -206,56 +140,58 @@ namespace ftk
     {
         IPopup::setGeometry(value);
         FTK_P();
-
-        const Box2I popupGeometry =
-            p.widgetGeometry.has_value() ?
-            p.widgetGeometry.value() :
-            p.buttonGeometry;
-        Size2I sizeHint = p.containerWidget->getSizeHint();
-        std::list<Box2I> boxes;
-        boxes.push_back(Box2I(
-            popupGeometry.min.x,
-            popupGeometry.max.y + 1,
-            sizeHint.w,
-            sizeHint.h));
-        boxes.push_back(Box2I(
-            popupGeometry.max.x + 1 - sizeHint.w,
-            popupGeometry.max.y + 1,
-            sizeHint.w,
-            sizeHint.h));
-        boxes.push_back(Box2I(
-            popupGeometry.min.x,
-            popupGeometry.min.y - sizeHint.h,
-            sizeHint.w,
-            sizeHint.h));
-        boxes.push_back(Box2I(
-            popupGeometry.max.x + 1 - sizeHint.w,
-            popupGeometry.min.y - sizeHint.h,
-            sizeHint.w,
-            sizeHint.h));
-        struct Intersect
+        bool changed = false;
+        if (p.widget)
         {
-            Box2I original;
-            Box2I intersected;
-        };
-        std::vector<Intersect> intersect;
-        for (const auto& box : boxes)
-        {
-            intersect.push_back({ box, ftk::intersect(box, value) });
-        }
-        std::stable_sort(
-            intersect.begin(),
-            intersect.end(),
-            [](const Intersect& a, const Intersect& b)
+            const Box2I popupGeometry =
+                p.widgetGeometry.has_value() ?
+                p.widgetGeometry.value() :
+                p.buttonGeometry;
+            Size2I sizeHint = p.widget->getSizeHint();
+            std::list<Box2I> boxes;
+            boxes.push_back(Box2I(
+                popupGeometry.min.x,
+                popupGeometry.max.y + 1,
+                sizeHint.w,
+                sizeHint.h));
+            boxes.push_back(Box2I(
+                popupGeometry.max.x + 1 - sizeHint.w,
+                popupGeometry.max.y + 1,
+                sizeHint.w,
+                sizeHint.h));
+            boxes.push_back(Box2I(
+                popupGeometry.min.x,
+                popupGeometry.min.y - sizeHint.h,
+                sizeHint.w,
+                sizeHint.h));
+            boxes.push_back(Box2I(
+                popupGeometry.max.x + 1 - sizeHint.w,
+                popupGeometry.min.y - sizeHint.h,
+                sizeHint.w,
+                sizeHint.h));
+            struct Intersect
             {
-                return
-                    area(a.intersected.size()) >
-                    area(b.intersected.size());
-            });
-        const Box2I g = intersect.front().intersected;
-        const bool changed = g != p.containerWidget->getGeometry();
-        p.containerWidget->setGeometry(g);
-
+                Box2I original;
+                Box2I intersected;
+            };
+            std::vector<Intersect> intersect;
+            for (const auto& box : boxes)
+            {
+                intersect.push_back({ box, ftk::intersect(box, value) });
+            }
+            std::stable_sort(
+                intersect.begin(),
+                intersect.end(),
+                [](const Intersect& a, const Intersect& b)
+                {
+                    return
+                        area(a.intersected.size()) >
+                        area(b.intersected.size());
+                });
+            const Box2I g = intersect.front().intersected;
+            changed = g != p.widget->getGeometry();
+            p.widget->setGeometry(g);
+        }
         if (changed)
         {
             p.draw.reset();
@@ -306,31 +242,38 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = p.containerWidget->getGeometry();
-            p.draw->g2 = margin(p.draw->g, p.size.border);
-            p.draw->g3 = Box2I(
-                p.draw->g.min.x - p.size.shadow,
-                p.draw->g.min.y,
-                p.draw->g.w() + p.size.shadow * 2,
-                p.draw->g.h() + p.size.shadow);
-            p.draw->shadow = shadow(p.draw->g3, p.size.shadow);
-            p.draw->border = border(p.draw->g2, p.size.border);
+            if (p.widget)
+            {
+                p.draw->g = p.widget->getGeometry();
+                p.draw->g2 = margin(p.draw->g, p.size.border);
+                p.draw->g3 = Box2I(
+                    p.draw->g.min.x - p.size.shadow,
+                    p.draw->g.min.y,
+                    p.draw->g.w() + p.size.shadow * 2,
+                    p.draw->g.h() + p.size.shadow);
+                p.draw->shadow = shadow(p.draw->g3, p.size.shadow);
+                p.draw->border = border(p.draw->g2, p.size.border);
+            }
         }
 
-        event.render->drawColorMesh(p.draw->shadow);
-        event.render->drawMesh(
-            p.draw->border,
-            event.style->getColorRole(ColorRole::Border));
-        event.render->drawRect(
-            p.draw->g,
-            event.style->getColorRole(p.popupRole));
+        if (p.widget)
+        {
+            event.render->drawColorMesh(p.draw->shadow);
+            event.render->drawMesh(
+                p.draw->border,
+                event.style->getColorRole(ColorRole::Border));
+            event.render->drawRect(
+                p.draw->g,
+                event.style->getColorRole(p.popupRole));
+        }
     }
 
     void IWidgetPopup::mousePressEvent(MouseClickEvent& event)
     {
         IPopup::mousePressEvent(event);
         FTK_P();
-        if (!contains(p.containerWidget->getGeometry(), event.pos) &&
+        if (p.widget &&
+            !contains(p.widget->getGeometry(), event.pos) &&
             !contains(p.buttonGeometry, event.pos))
         {
             close();
@@ -341,7 +284,8 @@ namespace ftk
     {
         IPopup::scrollEvent(event);
         FTK_P();
-        if (!contains(p.containerWidget->getGeometry(), event.pos))
+        if (p.widget &&
+            !contains(p.widget->getGeometry(), event.pos))
         {
             close();
         }

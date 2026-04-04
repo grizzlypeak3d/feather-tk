@@ -291,7 +291,7 @@ namespace ftk
             }
         }
 
-        bool clipRectEnabledPrev = event.render->getClipRectEnabled();
+        const bool clipRectEnabledPrev = event.render->getClipRectEnabled();
         const Box2I clipRectPrev = event.render->getClipRect();
         if (p.clipText)
         {

@@ -188,6 +188,16 @@ namespace ftk
         _p->pressedCallback = value;
     }
 
+    SizeRole RGBColorWidget::getMarginRole() const
+    {
+        return _p->layout->getMarginRole();
+    }
+
+    void RGBColorWidget::setMarginRole(SizeRole value)
+    {
+        _p->layout->setMarginRole(value);
+    }
+
     Size2I RGBColorWidget::getSizeHint() const
     {
         return _p->layout->getSizeHint();
@@ -407,6 +417,16 @@ namespace ftk
         _p->pressedCallback = value;
     }
 
+    SizeRole HSVColorWidget::getMarginRole() const
+    {
+        return _p->layout->getMarginRole();
+    }
+
+    void HSVColorWidget::setMarginRole(SizeRole value)
+    {
+        _p->layout->setMarginRole(value);
+    }
+
     Size2I HSVColorWidget::getSizeHint() const
     {
         return _p->layout->getSizeHint();
@@ -588,6 +608,7 @@ namespace ftk
                         p.pressedCallback(value, pressed);
                     }
                 });
+            p.rgbWidget->setMarginRole(SizeRole::MarginInside);
             break;
         case ColorWidgetMode::HSV:
             p.hsvWidget = HSVColorWidget::create(context, p.layout);
@@ -612,6 +633,7 @@ namespace ftk
                         p.pressedCallback(value, pressed);
                     }
                 });
+            p.hsvWidget->setMarginRole(SizeRole::MarginInside);
             break;
         default: break;
         }

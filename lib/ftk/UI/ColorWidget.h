@@ -42,6 +42,12 @@ namespace ftk
         //! Set the callback with a flag for whether the widget is presssed.
         FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
+        //! Get the margin role.
+        FTK_API SizeRole getMarginRole() const;
+
+        //! Set the margin role.
+        FTK_API void setMarginRole(SizeRole);
+
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
 
@@ -80,6 +86,12 @@ namespace ftk
 
         //! Set the callback with a flag for whether the widget is presssed.
         FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
+
+        //! Get the margin role.
+        FTK_API SizeRole getMarginRole() const;
+
+        //! Set the margin role.
+        FTK_API void setMarginRole(SizeRole);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
