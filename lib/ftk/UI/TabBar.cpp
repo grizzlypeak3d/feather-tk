@@ -52,7 +52,7 @@ namespace ftk
         p.buttonLayout->setSpacingRole(SizeRole::None);
 
         p.scrollWidget = ScrollWidget::create(context, ScrollType::Horizontal);
-        p.scrollWidget->setScrollBarsAutoHide(true);
+        p.scrollWidget->setScrollBarsVisible(false);
         p.scrollWidget->setBorder(false);
         p.scrollWidget->setStretch(Stretch::Expanding, Stretch::Fixed);
         p.scrollWidget->setWidget(p.buttonLayout);
