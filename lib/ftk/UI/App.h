@@ -96,12 +96,6 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineArg> >& = {},
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
-        //! Get the windows.
-        FTK_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
-
-        //! Observe the monitors.
-        FTK_API std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
-
         //! Get the font system.
         FTK_API const std::shared_ptr<FontSystem>& getFontSystem() const;
 
@@ -111,50 +105,47 @@ namespace ftk
         //! Get the style.
         FTK_API const std::shared_ptr<Style>& getStyle() const;
 
-        //! Get the color style.
+        //! \name Color Style
+        ///@{
+
         FTK_API ColorStyle getColorStyle() const;
-
-        //! Observe the color style.
         FTK_API std::shared_ptr<IObservable<ColorStyle> > observeColorStyle() const;
-
-        //! Set the color style.
         FTK_API void setColorStyle(ColorStyle);
 
-        //! Get the custom color roles.
         FTK_API const std::map<ColorRole, Color4F>& getCustomColorRoles() const;
-
-        //! Observe the custom color roles.
         FTK_API std::shared_ptr<IObservableMap<ColorRole, Color4F> > observeCustomColorRoles() const;
-
-        //! Set the custom color roles.
         FTK_API void setCustomColorRoles(const std::map<ColorRole, Color4F>&);
 
-        //! Get the color style command line option.
         FTK_API const std::shared_ptr<CmdLineOption<ColorStyle> >& getColorStyleCmdLineOption() const;
 
-        //! Get the default display scale.
+        ///@}
+
+        //! \name Display Scale
+        ///@{
+
         FTK_API float getDefaultDisplayScale() const;
-
-        //! Get the display scale.
         FTK_API float getDisplayScale() const;
-
-        //! Observe the display scale.
         FTK_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
-
-        //! Set the display scale.
         FTK_API void setDisplayScale(float);
 
-        //! Get the display scale command line option.
         FTK_API const std::shared_ptr<CmdLineOption<float> >& getDisplayScaleCmdLineOption() const;
 
-        //! Get whether tooltips are enabled.
+        ///@}
+
+        //! \name Tooltips
+        ///@{
+
         FTK_API bool areTooltipsEnabled() const;
-
-        //! Observe whether tooltips are enabled.
         FTK_API std::shared_ptr<IObservable<bool> > observeTooltipsEnabled() const;
-
-        //! Set whether tooltips are enabled.
         FTK_API void setTooltipsEnabled(bool);
+
+        ///@}
+
+        //! Observe the monitors.
+        FTK_API std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
+
+        //! Get the windows.
+        FTK_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
         //! Exit the application.
         FTK_API virtual void exit();

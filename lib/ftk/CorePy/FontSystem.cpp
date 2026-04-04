@@ -27,8 +27,8 @@ namespace ftk
 
             py::class_<FontInfo>(m, "FontInfo")
                 .def(py::init<>())
-                .def(py::init<FontType, int>())
-                .def_readwrite("type", &FontInfo::type)
+                .def(py::init<std::string, int>())
+                .def_readwrite("name", &FontInfo::name)
                 .def_readwrite("size", &FontInfo::size)
                 .def(py::self == py::self)
                 .def(py::self != py::self)
@@ -60,7 +60,7 @@ namespace ftk
                 .def(
                     py::init(&FontSystem::create),
                     py::arg("context"))
-                .def_property("fontTypes", &FontSystem::getFontTypes, &FontSystem::setFontTypes)
+                .def_property_readonly("fonts", &FontSystem::getFonts)
                 .def_property_readonly("glyphCacheSize", &FontSystem::getGlyphCacheSize)
                 .def_property_readonly("glyphCachePercentage", &FontSystem::getGlyphCachePercentage)
                 .def("getMetrics", &FontSystem::getMetrics, py::arg("fontInfo"))

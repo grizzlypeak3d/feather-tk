@@ -81,6 +81,9 @@ namespace ftk
             std::vector<Box2I>* = nullptr);
 
         FT_Library ftLibrary = nullptr;
+        std::shared_ptr<ObservableList<std::string> > fonts;
+        std::shared_ptr<Observable<size_t> > glyphCacheSize;
+        std::shared_ptr<Observable<float> > glyphCachePercentage;
 
         std::mutex mutex;
         std::map<std::string, std::vector<uint8_t> > fontData;
@@ -109,6 +112,10 @@ namespace ftk
                 LogType::Error);
         }
 
+        p.fonts = ObservableList<std::string>::create();
+        p.glyphCacheSize = Observable<size_t>::create();
+        p.glyphCachePercentage = Observable<float>::create();
+
         if (p.ftLibrary)
         {
             for (const auto& i : p.fontData)
@@ -125,7 +132,9 @@ namespace ftk
                         "ftk::FontSystem",
                         Format("Cannot create font: \"{0}\"").arg(i.first),
                         LogType::Error);
+                    continue;
                 }
+                p.fonts->pushBack(i.first);
             }
         }
     }
@@ -148,16 +157,14 @@ namespace ftk
         return std::shared_ptr<FontSystem>(new FontSystem(context));
     }
 
-    std::vector<std::string> FontSystem::getFontNames()
+    std::vector<std::string> FontSystem::getFonts() const
     {
-        FTK_P();
-        std::vector<std::string> out;
-        std::unique_lock<std::mutex> lock(p.mutex);
-        for (const auto& i : p.fontData)
-        {
-            out.push_back(i.first);
-        }
-        return out;
+        return _p->fonts->get();
+    }
+
+    std::shared_ptr<IObservableList<std::string> > FontSystem::observeFonts() const
+    {
+        return _p->fonts;
     }
 
     bool FontSystem::addFont(const std::string& name, const std::string& fileName)
@@ -191,31 +198,48 @@ namespace ftk
                 &p.faces[name]))
             {
                 out = true;
+                p.fonts->pushBack(name);
             }
         }
         return out;
     }
 
-    size_t FontSystem::getGlyphCacheSize() const
+    void FontSystem::removeFont(const std::string& name)
     {
         FTK_P();
-        size_t out = 0;
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            out = p.glyphCache.getSize();
+            auto i = p.fontData.find(name);
+            if (i != p.fontData.end())
+            {
+                p.fontData.erase(i);
+            }
         }
-        return out;
+        const size_t j = p.fonts->indexOf(name);
+        if (j != ObservableListInvalidIndex)
+        {
+            p.fonts->removeItem(j);
+        }
+    }
+
+    size_t FontSystem::getGlyphCacheSize() const
+    {
+        return _p->glyphCacheSize->get();
     }
 
     float FontSystem::getGlyphCachePercentage() const
     {
-        FTK_P();
-        float out = 0.F;
-        {
-            std::unique_lock<std::mutex> lock(p.mutex);
-            out = p.glyphCache.getPercentage();
-        }
-        return out;
+        return _p->glyphCachePercentage->get();
+    }
+
+    std::shared_ptr<IObservable<size_t> > FontSystem::observeGlyphCacheSize() const
+    {
+        return _p->glyphCacheSize;
+    }
+
+    std::shared_ptr<IObservable<float> > FontSystem::observeGlyphCachePercentage() const
+    {
+        return _p->glyphCachePercentage;
     }
 
     FontMetrics FontSystem::getMetrics(const FontInfo& info)
@@ -493,6 +517,25 @@ namespace ftk
 
         size.w = std::max(size.w, pos.x);
         size.h = pos.y;
+    }
+
+    void FontSystem::tick()
+    {
+        FTK_P();
+        size_t glyphCacheSize = 0;
+        float glyphCachePercentage = 0.F;
+        {
+            std::unique_lock<std::mutex> lock(p.mutex);
+            glyphCacheSize = p.glyphCache.getCount();
+            glyphCachePercentage = p.glyphCache.getPercentage();
+        }
+        p.glyphCacheSize->setIfChanged(glyphCacheSize);
+        p.glyphCachePercentage->setIfChanged(glyphCachePercentage);
+    }
+
+    std::chrono::milliseconds FontSystem::getTickTime() const
+    {
+        return std::chrono::seconds(1);
     }
 
     void to_json(nlohmann::json& json, const FontInfo& value)

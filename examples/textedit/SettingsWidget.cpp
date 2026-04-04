@@ -34,8 +34,8 @@ namespace textedit
         // Create the font widgets.
         _fontComboBox = ComboBox::create(context);
         auto fontSystem = context->getSystem<FontSystem>();
-        const auto fontNames = fontSystem->getFontNames();
-        _fontComboBox->setItems(fontNames);
+        const auto fonts = fontSystem->getFonts();
+        _fontComboBox->setItems(fonts);
         _fontComboBox->setHStretch(Stretch::Expanding);
         _fontSizeEdit = ftk::IntEdit::create(context);
         _fontSizeEdit->setRange(6, 64);
@@ -96,12 +96,12 @@ namespace textedit
 
         // Set the font callbacks.
         _fontComboBox->setIndexCallback(
-            [appWeak, fontNames](int index)
+            [appWeak, fonts](int index)
             {
                 if (auto app = appWeak.lock())
                 {
                     auto options = app->getSettingsModel()->getTextEditOptions();
-                    options.fontInfo.name = fontNames[index];
+                    options.fontInfo.name = fonts[index];
                     app->getSettingsModel()->setTextEditOptions(options);
                 }
             });
@@ -153,13 +153,13 @@ namespace textedit
         // Observe text edit options and update the widgets.
         _textEditOptionsObserver = Observer<TextEditOptions>::create(
             app->getSettingsModel()->observeTextEditOptions(),
-            [this, fontNames](const TextEditOptions& value)
+            [this, fonts](const TextEditOptions& value)
             {
                 int index = -1;
-                const auto i = std::find(fontNames.begin(), fontNames.end(), value.fontInfo.name);
-                if (i != fontNames.end())
+                const auto i = std::find(fonts.begin(), fonts.end(), value.fontInfo.name);
+                if (i != fonts.end())
                 {
-                    index = i - fontNames.begin();
+                    index = i - fonts.begin();
                 }
                 _fontComboBox->setCurrentIndex(index);
                 _fontSizeEdit->setValue(value.fontInfo.size);

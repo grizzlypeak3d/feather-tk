@@ -99,7 +99,6 @@ namespace ftk
         };
         CmdLine cmdLine;
 
-        std::shared_ptr<ObservableList<MonitorInfo> > monitors;
         std::shared_ptr<FontSystem> fontSystem;
         std::shared_ptr<IconSystem> iconSystem;
         std::shared_ptr<Style> style;
@@ -109,6 +108,7 @@ namespace ftk
         std::shared_ptr<Observable<float> > displayScale;
         std::shared_ptr<Observable<bool> > tooltipsEnabled;
         bool running = true;
+        std::shared_ptr<ObservableList<MonitorInfo> > monitors;
         std::list<std::shared_ptr<IWindow> > windows;
         std::weak_ptr<IWindow> activeWindow;
         std::map<std::shared_ptr<IWindow>, V2I> mousePos;
@@ -160,7 +160,6 @@ namespace ftk
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Create app...");
 
-        p.monitors = ObservableList<MonitorInfo>::create();
         p.fontSystem = context->getSystem<FontSystem>();
         p.iconSystem = context->getSystem<IconSystem>();
         p.style = Style::create(context);
@@ -204,6 +203,8 @@ namespace ftk
         p.displayScale = Observable<float>::create(p.defaultDisplayScale);
 
         p.tooltipsEnabled = Observable<bool>::create(true);
+
+        p.monitors = ObservableList<MonitorInfo>::create();
 
         _monitorsUpdate();
         _styleUpdate();
@@ -271,16 +272,6 @@ namespace ftk
         auto out = std::shared_ptr<App>(new App);
         out->_init(context, args, name, summary, cmdLineArgs, cmdLineOptions);
         return out;
-    }
-
-    const std::list<std::shared_ptr<IWindow> >& App::getWindows() const
-    {
-        return _p->windows;
-    }
-
-    std::shared_ptr<IObservableList<MonitorInfo> > App::observeMonitors() const
-    {
-        return _p->monitors;
     }
 
     const std::shared_ptr<FontSystem>& App::getFontSystem() const
@@ -392,6 +383,16 @@ namespace ftk
         {
             window->setTooltipsEnabled(value);
         }
+    }
+
+    std::shared_ptr<IObservableList<MonitorInfo> > App::observeMonitors() const
+    {
+        return _p->monitors;
+    }
+
+    const std::list<std::shared_ptr<IWindow> >& App::getWindows() const
+    {
+        return _p->windows;
     }
 
     void App::exit()

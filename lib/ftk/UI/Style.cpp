@@ -170,11 +170,11 @@ namespace ftk
     struct Style::Private
     {
         std::weak_ptr<Context> context;
-        std::map<SizeRole, int> sizeRoles;
-        std::map<ColorRole, Color4F> colorRoles;
-        ColorControls colorControls;
+        std::shared_ptr<ObservableMap<SizeRole, int> > sizeRoles;
+        std::shared_ptr<ObservableMap<ColorRole, Color4F> > colorRoles;
+        std::shared_ptr<Observable<ColorControls> > colorControls;
         M44F colorMatrix;
-        std::map<FontRole, FontInfo> fontRoles;
+        std::shared_ptr<ObservableMap<FontRole, FontInfo> > fontRoles;
     };
 
     void Style::_init(
@@ -183,9 +183,10 @@ namespace ftk
         FTK_P();
 
         p.context = context;
-        p.sizeRoles = getDefaultSizeRoles();
-        p.colorRoles = getDefaultColorRoles();
-        p.fontRoles = getDefaultFontRoles();
+        p.sizeRoles = ObservableMap<SizeRole, int>::create(getDefaultSizeRoles());
+        p.colorRoles = ObservableMap<ColorRole, Color4F>::create(getDefaultColorRoles());
+        p.colorControls = Observable<ColorControls>::create();
+        p.fontRoles = ObservableMap<FontRole, FontInfo>::create(getDefaultFontRoles());
 
         _colorUpdate();
     }
@@ -207,45 +208,49 @@ namespace ftk
 
     const std::map<SizeRole, int>& Style::getSizeRoles() const
     {
+        return _p->sizeRoles->get();
+    }
+
+    FTK_API std::shared_ptr<IObservableMap<SizeRole, int> > Style::observeSizeRoles() const
+    {
         return _p->sizeRoles;
     }
 
     void Style::setSizeRoles(const std::map<SizeRole, int>& value)
     {
-        _p->sizeRoles = value;
+        _p->sizeRoles->setIfChanged(value);
     }
 
     int Style::getSizeRole(SizeRole role, float scale) const
     {
         FTK_P();
-        const auto i = p.sizeRoles.find(role);
-        return i != p.sizeRoles.end() ? (i->second * scale) : 0;
-    }
-
-    void Style::setSizeRole(SizeRole role, int value)
-    {
-        FTK_P();
-        if (value == p.sizeRoles[role])
-            return;
-        p.sizeRoles[role] = value;
+        const auto& sizeRoles = p.sizeRoles->get();
+        const auto i = sizeRoles.find(role);
+        return i != sizeRoles.end() ? (i->second * scale) : 0;
     }
 
     const std::map<ColorRole, Color4F>& Style::getColorRoles() const
+    {
+        return _p->colorRoles->get();
+    }
+
+    std::shared_ptr<IObservableMap<ColorRole, Color4F> > Style::observeColorRoles() const
     {
         return _p->colorRoles;
     }
 
     void Style::setColorRoles(const std::map<ColorRole, Color4F>& value)
     {
-        _p->colorRoles = value;
+        _p->colorRoles->setIfChanged(value);
     }
 
     Color4F Style::getColorRole(ColorRole role) const
     {
         FTK_P();
-        const auto i = p.colorRoles.find(role);
+        const auto& colorRoles = p.colorRoles->get();
+        const auto i = colorRoles.find(role);
         Color4F c;
-        if (i != p.colorRoles.end())
+        if (i != colorRoles.end())
         {
             c = i->second;
         }
@@ -253,15 +258,12 @@ namespace ftk
         return Color4F(v.x, v.y, v.z, c.a);
     }
 
-    void Style::setColorRole(ColorRole role, const Color4F& value)
+    const ColorControls& Style::getColorControls() const
     {
-        FTK_P();
-        if (value == p.colorRoles[role])
-            return;
-        p.colorRoles[role] = value;
+        return _p->colorControls->get();
     }
 
-    const ColorControls& Style::getColorControls() const
+    std::shared_ptr<IObservable<ColorControls> > Style::observeColorControls() const
     {
         return _p->colorControls;
     }
@@ -269,28 +271,34 @@ namespace ftk
     void Style::setColorControls(const ColorControls& value)
     {
         FTK_P();
-        if (value == p.colorControls)
-            return;
-        p.colorControls = value;
-        _colorUpdate();
+        if (p.colorControls->setIfChanged(value))
+        {
+            _colorUpdate();
+        }
     }
 
     const std::map<FontRole, FontInfo>& Style::getFontRoles() const
+    {
+        return _p->fontRoles->get();
+    }
+
+    std::shared_ptr<IObservableMap<FontRole, FontInfo> > Style::observeFontRoles() const
     {
         return _p->fontRoles;
     }
 
     void Style::setFontRoles(const std::map<FontRole, FontInfo>& value)
     {
-        _p->fontRoles = value;
+        _p->fontRoles->setIfChanged(value);
     }
 
     FontInfo Style::getFontRole(FontRole role, float scale) const
     {
         FTK_P();
         FontInfo out;
-        const auto i = p.fontRoles.find(role);
-        if (i != p.fontRoles.end())
+        const auto& fontRoles = p.fontRoles->get();
+        const auto i = fontRoles.find(role);
+        if (i != fontRoles.end())
         {
             out = i->second;
             out.size *= scale;
@@ -298,17 +306,13 @@ namespace ftk
         return out;
     }
 
-    void Style::setFontRole(FontRole role, const FontInfo& value)
-    {
-        _p->fontRoles[role] = value;
-    }
-
     void Style::_colorUpdate()
     {
         FTK_P();
+        const auto& colorControls = p.colorControls->get();
         p.colorMatrix =
-            brightness(V3F(p.colorControls.brightness, p.colorControls.brightness, p.colorControls.brightness)) *
-            contrast(V3F(p.colorControls.contrast, p.colorControls.contrast, p.colorControls.contrast));
+            brightness(V3F(colorControls.brightness, colorControls.brightness, colorControls.brightness)) *
+            contrast(V3F(colorControls.contrast, colorControls.contrast, colorControls.contrast));
     }
 
     void to_json(nlohmann::json& json, const ColorControls& value)

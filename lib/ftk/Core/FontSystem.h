@@ -6,6 +6,8 @@
 #include <ftk/Core/Box.h>
 #include <ftk/Core/ISystem.h>
 #include <ftk/Core/Image.h>
+#include <ftk/Core/Observable.h>
+#include <ftk/Core/ObservableList.h>
 
 namespace ftk
 {
@@ -100,25 +102,21 @@ namespace ftk
         //! \name Fonts
         ///@{
 
-        //! Get the font names.
-        FTK_API std::vector<std::string> getFontNames();
-
-        //! Add a font.
+        FTK_API std::vector<std::string> getFonts() const;
+        FTK_API std::shared_ptr<IObservableList<std::string> > observeFonts() const;
         FTK_API bool addFont(const std::string& name, const std::string& fileName);
-
-        //! Add a font.
         FTK_API bool addFont(const std::string& name, const uint8_t*, size_t);
+        FTK_API void removeFont(const std::string&);
 
         ///@}
 
         //! \name Information
         ///@{
 
-        //! Get the glyph cache size.
         FTK_API size_t getGlyphCacheSize() const;
-
-        //! Get the percentage of the glyph cache in use.
         FTK_API float getGlyphCachePercentage() const;
+        FTK_API std::shared_ptr<IObservable<size_t> > observeGlyphCacheSize() const;
+        FTK_API std::shared_ptr<IObservable<float> > observeGlyphCachePercentage() const;
 
         ///@}
 
@@ -151,6 +149,9 @@ namespace ftk
             const FontInfo&);
 
         ///@}
+
+        FTK_API void tick() override;
+        FTK_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         FTK_PRIVATE();

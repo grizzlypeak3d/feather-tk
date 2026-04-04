@@ -6,9 +6,13 @@
 #include "App.h"
 
 #include <ftk/UI/ComboBox.h>
+#include <ftk/UI/FileEdit.h>
 #include <ftk/UI/FormLayout.h>
+#include <ftk/UI/GroupBox.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
+
+#include <ftk/Core/Format.h>
 
 using namespace ftk;
 
@@ -23,71 +27,73 @@ namespace widgets
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
-        layout->setMarginRole(SizeRole::MarginLarge);
+        layout->setMarginRole(SizeRole::Margin);
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
         _scrollWidget->setBorder(false);
         _scrollWidget->setWidget(layout);
 
-        // Create font widgets.
-        auto fontSystem = context->getSystem<FontSystem>();
-        const auto fontNames = fontSystem->getFontNames();
+        // Create font role widgets.
         auto style = app->getStyle();
-        auto fontRoles = style->getFontRoles();
-
-        auto regularComboBox = ComboBox::create(context, fontNames);
-        auto i = std::find(fontNames.begin(), fontNames.end(), fontRoles[FontRole::Label].name);
-        if (i != fontNames.end())
+        const auto fontRoleLabels = getFontRoleLabels();
+        auto groupBox = GroupBox::create(context, "Font Roles", layout);
+        auto formLayout = FormLayout::create(context, groupBox);
+        for (const auto fontRole : getFontRoleEnums())
         {
-            regularComboBox->setCurrentIndex(i - fontNames.begin());
-        }
-        auto formLayout = FormLayout::create(context, layout);
-        formLayout->addRow("Regular:", regularComboBox);
-
-        auto titleComboBox = ComboBox::create(context, fontNames);
-        i = std::find(fontNames.begin(), fontNames.end(), fontRoles[FontRole::Title].name);
-        if (i != fontNames.end())
-        {
-            titleComboBox->setCurrentIndex(i - fontNames.begin());
-        }
-        formLayout->addRow("Title:", titleComboBox);
-
-        auto monoComboBox = ComboBox::create(context, fontNames);
-        i = std::find(fontNames.begin(), fontNames.end(), fontRoles[FontRole::Mono].name);
-        if (i != fontNames.end())
-        {
-            monoComboBox->setCurrentIndex(i - fontNames.begin());
-        }
-        formLayout->addRow("Mono:", monoComboBox);
-
-        auto symbolsComboBox = ComboBox::create(context, fontNames);
-        i = std::find(fontNames.begin(), fontNames.end(), fontRoles[FontRole::Symbols].name);
-        if (i != fontNames.end())
-        {
-            symbolsComboBox->setCurrentIndex(i - fontNames.begin());
-        }
-        formLayout->addRow("Symbols:", symbolsComboBox);
-
-        regularComboBox->setIndexCallback(
-            [style, fontNames](int index)
+            if (fontRole != FontRole::None)
             {
-                auto fontRoles = style->getFontRoles();
-                fontRoles[FontRole::Label].name = fontNames[index];
-                style->setFontRoles(fontRoles);
+                _comboBoxes[fontRole] = ComboBox::create(context);
+                _comboBoxes[fontRole]->setIndexCallback(
+                    [this, style, fontRole](int index)
+                    {
+                        auto fontRoles = style->getFontRoles();
+                        fontRoles[fontRole].name = _fonts[index];
+                        style->setFontRoles(fontRoles);
+                    });
+                formLayout->addRow(Format("{0}:").arg(
+                    fontRoleLabels[static_cast<int>(fontRole)]), _comboBoxes[fontRole]);
+            }
+        }
+
+        // Create add font widgets.
+        groupBox = GroupBox::create(context, "Add Fonts", layout);
+        auto vLayout = VerticalLayout::create(context, groupBox);
+        auto fileEdit = FileEdit::create(context, vLayout);
+        auto fontSystem = context->getSystem<FontSystem>();
+        fileEdit->setCallback(
+            [this, fontSystem](const Path& value)
+            {
+                fontSystem->addFont(
+                    value.getBase() + value.getNum(),
+                    value.get());
             });
 
-        titleComboBox->setIndexCallback(
-            [app, fontNames](int index)
+        // Create obervers.
+        _fontsObserver = ListObserver<std::string>::create(
+            fontSystem->observeFonts(),
+            [this, app](const std::vector<std::string>& value)
             {
+                _fonts = value;
+                for (const auto fontRole : getFontRoleEnums())
+                {
+                    if (fontRole != FontRole::None)
+                    {
+                        _comboBoxes[fontRole]->setItems(value);
+                    }
+                }
             });
 
-        monoComboBox->setIndexCallback(
-            [app, fontNames](int index)
+        _fontRolesObserver = MapObserver<FontRole, FontInfo>::create(
+            style->observeFontRoles(),
+            [this, fontSystem](const std::map<FontRole, FontInfo>& value)
             {
-            });
-
-        symbolsComboBox->setIndexCallback(
-            [app, fontNames](int index)
-            {
+                for (const auto i : value)
+                {
+                    if (i.first != FontRole::None)
+                    {
+                        const auto j = std::find(_fonts.begin(), _fonts.end(), i.second.name);
+                        _comboBoxes[i.first]->setCurrentIndex(j != _fonts.end() ? (j - _fonts.begin()) : -1);
+                    }
+                }
             });
     }
 

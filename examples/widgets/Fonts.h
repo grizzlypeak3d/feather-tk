@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/ComboBox.h>
 #include <ftk/UI/ScrollWidget.h>
 
 namespace widgets
@@ -31,6 +32,12 @@ namespace widgets
         void setGeometry(const ftk::Box2I&) override;
 
     private:
+        std::vector<std::string> _fonts;
+
         std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
+        std::map<ftk::FontRole, std::shared_ptr<ftk::ComboBox> > _comboBoxes;
+
+        std::shared_ptr<ftk::ListObserver<std::string> > _fontsObserver;
+        std::shared_ptr<ftk::MapObserver<ftk::FontRole, ftk::FontInfo> > _fontRolesObserver;
     };
 }
