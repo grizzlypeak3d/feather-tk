@@ -42,7 +42,6 @@ namespace ftk
         {
             Box2I g;
             Box2I g2;
-            TriMesh2F mesh;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -335,7 +334,6 @@ namespace ftk
             {
                 p.draw->g2 = margin(p.draw->g2, -p.size.keyFocus);
             }
-            p.draw->mesh = rect(p.draw->g);
             p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
@@ -343,9 +341,23 @@ namespace ftk
         const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
         if (colorRole != ColorRole::None)
         {
-            event.render->drawMesh(
-                p.draw->mesh,
+            event.render->drawRect(
+                p.draw->g,
                 event.style->getColorRole(colorRole));
+        }
+
+        // Draw the mouse state.
+        if (_isMousePressed())
+        {
+            event.render->drawRect(
+                p.draw->g,
+                event.style->getColorRole(ColorRole::Pressed));
+        }
+        else if (_isMouseInside())
+        {
+            event.render->drawRect(
+                p.draw->g,
+                event.style->getColorRole(ColorRole::Hover));
         }
 
         // Draw the focus.
@@ -354,20 +366,6 @@ namespace ftk
             event.render->drawMesh(
                 p.draw->keyFocus,
                 event.style->getColorRole(ColorRole::KeyFocus));
-        }
-
-        // Draw the mouse states.
-        if (_isMousePressed())
-        {
-            event.render->drawMesh(
-                p.draw->mesh,
-                event.style->getColorRole(ColorRole::Pressed));
-        }
-        else if (_isMouseInside())
-        {
-            event.render->drawMesh(
-                p.draw->mesh,
-                event.style->getColorRole(ColorRole::Hover));
         }
 
         // Draw the icon.

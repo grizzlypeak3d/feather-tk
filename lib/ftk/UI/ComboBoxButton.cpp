@@ -167,14 +167,6 @@ namespace ftk
                 event.style->getColorRole(_buttonRole));
         }
 
-        // Draw the current state.
-        if (p.current)
-        {
-            event.render->drawMesh(
-                p.draw->keyFocus,
-                event.style->getColorRole(ColorRole::KeyFocus));
-        }
-
         // Draw the mouse state.
         if (_isMousePressed())
         {
@@ -187,6 +179,14 @@ namespace ftk
             event.render->drawRect(
                 p.draw->g,
                 event.style->getColorRole(ColorRole::Hover));
+        }
+
+        // Draw the current state.
+        if (p.current)
+        {
+            event.render->drawMesh(
+                p.draw->keyFocus,
+                event.style->getColorRole(ColorRole::KeyFocus));
         }
 
         // Draw the icon.

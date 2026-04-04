@@ -29,7 +29,6 @@ namespace ftk
         {
             Box2I g;
             Box2I g2;
-            TriMesh2F background;
             TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
@@ -184,7 +183,6 @@ namespace ftk
                 -(p.size.margin + p.size.keyFocus),
                 -(p.size.margin + p.size.pad + p.size.keyFocus),
                 -(p.size.margin + p.size.keyFocus));
-            p.draw->background = rect(p.draw->g);
             p.draw->border = border(p.draw->g, p.size.border);
             p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
@@ -193,9 +191,23 @@ namespace ftk
         const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
         if (colorRole != ColorRole::None)
         {
-            event.render->drawMesh(
-                p.draw->background,
+            event.render->drawRect(
+                p.draw->g,
                 event.style->getColorRole(colorRole));
+        }
+
+        // Draw the mouse state.
+        if (_isMousePressed())
+        {
+            event.render->drawRect(
+                p.draw->g,
+                event.style->getColorRole(ColorRole::Pressed));
+        }
+        else if (_isMouseInside())
+        {
+            event.render->drawRect(
+                p.draw->g,
+                event.style->getColorRole(ColorRole::Hover));
         }
 
         // Draw the focus and border.
@@ -203,20 +215,6 @@ namespace ftk
         event.render->drawMesh(
             keyFocus ? p.draw->keyFocus : p.draw->border,
             event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
-
-        // Draw the mouse states.
-        if (_isMousePressed())
-        {
-            event.render->drawMesh(
-                p.draw->background,
-                event.style->getColorRole(ColorRole::Pressed));
-        }
-        else if (_isMouseInside())
-        {
-            event.render->drawMesh(
-                p.draw->background,
-                event.style->getColorRole(ColorRole::Hover));
-        }
 
         // Draw the icon and text.
         int x = p.draw->g2.x();

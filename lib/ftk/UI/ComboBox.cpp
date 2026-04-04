@@ -58,7 +58,6 @@ namespace ftk
         {
             Box2I g;
             Box2I g2;
-            TriMesh2F background;
             TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
@@ -307,14 +306,13 @@ namespace ftk
             p.draw = Private::DrawData();
             p.draw->g = getGeometry();
             p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->background = rect(p.draw->g);
             p.draw->border = border(p.draw->g, p.size.border);
             p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         // Draw the background.
-        event.render->drawMesh(
-            p.draw->background,
+        event.render->drawRect(
+            p.draw->g,
             event.style->getColorRole(ColorRole::Button));
 
         // Draw the focus and border.
@@ -323,17 +321,17 @@ namespace ftk
             keyFocus ? p.draw->keyFocus : p.draw->border,
             event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
 
-        // Draw the mouse states.
+        // Draw the mouse state.
         if (_isMousePressed())
         {
-            event.render->drawMesh(
-                p.draw->background,
+            event.render->drawRect(
+                p.draw->g,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawMesh(
-                p.draw->background,
+            event.render->drawRect(
+                p.draw->g,
                 event.style->getColorRole(ColorRole::Hover));
         }
 

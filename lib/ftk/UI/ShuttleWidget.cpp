@@ -112,7 +112,21 @@ namespace ftk
     {
         IMouseWidget::drawEvent(drawRect, event);
         FTK_P();
+
         const Box2I& g = getGeometry();
+        if (_isMousePressed())
+        {
+            event.render->drawRect(
+                g,
+                event.style->getColorRole(ColorRole::Pressed));
+        }
+        else if (_isMouseInside())
+        {
+            event.render->drawRect(
+                g,
+                event.style->getColorRole(ColorRole::Hover));
+        }
+
         if (p.iconIndex >= 0 && p.iconIndex < p.iconImages.size())
         {
             const Size2I& iconSize = p.iconImages.front()->getSize();
@@ -127,18 +141,6 @@ namespace ftk
                 event.style->getColorRole(isEnabled() ?
                     ColorRole::Text :
                     ColorRole::TextDisabled));
-        }
-        if (_isMousePressed())
-        {
-            event.render->drawRect(
-                g,
-                event.style->getColorRole(ColorRole::Pressed));
-        }
-        else if (_isMouseInside())
-        {
-            event.render->drawRect(
-                g,
-                event.style->getColorRole(ColorRole::Hover));
         }
     }
 

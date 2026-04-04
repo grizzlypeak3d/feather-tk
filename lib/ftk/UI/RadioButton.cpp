@@ -189,15 +189,7 @@ namespace ftk
             p.draw->button1 = circle(center(p.draw->g3), p.size.diameter / 2 - p.size.border);
         }
 
-        // Draw the focus.
-        if (hasKeyFocus())
-        {
-            event.render->drawMesh(
-                p.draw->keyFocus,
-                event.style->getColorRole(ColorRole::KeyFocus));
-        }
-
-        // Draw the mouse states.
+        // Draw the mouse state.
         if (_isMousePressed())
         {
             event.render->drawRect(
@@ -209,6 +201,14 @@ namespace ftk
             event.render->drawRect(
                 p.draw->g,
                 event.style->getColorRole(ColorRole::Hover));
+        }
+
+        // Draw the focus.
+        if (hasKeyFocus())
+        {
+            event.render->drawMesh(
+                p.draw->keyFocus,
+                event.style->getColorRole(ColorRole::KeyFocus));
         }
 
         // Draw the button.
