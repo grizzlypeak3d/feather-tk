@@ -823,23 +823,11 @@ namespace ftk
         FTK_P();
         _closeTooltip();
 
-        // Send event to the focused widget or parent.
+        // Send event to the focused widget.
         ScrollEvent event(value, modifiers, p.cursorPos);
         if (auto widget = p.keyFocus.lock())
         {
-            while (widget)
-            {
-                widget->scrollEvent(event);
-                if (event.accept)
-                {
-                    break;
-                }
-                if (std::dynamic_pointer_cast<IDialog>(widget))
-                {
-                    break;
-                }
-                widget = widget->getParent();
-            }
+            widget->scrollEvent(event);
         }
 
         // Send event to the hovered widget.
