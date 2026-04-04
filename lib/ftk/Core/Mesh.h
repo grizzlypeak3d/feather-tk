@@ -41,12 +41,24 @@ namespace ftk
     //! Two-dimensional triangle.
     struct FTK_API_TYPE Triangle2
     {
+        Triangle2() = default;
+        constexpr Triangle2(
+            const Vertex2&,
+            const Vertex2&,
+            const Vertex2&);
+
         std::array<Vertex2, 3> v;
     };
 
     //! Three-dimensional triangle.
     struct FTK_API_TYPE Triangle3
     {
+        Triangle3() = default;
+        constexpr Triangle3(
+            const Vertex3&,
+            const Vertex3&,
+            const Vertex3&);
+
         std::array<Vertex3, 3> v;
     };
 

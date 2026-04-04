@@ -75,12 +75,12 @@ namespace ftk
             const V2F v2CW = perpCW(v2) * options.width / 2.F;
             const V2F v2CCW = perpCCW(v2) * options.width / 2.F;
             TriMesh2F mesh;
-            mesh.v.push_back(v0 + v2CCW);
-            mesh.v.push_back(v0 + v2CW);
-            mesh.v.push_back(v1 + v2CW);
-            mesh.v.push_back(v1 + v2CCW);
-            mesh.triangles.push_back({ 1, 3, 2 });
-            mesh.triangles.push_back({ 3, 1, 4 });
+            mesh.v.emplace_back(v0 + v2CCW);
+            mesh.v.emplace_back(v0 + v2CW);
+            mesh.v.emplace_back(v1 + v2CW);
+            mesh.v.emplace_back(v1 + v2CCW);
+            mesh.triangles.emplace_back(1, 3, 2);
+            mesh.triangles.emplace_back(3, 1, 4);
 
             if (p.vbos["line"])
             {

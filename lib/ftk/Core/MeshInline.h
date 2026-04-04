@@ -16,6 +16,20 @@ namespace ftk
         c(c)
     {}
 
+    constexpr Triangle2::Triangle2(
+        const Vertex2 & v0,
+        const Vertex2 & v1,
+        const Vertex2 & v2) :
+        v({ v0, v1, v2 })
+    {}
+
+    constexpr Triangle3::Triangle3(
+        const Vertex3& v0,
+        const Vertex3& v1,
+        const Vertex3& v2) :
+        v({ v0, v1, v2 })
+    {}
+
     inline float edge(const V2F& p, const V2F& v0, const V2F& v1)
     {
         return
