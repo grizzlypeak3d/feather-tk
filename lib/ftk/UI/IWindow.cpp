@@ -856,11 +856,9 @@ namespace ftk
         auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
         for (auto i = widgets.begin(); i != widgets.end(); ++i)
         {
-            std::cout << "drop: " << (*i)->getObjectName() << std::endl;
             (*i)->dropEvent(event);
             if (event.accept)
             {
-                std::cout << "  accept!" << std::endl;
                 break;
             }
             if (std::dynamic_pointer_cast<IDialog>(*i))

@@ -985,7 +985,7 @@ namespace ftk
                             Size2I frameBufferSize;
                             SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
                             SDL_GetWindowSizeInPixels(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
-                            window->_windowUpdate(windowSize, frameBufferSize);
+                            window->_setSize(windowSize, frameBufferSize);
                         }
                     }
                     break;
@@ -1187,7 +1187,14 @@ namespace ftk
                         {
                             found = true;
                             V2I mousePos;
+#if defined(FTK_SDL2)
                             SDL_GetGlobalMouseState(&mousePos.x, &mousePos.y);
+#elif defined(FTK_SDL3)
+                            V2F mousePosF;
+                            SDL_GetGlobalMouseState(&mousePosF.x, &mousePosF.y);
+                            mousePos.x = mousePosF.x;
+                            mousePos.y = mousePosF.y;
+#endif // FTK_SDL2
                             SDL_Window* sdlWindow = SDL_GetWindowFromID(event.drop.windowID);
                             V2I windowPos;
                             SDL_GetWindowPosition(sdlWindow, &windowPos.x, &windowPos.y);
