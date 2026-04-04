@@ -21,11 +21,13 @@ namespace ftk
 
         if (0 == cornerRadius)
         {
+            out.v.reserve(4);
             out.v.emplace_back(x, y);
             out.v.emplace_back(x + w, y);
             out.v.emplace_back(x + w, y + h);
             out.v.emplace_back(x, y + h);
 
+            out.triangles.reserve(2);
             out.triangles.emplace_back(1, 3, 2);
             out.triangles.emplace_back(3, 1, 4);
         }
@@ -134,6 +136,7 @@ namespace ftk
 
         if (0 == radius)
         {
+            out.v.reserve(8);
             out.v.emplace_back(x, y);
             out.v.emplace_back(x + w, y);
             out.v.emplace_back(x + w, y + h);
@@ -143,6 +146,7 @@ namespace ftk
             out.v.emplace_back(x + w - width, y + h - width);
             out.v.emplace_back(x + width, y + h - width);
 
+            out.triangles.reserve(8);
             out.triangles.emplace_back(1, 5, 2);
             out.triangles.emplace_back(2, 5, 6);
             out.triangles.emplace_back(2, 6, 3);
