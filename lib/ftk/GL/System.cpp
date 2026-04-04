@@ -61,13 +61,19 @@ namespace ftk
             p.logSystem = logSystem;
 #if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
-#endif // FTK_SDL2
             if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
+#elif defined(FTK_SDL3)
+            if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
+#endif // FTK_SDL2
             {
                 throw std::runtime_error(Format("Cannot initialize SDL: {0}").
                     arg(SDL_GetError()));
             }
+#if defined(FTK_SDL2)
             if (SDL_GL_LoadLibrary(NULL) < 0)
+#elif defined(FTK_SDL3)
+            if (!SDL_GL_LoadLibrary(NULL))
+#endif // FTK_SDL2
             {
                 throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
                     arg(SDL_GetError()));
