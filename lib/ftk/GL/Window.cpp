@@ -168,10 +168,10 @@ namespace ftk
                     Format(
                         "\n"
                         "    New window: {0}\n"
-                        "    * Size: {1}\n"
-                        "    * OpenGL vendor: {2}\n"
-                        "    * OpenGL renderer: {3}\n"
-                        "    * OpenGL version: {4}").
+                        "        * Size: {1}\n"
+                        "        * OpenGL vendor: {2}\n"
+                        "        * OpenGL renderer: {3}\n"
+                        "        * OpenGL version: {4}").
                     arg(this).
                     arg(size).
                     arg(p.glInfo.vendor).

@@ -26,9 +26,9 @@ namespace ftk
             "ftk::Context",
             Format(
                 "\n    System information:\n"
-                "    * Name:  {0}\n"
-                "    * Cores: {1}\n"
-                "    * RAM:   {2}GB").
+                "        * Name:  {0}\n"
+                "        * Cores: {1}\n"
+                "        * RAM:   {2}GB").
             arg(sysInfo.name).
             arg(sysInfo.cores).
             arg(sysInfo.ramGB));

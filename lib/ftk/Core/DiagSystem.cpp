@@ -204,7 +204,7 @@ namespace ftk
                 const auto i = samples.find(group + "/" + name);
                 if (i != samples.end())
                 {
-                    lines.push_back(Format("    * {0}").arg(
+                    lines.push_back(Format("        * {0}").arg(
                         Format(name).arg(!i->second.empty() ? i->second.back() : 0)));
                 }
             }

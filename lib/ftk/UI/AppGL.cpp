@@ -1374,10 +1374,10 @@ namespace ftk
         for (size_t i = 0; i < monitors.size(); ++i)
         {
             lines.push_back(Format("    Monitor: {0}").arg(monitors[i].name));
-            lines.push_back(Format("    * Size: {0}").arg(monitors[i].size));
-            lines.push_back(Format("    * Referesh rate: {0}").arg(monitors[i].refreshRate));
-            lines.push_back(Format("    * DPI: {0}").arg(monitors[i].dpi.x));
-            lines.push_back(Format("    * Bounds: {0}").arg(monitors[i].bounds));
+            lines.push_back(Format("        * Size: {0}").arg(monitors[i].size));
+            lines.push_back(Format("        * Referesh rate: {0}").arg(monitors[i].refreshRate));
+            lines.push_back(Format("        * DPI: {0}").arg(monitors[i].dpi.x));
+            lines.push_back(Format("        * Bounds: {0}").arg(monitors[i].bounds));
         }
         if (!lines.empty())
         {
