@@ -25,10 +25,10 @@ namespace ftk
         _logSystem->print(
             "ftk::Context",
             Format(
-                "\n    System information:\n"
-                "        * Name:  {0}\n"
-                "        * Cores: {1}\n"
-                "        * RAM:   {2}GB").
+                "System information:\n"
+                "    * Name:  {0}\n"
+                "    * Cores: {1}\n"
+                "    * RAM:   {2}GB").
             arg(sysInfo.name).
             arg(sysInfo.cores).
             arg(sysInfo.ramGB));
