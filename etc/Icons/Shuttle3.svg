@@ -7,8 +7,8 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
-   sodipodi:docname="FrameShuttle3.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="Shuttle3.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,12 @@
     <inkscape:grid
        type="xygrid"
        id="grid4526"
-       empspacing="10" />
+       empspacing="10"
+       originx="0"
+       originy="0"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -66,20 +71,10 @@
        inkscape:label="#g4524"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96">
-      <ellipse
-         style="fill:#f0f0f0;fill-opacity:1;stroke-width:0.264583"
+      <path
          id="path222"
-         cx="206.26894"
-         cy="-210.01071"
-         rx="1.8520833"
-         ry="1.8520851"
-         transform="rotate(135)" />
-      <circle
-         style="fill:#000000;fill-opacity:1;stroke-width:0.264583"
-         id="path535"
-         cx="206.26894"
-         cy="-211.06906"
-         r="0.52916664"
+         style="fill:#f0f0f0;fill-opacity:1;stroke-width:0.264583"
+         d="M 204.9593 -208.70108 A 1.8520833 1.8520851 5.65009e-09 0 0 206.26892 -208.15881 A 1.8520833 1.8520851 5.65009e-09 0 0 208.12081 -210.0107 A 1.8520833 1.8520851 5.65009e-09 0 0 206.26892 -211.86258 A 1.8520833 1.8520851 5.65009e-09 0 0 204.41704 -210.0107 A 1.8520833 1.8520851 5.65009e-09 0 0 204.9593 -208.70108 z M 205.89475 -210.69474 A 0.52916664 0.52916664 0 0 1 205.73981 -211.06892 A 0.52916664 0.52916664 0 0 1 206.26892 -211.59803 A 0.52916664 0.52916664 0 0 1 206.79803 -211.06892 A 0.52916664 0.52916664 0 0 1 206.26892 -210.53981 A 0.52916664 0.52916664 0 0 1 205.89475 -210.69474 z "
          transform="rotate(135)" />
     </g>
   </g>
