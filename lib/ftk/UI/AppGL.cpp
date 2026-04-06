@@ -1159,6 +1159,7 @@ namespace ftk
 #if defined(FTK_SDL2)
                 case SDL_DROPFILE:
                     p.dropFiles.push_back(event.drop.file);
+                    SDL_free(event.drop.file);
                     break;
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_DROP_FILE:
