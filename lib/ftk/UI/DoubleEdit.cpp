@@ -39,7 +39,7 @@ namespace ftk
         p.model = model;
 
         p.lineEdit = LineEdit::create(context);
-        p.lineEdit->setFontRole(FontRole::Mono);
+        p.lineEdit->setFont(FontType::Mono);
 
         p.incButtons = IncButtons::create(context);
 
@@ -209,14 +209,14 @@ namespace ftk
         _textUpdate();
     }
 
-    FontRole DoubleEdit::getFontRole() const
+    FontType DoubleEdit::getFont() const
     {
-        return _p->lineEdit->getFontRole();
+        return _p->lineEdit->getFont();
     }
 
-    void DoubleEdit::setFontRole(FontRole value)
+    void DoubleEdit::setFont(FontType value)
     {
-        _p->lineEdit->setFontRole(value);
+        _p->lineEdit->setFont(value);
     }
 
     ColorRole DoubleEdit::getBorderRole() const

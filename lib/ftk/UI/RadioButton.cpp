@@ -89,10 +89,10 @@ namespace ftk
         }
     }
 
-    void RadioButton::setFontRole(FontRole value)
+    void RadioButton::setFont(FontType value)
     {
-        const bool changed = value != _fontRole;
-        IButton::setFontRole(value);
+        const bool changed = value != _font;
+        IButton::setFont(value);
         FTK_P();
         if (changed)
         {
@@ -138,7 +138,7 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(_fontRole, event.displayScale);
+            p.size.fontInfo = event.style->getFont(_font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
             p.size.diameter = p.size.fontMetrics.lineHeight * .8F;

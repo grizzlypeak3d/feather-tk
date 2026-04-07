@@ -32,7 +32,7 @@ namespace ftk
         int currentIndex = -1;
         std::function<void(int)> indexCallback;
         std::function<void(const ComboBoxItem&)> itemCallback;
-        FontRole fontRole = FontRole::Label;
+        FontType font = FontType::Regular;
         std::string text;
         std::string icon;
         std::shared_ptr<Image> iconImage;
@@ -178,17 +178,17 @@ namespace ftk
         _p->itemCallback = value;
     }
 
-    FontRole ComboBox::getFontRole() const
+    FontType ComboBox::getFont() const
     {
-        return _p->fontRole;
+        return _p->font;
     }
 
-    void ComboBox::setFontRole(FontRole value)
+    void ComboBox::setFont(FontType value)
     {
         FTK_P();
-        if (value == p.fontRole)
+        if (value == p.font)
             return;
-        p.fontRole = value;
+        p.font = value;
         p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
@@ -233,7 +233,7 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+            p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = Size2I();
             for (const auto& i : p.items)

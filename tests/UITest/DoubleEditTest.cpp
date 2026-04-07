@@ -64,9 +64,9 @@ namespace ftk
                 edit->setPrecision(3);
                 FTK_ASSERT(3 == edit->getPrecision());
                 edit->setPrecision(2);
-                edit->setFontRole(FontRole::Label);
-                FTK_ASSERT(FontRole::Label == edit->getFontRole());
-                edit->setFontRole(FontRole::Mono);
+                edit->setFont(FontType::Regular);
+                FTK_ASSERT(FontType::Regular == edit->getFont());
+                edit->setFont(FontType::Mono);
             }
         }
     }

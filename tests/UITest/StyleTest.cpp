@@ -39,7 +39,6 @@ namespace ftk
         {
             FTK_TEST_ENUM(SizeRole);
             FTK_TEST_ENUM(ColorRole);
-            FTK_TEST_ENUM(FontRole);
         }
 
         void StyleTest::_widget()
@@ -76,13 +75,11 @@ namespace ftk
                 FTK_ASSERT(color == style->getColorRole(ColorRole::Window));
                 app->tick();
 
-                FontInfo fontInfo;
-                fontInfo.size = 32;
-                auto fontRoles = style->getFontRoles();
-                fontRoles[FontRole::Label] = fontInfo;
-                style->setFontRoles(fontRoles);
-                style->setFontRoles(fontRoles);
-                FTK_ASSERT(fontInfo == style->getFontRole(FontRole::Label, 1.F));
+                auto fonts = style->getFonts();
+                fonts[FontType::Regular] = "test";
+                style->setFonts(fonts);
+                style->setFonts(fonts);
+                FTK_ASSERT("test" == style->getFont(FontType::Regular, 1.F).name);
                 app->tick();
             }
         }

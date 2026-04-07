@@ -70,17 +70,17 @@ namespace ftk
         //! Set the vertical margin role.
         FTK_API void setVMarginRole(SizeRole);
 
-        //! Get the font role.
-        FTK_API FontRole getFontRole() const;
+        //! Get the font.
+        FTK_API FontType getFont() const;
 
-        //! Set the font role.
-        FTK_API void setFontRole(FontRole);
+        //! Set the font.
+        FTK_API void setFont(FontType);
 
-        //! Get the font information.
-        FTK_API const FontInfo& getFontInfo() const;
+        //! Get the font size.
+        FTK_API int getFontSize() const;
 
-        //! Set the font information.
-        FTK_API void setFontInfo(const FontInfo&);
+        //! Set the font size.
+        FTK_API void setFontSize(int);
 
         //! Get whether the text is clipped.
         FTK_API bool getClipText() const;

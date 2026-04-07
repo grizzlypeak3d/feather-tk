@@ -40,7 +40,7 @@ namespace ftk
                 .def_property("largeStep", &IntEdit::getLargeStep, &IntEdit::setLargeStep)
                 .def_property("defaultValue", &IntEdit::getDefault, &IntEdit::setDefault)
                 .def("getModel", &IntEdit::getModel)
-                .def_property("fontRole", &IntEdit::getFontRole, &IntEdit::setFontRole);
+                .def_property("font", &IntEdit::getFont, &IntEdit::setFont);
         }
     }
 }

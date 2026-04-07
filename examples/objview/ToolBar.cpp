@@ -107,15 +107,15 @@ namespace objview
     {
         auto toolBar = ftk::ToolBar::create(context, Orientation::Horizontal, _layout);
         _buttons["Object/RotateX"] = ToolButton::create(context);
-        _buttons["Object/RotateX"]->setFontRole(FontRole::Mono);
+        _buttons["Object/RotateX"]->setFont(FontType::Mono);
         _buttons["Object/RotateX"]->setTooltip("Object X rotation");
         toolBar->addWidget(_buttons["Object/RotateX"]);
         _buttons["Object/RotateY"] = ToolButton::create(context);
-        _buttons["Object/RotateY"]->setFontRole(FontRole::Mono);
+        _buttons["Object/RotateY"]->setFont(FontType::Mono);
         _buttons["Object/RotateY"]->setTooltip("Object Y rotation");
         toolBar->addWidget(_buttons["Object/RotateY"]);
         _buttons["Object/RotateZ"] = ToolButton::create(context);
-        _buttons["Object/RotateZ"]->setFontRole(FontRole::Mono);
+        _buttons["Object/RotateZ"]->setFont(FontType::Mono);
         _buttons["Object/RotateZ"]->setTooltip("Object Z rotation");
         toolBar->addWidget(_buttons["Object/RotateZ"]);
 

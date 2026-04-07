@@ -107,7 +107,7 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
-            const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            const auto fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
             p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
 
@@ -442,7 +442,7 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
-            const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            const auto fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
             p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
 

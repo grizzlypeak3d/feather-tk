@@ -42,11 +42,11 @@ namespace ftk
         //! Set the text.
         FTK_API virtual void setText(const std::string&);
 
-        //! Get the font role.
-        FTK_API FontRole getFontRole() const;
+        //! Get the font.
+        FTK_API FontType getFont() const;
 
-        //! Set the font role.
-        FTK_API virtual void setFontRole(FontRole);
+        //! Set the font.
+        FTK_API virtual void setFont(FontType);
 
         //! Get the icon.
         FTK_API const std::string& getIcon() const;
@@ -111,7 +111,7 @@ namespace ftk
 
     protected:
         std::string _text;
-        FontRole _fontRole = FontRole::Label;
+        FontType _font = FontType::Regular;
 
         std::string _icon;
         std::shared_ptr<Image> _iconImage;

@@ -62,9 +62,9 @@ namespace ftk
                 FTK_ASSERT(3 == slider->getLargeStep());
                 slider->setDefault(0);
                 FTK_ASSERT(0 == slider->getDefault());
-                slider->setFontRole(FontRole::Label);
-                FTK_ASSERT(FontRole::Label == slider->getFontRole());
-                slider->setFontRole(FontRole::Mono);
+                slider->setFont(FontType::Regular);
+                FTK_ASSERT(FontType::Regular == slider->getFont());
+                slider->setFont(FontType::Mono);
             }
         }
     }

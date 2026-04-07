@@ -31,18 +31,16 @@ namespace widgets
         auto stackLayout = StackLayout::create(context, layout);
         stackLayout->setStretch(Stretch::Expanding);
         auto label = Label::create(context, "One", stackLayout);
-        FontInfo fontInfo;
-        fontInfo.size = 64;
-        label->setFontInfo(fontInfo);
+        label->setFontSize(64);
         label->setAlign(HAlign::Center, VAlign::Center);
         label = Label::create(context, "Two", stackLayout);
-        label->setFontInfo(fontInfo);
+        label->setFontSize(64);
         label->setAlign(HAlign::Center, VAlign::Center);
         label = Label::create(context, "Three", stackLayout);
-        label->setFontInfo(fontInfo);
+        label->setFontSize(64);
         label->setAlign(HAlign::Center, VAlign::Center);
         label = Label::create(context, "Four", stackLayout);
-        label->setFontInfo(fontInfo);
+        label->setFontSize(64);
         label->setAlign(HAlign::Center, VAlign::Center);
 
         // Create buttons to change the current label.

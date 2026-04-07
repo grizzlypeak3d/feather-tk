@@ -87,10 +87,10 @@ namespace ftk
             button->setText(text);
             FTK_ASSERT(text == button->getText());
 
-            FontRole fontRole = FontRole::Mono;
-            button->setFontRole(fontRole);
-            button->setFontRole(fontRole);
-            FTK_ASSERT(fontRole == button->getFontRole());
+            FontType font = FontType::Mono;
+            button->setFont(font);
+            button->setFont(font);
+            FTK_ASSERT(font == button->getFont());
 
             button->setCheckable(true);
             button->setCheckable(true);

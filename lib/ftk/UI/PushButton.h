@@ -35,7 +35,7 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         FTK_API void setText(const std::string&) override;
-        FTK_API void setFontRole(FontRole) override;
+        FTK_API void setFont(FontType) override;
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;

@@ -21,7 +21,7 @@ namespace ftk
                 .def_property("checkable", &IButton::isCheckable, &IButton::setCheckable)
                 .def_property("checked", &IButton::isChecked, &IButton::setChecked)
                 .def_property("text", &IButton::getText, &IButton::setText)
-                .def_property("fontRole", &IButton::getFontRole, &IButton::setFontRole)
+                .def_property("font", &IButton::getFont, &IButton::setFont)
                 .def_property("icon", &IButton::getIcon, &IButton::setIcon)
                 .def_property("checkedIcon", &IButton::getCheckedIcon, &IButton::setCheckedIcon)
                 .def_property("buttonRole", &IButton::getButtonRole, &IButton::setButtonRole)

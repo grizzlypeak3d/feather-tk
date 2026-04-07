@@ -41,7 +41,7 @@ namespace ftk
                 .def_property("defaultValue", &IntEditSlider::getDefault, &IntEditSlider::setDefault)
                 .def("getModel", &IntEditSlider::getModel)
                 .def("setPressedCallback", &IntEditSlider::setPressedCallback)
-                .def_property("fontRole", &IntEditSlider::getFontRole, &IntEditSlider::setFontRole);
+                .def_property("font", &IntEditSlider::getFont, &IntEditSlider::setFont);
         }
     }
 }

@@ -72,10 +72,10 @@ namespace ftk
                     {
                         item = value;
                     });
-                widget->setFontRole(FontRole::Mono);
-                widget->setFontRole(FontRole::Mono);
-                FTK_ASSERT(FontRole::Mono == widget->getFontRole());
-                widget->setFontRole(FontRole::Label);
+                widget->setFont(FontType::Mono);
+                widget->setFont(FontType::Mono);
+                FTK_ASSERT(FontType::Mono == widget->getFont());
+                widget->setFont(FontType::Regular);
 
                 app->setDisplayScale(2.F);
                 app->tick();

@@ -315,7 +315,7 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
-            const auto fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            const auto fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
             p.size.sizeHint = margin(p.size.sizeHint, p.size.border);
 
@@ -747,15 +747,15 @@ namespace ftk
         _p->maxEdit->setPrecision(value);
     }
 
-    FontRole LevelsEditSlider::getFontRole() const
+    FontType LevelsEditSlider::getFont() const
     {
-        return _p->minEdit->getFontRole();
+        return _p->minEdit->getFont();
     }
 
-    void LevelsEditSlider::setFontRole(FontRole value)
+    void LevelsEditSlider::setFont(FontType value)
     {
-        _p->minEdit->setFontRole(value);
-        _p->maxEdit->setFontRole(value);
+        _p->minEdit->setFont(value);
+        _p->maxEdit->setFont(value);
     }
     
     Size2I LevelsEditSlider::getSizeHint() const

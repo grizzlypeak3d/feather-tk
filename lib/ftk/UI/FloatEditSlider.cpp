@@ -181,14 +181,14 @@ namespace ftk
         _p->edit->setPrecision(value);
     }
 
-    FontRole FloatEditSlider::getFontRole() const
+    FontType FloatEditSlider::getFont() const
     {
-        return _p->edit->getFontRole();
+        return _p->edit->getFont();
     }
 
-    void FloatEditSlider::setFontRole(FontRole value)
+    void FloatEditSlider::setFont(FontType value)
     {
-        _p->edit->setFontRole(value);
+        _p->edit->setFont(value);
     }
     
     Size2I FloatEditSlider::getSizeHint() const

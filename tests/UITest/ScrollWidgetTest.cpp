@@ -63,7 +63,7 @@ namespace ftk
                         context,
                         Format("Label {0} {1}").arg(row).arg(column),
                         layout);
-                    label->setFontRole(FontRole::Title);
+                    label->setFontSize(32);
                     label->setMarginRole(SizeRole::MarginLarge);
                     layout->setGridPos(label, row, column);
                 }

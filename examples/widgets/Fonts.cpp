@@ -32,26 +32,23 @@ namespace widgets
         _scrollWidget->setBorder(false);
         _scrollWidget->setWidget(layout);
 
-        // Create font role widgets.
+        // Create font widgets.
         auto style = app->getStyle();
-        const auto fontRoleLabels = getFontRoleLabels();
-        auto groupBox = GroupBox::create(context, "Font Roles", layout);
+        const auto fontLabels = getFontTypeLabels();
+        auto groupBox = GroupBox::create(context, "Fonts", layout);
         auto formLayout = FormLayout::create(context, groupBox);
-        for (const auto fontRole : getFontRoleEnums())
+        for (const auto font : getFontTypeEnums())
         {
-            if (fontRole != FontRole::None)
-            {
-                _comboBoxes[fontRole] = ComboBox::create(context);
-                _comboBoxes[fontRole]->setIndexCallback(
-                    [this, style, fontRole](int index)
-                    {
-                        auto fontRoles = style->getFontRoles();
-                        fontRoles[fontRole].name = _fonts[index];
-                        style->setFontRoles(fontRoles);
-                    });
-                formLayout->addRow(Format("{0}:").arg(
-                    fontRoleLabels[static_cast<int>(fontRole)]), _comboBoxes[fontRole]);
-            }
+            _comboBoxes[font] = ComboBox::create(context);
+            _comboBoxes[font]->setIndexCallback(
+                [this, style, font](int index)
+                {
+                    auto fonts = style->getFonts();
+                    fonts[font] = _fonts[index];
+                    style->setFonts(fonts);
+                });
+            formLayout->addRow(Format("{0}:").arg(
+                fontLabels[static_cast<int>(font)]), _comboBoxes[font]);
         }
 
         // Create add font widgets.
@@ -73,26 +70,20 @@ namespace widgets
             [this, app](const std::vector<std::string>& value)
             {
                 _fonts = value;
-                for (const auto fontRole : getFontRoleEnums())
+                for (const auto font : getFontTypeEnums())
                 {
-                    if (fontRole != FontRole::None)
-                    {
-                        _comboBoxes[fontRole]->setItems(value);
-                    }
+                    _comboBoxes[font]->setItems(value);
                 }
             });
 
-        _fontRolesObserver = MapObserver<FontRole, FontInfo>::create(
-            style->observeFontRoles(),
-            [this, fontSystem](const std::map<FontRole, FontInfo>& value)
+        _styleObserver = MapObserver<FontType, std::string>::create(
+            style->observeFonts(),
+            [this, fontSystem](const std::map<FontType, std::string>& value)
             {
                 for (const auto i : value)
                 {
-                    if (i.first != FontRole::None)
-                    {
-                        const auto j = std::find(_fonts.begin(), _fonts.end(), i.second.name);
-                        _comboBoxes[i.first]->setCurrentIndex(j != _fonts.end() ? (j - _fonts.begin()) : -1);
-                    }
+                    const auto j = std::find(_fonts.begin(), _fonts.end(), i.second);
+                    _comboBoxes[i.first]->setCurrentIndex(j != _fonts.end() ? (j - _fonts.begin()) : -1);
                 }
             });
     }

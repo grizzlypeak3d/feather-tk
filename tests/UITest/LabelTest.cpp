@@ -66,9 +66,9 @@ namespace ftk
                 label->setVMarginRole(SizeRole::Margin);
                 label->setVMarginRole(SizeRole::Margin);
                 FTK_ASSERT(SizeRole::Margin == label->getVMarginRole());
-                label->setFontRole(FontRole::Mono);
-                label->setFontRole(FontRole::Mono);
-                FTK_ASSERT(FontRole::Mono == label->getFontRole());
+                label->setFont(FontType::Mono);
+                label->setFont(FontType::Mono);
+                FTK_ASSERT(FontType::Mono == label->getFont());
 
                 label->setEnabled(false);
                 app->tick();

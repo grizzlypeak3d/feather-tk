@@ -148,25 +148,6 @@ namespace ftk
         return !(*this == other);
     }
 
-    FTK_ENUM_IMPL(
-        FontRole,
-        "None",
-        "Label",
-        "Mono",
-        "Title",
-        "Symbols");
-
-    std::map<FontRole, FontInfo> getDefaultFontRoles()
-    {
-        std::map<FontRole, FontInfo> out;
-        out[FontRole::None] = FontInfo();
-        out[FontRole::Label] = FontInfo(getDefaultFont(FontType::Regular), 12);
-        out[FontRole::Mono]  = FontInfo(getDefaultFont(FontType::Mono), 12);
-        out[FontRole::Title] = FontInfo(getDefaultFont(FontType::Bold), 12);
-        out[FontRole::Symbols] = FontInfo(getDefaultFont(FontType::Symbols), 12);
-        return out;
-    }
-
     struct Style::Private
     {
         std::weak_ptr<Context> context;
@@ -174,7 +155,7 @@ namespace ftk
         std::shared_ptr<ObservableMap<ColorRole, Color4F> > colorRoles;
         std::shared_ptr<Observable<ColorControls> > colorControls;
         M44F colorMatrix;
-        std::shared_ptr<ObservableMap<FontRole, FontInfo> > fontRoles;
+        std::shared_ptr<ObservableMap<FontType, std::string> > fonts;
     };
 
     void Style::_init(
@@ -186,7 +167,12 @@ namespace ftk
         p.sizeRoles = ObservableMap<SizeRole, int>::create(getDefaultSizeRoles());
         p.colorRoles = ObservableMap<ColorRole, Color4F>::create(getDefaultColorRoles());
         p.colorControls = Observable<ColorControls>::create();
-        p.fontRoles = ObservableMap<FontRole, FontInfo>::create(getDefaultFontRoles());
+        std::map<FontType, std::string> fonts;
+        for (const auto font : getFontTypeEnums())
+        {
+            fonts[font] = getDefaultFont(font);
+        }
+        p.fonts = ObservableMap<FontType, std::string>::create(fonts);
 
         _colorUpdate();
     }
@@ -277,31 +263,45 @@ namespace ftk
         }
     }
 
-    const std::map<FontRole, FontInfo>& Style::getFontRoles() const
+    const std::map<FontType, std::string>& Style::getFonts() const
     {
-        return _p->fontRoles->get();
+        return _p->fonts->get();
     }
 
-    std::shared_ptr<IObservableMap<FontRole, FontInfo> > Style::observeFontRoles() const
+    std::shared_ptr<IObservableMap<FontType, std::string> > Style::observeFonts() const
     {
-        return _p->fontRoles;
+        return _p->fonts;
     }
 
-    void Style::setFontRoles(const std::map<FontRole, FontInfo>& value)
+    void Style::setFonts(const std::map<FontType, std::string>& value)
     {
-        _p->fontRoles->setIfChanged(value);
+        _p->fonts->setIfChanged(value);
     }
 
-    FontInfo Style::getFontRole(FontRole role, float scale) const
+    FontInfo Style::getFont(FontType font, float scale) const
     {
         FTK_P();
         FontInfo out;
-        const auto& fontRoles = p.fontRoles->get();
-        const auto i = fontRoles.find(role);
-        if (i != fontRoles.end())
+        const auto& fonts = p.fonts->get();
+        const auto i = fonts.find(font);
+        if (i != fonts.end())
         {
-            out = i->second;
+            out.name = i->second;
             out.size *= scale;
+        }
+        return out;
+    }
+
+    FontInfo Style::getFont(FontType font, int size, float scale) const
+    {
+        FTK_P();
+        FontInfo out;
+        const auto& fonts = p.fonts->get();
+        const auto i = fonts.find(font);
+        if (i != fonts.end())
+        {
+            out.name = i->second;
+            out.size = size * scale;
         }
         return out;
     }

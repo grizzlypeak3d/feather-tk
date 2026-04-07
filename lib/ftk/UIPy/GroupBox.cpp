@@ -32,7 +32,7 @@ namespace ftk
                     py::arg("text"),
                     py::arg("parent") = nullptr)
                 .def_property("text", &GroupBox::getText, &GroupBox::setText)
-                .def_property("fontRole", &GroupBox::getFontRole, &GroupBox::setFontRole)
+                .def_property("font", &GroupBox::getFont, &GroupBox::setFont)
                 .def("clear", &GroupBox::clear);
         }
     }

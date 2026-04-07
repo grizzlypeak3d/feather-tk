@@ -40,11 +40,11 @@ namespace ftk
         //! Set the text.
         FTK_API void setText(const std::string&);
 
-        //! Get the font role.
-        FTK_API FontRole getFontRole() const;
+        //! Get the font.
+        FTK_API FontType getFont() const;
 
-        //! Set the font role.
-        FTK_API void setFontRole(FontRole);
+        //! Set the font.
+        FTK_API void setFont(FontType);
 
         //! Remove all children from the group box.
         FTK_API void clear();

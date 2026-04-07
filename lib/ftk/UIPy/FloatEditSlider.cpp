@@ -42,7 +42,7 @@ namespace ftk
                 .def("getModel", &FloatEditSlider::getModel)
                 .def("setPressedCallback", &FloatEditSlider::setPressedCallback)
                 .def_property("precision", &FloatEditSlider::getPrecision, &FloatEditSlider::setPrecision)
-                .def_property("fontRole", &FloatEditSlider::getFontRole, &FloatEditSlider::setFontRole);
+                .def_property("font", &FloatEditSlider::getFont, &FloatEditSlider::setFont);
         }
     }
 }

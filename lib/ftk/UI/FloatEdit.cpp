@@ -39,7 +39,7 @@ namespace ftk
 
         p.lineEdit = LineEdit::create(context, shared_from_this());
         p.lineEdit->getModel()->setRegex("[0-9\\-\\.]+");
-        p.lineEdit->setFontRole(FontRole::Mono);
+        p.lineEdit->setFont(FontType::Mono);
 
         p.incButtons = IncButtons::create(context);
 
@@ -209,14 +209,14 @@ namespace ftk
         _textUpdate();
     }
 
-    FontRole FloatEdit::getFontRole() const
+    FontType FloatEdit::getFont() const
     {
-        return _p->lineEdit->getFontRole();
+        return _p->lineEdit->getFont();
     }
 
-    void FloatEdit::setFontRole(FontRole value)
+    void FloatEdit::setFont(FontType value)
     {
-        _p->lineEdit->setFontRole(value);
+        _p->lineEdit->setFont(value);
     }
 
     void FloatEdit::takeKeyFocus()

@@ -182,14 +182,14 @@ namespace ftk
         return _p->model;
     }
 
-    FontRole IntEditShuttle::getFontRole() const
+    FontType IntEditShuttle::getFont() const
     {
-        return _p->edit->getFontRole();
+        return _p->edit->getFont();
     }
 
-    void IntEditShuttle::setFontRole(FontRole value)
+    void IntEditShuttle::setFont(FontType value)
     {
-        _p->edit->setFontRole(value);
+        _p->edit->setFont(value);
     }
 
     Size2I IntEditShuttle::getSizeHint() const

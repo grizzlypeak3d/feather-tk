@@ -35,9 +35,9 @@ namespace widgets
         std::vector<std::string> _fonts;
 
         std::shared_ptr<ftk::ScrollWidget> _scrollWidget;
-        std::map<ftk::FontRole, std::shared_ptr<ftk::ComboBox> > _comboBoxes;
+        std::map<ftk::FontType, std::shared_ptr<ftk::ComboBox> > _comboBoxes;
 
         std::shared_ptr<ftk::ListObserver<std::string> > _fontsObserver;
-        std::shared_ptr<ftk::MapObserver<ftk::FontRole, ftk::FontInfo> > _fontRolesObserver;
+        std::shared_ptr<ftk::MapObserver<ftk::FontType, std::string> > _styleObserver;
     };
 }

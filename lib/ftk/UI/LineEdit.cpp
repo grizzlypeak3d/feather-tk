@@ -25,7 +25,7 @@ namespace ftk
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = std::string(20, '#');
         std::function<void(bool)> focusCallback;
-        FontRole fontRole = FontRole::Label;
+        FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
 
         int cursorStart = -1;
@@ -225,17 +225,17 @@ namespace ftk
         _p->model->clearSelection();
     }
 
-    FontRole LineEdit::getFontRole() const
+    FontType LineEdit::getFont() const
     {
-        return _p->fontRole;
+        return _p->font;
     }
 
-    void LineEdit::setFontRole(FontRole value)
+    void LineEdit::setFont(FontType value)
     {
         FTK_P();
-        if (value == p.fontRole)
+        if (value == p.font)
             return;
-        p.fontRole = value;
+        p.font = value;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -350,7 +350,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+            p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             const auto& text = p.model->getText();
             p.size.textSize = event.fontSystem->getSize(text, p.size.fontInfo);

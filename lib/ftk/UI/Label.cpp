@@ -17,8 +17,8 @@ namespace ftk
         ColorRole textRole = ColorRole::Text;
         SizeRole hMarginRole = SizeRole::None;
         SizeRole vMarginRole = SizeRole::None;
-        FontRole fontRole = FontRole::Label;
-        FontInfo fontInfo;
+        FontType font = FontType::Regular;
+        int fontSize = FontInfo().size;
         bool clipText = false;
 
         struct SizeData
@@ -168,34 +168,33 @@ namespace ftk
         setDrawUpdate();
     }
 
-    FontRole Label::getFontRole() const
+    FontType Label::getFont() const
     {
-        return _p->fontRole;
+        return _p->font;
     }
 
-    void Label::setFontRole(FontRole value)
+    void Label::setFont(FontType value)
     {
         FTK_P();
-        if (value == p.fontRole)
+        if (value == p.font)
             return;
-        p.fontRole = value;
+        p.font = value;
         p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
 
-    const FontInfo& Label::getFontInfo() const
+    int Label::getFontSize() const
     {
-        return _p->fontInfo;
+        return _p->fontSize;
     }
 
-    void Label::setFontInfo(const FontInfo& value)
+    void Label::setFontSize(int value)
     {
         FTK_P();
-        if (value == p.fontInfo)
+        if (value == p.fontSize)
             return;
-        p.fontRole = FontRole::None;
-        p.fontInfo = value;
+        p.fontSize = value;
         p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
@@ -247,15 +246,7 @@ namespace ftk
             p.size.init = false;
             p.size.hMargin = event.style->getSizeRole(p.hMarginRole, event.displayScale);
             p.size.vMargin = event.style->getSizeRole(p.vMarginRole, event.displayScale);
-            if (p.fontRole != FontRole::None)
-            {
-                p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
-            }
-            else
-            {
-                p.size.fontInfo = p.fontInfo;
-                p.size.fontInfo.size *= event.displayScale;
-            }
+            p.size.fontInfo = event.style->getFont(p.font, p.fontSize, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
 

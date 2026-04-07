@@ -88,8 +88,8 @@ namespace ftk
         //! \name Font
         ///@{
 
-        FTK_API FontRole getFontRole() const;
-        FTK_API void setFontRole(FontRole);
+        FTK_API FontType getFont() const;
+        FTK_API void setFont(FontType);
 
         ///@}
 

@@ -41,7 +41,7 @@ namespace ftk
                 .def_property("defaultValue", &FloatEdit::getDefault, &FloatEdit::setDefault)
                 .def("getModel", &FloatEdit::getModel)
                 .def_property("precision", &FloatEdit::getPrecision, &FloatEdit::setPrecision)
-                .def_property("fontRole", &FloatEdit::getFontRole, &FloatEdit::setFontRole);
+                .def_property("font", &FloatEdit::getFont, &FloatEdit::setFont);
         }
     }
 }

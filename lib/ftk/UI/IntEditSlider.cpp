@@ -171,14 +171,14 @@ namespace ftk
         return _p->model;
     }
 
-    FontRole IntEditSlider::getFontRole() const
+    FontType IntEditSlider::getFont() const
     {
-        return _p->edit->getFontRole();
+        return _p->edit->getFont();
     }
 
-    void IntEditSlider::setFontRole(FontRole value)
+    void IntEditSlider::setFont(FontType value)
     {
-        _p->edit->setFontRole(value);
+        _p->edit->setFont(value);
     }
 
     Size2I IntEditSlider::getSizeHint() const

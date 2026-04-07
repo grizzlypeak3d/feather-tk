@@ -76,11 +76,11 @@ namespace ftk
         //! Set the current item callback.
         FTK_API void setItemCallback(const std::function<void(const ComboBoxItem&)>&);
 
-        //! Get the font role.
-        FTK_API FontRole getFontRole() const;
+        //! Get the font.
+        FTK_API FontType getFont() const;
 
-        //! Set the font role.
-        FTK_API void setFontRole(FontRole);
+        //! Set the font.
+        FTK_API void setFont(FontType);
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;

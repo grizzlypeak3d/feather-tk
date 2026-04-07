@@ -12,7 +12,7 @@ namespace ftk
     struct GroupBox::Private
     {
         std::string text;
-        FontRole fontRole = FontRole::Label;
+        FontType font = FontType::Regular;
 
         struct SizeData
         {
@@ -85,17 +85,17 @@ namespace ftk
         setDrawUpdate();
     }
 
-    FontRole GroupBox::getFontRole() const
+    FontType GroupBox::getFont() const
     {
-        return _p->fontRole;
+        return _p->font;
     }
 
-    void GroupBox::setFontRole(FontRole value)
+    void GroupBox::setFont(FontType value)
     {
         FTK_P();
-        if (value == p.fontRole)
+        if (value == p.font)
             return;
-        p.fontRole = value;
+        p.font = value;
         p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
@@ -163,7 +163,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::Margin, event.displayScale);
             p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+            p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
             p.draw.reset();

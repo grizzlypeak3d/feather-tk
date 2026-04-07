@@ -82,11 +82,11 @@ namespace ftk
         //! Set the display precision.
         FTK_API void setPrecision(int);
 
-        //! Get the font role.
-        FTK_API FontRole getFontRole() const;
+        //! Get the font.
+        FTK_API FontType getFont() const;
 
-        //! Set the font role.
-        FTK_API void setFontRole(FontRole);
+        //! Set the font.
+        FTK_API void setFont(FontType);
 
         //! Get the border role.
         FTK_API ColorRole getBorderRole() const;

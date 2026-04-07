@@ -60,9 +60,9 @@ namespace ftk
                 FTK_ASSERT(2 == edit->getStep());
                 edit->setLargeStep(3);
                 FTK_ASSERT(3 == edit->getLargeStep());
-                edit->setFontRole(FontRole::Label);
-                FTK_ASSERT(FontRole::Label == edit->getFontRole());
-                edit->setFontRole(FontRole::Mono);
+                edit->setFont(FontType::Regular);
+                FTK_ASSERT(FontType::Regular == edit->getFont());
+                edit->setFont(FontType::Mono);
             }
         }
     }

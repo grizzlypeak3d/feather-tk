@@ -79,16 +79,16 @@ namespace ftk
         setDrawUpdate();
     }
 
-    FontRole IButton::getFontRole() const
+    FontType IButton::getFont() const
     {
-        return _fontRole;
+        return _font;
     }
 
-    void IButton::setFontRole(FontRole value)
+    void IButton::setFont(FontType value)
     {
-        if (value == _fontRole)
+        if (value == _font)
             return;
-        _fontRole = value;
+        _font = value;
         setSizeUpdate();
         setDrawUpdate();
     }

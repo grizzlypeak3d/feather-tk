@@ -193,14 +193,14 @@ namespace ftk
         _p->edit->setPrecision(value);
     }
 
-    FontRole FloatEditShuttle::getFontRole() const
+    FontType FloatEditShuttle::getFont() const
     {
-        return _p->edit->getFontRole();
+        return _p->edit->getFont();
     }
 
-    void FloatEditShuttle::setFontRole(FontRole value)
+    void FloatEditShuttle::setFont(FontType value)
     {
-        _p->edit->setFontRole(value);
+        _p->edit->setFont(value);
     }
     
     Size2I FloatEditShuttle::getSizeHint() const

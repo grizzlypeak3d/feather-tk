@@ -193,14 +193,14 @@ namespace ftk
         _p->edit->setPrecision(value);
     }
 
-    FontRole DoubleEditShuttle::getFontRole() const
+    FontType DoubleEditShuttle::getFont() const
     {
-        return _p->edit->getFontRole();
+        return _p->edit->getFont();
     }
 
-    void DoubleEditShuttle::setFontRole(FontRole value)
+    void DoubleEditShuttle::setFont(FontType value)
     {
-        _p->edit->setFontRole(value);
+        _p->edit->setFont(value);
     }
 
     Size2I DoubleEditShuttle::getSizeHint() const

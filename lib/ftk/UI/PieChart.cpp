@@ -136,7 +136,7 @@ namespace ftk
         if (p.size.init)
         {
             p.size.init = false;
-            const FontInfo fontInfo = event.style->getFontRole(FontRole::Label, event.displayScale);
+            const FontInfo fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(fontInfo);
             p.draw.reset();
         }

@@ -41,7 +41,7 @@ namespace ftk
                 .def_property("defaultValue", &DoubleEdit::getDefault, &DoubleEdit::setDefault)
                 .def("getModel", &DoubleEdit::getModel)
                 .def_property("precision", &DoubleEdit::getPrecision, &DoubleEdit::setPrecision)
-                .def_property("fontRole", &DoubleEdit::getFontRole, &DoubleEdit::setFontRole)
+                .def_property("font", &DoubleEdit::getFont, &DoubleEdit::setFont)
                 .def_property("borderRole", &DoubleEdit::getBorderRole, &DoubleEdit::setBorderRole);
         }
     }

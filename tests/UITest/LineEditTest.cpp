@@ -67,10 +67,10 @@ namespace ftk
                 edit->setFormat("00.00");
                 FTK_ASSERT("00.00" == edit->getFormat());
                 edit->setFormat("");
-                edit->setFontRole(FontRole::Mono);
-                edit->setFontRole(FontRole::Mono);
-                FTK_ASSERT(FontRole::Mono == edit->getFontRole());
-                edit->setFontRole(FontRole::Label);
+                edit->setFont(FontType::Mono);
+                edit->setFont(FontType::Mono);
+                FTK_ASSERT(FontType::Mono == edit->getFont());
+                edit->setFont(FontType::Regular);
 
                 edit->takeKeyFocus();
                 app->tick();

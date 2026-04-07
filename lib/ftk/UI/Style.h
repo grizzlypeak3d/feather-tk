@@ -94,23 +94,6 @@ namespace ftk
         FTK_API bool operator != (const ColorControls&) const;
     };
 
-    //! Font roles.
-    enum class FTK_API_TYPE FontRole
-    {
-        None,
-        Label,
-        Mono,
-        Title,
-        Symbols,
-
-        Count,
-        First = None
-    };
-    FTK_ENUM(FontRole);
-
-    //! Get default font roles.
-    FTK_API std::map<FontRole, FontInfo> getDefaultFontRoles();
-
     //! Style.
     class FTK_API_TYPE Style : public std::enable_shared_from_this<Style>
     {
@@ -159,14 +142,15 @@ namespace ftk
 
         ///@}
 
-        //! \name Font Roles
+        //! \name Fonts
         ///@{
 
-        FTK_API const std::map<FontRole, FontInfo>& getFontRoles() const;
-        FTK_API std::shared_ptr<IObservableMap<FontRole, FontInfo> > observeFontRoles() const;
-        FTK_API void setFontRoles(const std::map<FontRole, FontInfo>&);
+        FTK_API const std::map<FontType, std::string>& getFonts() const;
+        FTK_API std::shared_ptr<IObservableMap<FontType, std::string> > observeFonts() const;
+        FTK_API void setFonts(const std::map<FontType, std::string>&);
 
-        FTK_API FontInfo getFontRole(FontRole, float scale) const;
+        FTK_API FontInfo getFont(FontType, float scale) const;
+        FTK_API FontInfo getFont(FontType, int size, float scale) const;
 
         ///@}
 

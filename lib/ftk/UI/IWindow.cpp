@@ -57,8 +57,7 @@ namespace ftk
             float displayScale = 0.F;
             std::map<SizeRole, int> sizeRoles;
             std::map<ColorRole, Color4F> colorRoles;
-            std::map<FontRole, FontInfo> fontRoles;
-            std::map<FontType, std::string> fontTypes;
+            std::map<FontType, std::string> fonts;
         };
         StyleData style;
 
@@ -496,19 +495,19 @@ namespace ftk
         const float displayScale = getDisplayScale();
         const auto sizeRoles = style->getSizeRoles();
         const auto colorRoles = style->getColorRoles();
-        const auto fontRoles = style->getFontRoles();
+        const auto fonts = style->getFonts();
         StyleEvent styleEvent;
         styleEvent.displayScaleChange = displayScale != p.style.displayScale;
         styleEvent.sizeRoleChange = sizeRoles != p.style.sizeRoles;
         styleEvent.colorRoleChange = colorRoles != p.style.colorRoles;
-        styleEvent.fontChange = fontRoles != p.style.fontRoles;
+        styleEvent.fontChange = fonts != p.style.fonts;
         if (styleEvent.hasChanges())
         {
             _styleEventRecursive(shared_from_this(), styleEvent);
             p.style.displayScale = displayScale;
             p.style.sizeRoles = sizeRoles;
             p.style.colorRoles = colorRoles;
-            p.style.fontRoles = fontRoles;
+            p.style.fonts = fonts;
         }
 
         const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
