@@ -30,6 +30,27 @@ namespace ftk
         v({ v0, v1, v2 })
     {}
 
+    template<typename T>
+    inline size_t TriangleMesh2<T>::getByteCount() const
+    {
+        return
+            v.size() * sizeof(Vector<2, T>) +
+            c.size() * sizeof(Vector<4, T>) +
+            t.size() * sizeof(Vector<2, T>) +
+            triangles.size() * sizeof(Triangle2);
+    }
+
+    template<typename T>
+    inline size_t TriangleMesh3<T>::getByteCount() const
+    {
+        return
+            v.size() * sizeof(Vector<3, T>) +
+            c.size() * sizeof(Vector<4, T>) +
+            t.size() * sizeof(Vector<2, T>) +
+            n.size() * sizeof(Vector<3, T>) +
+            triangles.size() * sizeof(Triangle3);
+    }
+
     inline float edge(const V2F& p, const V2F& v0, const V2F& v1)
     {
         return

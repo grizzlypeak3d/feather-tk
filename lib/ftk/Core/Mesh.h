@@ -70,6 +70,8 @@ namespace ftk
         std::vector<Vector<4, T> > c;
         std::vector<Vector<2, T> > t;
         std::vector<Triangle2> triangles;
+
+        size_t getByteCount() const;
     };
 
     //! Three-dimensional triangle mesh.
@@ -81,6 +83,8 @@ namespace ftk
         std::vector<Vector<2, T> > t;
         std::vector<Vector<3, T> > n;
         std::vector<Triangle3> triangles;
+
+        size_t getByteCount() const;
     };
 
     typedef TriangleMesh2<float> TriMesh2F;
