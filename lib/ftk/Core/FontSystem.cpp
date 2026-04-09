@@ -248,7 +248,11 @@ namespace ftk
         FontMetrics out;
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            const auto faceIt = p.faces.find(info.name);
+            auto faceIt = p.faces.find(info.name);
+            if (faceIt == p.faces.end())
+            {
+                faceIt = p.faces.find(getDefaultFont(FontType::Regular));
+            }
             if (faceIt != p.faces.end())
             {
                 FT_Set_Pixel_Sizes(faceIt->second, 0, info.size);
@@ -330,7 +334,11 @@ namespace ftk
             out = std::make_shared<Glyph>();
             out->info = GlyphInfo(code, fontInfo);
 
-            const auto faceIt = faces.find(fontInfo.name);
+            auto faceIt = faces.find(fontInfo.name);
+            if (faceIt == faces.end())
+            {
+                faceIt = faces.find(getDefaultFont(FontType::Regular));
+            }
             if (faceIt == faces.end())
             {
                 break;
@@ -425,7 +433,11 @@ namespace ftk
         Size2I& size,
         std::vector<Box2I>* glyphGeom)
     {
-        const auto faceIt = faces.find(fontInfo.name);
+        auto faceIt = faces.find(fontInfo.name);
+        if (faceIt == faces.end())
+        {
+            faceIt = faces.find(getDefaultFont(FontType::Regular));
+        }
         if (faceIt == faces.end())
         {
             return;
