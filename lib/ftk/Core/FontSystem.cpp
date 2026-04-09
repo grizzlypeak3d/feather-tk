@@ -267,11 +267,14 @@ namespace ftk
     {
         FTK_P();
         Size2I out;
+        try
         {
             std::unique_lock<std::mutex> lock(p.mutex);
             const auto utf32 = p.utf32Convert.from_bytes(text);
             p.measure(utf32, fontInfo, maxLineWidth, out);
         }
+        catch (const std::exception&)
+        {}
         return out;
     }
 
@@ -282,12 +285,15 @@ namespace ftk
     {
         FTK_P();
         std::vector<Box2I> out;
+        try
         {
             std::unique_lock<std::mutex> lock(p.mutex);
             const auto utf32 = p.utf32Convert.from_bytes(text);
             Size2I size;
             p.measure(utf32, fontInfo, maxLineWidth, size, &out);
         }
+        catch (const std::exception&)
+        {}
         return out;
     }
 
@@ -297,6 +303,7 @@ namespace ftk
     {
         FTK_P();
         std::vector<std::shared_ptr<Glyph> > out;
+        try
         {
             std::unique_lock<std::mutex> lock(p.mutex);
             const auto utf32 = p.utf32Convert.from_bytes(text);
@@ -305,6 +312,8 @@ namespace ftk
                 out.push_back(p.getGlyph(i, fontInfo));
             }
         }
+        catch (const std::exception&)
+        {}
         return out;
     }
 
