@@ -239,10 +239,6 @@ namespace ftk
             [this](const Path& value)
             {
                 FTK_P();
-                if (p.recentFilesModel)
-                {
-                    p.recentFilesModel->addRecent(value.get());
-                }
                 if (p.callback)
                 {
                     p.callback(value);
@@ -470,10 +466,6 @@ namespace ftk
     void FileBrowserWidget::_accept(const Path& path)
     {
         FTK_P();
-        if (p.recentFilesModel)
-        {
-            p.recentFilesModel->addRecent(path.get());
-        }
         if (p.callback)
         {
             p.callback(path);
