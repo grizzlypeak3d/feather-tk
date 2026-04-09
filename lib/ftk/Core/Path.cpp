@@ -115,6 +115,119 @@ namespace ftk
         return !(*this == other);
     }
 
+    FrameSeq::FrameSeq(const RangeI64& range, int inc) :
+        range(range),
+        inc(inc)
+    {}
+
+    FrameSeq::FrameSeq(int64_t min, int64_t max, int inc) :
+        range(min, max),
+        inc(inc)
+    {}
+
+    FrameSeq::FrameSeq(int64_t frame) :
+        range(frame, frame),
+        inc(1)
+    {}
+
+    bool FrameSeq::operator == (const FrameSeq& other) const
+    {
+        return range == other.range && inc == other.inc;
+    }
+
+    bool FrameSeq::operator != (const FrameSeq& other) const
+    {
+        return !(*this == other);
+    }
+
+    std::vector<FrameSeq> toFrameSeq(const std::vector<int64_t>& value)
+    {
+        std::vector<FrameSeq> out;
+        std::vector<int64_t> tmp = value;
+        std::sort(tmp.begin(), tmp.end());
+        for (size_t i = 0; i < tmp.size(); ++i)
+        {
+            size_t j = i + 2;
+            for (;
+                j < tmp.size() && tmp[j] - tmp[j - 1] == tmp[i + 1] - tmp[i];
+                ++j)
+            {}
+            if (j > i + 2)
+            {
+                out.push_back(FrameSeq(tmp[i], tmp[j - 1], tmp[i + 1] - tmp[i]));
+                i = j - 1;
+            }
+            else
+            {
+                j = i + 1;
+                for (;
+                    j < tmp.size() && tmp[j] - tmp[j - 1] == tmp[i + 1] - tmp[i];
+                    ++j)
+                {
+                }
+                if (j > i + 1)
+                {
+                    out.push_back(FrameSeq(tmp[i], tmp[j - 1], tmp[i + 1] - tmp[i]));
+                    i = j - 1;
+                }
+                else
+                {
+                    out.push_back(FrameSeq(tmp[i], tmp[i]));
+                }
+            }
+        }
+        return out;
+    }
+
+    std::vector<int64_t> toFrames(const FrameSeq& value)
+    {
+        std::vector<int64_t> out;
+        for (int64_t frame = value.range.min(); frame <= value.range.max(); frame += value.inc)
+        {
+            out.push_back(frame);
+        }
+        return out;
+    }
+
+    std::vector<int64_t> toFrames(const std::vector<FrameSeq>& value)
+    {
+        std::vector<int64_t> out;
+        for (const auto& i : value)
+        {
+            const auto frames = toFrames(i);
+            out.insert(out.end(), frames.begin(), frames.end());
+        }
+        return out;
+    }
+
+    std::string getLabel(const FrameSeq& value)
+    {
+        std::stringstream ss;
+        if (value.range.equal())
+        {
+            ss << value.range.min();
+        }
+        else
+        {
+            ss << value.range.min() << "-" << value.range.max();
+            if (value.inc > 1)
+            {
+                ss << ":" << value.inc;
+            }
+        }
+        return ss.str();
+    }
+
+    std::string getLabel(const std::vector<FrameSeq>& value)
+    {
+        std::vector<std::string> tmp;
+        for (const auto& i : value)
+        {
+            tmp.push_back(getLabel(i));
+        }
+        return join(tmp, ',');
+    }
+
     Path::Path(
         const std::string& value,
         const PathOptions& options) :

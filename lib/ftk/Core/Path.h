@@ -82,7 +82,37 @@ namespace ftk
         bool operator == (const PathOptions&) const;
         bool operator != (const PathOptions&) const;
     };
-    
+
+    //! Frame sequence.
+    struct FTK_API_TYPE FrameSeq
+    {
+        FrameSeq() = default;
+        explicit FrameSeq(const RangeI64&, int inc = 1);
+        FrameSeq(int64_t, int64_t, int inc = 1);
+        explicit FrameSeq(int64_t);
+
+        RangeI64 range;
+        int      inc = 1;
+
+        bool operator == (const FrameSeq&) const;
+        bool operator != (const FrameSeq&) const;
+    };
+
+    //! Convert frames to frame sequences.
+    FTK_API std::vector<FrameSeq> toFrameSeq(const std::vector<int64_t>&);
+
+    //! Convert a frame sequence to frames.
+    FTK_API std::vector<int64_t> toFrames(const FrameSeq&);
+
+    //! Convert frame sequences to frames.
+    FTK_API std::vector<int64_t> toFrames(const std::vector<FrameSeq>&);
+
+    //! Convert a frame sequence to a label.
+    FTK_API std::string getLabel(const FrameSeq&);
+
+    //! Convert frame sequences to a label.
+    FTK_API std::string getLabel(const std::vector<FrameSeq>&);
+
     //! File path.
     //! 
     //! Example: file:///tmp/render.0001.exr?user=foo;password=bar

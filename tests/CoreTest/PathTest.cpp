@@ -32,6 +32,7 @@ namespace ftk
             _drives();
             _userPaths();
             _tmpDir();
+            _frameSeq();
             _path();
             _dirList();
             _expandSeq();
@@ -142,6 +143,106 @@ namespace ftk
                 TmpDir tmpDir;
                 _print(Format("Tmp dir: {0}").arg(tmpDir.getPath().u8string()));
                 FileIO::create(tmpDir.getPath() / "render.exr", FileMode::Write);
+            }
+        }
+
+        void PathTest::_frameSeq()
+        {
+            {
+                std::vector<int64_t> frames = {};
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(0 == seqs.size());
+                frames = toFrames(seqs);
+                FTK_ASSERT(0 == frames.size());
+            }
+            {
+                std::vector<int64_t> frames = { 0 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0) == seqs[0]);
+                frames = toFrames(seqs);
+                FTK_ASSERT(1 == frames.size());
+                FTK_ASSERT(0 == frames[0]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 1 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 1) == seqs[0]);
+                frames = toFrames(seqs);
+                FTK_ASSERT(2 == frames.size());
+                FTK_ASSERT(0 == frames[0]);
+                FTK_ASSERT(1 == frames[1]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 2 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 2, 2) == seqs[0]);
+                frames = toFrames(seqs);
+                FTK_ASSERT(2 == frames.size());
+                FTK_ASSERT(0 == frames[0]);
+                FTK_ASSERT(2 == frames[1]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 1, 2 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 2) == seqs[0]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 1, 2, 3 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 3) == seqs[0]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 1, 2, 4 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(2 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 2) == seqs[0]);
+                FTK_ASSERT(FrameSeq(4, 4) == seqs[1]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 1, 2, 4, 5 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(2 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 2) == seqs[0]);
+                FTK_ASSERT(FrameSeq(4, 5) == seqs[1]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 2, 4, 6 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 6, 2) == seqs[0]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 3, 6, 9 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(1 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 9, 3) == seqs[0]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 1, 2, 4, 6, 8 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(2 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 2) == seqs[0]);
+                FTK_ASSERT(FrameSeq(4, 8, 2) == seqs[1]);
+            }
+            {
+                std::vector<int64_t> frames = { 0, 2, 4, 5, 6, 7 };
+                auto seqs = toFrameSeq(frames);
+                FTK_ASSERT(2 == seqs.size());
+                FTK_ASSERT(FrameSeq(0, 4, 2) == seqs[0]);
+                FTK_ASSERT(FrameSeq(5, 7) == seqs[1]);
+            }
+            {
+                std::vector<FrameSeq> seqs;
+                _print("Frame sequence: " + getLabel(seqs));
+                seqs.push_back(FrameSeq(0, 2));
+                _print("Frame sequence: " + getLabel(seqs));
+                seqs.push_back(FrameSeq(4, 8, 2));
+                _print("Frame sequence: " + getLabel(seqs));
             }
         }
 
