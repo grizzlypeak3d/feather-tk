@@ -67,7 +67,7 @@ namespace widgets
         // Create obervers.
         _fontsObserver = ListObserver<std::string>::create(
             fontSystem->observeFonts(),
-            [this, app](const std::vector<std::string>& value)
+            [this](const std::vector<std::string>& value)
             {
                 _fonts = value;
                 for (const auto font : getFontTypeEnums())
@@ -76,7 +76,7 @@ namespace widgets
                 }
             });
 
-        _styleObserver = MapObserver<FontType, std::string>::create(
+        _fontsObserver2 = MapObserver<FontType, std::string>::create(
             style->observeFonts(),
             [this, fontSystem](const std::map<FontType, std::string>& value)
             {

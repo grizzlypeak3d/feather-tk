@@ -38,6 +38,6 @@ namespace widgets
         std::map<ftk::FontType, std::shared_ptr<ftk::ComboBox> > _comboBoxes;
 
         std::shared_ptr<ftk::ListObserver<std::string> > _fontsObserver;
-        std::shared_ptr<ftk::MapObserver<ftk::FontType, std::string> > _styleObserver;
+        std::shared_ptr<ftk::MapObserver<ftk::FontType, std::string> > _fontsObserver2;
     };
 }
