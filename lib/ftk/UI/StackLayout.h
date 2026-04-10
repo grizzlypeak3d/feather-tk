@@ -58,8 +58,16 @@ namespace ftk
         //! Set the current widget.
         FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 
-        //! Remove all children from the group box.
+        //! Remove all children from the layout.
         FTK_API void clear();
+
+        //! Get whether the layout size fits all the children or just the
+        //! current one.
+        FTK_API bool hasFitAll() const;
+
+        //! Set whether the layout size fits all the children or just the
+        //! current one.
+        FTK_API void setFitAll(bool);
 
         //! Get the margin role.
         FTK_API SizeRole getMarginRole() const;

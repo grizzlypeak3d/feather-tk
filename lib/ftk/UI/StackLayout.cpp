@@ -10,6 +10,7 @@ namespace ftk
     struct StackLayout::Private
     {
         int currentIndex = 0;
+        bool fitAll = true;
         SizeRole marginRole = SizeRole::None;
         std::shared_ptr<Observable<bool> > hasNextIndex;
         std::shared_ptr<Observable<bool> > hasPrevIndex;
@@ -101,9 +102,8 @@ namespace ftk
         if (p.currentIndex >= 0 &&
             p.currentIndex < static_cast<int>(children.size()))
         {
-            int i = 0;
             auto j = children.begin();
-            for (; i < p.currentIndex && j != children.end(); ++i, ++j)
+            for (int i = 0; i < p.currentIndex; ++i, ++j)
                 ;
             out = *j;
         }
@@ -135,6 +135,21 @@ namespace ftk
         }
     }
 
+    bool StackLayout::hasFitAll() const
+    {
+        return _p->fitAll;
+    }
+
+    void StackLayout::setFitAll(bool value)
+    {
+        FTK_P();
+        if (value == p.fitAll)
+            return;
+        p.fitAll = value;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     SizeRole StackLayout::getMarginRole() const
     {
         return _p->marginRole;
@@ -155,11 +170,22 @@ namespace ftk
     {
         FTK_P();
         Size2I out;
-        for (const auto& child : getChildren())
+        const auto& children = getChildren();
+        if (p.fitAll)
         {
-            const Size2I& childSizeHint = child->getSizeHint();
-            out.w = std::max(out.w, childSizeHint.w);
-            out.h = std::max(out.h, childSizeHint.h);
+            for (const auto& child : children)
+            {
+                const Size2I& childSizeHint = child->getSizeHint();
+                out.w = std::max(out.w, childSizeHint.w);
+                out.h = std::max(out.h, childSizeHint.h);
+            }
+        }
+        else if (p.currentIndex >= 0 && p.currentIndex < children.size())
+        {
+            auto j = children.begin();
+            for (int i = 0; i < p.currentIndex; ++i, ++j)
+                ;
+            out = (*j)->getSizeHint();
         }
         out.w += p.size.margin * 2;
         out.h += p.size.margin * 2;
