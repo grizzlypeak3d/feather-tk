@@ -153,7 +153,7 @@ namespace ftk
         FTK_API virtual std::vector<std::pair<std::string, std::string> > getWindowInfo() const;
 
         FTK_API void setVisible(bool) override;
-        FTK_API void childAddEvent(const ChildAddEvent&);
+        FTK_API void childAddEvent(const ChildAddEvent&) override;
         FTK_API void tickEvent(
             bool parentsVisible,
             bool parentsEnabled,

@@ -41,16 +41,16 @@ namespace ftk
     constexpr Endian opposite(Endian);
 
     //! Convert the endianness of a block of memory in place.
-    FTK_API void endian(
+    FTK_API void swapEndian(
         void*  in,
-        size_t size,
+        size_t wordCount,
         size_t wordSize);
 
     //! Convert the endianness of a block of memory.
-    FTK_API void endian(
+    FTK_API void swapEndian(
         const void* in,
         void*       out,
-        size_t      size,
+        size_t      wordCount,
         size_t      wordSize);
 
     //! Get the given bit.
@@ -66,10 +66,10 @@ namespace ftk
     FTK_API unsigned int toggleBit(unsigned int, int bit);
 
     //! Convert bits to a string for debugging.
-    FTK_API std::string getBitString(uint8_t);
+    FTK_API std::string toBitString(uint8_t);
 
     //! Convert bits to a string for debugging.
-    FTK_API std::string getBitString(uint16_t);
+    FTK_API std::string toBitString(uint16_t);
 
     ///@}
 }

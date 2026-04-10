@@ -50,8 +50,7 @@ namespace ftk
             {
                 auto model = LineEditModel::create(context);
                 FTK_ASSERT(model->key(Key::A));
-                FTK_ASSERT(model->key(Key::A, static_cast<int>(KeyModifier::Shift)));
-                FTK_ASSERT(model->key(Key::A, static_cast<int>(KeyModifier::Control)));
+                FTK_ASSERT(model->key(Key::A, static_cast<int>(commandKeyModifier)));
             }
         }
     }

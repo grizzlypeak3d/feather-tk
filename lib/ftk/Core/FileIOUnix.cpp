@@ -219,7 +219,7 @@ namespace ftk
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
-                    endian(p.memP, in, size, wordSize);
+                    swapEndian(p.memP, in, size, wordSize);
                 }
                 else
                 {
@@ -242,7 +242,7 @@ namespace ftk
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
-                    endian(in, size, wordSize);
+                    swapEndian(in, size, wordSize);
                 }
             }
             break;
@@ -262,7 +262,7 @@ namespace ftk
             }
             if (p.endianConversion && wordSize > 1)
             {
-                endian(in, size, wordSize);
+                swapEndian(in, size, wordSize);
             }
             break;
         }
@@ -286,7 +286,7 @@ namespace ftk
         if (p.endianConversion && wordSize > 1)
         {
             tmp.resize(size * wordSize);
-            endian(in, tmp.data(), size, wordSize);
+            swapEndian(in, tmp.data(), size, wordSize);
             inP = tmp.data();
         }
         if (::write(p.f, inP, size * wordSize) == -1)

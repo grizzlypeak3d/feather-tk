@@ -46,9 +46,9 @@ namespace ftk
                 const std::vector<uint8_t> result(
                     { 1, 0, 3, 2 });
                 std::vector<uint8_t> out(result.size());
-                endian(data.data(), out.data(), data.size() / 2, 2);
+                swapEndian(data.data(), out.data(), data.size() / 2, 2);
                 FTK_ASSERT(result == out);
-                endian(data.data(), data.size() / 2, 2);
+                swapEndian(data.data(), data.size() / 2, 2);
                 FTK_ASSERT(result == data);
             }
             {
@@ -57,9 +57,9 @@ namespace ftk
                 const std::vector<uint8_t> result(
                     { 3, 2, 1, 0, 7, 6, 5, 4 });
                 std::vector<uint8_t> out(result.size());
-                endian(data.data(), out.data(), data.size() / 4, 4);
+                swapEndian(data.data(), out.data(), data.size() / 4, 4);
                 FTK_ASSERT(result == out);
-                endian(data.data(), data.size() / 4, 4);
+                swapEndian(data.data(), data.size() / 4, 4);
                 FTK_ASSERT(result == data);
             }
             {
@@ -68,9 +68,9 @@ namespace ftk
                 const std::vector<uint8_t> result(
                     { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 });
                 std::vector<uint8_t> out(result.size());
-                endian(data.data(), out.data(), data.size() / 8, 8);
+                swapEndian(data.data(), out.data(), data.size() / 8, 8);
                 FTK_ASSERT(result == out);
-                endian(data.data(), data.size() / 8, 8);
+                swapEndian(data.data(), data.size() / 8, 8);
                 FTK_ASSERT(result == data);
             }
         }
@@ -94,7 +94,7 @@ namespace ftk
                 v = toggleBit(v, 0);
                 v = toggleBit(v, 3);
                 v = toggleBit(v, 7);
-                _print(Format("Bits: {0}").arg(getBitString(v)));
+                _print(Format("Bits: {0}").arg(toBitString(v)));
             }
             {
                 uint16_t v = 0;
@@ -113,7 +113,7 @@ namespace ftk
                 v = toggleBit(v, 0);
                 v = toggleBit(v, 7);
                 v = toggleBit(v, 15);
-                _print(Format("Bits: {0}").arg(getBitString(v)));
+                _print(Format("Bits: {0}").arg(toBitString(v)));
             }
         }
     }
