@@ -7,6 +7,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LRUCache.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     namespace core_test
