@@ -1,29 +1,22 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <algorithm>
-
 namespace ftk
 {
     template<typename T, typename U>
-    inline std::size_t LRUCache<T, U>::getMax() const
+    inline size_t LRUCache<T, U>::getMax() const
     {
         return _max;
     }
 
     template<typename T, typename U>
-    inline std::size_t LRUCache<T, U>::getSize() const
+    inline size_t LRUCache<T, U>::getSize() const
     {
-        size_t out = 0;
-        for (const auto& i : _map)
-        {
-            out += i.second.second;
-        }
-        return out;
+        return _size;
     }
 
     template<typename T, typename U>
-    inline std::size_t LRUCache<T, U>::getCount() const
+    inline size_t LRUCache<T, U>::getCount() const
     {
         return _map.size();
     }
@@ -31,16 +24,16 @@ namespace ftk
     template<typename T, typename U>
     inline float LRUCache<T, U>::getPercentage() const
     {
-        return getSize() / static_cast<float>(_max) * 100.F;
+        return _size / static_cast<float>(_max) * 100.F;
     }
 
     template<typename T, typename U>
-    inline void LRUCache<T, U>::setMax(std::size_t value)
+    inline void LRUCache<T, U>::setMax(size_t value)
     {
         if (value == _max)
             return;
         _max = value;
-        _maxUpdate();
+        _evict();
     }
 
     template<typename T, typename U>
@@ -53,42 +46,44 @@ namespace ftk
     inline bool LRUCache<T, U>::get(const T& key, U& value)
     {
         const auto i = _map.find(key);
-        if (i != _map.end())
-        {
-            value = i->second.first;
-            auto j = _counts.find(key);
-            if (j != _counts.end())
-            {
-                ++_counter;
-                j->second = _counter;
-            }
-        }
-        return i != _map.end();
+        if (i == _map.end())
+            return false;
+        // Move to front (most-recently-used).
+        _list.splice(_list.begin(), _list, i->second);
+        value = std::get<1>(*i->second);
+        return true;
     }
 
     template<typename T, typename U>
     inline bool LRUCache<T, U>::touch(const T& key)
     {
         const auto i = _map.find(key);
-        if (i != _map.end())
-        {
-            auto j = _counts.find(key);
-            if (j != _counts.end())
-            {
-                ++_counter;
-                j->second = _counter;
-            }
-        }
-        return i != _map.end();
+        if (i == _map.end())
+            return false;
+        _list.splice(_list.begin(), _list, i->second);
+        return true;
     }
 
     template<typename T, typename U>
     inline void LRUCache<T, U>::add(const T& key, const U& value, size_t size)
     {
-        _map[key] = std::make_pair(value, size);
-        ++_counter;
-        _counts[key] = _counter;
-        _maxUpdate();
+        const auto i = _map.find(key);
+        if (i != _map.end())
+        {
+            // Update existing entry: adjust running size, move to front.
+            _size -= std::get<2>(*i->second);
+            std::get<1>(*i->second) = value;
+            std::get<2>(*i->second) = size;
+            _size += size;
+            _list.splice(_list.begin(), _list, i->second);
+        }
+        else
+        {
+            _list.emplace_front(key, value, size);
+            _map[key] = _list.begin();
+            _size += size;
+        }
+        _evict();
     }
 
     template<typename T, typename U>
@@ -97,29 +92,28 @@ namespace ftk
         const auto i = _map.find(key);
         if (i != _map.end())
         {
+            _size -= std::get<2>(*i->second);
+            _list.erase(i->second);
             _map.erase(i);
-        }
-        const auto j = _counts.find(key);
-        if (j != _counts.end())
-        {
-            _counts.erase(j);
         }
     }
 
     template<typename T, typename U>
     inline void LRUCache<T, U>::clear()
     {
+        _list.clear();
         _map.clear();
-        _counts.clear();
+        _size = 0;
     }
 
     template<typename T, typename U>
     inline std::vector<T> LRUCache<T, U>::getKeys() const
     {
         std::vector<T> out;
-        for (const auto& i : _map)
+        out.reserve(_map.size());
+        for (const auto& node : _list)
         {
-            out.push_back(i.first);
+            out.push_back(std::get<0>(node));
         }
         return out;
     }
@@ -128,29 +122,24 @@ namespace ftk
     inline std::vector<U> LRUCache<T, U>::getValues() const
     {
         std::vector<U> out;
-        for (const auto& i : _map)
+        out.reserve(_map.size());
+        for (const auto& node : _list)
         {
-            out.push_back(i.second.first);
+            out.push_back(std::get<1>(node));
         }
         return out;
     }
 
     template<typename T, typename U>
-    inline void LRUCache<T, U>::_maxUpdate()
+    inline void LRUCache<T, U>::_evict()
     {
-        while (getSize() > _max)
+        // Remove from the back (least-recently-used) until within budget.
+        while (_size > _max && !_list.empty())
         {
-            // Find the entry with the lowest counter (least recently used).
-            auto lru = _counts.begin();
-            for (auto i = _counts.begin(); i != _counts.end(); ++i)
-            {
-                if (i->second < lru->second)
-                {
-                    lru = i;
-                }
-            }
-            _map.erase(lru->first);
-            _counts.erase(lru);
+            const auto& lru = _list.back();
+            _size -= std::get<2>(lru);
+            _map.erase(std::get<0>(lru));
+            _list.pop_back();
         }
     }
 }

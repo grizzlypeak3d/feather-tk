@@ -16,9 +16,7 @@
 #include FT_GLYPH_H
 
 #include <algorithm>
-#include <codecvt>
 #include <limits>
-#include <locale>
 #include <map>
 #include <mutex>
 
@@ -67,10 +65,58 @@ namespace ftk
 #else // _WINDOWS
         typedef char32_t ftk_char_t;
 #endif // _WINDOWS
+
+        // Decode a UTF-8 string to a UTF-32 codepoint sequence without
+        // using the deprecated std::wstring_convert / std::codecvt_utf8.
+        std::basic_string<ftk_char_t> utf8ToUtf32(const std::string& s)
+        {
+            std::basic_string<ftk_char_t> out;
+            out.reserve(s.size()); // upper bound
+            const unsigned char* p = reinterpret_cast<const unsigned char*>(s.data());
+            const unsigned char* end = p + s.size();
+            while (p < end)
+            {
+                ftk_char_t cp = 0;
+                if (*p < 0x80)
+                {
+                    cp = *p++;
+                }
+                else if ((*p & 0xE0) == 0xC0 && (p + 1) < end)
+                {
+                    cp  = (*p++ & 0x1F) << 6;
+                    cp |= (*p++ & 0x3F);
+                }
+                else if ((*p & 0xF0) == 0xE0 && (p + 2) < end)
+                {
+                    cp  = (*p++ & 0x0F) << 12;
+                    cp |= (*p++ & 0x3F) << 6;
+                    cp |= (*p++ & 0x3F);
+                }
+                else if ((*p & 0xF8) == 0xF0 && (p + 3) < end)
+                {
+                    cp  = (*p++ & 0x07) << 18;
+                    cp |= (*p++ & 0x3F) << 12;
+                    cp |= (*p++ & 0x3F) << 6;
+                    cp |= (*p++ & 0x3F);
+                }
+                else
+                {
+                    ++p; // skip invalid byte
+                    continue;
+                }
+                out.push_back(cp);
+            }
+            return out;
+        }
     }
 
     struct FontSystem::Private
     {
+        // This funciton assumes the caller has already called
+        // FT_Set_Pixel_Sizes so we skip that step.
+        std::shared_ptr<Glyph> getGlyph(uint32_t code, const FontInfo&, FT_Face face);
+
+        // Convenience overload for single-glyph callers (resolves face internally).
         std::shared_ptr<Glyph> getGlyph(uint32_t code, const FontInfo&);
 
         void measure(
@@ -88,7 +134,6 @@ namespace ftk
         std::mutex mutex;
         std::map<std::string, std::vector<uint8_t> > fontData;
         std::map<std::string, FT_Face> faces;
-        std::wstring_convert<std::codecvt_utf8<ftk_char_t>, ftk_char_t> utf32Convert;
         LRUCache<GlyphInfo, std::shared_ptr<Glyph> > glyphCache;
     };
 
@@ -274,7 +319,7 @@ namespace ftk
         try
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            const auto utf32 = p.utf32Convert.from_bytes(text);
+            const auto utf32 = utf8ToUtf32(text);
             p.measure(utf32, fontInfo, maxLineWidth, out);
         }
         catch (const std::exception&)
@@ -292,7 +337,7 @@ namespace ftk
         try
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            const auto utf32 = p.utf32Convert.from_bytes(text);
+            const auto utf32 = utf8ToUtf32(text);
             Size2I size;
             p.measure(utf32, fontInfo, maxLineWidth, size, &out);
         }
@@ -310,7 +355,7 @@ namespace ftk
         try
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            const auto utf32 = p.utf32Convert.from_bytes(text);
+            const auto utf32 = utf8ToUtf32(text);
             for (const auto& i : utf32)
             {
                 out.push_back(p.getGlyph(i, fontInfo));
@@ -323,6 +368,27 @@ namespace ftk
 
     std::shared_ptr<Glyph> FontSystem::Private::getGlyph(uint32_t code, const FontInfo& fontInfo)
     {
+        auto faceIt = faces.find(fontInfo.name);
+        if (faceIt == faces.end())
+        {
+            faceIt = faces.find(getDefaultFont(FontType::Regular));
+        }
+        if (faceIt == faces.end())
+        {
+            return nullptr;
+        }
+        if (FT_Set_Pixel_Sizes(faceIt->second, 0, static_cast<int>(fontInfo.size)))
+        {
+            return nullptr;
+        }
+        return getGlyph(code, fontInfo, faceIt->second);
+    }
+
+    std::shared_ptr<Glyph> FontSystem::Private::getGlyph(
+        uint32_t code,
+        const FontInfo& fontInfo,
+        FT_Face face)
+    {
         std::shared_ptr<Glyph> out;
         do
         {
@@ -334,39 +400,21 @@ namespace ftk
             out = std::make_shared<Glyph>();
             out->info = GlyphInfo(code, fontInfo);
 
-            auto faceIt = faces.find(fontInfo.name);
-            if (faceIt == faces.end())
-            {
-                faceIt = faces.find(getDefaultFont(FontType::Regular));
-            }
-            if (faceIt == faces.end())
-            {
-                break;
-            }
-            if (FT_Set_Pixel_Sizes(
-                faceIt->second,
-                0,
-                static_cast<int>(fontInfo.size)))
-            {
-                break;
-            }
-            const FT_UInt ftGlyphIndex = FT_Get_Char_Index(faceIt->second, code);
+            const FT_UInt ftGlyphIndex = FT_Get_Char_Index(face, code);
             if (!ftGlyphIndex)
             {
                 break;
             }
-            if (FT_Load_Glyph(faceIt->second, ftGlyphIndex, FT_LOAD_FORCE_AUTOHINT))
+            if (FT_Load_Glyph(face, ftGlyphIndex, FT_LOAD_FORCE_AUTOHINT))
             {
                 break;
             }
-            const FT_Render_Mode renderMode = FT_RENDER_MODE_NORMAL;
-            const uint8_t renderModeChannels = 1;
-            if (FT_Render_Glyph(faceIt->second->glyph, renderMode))
+            if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
             {
                 break;
             }
 
-            const FT_Bitmap ftBitmap = faceIt->second->glyph->bitmap;
+            const FT_Bitmap ftBitmap = face->glyph->bitmap;
             const ImageInfo imageInfo(ftBitmap.width, ftBitmap.rows, imageType);
             out->image = Image::create(imageInfo);
             for (size_t y = 0; y < ftBitmap.rows; ++y)
@@ -406,13 +454,12 @@ namespace ftk
                 default: break;
                 }
             }
-            out->offset = V2I(faceIt->second->glyph->bitmap_left, faceIt->second->glyph->bitmap_top);
-            out->advance = faceIt->second->glyph->advance.x / 64;
-            out->lsbDelta = faceIt->second->glyph->lsb_delta;
-            out->rsbDelta = faceIt->second->glyph->rsb_delta;
+            out->offset   = V2I(face->glyph->bitmap_left, face->glyph->bitmap_top);
+            out->advance  = face->glyph->advance.x / 64;
+            out->lsbDelta = face->glyph->lsb_delta;
+            out->rsbDelta = face->glyph->rsb_delta;
 
             glyphCache.add(out->info, out);
-
         } while (0);
 
         return out;
@@ -451,13 +498,14 @@ namespace ftk
         }
 
         const int h = faceIt->second->size->metrics.height / 64;
+        const FT_Face face = faceIt->second;
         V2I pos(0, h);
         auto textLineIt = utf32.end();
         int textLineX = 0;
         int32_t rsbDeltaPrev = 0;
         for (auto utf32It = utf32.begin(); utf32It != utf32.end(); ++utf32It)
         {
-            const auto glyph = getGlyph(*utf32It, fontInfo);
+            const auto glyph = getGlyph(*utf32It, fontInfo, face);
 
             if (glyphGeom)
             {

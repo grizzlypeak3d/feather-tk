@@ -83,6 +83,27 @@ namespace ftk
     }
 
     template<typename T>
+    inline void IObservableList<T>::_notify(const std::vector<T>& value)
+    {
+        bool hasExpired = false;
+        for (const auto& i : _observers)
+        {
+            if (auto observer = i.lock())
+            {
+                observer->doCallback(value);
+            }
+            else
+            {
+                hasExpired = true;
+            }
+        }
+        if (hasExpired)
+        {
+            _removeExpired();
+        }
+    }
+
+    template<typename T>
     inline ObservableList<T>::ObservableList(const std::vector<T>& value) :
         _value(value)
     {}
@@ -103,13 +124,7 @@ namespace ftk
     inline void ObservableList<T>::setAlways(const std::vector<T>& value)
     {
         _value = value;
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
@@ -118,13 +133,7 @@ namespace ftk
         if (value == _value)
             return false;
         _value = value;
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
         return true;
     }
 
@@ -134,13 +143,7 @@ namespace ftk
         if (_value.size())
         {
             _value.clear();
-            for (const auto& i : IObservableList<T>::_observers)
-            {
-                if (auto observer = i.lock())
-                {
-                    observer->doCallback(_value);
-                }
-            }
+            IObservableList<T>::_notify(_value);
         }
     }
 
@@ -148,13 +151,7 @@ namespace ftk
     inline void ObservableList<T>::setItem(size_t index, const T& value)
     {
         _value[index] = value;
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
@@ -163,13 +160,7 @@ namespace ftk
         if (value == _value[index])
             return false;
         _value[index] = value;
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
         return true;
     }
 
@@ -177,78 +168,42 @@ namespace ftk
     inline void ObservableList<T>::pushBack(const T& value)
     {
         _value.push_back(value);
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
     inline void ObservableList<T>::pushBack(const std::vector<T>& value)
     {
         _value.insert(_value.end(), value.begin(), value.end());
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
     inline void ObservableList<T>::insertItem(size_t index, const T& value)
     {
         _value.insert(_value.begin() + index, value);
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
     inline void ObservableList<T>::insertItems(size_t index, const std::vector<T>& value)
     {
         _value.insert(_value.begin() + index, value.begin(), value.end());
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
     inline void ObservableList<T>::removeItem(size_t index)
     {
         _value.erase(_value.begin() + index);
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
     inline void ObservableList<T>::removeItems(size_t start, size_t end)
     {
         _value.erase(_value.begin() + start, _value.begin() + end);
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>
@@ -259,13 +214,7 @@ namespace ftk
     {
         _value.erase(_value.begin() + start, _value.begin() + end);
         _value.insert(_value.begin() + start, items.begin(), items.end());
-        for (const auto& i : IObservableList<T>::_observers)
-        {
-            if (auto observer = i.lock())
-            {
-                observer->doCallback(_value);
-            }
-        }
+        IObservableList<T>::_notify(_value);
     }
 
     template<typename T>

@@ -103,12 +103,21 @@ namespace ftk
     inline void Observable<T>::setAlways(const T& value)
     {
         _value = value;
+        bool hasExpired = false;
         for (const auto& i : IObservable<T>::_observers)
         {
             if (auto observer = i.lock())
             {
                 observer->doCallback(_value);
             }
+            else
+            {
+                hasExpired = true;
+            }
+        }
+        if (hasExpired)
+        {
+            IObservable<T>::_removeExpired();
         }
     }
 
@@ -118,12 +127,21 @@ namespace ftk
         if (value == _value)
             return false;
         _value = value;
+        bool hasExpired = false;
         for (const auto& i : IObservable<T>::_observers)
         {
             if (auto observer = i.lock())
             {
                 observer->doCallback(_value);
             }
+            else
+            {
+                hasExpired = true;
+            }
+        }
+        if (hasExpired)
+        {
+            IObservable<T>::_removeExpired();
         }
         return true;
     }

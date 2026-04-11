@@ -166,5 +166,28 @@ namespace ftk
     ///@}
 }
 
+namespace std
+{
+    template<>
+    struct hash<ftk::FontInfo>
+    {
+        size_t operator()(const ftk::FontInfo& v) const noexcept
+        {
+            const size_t seed = std::hash<std::string>{}(v.name);
+            return ftk::hashCombine(seed, std::hash<int>{}(v.size));
+        }
+    };
+
+    template<>
+    struct hash<ftk::GlyphInfo>
+    {
+        size_t operator()(const ftk::GlyphInfo& v) const noexcept
+        {
+            const size_t seed = std::hash<uint32_t>{}(v.code);
+            return ftk::hashCombine(seed, std::hash<ftk::FontInfo>{}(v.fontInfo));
+        }
+    };
+}
+
 #include <ftk/Core/FontSystemInline.h>
 

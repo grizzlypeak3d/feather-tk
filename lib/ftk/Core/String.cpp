@@ -64,13 +64,29 @@ namespace ftk
         SplitOptions options)
     {
         std::vector<std::string> out;
+        if (delimiters.empty())
+        {
+            if (!s.empty())
+            {
+                out.push_back(s);
+            }
+            return out;
+        }
+
+        // Build a 256-entry lookup table for O(1) per-character delimiter check.
+        bool isDelim[256] = {};
+        for (unsigned char c : delimiters)
+        {
+            isDelim[c] = true;
+        }
+
         bool word = false;
         const size_t size = s.size();
         std::size_t wordStart = 0;
         std::size_t i = 0;
         for (; i < size; ++i)
         {
-            if (std::find(delimiters.begin(), delimiters.end(), s[i]) == delimiters.end())
+            if (!isDelim[static_cast<unsigned char>(s[i])])
             {
                 if (!word)
                 {
@@ -87,9 +103,7 @@ namespace ftk
                 }
                 if (SplitOptions::KeepEmpty == options)
                 {
-                    if ((i > 0 &&
-                        std::find(delimiters.begin(), delimiters.end(), s[i - 1]) != delimiters.end()) ||
-                        (i == 0))
+                    if ((i > 0 && isDelim[static_cast<unsigned char>(s[i - 1])]) || (i == 0))
                     {
                         out.push_back(std::string());
                     }
@@ -158,6 +172,16 @@ namespace ftk
     std::string join(const std::vector<std::string>& values, char delimiter)
     {
         std::string out;
+        if (values.empty())
+            return out;
+
+        size_t total = values.size() - 1; // delimiters
+        for (const auto& v : values)
+        {
+            total += v.size();
+        }
+        out.reserve(total);
+
         const std::size_t size = values.size();
         for (std::size_t i = 0; i < size; ++i)
         {
@@ -173,6 +197,18 @@ namespace ftk
     std::string join(const std::vector<std::string>& values, const std::string& delimiter)
     {
         std::string out;
+        if (values.empty())
+        {
+            return out;
+        }
+
+        size_t total = delimiter.size() * (values.size() - 1); // delimiters
+        for (const auto& v : values)
+        {
+            total += v.size();
+        }
+        out.reserve(total);
+
         const std::size_t size = values.size();
         for (std::size_t i = 0; i < size; ++i)
         {
@@ -198,9 +234,10 @@ namespace ftk
     std::string toUpper(const std::string& value)
     {
         std::string out;
+        out.reserve(value.size());
         for (auto i : value)
         {
-            out.push_back(std::toupper(i));
+            out.push_back(std::toupper(static_cast<unsigned char>(i)));
         }
         return out;
     }
@@ -208,9 +245,10 @@ namespace ftk
     std::string toLower(const std::string& value)
     {
         std::string out;
+        out.reserve(value.size());
         for (auto i : value)
         {
-            out.push_back(std::tolower(i));
+            out.push_back(std::tolower(static_cast<unsigned char>(i)));
         }
         return out;
     }
@@ -242,17 +280,22 @@ namespace ftk
         const std::string& b,
         CaseCompare compare)
     {
-        bool out = false;
         switch (compare)
         {
         case CaseCompare::Sensitive:
-            out = a == b;
-            break;
+            return a == b;
         case CaseCompare::Insensitive:
-            out = toLower(a) == toLower(b);
-            break;
+            if (a.size() != b.size())
+                return false;
+            for (size_t i = 0; i < a.size(); ++i)
+            {
+                if (std::tolower(static_cast<unsigned char>(a[i])) !=
+                    std::tolower(static_cast<unsigned char>(b[i])))
+                    return false;
+            }
+            return true;
         }
-        return out;
+        return false;
     }
 
     bool contains(
@@ -260,17 +303,27 @@ namespace ftk
         const std::string& substr,
         CaseCompare compare)
     {
-        size_t i = std::string::npos;
         switch (compare)
         {
         case CaseCompare::Sensitive:
-            i = input.find(substr);
-            break;
+            return input.find(substr) != std::string::npos;
         case CaseCompare::Insensitive:
-            i = toLower(input).find(toLower(substr));
-            break;
+        {
+            if (substr.size() > input.size())
+                return false;
+            const auto it = std::search(
+                input.begin(),
+                input.end(),
+                substr.begin(),
+                substr.end(),
+                [](unsigned char a, unsigned char b)
+                {
+                    return std::tolower(a) == std::tolower(b);
+                });
+            return it != input.end();
         }
-        return i != std::string::npos;
+        }
+        return false;
     }
 
     std::wstring toWide(const std::string& value)

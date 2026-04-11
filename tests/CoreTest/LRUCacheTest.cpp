@@ -58,9 +58,10 @@ namespace ftk
             c.add(1, true);
             c.add(2, true);
             c.add(3, true);
-            FTK_ASSERT(1 == c.getKeys()[0]);
-            FTK_ASSERT(2 == c.getKeys()[1]);
-            FTK_ASSERT(3 == c.getKeys()[2]);
+            auto keys = c.getKeys();
+            FTK_ASSERT(std::find(keys.begin(), keys.end(), 1) != keys.end());
+            FTK_ASSERT(std::find(keys.begin(), keys.end(), 2) != keys.end());
+            FTK_ASSERT(std::find(keys.begin(), keys.end(), 3) != keys.end());
             FTK_ASSERT(c.getValues()[0]);
             FTK_ASSERT(c.getValues()[1]);
             FTK_ASSERT(c.getValues()[2]);

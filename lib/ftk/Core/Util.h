@@ -5,6 +5,8 @@
 
 #include <ftk/Core/Export.h>
 
+#include <cstdlib>
+
 //! Convenience macro for making a class non-copyable.
 #define FTK_NON_COPYABLE(CLASS) \
     CLASS(const CLASS&) = delete; \
@@ -95,3 +97,11 @@
         os << get##ENUM##Labels()[static_cast<std::size_t>(in)]; \
         return os; \
     }
+
+namespace ftk
+{
+    inline size_t hashCombine(size_t seed, size_t value) noexcept
+    {
+        return seed ^ (value + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+    }
+}

@@ -4,12 +4,16 @@
 #pragma once
 
 #include <cstdint>
-#include <map>
+#include <list>
+#include <unordered_map>
 #include <vector>
 
 namespace ftk
 {
     //! Least recently used (LRU) cache.
+    //!
+    //! Uses a linked-hashmap structure: a std::list maintains LRU order and
+    //! an unordered_map provides O(1) lookup.
     template<typename T, typename U>
     class LRUCache
     {
@@ -43,12 +47,19 @@ namespace ftk
         ///@}
 
     private:
-        void _maxUpdate();
+        void _evict();
 
-        size_t _max = 10000;
-        std::map<T, std::pair<U, size_t> > _map;
-        std::map<T, int64_t> _counts;
-        int64_t _counter = 0;
+        size_t _max  = 10000;
+        size_t _size = 0; // running total of item sizes
+
+        // LRU order: front = most-recently-used, back = least-recently-used.
+        // Each node stores: key, value, item-size.
+        using ListNode = std::tuple<T, U, size_t>;
+        std::list<ListNode> _list;
+
+        // Maps key -> iterator into _list for O(1) lookup and splice.
+        using Map = std::unordered_map<T, typename std::list<ListNode>::iterator>;
+        Map _map;
     };
 }
 

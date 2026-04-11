@@ -17,6 +17,19 @@
 #include <mutex>
 #include <thread>
 
+namespace std
+{
+    template<>
+    struct hash<std::pair<std::string, int> >
+    {
+        size_t operator()(const std::pair<std::string, int>& v) const noexcept
+        {
+            const size_t seed = std::hash<std::string>{}(v.first);
+            return ftk::hashCombine(seed, std::hash<int>{}(v.second));
+        }
+    };
+}
+
 namespace ftk_resource
 {
     extern std::vector<uint8_t> ArrowDown;
@@ -117,7 +130,9 @@ namespace ftk
         };
         const size_t requestTimeout = 5;
 
-        typedef std::pair<std::string, float> CacheKey;
+        // The display scale is converted to an int for caching.
+        const int displayScaleConvert = 100;
+        typedef std::pair<std::string, int> CacheKey;
 
         struct Mutex
         {
@@ -255,7 +270,7 @@ namespace ftk
                         {
                             std::unique_lock<std::mutex> lock(p.mutex.mutex);
                             cached = p.mutex.cache.get(
-                                std::make_pair(request->name, request->displayScale),
+                                std::make_pair(request->name, request->displayScale * p.displayScaleConvert),
                                 image);
                         }
                         if (!cached)
@@ -303,7 +318,7 @@ namespace ftk
                         {
                             std::unique_lock<std::mutex> lock(p.mutex.mutex);
                             p.mutex.cache.add(
-                                std::make_pair(request->name, request->displayScale),
+                                std::make_pair(request->name, request->displayScale * p.displayScaleConvert),
                                 image);
                         }
                     }
@@ -380,7 +395,7 @@ namespace ftk
         {
             std::unique_lock<std::mutex> lock(p.mutex.mutex);
             cached = p.mutex.cache.get(
-                std::make_pair(name, displayScale),
+                std::make_pair(name, displayScale * p.displayScaleConvert),
                 image);
         }
         if (cached)

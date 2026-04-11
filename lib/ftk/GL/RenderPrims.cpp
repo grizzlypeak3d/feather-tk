@@ -13,24 +13,7 @@ namespace ftk
             const Box2F& rect,
             const Color4F& color)
         {
-            FTK_P();
-
-            p.shaders["rect"]->bind();
-            p.shaders["rect"]->setUniform("color", color);
-
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-            if (p.vbos["rect"])
-            {
-                const auto mesh = ftk::mesh(rect);
-                p.vbos["rect"]->copy(convert(mesh, p.vbos["rect"]->getType()));
-                p.diag.triangles += mesh.triangles.size();
-            }
-            if (p.vaos["rect"])
-            {
-                p.vaos["rect"]->bind();
-                p.vaos["rect"]->draw(GL_TRIANGLES, 0, p.vbos["rect"]->getSize());
-            }
+            drawRects({ rect }, color);
         }
 
         void Render::drawRects(

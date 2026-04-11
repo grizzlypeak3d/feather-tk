@@ -90,12 +90,6 @@ namespace ftk
             glEnable(GL_BLEND);
             glBlendEquation(GL_FUNC_ADD);
 
-            if (!p.shaders["rect"])
-            {
-                p.shaders["rect"] = Shader::create(
-                    vertexSource(),
-                    meshFragmentSource());
-            }
             if (!p.shaders["line"])
             {
                 p.shaders["line"] = Shader::create(
@@ -133,8 +127,6 @@ namespace ftk
                     imageFragmentSource());
             }
 
-            p.vbos["rect"] = VBO::create(2 * 3, VBOType::Pos2_F32);
-            p.vaos["rect"] = VAO::create(p.vbos["rect"]->getType(), p.vbos["rect"]->getID());
             p.vbos["line"] = VBO::create(2 * 3, VBOType::Pos2_F32);
             p.vaos["line"] = VAO::create(p.vbos["line"]->getType(), p.vbos["line"]->getID());
             p.vbos["texture"] = gl::VBO::create(2 * 3, gl::VBOType::Pos2_F32_UV_U16);

@@ -83,6 +83,8 @@ namespace ftk
     protected:
         void _add(const std::weak_ptr<ListObserver<T> >&);
         void _removeExpired();
+        // Notify all observers, pruning any that have expired.
+        void _notify(const std::vector<T>&);
 
         std::vector<std::weak_ptr<ListObserver<T> > > _observers;
 
