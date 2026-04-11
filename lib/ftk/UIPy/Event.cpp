@@ -209,7 +209,7 @@ namespace ftk
                 .value("Up", Key::Up)
                 .value("NumLock", Key::NumLock)
                 .value("KeypadDivide", Key::KeypadDivide)
-                .value("KeypadMulitply", Key::KeypadMulitply)
+                .value("KeypadMulitply", Key::KeypadMultiply)
                 .value("KeypadMinus", Key::KeypadMinus)
                 .value("KeypadPlus", Key::KeypadPlus)
                 .value("KeypadEnter", Key::KeypadEnter)
