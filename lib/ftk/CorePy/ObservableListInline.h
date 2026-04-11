@@ -24,7 +24,22 @@ namespace ftk
                 .def(pybind11::init(pybind11::overload_cast<const std::vector<T>&>(&ObservableList<T>::create)))
                 .def("setAlways", &ObservableList<T>::setAlways)
                 .def("setIfChanged", &ObservableList<T>::setIfChanged)
-                .def("get", &ObservableList<T>::get);
+                .def("clear", &ObservableList<T>::clear)
+                .def("setItem", &ObservableList<T>::setItem, pybind11::arg("index"), pybind11::arg("value"))
+                .def("setItemOnlyIfChanged", &ObservableList<T>::setItemOnlyIfChanged, pybind11::arg("index"), pybind11::arg("value"))
+                .def("pushBack", pybind11::overload_cast<const T&>(&ObservableList<T>::pushBack))
+                .def("pushBack", pybind11::overload_cast<const std::vector<T>&>(&ObservableList<T>::pushBack))
+                .def("insertItem", &ObservableList<T>::insertItem, pybind11::arg("index"), pybind11::arg("value"))
+                .def("insertItems", &ObservableList<T>::insertItems, pybind11::arg("index"), pybind11::arg("list"))
+                .def("removeItem", &ObservableList<T>::removeItem, pybind11::arg("index"))
+                .def("removeItems", &ObservableList<T>::removeItems, pybind11::arg("start"), pybind11::arg("end"))
+                .def("replaceItems", &ObservableList<T>::replaceItems, pybind11::arg("start"), pybind11::arg("end"), pybind11::arg("list"))
+                .def("get", &ObservableList<T>::get)
+                .def("getSize", &ObservableList<T>::getSize)
+                .def("isEmpty", &ObservableList<T>::isEmpty)
+                .def("getItem", &ObservableList<T>::getItem)
+                .def("contains", &ObservableList<T>::contains)
+                .def("indexOf", &ObservableList<T>::indexOf);
         }
     }
 }
