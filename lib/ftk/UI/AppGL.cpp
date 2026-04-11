@@ -791,7 +791,7 @@ namespace ftk
             case SDLK_UP: out = Key::Up; break;
             case SDLK_NUMLOCKCLEAR: out = Key::NumLock; break;
             case SDLK_KP_DIVIDE: out = Key::KeypadDivide; break;
-            case SDLK_KP_MULTIPLY: out = Key::KeypadMulitply; break;
+            case SDLK_KP_MULTIPLY: out = Key::KeypadMultiply; break;
             case SDLK_KP_MINUS: out = Key::KeypadMinus; break;
             case SDLK_KP_PLUS: out = Key::KeypadPlus; break;
             case SDLK_KP_ENTER: out = Key::KeypadEnter; break;
