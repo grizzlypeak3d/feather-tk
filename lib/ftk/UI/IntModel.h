@@ -20,49 +20,49 @@ namespace ftk
         IntModel();
 
     public:
-        ~IntModel();
+        FTK_API ~IntModel();
 
         //! Create a new model.
-        static std::shared_ptr<IntModel> create();
+        FTK_API static std::shared_ptr<IntModel> create();
 
         //! \name Value
         ///@{
 
-        int getValue() const;
-        std::shared_ptr<IObservable<int> > observeValue() const;
-        void setValue(int);
+        FTK_API int getValue() const;
+        FTK_API std::shared_ptr<IObservable<int> > observeValue() const;
+        FTK_API void setValue(int);
 
         ///@}
 
         //! \name Range
         ///@{
 
-        const RangeI& getRange() const;
-        std::shared_ptr<IObservable<RangeI> > observeRange() const;
-        void setRange(const RangeI&);
+        FTK_API const RangeI& getRange() const;
+        FTK_API std::shared_ptr<IObservable<RangeI> > observeRange() const;
+        FTK_API void setRange(const RangeI&);
 
         ///@}
 
         //! \name Increment
         ///@{
 
-        int getStep() const;
-        void setStep(int);
+        FTK_API int getStep() const;
+        FTK_API void setStep(int);
 
-        int getLargeStep() const;
-        void setLargeStep(int);
+        FTK_API int getLargeStep() const;
+        FTK_API void setLargeStep(int);
 
         //! Increment the value by a step.
-        void step();
+        FTK_API void step();
 
         //! Decrement the value by a step.
-        void stepDec();
+        FTK_API void stepDec();
 
         //! Increment the value by a large step.
-        void largeStep();
+        FTK_API void largeStep();
 
         //! Decrement the value by a large step.
-        void largeStepDec();
+        FTK_API void largeStepDec();
 
         ///@}
 
@@ -70,25 +70,25 @@ namespace ftk
         ///@{
 
         //! Get whether there is a default value.
-        bool hasDefault() const;
+        FTK_API bool hasDefault() const;
 
         //! Observe whether there is a default value.
-        std::shared_ptr<IObservable<bool> > observeHasDefault() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasDefault() const;
 
         //! Get the default value.
-        int getDefault() const;
+        FTK_API int getDefault() const;
 
         //! Observe the default value.
-        std::shared_ptr<IObservable<int> > observeDefault() const;
+        FTK_API std::shared_ptr<IObservable<int> > observeDefault() const;
 
         //! Set the default value.
-        void setDefault(int);
+        FTK_API void setDefault(int);
 
         //! Set the value to the default value.
-        void setDefault();
+        FTK_API void setDefault();
 
         //! Clear the default value.
-        void clearDefault();
+        FTK_API void clearDefault();
 
         ///@}
 

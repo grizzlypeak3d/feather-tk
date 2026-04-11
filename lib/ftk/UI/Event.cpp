@@ -273,7 +273,7 @@ namespace ftk
         "Up",
         "Num Lock",
         "Keypad Divide",
-        "Keypad Mulitply",
+        "Keypad Multiply",
         "Keypad Minus",
         "Keypad Plus",
         "Keypad Enter",

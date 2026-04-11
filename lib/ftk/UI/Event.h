@@ -41,6 +41,7 @@ namespace ftk
     //! Style event.
     struct FTK_API_TYPE StyleEvent
     {
+        //! @param changes Set all of the fields to this value.
         FTK_API StyleEvent(bool changes = false);
 
         bool displayScaleChange = false;
@@ -130,6 +131,10 @@ namespace ftk
     FTK_ENUM(MouseButton);
 
     //! Keyboard modifiers.
+    //!
+    //! Note: This is a bitfield enum and is not compatible with FTK_ENUM,
+    //! which requires a contiguous Count member. See to_string/from_string
+    //! below for serialization support.
     enum class FTK_API_TYPE KeyModifier
     {
         None    = 0,
@@ -301,7 +306,7 @@ namespace ftk
         Up,
         NumLock,
         KeypadDivide,
-        KeypadMulitply,
+        KeypadMultiply,
         KeypadMinus,
         KeypadPlus,
         KeypadEnter,

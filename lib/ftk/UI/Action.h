@@ -29,6 +29,8 @@ namespace ftk
     //! Action.
     class FTK_API_TYPE Action : public std::enable_shared_from_this<Action>
     {
+        FTK_NON_COPYABLE(Action);
+
     protected:
         void _init(
             const std::string&               text,

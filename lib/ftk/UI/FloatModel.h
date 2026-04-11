@@ -20,49 +20,49 @@ namespace ftk
         FloatModel();
 
     public:
-        ~FloatModel();
+        FTK_API ~FloatModel();
 
         //! Create a new model.
-        static std::shared_ptr<FloatModel> create();
+        FTK_API static std::shared_ptr<FloatModel> create();
 
         //! \name Value
         ///@{
 
-        float getValue() const;
-        std::shared_ptr<IObservable<float> > observeValue() const;
-        void setValue(float);
+        FTK_API float getValue() const;
+        FTK_API std::shared_ptr<IObservable<float> > observeValue() const;
+        FTK_API void setValue(float);
 
         ///@}
 
         //! \name Range
         ///@{
 
-        const RangeF& getRange() const;
-        std::shared_ptr<IObservable<RangeF> > observeRange() const;
-        void setRange(const RangeF&);
+        FTK_API const RangeF& getRange() const;
+        FTK_API std::shared_ptr<IObservable<RangeF> > observeRange() const;
+        FTK_API void setRange(const RangeF&);
 
         ///@}
 
         //! \name Increment
         ///@{
 
-        float getStep() const;
-        void setStep(float);
+        FTK_API float getStep() const;
+        FTK_API void setStep(float);
 
-        float getLargeStep() const;
-        void setLargeStep(float);
+        FTK_API float getLargeStep() const;
+        FTK_API void setLargeStep(float);
 
         //! Increment the value by a step.
-        void step();
+        FTK_API void step();
 
         //! Decrement the value by a step.
-        void stepDec();
+        FTK_API void stepDec();
 
         //! Increment the value by a large step.
-        void largeStep();
+        FTK_API void largeStep();
 
         //! Decrement the value by a large step.
-        void largeStepDec();
+        FTK_API void largeStepDec();
 
         ///@}
 
@@ -70,25 +70,25 @@ namespace ftk
         ///@{
 
         //! Get whether there is a default value.
-        bool hasDefault() const;
+        FTK_API bool hasDefault() const;
 
         //! Observe whether there is a default value.
-        std::shared_ptr<IObservable<bool> > observeHasDefault() const;
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasDefault() const;
 
         //! Get the default value.
-        float getDefault() const;
+        FTK_API float getDefault() const;
 
         //! Observe the default value.
-        std::shared_ptr<IObservable<float> > observeDefault() const;
+        FTK_API std::shared_ptr<IObservable<float> > observeDefault() const;
 
         //! Set the default value.
-        void setDefault(float);
+        FTK_API void setDefault(float);
 
         //! Set the value to the default value.
-        void setDefault();
+        FTK_API void setDefault();
 
         //! Clear the default value.
-        void clearDefault();
+        FTK_API void clearDefault();
 
         ///@}
 
