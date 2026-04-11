@@ -153,7 +153,7 @@ namespace ftk
         //! Is the widget clipped?
         bool isClipped() const;
 
-        //! Does the widget clip it's children?
+        //! Does the widget clip its children?
         bool doesClipChildren() const;
 
         //! Set whether the widget clips it's children (e.g., scroll areas).
