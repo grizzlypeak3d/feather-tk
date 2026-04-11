@@ -11,7 +11,7 @@ namespace ftk
 {
     void ftk_assert(const char* file, int line)
     {
-        std::cout << "ASSERT: " << file << ":" << line << std::endl;
+        std::cerr << "ASSERT: " << file << ":" << line << std::endl;
         abort();
     }
 }

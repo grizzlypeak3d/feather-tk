@@ -18,12 +18,18 @@ namespace ftk
 }
 
 //! Assert macro.
+//!
+//! WARNING: 'value' is not evaluated in Release builds. Never place
+//! expressions with side effects inside FTK_ASSERT.
 #if defined(FTK_ASSERT)
 #undef FTK_ASSERT
 #define FTK_ASSERT(value) \
-    if (!(value)) \
-        ftk::ftk_assert(__FILE__, __LINE__)
+    do { \
+        if (!(value)) \
+            ftk::ftk_assert(__FILE__, __LINE__); \
+    } while(0)
 #else // FTK_ASSERT
-#define FTK_ASSERT(value)
+#define FTK_ASSERT(value) \
+    do {} while(0)
 #endif // FTK_ASSERT
 
