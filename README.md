@@ -14,7 +14,7 @@ a production-proven image sequence viewer used in professional VFX and animation
 ## Why feather-tk?
 
 **Lightweight and self-contained.** feather-tk has a small, well-defined set of
-dependencies, and includes a CMake superbuild for building all of the dependencies.
+dependencies, and includes a CMake superbuild for building the dependencies.
 
 **Modern C++ throughout.** Clean ownership model using `std::shared_ptr`, a reactive
 observable system for UI state, and a consistent event-driven architecture that makes
@@ -231,9 +231,3 @@ build-Release/examples/objview/objview feather-tk/etc/Objects/Bolt.obj
 # Windows
 build-Release\examples\objview\Release\objview feather-tk\etc\Objects\Bolt.obj
 ```
-
----
-
-## License
-
-BSD 3-Clause. See [LICENSE.txt](LICENSE.txt).
