@@ -26,23 +26,23 @@ namespace ftk
     //! Split a string.
     FTK_API std::vector<std::string> split(
         const std::string&,
-        char delimeter,
+        char delimiter,
         SplitOptions = SplitOptions::DiscardEmpty);
 
     //! Split a string.
     FTK_API std::vector<std::string> split(
         const std::string&,
-        const std::vector<char>& delimeters,
+        const std::vector<char>& delimiters,
         SplitOptions = SplitOptions::DiscardEmpty);
 
     //! Split a string on new-lines.
     FTK_API std::vector<std::string> splitLines(const std::string&);
 
     //! Join a list of strings.
-    FTK_API std::string join(const std::vector<std::string>&, char delimeter);
+    FTK_API std::string join(const std::vector<std::string>&, char delimiter);
 
     //! Join a list of strings.
-    FTK_API std::string join(const std::vector<std::string>&, const std::string& delimeter);
+    FTK_API std::string join(const std::vector<std::string>&, const std::string& delimiter);
 
     //! Join a list of strings with quotes.
     FTK_API std::string quotes(const std::vector<std::string>&);

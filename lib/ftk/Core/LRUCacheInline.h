@@ -104,13 +104,13 @@ namespace ftk
         {
             _counts.erase(j);
         }
-        _maxUpdate();
     }
 
     template<typename T, typename U>
     inline void LRUCache<T, U>::clear()
     {
         _map.clear();
+        _counts.clear();
     }
 
     template<typename T, typename U>
@@ -138,29 +138,19 @@ namespace ftk
     template<typename T, typename U>
     inline void LRUCache<T, U>::_maxUpdate()
     {
-        size_t size = getSize();
-        if (size > _max)
+        while (getSize() > _max)
         {
-            std::map<int64_t, T> sorted;
-            for (const auto& i : _counts)
+            // Find the entry with the lowest counter (least recently used).
+            auto lru = _counts.begin();
+            for (auto i = _counts.begin(); i != _counts.end(); ++i)
             {
-                sorted[i.second] = i.first;
-            }
-            while (getSize() > _max)
-            {
-                auto begin = sorted.begin();
-                auto i = _map.find(begin->second);
-                if (i != _map.end())
+                if (i->second < lru->second)
                 {
-                    _map.erase(i);
+                    lru = i;
                 }
-                auto j = _counts.find(begin->second);
-                if (j != _counts.end())
-                {
-                    _counts.erase(j);
-                }
-                sorted.erase(begin);
             }
+            _map.erase(lru->first);
+            _counts.erase(lru);
         }
     }
 }

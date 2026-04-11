@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace ftk
 {

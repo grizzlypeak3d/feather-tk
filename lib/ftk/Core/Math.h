@@ -33,8 +33,10 @@ namespace ftk
     constexpr T lerp(U value, T min, T max);
 
     //! Smooth step function.
-    template<typename T>
-    constexpr T smoothStep(T value, T min, T max);
+    constexpr float smoothStep(float value, float min, float max);
+
+    //! Smooth step function.
+    constexpr double smoothStep(double value, double min, double max);
 
     //! Count the number of digits.
     FTK_API size_t digits(int);

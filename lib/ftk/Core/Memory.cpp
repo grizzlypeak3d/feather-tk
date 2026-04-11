@@ -83,6 +83,7 @@ namespace ftk
     {
         FTK_ASSERT(in);
         FTK_ASSERT(out);
+        FTK_ASSERT(in != out);
         FTK_ASSERT(2 == wordSize || 4 == wordSize || 8 == wordSize);
 
         const uint8_t* inP = reinterpret_cast<const uint8_t*>(in);

@@ -13,7 +13,7 @@ namespace ftk
 {
     std::vector<std::string> split(
         const std::string& s,
-        char delimeter,
+        char delimiter,
         SplitOptions options)
     {
         std::vector<std::string> out;
@@ -23,7 +23,7 @@ namespace ftk
         std::size_t i = 0;
         for (; i < size; ++i)
         {
-            if (s[i] != delimeter)
+            if (s[i] != delimiter)
             {
                 if (!word)
                 {
@@ -40,7 +40,7 @@ namespace ftk
                 }
                 if (SplitOptions::KeepEmpty == options)
                 {
-                    if ((i > 0 && s[i - 1] == delimeter) || (i == 0))
+                    if ((i > 0 && s[i - 1] == delimiter) || (i == 0))
                     {
                         out.push_back(std::string());
                     }
@@ -60,7 +60,7 @@ namespace ftk
 
     std::vector<std::string> split(
         const std::string& s,
-        const std::vector<char>& delimeters,
+        const std::vector<char>& delimiters,
         SplitOptions options)
     {
         std::vector<std::string> out;
@@ -70,7 +70,7 @@ namespace ftk
         std::size_t i = 0;
         for (; i < size; ++i)
         {
-            if (std::find(delimeters.begin(), delimeters.end(), s[i]) == delimeters.end())
+            if (std::find(delimiters.begin(), delimiters.end(), s[i]) == delimiters.end())
             {
                 if (!word)
                 {
@@ -88,7 +88,7 @@ namespace ftk
                 if (SplitOptions::KeepEmpty == options)
                 {
                     if ((i > 0 &&
-                        std::find(delimeters.begin(), delimeters.end(), s[i - 1]) != delimeters.end()) ||
+                        std::find(delimiters.begin(), delimiters.end(), s[i - 1]) != delimiters.end()) ||
                         (i == 0))
                     {
                         out.push_back(std::string());
@@ -155,7 +155,7 @@ namespace ftk
         return out;
     }
 
-    std::string join(const std::vector<std::string>& values, char delimeter)
+    std::string join(const std::vector<std::string>& values, char delimiter)
     {
         std::string out;
         const std::size_t size = values.size();
@@ -164,13 +164,13 @@ namespace ftk
             out += values[i];
             if (i < size - 1)
             {
-                out += delimeter;
+                out += delimiter;
             }
         }
         return out;
     }
 
-    std::string join(const std::vector<std::string>& values, const std::string& delimeter)
+    std::string join(const std::vector<std::string>& values, const std::string& delimiter)
     {
         std::string out;
         const std::size_t size = values.size();
@@ -179,7 +179,7 @@ namespace ftk
             out += values[i];
             if (i < size - 1)
             {
-                out += delimeter;
+                out += delimiter;
             }
         }
         return out;
