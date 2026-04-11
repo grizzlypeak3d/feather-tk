@@ -66,18 +66,21 @@ using namespace ftk;
 
 int main(int argc, char** argv)
 {
+    // Create the context and application.
     auto context = Context::create();
     auto app = App::create(context, argc, argv, "simple", "Simple example");
     if (app->getExit() != 0)
         return app->getExit();
 
+    // Create a window.
     auto window = MainWindow::create(context, app, Size2I(1280, 960));
 
+    // Create a label.
     auto label = Label::create(context, "Hello world");
-    label->setFontRole(FontRole::Title);
-    label->setAlign(HAlign::Center, VAlign::Center);
+    label->setHAlign(HAlign::Center);
     window->setWidget(label);
 
+    // Run the application.
     app->run();
     return 0;
 }
@@ -92,17 +95,16 @@ import sys
 # Create the context and application.
 context = ftk.Context()
 app = ftk.App(context, sys.argv, "simple", "Simple example")
-if app.getExit() != 0:
-    sys.exit(app.getExit())
+if app.exitValue != 0:
+    sys.exit(app.exitValue)
 
 # Create a window.
 window = ftk.MainWindow(context, app, ftk.Size2I(1280, 960))
 
 # Create a label.
 label = ftk.Label(context, "Hello world")
-label.fontRole = ftk.FontRole.Title
-label.setAlign(ftk.HAlign.Center, ftk.VAlign.Center)
-window.setWidget(label)
+label.hAlign = ftk.HAlign.Center
+window.widget = label
 
 # Run the application.
 app.run()

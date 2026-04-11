@@ -400,7 +400,7 @@ namespace ftk
         return out;
     }
     
-    const std::string& LineEditModel::setRegex() const
+    const std::string& LineEditModel::getRegex() const
     {
         return _p->regex;
     }

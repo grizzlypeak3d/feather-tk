@@ -121,7 +121,7 @@ namespace ftk
                     "setStretch",
                     py::overload_cast<Stretch>(&IWidget::setStretch))
                 .def_property("hAlign", &IWidget::getHAlign, &IWidget::setHAlign)
-                .def_property("vAlign", &IWidget::getVAlign, &IWidget::setHAlign)
+                .def_property("vAlign", &IWidget::getVAlign, &IWidget::setVAlign)
                 .def(
                     "setAlign",
                     &IWidget::setAlign,

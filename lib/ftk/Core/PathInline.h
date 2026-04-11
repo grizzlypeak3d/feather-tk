@@ -8,7 +8,7 @@ namespace ftk
         return !fileName.empty() && '.' == fileName[0];
     }
 
-    inline const PathOptions& Path::getOptions()
+    inline const PathOptions& Path::getOptions() const
     {
         return _options;
     }

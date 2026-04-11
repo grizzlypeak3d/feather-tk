@@ -139,7 +139,7 @@ namespace ftk
         //! \name Path Options
         ///@{
 
-        const PathOptions& getOptions();
+        const PathOptions& getOptions() const;
         FTK_API void setOptions(const PathOptions&);
 
         ///@}

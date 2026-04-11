@@ -8,12 +8,15 @@ set(SOURCE
     Bindings.cpp
     ButtonGroup.cpp
     CheckBox.cpp
+    ClipboardSystem.cpp
     ColorPopup.cpp
     ColorSwatch.cpp
     ColorWidget.cpp
+    ComboBox.cpp
     ConfirmDialog.cpp
     DialogSystem.cpp
     Divider.cpp
+    DocumentModel.cpp
     DoubleEdit.cpp
     DoubleEditSlider.cpp
     DoubleModel.cpp
@@ -39,11 +42,15 @@ set(SOURCE
     IWindow.cpp
     Icon.cpp
     IconSystem.cpp
+    ImageWidget.cpp
     IntEdit.cpp
     IntEditSlider.cpp
     IntModel.cpp
     IntSlider.cpp
     Label.cpp
+    LineEdit.cpp
+    LineEditModel.cpp
+    ListWidget.cpp
     MDICanvas.cpp
     MDIMiniMap.cpp
     MDIWidget.cpp
@@ -51,19 +58,26 @@ set(SOURCE
     Menu.cpp
     MenuBar.cpp
     MessageDialog.cpp
+    OverlayLayout.cpp
     ProgressDialog.cpp
     PushButton.cpp
     RadioButton.cpp
     RecentFilesModel.cpp
     RowLayout.cpp
+    SVGWidget.cpp
     ScrollArea.cpp
+    ScrollBar.cpp
     ScrollWidget.cpp
+    SearchBox.cpp
     Settings.cpp
+    Spacer.cpp
     Splitter.cpp
     StackLayout.cpp
     Style.cpp
     TabBar.cpp
     TabWidget.cpp
+    TextEdit.cpp
+    TextEditModel.cpp
     ToolBar.cpp
     ToolButton.cpp
     WidgetOptions.cpp
