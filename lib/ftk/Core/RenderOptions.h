@@ -26,7 +26,7 @@ namespace ftk
         Color4F clearColor = Color4F(0.F, 0.F, 0.F, 0.F);
 
         //! Texture cache byte count.
-        size_t textureCacheByteCount = gigabyte / 4;
+        size_t textureCacheByteCount = megabyte * 32;
 
         //! Glyph texture atlas size.
         int glyphAtlasSize =
