@@ -62,19 +62,18 @@ namespace ftk
     void DiagSystem::addSampler(const std::string& id, const std::function<int64_t(void)>& sampler)
     {
         FTK_P();
-        if (!hasSampler(id))
+        auto i = id.find_first_of('/');
+        if (!hasSampler(id) && i != std::string::npos)
         {
-            const auto s = ftk::split(id, '/');
-            if (2 == s.size())
+            p.samplers.push_back(std::make_pair(id, sampler));
+            const std::string group = id.substr(0, i);
+            const std::string name = id.substr(i + 1);
+            auto i = std::find(p.groups.begin(), p.groups.end(), group);
+            if (i == p.groups.end())
             {
-                p.samplers.push_back(std::make_pair(id, sampler));
-                auto i = std::find(p.groups.begin(), p.groups.end(), s[0]);
-                if (i == p.groups.end())
-                {
-                    p.groups.push_back(s[0]);
-                }
-                p.names[s[0]].push_back(s[1]);
+                p.groups.push_back(group);
             }
+            p.names[group].push_back(name);
         }
     }
 
