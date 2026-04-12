@@ -65,28 +65,28 @@ namespace ftk
         auto diagSystem = context->getSystem<DiagSystem>();
         std::weak_ptr<Window> windowWeak(std::dynamic_pointer_cast<Window>(shared_from_this()));
         diagSystem->addSampler(
-            "feather-tk UI/Render time: {0}ms",
+            "ftk Frame Time/{0}ms",
             [windowWeak]
             {
                 auto window = windowWeak.lock();
                 return window ? window->_p->render->getDiag().time : 0;
             });
         diagSystem->addSampler(
-            "feather-tk UI Objects/Triangles: {0}",
+            "ftk Frame Stats/Triangles: {0}",
             [windowWeak]
             {
                 auto window = windowWeak.lock();
                 return window ? window->_p->render->getDiag().triangles : 0;
             });
         diagSystem->addSampler(
-            "feather-tk UI Objects/Textures: {0}",
+            "ftk Frame Stats/Textures: {0}",
             [windowWeak]
             {
                 auto window = windowWeak.lock();
                 return window ? window->_p->render->getDiag().textures : 0;
             });
         diagSystem->addSampler(
-            "feather-tk UI Objects/Glyphs: {0}",
+            "ftk Frame Stats/Glyphs: {0}",
             [windowWeak]
             {
                 auto window = windowWeak.lock();

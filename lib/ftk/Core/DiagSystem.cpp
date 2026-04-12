@@ -38,11 +38,11 @@ namespace ftk
         p.samplesInc = ObservableMap<std::string, int64_t>::create();
 
         addSampler(
-            "feather-tk Memory/Images: {0}MB",
+            "ftk Memory/Images: {0}MB",
             [] { return Image::getTotalByteCount() / megabyte; });
 
         addSampler(
-            "feather-tk Objects/Images: {0}",
+            "ftk Objects/Images: {0}",
             [] { return Image::getObjectCount(); });
 
         p.logTimer = Timer::create(context);
