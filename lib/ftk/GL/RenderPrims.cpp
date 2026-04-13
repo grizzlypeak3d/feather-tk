@@ -5,6 +5,8 @@
 
 #include <ftk/GL/Util.h>
 
+#include <sstream>
+
 namespace ftk
 {
     namespace gl
@@ -355,6 +357,16 @@ namespace ftk
             _drawTextMesh(p.textMesh);
         }
 
+        namespace
+        {
+            std::string getTexturePoolKey(const ImageInfo& value)
+            {
+                std::stringstream ss;
+                ss << value.size << " " << value.type;
+                return ss.str();
+            }
+        }
+
         void Render::drawImage(
             const std::shared_ptr<Image>& image,
             const TriMesh2F& mesh,
@@ -370,14 +382,19 @@ namespace ftk
             std::vector<std::shared_ptr<Texture> > textures;
             if (!imageOptions.cache)
             {
-                textures = _getTextures(info, imageOptions.imageFilters);
+                const std::string texturePoolKey = getTexturePoolKey(info);
+                if (!p.texturePool.get(texturePoolKey, textures))
+                {
+                    textures = _getTextures(info, imageOptions.imageFilters);
+                    p.texturePool.add(texturePoolKey, textures, image->getByteCount());
+                }
                 _copyTextures(image, textures);
             }
-            else if (!p.textureCache->get(image, textures))
+            else if (!p.textureCache.get(image, textures))
             {
                 textures = _getTextures(info, imageOptions.imageFilters);
                 _copyTextures(image, textures);
-                p.textureCache->add(image, textures, image->getByteCount());
+                p.textureCache.add(image, textures, image->getByteCount());
             }
             _setActiveTextures(info, textures);
             p.diag.textures += textures.size();

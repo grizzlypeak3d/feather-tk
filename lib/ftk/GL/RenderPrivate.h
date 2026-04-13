@@ -34,7 +34,13 @@ namespace ftk
             M44F transform;
             
             std::map<std::string, std::shared_ptr<gl::Shader> > shaders;
-            std::shared_ptr<TextureCache> textureCache;
+
+            LRUCache<
+                std::string,
+                std::vector<std::shared_ptr<Texture> > > texturePool;
+            LRUCache<
+                std::shared_ptr<Image>,
+                std::vector<std::shared_ptr<Texture> > > textureCache;
             std::shared_ptr<gl::TextureAtlas> glyphAtlas;
             std::map<GlyphInfo, BoxPackID> glyphIDs;
             TriMesh2F textMesh;

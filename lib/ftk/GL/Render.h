@@ -16,11 +16,6 @@ namespace ftk
 
         //! \name Renderer
         ///@{
-
-        //! Texture cache.
-        typedef LRUCache<
-            std::shared_ptr<Image>,
-            std::vector<std::shared_ptr<Texture> > > TextureCache;
         
         //! OpenGL renderer.
         class FTK_API_TYPE Render : public IRender
@@ -28,8 +23,7 @@ namespace ftk
         protected:
             void _init(
                 const std::shared_ptr<LogSystem>&,
-                const std::shared_ptr<FontSystem>&,
-                const std::shared_ptr<TextureCache>&);
+                const std::shared_ptr<FontSystem>&);
 
             Render();
 
@@ -39,14 +33,10 @@ namespace ftk
             //! Create a new renderer.
             FTK_API static std::shared_ptr<Render> create(
                 const std::shared_ptr<LogSystem>&,
-                const std::shared_ptr<FontSystem>&,
-                const std::shared_ptr<TextureCache>& = nullptr);
+                const std::shared_ptr<FontSystem>&);
 
             //! Get a shader.
             FTK_API std::shared_ptr<Shader> getShader(const std::string&);
-
-            //! Get the texture cache.
-            FTK_API const std::shared_ptr<TextureCache>& getTextureCache() const;
 
             FTK_API void begin(
                 const Size2I&,

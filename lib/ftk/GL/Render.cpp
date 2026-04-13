@@ -20,16 +20,9 @@ namespace ftk
 
         void Render::_init(
             const std::shared_ptr<LogSystem>& logSystem,
-            const std::shared_ptr<FontSystem>& fontSystem,
-            const std::shared_ptr<TextureCache>& textureCache)
+            const std::shared_ptr<FontSystem>& fontSystem)
         {
             IRender::_init(logSystem, fontSystem);
-            FTK_P();
-            p.textureCache = textureCache;
-            if (!p.textureCache)
-            {
-                p.textureCache = std::make_shared<TextureCache>();
-            }
         }
 
         Render::Render() :
@@ -41,22 +34,16 @@ namespace ftk
 
         std::shared_ptr<Render> Render::create(
             const std::shared_ptr<LogSystem>& logSystem,
-            const std::shared_ptr<FontSystem>& fontSystem,
-            const std::shared_ptr<TextureCache>& textureCache)
+            const std::shared_ptr<FontSystem>& fontSystem)
         {
             auto out = std::shared_ptr<Render>(new Render);
-            out->_init(logSystem, fontSystem, textureCache);
+            out->_init(logSystem, fontSystem);
             return out;
         }
 
         std::shared_ptr<Shader> Render::getShader(const std::string& value)
         {
             return _p->shaders[value];
-        }
-
-        const std::shared_ptr<TextureCache>& Render::getTextureCache() const
-        {
-            return _p->textureCache;
         }
 
         void Render::begin(
@@ -70,7 +57,8 @@ namespace ftk
 
             p.size = size;
             p.options = options;
-            p.textureCache->setMax(options.textureCacheByteCount);
+            p.texturePool.setMax(options.texturePoolByteCount);
+            p.textureCache.setMax(options.textureCacheByteCount);
 
             if (!p.glyphAtlas ||
                 (p.glyphAtlas && options.glyphAtlasSize != p.glyphAtlas->getSize()))

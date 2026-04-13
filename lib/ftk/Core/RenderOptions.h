@@ -25,6 +25,9 @@ namespace ftk
         //! Clear color.
         Color4F clearColor = Color4F(0.F, 0.F, 0.F, 0.F);
 
+        //! Texture pool byte count (enough for two 4K RGBA 16-bit frames).
+        size_t texturePoolByteCount = 4096 * 4096 * 4 * 2 * 2;
+
         //! Texture cache byte count.
         size_t textureCacheByteCount = megabyte * 100;
 

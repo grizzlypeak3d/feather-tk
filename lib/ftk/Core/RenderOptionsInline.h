@@ -8,6 +8,7 @@ namespace ftk
         return
             clear == other.clear &&
             clearColor == other.clearColor &&
+            texturePoolByteCount == other.texturePoolByteCount &&
             textureCacheByteCount == other.textureCacheByteCount &&
             glyphAtlasSize == other.glyphAtlasSize &&
             log == other.log;
