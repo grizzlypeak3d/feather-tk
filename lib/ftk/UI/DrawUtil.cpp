@@ -7,11 +7,55 @@
 
 namespace ftk
 {
+    namespace
+    {
+        // Default circle resolution.
+        constexpr size_t circleResolution = 16;
+
+        // Compute the sin and cos values for the default circle resolution.
+        struct CircleSample { float c, s; };
+        using CircleTable = std::array<CircleSample, circleResolution>;
+
+        CircleSample getCircleSample(float v)
+        {
+            static const CircleTable table = []
+            {
+                CircleTable t;
+                for (size_t k = 0; k < circleResolution; ++k)
+                {
+                    const float a = k / static_cast<float>(circleResolution - 1) * pi2;
+                    t[k] = { cosf(a), sinf(a) };
+                }
+                return t;
+            }();
+            const int i = clamp(
+                static_cast<int>(v / pi2 * (circleResolution - 1)),
+                0,
+                static_cast<int>(circleResolution - 1));
+            return table[i];
+        }
+
+        // Return the cos using our table.
+        float cosfTable(float v)
+        {
+            return getCircleSample(v).c;
+        }
+
+        // Return the sin using our table.
+        float sinfTable(float v)
+        {
+            return getCircleSample(v).s;
+        }
+    }
+
     TriMesh2F rect(
         const Box2I& box,
         int cornerRadius,
         size_t resolution)
     {
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+
         TriMesh2F out;
 
         const float x = box.x();
@@ -101,6 +145,9 @@ namespace ftk
         int radius,
         size_t resolution)
     {
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+
         TriMesh2F out;
 
         const int inc = 360 / resolution;
@@ -109,12 +156,12 @@ namespace ftk
             const size_t size = out.v.size();
             out.v.emplace_back(static_cast<float>(pos.x), static_cast<float>(pos.y));
             out.v.emplace_back(
-                pos.x + cos(deg2rad(i)) * radius,
-                pos.y + sin(deg2rad(i)) * radius);
+                pos.x + cosf(deg2rad(i)) * radius,
+                pos.y + sinf(deg2rad(i)) * radius);
             const int d = std::min(i + inc, 360);
             out.v.emplace_back(
-                pos.x + cos(deg2rad(d)) * radius,
-                pos.y + sin(deg2rad(d)) * radius);
+                pos.x + cosf(deg2rad(d)) * radius,
+                pos.y + sinf(deg2rad(d)) * radius);
             out.triangles.emplace_back(size + 1, size + 3, size + 2);
         }
 
@@ -127,6 +174,9 @@ namespace ftk
         int radius,
         size_t resolution)
     {
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+
         TriMesh2F out;
 
         const float x = box.x();
@@ -218,6 +268,9 @@ namespace ftk
         const float alpha,
         size_t resolution)
     {
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+
         TriMesh2F out;
 
         const int x = box.x();
