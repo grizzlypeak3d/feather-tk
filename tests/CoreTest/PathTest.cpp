@@ -451,6 +451,8 @@ namespace ftk
                 options.seqExts.push_back(".exr");
                 auto dirEntries = dirList(dir, options);
                 FTK_ASSERT(2 == dirEntries.size());
+                _print("List 0: " + dirEntries[0].path.getFileName());
+                _print("List 1: " + dirEntries[1].path.getFileName());
             }
         }
 

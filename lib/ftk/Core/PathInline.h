@@ -143,8 +143,18 @@ namespace ftk
         return
             (hasNum() || "#" == getNum()) &&
             other.hasNum() &&
-            getBase() == other.getBase() &&
-            getExt() == other.getExt();
+            0 == _path.compare(
+                _base.first,
+                _base.second,
+                other._path,
+                other._base.first,
+                other._base.second) &&
+            0 == _path.compare(
+                _ext.first,
+                _ext.second,
+                other._path,
+                other._ext.first,
+                other._ext.second);
     }
 
     inline bool Path::operator == (const Path& other) const
