@@ -595,7 +595,7 @@ namespace ftk
     }
 
     std::vector<DirEntry> dirList(
-        const std::filesystem::path& path,
+        const std::filesystem::path& dir,
         const DirListOptions& options)
     {
         std::vector<DirEntry> out;
@@ -604,7 +604,7 @@ namespace ftk
         pathOptions.seqMaxDigits = options.seqMaxDigits;
         try
         {
-            for (const auto& i : std::filesystem::directory_iterator(path))
+            for (const auto& i : std::filesystem::directory_iterator(dir))
             {
                 const Path path(i.path().u8string(), pathOptions);
                 const std::string fileName = i.path().filename().u8string();
