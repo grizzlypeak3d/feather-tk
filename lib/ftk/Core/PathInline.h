@@ -143,8 +143,7 @@ namespace ftk
         return
             (hasNum() || "#" == getNum()) &&
             other.hasNum() &&
-            _dir == other._dir &&
-            _base == other._base &&
+            getBase() == other.getBase() &&
             getExt() == other.getExt();
     }
 
