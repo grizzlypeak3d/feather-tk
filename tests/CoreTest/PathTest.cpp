@@ -403,7 +403,18 @@ namespace ftk
             {
                 std::filesystem::path dir("PathTest1");
                 std::filesystem::create_directory(dir);
-                FileIO::create(dir / "render.exr", FileMode::Write);
+                {
+                    FileIO::create(dir / "render.exr", FileMode::Write);
+                }
+                {
+                    FileIO::create(dir / "0001.exr", FileMode::Write);
+                }
+                {
+                    FileIO::create(dir / "0002", FileMode::Write);
+                }
+                {
+                    std::filesystem::create_directory(dir / "tmp");
+                }
                 for (int i = 0; i < 10; ++i)
                 {
                     FileIO::create(dir / Format("render.{0}.exr").arg(i).str(), FileMode::Write);
@@ -413,28 +424,37 @@ namespace ftk
                     FileIO::create(dir / Format("render.{0}.png").arg(i).str(), FileMode::Write);
                 }
                 auto dirEntries = dirList(dir);
-                FTK_ASSERT(3 == dirEntries.size());
+                FTK_ASSERT(6 == dirEntries.size());
                 _print("List 0: " + dirEntries[0].path.getFileName());
                 _print("List 1: " + dirEntries[1].path.getFileName());
                 _print("List 2: " + dirEntries[2].path.getFileName());
-                FTK_ASSERT("render.0.exr" == dirEntries[0].path.getFileName());
-                FTK_ASSERT(dirEntries[0].path.getFrames().has_value());
-                FTK_ASSERT(0 == dirEntries[0].path.getFrames().value().min());
-                FTK_ASSERT(9 == dirEntries[0].path.getFrames().value().max());
-                FTK_ASSERT("render.100.png" == dirEntries[1].path.getFileName());
-                FTK_ASSERT(100 == dirEntries[1].path.getFrames().value().min());
-                FTK_ASSERT(102 == dirEntries[1].path.getFrames().value().max());
-                FTK_ASSERT("render.exr" == dirEntries[2].path.getFileName());
+                _print("List 3: " + dirEntries[3].path.getFileName());
+                _print("List 4: " + dirEntries[4].path.getFileName());
+                _print("List 5: " + dirEntries[5].path.getFileName());
+                FTK_ASSERT("tmp" == dirEntries[0].path.getFileName());
+                FTK_ASSERT("0001.exr" == dirEntries[1].path.getFileName());
+                FTK_ASSERT("0002" == dirEntries[2].path.getFileName());
+                FTK_ASSERT("render.0.exr" == dirEntries[3].path.getFileName());
+                FTK_ASSERT(dirEntries[3].path.getFrames().has_value());
+                FTK_ASSERT(0 == dirEntries[3].path.getFrames().value().min());
+                FTK_ASSERT(9 == dirEntries[3].path.getFrames().value().max());
+                FTK_ASSERT("render.100.png" == dirEntries[4].path.getFileName());
+                FTK_ASSERT(100 == dirEntries[4].path.getFrames().value().min());
+                FTK_ASSERT(102 == dirEntries[4].path.getFrames().value().max());
+                FTK_ASSERT("render.exr" == dirEntries[5].path.getFileName());
 
                 DirListOptions options;
                 options.seqExts.push_back(".exr");
                 dirEntries = dirList(dir, options);
-                FTK_ASSERT(5 == dirEntries.size());
-                FTK_ASSERT("render.0.exr" == dirEntries[0].path.getFileName());
-                FTK_ASSERT("render.100.png" == dirEntries[1].path.getFileName());
-                FTK_ASSERT("render.101.png" == dirEntries[2].path.getFileName());
-                FTK_ASSERT("render.102.png" == dirEntries[3].path.getFileName());
-                FTK_ASSERT("render.exr" == dirEntries[4].path.getFileName());
+                FTK_ASSERT(8 == dirEntries.size());
+                FTK_ASSERT("tmp" == dirEntries[0].path.getFileName());
+                FTK_ASSERT("0001.exr" == dirEntries[1].path.getFileName());
+                FTK_ASSERT("0002" == dirEntries[2].path.getFileName());
+                FTK_ASSERT("render.0.exr" == dirEntries[3].path.getFileName());
+                FTK_ASSERT("render.100.png" == dirEntries[4].path.getFileName());
+                FTK_ASSERT("render.101.png" == dirEntries[5].path.getFileName());
+                FTK_ASSERT("render.102.png" == dirEntries[6].path.getFileName());
+                FTK_ASSERT("render.exr" == dirEntries[7].path.getFileName());
             }
             {
                 std::filesystem::path dir("PathTest2");
