@@ -5,6 +5,8 @@
 
 #include <ftk/Core/Math.h>
 
+#include <cmath>
+
 namespace ftk
 {
     namespace
