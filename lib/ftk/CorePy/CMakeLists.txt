@@ -10,6 +10,7 @@ set(SOURCE
     Bindings.cpp
     CmdLine.cpp
     Color.cpp
+    Command.cpp
     Context.cpp
     FontSystem.cpp
     IApp.cpp

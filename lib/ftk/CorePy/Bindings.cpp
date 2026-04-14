@@ -23,6 +23,7 @@ namespace ftk
             box(m);
             cmdLine(m);
             color(m);
+            command(m);
             context(m);
             fontSystem(m);
             iApp(m);

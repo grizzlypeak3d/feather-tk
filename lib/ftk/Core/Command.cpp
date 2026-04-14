@@ -44,6 +44,7 @@ namespace ftk
         p.currentIndex = p.currentIndex + 1;
         command->exec();
         p.hasUndo->setIfChanged(true);
+        p.hasRedo->setIfChanged(false);
     }
 
     std::shared_ptr<IObservable<bool> > CommandStack::observeHasUndo() const

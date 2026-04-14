@@ -37,6 +37,7 @@ namespace ftk
         FTK_API void box(pybind11::module_&);
         FTK_API void cmdLine(pybind11::module_&);
         FTK_API void color(pybind11::module_&);
+        FTK_API void command(pybind11::module_&);
         FTK_API void context(pybind11::module_&);
         FTK_API void fontSystem(pybind11::module_&);
         FTK_API void iApp(pybind11::module_&);

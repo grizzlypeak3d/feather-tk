@@ -110,6 +110,12 @@ namespace ftk
                 commandStack->clear();
                 FTK_ASSERT(!hasUndo);
                 FTK_ASSERT(!hasRedo);
+
+                commandStack->push(std::make_shared<AddCommand>(1, data));
+                commandStack->undo();
+                FTK_ASSERT(hasRedo);
+                commandStack->push(std::make_shared<AddCommand>(2, data));
+                FTK_ASSERT(!hasRedo);
             }
         }
     }
