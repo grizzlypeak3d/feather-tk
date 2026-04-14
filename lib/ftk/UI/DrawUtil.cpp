@@ -55,8 +55,8 @@ namespace ftk
         int cornerRadius,
         size_t resolution)
     {
-        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
-        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &::cosf;
 
         TriMesh2F out;
 
@@ -147,8 +147,8 @@ namespace ftk
         int radius,
         size_t resolution)
     {
-        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
-        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &::cosf;
 
         TriMesh2F out;
 
@@ -176,8 +176,8 @@ namespace ftk
         int radius,
         size_t resolution)
     {
-        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
-        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &::cosf;
 
         TriMesh2F out;
 
@@ -270,8 +270,8 @@ namespace ftk
         const float alpha,
         size_t resolution)
     {
-        const auto& sinf = circleResolution == resolution ? &sinfTable : &std::sinf;
-        const auto& cosf = circleResolution == resolution ? &cosfTable : &std::cosf;
+        const auto& sinf = circleResolution == resolution ? &sinfTable : &::sinf;
+        const auto& cosf = circleResolution == resolution ? &cosfTable : &::cosf;
 
         TriMesh2F out;
 
