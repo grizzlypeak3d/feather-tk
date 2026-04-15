@@ -54,6 +54,11 @@ namespace ftk
                     children.front()->setGeometry(value);
                 }
             }
+
+            void scrollEvent(ScrollEvent& event) override
+            {
+                event.accept = true;
+            }
         };
     }
 
