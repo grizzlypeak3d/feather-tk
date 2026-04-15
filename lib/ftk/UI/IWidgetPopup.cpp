@@ -268,26 +268,54 @@ namespace ftk
         }
     }
 
+    void IWidgetPopup::mouseMoveEvent(MouseMoveEvent& event)
+    {
+        IPopup::mouseMoveEvent(event);
+        FTK_P();
+        if (p.widget && contains(p.widget->getGeometry(), event.pos))
+        {
+            event.accept = true;
+        }
+    }
+
     void IWidgetPopup::mousePressEvent(MouseClickEvent& event)
     {
         IPopup::mousePressEvent(event);
         FTK_P();
-        if (p.widget &&
-            !contains(p.widget->getGeometry(), event.pos) &&
-            !contains(p.buttonGeometry, event.pos))
+        if (p.widget)
         {
-            close();
+            if (contains(p.widget->getGeometry(), event.pos))
+            {
+                event.accept = true;
+            }
+            else if (!contains(p.buttonGeometry, event.pos))
+            {
+                close();
+            }
         }
+    }
+
+    void IWidgetPopup::mouseReleaseEvent(MouseClickEvent& event)
+    {
+        IPopup::mouseReleaseEvent(event);
+        FTK_P();
+        event.accept = true;
     }
 
     void IWidgetPopup::scrollEvent(ScrollEvent& event)
     {
         IPopup::scrollEvent(event);
         FTK_P();
-        if (p.widget &&
-            !contains(p.widget->getGeometry(), event.pos))
+        if (p.widget)
         {
-            close();
+            if (contains(p.widget->getGeometry(), event.pos))
+            {
+                event.accept = true;
+            }
+            else
+            {
+                close();
+            }
         }
     }
 
