@@ -28,23 +28,26 @@ jobs:
 
     - name: Setup environment
       run: |
+        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh feather-tk/etc/Linux/linux-setup-gha.sh
 
     - name: Build
-      run: sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+      run: |
+        cd ..
+        sh feather-tk/etc/Linux/linux-build-gha.sh Debug
 
     - name: Run tests
       run: |
-        cd build-Debug
+        cd ../build-Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
       if: env.FTK_GCOV == 'ON'
       run: |
-        cd build-Debug
+        cd ../build-Debug
         sh ../feather-tk/etc/Linux/lcov.sh
 
   linux-sdl3-build:
@@ -72,23 +75,26 @@ jobs:
 
     - name: Setup environment
       run: |
+        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh feather-tk/etc/Linux/linux-setup-gha.sh
 
     - name: Build
-      run: sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+      run: |
+        cd ..
+        sh feather-tk/etc/Linux/linux-build-gha.sh Debug
 
     - name: Run tests
       run: |
-        cd build-Debug
+        cd ../build-Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
       if: env.FTK_GCOV == 'ON'
       run: |
-        cd build-Debug
+        cd ../build-Debug
         sh ../feather-tk/etc/Linux/lcov.sh
 
   linux-gles2-build:
@@ -116,17 +122,20 @@ jobs:
 
     - name: Setup environment
       run: |
+        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh feather-tk/etc/Linux/linux-setup-gha.sh
 
     - name: Build
-      run: sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+      run: |
+        cd ..
+        sh feather-tk/etc/Linux/linux-build-gha.sh Debug
 
     - name: Run tests
       run: |
-        cd build-Debug
+        cd ../build-Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   macos-15-intel-build:
@@ -157,6 +166,7 @@ jobs:
     # \bug DYLD_LIBRARY_PATH is not being set here?
     - name: Setup environment
       run: |
+        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
@@ -165,11 +175,13 @@ jobs:
 
     - name: Build
       run: |
+        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         sh feather-tk/etc/macOS/macos-build-gha.sh Debug
 
     - name: Run tests
       run: |
+        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
@@ -202,6 +214,7 @@ jobs:
     # \bug DYLD_LIBRARY_PATH is not being set here?
     - name: Setup environment
       run: |
+        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
@@ -210,11 +223,13 @@ jobs:
 
     - name: Build
       run: |
+        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         sh feather-tk/etc/macOS/macos-build-gha.sh Debug
 
     - name: Run tests
       run: |
+        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
@@ -246,6 +261,7 @@ jobs:
     - name: Setup environment
       shell: cmd
       run: |
+        cd ..
         echo %CD%\install-Debug\bin>> %GITHUB_PATH%
         echo %CD%\install-Debug\lib>> %GITHUB_PATH%
         echo PYTHONPATH=%CD%\install-Debug\lib >> %GITHUB_ENV%
@@ -253,11 +269,13 @@ jobs:
 
     - name: Build
       shell: cmd
-      run: feather-tk\etc\Windows\windows-build-gha.bat Debug
+      run: |
+        cd ..
+        feather-tk\etc\Windows\windows-build-gha.bat Debug
 
     - name: Run tests
       shell: cmd
       run: |
-        cd build-Debug
+        cd ..\build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
