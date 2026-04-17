@@ -1,4 +1,5 @@
-set BUILD_TYPE=%1
+set SOURCE_DIR=%1
+set BUILD_TYPE=%2
 IF "%BUILD_TYPE%"=="" set BUILD_TYPE=Release
 
 set JOBS=4
@@ -12,4 +13,4 @@ set FTK_EXAMPLES=ON
 set FTK_GCOV=OFF
 set BUILD_SHARED_LIBS=OFF
 
-feather-tk\etc\Windows\windows-build-gha.bat %BUILD_TYPE%
+%SOURCE_DIR%\etc\Windows\windows-build-gha.bat %SOURCE_DIR% %BUILD_TYPE%

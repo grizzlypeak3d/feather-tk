@@ -1,7 +1,8 @@
-set BUILD_TYPE=%1
+set SOURCE_DIR=%1
+set BUILD_TYPE=%2
 
 cmake ^
-    -S feather-tk/etc/SuperBuild ^
+    -S %SOURCE_DIR%/etc/SuperBuild ^
     -B sbuild-%BUILD_TYPE% ^
     -Dftk_API=%FTK_API% ^
     -Dftk_SDL2=%FTK_SDL2% ^
@@ -15,7 +16,7 @@ cmake ^
 cmake --build sbuild-%BUILD_TYPE% -j %JOBS% --config %BUILD_TYPE%
 
 cmake ^
-    -S feather-tk ^
+    -S %SOURCE_DIR% ^
     -B build-%BUILD_TYPE% ^
     -Dftk_API=%FTK_API% ^
     -Dftk_SDL2=%FTK_SDL2% ^

@@ -21,6 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        path: ftk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -28,27 +29,25 @@ jobs:
 
     - name: Setup environment
       run: |
-        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
-        sh feather-tk/etc/Linux/linux-setup-gha.sh
+        sh ftk/etc/Linux/linux-setup-gha.sh
 
     - name: Build
       run: |
-        cd ..
-        sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+        sh ftk/etc/Linux/linux-build-gha.sh ftk Debug
 
     - name: Run tests
       run: |
-        cd ../build-Debug
+        cd build-Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
       if: env.FTK_GCOV == 'ON'
       run: |
-        cd ../build-Debug
-        sh ../feather-tk/etc/Linux/lcov.sh
+        cd build-Debug
+        sh ../ftk/etc/Linux/lcov.sh
 
   linux-sdl3-build:
     runs-on: ubuntu-latest
@@ -68,6 +67,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        path: ftk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -75,27 +75,25 @@ jobs:
 
     - name: Setup environment
       run: |
-        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
-        sh feather-tk/etc/Linux/linux-setup-gha.sh
+        sh ftk/etc/Linux/linux-setup-gha.sh
 
     - name: Build
       run: |
-        cd ..
-        sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+        sh ftk/etc/Linux/linux-build-gha.sh ftk Debug
 
     - name: Run tests
       run: |
-        cd ../build-Debug
+        cd build-Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
       if: env.FTK_GCOV == 'ON'
       run: |
-        cd ../build-Debug
-        sh ../feather-tk/etc/Linux/lcov.sh
+        cd build-Debug
+        sh ../ftk/etc/Linux/lcov.sh
 
   linux-gles2-build:
     runs-on: ubuntu-latest
@@ -115,6 +113,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        path: ftk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -122,20 +121,18 @@ jobs:
 
     - name: Setup environment
       run: |
-        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
-        sh feather-tk/etc/Linux/linux-setup-gha.sh
+        sh ftk/etc/Linux/linux-setup-gha.sh
 
     - name: Build
       run: |
-        cd ..
-        sh feather-tk/etc/Linux/linux-build-gha.sh Debug
+        sh ftk/etc/Linux/linux-build-gha.sh ftk Debug
 
     - name: Run tests
       run: |
-        cd ../build-Debug
+        cd build-Debug
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   macos-15-intel-build:
@@ -158,6 +155,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        path: ftk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -166,7 +164,6 @@ jobs:
     # \bug DYLD_LIBRARY_PATH is not being set here?
     - name: Setup environment
       run: |
-        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
@@ -175,13 +172,11 @@ jobs:
 
     - name: Build
       run: |
-        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        sh feather-tk/etc/macOS/macos-build-gha.sh Debug
+        sh ftk/etc/macOS/macos-build-gha.sh ftk Debug
 
     - name: Run tests
       run: |
-        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
@@ -206,6 +201,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        path: ftk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -214,7 +210,6 @@ jobs:
     # \bug DYLD_LIBRARY_PATH is not being set here?
     - name: Setup environment
       run: |
-        cd ..
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
@@ -223,13 +218,11 @@ jobs:
 
     - name: Build
       run: |
-        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        sh feather-tk/etc/macOS/macos-build-gha.sh Debug
+        sh ftk/etc/macOS/macos-build-gha.sh ftk Debug
 
     - name: Run tests
       run: |
-        cd ..
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
         cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
@@ -252,6 +245,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        path: ftk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -261,7 +255,6 @@ jobs:
     - name: Setup environment
       shell: cmd
       run: |
-        cd ..
         echo %CD%\install-Debug\bin>> %GITHUB_PATH%
         echo %CD%\install-Debug\lib>> %GITHUB_PATH%
         echo PYTHONPATH=%CD%\install-Debug\lib >> %GITHUB_ENV%
@@ -270,12 +263,11 @@ jobs:
     - name: Build
       shell: cmd
       run: |
-        cd ..
-        feather-tk\etc\Windows\windows-build-gha.bat Debug
+        ftk\etc\Windows\windows-build-gha.bat ftk Debug
 
     - name: Run tests
       shell: cmd
       run: |
-        cd ..\build-Debug
+        cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
