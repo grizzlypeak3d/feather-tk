@@ -21,7 +21,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: feather-tk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -66,7 +65,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: feather-tk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -111,7 +109,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: feather-tk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -152,7 +149,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: feather-tk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -198,7 +194,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: feather-tk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
@@ -242,7 +237,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: feather-tk
         submodules: recursive
     - uses: actions/setup-python@v5
       with:
