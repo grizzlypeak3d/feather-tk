@@ -379,7 +379,7 @@ namespace ftk
             {
                 if (p.geom.rowsVisible[i])
                 {
-                    if (row % 2 == 0)
+                    if (row % 2 == 1)
                     {
                         event.render->drawRect(
                             Box2I(g.min.x, y, g.w(), p.geom.rowSizes[i]),
