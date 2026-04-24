@@ -33,6 +33,6 @@ namespace widgets
     private:
         std::shared_ptr<ftk::TextEdit> _textEdit;
 
-        std::shared_ptr<ftk::ListObserver<ftk::LogItem> > _logObserver;
+        std::shared_ptr<ftk::ListObserver<std::string> > _logObserver;
     };
 }

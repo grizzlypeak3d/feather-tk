@@ -4,7 +4,8 @@
 #pragma once
 
 #include <ftk/Core/ObservableList.h>
-#include <ftk/Core/LogSystem.h>
+
+#include <string>
 
 namespace ftk
 {
@@ -29,10 +30,16 @@ namespace ftk
         static std::shared_ptr<SysLogModel> create(const std::shared_ptr<Context>&);
 
         //! Observe messages (warnings and errors).
-        std::shared_ptr<IObservableList<LogItem> > observeMessages() const;
+        std::shared_ptr<IObservableList<std::string> > observeMessages() const;
+
+        //! Clear the messages.
+        void clearMessages();
 
         //! Observe the log.
-        std::shared_ptr<IObservableList<LogItem> > observeLog() const;
+        std::shared_ptr<IObservableList<std::string> > observeLog() const;
+
+        //! Clear the log.
+        void clearLog();
 
     private:
         FTK_PRIVATE();
