@@ -17,8 +17,8 @@ namespace ftk
 
     struct SysLogModel::Private
     {
-        std::shared_ptr<ObservableList<std::string> > messages;
-        std::shared_ptr<ObservableList<std::string> > log;
+        std::shared_ptr<ObservableList<LogItem> > messages;
+        std::shared_ptr<ObservableList<LogItem> > log;
         std::shared_ptr<ListObserver<LogItem> > logObserver;
     };
 
@@ -26,9 +26,9 @@ namespace ftk
     {
         FTK_P();
 
-        p.messages = ObservableList<std::string>::create();
+        p.messages = ObservableList<LogItem>::create();
 
-        p.log = ObservableList<std::string>::create();
+        p.log = ObservableList<LogItem>::create();
 
         auto logSystem = context->getLogSystem();
         p.logObserver = ListObserver<LogItem>::create(
@@ -36,26 +36,20 @@ namespace ftk
             [this](const std::vector<LogItem>& items)
             {
                 FTK_P();
-                std::list<std::string> messages(p.messages->get().begin(), p.messages->get().end());
-                std::list<std::string> log(p.log->get().begin(), p.log->get().end());
+                std::list<LogItem> messages(p.messages->get().begin(), p.messages->get().end());
+                std::list<LogItem> log(p.log->get().begin(), p.log->get().end());
                 for (const auto& item : items)
                 {
                     switch (item.type)
                     {
                     case LogType::Warning:
                     case LogType::Error:
-                        for (const auto& line : split(getLabel(item, true), '\n', SplitOptions::KeepEmpty))
-                        {
-                            messages.push_back(line);
-                        }
+                        messages.push_back(item);
                         break;
                     default: break;
                     }
 
-                    for (const auto& line : split(getLabel(item), '\n', SplitOptions::KeepEmpty))
-                    {
-                        log.push_back(line);
-                    }
+                    log.push_back(item);
                 }
 
                 while (messages.size() > messagesMax)
@@ -67,8 +61,8 @@ namespace ftk
                     log.pop_front();
                 }
 
-                p.messages->setIfChanged(std::vector<std::string>(messages.begin(), messages.end()));
-                p.log->setIfChanged(std::vector<std::string>(log.begin(), log.end()));
+                p.messages->setIfChanged(std::vector<LogItem>(messages.begin(), messages.end()));
+                p.log->setIfChanged(std::vector<LogItem>(log.begin(), log.end()));
             });
     }
 
@@ -87,12 +81,12 @@ namespace ftk
         return out;
     }
 
-    std::shared_ptr<IObservableList<std::string> > SysLogModel::observeMessages() const
+    std::shared_ptr<IObservableList<LogItem> > SysLogModel::observeMessages() const
     {
         return _p->messages;
     }
 
-    std::shared_ptr<IObservableList<std::string> > SysLogModel::observeLog() const
+    std::shared_ptr<IObservableList<LogItem> > SysLogModel::observeLog() const
     {
         return _p->log;
     }

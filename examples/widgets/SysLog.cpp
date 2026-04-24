@@ -24,12 +24,20 @@ namespace widgets
         _textEdit->setReadOnly(true);
         _textEdit->setMarginRole(SizeRole::Margin);
 
-        _logObserver = ListObserver<std::string>::create(
+        _logObserver = ListObserver<LogItem>::create(
             app->getSysLogModel()->observeLog(),
-            [this](const std::vector<std::string>& value)
+            [this](const std::vector<LogItem>& value)
             {
-                _textEdit->setText(value);
-                _textEdit->getModel()->setCursor(TextEditPos(value.size(), 0));
+                std::vector<std::string> text;
+                for (const auto& i : value)
+                {
+                    for (const auto& j : split(getLabel(i), '\n', SplitOptions::KeepEmpty))
+                    {
+                        text.push_back(j);
+                    }
+                }
+                _textEdit->setText(text);
+                _textEdit->getModel()->setCursor(TextEditPos(text.size(), 0));
             });
     }
 
