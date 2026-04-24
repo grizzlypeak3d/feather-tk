@@ -44,7 +44,7 @@ namespace ftk
                     {
                     case LogType::Warning:
                     case LogType::Error:
-                        for (const auto& line : split(getLabel(item), '\n', SplitOptions::KeepEmpty))
+                        for (const auto& line : split(getLabel(item, true), '\n', SplitOptions::KeepEmpty))
                         {
                             messages.push_back(line);
                         }
