@@ -30,7 +30,7 @@ namespace ftk
         //!
         //! \todo Should setVisible() be used instead of open() and
         //! close()?
-        FTK_API void open(
+        FTK_API virtual void open(
             const std::shared_ptr<IWindow>&,
             const Box2I& buttonGeometry,
             const std::optional<Box2I>& widgetGeometry = std::optional<Box2I>());
