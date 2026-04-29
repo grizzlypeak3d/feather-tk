@@ -59,11 +59,12 @@ namespace ftk
         _setMousePressEnabled(true);
 
         _titleLabel = Label::create(context, title);
-        _titleLabel->setMarginRole(SizeRole::MarginSmall);
+        _titleLabel->setFontSize(14);
+        _titleLabel->setMarginRole(SizeRole::Margin);
         _titleLabel->setBackgroundRole(ColorRole::Button);
 
         _label = Label::create(context, text);
-        _label->setMarginRole(SizeRole::MarginSmall);
+        _label->setMarginRole(SizeRole::Margin);
         _label->setAlign(HAlign::Left, VAlign::Top);
 
         _scrollWidget = ScrollWidget::create(context);

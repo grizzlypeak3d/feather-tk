@@ -81,7 +81,8 @@ namespace ftk
         p.model = model;
 
         p.titleLabel = Label::create(context, title);
-        p.titleLabel->setMarginRole(SizeRole::MarginSmall);
+        p.titleLabel->setFontSize(14);
+        p.titleLabel->setMarginRole(SizeRole::Margin);
         p.titleLabel->setBackgroundRole(ColorRole::Button);
 
         p.panelButton = ToolButton::create(context);

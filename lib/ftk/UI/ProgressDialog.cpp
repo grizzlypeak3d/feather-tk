@@ -207,7 +207,8 @@ namespace ftk
         _setMousePressEnabled(true);
 
         _titleLabel = Label::create(context, title);
-        _titleLabel->setMarginRole(SizeRole::MarginSmall);
+        _titleLabel->setFontSize(14);
+        _titleLabel->setMarginRole(SizeRole::Margin);
         _titleLabel->setBackgroundRole(ColorRole::Button);
 
         _label = Label::create(context, text);
