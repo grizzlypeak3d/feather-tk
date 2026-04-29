@@ -19,7 +19,7 @@ namespace ftk
 
         _logSystem->print(
             "ftk::Context",
-            Format("ftk version: {0}").arg(ftk_VERSION_FULL));
+            Format("ftk version: {0}").arg(FTK_VERSION_FULL));
 
         const auto sysInfo = getSysInfo();
         _logSystem->print(
