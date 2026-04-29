@@ -10,10 +10,11 @@ set(ftk_VERSION_MINOR "10")
 set(ftk_VERSION_PATCH "0")
 set(ftk_VERSION_DEV "-dev")
 set(ftk_VERSION_FULL ${ftk_VERSION_MAJOR}.${ftk_VERSION_MINOR}.${ftk_VERSION_PATCH}${ftk_VERSION_DEV})
-add_definitions(-Dftk_VERSION_MAJOR=${ftk_VERSION_MAJOR})
-add_definitions(-Dftk_VERSION_MINOR=${ftk_VERSION_MINOR})
-add_definitions(-Dftk_VERSION_PATCH=${ftk_VERSION_PATCH})
-add_definitions(-Dftk_VERSION_FULL="${ftk_VERSION_FULL}")
+add_definitions(-DFTK_VERSION_MAJOR=${ftk_VERSION_MAJOR})
+add_definitions(-DFTK_VERSION_MINOR=${ftk_VERSION_MINOR})
+add_definitions(-DFTK_VERSION_PATCH=${ftk_VERSION_PATCH})
+add_definitions(-DFTK_VERSION_DEV="${ftk_VERSION_DEV}")
+add_definitions(-DFTK_VERSION_FULL="${ftk_VERSION_FULL}")
 
 project(
     feather-tk
