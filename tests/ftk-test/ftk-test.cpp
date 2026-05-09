@@ -99,8 +99,6 @@
 #include <CoreTest/TimerTest.h>
 #include <CoreTest/VectorTest.h>
 
-#include <TestLib/ITest.h>
-
 #include <ftk/UI/Init.h>
 
 #if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)

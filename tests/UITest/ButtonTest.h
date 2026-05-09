@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/IButton.h>

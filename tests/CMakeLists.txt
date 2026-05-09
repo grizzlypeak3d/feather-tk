@@ -1,5 +1,4 @@
 add_subdirectory(CoreTest)
-add_subdirectory(TestLib)
 add_subdirectory(UITest)
 add_subdirectory(ftk-test)
 

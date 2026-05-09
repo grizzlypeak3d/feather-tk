@@ -1,5 +1,6 @@
 add_subdirectory(Core)
 add_subdirectory(Resource)
+add_subdirectory(TestLib)
 add_subdirectory(UI)
 
 if ("${ftk_API}" STREQUAL "GL_4_1" OR

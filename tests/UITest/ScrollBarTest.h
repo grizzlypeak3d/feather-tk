@@ -7,7 +7,7 @@
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace ftk
 {
