@@ -733,23 +733,27 @@ namespace ftk
         if (out.hasNum() && !out.isSeq() || out.hasSeqWildcard())
         {
             // Find matching sequence files.
-            bool init = true;
-            const std::filesystem::path stdpath = std::filesystem::u8path(out.get());
-            for (const auto& i : std::filesystem::directory_iterator(stdpath.parent_path()))
+            const std::filesystem::path abs =
+                std::filesystem::absolute(std::filesystem::u8path(out.get()));
+            if (std::filesystem::exists(abs))
             {
-                const Path entry(i.path().u8string(), pathOptions);
-                const bool isDir = std::filesystem::is_directory(i.path());
-                if (init && !isDir)
+                bool init = true;
+                for (const auto& i : std::filesystem::directory_iterator(abs.parent_path()))
                 {
-                    if (out.seq(entry))
+                    const Path entry(i.path().u8string(), pathOptions);
+                    const bool isDir = std::filesystem::is_directory(i.path());
+                    if (init && !isDir)
                     {
-                        init = false;
-                        out = entry;
+                        if (out.seq(entry))
+                        {
+                            init = false;
+                            out = entry;
+                        }
                     }
-                }
-                if (!init)
-                {
-                    out.addSeq(entry);
+                    if (!init)
+                    {
+                        out.addSeq(entry);
+                    }
                 }
             }
         }
