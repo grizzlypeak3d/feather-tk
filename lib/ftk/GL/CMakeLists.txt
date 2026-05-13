@@ -46,7 +46,11 @@ elseif(ftk_SDL3)
     target_compile_definitions(ftkGL PUBLIC FTK_SDL3)
 endif()
 
-target_include_directories(ftkGL PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+target_include_directories(ftkGL
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<BUILD_INTERFACE:${ftk_GLAD_DIR}>
+        $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(ftkGL PUBLIC ftkCore ftkglad)
 if(ftk_SDL2)

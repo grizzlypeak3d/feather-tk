@@ -231,7 +231,10 @@ if(ftk_nfd)
     target_compile_definitions(ftkUI PUBLIC FTK_NFD)
 endif()
 
-target_include_directories(ftkUI PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+target_include_directories(ftkUI
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
 
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR

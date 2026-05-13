@@ -136,7 +136,10 @@ else()
     target_compile_definitions(ftkCore PUBLIC FTK_STATIC)
 endif()
 
-target_include_directories(ftkCore PRIVATE ${PROJECT_SOURCE_DIR}/lib ${PROJECT_BINARY_DIR})
+target_include_directories(ftkCore
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(ftkCore PUBLIC ftkResource nlohmann_json::nlohmann_json)
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
