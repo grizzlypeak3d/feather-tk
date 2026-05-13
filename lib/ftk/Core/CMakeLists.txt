@@ -128,6 +128,7 @@ else()
 endif()
 
 add_library(ftkCore ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+add_library(ftk::ftkCore ALIAS ftkCore)
 
 target_compile_definitions(ftkCore PUBLIC $<$<CONFIG:Debug>:FTK_ASSERT>)
 if(BUILD_SHARED_LIBS)

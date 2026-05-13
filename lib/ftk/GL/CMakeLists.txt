@@ -34,6 +34,7 @@ elseif ("${ftk_API}" STREQUAL "GLES_2")
 endif()
 
 add_library(ftkGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+add_library(ftk::ftkGL ALIAS ftkGL)
 
 if(${ftk_API} STREQUAL "GL_4_1_Debug")
     target_compile_definitions(ftkGL PUBLIC FTK_API_GL_4_1)
