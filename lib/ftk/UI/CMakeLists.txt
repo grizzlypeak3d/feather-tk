@@ -228,7 +228,7 @@ endif()
 add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
 
 if(ftk_nfd)
-    target_compile_definitions(ftkUI FTK_NFD)
+    target_compile_definitions(ftkUI PUBLIC FTK_NFD)
 endif()
 
 target_include_directories(ftkUI PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
