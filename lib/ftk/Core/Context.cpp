@@ -9,6 +9,7 @@
 #include <ftk/Core/ImageIO.h>
 #include <ftk/Core/OS.h>
 #include <ftk/Core/Timer.h>
+#include <ftk/Core/Version.h>
 
 namespace ftk
 {

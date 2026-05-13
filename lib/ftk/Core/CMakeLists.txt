@@ -64,7 +64,8 @@ set(HEADERS
     Timer.h
     Util.h
     Vector.h
-    VectorInline.h)
+    VectorInline.h
+    Version.h)
 set(HEADERS_PRIVATE
     PNGPrivate.h)
 set(SOURCE
@@ -126,24 +127,28 @@ else()
     endif()
 endif()
 
-set(LIBS_PUBLIC ftkResource nlohmann_json::nlohmann_json)
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
-    list(APPEND LIBS_PUBLIC stdc++fs)
-endif()
-set(LIBS_PRIVATE Freetype::Freetype PNG::PNG ZLIB::ZLIB)
-if(APPLE)
-    list(APPEND LIBS_PRIVATE "-framework CoreServices" "-framework Foundation")
-endif()
-
 add_library(ftkCore ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
-target_link_libraries(ftkCore PUBLIC ${LIBS_PUBLIC} PRIVATE ${LIBS_PRIVATE})
-set_target_properties(ftkCore PROPERTIES FOLDER lib)
-set_target_properties(ftkCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
+target_compile_definitions(ftkCore PUBLIC $<$<CONFIG:Debug>:FTK_ASSERT>)
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(ftkCore PUBLIC FTK_EXPORTS)
 else()
     target_compile_definitions(ftkCore PUBLIC FTK_STATIC)
 endif()
+
+target_include_directories(ftkCore PRIVATE ${PROJECT_SOURCE_DIR}/lib ${PROJECT_BINARY_DIR})
+
+target_link_libraries(ftkCore PUBLIC ftkResource nlohmann_json::nlohmann_json)
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+    target_link_libraries(ftkCore PUBLIC stdc++fs)
+endif()
+target_link_libraries(ftkCore PRIVATE Freetype::Freetype PNG::PNG ZLIB::ZLIB)
+if(APPLE)
+    target_link_libraries(ftkCore PRIVATE "-framework CoreServices" "-framework Foundation")
+endif()
+
+set_target_properties(ftkCore PROPERTIES FOLDER lib)
+set_target_properties(ftkCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(
     TARGETS ftkCore

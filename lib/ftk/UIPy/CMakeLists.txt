@@ -84,7 +84,11 @@ set(SOURCE
     Window.cpp)
 
 add_library(ftkUIPy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+
+target_include_directories(ftkUIPy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
+
 target_link_libraries(ftkUIPy ftkUI Python3::Python)
+
 set_target_properties(ftkUIPy PROPERTIES FOLDER lib)
 set_target_properties(ftkUIPy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

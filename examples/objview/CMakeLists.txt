@@ -30,7 +30,11 @@ set(SOURCE
     main.cpp)
 
 add_executable(objview ${HEADERS} ${SOURCE})
+
+target_include_directories(objview PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+
 target_link_libraries(objview ftkUI)
+
 set_target_properties(objview PROPERTIES FOLDER examples)
 
 add_test(NAME objview COMMAND objview -exit -log)

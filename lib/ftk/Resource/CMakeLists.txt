@@ -89,9 +89,12 @@ foreach(RESOURCE ${RESOURCES})
 endforeach()
 
 add_library(ftkResource ${HEADERS} ${SOURCE})
+
 target_link_libraries(ftkResource)
+
 set_target_properties(ftkResource PROPERTIES FOLDER lib)
 set_target_properties(ftkResource PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
 add_dependencies(ftkResource ftk-resource)
 
 install(

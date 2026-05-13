@@ -44,7 +44,11 @@ set(SOURCE
     main.cpp)
 
 add_executable(widgets ${HEADERS} ${SOURCE})
+
+target_include_directories(widgets PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+
 target_link_libraries(widgets ftkUI)
+
 set_target_properties(widgets PROPERTIES FOLDER examples)
 
 add_test(NAME widgets COMMAND widgets -exit -log)

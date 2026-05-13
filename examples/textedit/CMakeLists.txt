@@ -26,7 +26,11 @@ set(SOURCE
     main.cpp)
 
 add_executable(textedit ${HEADERS} ${SOURCE})
+
+target_include_directories(textedit PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+
 target_link_libraries(textedit ftkUI)
+
 set_target_properties(textedit PROPERTIES FOLDER examples)
 
 add_test(NAME textedit COMMAND textedit -exit -log)

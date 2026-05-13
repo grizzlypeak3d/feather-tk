@@ -7,7 +7,9 @@ set(SOURCE
     main.cpp)
 
 add_executable(ftk-resource ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
 target_link_libraries(ftk-resource)
+
 set_target_properties(ftk-resource PROPERTIES FOLDER bin)
 
 set(RUNTIME_DESTINATION "bin")

@@ -33,15 +33,28 @@ elseif ("${ftk_API}" STREQUAL "GLES_2")
     list(APPEND SOURCE RenderShaders_GLES_2.cpp)
 endif()
 
-set(LIBRARIES ftkCore ftkglad)
+add_library(ftkGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+if(${ftk_API} STREQUAL "GL_4_1_Debug")
+    target_compile_definitions(ftkGL PUBLIC FTK_API_GL_4_1)
+else()
+    target_compile_definitions(ftkGL PUBLIC FTK_API_${ftk_API})
+endif()
 if(ftk_SDL2)
-    list(APPEND LIBRARIES SDL2::SDL2)
+    target_compile_definitions(ftkGL PUBLIC FTK_SDL2)
 elseif(ftk_SDL3)
-    list(APPEND LIBRARIES SDL3::SDL3)
+    target_compile_definitions(ftkGL PUBLIC FTK_SDL3)
 endif()
 
-add_library(ftkGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
-target_link_libraries(ftkGL ${LIBRARIES})
+target_include_directories(ftkGL PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+
+target_link_libraries(ftkGL PUBLIC ftkCore ftkglad)
+if(ftk_SDL2)
+    target_link_libraries(ftkGL PRIVATE SDL2::SDL2)
+elseif(ftk_SDL3)
+    target_link_libraries(ftkGL PRIVATE SDL3::SDL3)
+endif()
+
 set_target_properties(ftkGL PROPERTIES FOLDER lib)
 set_target_properties(ftkGL PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

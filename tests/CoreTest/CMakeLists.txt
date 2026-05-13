@@ -68,7 +68,11 @@ set(SOURCE
     VectorTest.cpp)
 
 add_library(ftkCoreTest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+target_include_directories(ftkCoreTest PRIVATE ${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/tests)
+
 target_link_libraries(ftkCoreTest ftkTestLib)
+
 set_target_properties(ftkCoreTest PROPERTIES FOLDER tests)
 set_target_properties(ftkCoreTest PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

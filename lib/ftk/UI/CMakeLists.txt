@@ -225,23 +225,27 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
         WindowGL.cpp)
 endif()
 
-set(LIBRARIES)
+add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+if(ftk_nfd)
+    target_compile_definitions(ftkUI FTK_NFD)
+endif()
+
+target_include_directories(ftkUI PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
     "${ftk_API}" STREQUAL "GLES_2")
-    list(APPEND LIBRARIES ftkGL)
+    target_link_libraries(ftkUI PUBLIC ftkGL)
 endif()
-list(APPEND LIBRARIES ftkCore)
-set(LIBRARIES_PRIVATE lunasvg::lunasvg)
+target_link_libraries(ftkUI PUBLIC ftkCore PRIVATE lunasvg::lunasvg)
 if(ftk_nfd)
+    target_link_libraries(ftkUI PRIVATE nfd::nfd)
     if(APPLE)
-        list(APPEND LIBRARIES "-framework UniformTypeIdentifiers")
+        target_link_libraries(ftkUI PUBLIC "-framework UniformTypeIdentifiers")
     endif()
-    list(APPEND LIBRARIES_PRIVATE nfd::nfd)
 endif()
 
-add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
-target_link_libraries(ftkUI PUBLIC ${LIBRARIES} PRIVATE ${LIBRARIES_PRIVATE})
 set_target_properties(ftkUI PROPERTIES FOLDER lib)
 set_target_properties(ftkUI PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

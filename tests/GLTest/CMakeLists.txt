@@ -20,7 +20,11 @@ set(SOURCE
     WindowTest.cpp)
 
 add_library(ftkGLTest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+target_include_directories(ftkGLTest PRIVATE ${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/tests ${ftk_GLAD_DIR})
+
 target_link_libraries(ftkGLTest ftkGL ftkTestLib)
+
 set_target_properties(ftkGLTest PROPERTIES FOLDER tests)
 set_target_properties(ftkGLTest PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

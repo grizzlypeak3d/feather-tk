@@ -32,7 +32,11 @@ set(SOURCE
     Vector.cpp)
 
 add_library(ftkCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+
+target_include_directories(ftkCorePy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
+
 target_link_libraries(ftkCorePy ftkCore Python3::Python)
+
 set_target_properties(ftkCorePy PROPERTIES FOLDER lib)
 set_target_properties(ftkCorePy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

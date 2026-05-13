@@ -6,7 +6,11 @@ set(SOURCE
     src/glad.c)
 
 add_library(ftkglad ${HEADERS} ${SOURCE})
+
+target_include_directories(ftkglad PRIVATE ${PROJECT_SOURCE_DIR}/deps/glad_GLES_2)
+
 target_link_libraries(ftkglad OpenGL::GL ${CMAKE_DL_LIBS})
+
 set_target_properties(ftkglad PROPERTIES FOLDER deps)
 
 install(

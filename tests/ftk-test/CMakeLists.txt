@@ -2,15 +2,18 @@ set(HEADERS ftk-test.h)
 
 set(SOURCE ftk-test.cpp)
 
-set(LIBRARIES ftkCoreTest ftkUITest)
+add_executable(ftk-test ${SOURCE} ${HEADERS})
+
+target_include_directories(ftk-test PRIVATE ${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/tests)
+
+target_link_libraries(ftk-test ftkUITest)
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
     "${ftk_API}" STREQUAL "GLES_2")
-    list(APPEND LIBRARIES ftkGLTest)
+    target_link_libraries(ftk-test ftkGLTest)
 endif()
+target_link_libraries(ftk-test ftkCoreTest)
 
-add_executable(ftk-test ${SOURCE} ${HEADERS})
-target_link_libraries(ftk-test ${LIBRARIES})
 set_target_properties(ftk-test PROPERTIES FOLDER tests)
 
 add_test(

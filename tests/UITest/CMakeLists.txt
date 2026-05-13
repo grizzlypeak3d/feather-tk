@@ -106,6 +106,10 @@ set(SOURCE
     WidgetOptionsTest.cpp)
 
 add_library(ftkUITest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+target_include_directories(ftkUITest PRIVATE ${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/tests)
+
 target_link_libraries(ftkUITest ftkUI ftkTestLib)
+
 set_target_properties(ftkUITest PROPERTIES FOLDER tests)
 set_target_properties(ftkUITest PROPERTIES PUBLIC_HEADER "${HEADERS}")

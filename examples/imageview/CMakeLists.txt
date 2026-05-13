@@ -28,7 +28,11 @@ set(SOURCE
     main.cpp)
 
 add_executable(imageview ${HEADERS} ${SOURCE})
+
+target_include_directories(imageview PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
+
 target_link_libraries(imageview ftkUI)
+
 set_target_properties(imageview PROPERTIES FOLDER examples)
 
 add_test(NAME imageview COMMAND imageview -exit -log)
