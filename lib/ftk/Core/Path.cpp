@@ -154,7 +154,7 @@ namespace ftk
             {}
             if (j > i + 2)
             {
-                out.push_back(FrameSeq(tmp[i], tmp[j - 1], tmp[i + 1] - tmp[i]));
+                out.push_back(FrameSeq(tmp[i], tmp[j - 1], static_cast<int>(tmp[i + 1] - tmp[i])));
                 i = j - 1;
             }
             else
@@ -167,7 +167,7 @@ namespace ftk
                 }
                 if (j > i + 1)
                 {
-                    out.push_back(FrameSeq(tmp[i], tmp[j - 1], tmp[i + 1] - tmp[i]));
+                    out.push_back(FrameSeq(tmp[i], tmp[j - 1], static_cast<int>(tmp[i + 1] - tmp[i])));
                     i = j - 1;
                 }
                 else
@@ -439,7 +439,7 @@ namespace ftk
         size_t dirSize = 0;
         if (size > 0)
         {
-            for (int i = size - 1; i >= static_cast<int>(protocolSize); --i)
+            for (int i = static_cast<int>(size) - 1; i >= static_cast<int>(protocolSize); --i)
             {
                 if (pathSeparators.find(_path[i]) != std::string::npos)
                 {
@@ -468,7 +468,7 @@ namespace ftk
         size_t extPos = std::string::npos;
         if (size > 0)
         {
-            for (int i = size - 1; i >= static_cast<int>(protocolDirSize); --i)
+            for (int i = static_cast<int>(size) - 1; i >= static_cast<int>(protocolDirSize); --i)
             {
                 if ('.' == _path[i])
                 {
@@ -491,7 +491,7 @@ namespace ftk
         size_t numPos = std::string::npos;
         if (size > 0)
         {
-            for (int i = size - 1; i >= static_cast<int>(protocolDirSize); --i)
+            for (int i = static_cast<int>(size) - 1; i >= static_cast<int>(protocolDirSize); --i)
             {
                 if (numbers.find(_path[i]) != std::string::npos)
                 {
@@ -521,18 +521,18 @@ namespace ftk
             _num = std::pair<size_t, size_t>(numPos, sizeTmp);
             if ('0' == _path[numPos])
             {
-                _pad = sizeTmp;
+                _pad = static_cast<int>(sizeTmp);
             }
             else if ('#' == _path[numPos])
             {
-                _pad = sizeTmp;
+                _pad = static_cast<int>(sizeTmp);
             }
             if (options.seqNegative &&
                 '-' == _path[numPos] &&
                 numPos < size - 1 &&
                 '0' == _path[numPos + 1])
             {
-                _pad = sizeTmp - 1;
+                _pad = static_cast<int>(sizeTmp) - 1;
             }
             if (_path[numPos] != '#')
             {
@@ -730,7 +730,7 @@ namespace ftk
         const PathOptions& pathOptions)
     {
         Path out = path;
-        if (out.hasNum() && !out.isSeq() || out.hasSeqWildcard())
+        if ((out.hasNum() && !out.isSeq()) || out.hasSeqWildcard())
         {
             // Find matching sequence files.
             const std::filesystem::path abs =

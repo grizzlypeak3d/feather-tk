@@ -301,9 +301,9 @@ namespace ftk
             if (faceIt != p.faces.end())
             {
                 FT_Set_Pixel_Sizes(faceIt->second, 0, info.size);
-                out.ascender = faceIt->second->size->metrics.ascender / 64;
-                out.descender = faceIt->second->size->metrics.descender / 64;
-                out.lineHeight = faceIt->second->size->metrics.height / 64;
+                out.ascender = static_cast<int>(faceIt->second->size->metrics.ascender / 64);
+                out.descender = static_cast<int>(faceIt->second->size->metrics.descender / 64);
+                out.lineHeight = static_cast<int>(faceIt->second->size->metrics.height / 64);
             }
         }
         return out;
@@ -455,9 +455,9 @@ namespace ftk
                 }
             }
             out->offset   = V2I(face->glyph->bitmap_left, face->glyph->bitmap_top);
-            out->advance  = face->glyph->advance.x / 64;
-            out->lsbDelta = face->glyph->lsb_delta;
-            out->rsbDelta = face->glyph->rsb_delta;
+            out->advance  = static_cast<int>(face->glyph->advance.x / 64);
+            out->lsbDelta = static_cast<int32_t>(face->glyph->lsb_delta);
+            out->rsbDelta = static_cast<int32_t>(face->glyph->rsb_delta);
 
             glyphCache.add(out->info, out);
         } while (0);
@@ -497,7 +497,7 @@ namespace ftk
             return;
         }
 
-        const int h = faceIt->second->size->metrics.height / 64;
+        const int h = static_cast<int>(faceIt->second->size->metrics.height / 64);
         const FT_Face face = faceIt->second;
         V2I pos(0, h);
         auto textLineIt = utf32.end();

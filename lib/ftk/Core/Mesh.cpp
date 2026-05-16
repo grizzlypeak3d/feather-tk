@@ -148,10 +148,10 @@ namespace ftk
             {
                 for (int i = 0; i < xs.size() - 1; ++i)
                 {
-                    const int v0 = j * xs.size() + i + 1;
-                    const int v1 = j * xs.size() + (i + 1) + 1;
-                    const int v2 = (j + 1) * xs.size() + (i + 1) + 1;
-                    const int v3 = (j + 1) * xs.size() + i + 1;
+                    const int v0 = j * static_cast<int>(xs.size()) + i + 1;
+                    const int v1 = j * static_cast<int>(xs.size()) + (i + 1) + 1;
+                    const int v2 = (j + 1) * static_cast<int>(xs.size()) + (i + 1) + 1;
+                    const int v3 = (j + 1) * static_cast<int>(xs.size()) + i + 1;
                     const int c = (j + i) % 2 + 1;
                     out.triangles.push_back({
                         Vertex2(v0, 0, c),
