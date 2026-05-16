@@ -35,6 +35,9 @@ namespace ftk
             const std::string& text,
             const std::shared_ptr<Menu>&);
 
+        //! Add a menu.
+        FTK_API std::shared_ptr<Menu> addMenu(const std::string& text);
+
         //! Get a menu.
         FTK_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 

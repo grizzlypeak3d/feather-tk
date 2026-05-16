@@ -96,6 +96,13 @@ namespace ftk
         }
     }
 
+    std::shared_ptr<Menu> MenuBar::addMenu(const std::string& text)
+    {
+        auto menu = Menu::create(getContext());
+        addMenu(text, menu);
+        return menu;
+    }
+
     std::shared_ptr<Menu> MenuBar::getMenu(const std::string& text) const
     {
         FTK_P();
