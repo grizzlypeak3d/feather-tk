@@ -7,9 +7,9 @@
 
 namespace ftk
 {
-    size_t digits(int value)
+    int digits(int value)
     {
-        size_t out = 0;
+        int out = 0;
         if (value != 0)
         {
             while (value)

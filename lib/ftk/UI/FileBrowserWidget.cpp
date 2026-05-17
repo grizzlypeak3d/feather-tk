@@ -507,7 +507,7 @@ namespace ftk
             ext);
         if (i != exts.end())
         {
-            p.extsComboBox->setCurrentIndex(i - exts.begin() + 1);
+            p.extsComboBox->setCurrentIndex(static_cast<int>(i - exts.begin()) + 1);
         }
     }
 }

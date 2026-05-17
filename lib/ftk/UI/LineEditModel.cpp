@@ -175,7 +175,7 @@ namespace ftk
         if (!text.empty())
         {
             selection.first = 0;
-            selection.second = text.size();
+            selection.second = static_cast<int>(text.size());
         }
         p.selection->setIfChanged(selection);
     }
@@ -260,7 +260,7 @@ namespace ftk
                 if (selection.isValid())
                 {
                     _replace(selection, clipboardText);
-                    cursor = selection.min() + clipboardText.size();
+                    cursor = selection.min() + static_cast<int>(clipboardText.size());
                     selection = LineEditSelection();
                 }
                 else
@@ -291,7 +291,7 @@ namespace ftk
             {
                 // Replace the selection.
                 _replace(selection, value);
-                cursor = selection.min() + value.size();
+                cursor = selection.min() + static_cast<int>(value.size());
                 selection = LineEditSelection();
             }
             else
@@ -441,7 +441,7 @@ namespace ftk
             cursor = 0;
             break;
         case Key::End:
-            cursor = text.size();
+            cursor = static_cast<int>(text.size());
             break;
 
         default: break;

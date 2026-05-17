@@ -44,7 +44,7 @@ namespace ftk
     bool TextEditPos::operator > (const TextEditPos& other) const
     {
         return line > other.line ||
-            (line == other.line) && chr > other.chr;
+            (line == other.line && chr > other.chr);
     }
 
     TextEditSelection::TextEditSelection(const TextEditPos& first) :
@@ -367,7 +367,7 @@ namespace ftk
             {
                 // Add a line.
                 std::string line = value;
-                cursor.chr = line.size();
+                cursor.chr = static_cast<int>(line.size());
                 p.text->pushBack(line);
             }
         }
@@ -546,7 +546,7 @@ namespace ftk
             else if (out.line > 0)
             {
                 --out.line;
-                out.chr = text[out.line].size();
+                out.chr = static_cast<int>(text[out.line].size());
             }
         }
         return out;
@@ -777,7 +777,8 @@ namespace ftk
             const TextEditPos max = selection.max();
             TextEditSelection tmp(min, max);
             tmp.first.chr = 0;
-            tmp.second.chr = max.line < text.size() ? text[max.line].size() : 0;
+            tmp.second.chr = max.line < static_cast<int>(text.size()) ?
+                static_cast<int>(text[max.line].size()) : 0;
             std::vector<std::string> lines = _getSelection(tmp);
             const std::string indent = _getTabSpaces();
             for (auto& line : lines)
@@ -799,7 +800,8 @@ namespace ftk
             const TextEditPos max = selection.max();
             TextEditSelection tmp(min, max);
             tmp.first.chr = 0;
-            tmp.second.chr = max.line < text.size() ? text[max.line].size() : 0;
+            tmp.second.chr = max.line < static_cast<int>(text.size()) ?
+                static_cast<int>(text[max.line].size()) : 0;
             std::vector<std::string> lines = _getSelection(tmp);
             const int tabSpaces = p.options->get().tabSpaces;
             int lastSpacesRemoved = 0;

@@ -39,24 +39,25 @@ namespace ftk
         {
             auto button = ComboBoxButton::create(context, items[i], p.layout);
             button->setCheckable(true);
-            button->setChecked(i == currentIndex);
-            button->setCurrent(i == currentIndex);
+            const int index = static_cast<int>(i);
+            button->setChecked(index == currentIndex);
+            button->setCurrent(index == currentIndex);
             p.buttons.push_back(button);
             button->setCheckedCallback(
-                [this, i](bool value)
+                [this, index](bool value)
                 {
                     if (_p->radio >= 0 && _p->radio < _p->buttons.size())
                     {
                         _p->buttons[_p->radio]->setChecked(false);
                     }
-                    _p->radio = i;
+                    _p->radio = index;
                     if (_p->radio >= 0 && _p->radio < _p->buttons.size())
                     {
                         _p->buttons[_p->radio]->setChecked(true);
                     }
                     if (_p->callback)
                     {
-                        _p->callback(i);
+                        _p->callback(index);
                     }
                 });
         }

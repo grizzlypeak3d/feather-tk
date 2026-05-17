@@ -39,7 +39,7 @@ namespace ftk
     constexpr double smoothStep(double value, double min, double max);
 
     //! Count the number of digits.
-    FTK_API size_t digits(int);
+    FTK_API int digits(int);
 
     //! Fuzzy double comparison.
     FTK_API bool fuzzyCompare(double a, double b, double e = .1e-9);

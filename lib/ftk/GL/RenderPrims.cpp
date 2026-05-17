@@ -281,7 +281,7 @@ namespace ftk
                         lineRect = Box2I(p.clipRect.min.x, pos.y + y, p.clipRect.w(), fontMetrics.lineHeight);
                     }
                     else if (!p.clipRectEnabled ||
-                        p.clipRectEnabled && intersects(p.clipRect, lineRect))
+                        (p.clipRectEnabled && intersects(p.clipRect, lineRect)))
                     {
                         if (rsbDeltaPrev - (*glyphIt)->lsbDelta > 32)
                         {

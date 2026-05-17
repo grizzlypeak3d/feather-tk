@@ -44,7 +44,7 @@ namespace ftk
     {
         FTK_P();
         auto label = Label::create(getContext(), text, p.layout);
-        const size_t index = p.widgets.size();
+        const int index = static_cast<int>(p.widgets.size());
         p.layout->setGridPos(label, index, 0);
         widget->setParent(p.layout);
         p.layout->setGridPos(widget, index, 1);
@@ -76,7 +76,7 @@ namespace ftk
         {
             if (value == p.widgets[i].second)
             {
-                removeRow(i);
+                removeRow(static_cast<int>(i));
                 break;
             }
         }
@@ -112,7 +112,7 @@ namespace ftk
         {
             if (widget == p.widgets[i].second)
             {
-                setRowVisible(i, visible);
+                setRowVisible(static_cast<int>(i), visible);
                 break;
             }
         }
@@ -146,7 +146,7 @@ namespace ftk
     int FormLayout::addSpacer(SizeRole value)
     {
         FTK_P();
-        const size_t index = p.widgets.size();
+        const int index = static_cast<int>(p.widgets.size());
         if (auto context = getContext())
         {
             auto spacer = Spacer::create(context, Orientation::Vertical, p.layout);

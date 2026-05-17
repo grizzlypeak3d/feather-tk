@@ -499,7 +499,7 @@ namespace ftk
             const Box2I g2(g.min.x, g.min.y + y, g.w(), item.size.h);
             if (contains(g2, value))
             {
-                out = i;
+                out = static_cast<int>(i);
                 break;
             }
             y += item.size.h;

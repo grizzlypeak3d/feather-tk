@@ -55,7 +55,7 @@ namespace ftk
         {
             auto button = MenuBarButton::create(context, text, p.layout);
 
-            const int index = p.buttons.size();
+            const int index = static_cast<int>(p.buttons.size());
             p.buttons.push_back(button);
 
             button->setHoveredCallback(

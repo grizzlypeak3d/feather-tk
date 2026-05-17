@@ -72,7 +72,7 @@ namespace ftk
             break;
         default: break;
         }
-        const size_t index = p.buttons.size();
+        const int index = static_cast<int>(p.buttons.size());
         p.buttons.push_back(button);
         button->setClickedCallback(
             [this, index]

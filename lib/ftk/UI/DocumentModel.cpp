@@ -46,7 +46,7 @@ namespace ftk
         _documents->pushBack(doc);
         _add->setAlways(doc);
         _current->setAlways(doc);
-        _currentIndex->setAlways(_documents->getSize() - 1);
+        _currentIndex->setAlways(static_cast<int>(_documents->getSize()) - 1);
     }
 
     std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > DocumentModel::observeAdd() const
