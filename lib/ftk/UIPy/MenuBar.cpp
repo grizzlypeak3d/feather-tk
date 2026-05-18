@@ -23,7 +23,13 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def(
                     "addMenu",
-                    &MenuBar::addMenu,
+                    py::overload_cast<const std::string&>(&MenuBar::addMenu),
+                    py::arg("text"))
+                .def(
+                    "addMenu",
+                    py::overload_cast<
+                        const std::string&,
+                        const std::shared_ptr<Menu>&>(&MenuBar::addMenu),
                     py::arg("text"),
                     py::arg("menu"))
                 .def(
