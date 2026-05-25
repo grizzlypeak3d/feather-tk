@@ -33,21 +33,24 @@ namespace ftk
         const std::shared_ptr<IWindow>& window)
     {
         FTK_P();
-        if (auto context = _context.lock())
+        if (p.messageDialog)
         {
-            p.messageDialog = MessageDialog::create(context, title, text);
-            p.messageDialog->open(window);
-            p.messageDialog->setCallback(
-                [this]
-                {
-                    _p->messageDialog->close();
-                });
-            p.messageDialog->setCloseCallback(
-                [this]
-                {
-                    _p->messageDialog.reset();
-                });
+            p.messageDialog->close();
+            p.messageDialog.reset();
         }
+        auto context = _context.lock();
+        p.messageDialog = MessageDialog::create(context, title, text);
+        p.messageDialog->open(window);
+        p.messageDialog->setCallback(
+            [this]
+            {
+                _p->messageDialog->close();
+            });
+        p.messageDialog->setCloseCallback(
+            [this]
+            {
+                _p->messageDialog.reset();
+            });
         return p.messageDialog;
     }
 
@@ -60,22 +63,25 @@ namespace ftk
         const std::string& cancel)
     {
         FTK_P();
-        if (auto context = _context.lock())
+        if (p.confirmDialog)
         {
-            p.confirmDialog = ConfirmDialog::create(context, title, text, confirm, cancel);
-            p.confirmDialog->open(window);
-            p.confirmDialog->setCallback(
-                [this, callback](bool value)
-                {
-                    callback(value);
-                    _p->confirmDialog->close();
-                });
-            p.confirmDialog->setCloseCallback(
-                [this]
-                {
-                    _p->confirmDialog.reset();
-                });
+            p.confirmDialog->close();
+            p.confirmDialog.reset();
         }
+        auto context = _context.lock();
+        p.confirmDialog = ConfirmDialog::create(context, title, text, confirm, cancel);
+        p.confirmDialog->open(window);
+        p.confirmDialog->setCallback(
+            [this, callback](bool value)
+            {
+                callback(value);
+                _p->confirmDialog->close();
+            });
+        p.confirmDialog->setCloseCallback(
+            [this]
+            {
+                _p->confirmDialog.reset();
+            });
         return p.confirmDialog;
     }
 }
