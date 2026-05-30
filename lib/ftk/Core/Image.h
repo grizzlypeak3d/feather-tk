@@ -113,7 +113,7 @@ namespace ftk
     {
         ImageLayout() = default;
         ImageLayout(
-            const ImageMirror& mirrot,
+            const ImageMirror& mirror,
             int                alignment = 1,
             Endian             endian    = getEndian());
 

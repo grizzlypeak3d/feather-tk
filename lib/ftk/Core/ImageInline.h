@@ -59,7 +59,7 @@ namespace ftk
     {
         return size.h > 0 ? (size.w / static_cast<float>(size.h) * pixelAspectRatio) : 0;
     }
-        
+
     inline bool ImageInfo::operator == (const ImageInfo& other) const
     {
         return
