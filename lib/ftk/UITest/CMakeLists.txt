@@ -1,0 +1,115 @@
+set(HEADERS
+    ActionTest.h
+    AppTest.h
+    BellowsTest.h
+    ButtonGroupTest.h
+    ButtonTest.h
+    ColorWidgetTest.h
+    ComboBoxTest.h
+    ConfirmDialogTest.h
+    DoubleEditSliderTest.h
+    DoubleEditTest.h
+    DoubleModelTest.h
+    DoubleSliderTest.h
+    DragDropTest.h
+    DrawUtilTest.h
+    EventTest.h
+    FileBrowserTest.h
+    FileEditTest.h
+    FloatEditSliderTest.h
+    FloatEditTest.h
+    FloatModelTest.h
+    FloatSliderTest.h
+    GridLayoutTest.h
+    GroupBoxTest.h
+    IWidgetTest.h
+    IconTest.h
+    IntEditSliderTest.h
+    IntEditTest.h
+    IntModelTest.h
+    IntSliderTest.h
+    LabelTest.h
+    LayoutUtilTest.h
+    LineEditModelTest.h
+    LineEditTest.h
+    ListWidgetTest.h
+    MDIWidgetTest.h
+    MenuBarTest.h
+    MessageDialogTest.h
+    PieChartTest.h
+    ProgressDialogTest.h
+    RecentFilesModelTest.h
+    RowLayoutTest.h
+    ScrollAreaTest.h
+    ScrollBarTest.h
+    ScrollWidgetTest.h
+    SearchBoxTest.h
+    SplitterTest.h
+    StackLayoutTest.h
+    StyleTest.h
+    TabWidgetTest.h
+    TextEditModelTest.h
+    WidgetOptionsTest.h)
+set(PRIVATE_HEADERS)
+
+set(SOURCE
+    ActionTest.cpp
+    AppTest.cpp
+    BellowsTest.cpp
+    ButtonGroupTest.cpp
+    ButtonTest.cpp
+    ColorWidgetTest.cpp
+    ComboBoxTest.cpp
+    ConfirmDialogTest.cpp
+    DoubleEditSliderTest.cpp
+    DoubleEditTest.cpp
+    DoubleModelTest.cpp
+    DoubleSliderTest.cpp
+    DragDropTest.cpp
+    DrawUtilTest.cpp
+    EventTest.cpp
+    FileBrowserTest.cpp
+    FileEditTest.cpp
+    FloatEditSliderTest.cpp
+    FloatEditTest.cpp
+    FloatModelTest.cpp
+    FloatSliderTest.cpp
+    GridLayoutTest.cpp
+    GroupBoxTest.cpp
+    IWidgetTest.cpp
+    IconTest.cpp
+    IntEditSliderTest.cpp
+    IntEditTest.cpp
+    IntModelTest.cpp
+    IntSliderTest.cpp
+    LabelTest.cpp
+    LayoutUtilTest.cpp
+    LineEditModelTest.cpp
+    LineEditTest.cpp
+    ListWidgetTest.cpp
+    MDIWidgetTest.cpp
+    MenuBarTest.cpp
+    MessageDialogTest.cpp
+    PieChartTest.cpp
+    ProgressDialogTest.cpp
+    RecentFilesModelTest.cpp
+    RowLayoutTest.cpp
+    ScrollAreaTest.cpp
+    ScrollBarTest.cpp
+    ScrollWidgetTest.cpp
+    SearchBoxTest.cpp
+    SplitterTest.cpp
+    StackLayoutTest.cpp
+    StyleTest.cpp
+    TabWidgetTest.cpp
+    TextEditModelTest.cpp
+    WidgetOptionsTest.cpp)
+
+add_library(ftkUITest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+target_include_directories(ftkUITest PRIVATE ${PROJECT_SOURCE_DIR}/lib)
+
+target_link_libraries(ftkUITest ftkUI ftkTestLib)
+
+set_target_properties(ftkUITest PROPERTIES FOLDER tests)
+set_target_properties(ftkUITest PROPERTIES PUBLIC_HEADER "${HEADERS}")

@@ -1,12 +1,4 @@
-add_subdirectory(CoreTest)
-add_subdirectory(UITest)
 add_subdirectory(ftk-test)
-
-if ("${ftk_API}" STREQUAL "GL_4_1" OR
-    "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-    "${ftk_API}" STREQUAL "GLES_2")
-    add_subdirectory(GLTest)
-endif()
 
 if(ftk_PYTHON)
     add_test(
