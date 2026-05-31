@@ -6,7 +6,8 @@ set(lunasvg_GIT_TAG "v3.4.0")
 
 set(lunasvg_ARGS
     ${ftk_DEPS_ARGS}
-    -DLUNASVG_BUILD_EXAMPLES=OFF)
+    -DLUNASVG_BUILD_EXAMPLES=OFF
+    -DCMAKE_INSTALL_LIBDIR=lib)
 
 ExternalProject_Add(
     lunasvg

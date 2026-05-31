@@ -34,7 +34,8 @@ set(SDL3_ARGS
     -DSDL_HAPTIC=OFF
     -DSDL_POWER=OFF
     -DSDL_SENSOR=OFF
-    -DSDL_DIALOG=OFF)
+    -DSDL_DIALOG=OFF
+    -DCMAKE_INSTALL_LIBDIR=lib)
 
 ExternalProject_Add(
     SDL3

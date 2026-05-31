@@ -24,7 +24,8 @@ set(SDL2_ARGS
     -DSDL_VIVANTE=OFF
     -DSDL_VULKAN=OFF
     -DSDL_WAYLAND=ON
-    -DSDL_X11=ON)
+    -DSDL_X11=ON
+    -DCMAKE_INSTALL_LIBDIR=lib)
 
 ExternalProject_Add(
     SDL2

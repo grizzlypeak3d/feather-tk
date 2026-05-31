@@ -111,7 +111,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Dependencies
 
 find_package(Threads REQUIRED)
-find_package(ZLIB REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(PNG REQUIRED)
 find_package(Freetype REQUIRED)
