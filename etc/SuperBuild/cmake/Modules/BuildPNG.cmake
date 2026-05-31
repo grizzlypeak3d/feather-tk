@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 set(PNG_GIT_REPOSITORY "https://github.com/glennrp/libpng.git")
-set(PNG_GIT_TAG "v1.6.58")
+set(PNG_GIT_TAG "v1.6.43")
 
 set(PNG_DEPS)
 if(ftk_ZLIB)
@@ -21,8 +21,10 @@ set(PNG_ARGS
     -DPNG_SHARED=${PNG_SHARED_LIBS}
     -DPNG_STATIC=${PNG_STATIC_LIBS}
     -DPNG_TESTS=OFF
-    -DPNG_TOOLS=OFF
-    -DPNG_EXECUTABLES=OFF)
+    -DPNG_ARM_NEON=off
+    -DSKIP_INSTALL_EXECUTABLES=ON
+    -DSKIP_INSTALL_PROGRAMS=ON
+    -DSKIP_INSTALL_FILES=ON)
 
 ExternalProject_Add(
     PNG
