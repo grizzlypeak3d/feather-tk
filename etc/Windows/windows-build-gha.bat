@@ -4,7 +4,6 @@ set BUILD_TYPE=%2
 cmake ^
     -S %SOURCE_DIR%/etc/SuperBuild ^
     -B sbuild-%BUILD_TYPE% ^
-    -Dftk_API=%FTK_API% ^
     -Dftk_SDL2=%FTK_SDL2% ^
     -Dftk_SDL3=%FTK_SDL3% ^
     -Dftk_nfd=%FTK_NFD% ^
