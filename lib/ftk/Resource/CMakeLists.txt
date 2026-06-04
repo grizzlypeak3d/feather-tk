@@ -89,7 +89,6 @@ foreach(RESOURCE ${RESOURCES})
 endforeach()
 
 add_library(ftkResource ${HEADERS} ${SOURCE})
-add_library(ftk::ftkResource ALIAS ftkResource)
 
 target_link_libraries(ftkResource)
 

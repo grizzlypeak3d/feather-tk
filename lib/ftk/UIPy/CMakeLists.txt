@@ -84,7 +84,6 @@ set(SOURCE
     Window.cpp)
 
 add_library(ftkUIPy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
-add_library(ftk::ftkUIPy ALIAS ftkUIPy)
 
 target_include_directories(ftkUIPy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

@@ -226,7 +226,6 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
 endif()
 
 add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
-add_library(ftk::ftkUI ALIAS ftkUI)
 
 if(ftk_nfd)
     target_compile_definitions(ftkUI PUBLIC FTK_NFD)

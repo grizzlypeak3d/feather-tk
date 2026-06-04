@@ -32,7 +32,6 @@ set(SOURCE
     Vector.cpp)
 
 add_library(ftkCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
-add_library(ftk::ftkCorePy ALIAS ftkCorePy)
 
 target_include_directories(ftkCorePy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

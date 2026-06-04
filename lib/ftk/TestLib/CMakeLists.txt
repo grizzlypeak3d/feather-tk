@@ -4,7 +4,6 @@ set(PRIVATE_HEADERS)
 set(SOURCE ITest.cpp)
 
 add_library(ftkTestLib ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
-add_library(ftk::ftkTestLib ALIAS ftkTestLib)
 
 target_include_directories(ftkTestLib PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 
