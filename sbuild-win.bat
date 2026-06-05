@@ -13,4 +13,4 @@ set FTK_EXAMPLES=ON
 set FTK_GCOV=OFF
 set BUILD_SHARED_LIBS=OFF
 
-%SOURCE_DIR%\etc\Windows\windows-build-gha.bat %SOURCE_DIR% %BUILD_TYPE%
+%SOURCE_DIR%\etc\Windows\sbuild.bat %SOURCE_DIR% %BUILD_TYPE%

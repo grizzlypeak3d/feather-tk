@@ -32,11 +32,11 @@ jobs:
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
-        sh ftk/etc/Linux/linux-setup-gha.sh
+        sh ftk/etc/Linux/setup-gha.sh
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/linux-build-gha.sh ftk Debug
+        sh ftk/etc/Linux/sbuild.sh ftk Debug
 
     - name: Run tests
       run: |
@@ -78,11 +78,11 @@ jobs:
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
-        sh ftk/etc/Linux/linux-setup-gha.sh
+        sh ftk/etc/Linux/setup-gha.sh
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/linux-build-gha.sh ftk Debug
+        sh ftk/etc/Linux/sbuild.sh ftk Debug
 
     - name: Run tests
       run: |
@@ -124,11 +124,11 @@ jobs:
         echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
-        sh ftk/etc/Linux/linux-setup-gha.sh
+        sh ftk/etc/Linux/setup-gha.sh
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/linux-build-gha.sh ftk Debug
+        sh ftk/etc/Linux/sbuild.sh ftk Debug
 
     - name: Run tests
       run: |
@@ -173,7 +173,7 @@ jobs:
     - name: Build
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        sh ftk/etc/macOS/macos-build-gha.sh ftk Debug
+        sh ftk/etc/macOS/sbuild.sh ftk Debug
 
     - name: Run tests
       run: |
@@ -219,7 +219,7 @@ jobs:
     - name: Build
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        sh ftk/etc/macOS/macos-build-gha.sh ftk Debug
+        sh ftk/etc/macOS/sbuild.sh ftk Debug
 
     - name: Run tests
       run: |
@@ -263,7 +263,7 @@ jobs:
     - name: Build
       shell: cmd
       run: |
-        ftk\etc\Windows\windows-build-gha.bat ftk Debug
+        ftk\etc\Windows\sbuild.bat ftk Debug
 
     - name: Run tests
       shell: cmd
