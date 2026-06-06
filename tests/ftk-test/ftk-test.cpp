@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include "ftktest.h"
+#include "ftk-test.h"
 
 #include <ftk/UITest/ActionTest.h>
 #include <ftk/UITest/AppTest.h>
