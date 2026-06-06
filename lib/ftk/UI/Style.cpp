@@ -241,7 +241,11 @@ namespace ftk
             c = i->second;
         }
         const V3F v = p.colorMatrix * V3F(c.r, c.g, c.b);
-        return Color4F(v.x, v.y, v.z, c.a);
+        return Color4F(
+            srgbToLinear(v.x),
+            srgbToLinear(v.y),
+            srgbToLinear(v.z),
+            c.a);
     }
 
     const ColorControls& Style::getColorControls() const

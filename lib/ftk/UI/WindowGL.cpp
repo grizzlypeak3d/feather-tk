@@ -11,10 +11,8 @@
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/System.h>
 #include <ftk/GL/Window.h>
-#if defined(FTK_API_GLES_2)
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/Shader.h>
-#endif // FTK_API_GLES_2
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
@@ -36,9 +34,7 @@ namespace ftk
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
-#if defined(FTK_API_GLES_2)
         std::shared_ptr<gl::Shader> shader;
-#endif // FTK_API_GLES_2
     };
 
     void Window::_init(
@@ -307,35 +303,16 @@ namespace ftk
                 p.render->end();
             }
 
-#if defined(FTK_API_GL_4_1)
-            if (p.buffer)
-            {
-                glBindFramebuffer(
-                    GL_READ_FRAMEBUFFER,
-                    p.buffer->getID());
-                glBlitFramebuffer(
-                    0,
-                    0,
-                    bufferSize.w,
-                    bufferSize.h,
-                    0,
-                    0,
-                    bufferSize.w,
-                    bufferSize.h,
-                    GL_COLOR_BUFFER_BIT,
-                    GL_LINEAR);
-            }
-#elif defined(FTK_API_GLES_2)
             if (!p.shader)
             {
                 try
                 {
                     const std::string vertexSource =
-                        "precision mediump float;\n"
+                        "#version 410\n"
                         "\n"
-                        "attribute vec3 vPos;\n"
-                        "attribute vec2 vTexture;\n"
-                        "varying vec2 fTexture;\n"
+                        "in vec3 vPos;\n"
+                        "in vec2 vTexture;\n"
+                        "out vec2 fTexture;\n"
                         "\n"
                         "struct Transform\n"
                         "{\n"
@@ -350,15 +327,24 @@ namespace ftk
                         "    fTexture = vTexture;\n"
                         "}\n";
                     const std::string fragmentSource =
-                        "precision mediump float;\n"
+                        "#version 410\n"
                         "\n"
-                        "varying vec2 fTexture;\n"
+                        "in vec2 fTexture;\n"
+                        "out vec4 outColor;\n"
                         "\n"
                         "uniform sampler2D textureSampler;\n"
                         "\n"
+                        "vec3 linear_to_srgb(vec3 c)\n"
+                        "{\n"
+                        "    c = clamp(c, 0.0, 1.0);\n"
+                        "    vec3 lo = c * 12.92;\n"
+                        "    vec3 hi = 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055;\n"
+                        "    return mix(lo, hi, step(vec3(0.0031308), c));\n"
+                        "}\n"
+                        "\n"
                         "void main()\n"
                         "{\n"
-                        "    gl_FragColor = texture2D(textureSampler, fTexture);\n"
+                        "    outColor = vec4(linear_to_srgb(texture(textureSampler, fTexture).rgb), 1.0);\n"
                         "}\n";
                     p.shader = gl::Shader::create(vertexSource, fragmentSource);
                 }
@@ -385,8 +371,8 @@ namespace ftk
                     ortho(
                         0.F,
                         static_cast<float>(bufferSize.w),
-                        0.F,
                         static_cast<float>(bufferSize.h),
+                        0.F,
                         -1.F,
                         1.F));
                 p.shader->setUniform("textureSampler", 0);
@@ -398,7 +384,8 @@ namespace ftk
                     0,
                     0,
                     bufferSize.w,
-                    bufferSize.h));
+                    bufferSize.h),
+                    true);
                 auto vboData = gl::convert(
                     mesh,
                     gl::VBOType::Pos2_F32_UV_U16,
@@ -409,7 +396,6 @@ namespace ftk
                 vao->bind();
                 vao->draw(GL_TRIANGLES, 0, mesh.triangles.size() * 3);
             }
-#endif // FTK_API_GL_4_1
 
             p.window->swap();
         }
