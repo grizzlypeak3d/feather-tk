@@ -35,7 +35,7 @@ namespace ftk
             void _print(const std::string&);
             void _error(const std::string&);
 
-            std::weak_ptr<Context> _context;
+            std::shared_ptr<Context> _context;
             std::string _name;
         };
     }
@@ -44,7 +44,7 @@ namespace ftk
 #define FTK_TEST_ENUM(ENUM) \
     for (auto i : get##ENUM##Enums()) \
     { \
-        _print(Format(#ENUM": {0}").arg(getLabel(i))); \
+        _print(ftk::Format(#ENUM": {0}").arg(getLabel(i))); \
     } \
     { \
         const ENUM v = ENUM::First; \

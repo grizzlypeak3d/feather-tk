@@ -28,21 +28,20 @@ namespace ftk
                 
         void ScrollWidgetTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ScrollWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ScrollWidgetTest",
                     "Scroll widget test.");
-                auto window = Window::create(context, app, "ScrollWidgetTest");
+                auto window = Window::create(_context, app, "ScrollWidgetTest");
                 window->show();
                 app->tick();
-                _test(context, app, window, ScrollType::Both);
-                _test(context, app, window, ScrollType::Horizontal);
-                _test(context, app, window, ScrollType::Vertical);
+                _test(_context, app, window, ScrollType::Both);
+                _test(_context, app, window, ScrollType::Horizontal);
+                _test(_context, app, window, ScrollType::Vertical);
             }
         }
 

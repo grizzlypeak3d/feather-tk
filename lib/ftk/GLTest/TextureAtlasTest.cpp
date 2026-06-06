@@ -54,9 +54,8 @@ namespace ftk
         
         void TextureAtlasTest::run()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
                 
                 auto atlas = TextureAtlas::create(
                     1024,

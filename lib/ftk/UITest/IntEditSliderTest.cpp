@@ -30,22 +30,21 @@ namespace ftk
                 
         void IntEditSliderTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("IntEditSliderTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "IntEditSliderTest",
                     "Integer edit slider test.");
-                auto window = Window::create(context, app, "IntEditSliderTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "IntEditSliderTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto slider = IntEditSlider::create(context, layout);
+                auto slider = IntEditSlider::create(_context, layout);
                 FTK_ASSERT(slider->getModel());
                 int value = 0;
                 slider->setCallback([&value](int v) { value = v; });

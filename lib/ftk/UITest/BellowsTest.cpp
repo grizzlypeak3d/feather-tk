@@ -31,25 +31,24 @@ namespace ftk
                 
         void BellowsTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("BellowsTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "BellowsTest",
                     "Bellows test.");
-                auto window = Window::create(context, app, "BellowsTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "BellowsTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto bellows = Bellows::create(context, "Bellows", layout);
+                auto bellows = Bellows::create(_context, "Bellows", layout);
                 bellows->setText("Test");
                 FTK_ASSERT("Test" == bellows->getText());
-                auto label = Label::create(context, "Label");
+                auto label = Label::create(_context, "Label");
                 bellows->setWidget(label);
                 bellows->setWidget(label);
                 FTK_ASSERT(label == bellows->getWidget());

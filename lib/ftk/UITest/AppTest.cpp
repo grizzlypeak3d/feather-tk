@@ -32,22 +32,21 @@ namespace ftk
         void AppTest::run()
         {
             int r = 0;
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv = { "app", "-exit" };
                 try
                 {
                     auto app = App::create(
-                        context,
+                        _context,
                         argv,
                         "ftk::ui_test::App",
                         "Test UI application");
                     r = app->getExit();
                     if (0 == r)
                     {
-                        auto window = Window::create(context, app, "ftk::ui_test::App");
-                        auto layout = VerticalLayout::create(context, window);
-                        auto button = PushButton::create(context, "Button", layout);
+                        auto window = Window::create(_context, app, "ftk::ui_test::App");
+                        auto layout = VerticalLayout::create(_context, window);
+                        auto button = PushButton::create(_context, "Button", layout);
                         FTK_ASSERT(app->getWindows().front() == window);
                         window->show();
                         window->setSize(Size2I(1280, 960));

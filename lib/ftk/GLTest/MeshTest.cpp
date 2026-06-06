@@ -96,9 +96,8 @@ namespace ftk
         
         void MeshTest::_members()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
                 {
                     auto mesh = ftk::mesh(Box2F(0.F, 0.F, 1.F, 1.F));
                     for (auto type : getVBOTypeEnums())

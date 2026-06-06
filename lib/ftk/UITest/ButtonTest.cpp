@@ -32,24 +32,23 @@ namespace ftk
 
         void ButtonTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ButtonTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ButtonTest",
                     "Button test.");
-                auto window = Window::create(context, app, "ButtonTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "ButtonTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                PushButton::create(context, "Push", layout);
+                PushButton::create(_context, "Push", layout);
 
-                std::shared_ptr<IButton> button = PushButton::create(context, "Push", layout);
+                std::shared_ptr<IButton> button = PushButton::create(_context, "Push", layout);
                 button->setObjectName("PushButton");
                 _print(button->getObjectName());
                 _print(button->getObjectPath());
@@ -57,12 +56,12 @@ namespace ftk
                 button->setParent(nullptr);
                 button.reset();
 
-                button = ToolButton::create(context, "Tool", layout);
+                button = ToolButton::create(_context, "Tool", layout);
                 _test(app, window, layout, button);
                 button->setParent(nullptr);
                 button.reset();
 
-                button = CheckBox::create(context, "CheckBox", layout);
+                button = CheckBox::create(_context, "CheckBox", layout);
                 _test(app, window, layout, button);
                 std::string tooltip = "This is a tooltip";
                 button->setTooltip(tooltip);

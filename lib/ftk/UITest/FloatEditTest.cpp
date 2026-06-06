@@ -30,22 +30,21 @@ namespace ftk
 
         void FloatEditTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("FloatEditTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "FloatEditTest",
                     "Float edit test.");
-                auto window = Window::create(context, app, "FloatEditTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "FloatEditTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto edit = FloatEdit::create(context, layout);
+                auto edit = FloatEdit::create(_context, layout);
                 FTK_ASSERT(edit->getModel());
                 float value = 0.F;
                 edit->setCallback([&value](float v) { value = v; });

@@ -29,9 +29,8 @@ namespace ftk
                 
         void TextEditModelTest::run()
         {
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -53,15 +52,13 @@ namespace ftk
                 model->clearText();
                 FTK_ASSERT(text2 == std::vector<std::string>({ "" }));
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 FTK_ASSERT(model->key(Key::A));
                 FTK_ASSERT(model->key(Key::A, static_cast<int>(commandKeyModifier)));
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -90,9 +87,8 @@ namespace ftk
                 FTK_ASSERT(cursor2.line == static_cast<int>(text.size()) - 1);
                 FTK_ASSERT(cursor2.chr == static_cast<int>(text.back().size()));
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -130,9 +126,8 @@ namespace ftk
                 FTK_ASSERT(selection2.second.line == static_cast<int>(text.size()) - 1);
                 FTK_ASSERT(selection2.second.chr == static_cast<int>(text.back().size()));
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -184,9 +179,8 @@ namespace ftk
                 FTK_ASSERT(text2[0] == "0123456789");
                 FTK_ASSERT(!model->getSelection().isValid());
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {};
                 model->setText(text);
@@ -213,7 +207,7 @@ namespace ftk
                         selection2 = value;
                     });
 
-                auto clipboard = context->getSystem<ClipboardSystem>();
+                auto clipboard = _context->getSystem<ClipboardSystem>();
                 clipboard->setText("\n0123456789\nabcdefghijklmnopqrstuvwxyz\n");
 
                 model->paste();
@@ -335,9 +329,8 @@ namespace ftk
                 FTK_ASSERT(TextEditPos(0, 0) == cursor2);
                 FTK_ASSERT(!selection2.isValid());
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -391,9 +384,8 @@ namespace ftk
                 model->key(Key::Down);
                 FTK_ASSERT(cursor == model->getCursor());
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -471,9 +463,8 @@ namespace ftk
                 model->key(Key::PageUp, static_cast<int>(KeyModifier::Shift));
                 FTK_ASSERT(TextEditSelection(cursor, cursor2) == selection2);
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -518,9 +509,8 @@ namespace ftk
                 FTK_ASSERT(text2[1] == "");
                 FTK_ASSERT(text2[2] == "    0123456789");
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -560,9 +550,8 @@ namespace ftk
                 model->key(Key::Backspace);
                 FTK_ASSERT(text2[0] == "abcde!!!!!!!!!!");
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",
@@ -604,9 +593,8 @@ namespace ftk
                 model->key(Key::Delete);
                 FTK_ASSERT(text2[0] == "!!!!!56789");
             }
-            if (auto context = _context.lock())
             {
-                auto model = TextEditModel::create(context);
+                auto model = TextEditModel::create(_context);
                 std::vector<std::string> text =
                 {
                     "abcdefghijklmnopqrstuvwxyz",

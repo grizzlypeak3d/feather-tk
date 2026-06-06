@@ -30,22 +30,21 @@ namespace ftk
                 
         void SearchBoxTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("SearchBoxTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "SearchBoxTest",
                     "Search box test.");
-                auto window = Window::create(context, app, "SearchBoxTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "SearchBoxTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = SearchBox::create(context, layout);
+                auto widget = SearchBox::create(_context, layout);
                 std::string text;
                 widget->setCallback(
                     [&text](const std::string& value)

@@ -42,20 +42,19 @@ namespace ftk
 
         void MDIWidgetTest::_widget()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("MDIWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "MDIWidgetTest",
                     "MDI widget test.");
-                auto window = Window::create(context, app, "MDIWidgetTest");
+                auto window = Window::create(_context, app, "MDIWidgetTest");
                 window->show();
                 app->tick();
 
-                auto canvas = MDICanvas::create(context, window);
+                auto canvas = MDICanvas::create(_context, window);
                 canvas->setCanvasSize(Size2I(100, 100));
                 canvas->setCanvasSize(Size2I(100, 100));
                 FTK_ASSERT(Size2I(100, 100) == canvas->getCanvasSize());
@@ -65,7 +64,7 @@ namespace ftk
                 FTK_ASSERT(Size2I(2, 2) == canvas->getGridSize());
                 canvas->setGridSize(Size2I(20, 20));
 
-                auto label = Label::create(context, "Label");
+                auto label = Label::create(_context, "Label");
                 auto widget = canvas->addWidget("Widget 0", V2I(100, 100), label);
                 FTK_ASSERT("Widget 0" == widget->getTitle());
                 widget->setTitle("Widget");
@@ -74,9 +73,9 @@ namespace ftk
                 label.reset();
                 widget->setParent(nullptr);
                 widget.reset();
-                label = Label::create(context, "Label 1");
+                label = Label::create(_context, "Label 1");
                 widget = canvas->addWidget("Widget 1", V2I(100, 100), label);
-                label = Label::create(context, "Label 2");
+                label = Label::create(_context, "Label 2");
                 widget->setWidget(label);
                 widget->setWidget(label);
                 FTK_ASSERT(label == widget->getWidget());

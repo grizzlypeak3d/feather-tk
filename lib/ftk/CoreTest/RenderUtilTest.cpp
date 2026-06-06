@@ -184,9 +184,8 @@ namespace ftk
 
         void RenderUtilTest::run()
         {
-            auto context = _context.lock();
-            auto logSystem = context->getLogSystem();
-            auto fontSystem = context->getSystem<FontSystem>();
+            auto logSystem = _context->getLogSystem();
+            auto fontSystem = _context->getSystem<FontSystem>();
             {
                 auto render = Render::create(logSystem, fontSystem);
                 const Size2I a(1280, 960);

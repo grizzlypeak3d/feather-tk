@@ -43,19 +43,18 @@ namespace ftk
 
         void StyleTest::_widget()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("StyleTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "StyleTest",
                     "Style test.");
-                auto window = Window::create(context, app, "StyleTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "StyleTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
-                auto button = PushButton::create(context, "Button", layout);
+                auto button = PushButton::create(_context, "Button", layout);
                 window->show();
                 app->tick();
 

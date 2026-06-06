@@ -30,20 +30,19 @@ namespace ftk
                 
         void ConfirmDialogTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ConfirmDialogTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ConfirmDialogTest",
                     "Confirmation dialog test.");
-                auto window = Window::create(context, app, "ConfirmDialogTest");
+                auto window = Window::create(_context, app, "ConfirmDialogTest");
                 window->show();
                 app->tick();
 
-                auto system = context->getSystem<DialogSystem>();
+                auto system = _context->getSystem<DialogSystem>();
                 bool confirmed = false;
                 system->confirm(
                     "Confirm",

@@ -30,16 +30,15 @@ namespace ftk
                 
         void MessageDialogTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("MessageDialogTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "MessageDialogTest",
                     "Message dialog test.");
-                auto window = Window::create(context, app, "MessageDialogTest");
+                auto window = Window::create(_context, app, "MessageDialogTest");
                 window->show();
                 app->tick();
             }

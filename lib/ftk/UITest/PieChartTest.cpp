@@ -37,22 +37,21 @@ namespace ftk
                 FTK_ASSERT(a == a);
                 FTK_ASSERT(a != b);
             }
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("PieChartTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "PieChartTest",
                     "Pie chart test.");
-                auto window = Window::create(context, app, "PieChartTest");
-                auto layout = HorizontalLayout::create(context, window);
+                auto window = Window::create(_context, app, "PieChartTest");
+                auto layout = HorizontalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = PieChart::create(context, layout);
+                auto widget = PieChart::create(_context, layout);
                 std::vector<PieChartData> data;
                 data.push_back(PieChartData(60.F, Color4F(1.F, 0.F, 0.F)));
                 data.push_back(PieChartData(30.F, Color4F(1.F, .8F, 0.F)));

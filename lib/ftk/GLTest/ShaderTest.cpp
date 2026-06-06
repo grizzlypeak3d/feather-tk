@@ -112,9 +112,8 @@ namespace ftk
                
         void ShaderTest::run()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
 
                 auto shader = Shader::create(vertexSource, fragmentSource);
                 FTK_ASSERT(vertexSource == shader->getVertexSource());
@@ -136,9 +135,8 @@ namespace ftk
                 shader->setUniform("av3", std::vector<V3F>(4, V3F(1.F, 1.F, 1.F)));
                 shader->setUniform("av4", std::vector<V4F>(4, V4F(1.F, 1.F, 1.F, 1.F)));
             }
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
                 try
                 {
                     auto shader = Shader::create("!", "!");

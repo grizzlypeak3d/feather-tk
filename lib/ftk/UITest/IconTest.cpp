@@ -31,22 +31,21 @@ namespace ftk
                 
         void IconTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("IconTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "IconTest",
                     "Icon test.");
-                auto window = Window::create(context, app, "IconTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "IconTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = Icon::create(context, "PlaybackForward", layout);
+                auto widget = Icon::create(_context, "PlaybackForward", layout);
                 widget->setIcon("PlaybackStop");
                 widget->setIcon("PlaybackStop");
                 FTK_ASSERT("PlaybackStop" == widget->getIcon());

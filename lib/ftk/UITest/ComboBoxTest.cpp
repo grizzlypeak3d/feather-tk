@@ -30,17 +30,16 @@ namespace ftk
                 
         void ComboBoxTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ComboBoxTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ComboBoxTest",
                     "Combo box test.");
-                auto window = Window::create(context, app, "ComboBoxTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "ComboBoxTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
@@ -51,7 +50,7 @@ namespace ftk
                     ComboBoxItem("Forward", "PlaybackForward"),
                     ComboBoxItem("Reverse", "PlaybackReverse")
                 };
-                auto widget = ComboBox::create(context, items, layout);
+                auto widget = ComboBox::create(_context, items, layout);
                 FTK_ASSERT(items[0] != ComboBoxItem());
                 widget->setItems(items);
                 widget->setItems(items);

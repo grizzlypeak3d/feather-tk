@@ -40,22 +40,21 @@ namespace ftk
 
         void FileBrowserTest::_shortcuts()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("FileBrowserTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, app, "FileBrowserTest");
+                auto window = Window::create(_context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
-                auto model = FileBrowserModel::create(context);
-                auto panel = FileBrowserPanel::create(context, model, window);
-                auto recentFilesModel = RecentFilesModel::create(context);
+                auto model = FileBrowserModel::create(_context);
+                auto panel = FileBrowserPanel::create(_context, model, window);
+                auto recentFilesModel = RecentFilesModel::create(_context);
                 recentFilesModel->addRecent(std::filesystem::current_path());
                 panel->setRecentFilesModel(recentFilesModel);
             }
@@ -63,21 +62,20 @@ namespace ftk
 
         void FileBrowserTest::_view()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("FileBrowserTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, app, "FileBrowserTest");
+                auto window = Window::create(_context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
-                auto model = FileBrowserModel::create(context);
-                auto view = FileBrowserView::create(context, FileBrowserMode::Open, model, window);
+                auto model = FileBrowserModel::create(_context);
+                auto view = FileBrowserView::create(_context, FileBrowserMode::Open, model, window);
                 auto path = std::filesystem::current_path();
                 model->setPath(path);
                 model->setPath(path);
@@ -107,23 +105,22 @@ namespace ftk
 
         void FileBrowserTest::_widget()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("FileBrowserTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, app, "FileBrowserTest");
+                auto window = Window::create(_context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
                 auto path = std::filesystem::current_path();
-                auto model = FileBrowserModel::create(context);
+                auto model = FileBrowserModel::create(_context);
                 auto fileBrowserWidget = FileBrowserWidget::create(
-                    context,
+                    _context,
                     "Open",
                     path,
                     FileBrowserMode::Open,
@@ -134,7 +131,7 @@ namespace ftk
                 model->setOptions(options);
                 model->setOptions(options);
                 FTK_ASSERT(options == model->getOptions());
-                auto recentFilesModel = RecentFilesModel::create(context);
+                auto recentFilesModel = RecentFilesModel::create(_context);
                 fileBrowserWidget->setRecentFilesModel(recentFilesModel);
                 fileBrowserWidget->setCallback(
                     [](const Path&)
@@ -151,23 +148,22 @@ namespace ftk
 
         void FileBrowserTest::_dialog()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("FileBrowserTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "FileBrowserTest",
                     "File browser test.");
-                auto window = Window::create(context, app, "FileBrowserTest");
+                auto window = Window::create(_context, app, "FileBrowserTest");
                 window->show();
                 app->tick();
 
                 auto path = std::filesystem::current_path();
-                auto model = FileBrowserModel::create(context);
+                auto model = FileBrowserModel::create(_context);
                 auto fileBrowser = FileBrowser::create(
-                    context,
+                    _context,
                     "Open",
                     path,
                     FileBrowserMode::Open,
@@ -176,7 +172,7 @@ namespace ftk
                 options.dirList.sortReverse = true;
                 model->setOptions(options);
                 FTK_ASSERT(model->getOptions() == options);
-                auto recentFilesModel = RecentFilesModel::create(context);
+                auto recentFilesModel = RecentFilesModel::create(_context);
                 fileBrowser->setRecentFilesModel(recentFilesModel);
                 FTK_ASSERT(recentFilesModel == fileBrowser->getRecentFilesModel());
                 fileBrowser->setCallback(

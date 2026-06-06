@@ -30,22 +30,21 @@ namespace ftk
                 
         void DoubleEditTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("DoubleEditTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "DoubleEditTest",
                     "Double edit test.");
-                auto window = Window::create(context, app, "DoubleEditTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "DoubleEditTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto edit = DoubleEdit::create(context, layout);
+                auto edit = DoubleEdit::create(_context, layout);
                 FTK_ASSERT(edit->getModel());
                 double value = 0.0;
                 edit->setCallback([&value](double v) { value = v; });

@@ -31,25 +31,24 @@ namespace ftk
                 
         void ButtonGroupTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ButtonGroupTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ButtonGroupTest",
                     "Button group test.");
-                auto window = Window::create(context, app, "ButtonGroupTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "ButtonGroupTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto button0 = PushButton::create(context, "Button 0", layout);
-                auto button1 = PushButton::create(context, "Button 0", layout);
-                auto button2 = PushButton::create(context, "Button 0", layout);
-                auto group = ButtonGroup::create(context, ButtonGroupType::Click);
+                auto button0 = PushButton::create(_context, "Button 0", layout);
+                auto button1 = PushButton::create(_context, "Button 0", layout);
+                auto button2 = PushButton::create(_context, "Button 0", layout);
+                auto group = ButtonGroup::create(_context, ButtonGroupType::Click);
                 group->addButton(button0);
                 FTK_ASSERT(!group->getButtons().empty());
                 group->clearButtons();
@@ -64,7 +63,7 @@ namespace ftk
                         clicked = value;
                     });
 
-                group = ButtonGroup::create(context, ButtonGroupType::Check);
+                group = ButtonGroup::create(_context, ButtonGroupType::Check);
                 group->addButton(button0);
                 group->addButton(button1);
                 group->addButton(button2);
@@ -77,7 +76,7 @@ namespace ftk
                         checked = value;
                     });
 
-                group = ButtonGroup::create(context, ButtonGroupType::Radio);
+                group = ButtonGroup::create(_context, ButtonGroupType::Radio);
                 group->addButton(button0);
                 group->addButton(button1);
                 group->addButton(button2);
@@ -90,7 +89,7 @@ namespace ftk
                         checked = value;
                     });
 
-                group = ButtonGroup::create(context, ButtonGroupType::Toggle);
+                group = ButtonGroup::create(_context, ButtonGroupType::Toggle);
                 group->addButton(button0);
                 group->addButton(button1);
                 group->addButton(button2);

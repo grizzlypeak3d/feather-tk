@@ -31,20 +31,19 @@ namespace ftk
 
         void GridLayoutTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("GridLayoutTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "GridLayoutTest",
                     "Grid layout test.");
-                auto window = Window::create(context, app, "GridLayoutTest");
+                auto window = Window::create(_context, app, "GridLayoutTest");
                 window->show();
                 app->tick();
 
-                auto layout = GridLayout::create(context, window);
+                auto layout = GridLayout::create(_context, window);
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::Spacing);
@@ -54,9 +53,9 @@ namespace ftk
                 layout->setMarginRole(SizeRole::None);
                 FTK_ASSERT(SizeRole::None == layout->getMarginRole());
 
-                auto spacer0 = Spacer::create(context, Orientation::Horizontal, layout);
-                auto spacer1 = Spacer::create(context, Orientation::Horizontal, layout);
-                auto spacer2 = Spacer::create(context, Orientation::Horizontal, layout);
+                auto spacer0 = Spacer::create(_context, Orientation::Horizontal, layout);
+                auto spacer1 = Spacer::create(_context, Orientation::Horizontal, layout);
+                auto spacer2 = Spacer::create(_context, Orientation::Horizontal, layout);
                 spacer2->setStretch(Stretch::Expanding);
                 layout->setGridPos(spacer0, 0, 0);
                 layout->setGridPos(spacer1, 0, 1);

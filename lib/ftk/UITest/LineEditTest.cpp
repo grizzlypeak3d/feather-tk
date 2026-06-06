@@ -30,22 +30,21 @@ namespace ftk
                 
         void LineEditTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("LineEditTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "LineEditTest",
                     "Line edit test.");
-                auto window = Window::create(context, app, "LineEditTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "LineEditTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto edit = LineEdit::create(context, layout);
+                auto edit = LineEdit::create(_context, layout);
                 std::string text;
                 edit->setCallback(
                     [&text](const std::string& value)

@@ -28,9 +28,8 @@ namespace ftk
         
         void PNGTest::run()
         {
-            if (auto context = _context.lock())
             {
-                auto io = context->getSystem<ImageIO>();
+                auto io = _context->getSystem<ImageIO>();
                 const std::vector<Size2I> sizes =
                 {
                     Size2I(512, 512),

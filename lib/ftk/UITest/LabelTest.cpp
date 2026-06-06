@@ -30,22 +30,21 @@ namespace ftk
                 
         void LabelTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("LabelTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "LabelTest",
                     "Label test.");
-                auto window = Window::create(context, app, "LabelTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "LabelTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto label = Label::create(context, layout);
+                auto label = Label::create(_context, layout);
                 label->setText("Test");
                 label->setText("Test");
                 FTK_ASSERT("Test" == label->getText());

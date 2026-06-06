@@ -32,22 +32,21 @@ namespace ftk
                 
         void ColorWidgetTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ColorWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ColorWidgetTest",
                     "Color widget test.");
-                auto window = Window::create(context, app, "ColorWidgetTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "ColorWidgetTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = ColorSwatch::create(context, layout);
+                auto widget = ColorSwatch::create(_context, layout);
                 Color4F color(1.F, 1.F, 1.F, 1.F);
                 widget->setColor(color);
                 widget->setColor(color);
@@ -66,7 +65,7 @@ namespace ftk
                 FTK_ASSERT(SizeRole::Margin == widget->getSizeRole());
                 widget->setSizeRole(SizeRole::Swatch);
 
-                auto popup = ColorPopup::create(context, color);
+                auto popup = ColorPopup::create(_context, color);
                 popup->setPopupRole(ColorRole::Red);
                 popup->setPopupRole(ColorRole::Red);
                 FTK_ASSERT(ColorRole::Red == popup->getPopupRole());

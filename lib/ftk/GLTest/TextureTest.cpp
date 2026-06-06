@@ -50,9 +50,8 @@ namespace ftk
         
         void TextureTest::_members()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
                 
                 struct Data
                 {
@@ -113,9 +112,8 @@ namespace ftk
         
         void TextureTest::_functions()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
             }
         }
         

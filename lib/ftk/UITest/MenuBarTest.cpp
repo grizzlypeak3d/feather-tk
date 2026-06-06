@@ -31,24 +31,23 @@ namespace ftk
                 
         void MenuBarTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("MenuBarTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "MenuBarTest",
                     "Menu bar test.");
-                auto window = Window::create(context, app, "MenuBarTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "MenuBarTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto menuBar = MenuBar::create(context, layout);
+                auto menuBar = MenuBar::create(_context, layout);
 
-                auto menu = Menu::create(context);
+                auto menu = Menu::create(_context);
                 bool action1 = false;
                 menu->addAction(Action::create(
                     "Action 1",
@@ -72,7 +71,7 @@ namespace ftk
                 menuBar->addMenu("Menu 1", menu);
                 app->tick();
 
-                menu = Menu::create(context);
+                menu = Menu::create(_context);
                 bool action4 = false;
                 menu->addAction(Action::create(
                     "Action 4",

@@ -159,20 +159,19 @@ namespace ftk
                 
         void DragDropTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("DragDropTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "DragDropTest",
                     "Drag and drop test.");
-                auto window = Window::create(context, app, "DragDropTest");
-                auto layout = HorizontalLayout::create(context, window);
-                auto dragDropWidget0 = DragDropWidget::create(context, { "Drag 0" }, layout);
-                auto dragDropWidget1 = DragDropWidget::create(context, { "Drag 1" }, layout);
-                auto spacer = Spacer::create(context, Orientation::Horizontal, layout);
+                auto window = Window::create(_context, app, "DragDropTest");
+                auto layout = HorizontalLayout::create(_context, window);
+                auto dragDropWidget0 = DragDropWidget::create(_context, { "Drag 0" }, layout);
+                auto dragDropWidget1 = DragDropWidget::create(_context, { "Drag 1" }, layout);
+                auto spacer = Spacer::create(_context, Orientation::Horizontal, layout);
                 spacer->setStretch(Stretch::Expanding);
                 window->show();
                 app->tick();

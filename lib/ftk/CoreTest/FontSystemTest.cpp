@@ -52,9 +52,8 @@ namespace ftk
 
         void FontSystemTest::_size()
         {
-            if (auto context = _context.lock())
             {
-                auto fontSystem = context->getSystem<FontSystem>();
+                auto fontSystem = _context->getSystem<FontSystem>();
                 for (const auto font : getFontTypeEnums())
                 {
                     const FontInfo info(getDefaultFont(font), 12);
@@ -96,9 +95,8 @@ namespace ftk
 
         void FontSystemTest::_add()
         {
-            if (auto context = _context.lock())
             {
-                auto fontSystem = context->getSystem<FontSystem>();
+                auto fontSystem = _context->getSystem<FontSystem>();
                 FTK_ASSERT(!fontSystem->addFont("", nullptr, 0));
             }
         }

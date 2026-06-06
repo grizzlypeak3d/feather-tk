@@ -30,22 +30,21 @@ namespace ftk
                 
         void GroupBoxTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("GroupBoxTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "GroupBoxTest",
                     "Group box test.");
-                auto window = Window::create(context, app, "GroupBoxTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "GroupBoxTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = GroupBox::create(context, "Test", layout);
+                auto widget = GroupBox::create(_context, "Test", layout);
                 widget->setText("Group");
                 widget->setText("Group");
                 FTK_ASSERT("Group" == widget->getText());

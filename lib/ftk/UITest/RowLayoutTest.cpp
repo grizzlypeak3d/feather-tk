@@ -28,20 +28,19 @@ namespace ftk
 
         void RowLayoutTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("RowLayoutTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "RowLayoutTest",
                     "Row layout test.");
-                auto window = Window::create(context, app, "RowLayoutTest");
+                auto window = Window::create(_context, app, "RowLayoutTest");
                 window->show();
                 app->tick();
 
-                std::shared_ptr<RowLayout> layout = VerticalLayout::create(context, window);
+                std::shared_ptr<RowLayout> layout = VerticalLayout::create(_context, window);
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::Spacing);
@@ -50,12 +49,12 @@ namespace ftk
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::None);
                 FTK_ASSERT(SizeRole::None == layout->getMarginRole());
-                _test(context, app, window, layout, Orientation::Horizontal);
+                _test(_context, app, window, layout, Orientation::Horizontal);
                 layout->setParent(nullptr);
                 layout.reset();
 
-                layout = HorizontalLayout::create(context, window);
-                _test(context, app, window, layout, Orientation::Vertical);
+                layout = HorizontalLayout::create(_context, window);
+                _test(_context, app, window, layout, Orientation::Vertical);
                 layout->setParent(nullptr);
                 layout.reset();
             }

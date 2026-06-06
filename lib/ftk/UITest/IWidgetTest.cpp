@@ -49,26 +49,25 @@ namespace ftk
 
         void IWidgetTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("IWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "IWidgetTest",
                     "IWidget test.");
-                auto window = Window::create(context, app, "IWidgetTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "IWidgetTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget0 = Widget::create(context, layout);
+                auto widget0 = Widget::create(_context, layout);
                 FTK_ASSERT(0 == layout->getChildIndex(widget0));
-                auto widget1 = Widget::create(context, layout);
+                auto widget1 = Widget::create(_context, layout);
                 FTK_ASSERT(1 == layout->getChildIndex(widget1));
-                auto widget2 = Widget::create(context, layout);
+                auto widget2 = Widget::create(_context, layout);
                 FTK_ASSERT(2 == layout->getChildIndex(widget2));
                 app->tick();
 

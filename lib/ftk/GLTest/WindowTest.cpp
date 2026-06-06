@@ -29,10 +29,9 @@ namespace ftk
         
         void WindowTest::run()
         {
-            if (auto context = _context.lock())
             {
                 Size2I size(1024, 1024);
-                auto window = Window::create(context, "WindowTest", size);
+                auto window = Window::create(_context, "WindowTest", size);
                 FTK_ASSERT(window->getID());
                 _print(Format("Screen: {0}").arg(window->getScreen()));
                 _print(Format("Full screen: {0}").arg(window->isFullScreen()));

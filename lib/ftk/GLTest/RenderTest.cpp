@@ -45,11 +45,10 @@ namespace ftk
         
         void RenderTest::run()
         {
-            auto context = _context.lock();
-            auto logSystem = context->getLogSystem();
-            auto fontSystem = context->getSystem<FontSystem>();
+            auto logSystem = _context->getLogSystem();
+            auto fontSystem = _context->getSystem<FontSystem>();
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
                 Size2I size(1920, 1080);
                 auto buffer = OffscreenBuffer::create(size);
                 OffscreenBufferBinding bufferBinding(buffer);
@@ -79,9 +78,8 @@ namespace ftk
 
                 render->end();
             }
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
                 Size2I size(1920, 1080);
                 auto buffer = OffscreenBuffer::create(size);
                 OffscreenBufferBinding bufferBinding(buffer);
@@ -143,7 +141,7 @@ namespace ftk
                 }
                 
                 std::string text = "Hello world";
-                auto fontSystem = context->getSystem<FontSystem>();
+                auto fontSystem = _context->getSystem<FontSystem>();
                 FontInfo fontInfo;
                 auto fontMetrics = fontSystem->getMetrics(fontInfo);
                 auto glyphs = fontSystem->getGlyphs(text, fontInfo);

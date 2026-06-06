@@ -121,37 +121,33 @@ namespace ftk
                 delete [] argv[0];
                 delete [] argv[1];
             }
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv = { "app", "-h" };
-                auto app = App::create(context, argv);
+                auto app = App::create(_context, argv);
                 _print(app->getExeName());
                 app->run();
             }
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv = { "app", "arg", "-option", "42" };
-                auto app = App::create(context, argv);
+                auto app = App::create(_context, argv);
                 app->run();
                 FTK_ASSERT("arg" == app->getArg());
                 FTK_ASSERT(42 == app->getOption());
             }
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv = { "app"};
                 try
                 {
-                    auto app = App::create(context, argv);
+                    auto app = App::create(_context, argv);
                 }
                 catch (const std::exception&)
                 {}
             }
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv = { "app", "arg", "-option" };
                 try
                 {
-                    auto app = App::create(context, argv);
+                    auto app = App::create(_context, argv);
                 }
                 catch (const std::exception&)
                 {}

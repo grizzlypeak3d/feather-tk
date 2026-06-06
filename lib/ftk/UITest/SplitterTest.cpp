@@ -28,20 +28,19 @@ namespace ftk
                 
         void SplitterTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("SplitterTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "SplitterTest",
                     "Splitter test.");
-                auto window = Window::create(context, app, "SplitterTest");
+                auto window = Window::create(_context, app, "SplitterTest");
                 window->show();
                 app->tick();
-                _test(context, app, window, Orientation::Horizontal);
-                _test(context, app, window, Orientation::Vertical);
+                _test(_context, app, window, Orientation::Horizontal);
+                _test(_context, app, window, Orientation::Vertical);
             }
         }
 

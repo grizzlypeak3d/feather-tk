@@ -30,22 +30,21 @@ namespace ftk
                 
         void IntEditTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("IntEditTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "IntEditTest",
                     "Integer edit test.");
-                auto window = Window::create(context, app, "IntEditTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "IntEditTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto edit = IntEdit::create(context, layout);
+                auto edit = IntEdit::create(_context, layout);
                 FTK_ASSERT(edit->getModel());
                 int value = 0;
                 edit->setCallback([&value](int v) { value = v; });

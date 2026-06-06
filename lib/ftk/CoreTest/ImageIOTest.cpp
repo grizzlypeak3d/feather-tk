@@ -53,9 +53,8 @@ namespace ftk
         
         void ImageIOTest::_members()
         {
-            if (auto context = _context.lock())
             {
-                auto io = context->getSystem<ImageIO>();
+                auto io = _context->getSystem<ImageIO>();
                 auto dummy = DummyPlugin::create();
                 io->addPlugin(dummy);
                 for (const auto& plugin : io->getPlugins())

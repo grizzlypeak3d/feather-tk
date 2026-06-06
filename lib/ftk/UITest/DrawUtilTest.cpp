@@ -74,20 +74,19 @@ namespace ftk
                 
         void DrawUtilTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("DrawUtilTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "DrawUtilTest",
                     "Draw utilities test.");
-                auto window = Window::create(context, app, "DrawUtilTest");
+                auto window = Window::create(_context, app, "DrawUtilTest");
                 window->show();
                 app->tick();
 
-                auto widget = DrawWidget::create(context, window);
+                auto widget = DrawWidget::create(_context, window);
                 for (size_t i = 0; i < 10; ++i)
                 {
                     widget->update();

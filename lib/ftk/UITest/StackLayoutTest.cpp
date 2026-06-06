@@ -31,28 +31,27 @@ namespace ftk
 
         void StackLayoutTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("StackLayoutTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "StackLayoutTest",
                     "Stack layout test.");
-                auto window = Window::create(context, app, "StackLayoutTest");
+                auto window = Window::create(_context, app, "StackLayoutTest");
                 window->show();
                 app->tick();
 
-                auto layout = StackLayout::create(context, window);
+                auto layout = StackLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::None);
                 FTK_ASSERT(SizeRole::None == layout->getMarginRole());
 
-                auto spacer0 = Spacer::create(context, Orientation::Horizontal, layout);
-                auto spacer1 = Spacer::create(context, Orientation::Horizontal, layout);
-                auto spacer2 = Spacer::create(context, Orientation::Horizontal, layout);
+                auto spacer0 = Spacer::create(_context, Orientation::Horizontal, layout);
+                auto spacer1 = Spacer::create(_context, Orientation::Horizontal, layout);
+                auto spacer2 = Spacer::create(_context, Orientation::Horizontal, layout);
                 app->tick();
                 FTK_ASSERT(0 == layout->getCurrentIndex());
                 FTK_ASSERT(spacer0->isVisible());

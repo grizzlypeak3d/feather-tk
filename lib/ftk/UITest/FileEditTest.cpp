@@ -31,22 +31,21 @@ namespace ftk
 
         void FileEditTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("FileEditTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "FileEditTest",
                     "File edit test.");
-                auto window = Window::create(context, app, "FileEditTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "FileEditTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto edit = FileEdit::create(context, layout);
+                auto edit = FileEdit::create(_context, layout);
                 Path path(std::filesystem::current_path().u8string());
                 edit->setPath(path);
                 edit->setPath(path);
@@ -57,7 +56,7 @@ namespace ftk
                         path = value;
                     });
 
-                auto system = context->getSystem<FileBrowserSystem>();
+                auto system = _context->getSystem<FileBrowserSystem>();
                 system->setNativeFileDialog(false);
                 FTK_ASSERT(!system->isNativeFileDialog());
             }

@@ -27,22 +27,21 @@ namespace ftk
                 
         void ScrollBarTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ScrollBarTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ScrollBarTest",
                     "Scroll bar test.");
-                auto window = Window::create(context, app, "ScrollBarTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "ScrollBarTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
-                _test(context, app, window, layout, Orientation::Horizontal);
-                _test(context, app, window, layout, Orientation::Vertical);
+                _test(_context, app, window, layout, Orientation::Horizontal);
+                _test(_context, app, window, layout, Orientation::Vertical);
             }
         }
 

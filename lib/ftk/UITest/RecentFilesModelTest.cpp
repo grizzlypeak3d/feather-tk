@@ -27,9 +27,8 @@ namespace ftk
                 
         void RecentFilesModelTest::run()
         {
-            if (auto context = _context.lock())
             {
-                auto model = RecentFilesModel::create(context);
+                auto model = RecentFilesModel::create(_context);
 
                 size_t recentMax = 0;
                 std::vector<std::filesystem::path> recent;

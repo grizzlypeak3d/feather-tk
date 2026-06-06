@@ -30,22 +30,21 @@ namespace ftk
                 
         void DoubleSliderTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("DoubleSliderTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "DoubleSliderTest",
                     "Double slider test.");
-                auto window = Window::create(context, app, "DoubleSliderTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "DoubleSliderTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto slider = DoubleSlider::create(context, layout);
+                auto slider = DoubleSlider::create(_context, layout);
                 FTK_ASSERT(slider->getModel());
                 double value = 0.0;
                 slider->setCallback([&value](double v) { value = v; });

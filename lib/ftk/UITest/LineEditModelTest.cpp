@@ -27,9 +27,8 @@ namespace ftk
                 
         void LineEditModelTest::run()
         {
-            if (auto context = _context.lock())
             {
-                auto model = LineEditModel::create(context);
+                auto model = LineEditModel::create(_context);
                 std::string text = "abcdefghijklmnopqrstuvwxyz";
                 model->setText(text);
                 model->setText(text);
@@ -46,9 +45,8 @@ namespace ftk
                 model->clearText();
                 FTK_ASSERT(text2 == std::string());
             }
-            if (auto context = _context.lock())
             {
-                auto model = LineEditModel::create(context);
+                auto model = LineEditModel::create(_context);
                 FTK_ASSERT(model->key(Key::A));
                 FTK_ASSERT(model->key(Key::A, static_cast<int>(commandKeyModifier)));
             }

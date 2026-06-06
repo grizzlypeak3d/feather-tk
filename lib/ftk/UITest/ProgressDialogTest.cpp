@@ -29,16 +29,15 @@ namespace ftk
                 
         void ProgressDialogTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ProgressDialogTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ProgressDialogTest",
                     "Progress dialog test.");
-                auto window = Window::create(context, app, "ProgressDialogTest");
+                auto window = Window::create(_context, app, "ProgressDialogTest");
                 window->show();
                 app->tick();
             }

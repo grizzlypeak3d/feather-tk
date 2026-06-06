@@ -38,22 +38,21 @@ namespace ftk
 
         void TabWidgetTest::_bar()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("TabWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "TabWidgetTest",
                     "Tab widget test.");
-                auto window = Window::create(context, app, "TabWidgetTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "TabWidgetTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = TabBar::create(context, layout);
+                auto widget = TabBar::create(_context, layout);
                 std::vector<std::string> tabs =
                 {
                     "Tab 0",
@@ -86,30 +85,29 @@ namespace ftk
 
         void TabWidgetTest::_widget()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("TabWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "TabWidgetTest",
                     "Tab widget test.");
-                auto window = Window::create(context, app, "TabWidgetTest");
-                auto layout = VerticalLayout::create(context, window);
+                auto window = Window::create(_context, app, "TabWidgetTest");
+                auto layout = VerticalLayout::create(_context, window);
                 layout->setMarginRole(SizeRole::MarginLarge);
                 window->show();
                 app->tick();
 
-                auto widget = TabWidget::create(context, layout);
+                auto widget = TabWidget::create(_context, layout);
                 std::vector<std::string> tabs =
                 {
                     "Tab 0",
                     "Tab 1",
                 };
-                auto label0 = Label::create(context, "Label 0");
+                auto label0 = Label::create(_context, "Label 0");
                 widget->addTab(tabs[0], label0);
-                auto label1 = Label::create(context, "Label 1");
+                auto label1 = Label::create(_context, "Label 1");
                 widget->addTab(tabs[1], label1);
                 FTK_ASSERT(tabs == widget->getTabs());
                 app->tick();

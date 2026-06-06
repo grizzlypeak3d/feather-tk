@@ -27,22 +27,21 @@ namespace ftk
                 
         void ListWidgetTest::run()
         {
-            if (auto context = _context.lock())
             {
                 std::vector<std::string> argv;
                 argv.push_back("ListWidgetTest");
                 auto app = App::create(
-                    context,
+                    _context,
                     argv,
                     "ListWidgetTest",
                     "List widget test.");
-                auto window = Window::create(context, app, "ListWidgetTest");
+                auto window = Window::create(_context, app, "ListWidgetTest");
                 window->show();
                 app->tick();
-                _test(context, app, window, ButtonGroupType::Click);
-                _test(context, app, window, ButtonGroupType::Check);
-                _test(context, app, window, ButtonGroupType::Radio);
-                _test(context, app, window, ButtonGroupType::Toggle);
+                _test(_context, app, window, ButtonGroupType::Click);
+                _test(_context, app, window, ButtonGroupType::Check);
+                _test(_context, app, window, ButtonGroupType::Radio);
+                _test(_context, app, window, ButtonGroupType::Toggle);
             }
         }
 

@@ -84,9 +84,8 @@ namespace ftk
                 b.time = 1.F;
                 FTK_ASSERT(a != b);
             }
-            if (auto context = _context.lock())
             {
-                auto logSystem = context->getSystem<LogSystem>();
+                auto logSystem = _context->getSystem<LogSystem>();
                 logSystem->print(
                     "ftk::core_test::SystemTest",
                     "This is a message",

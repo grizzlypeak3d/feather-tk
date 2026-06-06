@@ -58,9 +58,8 @@ namespace ftk
         
         void OffscreenBufferTest::_members()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
 
                 struct Test
                 {
@@ -141,9 +140,8 @@ namespace ftk
         
         void OffscreenBufferTest::_functions()
         {
-            if (auto context = _context.lock())
             {
-                auto window = createWindow(context);
+                auto window = createWindow(_context);
 
                 std::shared_ptr<OffscreenBuffer> buffer;
                 Size2I size(1920, 1080);
