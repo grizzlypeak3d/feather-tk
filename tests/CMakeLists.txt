@@ -1,4 +1,4 @@
-add_subdirectory(ftk-test)
+add_subdirectory(ftktest)
 
 if(ftk_PYTHON)
     add_test(
