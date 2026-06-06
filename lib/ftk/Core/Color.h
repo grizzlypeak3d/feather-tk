@@ -158,6 +158,9 @@ namespace ftk
     //! Convert HSV to RGB.
     FTK_API void hsvToRGB(const float in[3], float out[3]);
 
+    //! Convert sRGB to linear.
+    FTK_API float srgbToLinear(float);
+
     FTK_API std::string to_string(const Color1F&);
     FTK_API std::string to_string(const Color2F&);
     FTK_API std::string to_string(const Color3F&);

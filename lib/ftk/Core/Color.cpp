@@ -159,6 +159,11 @@ namespace ftk
         }
     }
 
+    float srgbToLinear(float c)
+    {
+        return (c <= 0.04045f) ? c / 12.92f : powf((c + 0.055f) / 1.055f, 2.4f);
+    }
+
     std::string to_string(const Color1F& value)
     {
         std::stringstream ss;
