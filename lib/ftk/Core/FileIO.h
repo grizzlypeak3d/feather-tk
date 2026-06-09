@@ -13,7 +13,7 @@ namespace ftk
 {
     //! \name File I/O
     ///@{
-        
+
     //! File I/O modes.
     enum class FTK_API_TYPE FileMode
     {
@@ -42,8 +42,9 @@ namespace ftk
     struct FTK_API_TYPE MemFile
     {
         MemFile() = default;
-        MemFile(const uint8_t*, size_t size);
+        MemFile(const std::shared_ptr<void>&, const uint8_t*, size_t size);
 
+        std::shared_ptr<void> f;
         const uint8_t* p = nullptr;
         size_t size = 0;
 

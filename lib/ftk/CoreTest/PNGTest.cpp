@@ -80,7 +80,7 @@ namespace ftk
                             
                             auto fileIO = FileIO::create(path, FileMode::Read);
                             const size_t size = fileIO->getSize();
-                            MemFile memFile(fileIO->getMemStart(), size);
+                            MemFile memFile(fileIO, fileIO->getMemStart(), size);
                             read = io->read(path, memFile);
                             info2 = read->getInfo();
                             FTK_ASSERT(info.size == info2.size);

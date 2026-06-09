@@ -3,7 +3,8 @@
 
 namespace ftk
 {
-    inline MemFile::MemFile(const uint8_t* p, size_t size) :
+    inline MemFile::MemFile(const std::shared_ptr<void>& f, const uint8_t* p, size_t size) :
+        f(f),
         p(p),
         size(size)
     {}
@@ -11,6 +12,7 @@ namespace ftk
     inline bool MemFile::operator == (const MemFile& other) const
     {
         return
+            f == other.f &&
             p == other.p &&
             size == other.size;
     }

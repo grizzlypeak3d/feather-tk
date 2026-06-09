@@ -36,7 +36,7 @@ namespace widgets
         // Create image widget.
         auto imageWidget = ImageWidget::create(context, layout);
         auto imageIO = context->getSystem<ImageIO>();
-        MemFile memFile(ftk_resource::Charlie.data(), ftk_resource::Charlie.size());
+        MemFile memFile(nullptr, ftk_resource::Charlie.data(), ftk_resource::Charlie.size());
         if (auto read = imageIO->read("Charlie.png", memFile))
         {
             imageWidget->setImage(read->read());
