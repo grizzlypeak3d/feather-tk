@@ -7,6 +7,7 @@
 #include <ftk/Core/Memory.h>
 #include <ftk/Core/Path.h>
 
+#include <atomic>
 #include <filesystem>
 
 #include <sys/mman.h>
