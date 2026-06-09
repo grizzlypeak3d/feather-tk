@@ -6,6 +6,7 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Error.h>
 
+#include <atomic>
 #include <algorithm>
 #include <array>
 #include <iostream>

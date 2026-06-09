@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
+#include <ftk/Core/FileIO.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/String.h>
@@ -44,6 +45,10 @@ namespace ftk
         addSampler(
             "ftk Objects/Images: {0}",
             [] { return Image::getObjectCount(); });
+
+        addSampler(
+            "ftk Objects/File I/O: {0}",
+            [] { return FileIO::getObjectCount(); });
 
         p.logTimer = Timer::create(context);
         p.logTimer->setRepeating(true);

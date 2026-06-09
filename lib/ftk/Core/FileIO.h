@@ -190,6 +190,9 @@ namespace ftk
 
         ///@}
 
+        //! Get the number of objects currenty instantiated.
+        FTK_API static size_t getObjectCount();
+
     private:
         void _open(const std::filesystem::path&, FileMode, FileRead);
         bool _close(std::string* error = nullptr);

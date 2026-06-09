@@ -99,13 +99,21 @@ namespace ftk
         const uint8_t*        memP = nullptr;
     };
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+    }
+
     FileIO::FileIO() :
         _p(new Private)
-    {}
+    {
+        ++objectCount;
+    }
 
     FileIO::~FileIO()
     {
         _close();
+        --objectCount;
     }
 
     std::shared_ptr<FileIO> FileIO::create(
@@ -278,6 +286,11 @@ namespace ftk
         }
         p.pos += size * wordSize;
         p.size = std::max(p.pos, p.size);
+    }
+
+    size_t FileIO::getObjectCount()
+    {
+        return objectCount;
     }
 
     void FileIO::_open(
