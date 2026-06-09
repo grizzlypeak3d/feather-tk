@@ -11,7 +11,8 @@ FTK_MAIN()
     {
         // Create the context and application.
         auto context = ftk::Context::create();
-        auto app = widgets::App::create(context, ftk::convert(argc, argv));
+        auto args = ftk::convert(argc, argv);
+        auto app = widgets::App::create(context, args);
         if (app->hasCmdLineHelp())
             return 0;
 

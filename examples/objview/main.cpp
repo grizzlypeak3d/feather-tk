@@ -8,7 +8,8 @@ FTK_MAIN()
     try
     {
         auto context = ftk::Context::create();
-        auto app = objview::App::create(context, ftk::convert(argc, argv));
+        auto args = ftk::convert(argc, argv);
+        auto app = objview::App::create(context, args);
         return app->run();
     }
     catch (const std::exception& e)
