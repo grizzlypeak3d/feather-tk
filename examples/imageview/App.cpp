@@ -17,56 +17,17 @@ namespace imageview
         const std::shared_ptr<Context>& context,
         const std::vector<std::string>& argv)
     {
-        // Create the command line arguments.
         _cmdLine.paths = CmdLineListArg<std::string>::create(
             "inputs",
             "Input paths.",
             true);
 
-        // Initialize the base class.
         ftk::App::_init(
             context,
             argv,
             "imageview",
             "Image view example",
             { _cmdLine.paths });
-
-        // Create models.
-        _settingsModel = SettingsModel::create(context, getDefaultDisplayScale());
-        _documentModel = DocumentModel::create(context);
-        _recentFilesModel = RecentFilesModel::create(context);
-        _recentFilesModel->setRecent(_settingsModel->getRecentFiles());
-
-        // Initialize the file browser.
-        auto fileBrowserSystem = context->getSystem<FileBrowserSystem>();
-        fileBrowserSystem->setNativeFileDialog(false);
-        fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
-
-        // Create the main window.
-        _mainWindow = MainWindow::create(
-            context,
-            std::dynamic_pointer_cast<App>(shared_from_this()),
-            Size2I(1280, 960));
-
-        // Observe style settings.
-        _styleSettingsObserver = Observer<StyleSettings>::create(
-            _settingsModel->observeStyle(),
-            [this](const StyleSettings& value)
-            {
-                setColorStyle(value.colorStyle);
-                setDisplayScale(value.displayScale);
-            });
-
-        // Open command line arguments.
-        std::vector<std::filesystem::path> paths;
-        for (const std::string& path : _cmdLine.paths->getList())
-        {
-            paths.push_back(std::filesystem::u8path(path));
-        }
-        if (!paths.empty())
-        {
-            open(paths);
-        }
     }
 
     App::~App()
@@ -153,5 +114,47 @@ namespace imageview
     void App::closeAll()
     {
         _documentModel->closeAll();
+    }
+
+    void App::run()
+    {
+        // Create models.
+        _settingsModel = SettingsModel::create(_context, getDefaultDisplayScale());
+        _documentModel = DocumentModel::create(_context);
+        _recentFilesModel = RecentFilesModel::create(_context);
+        _recentFilesModel->setRecent(_settingsModel->getRecentFiles());
+
+        // Initialize the file browser.
+        auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();
+        fileBrowserSystem->setNativeFileDialog(false);
+        fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
+
+        // Create the main window.
+        _mainWindow = MainWindow::create(
+            _context,
+            std::dynamic_pointer_cast<App>(shared_from_this()),
+            Size2I(1280, 960));
+
+        // Observe style settings.
+        _styleSettingsObserver = Observer<StyleSettings>::create(
+            _settingsModel->observeStyle(),
+            [this](const StyleSettings& value)
+            {
+                setColorStyle(value.colorStyle);
+                setDisplayScale(value.displayScale);
+            });
+
+        // Open command line arguments.
+        std::vector<std::filesystem::path> paths;
+        for (const std::string& path : _cmdLine.paths->getList())
+        {
+            paths.push_back(std::filesystem::u8path(path));
+        }
+        if (!paths.empty())
+        {
+            open(paths);
+        }
+
+        ftk::App::run();
     }
 }

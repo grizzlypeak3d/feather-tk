@@ -30,6 +30,8 @@ namespace gfx
         //! Get the main window.
         const std::shared_ptr<MainWindow>& getMainWindow() const;
 
+        void run() override;
+
     private:
         std::shared_ptr<MainWindow> _mainWindow;
     };

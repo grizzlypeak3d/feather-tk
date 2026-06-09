@@ -62,6 +62,8 @@ namespace objview
 
         ///@}
 
+        void run() override;
+
     private:
 
         //! Command line arguments and options.

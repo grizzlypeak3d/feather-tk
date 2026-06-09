@@ -37,12 +37,14 @@ namespace ftk
                 return out;
             }
 
+            virtual void run() override
+            {
+                PYBIND11_OVERRIDE(void, App, run);
+            }
+
             virtual void tick() override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    App,
-                    tick);
+                PYBIND11_OVERRIDE(void, App, tick);
             }
         };
 
@@ -88,6 +90,7 @@ namespace ftk
                 .def_property("tooltipsEnabled", &App::areTooltipsEnabled, &App::setTooltipsEnabled)
                 .def_property_readonly("observeTooltipsEnabled", &App::observeTooltipsEnabled)
                 .def("exit", &App::exit)
+                .def("run", &App::run)
                 .def("tick", &App::tick);
         }
     }

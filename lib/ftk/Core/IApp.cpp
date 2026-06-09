@@ -41,9 +41,9 @@ namespace ftk
         std::vector<std::shared_ptr<ICmdLineArg> > cmdLineArgs;
         std::shared_ptr<CmdLineFlag> logFlag;
         std::shared_ptr<CmdLineFlag> helpFlag;
+        bool help = false;
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptions;
         std::shared_ptr<ListObserver<LogItem> > logObserver;
-        int exit = 0;
     };
 
     void IApp::_init(
@@ -76,14 +76,15 @@ namespace ftk
             { "-help", "-h", "--help", "--h" },
             "Show this message.");
         p.cmdLineOptions.push_back(p.helpFlag);
-        p.exit = _parseCmdLine();
+
+        _parseCmdLine();
 
         auto logSystem = context->getSystem<LogSystem>();
         p.logObserver = ListObserver<LogItem>::create(
             logSystem->observeLogItems(),
             [this](const std::vector<LogItem>& value)
             {
-                _print(value);
+                _printLog(value);
             });
         logSystem->print(name, "Starting...");
     }
@@ -105,11 +106,6 @@ namespace ftk
         return _p->exeName;
     }
 
-    int IApp::getExit() const
-    {
-        return _p->exit;
-    }
-
     const std::shared_ptr<Context>& IApp::getContext() const
     {
         return _context;
@@ -125,17 +121,12 @@ namespace ftk
         return _p->summary;
     }
 
-    void IApp::_print(const std::string& value)
+    bool IApp::hasCmdLineHelp() const
     {
-        std::cout << value << std::endl;
+        return _p->help;
     }
 
-    void IApp::_printError(const std::string& value)
-    {
-        std::cerr << "ERROR: " << value << std::endl;
-    }
-
-    int IApp::_parseCmdLine()
+    void IApp::_parseCmdLine()
     {
         FTK_P();
         for (const auto& i : p.cmdLineOptions)
@@ -168,7 +159,7 @@ namespace ftk
             p.helpFlag->found())
         {
             _printCmdLineHelp();
-            return 1;
+            return;
         }
         for (const auto& i : p.cmdLineArgs)
         {
@@ -189,14 +180,23 @@ namespace ftk
         if (!p.argv.empty())
         {
             _printCmdLineHelp();
-            return 1;
         }
-        return 0;
+    }
+
+    void IApp::_print(const std::string& value)
+    {
+        std::cout << value << std::endl;
+    }
+
+    void IApp::_printError(const std::string& value)
+    {
+        std::cerr << "ERROR: " << value << std::endl;
     }
 
     void IApp::_printCmdLineHelp()
     {
         FTK_P();
+        p.help = true;
         _print("\n" + p.name + "\n");
         _print("    " + p.summary + "\n");
         _print("Usage:\n");
@@ -270,7 +270,7 @@ namespace ftk
         }
     }
 
-    void IApp::_print(const std::vector<LogItem>& value)
+    void IApp::_printLog(const std::vector<LogItem>& value)
     {
         FTK_P();
         if (p.logFlag->found())

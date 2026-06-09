@@ -306,22 +306,18 @@ namespace ftk
 
 FTK_MAIN()
 {
-    int r = 0;
     try
     {
         auto context = ftk::Context::create();
-        auto args = ftk::convert(argc, argv);
-        auto app = ftk::tests::App::create(context, args);
-        r = app->getExit();
-        if (0 == r)
-        {
-            app->run();
-        }
+        auto app = ftk::tests::App::create(context, ftk::convert(argc, argv));
+        if (app->hasCmdLineHelp())
+            return 0;
+        app->run();
     }
     catch (const std::exception& e)
     {
         std::cout << "ERROR: " << e.what() << std::endl;
+        return 1;
     }
-    return r;
+    return 0;
 }
-

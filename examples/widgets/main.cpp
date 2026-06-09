@@ -12,8 +12,8 @@ FTK_MAIN()
         // Create the context and application.
         auto context = ftk::Context::create();
         auto app = widgets::App::create(context, ftk::convert(argc, argv));
-        if (app->getExit() != 0)
-            return app->getExit();
+        if (app->hasCmdLineHelp())
+            return 0;
 
         // Initialize the file browser.
         auto fileBrowserSystem = context->getSystem<ftk::FileBrowserSystem>();
@@ -29,4 +29,3 @@ FTK_MAIN()
     }
     return 0;
 }
-

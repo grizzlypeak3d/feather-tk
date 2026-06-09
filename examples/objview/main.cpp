@@ -9,14 +9,11 @@ FTK_MAIN()
     {
         auto context = ftk::Context::create();
         auto app = objview::App::create(context, ftk::convert(argc, argv));
-        if (app->getExit() != 0)
-            return app->getExit();
-        app->run();
+        return app->run();
     }
     catch (const std::exception& e)
     {
         std::cout << "ERROR: " << e.what() << std::endl;
-        return 1;
     }
-    return 0;
+    return 1;
 }

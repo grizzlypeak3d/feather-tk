@@ -62,6 +62,8 @@ namespace imageview
 
         ///@}
 
+        void run() override;
+
     private:
 
         //! Command line arguments and options.

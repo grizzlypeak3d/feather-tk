@@ -26,7 +26,7 @@ namespace ftk
                 const std::shared_ptr<Context>&,
                 std::vector<std::string>&);
 
-            void run() override;
+            void run();
             
         private:
             FTK_PRIVATE();

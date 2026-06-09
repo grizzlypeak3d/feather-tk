@@ -116,8 +116,8 @@ FTK_MAIN()
         // Create the context and application.
         auto context = Context::create();
         auto app = App::create(context, argc, argv, "windows", "Multiple windows example");
-        if (app->getExit() != 0)
-            return app->getExit();
+        if (app->hasCmdLineHelp())
+            return 0;
 
         // Create the main window.
         auto mainWindow = MyMainWindow::create(context, app);

@@ -31,39 +31,32 @@ namespace ftk
                 
         void AppTest::run()
         {
-            int r = 0;
+            std::vector<std::string> argv = { "app", "-exit" };
+            try
             {
-                std::vector<std::string> argv = { "app", "-exit" };
-                try
-                {
-                    auto app = App::create(
-                        _context,
-                        argv,
-                        "ftk::ui_test::App",
-                        "Test UI application");
-                    r = app->getExit();
-                    if (0 == r)
-                    {
-                        auto window = Window::create(_context, app, "ftk::ui_test::App");
-                        auto layout = VerticalLayout::create(_context, window);
-                        auto button = PushButton::create(_context, "Button", layout);
-                        FTK_ASSERT(app->getWindows().front() == window);
-                        window->show();
-                        window->setSize(Size2I(1280, 960));
+                auto app = App::create(
+                    _context,
+                    argv,
+                    "ftk::ui_test::App",
+                    "Test UI application");
 
-                        _print(Format("Window size: {0}").arg(window->getSize()));
-                        _print(Format("Buffer size: {0}").arg(window->getBufferSize()));
-                        _print(Format("Display scale: {0}").arg(window->getDisplayScale()));
+                auto window = Window::create(_context, app, "ftk::ui_test::App");
+                auto layout = VerticalLayout::create(_context, window);
+                auto button = PushButton::create(_context, "Button", layout);
+                FTK_ASSERT(app->getWindows().front() == window);
+                window->show();
+                window->setSize(Size2I(1280, 960));
 
-                        app->run();
-                        app->exit();
-                        window->close();
-                    }
-                }
-                catch (const std::exception&)
-                {}
+                _print(Format("Window size: {0}").arg(window->getSize()));
+                _print(Format("Buffer size: {0}").arg(window->getBufferSize()));
+                _print(Format("Display scale: {0}").arg(window->getDisplayScale()));
+
+                app->run();
+                app->exit();
+                window->close();
             }
-            FTK_ASSERT(0 == r);
+            catch (const std::exception&)
+            {}
         }
     }
 }

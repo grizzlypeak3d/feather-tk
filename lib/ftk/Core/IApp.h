@@ -51,9 +51,6 @@ namespace ftk
         //! Get the executable file name.
         FTK_API const std::string& getExeName() const;
 
-        //! Get the exit code.
-        FTK_API int getExit() const;
-
         //! Get the context.
         FTK_API const std::shared_ptr<Context>& getContext() const;
 
@@ -63,20 +60,20 @@ namespace ftk
         //! Get the application summary.
         FTK_API const std::string& getSummary() const;
 
-        //! Run the application.
-        FTK_API virtual void run() {}
+        //! Get whether the command line help is shown.
+        FTK_API bool hasCmdLineHelp() const;
 
     protected:
+        void _parseCmdLine();
+
         void _print(const std::string&);
         void _printError(const std::string&);
 
         std::shared_ptr<Context> _context;
         
     private:
-        int _parseCmdLine();
         void _printCmdLineHelp();
-
-        void _print(const std::vector<LogItem>&);
+        void _printLog(const std::vector<LogItem>&);
 
         FTK_PRIVATE();
     };

@@ -9,8 +9,8 @@ FTK_MAIN()
     {
         auto context = ftk::Context::create();
         auto app = gfx::App::create(context, ftk::convert(argc, argv));
-        if (app->getExit() != 0)
-            return app->getExit();
+        if (app->hasCmdLineHelp())
+            return 0;
         app->run();
     }
     catch (const std::exception& e)

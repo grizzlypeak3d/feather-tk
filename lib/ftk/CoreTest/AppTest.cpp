@@ -48,8 +48,6 @@ namespace ftk
 
                 bool hasOption() const { return _option->hasValue(); }
                 int getOption() const { return _option->getValue(); }
-
-                void run() override;
                 
             private:
                 std::shared_ptr<CmdLineArg<std::string> > _arg;
@@ -86,9 +84,6 @@ namespace ftk
                 out->_init(context, argv);
                 return out;
             }
-            
-            void App::run()
-            {}
         }
                 
         void AppTest::run()
@@ -125,12 +120,10 @@ namespace ftk
                 std::vector<std::string> argv = { "app", "-h" };
                 auto app = App::create(_context, argv);
                 _print(app->getExeName());
-                app->run();
             }
             {
                 std::vector<std::string> argv = { "app", "arg", "-option", "42" };
                 auto app = App::create(_context, argv);
-                app->run();
                 FTK_ASSERT("arg" == app->getArg());
                 FTK_ASSERT(42 == app->getOption());
             }

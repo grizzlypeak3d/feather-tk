@@ -150,11 +150,12 @@ namespace ftk
         //! Exit the application.
         FTK_API virtual void exit();
 
+        //! Run the application.
+        FTK_API virtual void run();
+
         //! Tick the event loop. If this method is overridden the base method
         //! should be called.
         FTK_API virtual void tick();
-
-        FTK_API void run() override;
 
     protected:
         void _addWindow(const std::shared_ptr<IWindow>&);

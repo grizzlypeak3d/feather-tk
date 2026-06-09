@@ -8,8 +8,8 @@ import sys
 # Create the context and application.
 context = ftk.Context()
 app = ftk.App(context, sys.argv, "buttons", "Buttons example")
-if app.exitValue!= 0:
-    sys.exit(app.exitValue)
+if app.hasCmdLineHelp:
+    sys.exit(0)
 
 # Create a window.
 window = ftk.MainWindow(context, app, ftk.Size2I(1280, 960))

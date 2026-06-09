@@ -65,6 +65,7 @@ namespace textedit
         ///@}
 
         void exit() override;
+        void run() override;
 
     private:
 

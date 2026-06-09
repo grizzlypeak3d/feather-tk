@@ -15,18 +15,11 @@ namespace gfx
         const std::shared_ptr<Context>& context,
         const std::vector<std::string>& argv)
     {
-        // Initialize the base class.
         ftk::App::_init(
             context,
             argv,
             "gfx",
             "Graphics examples");
-
-        // Create the main window.
-        _mainWindow = MainWindow::create(
-            context,
-            std::dynamic_pointer_cast<App>(shared_from_this()),
-            Size2I(1280, 960));
     }
 
     App::~App()
@@ -44,5 +37,15 @@ namespace gfx
     const std::shared_ptr<MainWindow>& App::getMainWindow() const
     {
         return _mainWindow;
+    }
+
+    void App::run()
+    {
+        _mainWindow = MainWindow::create(
+            _context,
+            std::dynamic_pointer_cast<App>(shared_from_this()),
+            Size2I(1280, 960));
+
+        ftk::App::run();
     }
 }
