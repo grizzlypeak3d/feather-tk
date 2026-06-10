@@ -10,7 +10,7 @@ FTK_MAIN()
         auto context = ftk::Context::create();
         auto args = ftk::convert(argc, argv);
         auto app = objview::App::create(context, args);
-        return app->run();
+        app->run();
     }
     catch (const std::exception& e)
     {
