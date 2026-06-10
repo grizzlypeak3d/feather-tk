@@ -36,9 +36,9 @@ namespace ftk
 
         //! Default offscreen depth buffer.
 #if defined(FTK_API_GL_4_1)
-        const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_16;
-#elif defined(FTK_API_GLES_2)
         const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_24;
+#elif defined(FTK_API_GLES_2)
+        const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_16;
 #endif // FTK_API_GL_4_1
 
         //! Offscreen buffer stencil size.
