@@ -8,6 +8,10 @@
 #include <ftk/UI/FileBrowser.h>
 #include <ftk/UI/IconSystem.h>
 
+#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
+#include <ftk/GL/Init.h>
+#endif // FTK_API_GL_4_1
+
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
 
@@ -15,6 +19,10 @@ namespace ftk
 {
     void uiInit(const std::shared_ptr<Context>& context)
     {
+#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
+        gl::init(context);
+#endif // FTK_API_GL_4_1
+
         auto diagSystem = context->getSystem<DiagSystem>();
         diagSystem->addSampler(
             "ftk Objects/IWidgets: {0}",

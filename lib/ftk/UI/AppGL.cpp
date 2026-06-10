@@ -155,7 +155,6 @@ namespace ftk
             cmdLineArgs,
             cmdLineOptionsTmp);
         uiInit(context);
-        gl::init(context);
 
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Create app...");

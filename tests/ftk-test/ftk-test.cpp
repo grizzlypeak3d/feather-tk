@@ -101,10 +101,6 @@
 
 #include <ftk/UI/Init.h>
 
-#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
-#include <ftk/GL/Init.h>
-#endif // FTK_API_GL_4_1
-
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
@@ -138,10 +134,7 @@ namespace ftk
                 "ftk-test",
                 "Test application",
                 { p.testNames });
-            p.startTime = std::chrono::steady_clock::now();                
-#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
-            gl::init(context);
-#endif // FTK_API_GL_4_1
+            p.startTime = std::chrono::steady_clock::now();
             uiInit(context);
 
             p.tests.push_back(core_test::AppTest::create(context));
