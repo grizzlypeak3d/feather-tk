@@ -318,7 +318,9 @@ namespace ftk
                         {
                             std::unique_lock<std::mutex> lock(p.mutex.mutex);
                             p.mutex.cache.add(
-                                std::make_pair(request->name, request->displayScale * p.displayScaleConvert),
+                                std::make_pair(
+                                    request->name,
+                                    static_cast<int>(request->displayScale * p.displayScaleConvert)),
                                 image);
                         }
                     }
@@ -395,7 +397,9 @@ namespace ftk
         {
             std::unique_lock<std::mutex> lock(p.mutex.mutex);
             cached = p.mutex.cache.get(
-                std::make_pair(name, displayScale * p.displayScaleConvert),
+                std::make_pair(
+                    name,
+                    static_cast<int>(displayScale * p.displayScaleConvert)),
                 image);
         }
         if (cached)
