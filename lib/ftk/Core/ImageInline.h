@@ -57,7 +57,7 @@ namespace ftk
 
     inline float ImageInfo::getAspect() const
     {
-        return size.h > 0 ? (size.w / static_cast<float>(size.h) * pixelAspectRatio) : 0;
+        return size.h > 0 ? (size.w / static_cast<float>(size.h) * pixelAspectRatio) : 0.F;
     }
 
     inline bool ImageInfo::operator == (const ImageInfo& other) const
