@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include <cstddef>
 #include <list>
-#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -53,8 +53,18 @@ namespace ftk
         size_t _size = 0; // running total of item sizes
 
         // LRU order: front = most-recently-used, back = least-recently-used.
-        // Each node stores: key, value, item-size.
-        using ListNode = std::tuple<T, U, size_t>;
+        struct ListNode
+        {
+            ListNode(const T& key, const U& value, size_t size) :
+                key(key),
+                value(value),
+                size(size)
+            {}
+
+            T      key;
+            U      value;
+            size_t size = 1;
+        };
         std::list<ListNode> _list;
 
         // Maps key -> iterator into _list for O(1) lookup and splice.

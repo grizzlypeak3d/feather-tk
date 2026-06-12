@@ -55,7 +55,7 @@ namespace ftk
             // Move to front (most-recently-used).
             _list.splice(_list.begin(), _list, i->second);
         }
-        value = std::get<1>(*i->second);
+        value = i->second->value;
         return true;
     }
 
@@ -79,9 +79,9 @@ namespace ftk
         if (i != _map.end())
         {
             // Update existing entry: adjust running size, move to front.
-            _size -= std::get<2>(*i->second);
-            std::get<1>(*i->second) = value;
-            std::get<2>(*i->second) = size;
+            _size -= i->second->size;
+            i->second->value = value;
+            i->second->size = size;
             _size += size;
             if (i->second != _list.begin())
             {
@@ -103,7 +103,7 @@ namespace ftk
         const auto i = _map.find(key);
         if (i != _map.end())
         {
-            _size -= std::get<2>(*i->second);
+            _size -= i->second->size;
             _list.erase(i->second);
             _map.erase(i);
         }
@@ -124,7 +124,7 @@ namespace ftk
         out.reserve(_map.size());
         for (const auto& node : _list)
         {
-            out.push_back(std::get<0>(node));
+            out.push_back(node.key);
         }
         return out;
     }
@@ -136,7 +136,7 @@ namespace ftk
         out.reserve(_map.size());
         for (const auto& node : _list)
         {
-            out.push_back(std::get<1>(node));
+            out.push_back(node.value);
         }
         return out;
     }
@@ -148,9 +148,10 @@ namespace ftk
         while (_size > _max && !_list.empty())
         {
             const auto& lru = _list.back();
-            _size -= std::get<2>(lru);
-            _map.erase(std::get<0>(lru));
+            _size -= lru.size;
+            _map.erase(lru.key);
             _list.pop_back();
         }
     }
 }
+
