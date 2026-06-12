@@ -89,6 +89,31 @@ namespace ftk
         p.layout->clear();
     }
 
+    void FormLayout::setText(int row, const std::string& text)
+    {
+        FTK_P();
+        if (row >= 0 && row < p.widgets.size() && p.widgets[row].first)
+        {
+            p.widgets[row].first->setText(text);
+        }
+    }
+
+    void FormLayout::setText(const std::shared_ptr<IWidget>& widget, const std::string& text)
+    {
+        FTK_P();
+        for (size_t i = 0; i < p.widgets.size(); ++i)
+        {
+            if (widget == p.widgets[i].second)
+            {
+                if (p.widgets[i].first)
+                {
+                    p.widgets[i].first->setText(text);
+                }
+                break;
+            }
+        }
+    }
+
     void FormLayout::setRowVisible(int index, bool visible)
     {
         FTK_P();

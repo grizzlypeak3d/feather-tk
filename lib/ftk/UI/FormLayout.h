@@ -40,6 +40,12 @@ namespace ftk
         //! Clear all of the rows.
         FTK_API void clear();
 
+        //! Set the text.
+        FTK_API void setText(int, const std::string&);
+
+        //! Set the text.
+        FTK_API void setText(const std::shared_ptr<IWidget>&, const std::string&);
+
         //! Set row visibility.
         FTK_API void setRowVisible(int, bool);
 
