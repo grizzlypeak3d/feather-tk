@@ -24,7 +24,9 @@ namespace ftk
     template<typename T, typename U>
     inline float LRUCache<T, U>::getPercentage() const
     {
-        return _size / static_cast<float>(_max) * 100.F;
+        return _max > 0 ?
+            (_size / static_cast<float>(_max) * 100.F) :
+            0.F;
     }
 
     template<typename T, typename U>
@@ -48,8 +50,11 @@ namespace ftk
         const auto i = _map.find(key);
         if (i == _map.end())
             return false;
-        // Move to front (most-recently-used).
-        _list.splice(_list.begin(), _list, i->second);
+        if (i->second != _list.begin())
+        {
+            // Move to front (most-recently-used).
+            _list.splice(_list.begin(), _list, i->second);
+        }
         value = std::get<1>(*i->second);
         return true;
     }
@@ -60,7 +65,10 @@ namespace ftk
         const auto i = _map.find(key);
         if (i == _map.end())
             return false;
-        _list.splice(_list.begin(), _list, i->second);
+        if (i->second != _list.begin())
+        {
+            _list.splice(_list.begin(), _list, i->second);
+        }
         return true;
     }
 
@@ -75,7 +83,10 @@ namespace ftk
             std::get<1>(*i->second) = value;
             std::get<2>(*i->second) = size;
             _size += size;
-            _list.splice(_list.begin(), _list, i->second);
+            if (i->second != _list.begin())
+            {
+                _list.splice(_list.begin(), _list, i->second);
+            }
         }
         else
         {
