@@ -271,7 +271,7 @@ namespace ftk
                     if ('\n' == (*glyphIt)->info.code)
                     {
                         auto crIt = glyphIt + 1;
-                        if (crIt != glyphs.end() && '\r' == (*glyphIt)->info.code)
+                        if (crIt != glyphs.end() && *crIt && '\r' == (*crIt)->info.code)
                         {
                             ++glyphIt;
                         }
@@ -354,6 +354,14 @@ namespace ftk
                     }
                 }
             }
+
+            // Glyphs skipped by clipping leave unused slots at the end of the
+            // (reused) mesh buffers; trim to the emitted counts so stale data
+            // from a previous frame is not drawn.
+            p.textMesh.v.resize(v);
+            p.textMesh.t.resize(v);
+            p.textMesh.triangles.resize(t);
+
             _drawTextMesh(p.textMesh);
         }
 

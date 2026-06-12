@@ -627,7 +627,7 @@ namespace ftk
                     getTextureType(getTextureType(info.type)),
                     data->getData());
             }
-            return false;
+            return true;
         }
 
         bool Texture::copy(const uint8_t* data, const ImageInfo& info)

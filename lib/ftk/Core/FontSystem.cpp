@@ -356,9 +356,21 @@ namespace ftk
         {
             std::unique_lock<std::mutex> lock(p.mutex);
             const auto utf32 = utf8ToUtf32(text);
-            for (const auto& i : utf32)
+            // Resolve the face and set the pixel size once for the whole
+            // string; Private::getGlyph(code, fontInfo, face) skips both.
+            auto faceIt = p.faces.find(fontInfo.name);
+            if (faceIt == p.faces.end())
             {
-                out.push_back(p.getGlyph(i, fontInfo));
+                faceIt = p.faces.find(getDefaultFont(FontType::Regular));
+            }
+            if (faceIt != p.faces.end() &&
+                0 == FT_Set_Pixel_Sizes(faceIt->second, 0, static_cast<int>(fontInfo.size)))
+            {
+                out.reserve(utf32.size());
+                for (const auto& i : utf32)
+                {
+                    out.push_back(p.getGlyph(i, fontInfo, faceIt->second));
+                }
             }
         }
         catch (const std::exception&)

@@ -119,7 +119,7 @@ namespace ftk
         {
             FTK_P();
             float area = 0.F;
-            for (const auto node : p.boxPack->getNodes())
+            for (const auto& node : p.boxPack->getNodes())
             {
                 if (node->id != boxPackInvalidID)
                 {
