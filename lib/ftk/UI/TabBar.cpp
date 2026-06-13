@@ -409,6 +409,7 @@ namespace ftk
                 {
                     auto closeButton = ToolButton::create(context, p.buttonLayout);
                     closeButton->setAcceptsKeyFocus(false);
+                    closeButton->setCornerRadiusRole(SizeRole::None);
                     closeButton->setIcon("Close");
                     p.closeButtons.push_back(closeButton);
                     p.closeButtonGroup->addButton(closeButton);

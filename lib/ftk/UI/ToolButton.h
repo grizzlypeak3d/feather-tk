@@ -49,6 +49,12 @@ namespace ftk
         //! Set the margin role.
         void setMarginRole(SizeRole);
 
+        //! Get the corner radius role.
+        SizeRole getCornerRadiusRole() const;
+
+        //! Set the corner radius role.
+        void setCornerRadiusRole(SizeRole);
+
         //! Get whether the button has a popup icon.
         bool hasPopupIcon() const;
 

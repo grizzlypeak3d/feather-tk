@@ -14,6 +14,7 @@ namespace ftk
     {
         std::shared_ptr<Action> action;
         SizeRole marginRole = SizeRole::MarginInside;
+        SizeRole cornerRadiusRole = SizeRole::CornerRadius;
         bool popupIcon = false;
         float popupIconScale = 1.F;
         std::shared_ptr<Image> popupImage;
@@ -170,6 +171,22 @@ namespace ftk
         setDrawUpdate();
     }
 
+    SizeRole ToolButton::getCornerRadiusRole() const
+    {
+        return _p->cornerRadiusRole;
+    }
+
+    void ToolButton::setCornerRadiusRole(SizeRole value)
+    {
+        FTK_P();
+        if (value == p.cornerRadiusRole)
+            return;
+        p.cornerRadiusRole = value;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     bool ToolButton::hasPopupIcon() const
     {
         return _p->popupIcon;
@@ -260,7 +277,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
-            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(p.cornerRadiusRole, event.displayScale);
             p.size.fontInfo = event.style->getFont(_font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
@@ -332,7 +349,8 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->bg = getGeometry();
-            p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
+            const int kf = acceptsKeyFocus() ? p.size.keyFocus : 0;
+            p.draw->inside = margin(p.draw->bg, -(p.size.margin + kf));
             p.draw->bgMesh = rect(p.draw->bg, p.size.cornerRadius);
             p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus, p.size.cornerRadius);
         }
