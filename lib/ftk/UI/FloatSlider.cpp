@@ -391,6 +391,9 @@ namespace ftk
         event.render->drawRect(
             gh,
             event.style->getColorRole(ColorRole::Button, enabled));
+        event.render->drawMesh(
+            border(gh, p.size.border),
+            event.style->getColorRole(ColorRole::Border, enabled));
         if (hasKeyFocus())
         {
             event.render->drawRect(

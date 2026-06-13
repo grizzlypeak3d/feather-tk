@@ -31,6 +31,7 @@ namespace ftk
             int margin = 0;
             int keyFocus = 0;
             int pad = 0;
+            int cornerRadius = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
@@ -42,6 +43,7 @@ namespace ftk
         {
             Box2I bg;
             Box2I inside;
+            TriMesh2F bgMesh;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -258,6 +260,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.fontInfo = event.style->getFont(_font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
@@ -330,29 +333,30 @@ namespace ftk
             p.draw = Private::DrawData();
             p.draw->bg = getGeometry();
             p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
-            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus);
+            p.draw->bgMesh = rect(p.draw->bg, p.size.cornerRadius);
+            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus, p.size.cornerRadius);
         }
 
         // Draw the background.
         const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
         if (colorRole != ColorRole::None)
         {
-            event.render->drawRect(
-                p.draw->bg,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(colorRole, isEnabled()));
         }
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
-            event.render->drawRect(
-                p.draw->bg,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                p.draw->bg,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Hover));
         }
 

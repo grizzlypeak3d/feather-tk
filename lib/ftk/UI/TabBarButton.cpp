@@ -185,6 +185,15 @@ namespace ftk
                 event.style->getColorRole(ColorRole::Hover));
         }
 
+        // Draw the active indicator (accent underline).
+        if (_checked)
+        {
+            const Box2I& g = p.size.g;
+            event.render->drawRect(
+                Box2I(g.x(), g.y() + g.h() - p.size.keyFocus, g.w(), p.size.keyFocus),
+                event.style->getColorRole(ColorRole::Checked));
+        }
+
         // Draw the current state.
         if (p.current)
         {

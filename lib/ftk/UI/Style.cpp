@@ -34,7 +34,8 @@ namespace ftk
         "Swatch",
         "Swatch Large",
         "Shadow",
-        "Drag Length");
+        "Drag Length",
+        "Corner Radius");
 
     std::map<SizeRole, int> getDefaultSizeRoles()
     {
@@ -60,6 +61,7 @@ namespace ftk
         out[SizeRole::SwatchLarge] = 40;
         out[SizeRole::Shadow] = 15;
         out[SizeRole::DragLength] = 10;
+        out[SizeRole::CornerRadius] = 4;
         return out;
     }
 
@@ -104,15 +106,15 @@ namespace ftk
         out[ColorRole::Checked] = Color4F(.56F, .36F, .15F);
         out[ColorRole::KeyFocus] = Color4F(.8F, .6F, .3F);
         out[ColorRole::Overlay] = Color4F(0.F, 0.F, 0.F, .5F);
-        out[ColorRole::TooltipWindow] = Color4F(1.F, .95F, .7F);
-        out[ColorRole::TooltipText] = Color4F(0.F, 0.F, 0.F);
+        out[ColorRole::TooltipWindow] = Color4F(.2F, .2F, .2F);
+        out[ColorRole::TooltipText] = Color4F(.9F, .9F, .9F);
 
-        out[ColorRole::Red] = Color4F(.6F, .3F, .3F);
-        out[ColorRole::Green] = Color4F(.3F, .6F, .3F);
-        out[ColorRole::Blue] = Color4F(.3F, .3F, .6F);
-        out[ColorRole::Cyan] = Color4F(.3F, .6F, .6F);
-        out[ColorRole::Magenta] = Color4F(.6F, .3F, .6F);
-        out[ColorRole::Yellow] = Color4F(.6F, .6F, .3F);
+        out[ColorRole::Red]     = Color4F(.835F, .369F, 0.F);    // Vermillion
+        out[ColorRole::Green]   = Color4F(0.F,   .620F, .451F);  // Bluish green
+        out[ColorRole::Blue]    = Color4F(0.F,   .447F, .698F);  // Blue
+        out[ColorRole::Cyan]    = Color4F(.337F, .706F, .914F);  // Sky blue
+        out[ColorRole::Magenta] = Color4F(.8F,   .475F, .655F);  // Reddish purple
+        out[ColorRole::Yellow]  = Color4F(.941F, .894F, .259F);  // Yellow
 
         return out;
     }
@@ -144,9 +146,11 @@ namespace ftk
         out[ColorRole::Border] = Color4F(.65F, .65F, .65F);
         out[ColorRole::Hover] = Color4F(0.F, 0.F, 0.F, .1F);
         out[ColorRole::Pressed] = Color4F(0.F, 0.F, 0.F, .2F);
-        out[ColorRole::Checked] = Color4F(.6F, .7F, .85F);
-        out[ColorRole::KeyFocus] = Color4F(0.F, .5F, 1.F);
+        out[ColorRole::Checked]  = Color4F(.62F, .42F, .12F);
+        out[ColorRole::KeyFocus] = Color4F(.74F, .50F, .13F);
         out[ColorRole::Overlay] = Color4F(1.F, 1.F, 1.F, .5F);
+        out[ColorRole::TooltipWindow] = Color4F(1.F, 1.F, 1.F);
+        out[ColorRole::TooltipText] = Color4F(0.F, 0.F, 0.F);
 
         return out;
     }

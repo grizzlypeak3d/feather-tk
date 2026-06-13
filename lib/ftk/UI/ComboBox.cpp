@@ -44,8 +44,10 @@ namespace ftk
         {
             bool init = true;
             int margin = 0;
+            int border = 0;
             int keyFocus = 0;
             int pad = 0;
+            int cornerRadius = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
@@ -57,6 +59,8 @@ namespace ftk
         {
             Box2I bg;
             Box2I inside;
+            TriMesh2F bgMesh;
+            TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -228,8 +232,10 @@ namespace ftk
             init = true;
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = Size2I();
@@ -303,34 +309,42 @@ namespace ftk
             p.draw = Private::DrawData();
             p.draw->bg = getGeometry();
             p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
-            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus);
+            p.draw->bgMesh = rect(p.draw->bg, p.size.cornerRadius);
+            p.draw->border = border(p.draw->bg, p.size.border, p.size.cornerRadius);
+            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus, p.size.cornerRadius);
         }
 
         // Draw the background.
-        event.render->drawRect(
-            p.draw->bg,
+        event.render->drawMesh(
+            p.draw->bgMesh,
             event.style->getColorRole(ColorRole::Button));
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
-            event.render->drawRect(
-                p.draw->bg,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                p.draw->bg,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
-        // Draw the focus.
+        // Draw the focus and border.
         if (hasKeyFocus())
         {
             event.render->drawMesh(
                 p.draw->keyFocus,
                 event.style->getColorRole(ColorRole::KeyFocus));
+        }
+        else
+        {
+            event.render->drawMesh(
+                p.draw->border,
+                event.style->getColorRole(ColorRole::Border));
         }
 
         // Draw the icon.

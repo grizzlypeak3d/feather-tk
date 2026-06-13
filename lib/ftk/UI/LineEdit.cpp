@@ -44,6 +44,7 @@ namespace ftk
             int margin = 0;
             int border = 0;
             int keyFocus = 0;
+            int cornerRadius = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
@@ -58,6 +59,7 @@ namespace ftk
             Box2I g;
             Box2I g2;
             Box2I g3;
+            TriMesh2F bgMesh;
             TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
@@ -350,6 +352,7 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             const auto& text = p.model->getText();
@@ -390,15 +393,16 @@ namespace ftk
             p.draw->g = _getAlignGeometry();
             p.draw->g2 = _getMarginGeometry();
             p.draw->g3 = _getTextGeometry();
-            p.draw->border = border(p.draw->g, p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->bgMesh = rect(p.draw->g, p.size.cornerRadius);
+            p.draw->border = border(p.draw->g, p.size.border, p.size.cornerRadius);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus, p.size.cornerRadius);
         }
 
         const bool enabled = isEnabled();
 
         // Draw the background.
-        event.render->drawRect(
-            p.draw->g,
+        event.render->drawMesh(
+            p.draw->bgMesh,
             event.style->getColorRole(ColorRole::Base));
 
         // Draw the focus and border.

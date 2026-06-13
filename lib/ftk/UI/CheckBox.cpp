@@ -34,6 +34,9 @@ namespace ftk
             Box2I box;
             TriMesh2F focus;
             TriMesh2F checkBox;
+            V2I check0;
+            V2I check1;
+            V2I check2;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
         std::optional<DrawData> draw;
@@ -186,6 +189,10 @@ namespace ftk
                 p.size.checkBox);
             p.draw->focus = border(p.draw->bg, p.size.keyFocus);
             p.draw->checkBox = border(p.draw->box, p.size.border);
+            const Box2I& cb = p.draw->box;
+            p.draw->check0 = V2I(cb.x() + cb.w() * 24 / 100, cb.y() + cb.h() * 54 / 100);
+            p.draw->check1 = V2I(cb.x() + cb.w() * 43 / 100, cb.y() + cb.h() * 72 / 100);
+            p.draw->check2 = V2I(cb.x() + cb.w() * 78 / 100, cb.y() + cb.h() * 30 / 100);
         }
 
         // Draw the mouse state.
@@ -218,6 +225,23 @@ namespace ftk
         event.render->drawRect(
             margin(p.draw->box, -p.size.border),
             event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Button, enabled));
+
+        // Draw the check mark.
+        if (_checked)
+        {
+            LineOptions options;
+            options.width = p.size.border * 1.5F;
+            event.render->drawLine(
+                p.draw->check0,
+                p.draw->check1,
+                event.style->getColorRole(_textRole, enabled),
+                options);
+            event.render->drawLine(
+                p.draw->check1,
+                p.draw->check2,
+                event.style->getColorRole(_textRole, enabled),
+                options);
+        }
 
         // Draw the text.
         if (!_text.empty() && p.draw->glyphs.empty())

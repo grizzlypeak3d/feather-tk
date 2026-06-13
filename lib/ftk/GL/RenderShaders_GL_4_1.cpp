@@ -127,7 +127,10 @@ namespace ftk
                 "    outColor.r = color.r;\n"
                 "    outColor.g = color.g;\n"
                 "    outColor.b = color.b;\n"
-                "    outColor.a = color.a * texture(textureSampler, fTexture).r;\n"
+                "    float coverage = texture(textureSampler, fTexture).r;\n"
+                "    //! \todo Should this be configurable?\n"
+                "    float gamma = 1.3;\n"
+                "    outColor.a = pow(coverage, 1.0 / gamma);\n"
                 "}\n";
         }
 

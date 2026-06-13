@@ -100,6 +100,7 @@ namespace widgets
         auto vLayout = VerticalLayout::create(context, groupBox);
         vLayout->setSpacingRole(SizeRole::SpacingSmall);
         auto checkBox = CheckBox::create(context, "Check 0", vLayout);
+        checkBox->setChecked(true);
         checkBox->setCheckedCallback(
             [](bool value)
             {

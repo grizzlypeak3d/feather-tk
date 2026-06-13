@@ -38,6 +38,7 @@ namespace ftk
         SwatchLarge,
         Shadow,
         DragLength,
+        CornerRadius,
 
         Count,
         First = None
