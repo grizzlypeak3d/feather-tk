@@ -329,11 +329,7 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             p.draw->bg = getGeometry();
-            if (acceptsKeyFocus())
-            {
-                p.draw->bg = margin(p.draw->bg, -p.size.keyFocus);
-            }
-            p.draw->inside = margin(p.draw->bg, -p.size.margin);
+            p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
             p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus);
         }
 
