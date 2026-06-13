@@ -218,7 +218,7 @@ namespace ftk
             event.style->getColorRole(ColorRole::Border, enabled));
         event.render->drawMesh(
             p.draw->button1,
-            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Button, enabled));
+            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Well, enabled));
 
         // Draw the text.
         if (!_text.empty() && p.draw->glyphs.empty())

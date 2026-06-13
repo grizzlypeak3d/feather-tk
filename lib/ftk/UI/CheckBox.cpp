@@ -224,7 +224,7 @@ namespace ftk
             event.style->getColorRole(ColorRole::Border, enabled));
         event.render->drawRect(
             margin(p.draw->box, -p.size.border),
-            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Button, enabled));
+            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Well, enabled));
 
         // Draw the check mark.
         if (_checked)
