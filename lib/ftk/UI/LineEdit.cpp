@@ -403,7 +403,7 @@ namespace ftk
         // Draw the background.
         event.render->drawMesh(
             p.draw->bgMesh,
-            event.style->getColorRole(ColorRole::Base));
+            event.style->getColorRole(ColorRole::Well));
 
         // Draw the focus and border.
         const bool keyFocus = hasKeyFocus();

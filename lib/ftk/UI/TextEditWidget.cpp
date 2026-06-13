@@ -58,7 +58,7 @@ namespace ftk
         FTK_P();
 
         setAcceptsKeyFocus(true);
-        setBackgroundRole(ColorRole::Base);
+        setBackgroundRole(ColorRole::Well);
         _setMouseHoverEnabled(true);
 
         p.model = model;

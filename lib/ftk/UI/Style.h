@@ -74,6 +74,8 @@ namespace ftk
         Magenta,
         Yellow,
 
+        Well,
+
         Count,
         First = None
     };
