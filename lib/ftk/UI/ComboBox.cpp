@@ -44,7 +44,6 @@ namespace ftk
         {
             bool init = true;
             int margin = 0;
-            int border = 0;
             int keyFocus = 0;
             int pad = 0;
             FontInfo fontInfo;
@@ -56,9 +55,8 @@ namespace ftk
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
-            TriMesh2F border;
+            Box2I bg;
+            Box2I inside;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -230,7 +228,6 @@ namespace ftk
             init = true;
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
@@ -304,39 +301,40 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->border = border(p.draw->g, p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->bg = getGeometry();
+            p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
+            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus);
         }
 
         // Draw the background.
         event.render->drawRect(
-            p.draw->g,
+            p.draw->bg,
             event.style->getColorRole(ColorRole::Button));
-
-        // Draw the focus and border.
-        const bool keyFocus = hasKeyFocus();
-        event.render->drawMesh(
-            keyFocus ? p.draw->keyFocus : p.draw->border,
-            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
+        // Draw the focus.
+        if (hasKeyFocus())
+        {
+            event.render->drawMesh(
+                p.draw->keyFocus,
+                event.style->getColorRole(ColorRole::KeyFocus));
+        }
+
         // Draw the icon.
-        int x = p.draw->g2.x();
+        int x = p.draw->inside.x();
         if (p.iconImage)
         {
             const Size2I& iconSize = p.iconImage->getSize();
@@ -344,7 +342,7 @@ namespace ftk
                 p.iconImage,
                 Box2I(
                     x,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(ColorRole::Text, isEnabled()));
@@ -362,7 +360,7 @@ namespace ftk
                 p.draw->glyphs,
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+                    p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(ColorRole::Text, isEnabled()));
         }
 
@@ -373,8 +371,8 @@ namespace ftk
             event.render->drawImage(
                 p.arrowIconImage,
                 Box2I(
-                    p.draw->g2.x() + p.draw->g2.w() - iconSize.w,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.draw->inside.x() + p.draw->inside.w() - iconSize.w,
+                    p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(ColorRole::Text, isEnabled()));

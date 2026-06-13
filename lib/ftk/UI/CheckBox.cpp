@@ -29,9 +29,9 @@ namespace ftk
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
+            Box2I bg;
+            Box2I inside;
+            Box2I box;
             TriMesh2F focus;
             TriMesh2F checkBox;
             std::vector<std::shared_ptr<Glyph> > glyphs;
@@ -177,28 +177,28 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->g3 = Box2I(
-                p.draw->g2.x(),
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.checkBox / 2,
+            p.draw->bg = getGeometry();
+            p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
+            p.draw->box = Box2I(
+                p.draw->inside.x(),
+                p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.checkBox / 2,
                 p.size.checkBox,
                 p.size.checkBox);
-            p.draw->focus = border(p.draw->g, p.size.keyFocus);
-            p.draw->checkBox = border(p.draw->g3, p.size.border);
+            p.draw->focus = border(p.draw->bg, p.size.keyFocus);
+            p.draw->checkBox = border(p.draw->box, p.size.border);
         }
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
@@ -216,7 +216,7 @@ namespace ftk
             p.draw->checkBox,
             event.style->getColorRole(ColorRole::Border, enabled));
         event.render->drawRect(
-            margin(p.draw->g3, -p.size.border),
+            margin(p.draw->box, -p.size.border),
             event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Button, enabled));
 
         // Draw the text.
@@ -227,8 +227,8 @@ namespace ftk
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            V2I(p.draw->g2.x() + p.size.checkBox + p.size.spacing + p.size.pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+            V2I(p.draw->inside.x() + p.size.checkBox + p.size.spacing + p.size.pad,
+                p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
             event.style->getColorRole(_textRole, isEnabled()));
     }
 

@@ -29,9 +29,9 @@ namespace ftk
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
+            Box2I bg;
+            Box2I inside;
+            Box2I circle;
             TriMesh2F keyFocus;
             TriMesh2F button0;
             TriMesh2F button1;
@@ -177,29 +177,29 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->g3 = Box2I(
-                p.draw->g2.x(),
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.diameter / 2,
+            p.draw->bg = getGeometry();
+            p.draw->inside = margin(p.draw->bg, -(p.size.margin + p.size.keyFocus));
+            p.draw->circle = Box2I(
+                p.draw->inside.x(),
+                p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.diameter / 2,
                 p.size.diameter,
                 p.size.diameter);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
-            p.draw->button0 = circle(center(p.draw->g3), p.size.diameter / 2);
-            p.draw->button1 = circle(center(p.draw->g3), p.size.diameter / 2 - p.size.border);
+            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus);
+            p.draw->button0 = circle(center(p.draw->circle), p.size.diameter / 2);
+            p.draw->button1 = circle(center(p.draw->circle), p.size.diameter / 2 - p.size.border);
         }
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
@@ -228,8 +228,8 @@ namespace ftk
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            V2I(p.draw->g2.x() + p.size.diameter + p.size.spacing + p.size.pad,
-                p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+            V2I(p.draw->inside.x() + p.size.diameter + p.size.spacing + p.size.pad,
+                p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
             event.style->getColorRole(_textRole, enabled));
     }
 

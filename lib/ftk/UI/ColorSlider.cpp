@@ -19,7 +19,6 @@ namespace ftk
             bool init = true;
             int size = 0;
             int border = 0;
-            int keyFocus = 0;
             int handle = 0;
             Size2I sizeHint;
         };
@@ -30,7 +29,6 @@ namespace ftk
             Box2I g;
             Box2I g2;
             TriMesh2F border;
-            TriMesh2F keyFocus;
         };
         std::optional<DrawData> draw;
     };
@@ -104,12 +102,10 @@ namespace ftk
             p.size.init = false;
             p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
 
             p.draw.reset();
         }
@@ -135,14 +131,12 @@ namespace ftk
             p.draw->g = _getInsideGeometry();
             p.draw->g2 = _getSliderGeometry();
             p.draw->border = border(margin(p.draw->g2, p.size.border), p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
-        // Draw the focus and border.
-        const bool keyFocus = hasKeyFocus();
+        // Draw the border.
         event.render->drawMesh(
-            keyFocus ? p.draw->keyFocus : p.draw->border,
-            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
+            p.draw->border,
+            event.style->getColorRole(ColorRole::Border));
 
         // Draw the colors.
         TriMesh2F mesh;
@@ -183,13 +177,13 @@ namespace ftk
             Vertex2(2) });
         event.render->drawMesh(
             mesh,
-            event.style->getColorRole(ColorRole::Text));
+            event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::Text));
     }
 
     Box2I ColorIntSlider::_getSliderGeometry() const
     {
         FTK_P();
-        return margin(_getInsideGeometry(), -p.size.keyFocus);
+        return _getInsideGeometry();
     }
 
     Box2I ColorIntSlider::_getInsideGeometry() const
@@ -354,7 +348,6 @@ namespace ftk
             bool init = true;
             int size = 0;
             int border = 0;
-            int keyFocus = 0;
             int handle = 0;
             Size2I sizeHint;
         };
@@ -365,7 +358,6 @@ namespace ftk
             Box2I g;
             Box2I g2;
             TriMesh2F border;
-            TriMesh2F keyFocus;
         };
         std::optional<DrawData> draw;
     };
@@ -439,12 +431,10 @@ namespace ftk
             p.size.init = false;
             p.size.size = event.style->getSizeRole(SizeRole::Slider, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
-            p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
 
             const auto fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
-            p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
 
             p.draw.reset();
         }
@@ -470,14 +460,12 @@ namespace ftk
             p.draw->g = _getInsideGeometry();
             p.draw->g2 = _getSliderGeometry();
             p.draw->border = border(margin(p.draw->g2, p.size.border), p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
-        // Draw the focus and border.
-        const bool keyFocus = hasKeyFocus();
+        // Draw the border.
         event.render->drawMesh(
-            keyFocus ? p.draw->keyFocus : p.draw->border,
-            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
+            p.draw->border,
+            event.style->getColorRole(ColorRole::Border));
 
         // Draw the colors.
         TriMesh2F mesh;
@@ -518,13 +506,13 @@ namespace ftk
             Vertex2(2) });
         event.render->drawMesh(
             mesh,
-            event.style->getColorRole(ColorRole::Text));
+            event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::Text));
     }
 
     Box2I ColorFloatSlider::_getSliderGeometry() const
     {
         FTK_P();
-        return margin(_getInsideGeometry(), -p.size.keyFocus);
+        return _getInsideGeometry();
     }
 
     Box2I ColorFloatSlider::_getInsideGeometry() const

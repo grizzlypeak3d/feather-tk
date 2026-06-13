@@ -40,8 +40,8 @@ namespace ftk
 
         struct DrawData
         {
-            Box2I g;
-            Box2I g2;
+            Box2I bg;
+            Box2I inside;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -328,13 +328,13 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = margin(p.draw->g, -p.size.margin);
+            p.draw->bg = getGeometry();
             if (acceptsKeyFocus())
             {
-                p.draw->g2 = margin(p.draw->g2, -p.size.keyFocus);
+                p.draw->bg = margin(p.draw->bg, -p.size.keyFocus);
             }
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            p.draw->inside = margin(p.draw->bg, -p.size.margin);
+            p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus);
         }
 
         // Draw the background.
@@ -342,7 +342,7 @@ namespace ftk
         if (colorRole != ColorRole::None)
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(colorRole, isEnabled()));
         }
 
@@ -350,13 +350,13 @@ namespace ftk
         if (_isMousePressed())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                p.draw->g,
+                p.draw->bg,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
@@ -369,7 +369,7 @@ namespace ftk
         }
 
         // Draw the icon.
-        int x = p.draw->g2.x();
+        int x = p.draw->inside.x();
         auto iconImage = _iconImage;
         if (_checked && _checkedIconImage)
         {
@@ -382,7 +382,7 @@ namespace ftk
                 iconImage,
                 Box2I(
                     x,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(_textRole, isEnabled()));
@@ -400,7 +400,7 @@ namespace ftk
                 p.draw->glyphs,
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
+                    p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(_textRole, isEnabled()));
             x += p.size.pad * 2 + p.size.textSize.w;
         }
@@ -413,7 +413,7 @@ namespace ftk
                 p.popupImage,
                 Box2I(
                     x,
-                    p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
+                    p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
                 event.style->getColorRole(_textRole, isEnabled()));
