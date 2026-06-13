@@ -75,6 +75,7 @@ namespace ftk
         Yellow,
 
         Well,
+        Header,
 
         Count,
         First = None
