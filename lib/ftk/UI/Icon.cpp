@@ -158,9 +158,7 @@ namespace ftk
                     g.y() + g.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                event.style->getColorRole(isEnabled() ?
-                    ColorRole::Text :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(ColorRole::Text, isEnabled()));
         }
     }
 }

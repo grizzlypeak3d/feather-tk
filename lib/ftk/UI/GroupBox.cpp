@@ -19,7 +19,6 @@ namespace ftk
             bool init = true;
             int margin = 0;
             int spacing = 0;
-            int border = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
@@ -30,7 +29,7 @@ namespace ftk
         {
             Box2I g;
             Box2I g2;
-            TriMesh2F border;
+            TriMesh2F bg;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
         std::optional<DrawData> draw;
@@ -120,7 +119,7 @@ namespace ftk
             out.w = std::max(out.w, childSizeHint.w);
             out.h = std::max(out.h, childSizeHint.h);
         }
-        out = margin(out, p.size.margin + p.size.border);
+        out = margin(out, p.size.margin);
         out.w = std::max(out.w, p.size.textSize.w);
         out.h += p.size.fontMetrics.lineHeight + p.size.spacing;
         return out;
@@ -137,7 +136,7 @@ namespace ftk
 
         Box2I g = value;
         g.min.y += p.size.fontMetrics.lineHeight + p.size.spacing;
-        g = margin(g, -(p.size.border + p.size.margin));
+        g = margin(g, -p.size.margin);
         for (const auto& child : getChildren())
         {
             child->setGeometry(g);
@@ -162,7 +161,6 @@ namespace ftk
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::Margin, event.displayScale);
             p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
@@ -196,7 +194,7 @@ namespace ftk
                     p.draw->g.min.x,
                     p.draw->g.min.y + p.size.fontMetrics.lineHeight + p.size.spacing),
                 p.draw->g.max);
-            p.draw->border = border(p.draw->g2, p.size.border, p.size.margin);
+            p.draw->bg = rect(p.draw->g2, p.size.margin);
         }
 
         if (!p.text.empty() && p.draw->glyphs.empty())
@@ -207,10 +205,10 @@ namespace ftk
             p.draw->glyphs,
             p.size.fontMetrics,
             p.draw->g.min,
-            event.style->getColorRole(ColorRole::Text));
+            event.style->getColorRole(ColorRole::TextDisabled));
 
         event.render->drawMesh(
-            p.draw->border,
-            event.style->getColorRole(ColorRole::Border));
+            p.draw->bg,
+            event.style->getColorRole(ColorRole::Base));
     }
 }

@@ -1392,14 +1392,24 @@ namespace ftk
     {
         FTK_P();
         std::map<ColorRole, Color4F> colorRoles;
+        ColorControls colorControls = p.style->getColorControls();
         switch (p.colorStyle->get())
         {
-        case ColorStyle::Dark: colorRoles = getDefaultColorRoles(); break;
-        case ColorStyle::Light: colorRoles = getLightColorRoles(); break;
-        case ColorStyle::Custom: colorRoles = p.customColorRoles->get(); break;
+        case ColorStyle::Dark:
+            colorRoles = getDefaultColorRoles();
+            colorControls.disabledAlpha = getDefaultColorControls().disabledAlpha;
+            break;
+        case ColorStyle::Light:
+            colorRoles = getLightColorRoles();
+            colorControls.disabledAlpha = getLightColorControls().disabledAlpha;
+            break;
+        case ColorStyle::Custom:
+            colorRoles = p.customColorRoles->get();
+            break;
         default: break;
         }
         p.style->setColorRoles(colorRoles);
+        p.style->setColorControls(colorControls);
     }
 
     void App::_log()

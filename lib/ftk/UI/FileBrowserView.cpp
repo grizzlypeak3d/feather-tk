@@ -318,9 +318,7 @@ namespace ftk
                         glyphs,
                         p.size.fontMetrics,
                         V2I(x + p.size.pad + p.size.margin, y + item.size.h / 2 - item.textSizes[i].h / 2),
-                        event.style->getColorRole(isEnabled() ?
-                            ColorRole::Text :
-                            ColorRole::TextDisabled));
+                        event.style->getColorRole(ColorRole::Text, isEnabled()));
                     if (0 == i)
                     {
                         x = g.max.x - rightColumnsSize;

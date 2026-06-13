@@ -96,9 +96,9 @@ namespace ftk
         out[ColorRole::Window] = Color4F(.15F, .15F, .15F);
         out[ColorRole::Base] = Color4F(.12F, .12F, .12F);
         out[ColorRole::Button] = Color4F(.2F, .2F, .2F);
-        out[ColorRole::Text] = Color4F(1.F, 1.F, 1.F);
+        out[ColorRole::Text] = Color4F(.85F, .85F, .85F);
         out[ColorRole::TextDisabled] = Color4F(.5F, .5F, .5F);
-        out[ColorRole::Border] = Color4F(.05F, .05F, .05F);
+        out[ColorRole::Border] = Color4F(.3F, .3F, .3F);
         out[ColorRole::Hover] = Color4F(1.F, 1.F, 1.F, .1F);
         out[ColorRole::Pressed] = Color4F(1.F, 1.F, 1.F, .2F);
         out[ColorRole::Checked] = Color4F(.56F, .36F, .15F);
@@ -114,6 +114,21 @@ namespace ftk
         out[ColorRole::Magenta] = Color4F(.6F, .3F, .6F);
         out[ColorRole::Yellow] = Color4F(.6F, .6F, .3F);
 
+        return out;
+    }
+
+    ColorControls getDefaultColorControls()
+    {
+        ColorControls out;
+        out.disabledAlpha = .5F;
+        return out;
+    }
+
+    ColorControls getLightColorControls()
+    {
+        ColorControls out;
+        // Light styles need more dimming; black-on-white has further to fade.
+        out.disabledAlpha = .6F;
         return out;
     }
 
@@ -140,7 +155,8 @@ namespace ftk
     {
         return
             brightness == other.brightness &&
-            contrast == other.contrast;
+            contrast == other.contrast &&
+            disabledAlpha == other.disabledAlpha;
     }
 
     bool ColorControls::operator != (const ColorControls& other) const
@@ -244,6 +260,17 @@ namespace ftk
         return Color4F(v.x, v.y, v.z, c.a);
     }
 
+    Color4F Style::getColorRole(ColorRole role, bool enabled) const
+    {
+        FTK_P();
+        Color4F out = getColorRole(role);
+        if (!enabled)
+        {
+            out.a *= p.colorControls->get().disabledAlpha;
+        }
+        return out;
+    }
+
     const ColorControls& Style::getColorControls() const
     {
         return _p->colorControls->get();
@@ -319,11 +346,13 @@ namespace ftk
     {
         json["Brightness"] = value.brightness;
         json["Contrast"] = value.contrast;
+        json["DisabledAlpha"] = value.disabledAlpha;
     }
 
     void from_json(const nlohmann::json& json, ColorControls& out)
     {
         json.at("Brightness").get_to(out.brightness);
         json.at("Contrast").get_to(out.contrast);
+        json.at("DisabledAlpha").get_to(out.disabledAlpha);
     }
 }

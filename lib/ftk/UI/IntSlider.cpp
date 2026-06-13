@@ -291,16 +291,6 @@ namespace ftk
             Size2I sizeHint;
         };
         SizeData size;
-
-        struct DrawData
-        {
-            Box2I g;
-            Box2I g2;
-            Box2I g3;
-            TriMesh2F border;
-            TriMesh2F keyFocus;
-        };
-        std::optional<DrawData> draw;
     };
 
     void IntSlider::_init(
@@ -343,15 +333,6 @@ namespace ftk
         return _p->size.sizeHint;
     }
     
-    void IntSlider::setGeometry(const Box2I& value)
-    {
-        if (value != getGeometry())
-        {
-            _p->draw.reset();
-        }
-        IIntSlider::setGeometry(value);
-    }
-
     void IntSlider::styleEvent(const StyleEvent& event)
     {
         IIntSlider::styleEvent(event);
@@ -359,7 +340,6 @@ namespace ftk
         if (event.hasChanges())
         {
             p.size.init = true;
-            p.draw.reset();
         }
     }
 
@@ -378,18 +358,6 @@ namespace ftk
             const auto fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.sizeHint = Size2I(p.size.size, event.fontSystem->getMetrics(fontInfo).lineHeight);
             p.size.sizeHint = margin(p.size.sizeHint, p.size.keyFocus);
-
-            p.draw.reset();
-        }
-    }
-
-    void IntSlider::clipEvent(const Box2I& clipRect, bool clipped)
-    {
-        IIntSlider::clipEvent(clipRect, clipped);
-        FTK_P();
-        if (clipped)
-        {
-            p.draw.reset();
         }
     }
 
@@ -400,52 +368,46 @@ namespace ftk
         IIntSlider::drawEvent(drawRect, event);
         FTK_P();
 
-        if (!p.draw.has_value())
-        {
-            p.draw = Private::DrawData();
-            p.draw->g = getGeometry();
-            p.draw->g2 = _getInsideGeometry();
-            p.draw->g3 = _getSliderGeometry();
-            p.draw->border = border(p.draw->g, p.size.border);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
-        }
+        const bool enabled = isEnabled();
 
-        // Draw the background.
+        // Draw the trough.
+        const int pos = _valueToPos(getValue());
+        const Box2I g2 = _getInsideGeometry();
+        const int h = p.size.border * 2;
+        const int y = g2.y() + g2.h() / 2 - h / 2;
+        const Color4F troughColor = event.style->getColorRole(ColorRole::Border, enabled);
+        Color4F remainderColor = troughColor;
+        remainderColor.a *= .4F;
         event.render->drawRect(
-            p.draw->g,
-            event.style->getColorRole(ColorRole::Base));
-
-        // Draw the focus and border.
-        const bool keyFocus = hasKeyFocus();
-        event.render->drawMesh(
-            keyFocus ? p.draw->keyFocus : p.draw->border,
-            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
+            Box2I(g2.x(), y, g2.w(), h),
+            remainderColor);
+        event.render->drawRect(
+            Box2I(g2.x(), y, pos - g2.x(), h),
+            troughColor);
 
         // Draw the handle.
-        const int pos = _valueToPos(getValue());
-        const Box2I handle(
-            pos - p.size.handle / 2,
-            p.draw->g3.min.y,
-            p.size.handle,
-            p.draw->g3.h());
+        const Box2I gh = _getHandleGeometry();
         event.render->drawRect(
-            handle,
-            event.style->getColorRole(ColorRole::Button));
+            gh,
+            event.style->getColorRole(ColorRole::Button, enabled));
+        if (hasKeyFocus())
+        {
+            event.render->drawRect(
+                gh,
+                event.style->getColorRole(ColorRole::KeyFocus));
+        }
         if (_isMousePressed())
         {
             event.render->drawRect(
-                handle,
+                gh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
             event.render->drawRect(
-                handle,
+                gh,
                 event.style->getColorRole(ColorRole::Hover));
         }
-        event.render->drawMesh(
-            border(handle, p.size.border),
-            event.style->getColorRole(ColorRole::Border));
     }
 
     Box2I IntSlider::_getSliderGeometry() const
@@ -458,5 +420,18 @@ namespace ftk
     {
         FTK_P();
         return margin(getGeometry(), -p.size.keyFocus);
+    }
+
+    Box2I IntSlider::_getHandleGeometry() const
+    {
+        FTK_P();
+        const Box2I& g = _getInsideGeometry();
+        const int pos = _valueToPos(getValue());
+        const Box2I handle(
+            pos - p.size.handle / 2,
+            g.min.y,
+            p.size.handle,
+            g.h());
+        return handle;
     }
 }

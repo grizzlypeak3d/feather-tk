@@ -212,12 +212,13 @@ namespace ftk
         }
 
         // Draw the button.
+        const bool enabled = isEnabled();
         event.render->drawMesh(
             p.draw->button0,
-            event.style->getColorRole(ColorRole::Border));
+            event.style->getColorRole(ColorRole::Border, enabled));
         event.render->drawMesh(
             p.draw->button1,
-            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Base));
+            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Button, enabled));
 
         // Draw the text.
         if (!_text.empty() && p.draw->glyphs.empty())
@@ -229,9 +230,7 @@ namespace ftk
             p.size.fontMetrics,
             V2I(p.draw->g2.x() + p.size.diameter + p.size.spacing + p.size.pad,
                 p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
-            event.style->getColorRole(isEnabled() ?
-                _textRole :
-                ColorRole::TextDisabled));
+            event.style->getColorRole(_textRole, enabled));
     }
 
     void RadioButton::keyPressEvent(KeyEvent& event)

@@ -427,7 +427,7 @@ namespace ftk
                     p.draw->g3.y(),
                     x1 - x0 + 1,
                     p.draw->g3.h()),
-                event.style->getColorRole(ColorRole::Checked));
+                event.style->getColorRole(ColorRole::Checked, enabled));
         }
 
         // Draw the text.
@@ -442,9 +442,7 @@ namespace ftk
             p.draw->glyphs,
             p.size.fontMetrics,
             pos,
-            event.style->getColorRole(enabled ?
-                ColorRole::Text :
-                ColorRole::TextDisabled));
+            event.style->getColorRole(ColorRole::Text, enabled));
 
         // Draw the cursor.
         if (p.cursorVisible)

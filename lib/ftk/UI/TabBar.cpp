@@ -413,8 +413,6 @@ namespace ftk
                     p.closeButtons.push_back(closeButton);
                     p.closeButtonGroup->addButton(closeButton);
                 }
-
-                Divider::create(context, Orientation::Horizontal, p.buttonLayout);
             }
         }
         p.buttonGroup->setChecked(p.current, true);

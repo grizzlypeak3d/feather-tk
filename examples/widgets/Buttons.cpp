@@ -90,6 +90,10 @@ namespace widgets
         toolButton = ToolButton::create(context, "Disabled", hLayout);
         toolButton->setEnabled(false);
         _toolButtonGroup->addButton(toolButton);
+        toolButton = ToolButton::create(context, "Disabled", hLayout);
+        toolButton->setChecked(true);
+        toolButton->setEnabled(false);
+        _toolButtonGroup->addButton(toolButton);
 
         // Create check boxes.
         groupBox = GroupBox::create(context, "Check Boxes", layout);
@@ -110,6 +114,9 @@ namespace widgets
         checkBox = CheckBox::create(context, vLayout);
         checkBox = CheckBox::create(context, "Disabled", vLayout);
         checkBox->setEnabled(false);
+        checkBox = CheckBox::create(context, "Disabled", vLayout);
+        checkBox->setChecked(true);
+        checkBox->setEnabled(false);
 
         // Create radio buttons.
         groupBox = GroupBox::create(context, "Radio Buttons", layout);
@@ -129,6 +136,9 @@ namespace widgets
             _radioButtonGroup->addButton(radioButton);
         }
         auto radioButton = RadioButton::create(context, "Disabled", vLayout);
+        radioButton->setEnabled(false);
+        radioButton = RadioButton::create(context, "Disabled", vLayout);
+        radioButton->setChecked(true);
         radioButton->setEnabled(false);
     }
 

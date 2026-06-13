@@ -188,9 +188,7 @@ namespace ftk
                     p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                event.style->getColorRole(isEnabled() ?
-                    _textRole :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(_textRole, isEnabled()));
             x += iconSize.w;
         }
 
@@ -206,9 +204,7 @@ namespace ftk
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
                     p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
-                event.style->getColorRole(isEnabled() ?
-                    _textRole :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(_textRole, isEnabled()));
         }
     }
 

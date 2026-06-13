@@ -359,14 +359,12 @@ namespace ftk
             {
                 event.render->drawRect(
                     iconRect,
-                    event.style->getColorRole(ColorRole::Checked));
+                    event.style->getColorRole(ColorRole::Checked, isEnabled()));
             }
             event.render->drawImage(
                 image,
                 iconRect,
-                event.style->getColorRole(isEnabled() ?
-                    _textRole :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(_textRole, isEnabled()));
             x += iconSize.w;
         }
 
@@ -382,9 +380,7 @@ namespace ftk
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
                     p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
-                event.style->getColorRole(isEnabled() ?
-                    _textRole :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(_textRole, isEnabled()));
         }
 
         // Draw the shortcut.
@@ -401,9 +397,7 @@ namespace ftk
                 p.draw->shortcutGlyphs,
                 p.size.fontMetrics,
                 pos,
-                event.style->getColorRole(isEnabled() ?
-                    _textRole :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(_textRole, isEnabled()));
         }
 
         // Draw the sub menu icon.
@@ -417,9 +411,7 @@ namespace ftk
                     p.draw->g2.y() + p.draw->g2.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                event.style->getColorRole(isEnabled() ?
-                    _textRole :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(_textRole, isEnabled()));
         }
     }
 }

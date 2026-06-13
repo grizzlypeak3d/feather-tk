@@ -90,9 +90,21 @@ namespace ftk
         float brightness = 1.F;
         float contrast = 1.F;
 
+        //! Alpha multiplier applied by getColorRole(ColorRole, bool enabled)
+        //! when a widget is disabled. Since widgets are alpha-composited,
+        //! this dims toward the underlying surface.
+        float disabledAlpha = .5F;
+
         FTK_API bool operator == (const ColorControls&) const;
         FTK_API bool operator != (const ColorControls&) const;
     };
+
+    //! Get the default color controls.
+    FTK_API ColorControls getDefaultColorControls();
+
+    //! Get color controls for the light style.
+    FTK_API ColorControls getLightColorControls();
+
 
     //! Style.
     class FTK_API_TYPE Style : public std::enable_shared_from_this<Style>
@@ -130,6 +142,11 @@ namespace ftk
         FTK_API void setColorRoles(const std::map<ColorRole, Color4F>&);
 
         FTK_API Color4F getColorRole(ColorRole) const;
+
+        //! Get a color role for a widget state. When enabled is false the
+        //! color's alpha is multiplied by ColorControls::disabledAlpha,
+        //! dimming it toward the surface it is drawn over.
+        FTK_API Color4F getColorRole(ColorRole, bool enabled) const;
 
         ///@}
 

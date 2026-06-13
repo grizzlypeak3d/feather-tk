@@ -354,7 +354,7 @@ namespace ftk
             {
                 if (intersects(box, drawRect))
                 {
-                    event.render->drawRect(box, event.style->getColorRole(ColorRole::Checked));
+                    event.render->drawRect(box, event.style->getColorRole(ColorRole::Checked, isEnabled()));
                 }
             }
         }
@@ -362,9 +362,7 @@ namespace ftk
         // Draw the text.
         V2I pos(g2.min);
         const bool enabled = isEnabled();
-        const Color4F textColor = event.style->getColorRole(enabled ?
-            ColorRole::Text :
-            ColorRole::TextDisabled);
+        const Color4F textColor = event.style->getColorRole(ColorRole::Text, enabled);
         for (const auto& line : text)
         {
             const Box2I g3(pos.x, pos.y, p.size.textSize.w, p.size.fontMetrics.lineHeight);

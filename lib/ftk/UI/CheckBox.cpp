@@ -211,12 +211,13 @@ namespace ftk
         }
 
         // Draw the check box.
+        const bool enabled = isEnabled();
         event.render->drawMesh(
             p.draw->checkBox,
-            event.style->getColorRole(ColorRole::Border));
+            event.style->getColorRole(ColorRole::Border, enabled));
         event.render->drawRect(
             margin(p.draw->g3, -p.size.border),
-            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Base));
+            event.style->getColorRole(_checked ? ColorRole::Checked : ColorRole::Button, enabled));
 
         // Draw the text.
         if (!_text.empty() && p.draw->glyphs.empty())
@@ -228,9 +229,7 @@ namespace ftk
             p.size.fontMetrics,
             V2I(p.draw->g2.x() + p.size.checkBox + p.size.spacing + p.size.pad,
                 p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
-            event.style->getColorRole(isEnabled() ?
-                _textRole :
-                ColorRole::TextDisabled));
+            event.style->getColorRole(_textRole, isEnabled()));
     }
 
     void CheckBox::keyPressEvent(KeyEvent& event)

@@ -73,7 +73,7 @@ namespace ftk
         {
             event.render->drawRect(
                 g,
-                event.style->getColorRole(colorRole));
+                event.style->getColorRole(colorRole, isEnabled()));
         }
 
         if (_isMousePressed())

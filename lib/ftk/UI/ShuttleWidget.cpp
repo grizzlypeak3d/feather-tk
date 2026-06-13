@@ -138,9 +138,7 @@ namespace ftk
             event.render->drawImage(
                 p.iconImages[p.iconIndex],
                 g2,
-                event.style->getColorRole(isEnabled() ?
-                    ColorRole::Text :
-                    ColorRole::TextDisabled));
+                event.style->getColorRole(ColorRole::Text, isEnabled()));
         }
     }
 

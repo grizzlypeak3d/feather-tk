@@ -203,7 +203,7 @@ namespace ftk
             {
                 event.render->drawRect(
                     iconBox,
-                    event.style->getColorRole(ColorRole::Checked));
+                    event.style->getColorRole(ColorRole::Checked, isEnabled()));
             }
             event.render->drawImage(
                 image,

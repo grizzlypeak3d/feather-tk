@@ -294,10 +294,7 @@ namespace ftk
             p.draw->glyphs,
             p.size.fontMetrics,
             p.draw->g2.min,
-            event.style->getColorRole(
-                isEnabled() ?
-                p.textRole :
-                ColorRole::TextDisabled));
+            event.style->getColorRole(p.textRole, isEnabled()));
 
         if (p.clipText)
         {
