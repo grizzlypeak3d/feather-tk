@@ -5,6 +5,7 @@
 
 #include <ftk/UI/IncButtons.h>
 #include <ftk/UI/LineEdit.h>
+#include <ftk/UI/LineEditModel.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
@@ -39,7 +40,9 @@ namespace ftk
         p.model = model;
 
         p.lineEdit = LineEdit::create(context);
+        p.lineEdit->getModel()->setRegex("[0-9\\-\\.]+");
         p.lineEdit->setFont(FontType::Mono);
+        p.lineEdit->setFormat("00000.00");
 
         p.incButtons = IncButtons::create(context);
 
@@ -124,6 +127,11 @@ namespace ftk
         return out;
     }
 
+    const std::shared_ptr<DoubleModel>& DoubleEdit::getModel() const
+    {
+        return _p->model;
+    }
+
     double DoubleEdit::getValue() const
     {
         return _p->model->getValue();
@@ -190,11 +198,6 @@ namespace ftk
         _p->model->setDefault(value);
     }
 
-    const std::shared_ptr<DoubleModel>& DoubleEdit::getModel() const
-    {
-        return _p->model;
-    }
-
     int DoubleEdit::getPrecision() const
     {
         return _p->precision;
@@ -207,6 +210,16 @@ namespace ftk
             return;
         p.precision = value;
         _textUpdate();
+    }
+
+    const std::string& DoubleEdit::getFormat() const
+    {
+        return _p->lineEdit->getFormat();
+    }
+
+    void DoubleEdit::setFormat(const std::string& value)
+    {
+        _p->lineEdit->setFormat(value);
     }
 
     FontType DoubleEdit::getFont() const
@@ -298,20 +311,11 @@ namespace ftk
     {
         FTK_P();
         std::string text;
-        std::string format;
         if (p.model)
         {
             text = Format("{0}").arg(p.model->getValue(), p.precision);
-            int width = p.digits + 1 + p.precision;
-            if (p.model->getRange().min() < 0 ||
-                p.model->getRange().max() < 0)
-            {
-                ++width;
-            }
-            format = Format("{0}").arg(0, width);
         }
         p.lineEdit->setText(text);
-        p.lineEdit->setFormat(format);
     }
 
     struct DoubleResetButton::Private

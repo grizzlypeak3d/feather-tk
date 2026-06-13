@@ -36,6 +36,9 @@ namespace ftk
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Get the model.
+        FTK_API const std::shared_ptr<FloatModel>& getModel() const;
+
         //! \name Value
         ///@{
 
@@ -73,8 +76,8 @@ namespace ftk
         
         ///@}
 
-        //! Get the model.
-        FTK_API const std::shared_ptr<FloatModel>& getModel() const;
+        //! \name Text
+        ///@{
 
         //! Get the display precision.
         FTK_API int getPrecision() const;
@@ -82,11 +85,16 @@ namespace ftk
         //! Set the display precision.
         FTK_API void setPrecision(int);
 
-        //! Get the font.
-        FTK_API FontType getFont() const;
+        //! Get the formatting text.
+        FTK_API const std::string& getFormat() const;
 
-        //! Set the font.
+        //! Set the formatting text.
+        FTK_API void setFormat(const std::string&);
+
+        FTK_API FontType getFont() const;
         FTK_API void setFont(FontType);
+
+        ///@}
 
         FTK_API void takeKeyFocus() override;
         FTK_API Size2I getSizeHint() const override;

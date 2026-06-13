@@ -18,11 +18,13 @@ namespace ftk
         std::shared_ptr<FloatModel> model;
         int digits = 3;
         int precision = 2;
+
         std::shared_ptr<LineEdit> lineEdit;
         std::shared_ptr<IncButtons> incButtons;
         std::shared_ptr<HorizontalLayout> layout;
         std::function<void(float)> callback;
         int blockCallbacks = 0;
+
         std::shared_ptr<Observer<float> > valueObserver;
         std::shared_ptr<Observer<RangeF> > rangeObserver;
     };
@@ -40,6 +42,7 @@ namespace ftk
         p.lineEdit = LineEdit::create(context, shared_from_this());
         p.lineEdit->getModel()->setRegex("[0-9\\-\\.]+");
         p.lineEdit->setFont(FontType::Mono);
+        p.lineEdit->setFormat("00000.00");
 
         p.incButtons = IncButtons::create(context);
 
@@ -124,6 +127,11 @@ namespace ftk
         return out;
     }
 
+    const std::shared_ptr<FloatModel>& FloatEdit::getModel() const
+    {
+        return _p->model;
+    }
+
     float FloatEdit::getValue() const
     {
         return _p->model->getValue();
@@ -190,11 +198,6 @@ namespace ftk
         _p->model->setDefault(value);
     }
 
-    const std::shared_ptr<FloatModel>& FloatEdit::getModel() const
-    {
-        return _p->model;
-    }
-
     int FloatEdit::getPrecision() const
     {
         return _p->precision;
@@ -207,6 +210,16 @@ namespace ftk
             return;
         p.precision = value;
         _textUpdate();
+    }
+
+    const std::string& FloatEdit::getFormat() const
+    {
+        return _p->lineEdit->getFormat();
+    }
+
+    void FloatEdit::setFormat(const std::string& value)
+    {
+        _p->lineEdit->setFormat(value);
     }
 
     FontType FloatEdit::getFont() const
@@ -288,20 +301,11 @@ namespace ftk
     {
         FTK_P();
         std::string text;
-        std::string format;
         if (p.model)
         {
             text = Format("{0}").arg(p.model->getValue(), p.precision);
-            int width = p.digits + 1 + p.precision;
-            if (p.model->getRange().min() < 0 ||
-                p.model->getRange().max() < 0)
-            {
-                ++width;
-            }
-            format = Format("{0}").arg(0, width);
         }
         p.lineEdit->setText(text);
-        p.lineEdit->setFormat(format);
     }
 
     struct FloatResetButton::Private

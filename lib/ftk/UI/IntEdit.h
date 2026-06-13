@@ -36,6 +36,9 @@ namespace ftk
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Get the model.
+        FTK_API const std::shared_ptr<IntModel>& getModel() const;
+
         //! \name Value
         ///@{
 
@@ -73,14 +76,19 @@ namespace ftk
         
         ///@}
 
-        //! Get the model.
-        FTK_API const std::shared_ptr<IntModel>& getModel() const;
+        //! \name Text
+        ///@{
 
-        //! Get the font.
+        //! Get the formatting text.
+        FTK_API const std::string& getFormat() const;
+
+        //! Set the formatting text.
+        FTK_API void setFormat(const std::string&);
+
         FTK_API FontType getFont() const;
-
-        //! Set the font.
         FTK_API void setFont(FontType);
+
+        ///@}
 
         FTK_API void takeKeyFocus() override;
         FTK_API Size2I getSizeHint() const override;
