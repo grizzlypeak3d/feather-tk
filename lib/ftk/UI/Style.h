@@ -55,6 +55,8 @@ namespace ftk
 
         Window,
         Base,
+        Well,
+        Header,
         Button,
         Text,
         TextDisabled,
@@ -73,9 +75,6 @@ namespace ftk
         Cyan,
         Magenta,
         Yellow,
-
-        Well,
-        Header,
 
         Count,
         First = None

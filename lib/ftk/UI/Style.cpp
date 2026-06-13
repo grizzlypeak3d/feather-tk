@@ -71,6 +71,8 @@ namespace ftk
 
         "Window",
         "Base",
+        "Well",
+        "Header",
         "Button",
         "Text",
         "Text Disabled",
@@ -88,10 +90,7 @@ namespace ftk
         "Blue",
         "Cyan",
         "Magenta",
-        "Yellow",
-
-        "Well",
-        "Header");
+        "Yellow");
 
     std::map<ColorRole, Color4F> getDefaultColorRoles()
     {
