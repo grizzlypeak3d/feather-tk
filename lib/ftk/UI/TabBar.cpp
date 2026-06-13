@@ -444,6 +444,7 @@ namespace ftk
         {
             p.closeButtons[i]->setButtonRole(p.current == i ? ColorRole::Button : ColorRole::None);
             p.closeButtons[i]->setTextRole(p.current == i ? ColorRole::Text : ColorRole::TextDisabled);
+            p.closeButtons[i]->setAccentUnderline(p.current == i);
         }
         if (p.currentFocus >= 0 && p.currentFocus < p.buttons.size())
         {

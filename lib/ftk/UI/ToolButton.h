@@ -55,6 +55,12 @@ namespace ftk
         //! Set the corner radius role.
         void setCornerRadiusRole(SizeRole);
 
+        //! Get whether an active accent underline is drawn.
+        bool hasAccentUnderline() const;
+
+        //! Set whether an active accent underline is drawn along the bottom edge.
+        void setAccentUnderline(bool);
+
         //! Get whether the button has a popup icon.
         bool hasPopupIcon() const;
 
