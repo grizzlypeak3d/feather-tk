@@ -3,7 +3,6 @@
 
 #include <ftk/UI/BellowsPrivate.h>
 
-#include <ftk/UI/Divider.h>
 #include <ftk/UI/RowLayout.h>
 
 namespace ftk
@@ -38,7 +37,6 @@ namespace ftk
         p.layout = VerticalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::None);
         p.buttonLayout->setParent(p.layout);
-        Divider::create(context, Orientation::Vertical, p.layout);
 
         p.button->setCheckedCallback(
             [this](bool value)

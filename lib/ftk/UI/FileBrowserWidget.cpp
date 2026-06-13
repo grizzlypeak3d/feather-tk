@@ -83,7 +83,7 @@ namespace ftk
         p.titleLabel = Label::create(context, title);
         p.titleLabel->setFontSize(14);
         p.titleLabel->setMarginRole(SizeRole::Margin);
-        p.titleLabel->setBackgroundRole(ColorRole::Button);
+        p.titleLabel->setBackgroundRole(ColorRole::Header);
 
         p.panelButton = ToolButton::create(context);
         p.panelButton->setCheckable(true);

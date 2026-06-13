@@ -63,7 +63,7 @@ namespace textedit
         _layout->setSpacingRole(SizeRole::None);
         auto hLayout = HorizontalLayout::create(context, _layout);
         hLayout->setSpacingRole(SizeRole::None);
-        hLayout->setBackgroundRole(ColorRole::Button);
+        hLayout->setBackgroundRole(ColorRole::Header);
         titleLabel->setParent(hLayout);
         closeButton->setParent(hLayout);
         auto formLayout = FormLayout::create(context, _layout);

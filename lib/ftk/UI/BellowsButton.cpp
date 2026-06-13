@@ -42,8 +42,8 @@ namespace ftk
         setCheckable(true);
         setIcon("BellowsClosed");
         setCheckedIcon("BellowsOpen");
-        setButtonRole(ColorRole::Button);
-        setCheckedRole(ColorRole::Button);
+        setButtonRole(ColorRole::Header);
+        setCheckedRole(ColorRole::Header);
         setAcceptsKeyFocus(true);
     }
 

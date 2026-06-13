@@ -409,7 +409,7 @@ namespace ftk
         p.settingsWidget = FileBrowserSettings::create(context, model);
 
         p.layout = VerticalLayout::create(context, shared_from_this());
-        p.layout->setSpacingRole(SizeRole::None);
+        p.layout->setSpacingRole(SizeRole::Border);
         p.bellows["Drives"] = Bellows::create(context, "Drives", p.layout);
         p.bellows["Drives"]->setWidget(p.drivesWidget);
         p.bellows["Shortcuts"] = Bellows::create(context, "Shortcuts", p.layout);

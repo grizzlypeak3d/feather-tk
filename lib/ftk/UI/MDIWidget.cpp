@@ -173,7 +173,7 @@ namespace ftk
         p.layout->setSpacingRole(SizeRole::None);
         auto hLayout = HorizontalLayout::create(context, p.layout);
         hLayout->setSpacingRole(SizeRole::None);
-        hLayout->setBackgroundRole(ColorRole::Button);
+        hLayout->setBackgroundRole(ColorRole::Header);
         p.titleLabel->setParent(hLayout);
         p.closeButton->setParent(hLayout);
         Divider::create(context, Orientation::Vertical, p.layout);

@@ -24,8 +24,7 @@ namespace widgets
 
         // Create a layout.
         auto layout = VerticalLayout::create(context);
-        //layout->setMarginRole(SizeRole::None);
-        layout->setSpacingRole(SizeRole::None);
+        layout->setSpacingRole(SizeRole::Border);
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
         _scrollWidget->setBorder(false);
         _scrollWidget->setWidget(layout);

@@ -61,7 +61,7 @@ namespace ftk
         _titleLabel = Label::create(context, title);
         _titleLabel->setFontSize(14);
         _titleLabel->setMarginRole(SizeRole::Margin);
-        _titleLabel->setBackgroundRole(ColorRole::Button);
+        _titleLabel->setBackgroundRole(ColorRole::Header);
 
         _label = Label::create(context, text);
         _label->setMarginRole(SizeRole::Margin);
