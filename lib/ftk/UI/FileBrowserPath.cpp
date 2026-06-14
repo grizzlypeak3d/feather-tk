@@ -189,6 +189,7 @@ namespace ftk
             for (size_t i = 0; i < p.pieces.size(); ++i)
             {
                 auto button = ToolButton::create(context, p.pieces[i], p.buttonsLayout);
+                button->setCornerRadiusRole(SizeRole::None);
                 p.buttons.push_back(button);
                 p.buttonGroup->addButton(button);
                 Divider::create(context, Orientation::Horizontal, p.buttonsLayout);
