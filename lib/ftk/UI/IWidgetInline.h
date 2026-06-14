@@ -13,6 +13,17 @@ namespace ftk
         return _objectName;
     }
 
+    inline bool IWidget::hasProperty(const std::string& key) const
+    {
+        return _properties.find(key) != _properties.end();
+    }
+
+    inline std::string IWidget::getProperty(const std::string& key) const
+    {
+        const auto i = _properties.find(key);
+        return i != _properties.end() ? i->second : std::string();
+    }
+
     inline std::shared_ptr<IWidget> IWidget::getParent() const
     {
         return _parent.lock();

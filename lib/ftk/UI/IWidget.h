@@ -31,14 +31,19 @@ namespace ftk
         //! Get the context.
         std::shared_ptr<Context> getContext() const;
 
-        //! Get the object name.
-        const std::string& getObjectName() const;
+        //! Object
+        ///@{
 
-        //! Set the object name.
+        const std::string& getObjectName() const;
         FTK_API void setObjectName(const std::string&);
 
-        //! Get the object path.
         FTK_API std::string getObjectPath() const;
+
+        bool hasProperty(const std::string& key) const;
+        std::string getProperty(const std::string& key) const;
+        void setProperty(const std::string& key, const std::string& value);
+
+        ///@}
 
         //! Hierarchy
         ///@{
@@ -310,6 +315,7 @@ namespace ftk
         std::weak_ptr<Context> _context;
 
         std::string _objectName;
+        std::map<std::string, std::string> _properties;
         ColorRole _backgroundRole = ColorRole::None;
 
         std::weak_ptr<IWidget> _parent;

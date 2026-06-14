@@ -62,6 +62,11 @@ namespace ftk
         return join(names, '/');
     }
 
+    void IWidget::setProperty(const std::string& key, const std::string& value)
+    {
+        _properties[key] = value;
+    }
+
     void IWidget::setParent(const std::shared_ptr<IWidget>& value)
     {
         if (!value)
