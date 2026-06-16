@@ -76,6 +76,7 @@ set(HEADERS
     RecentFilesModel.h
     RowLayout.h
     SVGWidget.h
+    ScreenshotTag.h
     ScrollArea.h
     ScrollBar.h
     ScrollWidget.h
