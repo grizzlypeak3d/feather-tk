@@ -5,6 +5,7 @@ set(RESOURCES
     etc/Fonts/NotoSans-Bold.ttf
     etc/Fonts/NotoSans-Regular.ttf
     etc/Fonts/NotoSansSymbols2-Regular.ttf
+    etc/Fonts/NotoSansCJK-Regular.otf
     etc/Icons/ArrowDown.svg
     etc/Icons/ArrowLeft.svg
     etc/Icons/ArrowRight.svg
@@ -90,7 +91,9 @@ endforeach()
 
 add_library(ftkResource ${HEADERS} ${SOURCE})
 
-target_link_libraries(ftkResource)
+target_compile_definitions(ftkResource PUBLIC FTK_CJK)
+
+target_link_libraries(ftkResource ZLIB::ZLIB)
 
 set_target_properties(ftkResource PROPERTIES FOLDER lib)
 set_target_properties(ftkResource PROPERTIES PUBLIC_HEADER "${HEADERS}")

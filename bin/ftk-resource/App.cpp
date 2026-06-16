@@ -10,7 +10,7 @@
 #include <regex>
 #include <vector>
 
-const size_t maxOutputSize = 4 * 1024 * 1024;
+#include <zlib.h>
 
 void App::_init(int argc, char** argv)
 {
@@ -93,37 +93,121 @@ void App::run()
         File file(_input, "rb");
         size = std::filesystem::file_size(_input);
         data.resize(size);
-        file.read(data.data(), size);
+        if (size > 0)
+        {
+            file.read(data.data(), size);
+        }
     }
 
     std::string var = std::filesystem::path(_input).stem().string();
     var = std::regex_replace(var, std::regex("[^A-Za-z0-9_]"), "_");
+
+    // Compress the data. The bytes have to live in the binary either way, so
+    // storing them deflated shrinks the executable (fonts roughly halve, SVG
+    // icons more); each resource is inflated once when first used. If
+    // compression does not help -- tiny or already-compressed data -- the raw
+    // bytes are stored instead so nothing is pessimized.
+    std::vector<uint8_t> compressed(compressBound(static_cast<uLong>(size)));
+    uLongf compressedSize = static_cast<uLongf>(compressed.size());
+    bool useCompression = false;
+    if (size > 0)
+    {
+        const int r = compress2(
+            compressed.data(),
+            &compressedSize,
+            data.data(),
+            static_cast<uLong>(size),
+            Z_BEST_COMPRESSION);
+        useCompression = (Z_OK == r) && (compressedSize < size);
+    }
+    const uint8_t* payload = useCompression ? compressed.data() : data.data();
+    const size_t payloadSize = useCompression ? compressedSize : size;
     {
         std::filesystem::path sourceOutput = _output;
         sourceOutput.replace_extension(".cpp");
-        std::cout << "Source output: " << sourceOutput.string() << std::endl;
+        std::cout << "Source output: " << sourceOutput.string()
+            << (useCompression ? " (compressed " : " (raw ")
+            << payloadSize << "/" << size << " bytes)" << std::endl;
+
+        // Emit the payload as a series of small string-literal arrays that are
+        // stitched together at load time. String literals are parsed far more
+        // cheaply than brace-enclosed initializer lists (which build one AST
+        // node per byte), so even multi-megabyte resources -- e.g. CJK fonts --
+        // stay fast and light to compile. Each chunk is a single literal under
+        // MSVC's per-literal limit (16380 bytes), and bytes are written as
+        // 3-digit octal escapes so no escape can run into the following byte.
+        const size_t chunkSize = 16000;
+        const size_t chunkCount = (payloadSize + chunkSize - 1) / chunkSize;
+
         std::string tmp;
+        tmp.reserve(payloadSize * 4 + chunkCount * 96 + 256);
         tmp.append("#include <cstdint>\n");
         tmp.append("#include <vector>\n");
+        if (useCompression)
+        {
+            tmp.append("#include <zlib.h>\n");
+        }
         tmp.append("\n");
         tmp.append("namespace " + _namespace + "\n");
         tmp.append("{\n");
-        tmp.append("    std::vector<uint8_t> " + var + " = \n");
-        tmp.append("    {\n");
-        const size_t columns = 30;
-        for (size_t i = 0; i < size; i += columns)
+        for (size_t c = 0; c < chunkCount; ++c)
         {
-            tmp.append("        ");
-            for (size_t j = i; j < i + columns && j < size; ++j)
+            const size_t begin = c * chunkSize;
+            size_t end = begin + chunkSize;
+            if (end > payloadSize)
             {
-                std::stringstream ss;
-                ss << static_cast<int>(data[j]) << ", ";
-                tmp.append(ss.str());
+                end = payloadSize;
             }
-            tmp.append("\n");
+            tmp.append("    static const unsigned char " + var + "_" +
+                std::to_string(c) + "[] =\n        \"");
+            for (size_t j = begin; j < end; ++j)
+            {
+                const unsigned char b = payload[j];
+                const char esc[4] =
+                {
+                    '\\',
+                    static_cast<char>('0' + ((b >> 6) & 7)),
+                    static_cast<char>('0' + ((b >> 3) & 7)),
+                    static_cast<char>('0' + (b & 7))
+                };
+                tmp.append(esc, 4);
+            }
+            tmp.append("\";\n");
         }
-        tmp.append("    };\n");
+        tmp.append("    std::vector<uint8_t> " + var + " = []\n");
+        tmp.append("    {\n");
+        if (useCompression)
+        {
+            // Gather the deflated bytes, then inflate into the result.
+            tmp.append("        std::vector<uint8_t> z;\n");
+            tmp.append("        z.reserve(" + std::to_string(payloadSize) + ");\n");
+            for (size_t c = 0; c < chunkCount; ++c)
+            {
+                const std::string n = var + "_" + std::to_string(c);
+                tmp.append("        z.insert(z.end(), " + n + ", " + n +
+                    " + sizeof(" + n + ") - 1);\n");
+            }
+            tmp.append("        std::vector<uint8_t> v(" + std::to_string(size) + ");\n");
+            tmp.append("        uLongf n = " + std::to_string(size) + ";\n");
+            tmp.append("        uncompress(v.data(), &n, z.data(), static_cast<uLong>(z.size()));\n");
+            tmp.append("        v.resize(n);\n");
+            tmp.append("        return v;\n");
+        }
+        else
+        {
+            tmp.append("        std::vector<uint8_t> v;\n");
+            tmp.append("        v.reserve(" + std::to_string(size) + ");\n");
+            for (size_t c = 0; c < chunkCount; ++c)
+            {
+                const std::string n = var + "_" + std::to_string(c);
+                tmp.append("        v.insert(v.end(), " + n + ", " + n +
+                    " + sizeof(" + n + ") - 1);\n");
+            }
+            tmp.append("        return v;\n");
+        }
+        tmp.append("    }();\n");
         tmp.append("}\n");
+
         File file(sourceOutput.string(), "wb");
         file.write((const uint8_t*)tmp.c_str(), tmp.size());
     }

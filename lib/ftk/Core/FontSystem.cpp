@@ -26,6 +26,9 @@ namespace ftk_resource
     extern std::vector<uint8_t> NotoMono_Regular;
     extern std::vector<uint8_t> NotoSans_Regular;
     extern std::vector<uint8_t> NotoSansSymbols2_Regular;
+#if defined(FTK_CJK)
+    extern std::vector<uint8_t> NotoSansCJK_Regular;
+#endif // FTK_CJK
 }
 
 namespace ftk
@@ -134,6 +137,9 @@ namespace ftk
         std::mutex mutex;
         std::map<std::string, std::vector<uint8_t> > fontData;
         std::map<std::string, FT_Face> faces;
+        // Faces consulted, in order, for glyphs the requested face lacks (e.g.
+        // a CJK font behind the Latin default).
+        std::vector<std::string> fallbackFonts;
         LRUCache<GlyphInfo, std::shared_ptr<Glyph> > glyphCache;
     };
 
@@ -147,6 +153,14 @@ namespace ftk
         p.fontData[getDefaultFont(FontType::Bold)] = ftk_resource::NotoSans_Bold;
         p.fontData[getDefaultFont(FontType::Mono)] = ftk_resource::NotoMono_Regular;
         p.fontData[getDefaultFont(FontType::Symbols)] = ftk_resource::NotoSansSymbols2_Regular;
+#if defined(FTK_CJK)
+        // Bundle a pan-CJK font and register it as a fallback so Chinese,
+        // Japanese, and Korean glyphs the Latin defaults lack still render
+        // (e.g. file names). It is loaded as a normal face below.
+        const std::string cjkFont = "NotoSansCJK-Regular";
+        p.fontData[cjkFont] = ftk_resource::NotoSansCJK_Regular;
+        p.fallbackFonts.push_back(cjkFont);
+#endif // FTK_CJK
 
         if (FT_Init_FreeType(&p.ftLibrary))
         {
@@ -259,11 +273,25 @@ namespace ftk
             {
                 p.fontData.erase(i);
             }
+            p.fallbackFonts.erase(
+                std::remove(p.fallbackFonts.begin(), p.fallbackFonts.end(), name),
+                p.fallbackFonts.end());
         }
         const size_t j = p.fonts->indexOf(name);
         if (j != ObservableListInvalidIndex)
         {
             p.fonts->removeItem(j);
+        }
+    }
+
+    void FontSystem::addFallbackFont(const std::string& name)
+    {
+        FTK_P();
+        std::unique_lock<std::mutex> lock(p.mutex);
+        if (std::find(p.fallbackFonts.begin(), p.fallbackFonts.end(), name) ==
+            p.fallbackFonts.end())
+        {
+            p.fallbackFonts.push_back(name);
         }
     }
 
@@ -412,21 +440,45 @@ namespace ftk
             out = std::make_shared<Glyph>();
             out->info = GlyphInfo(code, fontInfo);
 
-            const FT_UInt ftGlyphIndex = FT_Get_Char_Index(face, code);
+            FT_Face glyphFace = face;
+            FT_UInt ftGlyphIndex = FT_Get_Char_Index(face, code);
             if (!ftGlyphIndex)
             {
-                break;
+                // The requested face lacks this glyph; try the fallback faces
+                // (e.g. a bundled CJK font) and render from the first that has
+                // it. Each fallback face needs its own pixel size set, since
+                // the caller only sized the requested face.
+                for (const auto& name : fallbackFonts)
+                {
+                    auto i = faces.find(name);
+                    if (i == faces.end() || i->second == face)
+                    {
+                        continue;
+                    }
+                    const FT_UInt fallbackIndex = FT_Get_Char_Index(i->second, code);
+                    if (fallbackIndex &&
+                        0 == FT_Set_Pixel_Sizes(i->second, 0, static_cast<int>(fontInfo.size)))
+                    {
+                        glyphFace = i->second;
+                        ftGlyphIndex = fallbackIndex;
+                        break;
+                    }
+                }
+                if (!ftGlyphIndex)
+                {
+                    break;
+                }
             }
-            if (FT_Load_Glyph(face, ftGlyphIndex, FT_LOAD_FORCE_AUTOHINT))
+            if (FT_Load_Glyph(glyphFace, ftGlyphIndex, FT_LOAD_FORCE_AUTOHINT))
             {
                 break;
             }
-            if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
+            if (FT_Render_Glyph(glyphFace->glyph, FT_RENDER_MODE_NORMAL))
             {
                 break;
             }
 
-            const FT_Bitmap ftBitmap = face->glyph->bitmap;
+            const FT_Bitmap ftBitmap = glyphFace->glyph->bitmap;
             const ImageInfo imageInfo(ftBitmap.width, ftBitmap.rows, imageType);
             out->image = Image::create(imageInfo);
             for (size_t y = 0; y < ftBitmap.rows; ++y)
@@ -466,10 +518,10 @@ namespace ftk
                 default: break;
                 }
             }
-            out->offset   = V2I(face->glyph->bitmap_left, face->glyph->bitmap_top);
-            out->advance  = static_cast<int>(face->glyph->advance.x / 64);
-            out->lsbDelta = static_cast<int32_t>(face->glyph->lsb_delta);
-            out->rsbDelta = static_cast<int32_t>(face->glyph->rsb_delta);
+            out->offset   = V2I(glyphFace->glyph->bitmap_left, glyphFace->glyph->bitmap_top);
+            out->advance  = static_cast<int>(glyphFace->glyph->advance.x / 64);
+            out->lsbDelta = static_cast<int32_t>(glyphFace->glyph->lsb_delta);
+            out->rsbDelta = static_cast<int32_t>(glyphFace->glyph->rsb_delta);
 
             glyphCache.add(out->info, out);
         } while (0);

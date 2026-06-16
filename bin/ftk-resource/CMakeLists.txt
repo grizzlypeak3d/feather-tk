@@ -8,7 +8,7 @@ set(SOURCE
 
 add_executable(ftk-resource ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
 
-target_link_libraries(ftk-resource)
+target_link_libraries(ftk-resource ZLIB::ZLIB)
 
 set_target_properties(ftk-resource PROPERTIES FOLDER bin)
 

@@ -108,6 +108,12 @@ namespace ftk
         FTK_API bool addFont(const std::string& name, const uint8_t*, size_t);
         FTK_API void removeFont(const std::string&);
 
+        //! Register an already-added font (see addFont) as a fallback for
+        //! glyphs missing from the requested font. Fallbacks are consulted in
+        //! registration order. Useful for scripts the bundled fonts do not
+        //! cover.
+        FTK_API void addFallbackFont(const std::string& name);
+
         ///@}
 
         //! \name Information
