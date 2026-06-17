@@ -7,7 +7,7 @@ BUILD_TYPE=$2
 
 cmake \
     -S $SOURCE_DIR/etc/SuperBuild \
-    -B sbuild-$BUILD_TYPE \
+    -B sb-$BUILD_TYPE \
     -Dftk_SDL2=$FTK_SDL2 \
     -Dftk_SDL3=$FTK_SDL3 \
     -Dftk_nfd=$FTK_NFD \
@@ -18,7 +18,7 @@ cmake \
     -DCMAKE_PREFIX_PATH=$PWD/install-$BUILD_TYPE \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=$CMAKE_OSX_DEPLOYMENT_TARGET \
     -DCMAKE_OSX_ARCHITECTURES=$CMAKE_OSX_ARCHITECTURES
-cmake --build sbuild-$BUILD_TYPE -j $JOBS --config $BUILD_TYPE
+cmake --build sb-$BUILD_TYPE -j $JOBS --config $BUILD_TYPE
 
 cmake \
     -S $SOURCE_DIR \

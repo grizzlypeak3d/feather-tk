@@ -3,7 +3,7 @@ set BUILD_TYPE=%2
 
 cmake ^
     -S %SOURCE_DIR%/etc/SuperBuild ^
-    -B sbuild-%BUILD_TYPE% ^
+    -B sb-%BUILD_TYPE% ^
     -Dftk_SDL2=%FTK_SDL2% ^
     -Dftk_SDL3=%FTK_SDL3% ^
     -Dftk_nfd=%FTK_NFD% ^
@@ -12,7 +12,7 @@ cmake ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%CD%/install-%BUILD_TYPE% ^
     -DCMAKE_PREFIX_PATH=%CD%/install-%BUILD_TYPE%
-cmake --build sbuild-%BUILD_TYPE% -j %JOBS% --config %BUILD_TYPE%
+cmake --build sb-%BUILD_TYPE% -j %JOBS% --config %BUILD_TYPE%
 
 cmake ^
     -S %SOURCE_DIR% ^
