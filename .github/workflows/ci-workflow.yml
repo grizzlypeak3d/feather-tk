@@ -19,11 +19,11 @@ jobs:
       BUILD_SHARED_LIBS: OFF
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: ftk
         submodules: recursive
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -65,11 +65,11 @@ jobs:
       BUILD_SHARED_LIBS: OFF
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: ftk
         submodules: recursive
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -111,11 +111,11 @@ jobs:
       BUILD_SHARED_LIBS: OFF
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: ftk
         submodules: recursive
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -153,11 +153,11 @@ jobs:
       CMAKE_OSX_ARCHITECTURES: x86_64
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: ftk
         submodules: recursive
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -200,11 +200,11 @@ jobs:
       CMAKE_OSX_ARCHITECTURES: arm64
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: ftk
         submodules: recursive
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -245,11 +245,11 @@ jobs:
       BUILD_SHARED_LIBS: OFF
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: ftk
         submodules: recursive
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
