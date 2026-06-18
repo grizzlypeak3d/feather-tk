@@ -123,7 +123,7 @@ namespace ftk
                 "    gl_FragColor.r = color.r;\n"
                 "    gl_FragColor.g = color.g;\n"
                 "    gl_FragColor.b = color.b;\n"
-                "    float coverage = texture2D(textureSampler, fTexture).r;\n"
+                "    float coverage = texture2D(textureSampler, fTexture).r * color.a;\n"
                 "    //! \todo Should this be configurable?\n"
                 "    float gamma = 1.3;\n"
                 "    gl_FragColor.a = pow(coverage, 1.0 / gamma);\n"
