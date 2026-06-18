@@ -16,6 +16,7 @@ namespace ftk
         bool editable = false;
         std::function<void(const Color4F&)> callback;
         std::function<void(const Color4F&, bool)> pressedCallback;
+        bool border = true;
         SizeRole sizeRole = SizeRole::Swatch;
         std::shared_ptr<ColorPopup> popup;
 
@@ -97,6 +98,22 @@ namespace ftk
         _p->pressedCallback = value;
     }
 
+    bool ColorSwatch::hasBorder() const
+    {
+        return _p->border;
+    }
+
+    void ColorSwatch::setBorder(bool value)
+    {
+        FTK_P();
+        if (value == p.border)
+            return;
+        p.border = value;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     SizeRole ColorSwatch::getSizeRole() const
     {
         return _p->sizeRole;
@@ -148,6 +165,10 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.sizeHint.w = p.size.sizeHint.h =
                 event.style->getSizeRole(p.sizeRole, event.displayScale);
+            if (p.border)
+            {
+                p.size.sizeHint = p.size.sizeHint + p.size.border * 2;
+            }
             p.draw.reset();
         }
     }
@@ -173,13 +194,23 @@ namespace ftk
         {
             p.draw = Private::DrawData();
             const Box2I& g = getGeometry();
-            p.draw->g2 = margin(g, -p.size.border);
-            p.draw->border = border(g, p.size.border);
+            if (p.border)
+            {
+                p.draw->g2 = margin(g, -p.size.border);
+                p.draw->border = border(g, p.size.border);
+            }
+            else
+            {
+                p.draw->g2 = g;
+            }
         }
 
-        event.render->drawMesh(
-            p.draw->border,
-            event.style->getColorRole(ColorRole::Border));
+        if (p.border)
+        {
+            event.render->drawMesh(
+                p.draw->border,
+                event.style->getColorRole(ColorRole::Border));
+        }
         event.render->drawRect(p.draw->g2, Color4F(0.F, 0.F, 0.F));
         event.render->drawRect(p.draw->g2, p.color);
     }

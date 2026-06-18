@@ -46,6 +46,12 @@ namespace ftk
         //! Set the callback with a flag for whether the widget is pressed.
         FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
+        //! Get whether a border is shown.
+        FTK_API bool hasBorder() const;
+
+        //! Set whether a border is shown.
+        FTK_API void setBorder(bool);
+
         //! Get the size role.
         FTK_API SizeRole getSizeRole() const;
 
