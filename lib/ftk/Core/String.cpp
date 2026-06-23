@@ -252,6 +252,20 @@ namespace ftk
         }
         return out;
     }
+    
+    std::string toSentenceCase(const std::string& value)
+    {
+        auto s = split(value, ' ');
+        if (!s.empty() && !s[0].empty())
+        {
+            s[0][0] = std::toupper(s[0][0]);
+        }
+        for (size_t i = 1; i < s.size(); ++i)
+        {
+            s[i] = toLower(s[i]);
+        }
+        return join(s, ' ');
+    }
 
     void removeTrailingNewlines(std::string& value)
     {

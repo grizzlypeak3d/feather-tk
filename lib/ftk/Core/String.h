@@ -53,6 +53,9 @@ namespace ftk
     //! Convert to lower case.
     FTK_API std::string toLower(const std::string&);
 
+    //! Convert to sentence case (first word capitalized).
+    FTK_API std::string toSentenceCase(const std::string&);
+
     //! Remove trailing newlines.
     FTK_API void removeTrailingNewlines(std::string&);
 
