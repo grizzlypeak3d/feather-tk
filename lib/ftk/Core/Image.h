@@ -59,6 +59,9 @@ namespace ftk
 
         ARGB_4444_Premult,
 
+        YUV_420SP_U8,   //!< Semi-planar 4:2:0 8-bit (e.g. hardware-decoded NV12)
+        YUV_420SP_U16,  //!< Semi-planar 4:2:0 16-bit (e.g. hardware-decoded P010)
+
         Count,
         First = None
     };

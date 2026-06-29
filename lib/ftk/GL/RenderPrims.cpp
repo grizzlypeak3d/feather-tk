@@ -436,6 +436,8 @@ namespace ftk
             case ImageType::YUV_420P_U16:
             case ImageType::YUV_422P_U16:
             case ImageType::YUV_444P_U16:
+            case ImageType::YUV_420SP_U8:
+            case ImageType::YUV_420SP_U16:
                 p.shaders["image"]->setUniform("textureSampler1", 1);
                 p.shaders["image"]->setUniform("textureSampler2", 2);
             default:

@@ -304,6 +304,22 @@ namespace ftk
                 out.push_back(Texture::create(infoTmp, options));
                 break;
             }
+            case ImageType::YUV_420SP_U8:
+            {
+                auto infoTmp = ImageInfo(info.size, ImageType::L_U8);
+                out.push_back(Texture::create(infoTmp, options));
+                infoTmp = ImageInfo(info.size.w / 2, info.size.h / 2, ImageType::LA_U8);
+                out.push_back(Texture::create(infoTmp, options));
+                break;
+            }
+            case ImageType::YUV_420SP_U16:
+            {
+                auto infoTmp = ImageInfo(info.size, ImageType::L_U16);
+                out.push_back(Texture::create(infoTmp, options));
+                infoTmp = ImageInfo(info.size.w / 2, info.size.h / 2, ImageType::LA_U16);
+                out.push_back(Texture::create(infoTmp, options));
+                break;
+            }
             default:
             {
                 auto texture = Texture::create(info, options);
@@ -400,6 +416,28 @@ namespace ftk
                 }
                 break;
             }
+            case ImageType::YUV_420SP_U8:
+            {
+                if (2 == textures.size())
+                {
+                    const std::size_t w = info.size.w;
+                    const std::size_t h = info.size.h;
+                    textures[0]->copy(image->getData(), textures[0]->getImageInfo());
+                    textures[1]->copy(image->getData() + (w * h), textures[1]->getImageInfo());
+                }
+                break;
+            }
+            case ImageType::YUV_420SP_U16:
+            {
+                if (2 == textures.size())
+                {
+                    const std::size_t w = info.size.w;
+                    const std::size_t h = info.size.h;
+                    textures[0]->copy(image->getData(), textures[0]->getImageInfo());
+                    textures[1]->copy(image->getData() + (w * h) * 2, textures[1]->getImageInfo());
+                }
+                break;
+            }
             default:
                 if (1 == textures.size())
                 {
@@ -480,6 +518,21 @@ namespace ftk
                     textures[1]->bind();
                     glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
                     textures[2]->bind();
+                }
+                break;
+            case ImageType::YUV_420SP_U8:
+            case ImageType::YUV_420SP_U16:
+                if (2 == textures.size())
+                {
+                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
+                    textures[0]->bind();
+                    // The interleaved chroma plane is bound to both units 1 and 2;
+                    // the NV12 shader path reads Cb/Cr from sampler 1 (.r/.g) and
+                    // leaves sampler 2 unused, but binding it keeps it valid.
+                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 1 + offset));
+                    textures[1]->bind();
+                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
+                    textures[1]->bind();
                 }
                 break;
             default:
