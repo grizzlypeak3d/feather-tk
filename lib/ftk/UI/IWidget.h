@@ -190,7 +190,7 @@ namespace ftk
 
         //! Set a draw update. The drawEvent() method will be called the next
         //! tick of the event loop.
-        FTK_API void setDrawUpdate(bool value = true);
+        void setDrawUpdate(bool value = true);
 
         //! Get the background role.
         ColorRole getBackgroundRole() const;

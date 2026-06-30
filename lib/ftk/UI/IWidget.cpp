@@ -111,7 +111,7 @@ namespace ftk
         int out = -1;
         int i = 0;
         auto j = _children.begin();
-        for (; *j != value && j != _children.end(); ++i, ++j)
+        for (; j != _children.end() && *j != value; ++i, ++j)
             ;
         if (j != _children.end())
         {
