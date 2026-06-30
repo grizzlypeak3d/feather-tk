@@ -101,6 +101,12 @@ namespace ftk
         FTK_API void undo();
         FTK_API void redo();
 
+        //! Observe whether there is a command to undo.
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasUndo() const;
+
+        //! Observe whether there is a command to redo.
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasRedo() const;
+
         ///@}
 
         //! \name Clipboard
@@ -134,9 +140,15 @@ namespace ftk
         void _backspace();
         void _delete();
 
-        void _replace(
-            const LineEditSelection&,
-            const std::string&);
+        //! The single text-mutation funnel: replace [pos, pos + removeCount)
+        //! with the insert string, moving to the given cursor and selection.
+        //! Each call is recorded as one undoable command.
+        void _edit(
+            int pos,
+            int removeCount,
+            const std::string& insert,
+            int cursor,
+            const LineEditSelection& selection);
 
         FTK_PRIVATE();
     };
