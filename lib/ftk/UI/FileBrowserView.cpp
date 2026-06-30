@@ -55,6 +55,7 @@ namespace ftk
             int pad = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
+            Size2I sizeHint;
         };
         SizeData size;
 
@@ -189,14 +190,7 @@ namespace ftk
 
     Size2I FileBrowserView::getSizeHint() const
     {
-        FTK_P();
-        Size2I out;
-        for (const auto& item : p.items)
-        {
-            out.w = std::max(out.w, item.size.w);
-            out.h += item.size.h;
-        }
-        return out;
+        return _p->size.sizeHint;
     }
 
     void FileBrowserView::styleEvent(const StyleEvent& event)
@@ -240,6 +234,7 @@ namespace ftk
             const int imageHeight = p.directoryImage ?
                 p.directoryImage->getHeight() :
                 (p.fileImage ? p.fileImage->getHeight() : 0);
+            p.size.sizeHint = Size2I();
             for (size_t i = 0; i < p.dirEntries.size() && i < p.items.size(); ++i)
             {
                 auto& item = p.items[i];
@@ -255,6 +250,8 @@ namespace ftk
                         item.size.h,
                         std::max(textSize.h + p.size.margin * 2, imageHeight) + p.size.keyFocus * 2);
                 }
+                p.size.sizeHint.w = std::max(p.size.sizeHint.w, item.size.w);
+                p.size.sizeHint.h += item.size.h;
             }
         }
     }
@@ -402,9 +399,13 @@ namespace ftk
                 if (p.mouse.click == p.mouse.pressed && diff.count() < doubleClickTime)
                 {
                     _doubleClick(p.mouse.pressed);
+                    p.mouse.click = -1;
                 }
-                p.mouse.click = p.mouse.pressed;
-                p.mouse.clickTime = now;
+                else
+                {
+                    p.mouse.click = p.mouse.pressed;
+                    p.mouse.clickTime = now;
+                }
             }
             p.mouse.pressed = -1;
             setDrawUpdate();

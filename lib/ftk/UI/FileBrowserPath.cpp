@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
 #include <ftk/UI/FileBrowserPrivate.h>
@@ -83,7 +82,7 @@ namespace ftk
                     std::filesystem::path path;
                     for (int i = 0; i <= index; ++i)
                     {
-                        path = path / _p->pieces[i];
+                        path = path / std::filesystem::u8path(_p->pieces[i]);
                     }
                     _p->path = path;
                     _widgetUpdate();
@@ -97,7 +96,7 @@ namespace ftk
         p.lineEdit->setCallback(
             [this](const std::string& value)
             {
-                _p->path = value;
+                _p->path = std::filesystem::u8path(value);
                 _widgetUpdate();
                 if (_p->callback)
                 {

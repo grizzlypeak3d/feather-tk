@@ -318,7 +318,10 @@ namespace ftk
                 switch (p.mode)
                 {
                 case FileBrowserMode::Open:
-                    _accept(p.selection);
+                    if (!p.selection.isEmpty())
+                    {
+                        _accept(p.selection);
+                    }
                     break;
                 case FileBrowserMode::Save:
                 {
