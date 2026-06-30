@@ -22,22 +22,22 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/FontSystem.h>
 
-#include <codecvt>
-#include <locale>
-
 namespace ftk
 {
     struct Window::Private
     {
         std::weak_ptr<Context> context;
 
-        int modifiers = 0;
         std::shared_ptr<gl::Window> window;
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
 #if defined(FTK_API_GLES_2)
         std::shared_ptr<gl::Shader> shader;
+        std::shared_ptr<gl::VBO> vbo;
+        std::shared_ptr<gl::VAO> vao;
+        Size2I vboSize;
+        size_t vboTriangles = 0;
 #endif // FTK_API_GLES_2
     };
 
@@ -394,20 +394,25 @@ namespace ftk
                 glActiveTexture(static_cast<GLenum>(GL_TEXTURE0));
                 glBindTexture(GL_TEXTURE_2D, p.buffer->getColorID());
 
-                auto mesh = ftk::mesh(Box2I(
-                    0,
-                    0,
-                    bufferSize.w,
-                    bufferSize.h));
-                auto vboData = gl::convert(
-                    mesh,
-                    gl::VBOType::Pos2_F32_UV_U16,
-                    RangeSizeT(0, mesh.triangles.size() - 1));
-                auto vbo = gl::VBO::create(mesh.triangles.size() * 3, gl::VBOType::Pos2_F32_UV_U16);
-                vbo->copy(vboData);
-                auto vao = gl::VAO::create(gl::VBOType::Pos2_F32_UV_U16, vbo->getID());
-                vao->bind();
-                vao->draw(GL_TRIANGLES, 0, mesh.triangles.size() * 3);
+                if (!p.vbo || !p.vao || p.vboSize != bufferSize)
+                {
+                    const auto mesh = ftk::mesh(Box2I(
+                        0,
+                        0,
+                        bufferSize.w,
+                        bufferSize.h));
+                    const auto vboData = gl::convert(
+                        mesh,
+                        gl::VBOType::Pos2_F32_UV_U16,
+                        RangeSizeT(0, mesh.triangles.size() - 1));
+                    p.vbo = gl::VBO::create(mesh.triangles.size() * 3, gl::VBOType::Pos2_F32_UV_U16);
+                    p.vbo->copy(vboData);
+                    p.vao = gl::VAO::create(gl::VBOType::Pos2_F32_UV_U16, p.vbo->getID());
+                    p.vboSize = bufferSize;
+                    p.vboTriangles = mesh.triangles.size();
+                }
+                p.vao->bind();
+                p.vao->draw(GL_TRIANGLES, 0, p.vboTriangles * 3);
             }
 #endif // FTK_API_GL_4_1
 
