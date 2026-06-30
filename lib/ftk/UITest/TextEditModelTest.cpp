@@ -273,10 +273,6 @@ namespace ftk
                 FTK_ASSERT(!selection2.isValid());
 
                 model->setText({ "!!!!!!!!!!", "0123456789", "abcdefghijklmnopqrstuvwxyz", "##########" });
-                model->setSelection(TextEditSelection());
-                model->copy();
-                FTK_ASSERT(clipboard->getText().empty());
-
                 model->setSelection(TextEditSelection(
                     TextEditPos(0, 0),
                     TextEditPos(0, 1)));
@@ -289,11 +285,6 @@ namespace ftk
                 model->copy();
                 auto tmp = splitLines(clipboard->getText());
                 FTK_ASSERT(tmp == std::vector<std::string>({ "56789", "abcde" }));
-
-                model->setSelection(TextEditSelection());
-                model->cut();
-                tmp = splitLines(clipboard->getText());
-                FTK_ASSERT(tmp == std::vector<std::string>({ "" }));
 
                 model->setSelection(TextEditSelection(
                     TextEditPos(0, 0),

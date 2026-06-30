@@ -262,21 +262,16 @@ namespace ftk
             return;
         if (auto context = p.context.lock())
         {
-            auto clipboard = context->getSystem<ClipboardSystem>();
-            std::string clipboardText;
-            TextEditPos cursor = p.cursor->get();
             TextEditSelection selection = p.selection->get();
             if (selection.isValid())
             {
+                auto clipboard = context->getSystem<ClipboardSystem>();
                 const auto lines = _getSelection(selection);
-                clipboardText = join(lines, '\n');
+                clipboard->setText(join(lines, '\n'));
                 _replace(selection, {});
-                cursor = selection.min();
-                selection = TextEditSelection();
+                p.cursor->setIfChanged(selection.min());
+                p.selection->setIfChanged(TextEditSelection());
             }
-            clipboard->setText(clipboardText);
-            p.cursor->setIfChanged(cursor);
-            p.selection->setIfChanged(selection);
         }
     }
 
@@ -285,15 +280,13 @@ namespace ftk
         FTK_P();
         if (auto context = p.context.lock())
         {
-            auto clipboard = context->getSystem<ClipboardSystem>();
-            std::string clipboardText;
             const TextEditSelection& selection = p.selection->get();
             if (selection.isValid())
             {
+                auto clipboard = context->getSystem<ClipboardSystem>();
                 const auto lines = _getSelection(selection);
-                clipboardText = join(lines, '\n');
+                clipboard->setText(join(lines, '\n'));
             }
-            clipboard->setText(clipboardText);
         }
     }
 

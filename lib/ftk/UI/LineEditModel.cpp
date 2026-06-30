@@ -5,6 +5,7 @@
 
 #include <ftk/UI/ClipboardSystem.h>
 
+#include <optional>
 #include <regex>
 
 namespace ftk
@@ -56,6 +57,7 @@ namespace ftk
         std::shared_ptr<Observable<int> > cursor;
         std::shared_ptr<Observable<LineEditSelection> > selection;
         std::string regex;
+        std::optional<std::regex> regexCompiled;
     };
 
     void LineEditModel::_init(
@@ -207,22 +209,17 @@ namespace ftk
             return;
         if (auto context = p.context.lock())
         {
-            auto clipboard = context->getSystem<ClipboardSystem>();
-            std::string clipboardText;
-            int cursor = p.cursor->get();
             LineEditSelection selection = p.selection->get();
             if (selection.isValid())
             {
-                clipboardText = p.text->get().substr(
+                auto clipboard = context->getSystem<ClipboardSystem>();
+                clipboard->setText(p.text->get().substr(
                     selection.min(),
-                    selection.max() - selection.min());
+                    selection.max() - selection.min()));
                 _replace(selection, "");
-                cursor = selection.min();
-                selection = LineEditSelection();
+                p.cursor->setIfChanged(selection.min());
+                p.selection->setIfChanged(LineEditSelection());
             }
-            clipboard->setText(clipboardText);
-            p.cursor->setIfChanged(cursor);
-            p.selection->setIfChanged(selection);
         }
     }
 
@@ -231,16 +228,14 @@ namespace ftk
         FTK_P();
         if (auto context = p.context.lock())
         {
-            auto clipboard = context->getSystem<ClipboardSystem>();
-            std::string clipboardText;
             const LineEditSelection& selection = p.selection->get();
             if (selection.isValid())
             {
-                clipboardText = p.text->get().substr(
+                auto clipboard = context->getSystem<ClipboardSystem>();
+                clipboard->setText(p.text->get().substr(
                     selection.min(),
-                    selection.max() - selection.min());
+                    selection.max() - selection.min()));
             }
-            clipboard->setText(clipboardText);
         }
     }
 
@@ -253,7 +248,9 @@ namespace ftk
         {
             auto clipboard = context->getSystem<ClipboardSystem>();
             const std::string clipboardText = clipboard->getText();
-            if (!clipboardText.empty())
+            if (!clipboardText.empty() &&
+                (!p.regexCompiled.has_value() ||
+                    std::regex_match(clipboardText, p.regexCompiled.value())))
             {
                 int cursor = p.cursor->get();
                 LineEditSelection selection = p.selection->get();
@@ -281,8 +278,8 @@ namespace ftk
         FTK_P();
         if (p.readOnly->get())
             return;
-        const std::regex r(p.regex);
-        if (p.regex.empty() || std::regex_match(value, r))
+        if (!p.regexCompiled.has_value() ||
+            std::regex_match(value, p.regexCompiled.value()))
         {
             int cursor = p.cursor->get();
             LineEditSelection selection = p.selection->get();
@@ -407,7 +404,22 @@ namespace ftk
 
     FTK_API void LineEditModel::setRegex(const std::string& value)
     {
-        _p->regex = value;
+        FTK_P();
+        p.regex = value;
+        p.regexCompiled.reset();
+        if (!value.empty())
+        {
+            try
+            {
+                p.regexCompiled = std::regex(value);
+            }
+            catch (const std::exception&)
+            {
+                // Invalid pattern: fall back to no filtering rather than
+                // throwing on every input.
+                p.regexCompiled.reset();
+            }
+        }
     }
 
     void LineEditModel::_move(Key key, int modifiers)
