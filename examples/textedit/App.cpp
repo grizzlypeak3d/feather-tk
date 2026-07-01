@@ -32,7 +32,10 @@ namespace textedit
 
     App::~App()
     {
-        _settingsModel->setRecentFiles(_recentFilesModel->getRecent());
+        if (_settingsModel && _recentFilesModel)
+        {
+            _settingsModel->setRecentFiles(_recentFilesModel->getRecent());
+        }
     }
 
     std::shared_ptr<App> App::create(
