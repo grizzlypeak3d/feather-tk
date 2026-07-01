@@ -33,7 +33,7 @@ namespace ftk
                     py::arg("checked"))
                 .def(
                     "setEnabled",
-                    py::overload_cast<bool>(&Menu::setEnabled),
+                    py::overload_cast<bool>(&IWidget::setEnabled),
                     py::arg("enabled"))
                 .def(
                     "setEnabled",
