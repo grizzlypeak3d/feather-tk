@@ -247,7 +247,7 @@ namespace ftk
                 int x = g2.min.x;
                 int y = g2.min.y;
                 int h = g2.h();
-                for (int i = 1; i < samples.size(); ++i, x += _size.sampleSize)
+                for (int i = 1; i < static_cast<int>(samples.size()); ++i, x += _size.sampleSize)
                 {
                     const float v0 = samples[i - 1] / static_cast<float>(_samplesMax);
                     const float v1 = samples[i] / static_cast<float>(_samplesMax);

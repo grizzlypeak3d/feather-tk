@@ -46,12 +46,12 @@ namespace ftk
             button->setCheckedCallback(
                 [this, index](bool value)
                 {
-                    if (_p->radio >= 0 && _p->radio < _p->buttons.size())
+                    if (_p->radio >= 0 && _p->radio < static_cast<int>(_p->buttons.size()))
                     {
                         _p->buttons[_p->radio]->setChecked(false);
                     }
                     _p->radio = index;
-                    if (_p->radio >= 0 && _p->radio < _p->buttons.size())
+                    if (_p->radio >= 0 && _p->radio < static_cast<int>(_p->buttons.size()))
                     {
                         _p->buttons[_p->radio]->setChecked(true);
                     }
@@ -113,7 +113,7 @@ namespace ftk
             case Key::Return:
                 event.accept = true;
                 takeKeyFocus();
-                if (p.current >= 0 && p.current < p.buttons.size())
+                if (p.current >= 0 && p.current < static_cast<int>(p.buttons.size()))
                 {
                     p.buttons[p.current]->click();
                 }
@@ -168,7 +168,7 @@ namespace ftk
     {
         FTK_P();
         const bool focus = hasKeyFocus();
-        for (int i = 0; i < p.buttons.size(); ++i)
+        for (int i = 0; i < static_cast<int>(p.buttons.size()); ++i)
         {
             p.buttons[i]->setCurrent(p.current == i && focus);
         }
@@ -177,7 +177,7 @@ namespace ftk
     void ComboBoxMenu::_scrollToCurrent()
     {
         FTK_P();
-        if (p.current >= 0 && p.current < p.buttons.size())
+        if (p.current >= 0 && p.current < static_cast<int>(p.buttons.size()))
         {
             auto button = p.buttons[p.current];
             Box2I g = button->getGeometry();

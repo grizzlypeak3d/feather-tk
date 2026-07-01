@@ -77,7 +77,7 @@ namespace ftk
         p.buttonGroup->setClickedCallback(
             [this](int index)
             {
-                if (index >= 0 && index < _p->pieces.size())
+                if (index >= 0 && index < static_cast<int>(_p->pieces.size()))
                 {
                     std::filesystem::path path;
                     for (int i = 0; i <= index; ++i)

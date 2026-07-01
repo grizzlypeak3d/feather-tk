@@ -152,7 +152,7 @@ namespace ftk
         const auto& text = p.model->getText();
         const TextEditPos& cursor = p.model->getCursor();
         V2I pos(p.size.margin, p.size.margin);
-        if (cursor.line >= 0 && cursor.line < text.size())
+        if (cursor.line >= 0 && cursor.line < static_cast<int>(text.size()))
         {
             pos.y += p.size.fontMetrics.lineHeight * cursor.line;
             const std::string& line = text[cursor.line];
@@ -518,7 +518,7 @@ namespace ftk
             (value.y - g.min.y - p.size.margin) / p.size.fontMetrics.lineHeight,
             0,
             static_cast<int>(text.size()) - 1);
-        if (out.line >= 0 && out.line < text.size())
+        if (out.line >= 0 && out.line < static_cast<int>(text.size()))
         {
             const auto boxes = p.fontSystem->getBoxes(text[out.line], p.size.fontInfo);
             int end = value.x - g.min.x - p.size.margin;

@@ -131,9 +131,9 @@ namespace ftk
         if (!xs.empty() && !ys.empty())
         {
             // 2D points.
-            for (int j = 0; j < ys.size(); ++j)
+            for (int j = 0; j < static_cast<int>(ys.size()); ++j)
             {
-                for (int i = 0; i < xs.size(); ++i)
+                for (int i = 0; i < static_cast<int>(xs.size()); ++i)
                 {
                     out.v.push_back(V2F(xs[i], ys[j]));
                 }
@@ -144,9 +144,9 @@ namespace ftk
             out.c.push_back(V4F(color1.r, color1.g, color1.b, color1.a));
 
             // Triangles.
-            for (int j = 0; j < ys.size() - 1; ++j)
+            for (int j = 0; j < static_cast<int>(ys.size()) - 1; ++j)
             {
-                for (int i = 0; i < xs.size() - 1; ++i)
+                for (int i = 0; i < static_cast<int>(xs.size()) - 1; ++i)
                 {
                     const int v0 = j * static_cast<int>(xs.size()) + i + 1;
                     const int v1 = j * static_cast<int>(xs.size()) + (i + 1) + 1;

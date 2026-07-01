@@ -107,7 +107,7 @@ namespace ftk
     {
         FTK_P();
         std::shared_ptr<Menu> out;
-        for (int index = 0; index < p.menus.size() && index < p.buttons.size(); ++index)
+        for (int index = 0; index < static_cast<int>(p.menus.size()) && index < static_cast<int>(p.buttons.size()); ++index)
         {
             if (text == p.buttons[index]->getText())
             {
@@ -209,7 +209,7 @@ namespace ftk
                 }
                 break;
             case Key::Return:
-                if (p.current >= 0 && p.current < p.menus.size())
+                if (p.current >= 0 && p.current < static_cast<int>(p.menus.size()))
                 {
                     event.accept = true;
                     takeKeyFocus();
@@ -259,7 +259,7 @@ namespace ftk
     {
         FTK_P();
         const bool focus = hasKeyFocus();
-        for (int i = 0; i < p.buttons.size(); ++i)
+        for (int i = 0; i < static_cast<int>(p.buttons.size()); ++i)
         {
             p.buttons[i]->setCurrent(p.current == i && focus);
         }
@@ -283,7 +283,7 @@ namespace ftk
     void MenuBar::_openMenu(int value)
     {
         FTK_P();
-        if (value >= 0 && value < p.buttons.size())
+        if (value >= 0 && value < static_cast<int>(p.buttons.size()))
         {
             auto menu = p.menus[value];
             auto openMenu = _getOpenMenu();

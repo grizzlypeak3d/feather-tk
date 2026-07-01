@@ -202,7 +202,7 @@ namespace ftk
     void TabBar::removeTab(int index)
     {
         FTK_P();
-        if (index >= 0 && index < p.text.size())
+        if (index >= 0 && index < static_cast<int>(p.text.size()))
         {
             p.text.erase(p.text.begin() + index);
             p.tooltips.erase(p.tooltips.begin() + index);
@@ -360,7 +360,7 @@ namespace ftk
                 }
                 break;
             case Key::Return:
-                if (hasKeyFocus() && p.currentFocus >= 0 && p.currentFocus < p.buttons.size())
+                if (hasKeyFocus() && p.currentFocus >= 0 && p.currentFocus < static_cast<int>(p.buttons.size()))
                 {
                     event.accept = true;
                     p.buttons[p.currentFocus]->click();
@@ -446,7 +446,7 @@ namespace ftk
             p.closeButtons[i]->setTextRole(p.current == i ? ColorRole::Text : ColorRole::TextDisabled);
             p.closeButtons[i]->setAccentUnderline(p.current == i);
         }
-        if (p.currentFocus >= 0 && p.currentFocus < p.buttons.size())
+        if (p.currentFocus >= 0 && p.currentFocus < static_cast<int>(p.buttons.size()))
         {
             const Box2I g =
                 p.buttons[p.currentFocus]->getGeometry() -

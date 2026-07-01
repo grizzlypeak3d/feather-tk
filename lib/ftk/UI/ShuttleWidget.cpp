@@ -127,7 +127,7 @@ namespace ftk
                 event.style->getColorRole(ColorRole::Hover));
         }
 
-        if (p.iconIndex >= 0 && p.iconIndex < p.iconImages.size())
+        if (p.iconIndex >= 0 && p.iconIndex < static_cast<int>(p.iconImages.size()))
         {
             const Size2I& iconSize = p.iconImages.front()->getSize();
             const Box2I g2(

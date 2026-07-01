@@ -141,7 +141,7 @@ namespace ftk
     {
         FTK_P();
         bool out = false;
-        if (index >= 0 && index < p.buttons.size())
+        if (index >= 0 && index < static_cast<int>(p.buttons.size()))
         {
             out = p.buttons[index]->isChecked();
         }
@@ -214,7 +214,7 @@ namespace ftk
     {
         FTK_P();
         Box2I out;
-        if (index >= 0 && index < p.buttons.size())
+        if (index >= 0 && index < static_cast<int>(p.buttons.size()))
         {
             out = p.buttons[index]->getGeometry();
             out = move(out, -p.layout->getGeometry().min);
@@ -256,7 +256,7 @@ namespace ftk
                 event.accept = true;
                 takeKeyFocus();
                 const int current = p.current->get();
-                if (current >= 0 && current < p.buttons.size())
+                if (current >= 0 && current < static_cast<int>(p.buttons.size()))
                 {
                     p.buttons[current]->click();
                 }

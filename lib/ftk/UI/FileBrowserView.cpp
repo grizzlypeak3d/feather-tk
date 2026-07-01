@@ -304,11 +304,11 @@ namespace ftk
                     x += iconSize.w;
                 }
                 int rightColumnsSize = 0;
-                for (int i = 1; i < item.text.size() && i < item.textSizes.size(); ++i)
+                for (int i = 1; i < static_cast<int>(item.text.size()) && i < static_cast<int>(item.textSizes.size()); ++i)
                 {
                     rightColumnsSize += item.textSizes[i].w + p.size.pad * 2 + p.size.margin * 2;
                 }
-                for (int i = 0; i < item.text.size() && i < item.textSizes.size(); ++i)
+                for (int i = 0; i < static_cast<int>(item.text.size()) && i < static_cast<int>(item.textSizes.size()); ++i)
                 {
                     const auto glyphs = event.fontSystem->getGlyphs(item.text[i], p.size.fontInfo);
                     event.render->drawText(
@@ -619,7 +619,7 @@ namespace ftk
     {
         FTK_P();
         takeKeyFocus();
-        if (index >= 0 && index < p.dirEntries.size())
+        if (index >= 0 && index < static_cast<int>(p.dirEntries.size()))
         {
             const DirEntry& dirEntry = p.dirEntries[index];
             switch (p.mode)

@@ -176,7 +176,7 @@ namespace widgets
         {
             tmp.push_back(i.first);
         }
-        if (index >= 0 && index < tmp.size())
+        if (index >= 0 && index < static_cast<int>(tmp.size()))
         {
             auto widget = _widgets[tmp[index]](getContext(), _app.lock(), _layout);
             widget->setVStretch(Stretch::Expanding);

@@ -47,7 +47,7 @@ namespace ftk
             [this, model](int index, bool)
             {
                 FTK_P();
-                if (index >= 0 && index < p.drives.size())
+                if (index >= 0 && index < static_cast<int>(p.drives.size()))
                 {
                     model->setPath(p.drives[index]);
                 }
@@ -123,7 +123,7 @@ namespace ftk
             [this, model](int index, bool)
             {
                 FTK_P();
-                if (index >= 0 && index < p.shortcuts.size())
+                if (index >= 0 && index < static_cast<int>(p.shortcuts.size()))
                 {
                     model->setPath(p.shortcuts[index]);
                 }
@@ -204,7 +204,7 @@ namespace ftk
             [this, model](int index, bool)
             {
                 FTK_P();
-                if (index >= 0 && index < p.recent.size())
+                if (index >= 0 && index < static_cast<int>(p.recent.size()))
                 {
                     model->setPath(p.recent[index]);
                 }

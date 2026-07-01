@@ -56,7 +56,7 @@ namespace ftk
 
     void DocumentModel::close(int index)
     {
-        if (index >= 0 && index < _documents->getSize())
+        if (index >= 0 && index < static_cast<int>(_documents->getSize()))
         {
             _close->setAlways(_documents->getItem(index));
             _documents->removeItem(index);
@@ -125,7 +125,7 @@ namespace ftk
         if (_currentIndex->setIfChanged(tmp))
         {
             _current->setIfChanged(
-                tmp >= 0 && tmp < docs.size() ?
+                tmp >= 0 && tmp < static_cast<int>(docs.size()) ?
                 docs[tmp] :
                 nullptr);
         }

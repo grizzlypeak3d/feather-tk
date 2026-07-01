@@ -139,7 +139,7 @@ namespace ftk
         switch (p.type)
         {
         case ButtonGroupType::Check:
-            if (index >= 0 && index < p.buttons.size())
+            if (index >= 0 && index < static_cast<int>(p.buttons.size()))
             {
                 p.buttons[index]->setChecked(value);
             }

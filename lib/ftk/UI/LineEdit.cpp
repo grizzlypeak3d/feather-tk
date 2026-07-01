@@ -592,7 +592,7 @@ namespace ftk
     {
         FTK_P();
         int out = 0;
-        if (value >= 0 && value < p.size.glyphBoxes.size())
+        if (value >= 0 && value < static_cast<int>(p.size.glyphBoxes.size()))
         {
             out = p.size.glyphBoxes[value].min.x;
         }

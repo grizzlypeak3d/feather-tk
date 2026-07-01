@@ -286,7 +286,7 @@ namespace ftk
             {
                 FTK_P();
                 const std::vector<std::string>& exts = p.model->getExts();
-                if (value >= 0 && value <= exts.size())
+                if (value >= 0 && value <= static_cast<int>(exts.size()))
                 {
                     const std::string ext = value > 0 ? exts[value - 1] : "";
                     p.model->setExt(ext);
