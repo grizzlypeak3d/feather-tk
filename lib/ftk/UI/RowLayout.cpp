@@ -234,8 +234,8 @@ namespace ftk
             -p.size.margins[3]);
 
         std::vector<Size2I> sizeHints;
-        size_t expanding = 0;
-        std::shared_ptr<IWidget> lastVisibleChild;
+        int expanding = 0;
+        std::shared_ptr<IWidget> lastExpandingChild;
         const auto& children = getChildren();
         for (const auto& child : children)
         {
@@ -248,17 +248,18 @@ namespace ftk
                     if (Stretch::Expanding == child->getHStretch())
                     {
                         ++expanding;
+                        lastExpandingChild = child;
                     }
                     break;
                 case Orientation::Vertical:
                     if (Stretch::Expanding == child->getVStretch())
                     {
                         ++expanding;
+                        lastExpandingChild = child;
                     }
                     break;
                 default: break;
                 }
-                lastVisibleChild = child;
             }
         }
         const std::pair<int, int> extra(
@@ -290,7 +291,7 @@ namespace ftk
                     if (expanding > 0 && Stretch::Expanding == child->getHStretch())
                     {
                         size.w += extra.first / expanding;
-                        if (child == lastVisibleChild)
+                        if (child == lastExpandingChild)
                         {
                             size.w += extra.first - (extra.first / expanding * expanding);
                         }
@@ -313,7 +314,7 @@ namespace ftk
                     if (expanding > 0 && Stretch::Expanding == child->getVStretch())
                     {
                         size.h += extra.second / expanding;
-                        if (child == lastVisibleChild)
+                        if (child == lastExpandingChild)
                         {
                             size.h += extra.second - (extra.second / expanding * expanding);
                         }

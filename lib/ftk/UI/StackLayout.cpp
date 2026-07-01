@@ -180,7 +180,7 @@ namespace ftk
                 out.h = std::max(out.h, childSizeHint.h);
             }
         }
-        else if (p.currentIndex >= 0 && p.currentIndex < children.size())
+        else if (p.currentIndex >= 0 && p.currentIndex < static_cast<int>(children.size()))
         {
             auto j = children.begin();
             for (int i = 0; i < p.currentIndex; ++i, ++j)

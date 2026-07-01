@@ -43,19 +43,22 @@ namespace ftk
     int FormLayout::addRow(const std::string& text, const std::shared_ptr<IWidget>& widget)
     {
         FTK_P();
-        auto label = Label::create(getContext(), text, p.layout);
         const int index = static_cast<int>(p.widgets.size());
-        p.layout->setGridPos(label, index, 0);
-        widget->setParent(p.layout);
-        p.layout->setGridPos(widget, index, 1);
-        p.widgets.push_back({ label, widget });
+        if (auto context = getContext())
+        {
+            auto label = Label::create(context, text, p.layout);
+            p.layout->setGridPos(label, index, 0);
+            widget->setParent(p.layout);
+            p.layout->setGridPos(widget, index, 1);
+            p.widgets.push_back({ label, widget });
+        }
         return index;
     }
 
     void FormLayout::removeRow(int index)
     {
         FTK_P();
-        if (index >= 0 && index < p.widgets.size())
+        if (index >= 0 && index < static_cast<int>(p.widgets.size()))
         {
             if (p.widgets[index].first)
             {
@@ -66,6 +69,25 @@ namespace ftk
                 p.widgets[index].second->setParent(nullptr);
             }
             p.widgets.erase(p.widgets.begin() + index);
+
+            // Renumber the grid positions of the rows after the removed one.
+            // Grid rows are assigned from the row count at insertion time, so
+            // erasing a row would otherwise leave the following rows at stale
+            // grid rows - and the next added row (which uses the new, smaller
+            // row count as its grid row) would land on top of one of them.
+            // Reassigning keeps the grid rows dense and collision-free.
+            for (size_t i = index; i < p.widgets.size(); ++i)
+            {
+                if (p.widgets[i].first)
+                {
+                    p.layout->setGridPos(p.widgets[i].first, static_cast<int>(i), 0);
+                    p.layout->setGridPos(p.widgets[i].second, static_cast<int>(i), 1);
+                }
+                else if (p.widgets[i].second)
+                {
+                    p.layout->setGridPos(p.widgets[i].second, static_cast<int>(i), 0);
+                }
+            }
         }
     }
 
@@ -92,7 +114,7 @@ namespace ftk
     void FormLayout::setText(int row, const std::string& text)
     {
         FTK_P();
-        if (row >= 0 && row < p.widgets.size() && p.widgets[row].first)
+        if (row >= 0 && row < static_cast<int>(p.widgets.size()) && p.widgets[row].first)
         {
             p.widgets[row].first->setText(text);
         }
@@ -117,7 +139,7 @@ namespace ftk
     void FormLayout::setRowVisible(int index, bool visible)
     {
         FTK_P();
-        if (index >= 0 && index < p.widgets.size())
+        if (index >= 0 && index < static_cast<int>(p.widgets.size()))
         {
             if (p.widgets[index].first)
             {

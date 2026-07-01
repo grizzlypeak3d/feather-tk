@@ -44,7 +44,7 @@ namespace ftk
             int column);
 
         //! Get the odd rows background role.
-        FTK_API ColorRole getRowBackgroundRole(ColorRole) const;
+        FTK_API ColorRole getRowBackgroundRole() const;
 
         //! Get the odd rows background role.
         FTK_API void setRowBackgroundRole(ColorRole);

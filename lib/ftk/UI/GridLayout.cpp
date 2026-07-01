@@ -131,7 +131,7 @@ namespace ftk
         setDrawUpdate();
     }
 
-    ColorRole GridLayout::getRowBackgroundRole(ColorRole) const
+    ColorRole GridLayout::getRowBackgroundRole() const
     {
         return _p->rowBackgroundRole;
     }
@@ -269,40 +269,73 @@ namespace ftk
             }
         }
         V2I stretchSize;
+        V2I stretchExtra;
         int rowsVisibleCount = 0;
         int columnsVisibleCount = 0;
         p.getVisible(rowsVisibleCount, columnsVisibleCount);
         if (rowStretchCount > 0)
         {
-            stretchSize.y = (g.h() -
+            const int avail = g.h() -
                 (rowsVisibleCount - 1) * p.size.spacing -
-                totalSize.y) / rowStretchCount;
+                totalSize.y;
+            stretchSize.y = avail / static_cast<int>(rowStretchCount);
+            stretchExtra.y = avail - stretchSize.y * static_cast<int>(rowStretchCount);
         }
         if (columnStretchCount > 0)
         {
-            stretchSize.x = (g.w() -
+            const int avail = g.w() -
                 (columnsVisibleCount - 1) * p.size.spacing -
-                totalSize.x) / columnStretchCount;
+                totalSize.x;
+            stretchSize.x = avail / static_cast<int>(columnStretchCount);
+            stretchExtra.x = avail - stretchSize.x * static_cast<int>(columnStretchCount);
+        }
+
+        // Find the last stretch row and column, which absorb the remainder
+        // left over from the integer division above so the grid fills the
+        // available space exactly instead of coming up a pixel or two short.
+        int lastRowStretch = -1;
+        for (int i = 0; i < static_cast<int>(rowStretch.size()); ++i)
+        {
+            if (rowStretch[i])
+            {
+                lastRowStretch = i;
+            }
+        }
+        int lastColumnStretch = -1;
+        for (int i = 0; i < static_cast<int>(columnStretch.size()); ++i)
+        {
+            if (columnStretch[i])
+            {
+                lastColumnStretch = i;
+            }
         }
 
         // Get the sizes.
         p.geom.rowSizes.clear();
         std::vector<int> columnSizes;
-        for (int i = 0; i < rowSizeHints.size(); ++i)
+        for (int i = 0; i < static_cast<int>(rowSizeHints.size()); ++i)
         {
             int size = rowSizeHints[i];
             if (rowStretch[i])
             {
                 size += stretchSize.y;
+                if (i == lastRowStretch)
+                {
+                    size += stretchExtra.y;
+                }
             }
             p.geom.rowSizes.push_back(size);
         }
-        for (int i = 0; i < columnSizeHints.size(); ++i)
+        for (int i = 0; i < static_cast<int>(columnSizeHints.size()); ++i)
         {
             int size = columnSizeHints[i];
             if (columnStretch[i])
             {
                 size += stretchSize.x;
+                if (i == lastColumnStretch)
+                {
+                    size += stretchExtra.x;
+                }
             }
             columnSizes.push_back(size);
         }
@@ -312,14 +345,14 @@ namespace ftk
         {
             const bool visible = i.first->isVisible(false);
             V2I pos = g.min;
-            for (int j = 0; j < i.second.row && j < p.geom.rowSizes.size(); ++j)
+            for (int j = 0; j < i.second.row && j < static_cast<int>(p.geom.rowSizes.size()); ++j)
             {
                 if (p.geom.rowsVisible[j])
                 {
                     pos.y += p.geom.rowSizes[j] + (visible ? p.size.spacing : 0);
                 }
             }
-            for (int j = 0; j < i.second.column && j < columnSizes.size(); ++j)
+            for (int j = 0; j < i.second.column && j < static_cast<int>(columnSizes.size()); ++j)
             {
                 if (columnsVisible[j])
                 {
@@ -327,11 +360,11 @@ namespace ftk
                 }
             }
             Size2I size;
-            if (i.second.column < columnSizes.size())
+            if (i.second.column < static_cast<int>(columnSizes.size()))
             {
                 size.w = columnSizes[i.second.column];
             }
-            if (i.second.row < p.geom.rowSizes.size())
+            if (i.second.row < static_cast<int>(p.geom.rowSizes.size()))
             {
                 size.h = p.geom.rowSizes[i.second.row];
             }
