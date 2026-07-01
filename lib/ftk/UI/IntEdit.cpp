@@ -289,12 +289,6 @@ namespace ftk
         if (p.model)
         {
             text = Format("{0}").arg(p.model->getValue());
-            int width = std::max(p.digits, 2);
-            if (p.model->getRange().min() < 0 ||
-                p.model->getRange().max() < 0)
-            {
-                ++width;
-            }
         }
         p.lineEdit->setText(text);
     }

@@ -22,7 +22,7 @@
 
 //! Convenience macro for accessing private implementations.
 #define FTK_P() \
-    auto& p = *_p
+    [[maybe_unused]] auto& p = *_p
 
 //! Convenience macro for enum utilities.
 //! 

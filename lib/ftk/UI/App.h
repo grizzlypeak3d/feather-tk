@@ -19,7 +19,7 @@ namespace ftk
     class IWidget;
     class IWindow;
     class IconSystem;
-    class TickEvent;
+    struct TickEvent;
 
     //! Monitor information.
     struct FTK_API_TYPE MonitorInfo

@@ -42,6 +42,10 @@ namespace ftk
         //! \todo Remove this function and replace it with an observer.
         FTK_API void setChecked(const std::shared_ptr<Action>&, bool);
 
+        //! Bring the base widget's setEnabled(bool) into scope; the
+        //! item-oriented overload below would otherwise hide it.
+        using IWidget::setEnabled;
+
         //! Set whether a menu item is enabled.
         //! 
         //! \todo Remove this function and replace it with an observer.
