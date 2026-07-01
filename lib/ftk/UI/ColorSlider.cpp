@@ -141,7 +141,6 @@ namespace ftk
         // Draw the colors.
         TriMesh2F mesh;
         int w = p.draw->g2.w();
-        int h = p.draw->g2.h();
         for (size_t i = 0; i < p.colors.size(); ++i)
         {
             const int x = p.draw->g2.min.x + i / (static_cast<float>(p.colors.size() - 1)) * w;
@@ -470,7 +469,6 @@ namespace ftk
         // Draw the colors.
         TriMesh2F mesh;
         int w = p.draw->g2.w();
-        int h = p.draw->g2.h();
         for (size_t i = 0; i < p.colors.size(); ++i)
         {
             const int x = p.draw->g2.min.x + i / (static_cast<float>(p.colors.size() - 1)) * w;

@@ -117,7 +117,7 @@ namespace objview
         const std::shared_ptr<Actions>& actions)
     {
         _menus["Render"] = Menu::create(context);
-        for (const auto label : getRenderModeLabels())
+        for (const auto& label : getRenderModeLabels())
         {
             const std::string key = "Render/" + label;
             _menus["Render"]->addAction(actions->getAction(key));

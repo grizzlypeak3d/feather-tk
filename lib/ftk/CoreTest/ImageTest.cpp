@@ -88,7 +88,6 @@ namespace ftk
                 FTK_ASSERT(info.size == image->getSize());
                 FTK_ASSERT(info.size.w == image->getWidth());
                 FTK_ASSERT(info.size.h == image->getHeight());
-                const float aspect = image->getAspect();
                 FTK_ASSERT(info.type == image->getType());
                 FTK_ASSERT(image->isValid());
                 ImageTags tags;

@@ -314,7 +314,7 @@ namespace ftk
         FTK_P();
 
         p.graph = GraphSubWidget::create(context);
-        for (const auto i : labels)
+        for (const auto& i : labels)
         {
             auto label = Label::create(context);
             label->setTextRole(ColorRole::TextDisabled);
@@ -329,7 +329,7 @@ namespace ftk
         p.graph->setParent(p.layout);
         auto hLayout = HorizontalLayout::create(context, p.layout);
         hLayout->setSpacingRole(SizeRole::SpacingSmall);
-        for (const auto i : labels)
+        for (const auto& i : labels)
         {
             auto hLayout2 = HorizontalLayout::create(context, hLayout);
             hLayout2->setSpacingRole(SizeRole::SpacingTool);

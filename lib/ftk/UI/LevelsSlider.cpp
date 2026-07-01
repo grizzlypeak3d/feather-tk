@@ -353,8 +353,6 @@ namespace ftk
 
         // Draw the colors.
         TriMesh2F mesh;
-        int w = p.draw->g2.w();
-        int h = p.draw->g2.h();
         const int v0 = _valueToPos(getValue().min());
         const int v1 = _valueToPos(getValue().max());
         mesh.v.push_back(V2F(p.draw->g2.min.x, p.draw->g2.min.y));

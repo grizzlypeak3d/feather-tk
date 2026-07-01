@@ -50,7 +50,7 @@ namespace ftk
         const LineOptions& options)
     {
         std::vector<std::pair<V2F, V2F> > linesF;
-        for (const auto line : lines)
+        for (const auto& line : lines)
         {
             linesF.push_back(std::make_pair(
                 V2F(line.first.x, line.first.y),

@@ -24,7 +24,6 @@ namespace ftk
 
         private:
             void _members();
-            void _functions();
         };
     }
 }

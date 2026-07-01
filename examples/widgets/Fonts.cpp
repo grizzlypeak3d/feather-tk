@@ -80,7 +80,7 @@ namespace widgets
             style->observeFonts(),
             [this, fontSystem](const std::map<FontType, std::string>& value)
             {
-                for (const auto i : value)
+                for (const auto& i : value)
                 {
                     const auto j = std::find(_fonts.begin(), _fonts.end(), i.second);
                     _comboBoxes[i.first]->setCurrentIndex(j != _fonts.end() ? (j - _fonts.begin()) : -1);

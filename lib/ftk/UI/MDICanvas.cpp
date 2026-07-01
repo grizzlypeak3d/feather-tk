@@ -240,7 +240,6 @@ namespace ftk
 
         // Place new child widgets on the canvas.
         const Box2I& pg = getGeometry();
-        const Size2I& gridSize = p.size.gridSize;
         for (auto i : p.newWidgets)
         {
             const Size2I& sizeHint = i.second->getSizeHint();

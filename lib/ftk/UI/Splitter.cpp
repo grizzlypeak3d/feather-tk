@@ -127,8 +127,6 @@ namespace ftk
         FTK_P();
 
         const Box2I& g = getGeometry();
-        const int w = g.w();
-        const int h = g.h();
 
         std::vector<std::shared_ptr<IWidget> > children;
         for (const auto& child : getChildren())

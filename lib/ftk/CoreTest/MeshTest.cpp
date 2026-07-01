@@ -26,7 +26,6 @@ namespace ftk
         void MeshTest::run()
         {
             _members();
-            _functions();
         }
         
         void MeshTest::_members()
@@ -57,16 +56,6 @@ namespace ftk
                 FTK_ASSERT(3 == v.n);
                 FTK_ASSERT(4 == v.c);
             }
-        }
-        
-        void MeshTest::_functions()
-        {
-            const float e = edge(
-                V2F(0.F, 1.F),
-                V2F(1.F, 0.F),
-                V2F(1.F, 1.F));
-            const TriMesh2F m = mesh(Box2I(0, 1, 2, 3));
-            const TriMesh2F m1 = mesh(Box2F(0.F, 1.F, 2.F, 3.F));
         }
     }
 }

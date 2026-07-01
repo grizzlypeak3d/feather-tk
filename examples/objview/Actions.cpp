@@ -40,7 +40,7 @@ namespace objview
                 _actions["View/OrbitRight"]->setEnabled(current);
                 _actions["View/OrbitUp"]->setEnabled(current);
                 _actions["View/OrbitDown"]->setEnabled(current);
-                for (const auto label : getRenderModeLabels())
+                for (const auto& label : getRenderModeLabels())
                 {
                     const std::string key = "Render/" + label;
                     _actions[key]->setEnabled(current);
