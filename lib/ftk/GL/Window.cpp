@@ -163,16 +163,28 @@ namespace ftk
 
             if (auto logSystem = p.logSystem.lock())
             {
+                Size2I actualSize;
+                SDL_GetWindowSize(p.sdlWindow, &actualSize.w, &actualSize.h);
+                Size2I frameBufferSize;
+#if defined(FTK_SDL2)
+                SDL_GL_GetDrawableSize(p.sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+#elif defined(FTK_SDL3)
+                SDL_GetWindowSizeInPixels(p.sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+#endif // FTK_SDL2
                 logSystem->print(
                     "ftk::gl::Window",
                     Format(
                         "New window: {0}\n"
-                        "    * Size: {1}\n"
-                        "    * OpenGL vendor: {2}\n"
-                        "    * OpenGL renderer: {3}\n"
-                        "    * OpenGL version: {4}").
+                        "    * Requested size: {1}\n"
+                        "    * Actual size: {2}\n"
+                        "    * Framebuffer size: {3}\n"
+                        "    * OpenGL vendor: {4}\n"
+                        "    * OpenGL renderer: {5}\n"
+                        "    * OpenGL version: {6}").
                     arg(this).
                     arg(size).
+                    arg(actualSize).
+                    arg(frameBufferSize).
                     arg(p.glInfo.vendor).
                     arg(p.glInfo.renderer).
                     arg(p.glInfo.version));
