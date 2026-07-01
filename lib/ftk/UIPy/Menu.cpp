@@ -33,7 +33,11 @@ namespace ftk
                     py::arg("checked"))
                 .def(
                     "setEnabled",
-                    &Menu::setEnabled,
+                    py::overload_cast<bool>(&Menu::setEnabled),
+                    py::arg("enabled"))
+                .def(
+                    "setEnabled",
+                    py::overload_cast<const std::shared_ptr<Action>&, bool>(&Menu::setEnabled),
                     py::arg("action"),
                     py::arg("enabled"))
                 .def("getSubMenus", &Menu::getSubMenus)
