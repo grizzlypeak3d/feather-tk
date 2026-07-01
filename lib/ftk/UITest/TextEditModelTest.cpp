@@ -635,6 +635,121 @@ namespace ftk
                 FTK_ASSERT(text2[5] == "0123456789");
                 FTK_ASSERT(cursor2 == TextEditPos(3, 0));
             }
+            {
+                // Undo/redo.
+                auto model = TextEditModel::create(_context);
+                model->setText({ "abc" });
+
+                bool hasUndo = false;
+                bool hasRedo = false;
+                auto hasUndoObserver = Observer<bool>::create(
+                    model->observeHasUndo(),
+                    [&hasUndo](bool value) { hasUndo = value; });
+                auto hasRedoObserver = Observer<bool>::create(
+                    model->observeHasRedo(),
+                    [&hasRedo](bool value) { hasRedo = value; });
+                FTK_ASSERT(!hasUndo);
+                FTK_ASSERT(!hasRedo);
+
+                // Type a character, then undo and redo it.
+                model->setCursor(TextEditPos(0, 3));
+                model->input("d");
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "abcd" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(0, 4));
+                FTK_ASSERT(hasUndo);
+                FTK_ASSERT(!hasRedo);
+                model->undo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "abc" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(0, 3));
+                FTK_ASSERT(!hasUndo);
+                FTK_ASSERT(hasRedo);
+                model->redo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "abcd" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(0, 4));
+                FTK_ASSERT(!hasRedo);
+
+                // Splitting a line with Return, then undo restores the joined
+                // line and the cursor.
+                model->setText({ "abc" });
+                FTK_ASSERT(!hasUndo);
+                model->setCursor(TextEditPos(0, 1));
+                model->key(Key::Return);
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "a", "bc" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(1, 0));
+                model->undo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "abc" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(0, 1));
+                model->redo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "a", "bc" }));
+
+                // Undo of a multi-line paste restores the original lines, the
+                // cursor, and the selection.
+                model->setText({ "AAA", "BBB" });
+                model->setSelection(TextEditSelection(
+                    TextEditPos(0, 1),
+                    TextEditPos(1, 1)));
+                auto clipboard = _context->getSystem<ClipboardSystem>();
+                clipboard->setText("1\n2");
+                model->paste();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "A1", "2BB" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(1, 1));
+                FTK_ASSERT(!model->getSelection().isValid());
+                model->undo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "AAA", "BBB" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(0, 0));
+                FTK_ASSERT(model->getSelection() == TextEditSelection(
+                    TextEditPos(0, 1),
+                    TextEditPos(1, 1)));
+
+                // Undo of a selection-replace restores the selection.
+                model->setText({ "hello" });
+                model->setSelection(TextEditSelection(
+                    TextEditPos(0, 0),
+                    TextEditPos(0, 5)));
+                model->input("X");
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "X" }));
+                model->undo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "hello" }));
+                FTK_ASSERT(model->getSelection() == TextEditSelection(
+                    TextEditPos(0, 0),
+                    TextEditPos(0, 5)));
+
+                // A new edit after an undo truncates the redo branch.
+                model->setText({ "ab" });
+                model->setCursor(TextEditPos(0, 2));
+                model->input("c");
+                model->undo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "ab" }));
+                FTK_ASSERT(hasRedo);
+                model->input("d");
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "abd" }));
+                FTK_ASSERT(!hasRedo);
+
+                // Setting the text clears the undo history.
+                model->input("e");
+                FTK_ASSERT(hasUndo);
+                model->setText({ "zzz" });
+                FTK_ASSERT(!hasUndo);
+                FTK_ASSERT(!hasRedo);
+            }
+            {
+                // Inserting multi-line text within a single line: the last
+                // pasted line merges before the remainder of the original
+                // line (regression test for the ordering in _replace).
+                auto model = TextEditModel::create(_context);
+                model->setText({ "xy" });
+
+                auto clipboard = _context->getSystem<ClipboardSystem>();
+                clipboard->setText("1\n2");
+                model->setCursor(TextEditPos(0, 1));
+                model->paste();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "x1", "2y" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(1, 1));
+
+                model->undo();
+                FTK_ASSERT(model->getText() == std::vector<std::string>({ "xy" }));
+                FTK_ASSERT(model->getCursor() == TextEditPos(0, 1));
+            }
         }
     }
 }

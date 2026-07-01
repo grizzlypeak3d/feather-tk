@@ -6,6 +6,7 @@
 #include <ftk/UI/ClipboardSystem.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Command.h>
 #include <ftk/Core/String.h>
 
 namespace ftk
@@ -96,6 +97,71 @@ namespace ftk
         return tabSpaces == other.tabSpaces;
     }
 
+    namespace
+    {
+        //! Undo/redo command for a line-range replacement. The affected lines
+        //! [lineStart, lineStart + oldLines.size()) are replaced by newLines on
+        //! exec, and the inverse on undo, restoring the cursor and selection.
+        class TextEditCommand : public ICommand
+        {
+        public:
+            TextEditCommand(
+                const std::shared_ptr<ObservableList<std::string> >& text,
+                const std::shared_ptr<Observable<TextEditPos> >& cursor,
+                const std::shared_ptr<Observable<TextEditSelection> >& selection,
+                int lineStart,
+                const std::vector<std::string>& oldLines,
+                const std::vector<std::string>& newLines,
+                const TextEditPos& cursorBefore,
+                const TextEditSelection& selectionBefore,
+                const TextEditPos& cursorAfter,
+                const TextEditSelection& selectionAfter) :
+                _text(text),
+                _cursor(cursor),
+                _selection(selection),
+                _lineStart(lineStart),
+                _oldLines(oldLines),
+                _newLines(newLines),
+                _cursorBefore(cursorBefore),
+                _selectionBefore(selectionBefore),
+                _cursorAfter(cursorAfter),
+                _selectionAfter(selectionAfter)
+            {}
+
+            void exec() override
+            {
+                _text->replaceItems(
+                    _lineStart,
+                    _lineStart + _oldLines.size(),
+                    _newLines);
+                _cursor->setIfChanged(_cursorAfter);
+                _selection->setIfChanged(_selectionAfter);
+            }
+
+            void undo() override
+            {
+                _text->replaceItems(
+                    _lineStart,
+                    _lineStart + _newLines.size(),
+                    _oldLines);
+                _cursor->setIfChanged(_cursorBefore);
+                _selection->setIfChanged(_selectionBefore);
+            }
+
+        private:
+            std::shared_ptr<ObservableList<std::string> > _text;
+            std::shared_ptr<Observable<TextEditPos> > _cursor;
+            std::shared_ptr<Observable<TextEditSelection> > _selection;
+            int _lineStart;
+            std::vector<std::string> _oldLines;
+            std::vector<std::string> _newLines;
+            TextEditPos _cursorBefore;
+            TextEditSelection _selectionBefore;
+            TextEditPos _cursorAfter;
+            TextEditSelection _selectionAfter;
+        };
+    }
+
     struct TextEditModel::Private
     {
         std::weak_ptr<Context> context;
@@ -105,6 +171,7 @@ namespace ftk
         std::shared_ptr<Observable<TextEditSelection> > selection;
         int pageRows = 0;
         std::shared_ptr<Observable<TextEditModelOptions> > options;
+        std::shared_ptr<CommandStack> commandStack;
     };
 
     void TextEditModel::_init(
@@ -118,6 +185,7 @@ namespace ftk
         p.cursor = Observable<TextEditPos>::create(TextEditPos(0, 0));
         p.selection = Observable<TextEditSelection>::create();
         p.options = Observable<TextEditModelOptions>::create();
+        p.commandStack = CommandStack::create();
     }
 
     TextEditModel::TextEditModel() :
@@ -155,6 +223,7 @@ namespace ftk
             p.cursor->setIfChanged(TextEditPos(0, 0));
             p.selection->setIfChanged(TextEditSelection());
             p.text->setIfChanged(!value.empty() ? value : textEditClear);
+            p.commandStack->clear();
         }
     }
 
@@ -246,6 +315,7 @@ namespace ftk
         FTK_P();
         if (p.readOnly->get())
             return;
+        p.commandStack->undo();
     }
 
     void TextEditModel::redo()
@@ -253,6 +323,17 @@ namespace ftk
         FTK_P();
         if (p.readOnly->get())
             return;
+        p.commandStack->redo();
+    }
+
+    std::shared_ptr<IObservable<bool> > TextEditModel::observeHasUndo() const
+    {
+        return _p->commandStack->observeHasUndo();
+    }
+
+    std::shared_ptr<IObservable<bool> > TextEditModel::observeHasRedo() const
+    {
+        return _p->commandStack->observeHasRedo();
     }
 
     void TextEditModel::cut()
@@ -262,15 +343,13 @@ namespace ftk
             return;
         if (auto context = p.context.lock())
         {
-            TextEditSelection selection = p.selection->get();
+            const TextEditSelection selection = p.selection->get();
             if (selection.isValid())
             {
                 auto clipboard = context->getSystem<ClipboardSystem>();
                 const auto lines = _getSelection(selection);
                 clipboard->setText(join(lines, '\n'));
-                _replace(selection, {});
-                p.cursor->setIfChanged(selection.min());
-                p.selection->setIfChanged(TextEditSelection());
+                _replace(selection, {}, selection.min(), TextEditSelection());
             }
         }
     }
@@ -302,29 +381,25 @@ namespace ftk
             if (!clipboardText.empty())
             {
                 const auto lines = splitLines(clipboardText);
-                TextEditPos cursor = p.cursor->get();
-                TextEditSelection selection = p.selection->get();
-                if (selection.isValid())
-                {
-                    _replace(selection, lines);
-                    cursor = selection.min();
-                    selection = TextEditSelection();
-                }
-                else
-                {
-                    _replace(TextEditSelection(cursor, cursor), lines);
-                }
+                const TextEditSelection selection = p.selection->get();
+                const TextEditPos pos = selection.isValid() ?
+                    selection.min() :
+                    p.cursor->get();
+                TextEditPos cursor = pos;
                 if (1 == lines.size())
                 {
-                    cursor.chr += static_cast<int>(lines.front().size());
+                    cursor.chr = pos.chr + static_cast<int>(lines.front().size());
                 }
                 else
                 {
-                    cursor.line += static_cast<int>(lines.size()) - 1;
+                    cursor.line = pos.line + static_cast<int>(lines.size()) - 1;
                     cursor.chr = static_cast<int>(lines.back().size());
                 }
-                p.cursor->setIfChanged(cursor);
-                p.selection->setIfChanged(selection);
+                _replace(
+                    selection.isValid() ? selection : TextEditSelection(pos, pos),
+                    lines,
+                    cursor,
+                    TextEditSelection());
             }
         }
     }
@@ -334,39 +409,17 @@ namespace ftk
         FTK_P();
         if (p.readOnly->get())
             return;
-        const auto& text = p.text->get();
-        TextEditPos cursor = p.cursor->get();
-        TextEditSelection selection = p.selection->get();
-
-        if (selection.isValid())
-        {
-            // Replace the selection.
-            _replace(selection, { value });
-            cursor = selection.min();
-            cursor.chr += value.size();
-            selection = TextEditSelection();
-        }
-        else
-        {
-            if (cursor.line >= 0 && cursor.line < static_cast<int>(text.size()))
-            {
-                // Insert text at the cursor.
-                std::string line = text[cursor.line];
-                line.insert(cursor.chr, value);
-                cursor.chr += value.size();
-                p.text->setItem(cursor.line, line);
-            }
-            else
-            {
-                // Add a line.
-                std::string line = value;
-                cursor.chr = static_cast<int>(line.size());
-                p.text->pushBack(line);
-            }
-        }
-
-        p.cursor->setIfChanged(cursor);
-        p.selection->setIfChanged(selection);
+        const TextEditSelection selection = p.selection->get();
+        const TextEditPos pos = selection.isValid() ?
+            selection.min() :
+            p.cursor->get();
+        TextEditPos cursor = pos;
+        cursor.chr = pos.chr + static_cast<int>(value.size());
+        _replace(
+            selection.isValid() ? selection : TextEditSelection(pos, pos),
+            { value },
+            cursor,
+            TextEditSelection());
     }
 
     bool TextEditModel::key(Key key, int modifiers)
@@ -676,113 +729,94 @@ namespace ftk
     void TextEditModel::_backspace()
     {
         FTK_P();
-        TextEditPos cursor = p.cursor->get();
-        TextEditSelection selection = p.selection->get();
+        const TextEditPos cursor = p.cursor->get();
+        const TextEditSelection selection = p.selection->get();
         if (selection.isValid())
         {
             // Remove the selection.
-            _replace(selection, {});
-            cursor = selection.min();
-            selection = TextEditSelection();
+            _replace(selection, {}, selection.min(), TextEditSelection());
         }
         else
         {
             const TextEditPos prev = _getPrev(cursor);
             if (cursor != prev)
             {
-                _replace(TextEditSelection(cursor, prev), {});
-                cursor = prev;
+                _replace(TextEditSelection(cursor, prev), {}, prev, TextEditSelection());
             }
         }
-        p.cursor->setIfChanged(cursor);
-        p.selection->setIfChanged(selection);
     }
 
     void TextEditModel::_delete()
     {
         FTK_P();
-        TextEditPos cursor = p.cursor->get();
-        TextEditSelection selection = p.selection->get();
+        const TextEditPos cursor = p.cursor->get();
+        const TextEditSelection selection = p.selection->get();
         if (selection.isValid())
         {
             // Remove the selection.
-            _replace(selection, {});
-            cursor = selection.min();
-            selection = TextEditSelection();
+            _replace(selection, {}, selection.min(), TextEditSelection());
         }
         else
         {
             const TextEditPos next = _getNext(cursor);
             if (cursor != next)
             {
-                _replace(TextEditSelection(cursor, next), {});
+                _replace(TextEditSelection(cursor, next), {}, cursor, TextEditSelection());
             }
         }
-        p.cursor->setIfChanged(cursor);
-        p.selection->setIfChanged(selection);
     }
 
     void TextEditModel::_return()
     {
         FTK_P();
-        const auto& text = p.text->get();
-        TextEditPos cursor = p.cursor->get();
-        TextEditSelection selection = p.selection->get();
+        const TextEditPos cursor = p.cursor->get();
+        const TextEditSelection selection = p.selection->get();
         if (selection.isValid())
         {
             // Remove the selection.
-            _replace(selection, {});
-            cursor = selection.second;
-            selection = TextEditSelection();
-        }
-        else if (0 == cursor.chr)
-        {
-            // Insert a line.
-            p.text->insertItem(cursor.line, std::string());
-            cursor.line = std::min(cursor.line + 1, static_cast<int>(text.size()) - 1);
+            _replace(selection, {}, selection.second, TextEditSelection());
         }
         else
         {
-            // Break the line.
-            const std::string& line = text[cursor.line];
-            p.text->replaceItems(
-                cursor.line,
-                cursor.line + 1,
-                { line.substr(0, cursor.chr), line.substr(cursor.chr) });
-            cursor.line = std::min(cursor.line + 1, static_cast<int>(text.size()) - 1);
-            cursor.chr = 0;
+            // Break the line at the cursor (when the cursor is at the start of
+            // a line this inserts an empty line above it).
+            _replace(
+                TextEditSelection(cursor, cursor),
+                { std::string(), std::string() },
+                TextEditPos(cursor.line + 1, 0),
+                TextEditSelection());
         }
-        p.cursor->setIfChanged(cursor);
-        p.selection->setIfChanged(selection);
     }
 
     void TextEditModel::_tab(int modifiers)
     {
         FTK_P();
         const auto& text = p.text->get();
-        TextEditPos cursor = p.cursor->get();
-        TextEditSelection selection = p.selection->get();
+        const TextEditPos cursor = p.cursor->get();
+        const TextEditSelection selection = p.selection->get();
         if (0 == modifiers &&
             selection.isValid())
         {
             // Indent.
             const TextEditPos min = selection.min();
             const TextEditPos max = selection.max();
-            TextEditSelection tmp(min, max);
-            tmp.first.chr = 0;
-            tmp.second.chr = max.line < static_cast<int>(text.size()) ?
+            TextEditSelection range(min, max);
+            range.first.chr = 0;
+            range.second.chr = max.line < static_cast<int>(text.size()) ?
                 static_cast<int>(text[max.line].size()) : 0;
-            std::vector<std::string> lines = _getSelection(tmp);
+            std::vector<std::string> lines = _getSelection(range);
             const std::string indent = _getTabSpaces();
             for (auto& line : lines)
             {
                 line.insert(0, indent);
             }
-            _replace(tmp, lines);
             const int tabSpaces = p.options->get().tabSpaces;
-            cursor.chr += tabSpaces;
-            selection.first.chr += tabSpaces;
-            selection.second.chr += tabSpaces;
+            TextEditPos cursorAfter = cursor;
+            cursorAfter.chr += tabSpaces;
+            TextEditSelection selectionAfter = selection;
+            selectionAfter.first.chr += tabSpaces;
+            selectionAfter.second.chr += tabSpaces;
+            _replace(range, lines, cursorAfter, selectionAfter);
         }
         else if (
             static_cast<int>(KeyModifier::Shift) == modifiers &&
@@ -791,11 +825,11 @@ namespace ftk
             // Un-indent.
             const TextEditPos min = selection.min();
             const TextEditPos max = selection.max();
-            TextEditSelection tmp(min, max);
-            tmp.first.chr = 0;
-            tmp.second.chr = max.line < static_cast<int>(text.size()) ?
+            TextEditSelection range(min, max);
+            range.first.chr = 0;
+            range.second.chr = max.line < static_cast<int>(text.size()) ?
                 static_cast<int>(text[max.line].size()) : 0;
-            std::vector<std::string> lines = _getSelection(tmp);
+            std::vector<std::string> lines = _getSelection(range);
             const int tabSpaces = p.options->get().tabSpaces;
             int lastSpacesRemoved = 0;
             for (auto& line : lines)
@@ -813,10 +847,12 @@ namespace ftk
                 }
                 lastSpacesRemoved = j;
             }
-            _replace(tmp, lines);
-            cursor.chr = std::max(0, cursor.chr - lastSpacesRemoved);
-            selection.first.chr = std::max(0, selection.first.chr - lastSpacesRemoved);
-            selection.second.chr = std::max(0, selection.second.chr - lastSpacesRemoved);
+            TextEditPos cursorAfter = cursor;
+            cursorAfter.chr = std::max(0, cursor.chr - lastSpacesRemoved);
+            TextEditSelection selectionAfter = selection;
+            selectionAfter.first.chr = std::max(0, selection.first.chr - lastSpacesRemoved);
+            selectionAfter.second.chr = std::max(0, selection.second.chr - lastSpacesRemoved);
+            _replace(range, lines, cursorAfter, selectionAfter);
         }
         else if (
             cursor.line >= 0 &&
@@ -825,47 +861,57 @@ namespace ftk
             cursor.chr <= text[cursor.line].size())
         {
             // Insert spaces.
-            std::string line = text[cursor.line];
-            line.insert(cursor.chr, _getTabSpaces());
-            cursor.chr += p.options->get().tabSpaces;
-            p.text->setItem(cursor.line, line);
+            const int tabSpaces = p.options->get().tabSpaces;
+            TextEditPos cursorAfter = cursor;
+            cursorAfter.chr += tabSpaces;
+            _replace(
+                TextEditSelection(cursor, cursor),
+                { _getTabSpaces() },
+                cursorAfter,
+                TextEditSelection());
         }
-        p.cursor->setIfChanged(cursor);
-        p.selection->setIfChanged(selection);
     }
 
     void TextEditModel::_replace(
         const TextEditSelection& selection,
-        const std::vector<std::string>& value)
+        const std::vector<std::string>& value,
+        const TextEditPos& cursorAfter,
+        const TextEditSelection& selectionAfter)
     {
         FTK_P();
         const TextEditPos min = selection.min();
         const TextEditPos max = selection.max();
         const auto& text = p.text->get();
+        int lineStart = 0;
+        int lineEnd = 0;
+        std::vector<std::string> newLines;
         if (selection == _getSelectAll())
         {
-            p.text->setIfChanged(!value.empty() ? value : textEditClear);
+            lineStart = 0;
+            lineEnd = static_cast<int>(text.size());
+            newLines = !value.empty() ? value : textEditClear;
         }
         else if (min.line == max.line && value.size() <= 1)
         {
             const std::string& line = text[min.line];
-            const std::string tmp =
+            newLines.push_back(
                 line.substr(0, min.chr) +
                 (!value.empty() ? value.front() : std::string()) +
-                line.substr(max.chr);
-            p.text->setItemOnlyIfChanged(min.line, tmp);
+                line.substr(max.chr));
+            lineStart = min.line;
+            lineEnd = min.line + 1;
         }
         else if (min.line == max.line)
         {
-            std::vector<std::string> tmp;
             const std::string& line = text[min.line];
-            tmp.push_back(line.substr(0, min.chr) + value.front());
-            for (size_t i = 1; !value.empty() && i < value.size() - 1; ++i)
+            newLines.push_back(line.substr(0, min.chr) + value.front());
+            for (size_t i = 1; i + 1 < value.size(); ++i)
             {
-                tmp.push_back(value[i]);
+                newLines.push_back(value[i]);
             }
-            tmp.push_back(line.substr(max.chr) + value.back());
-            p.text->replaceItems(min.line, min.line + 1, tmp);
+            newLines.push_back(value.back() + line.substr(max.chr));
+            lineStart = min.line;
+            lineEnd = min.line + 1;
         }
         else if (value.size() <= 1)
         {
@@ -875,19 +921,58 @@ namespace ftk
                 tmp += value.front();
             }
             tmp += text[max.line].substr(max.chr);
-            p.text->replaceItems(min.line, max.line + 1, { tmp });
+            newLines.push_back(tmp);
+            lineStart = min.line;
+            lineEnd = max.line + 1;
         }
         else
         {
-            std::vector<std::string> tmp;
-            tmp.push_back(text[min.line].substr(0, min.chr) + value.front());
-            for (size_t i = 1; !value.empty() && i < value.size() - 1; ++i)
+            newLines.push_back(text[min.line].substr(0, min.chr) + value.front());
+            for (size_t i = 1; i + 1 < value.size(); ++i)
             {
-                tmp.push_back(value[i]);
+                newLines.push_back(value[i]);
             }
-            tmp.push_back(value.back() + text[max.line].substr(max.chr));
-            p.text->replaceItems(min.line, max.line + 1, tmp);
+            newLines.push_back(value.back() + text[max.line].substr(max.chr));
+            lineStart = min.line;
+            lineEnd = max.line + 1;
         }
+        _edit(lineStart, lineEnd, newLines, cursorAfter, selectionAfter);
+    }
+
+    void TextEditModel::_edit(
+        int lineStart,
+        int lineEnd,
+        const std::vector<std::string>& newLines,
+        const TextEditPos& cursorAfter,
+        const TextEditSelection& selectionAfter)
+    {
+        FTK_P();
+        const auto& text = p.text->get();
+        lineStart = std::max(0, std::min(lineStart, static_cast<int>(text.size())));
+        lineEnd = std::max(lineStart, std::min(lineEnd, static_cast<int>(text.size())));
+        const std::vector<std::string> oldLines(
+            text.begin() + lineStart,
+            text.begin() + lineEnd);
+        const TextEditPos cursorBefore = p.cursor->get();
+        const TextEditSelection selectionBefore = p.selection->get();
+        if (oldLines == newLines &&
+            cursorAfter == cursorBefore &&
+            selectionAfter == selectionBefore)
+        {
+            return;
+        }
+        auto command = std::make_shared<TextEditCommand>(
+            p.text,
+            p.cursor,
+            p.selection,
+            lineStart,
+            oldLines,
+            newLines,
+            cursorBefore,
+            selectionBefore,
+            cursorAfter,
+            selectionAfter);
+        p.commandStack->push(command);
     }
 
     void to_json(nlohmann::json& json, const TextEditModelOptions& value)

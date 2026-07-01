@@ -60,6 +60,7 @@ namespace textedit
                     _currentLine = 0;
                     _currentColumn = 0;
                     _textObserver.reset();
+                    _cursorObserver.reset();
                     _textUpdate();
                 }
             });

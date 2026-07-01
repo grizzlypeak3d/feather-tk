@@ -61,6 +61,8 @@ namespace textedit
         std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
         std::shared_ptr<ftk::Observer<bool> > _changedObserver;
         std::shared_ptr<ftk::Observer<ftk::TextEditSelection> > _selectionObserver;
+        std::shared_ptr<ftk::Observer<bool> > _hasUndoObserver;
+        std::shared_ptr<ftk::Observer<bool> > _hasRedoObserver;
         std::shared_ptr<ftk::Observer<WindowSettings> > _windowSettingsObserver;
         std::shared_ptr<ftk::Observer<bool> > _fullScreenObserver;
     };

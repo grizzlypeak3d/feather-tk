@@ -43,11 +43,25 @@ namespace textedit
                         {
                             _actionsUpdate();
                         });
+                    _hasUndoObserver = Observer<bool>::create(
+                        doc->getModel()->observeHasUndo(),
+                        [this](bool)
+                        {
+                            _actionsUpdate();
+                        });
+                    _hasRedoObserver = Observer<bool>::create(
+                        doc->getModel()->observeHasRedo(),
+                        [this](bool)
+                        {
+                            _actionsUpdate();
+                        });
                 }
                 else
                 {
                     _changedObserver.reset();
                     _selectionObserver.reset();
+                    _hasUndoObserver.reset();
+                    _hasRedoObserver.reset();
                     _actionsUpdate();
                 }
             });
@@ -330,8 +344,8 @@ namespace textedit
         _actions["File/Save"]->setEnabled(doc ? doc->isChanged() : false);
         _actions["File/SaveAs"]->setEnabled(current);
 
-        _actions["Edit/Undo"]->setEnabled(false);
-        _actions["Edit/Redo"]->setEnabled(false);
+        _actions["Edit/Undo"]->setEnabled(doc && doc->getModel()->observeHasUndo()->get());
+        _actions["Edit/Redo"]->setEnabled(doc && doc->getModel()->observeHasRedo()->get());
         _actions["Edit/Cut"]->setEnabled(current && selection.isValid());
         _actions["Edit/Copy"]->setEnabled(current && selection.isValid());
         _actions["Edit/Paste"]->setEnabled(current);

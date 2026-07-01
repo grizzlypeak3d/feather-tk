@@ -128,6 +128,12 @@ namespace ftk
         FTK_API void undo();
         FTK_API void redo();
 
+        //! Observe whether there is a command to undo.
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasUndo() const;
+
+        //! Observe whether there is a command to redo.
+        FTK_API std::shared_ptr<IObservable<bool> > observeHasRedo() const;
+
         ///@}
 
         //! \name Clipboard
@@ -179,7 +185,15 @@ namespace ftk
 
         void _replace(
             const TextEditSelection&,
-            const std::vector<std::string>&);
+            const std::vector<std::string>&,
+            const TextEditPos& cursorAfter,
+            const TextEditSelection& selectionAfter);
+        void _edit(
+            int lineStart,
+            int lineEnd,
+            const std::vector<std::string>& newLines,
+            const TextEditPos& cursorAfter,
+            const TextEditSelection& selectionAfter);
 
         FTK_PRIVATE();
     };
