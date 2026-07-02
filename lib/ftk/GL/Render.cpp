@@ -113,10 +113,16 @@ namespace ftk
                     imageFragmentSource());
             }
 
-            p.vbos["line"] = VBO::create(2 * 3, VBOType::Pos2_F32);
-            p.vaos["line"] = VAO::create(p.vbos["line"]->getType(), p.vbos["line"]->getID());
-            p.vbos["texture"] = gl::VBO::create(2 * 3, gl::VBOType::Pos2_F32_UV_U16);
-            p.vaos["texture"] = gl::VAO::create(p.vbos["texture"]->getType(), p.vbos["texture"]->getID());
+            if (!p.vbos["line"])
+            {
+                p.vbos["line"] = VBO::create(2 * 3, VBOType::Pos2_F32);
+                p.vaos["line"] = VAO::create(p.vbos["line"]->getType(), p.vbos["line"]->getID());
+            }
+            if (!p.vbos["texture"])
+            {
+                p.vbos["texture"] = gl::VBO::create(2 * 3, gl::VBOType::Pos2_F32_UV_U16);
+                p.vaos["texture"] = gl::VAO::create(p.vbos["texture"]->getType(), p.vbos["texture"]->getID());
+            }
 
             setViewport(Box2I(0, 0, size.w, size.h));
             if (options.clear)

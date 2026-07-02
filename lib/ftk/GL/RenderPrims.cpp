@@ -302,52 +302,63 @@ namespace ftk
                                 id = j->second;
                             }
                             TextureAtlasItem item;
-                            if (boxPackInvalidID == id ||
-                                !p.glyphAtlas->getItem(id, item))
+                            bool valid =
+                                boxPackInvalidID != id &&
+                                p.glyphAtlas->getItem(id, item);
+                            if (!valid)
                             {
-                                p.glyphAtlas->addItem((*glyphIt)->image, item);
-                                p.glyphIDs[(*glyphIt)->info] = item.id;
+                                // Atlas insertion fails when the atlas is full;
+                                // skip the glyph rather than drawing it with an
+                                // invalid (degenerate) texture region.
+                                valid = p.glyphAtlas->addItem((*glyphIt)->image, item);
+                                if (valid)
+                                {
+                                    p.glyphIDs[(*glyphIt)->info] = item.id;
+                                }
                             }
 
-                            const V2I& offset = (*glyphIt)->offset;
-                            //! \bug Off by one?
-                            const int extraOffset = 1;
-                            const Box2I box(
-                                pos.x + x + offset.x,
-                                pos.y + y + fontMetrics.ascender - offset.y - extraOffset,
-                                (*glyphIt)->image->getWidth(),
-                                (*glyphIt)->image->getHeight());
+                            if (valid)
+                            {
+                                const V2I& offset = (*glyphIt)->offset;
+                                //! \bug Off by one?
+                                const int extraOffset = 1;
+                                const Box2I box(
+                                    pos.x + x + offset.x,
+                                    pos.y + y + fontMetrics.ascender - offset.y - extraOffset,
+                                    (*glyphIt)->image->getWidth(),
+                                    (*glyphIt)->image->getHeight());
 
-                            vP[0].x = box.min.x;
-                            vP[0].y = box.min.y;
-                            vP[1].x = box.max.x + 1;
-                            vP[1].y = box.min.y;
-                            vP[2].x = box.max.x + 1;
-                            vP[2].y = box.max.y + 1;
-                            vP[3].x = box.min.x;
-                            vP[3].y = box.max.y + 1;
+                                vP[0].x = box.min.x;
+                                vP[0].y = box.min.y;
+                                vP[1].x = box.max.x + 1;
+                                vP[1].y = box.min.y;
+                                vP[2].x = box.max.x + 1;
+                                vP[2].y = box.max.y + 1;
+                                vP[3].x = box.min.x;
+                                vP[3].y = box.max.y + 1;
 
-                            tP[0].x = item.u.min();
-                            tP[0].y = item.v.min();
-                            tP[1].x = item.u.max();
-                            tP[1].y = item.v.min();
-                            tP[2].x = item.u.max();
-                            tP[2].y = item.v.max();
-                            tP[3].x = item.u.min();
-                            tP[3].y = item.v.max();
+                                tP[0].x = item.u.min();
+                                tP[0].y = item.v.min();
+                                tP[1].x = item.u.max();
+                                tP[1].y = item.v.min();
+                                tP[2].x = item.u.max();
+                                tP[2].y = item.v.max();
+                                tP[3].x = item.u.min();
+                                tP[3].y = item.v.max();
 
-                            triP[0].v[0] = { v + 1, v + 1 };
-                            triP[0].v[1] = { v + 3, v + 3 };
-                            triP[0].v[2] = { v + 2, v + 2 };
-                            triP[1].v[0] = { v + 3, v + 3 };
-                            triP[1].v[1] = { v + 1, v + 1 };
-                            triP[1].v[2] = { v + 4, v + 4 };
+                                triP[0].v[0] = { v + 1, v + 1 };
+                                triP[0].v[1] = { v + 3, v + 3 };
+                                triP[0].v[2] = { v + 2, v + 2 };
+                                triP[1].v[0] = { v + 3, v + 3 };
+                                triP[1].v[1] = { v + 1, v + 1 };
+                                triP[1].v[2] = { v + 4, v + 4 };
 
-                            v += 4;
-                            t += 2;
-                            vP += 4;
-                            tP += 4;
-                            triP += 2;
+                                v += 4;
+                                t += 2;
+                                vP += 4;
+                                tP += 4;
+                                triP += 2;
+                            }
                         }
 
                         x += (*glyphIt)->advance;
@@ -438,8 +449,10 @@ namespace ftk
             case ImageType::YUV_444P_U16:
             case ImageType::YUV_420SP_U8:
             case ImageType::YUV_420SP_U16:
+                p.shaders["image"]->setUniform("textureSampler0", 0);
                 p.shaders["image"]->setUniform("textureSampler1", 1);
                 p.shaders["image"]->setUniform("textureSampler2", 2);
+                break;
             default:
                 p.shaders["image"]->setUniform("textureSampler0", 0);
                 break;
