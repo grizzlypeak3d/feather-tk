@@ -523,7 +523,7 @@ namespace ftk
             const auto boxes = p.fontSystem->getBoxes(text[out.line], p.size.fontInfo);
             int end = value.x - g.min.x - p.size.margin;
             for (;
-                out.chr < boxes.size() && boxes[out.chr].max.x < end;
+                out.chr < static_cast<int>(boxes.size()) && boxes[out.chr].max.x < end;
                 ++out.chr)
                 ;
         }

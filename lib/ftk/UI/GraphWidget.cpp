@@ -234,7 +234,8 @@ namespace ftk
             const int w = g2.w();
             for (auto i = _samples.begin(); i != _samples.end(); ++i)
             {
-                while (i->second.size() * _size.sampleSize > (w + _size.sampleSize))
+                while (static_cast<int>(i->second.size() * _size.sampleSize) >
+                    (w + _size.sampleSize))
                 {
                     i->second.pop_front();
                 }

@@ -263,7 +263,7 @@ namespace ftk
         const auto& text = p.text->get();
         TextEditPos tmp = value;
         tmp.line = clamp(tmp.line, 0, static_cast<int>(text.size()) - 1);
-        tmp.chr = tmp.line < text.size() ?
+        tmp.chr = tmp.line < static_cast<int>(text.size()) ?
             clamp(tmp.chr, 0, static_cast<int>(text[tmp.line].size())) :
             0;
         if (p.cursor->setIfChanged(tmp))
@@ -288,11 +288,11 @@ namespace ftk
         const auto& text = p.text->get();
         TextEditSelection tmp = value;
         tmp.first.line = clamp(tmp.first.line, 0, static_cast<int>(text.size()) - 1);
-        tmp.first.chr =  tmp.first.line < text.size() ?
+        tmp.first.chr =  tmp.first.line < static_cast<int>(text.size()) ?
             clamp(tmp.first.chr, 0, static_cast<int>(text[tmp.first.line].size())) :
             0;
         tmp.second.line = clamp(tmp.second.line, 0, static_cast<int>(text.size()) - 1);
-        tmp.second.chr = tmp.second.line < text.size() ?
+        tmp.second.chr = tmp.second.line < static_cast<int>(text.size()) ?
             clamp(tmp.second.chr, 0, static_cast<int>(text[tmp.second.line].size())) :
             0;
         p.selection->setIfChanged(tmp);
@@ -629,7 +629,7 @@ namespace ftk
             {
                 out.push_back(text[i]);
             }
-            if (max.line < text.size())
+            if (max.line < static_cast<int>(text.size()))
             {
                 out.push_back(text[max.line].substr(0, max.chr));
             }
@@ -837,7 +837,7 @@ namespace ftk
                 int j = 0;
                 for (;
                     j < tabSpaces &&
-                    j < line.size() &&
+                    j < static_cast<int>(line.size()) &&
                     ' ' == line[j];
                     ++j)
                     ;
@@ -858,7 +858,7 @@ namespace ftk
             cursor.line >= 0 &&
             cursor.line < static_cast<int>(text.size()) &&
             cursor.chr >= 0 &&
-            cursor.chr <= text[cursor.line].size())
+            cursor.chr <= static_cast<int>(text[cursor.line].size()))
         {
             // Insert spaces.
             const int tabSpaces = p.options->get().tabSpaces;

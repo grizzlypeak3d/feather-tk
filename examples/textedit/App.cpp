@@ -112,7 +112,7 @@ namespace textedit
     void App::close(int index)
     {
         auto& docs = _documentModel->getList();
-        if (index >= 0 && index < docs.size())
+        if (index >= 0 && index < static_cast<int>(docs.size()))
         {
             auto doc = std::dynamic_pointer_cast<Document>(docs[index]);
             if (doc && doc->isChanged())

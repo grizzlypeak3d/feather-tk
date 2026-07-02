@@ -156,7 +156,7 @@ namespace ftk
             _children.erase(i);
             i = _children.begin();
             int j = 0;
-            for (; i != _children.end() && j < index; ++i, ++j)
+            for (; i != _children.end() && j < static_cast<int>(index); ++i, ++j)
                 ;
             if (i != _children.end())
             {

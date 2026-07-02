@@ -343,9 +343,9 @@ namespace ftk
                 FTK_ASSERT(TextEditPos(0, 0) == model->getCursor());
                 model->key(Key::Right);
                 FTK_ASSERT(TextEditPos(0, 1) == model->getCursor());
-                for (int i = 0; i < text.size(); ++i)
+                for (int i = 0; i < static_cast<int>(text.size()); ++i)
                 {
-                    for (int j = 0; j <= text[i].size(); ++j)
+                    for (int j = 0; j <= static_cast<int>(text[i].size()); ++j)
                     {
                         model->key(Key::Right);
                     }
@@ -366,7 +366,7 @@ namespace ftk
                 FTK_ASSERT(TextEditPos(0, 0) == model->getCursor());
                 model->key(Key::Down);
                 FTK_ASSERT(TextEditPos(1, 0) == model->getCursor());
-                for (int i = 0; i <= text.size(); ++i)
+                for (int i = 0; i <= static_cast<int>(text.size()); ++i)
                 {
                     model->key(Key::Down);
                 }
@@ -414,7 +414,7 @@ namespace ftk
                     TextEditPos(0, 1)) == selection2);
                 for (int i = 0; i < static_cast<int>(text.size()); ++i)
                 {
-                    for (int j = 0; j <= text[i].size(); ++j)
+                    for (int j = 0; j <= static_cast<int>(text[i].size()); ++j)
                     {
                         model->key(Key::Right, static_cast<int>(KeyModifier::Shift));
                     }

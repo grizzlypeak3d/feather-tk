@@ -143,16 +143,11 @@ namespace ftk
             }
         }
         size_t requiredArgs = 0;
-        size_t optionalArgs = 0;
         for (const auto& i : p.cmdLineArgs)
         {
             if (!i->isOptional())
             {
                 ++requiredArgs;
-            }
-            else
-            {
-                ++optionalArgs;
             }
         }
         if (p.argv.size() < requiredArgs ||

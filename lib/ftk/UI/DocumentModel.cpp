@@ -74,7 +74,7 @@ namespace ftk
             }
             _current->setIfChanged(
                 _currentIndex->get() >= 0 &&
-                _currentIndex->get() < _documents->getSize() ?
+                _currentIndex->get() < static_cast<int>(_documents->getSize()) ?
                 _documents->getItem(_currentIndex->get()) :
                 nullptr);
         }

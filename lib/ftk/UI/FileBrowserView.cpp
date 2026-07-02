@@ -175,13 +175,13 @@ namespace ftk
         FTK_P();
         int y = 0;
         int i = 0;
-        for (; i < index && i < p.items.size(); ++i)
+        for (; i < index && i < static_cast<int>(p.items.size()); ++i)
         {
             const FileBrowserItem& item = p.items[i];
             y += item.size.h;
         }
         int h = 0;
-        if (i < p.items.size())
+        if (i < static_cast<int>(p.items.size()))
         {
             h = p.items[i].size.h;
         }

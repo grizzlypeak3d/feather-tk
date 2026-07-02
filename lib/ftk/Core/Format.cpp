@@ -66,7 +66,7 @@ namespace ftk
             if (matches.size() > 0)
             {
                 std::string tmp = value;
-                if (tmp.size() < width)
+                if (static_cast<int>(tmp.size()) < width)
                 {
                     tmp = std::string(width - tmp.size(), ' ') + tmp;
                 }

@@ -206,11 +206,11 @@ namespace ftk
         {
             p.text.erase(p.text.begin() + index);
             p.tooltips.erase(p.tooltips.begin() + index);
-            if (p.current >= p.text.size())
+            if (p.current >= static_cast<int>(p.text.size()))
             {
                 p.current = p.current - 1;
             }
-            if (p.currentFocus >= p.text.size())
+            if (p.currentFocus >= static_cast<int>(p.text.size()))
             {
                 p.currentFocus = p.currentFocus - 1;
             }
@@ -258,8 +258,8 @@ namespace ftk
     {
         FTK_P();
         if (index >= 0 &&
-            index < p.text.size() &&
-            index < p.buttons.size())
+            index < static_cast<int>(p.text.size()) &&
+            index < static_cast<int>(p.buttons.size()))
         {
             p.text[index] = text;
             p.buttons[index]->setText(text);
@@ -270,8 +270,8 @@ namespace ftk
     {
         FTK_P();
         if (index >= 0 &&
-            index < p.tooltips.size() &&
-            index < p.buttons.size())
+            index < static_cast<int>(p.tooltips.size()) &&
+            index < static_cast<int>(p.buttons.size()))
         {
             p.tooltips[index] = tooltip;
             p.buttons[index]->setTooltip(tooltip);

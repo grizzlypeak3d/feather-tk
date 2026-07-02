@@ -582,7 +582,8 @@ namespace ftk
         FTK_P();
         int out = 0;
         for (;
-            out < p.size.glyphBoxes.size() && p.size.glyphBoxes[out].max.x < value;
+            out < static_cast<int>(p.size.glyphBoxes.size()) &&
+                p.size.glyphBoxes[out].max.x < value;
             ++out)
             ;
         return out;
@@ -596,7 +597,8 @@ namespace ftk
         {
             out = p.size.glyphBoxes[value].min.x;
         }
-        else if (value >= p.size.glyphBoxes.size() && !p.size.glyphBoxes.empty())
+        else if (value >= static_cast<int>(p.size.glyphBoxes.size()) &&
+            !p.size.glyphBoxes.empty())
         {
             out = p.size.glyphBoxes.back().max.x;
         }

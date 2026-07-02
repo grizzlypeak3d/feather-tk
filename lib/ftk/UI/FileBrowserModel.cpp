@@ -64,7 +64,7 @@ namespace ftk
             p.currentPath++;
 
             p.path->setIfChanged(value);
-            p.hasForward->setIfChanged(p.currentPath < p.paths.size() - 1);
+            p.hasForward->setIfChanged(p.currentPath < static_cast<int>(p.paths.size()) - 1);
             p.hasBack->setIfChanged(p.currentPath > 0);
         }
     }
@@ -72,11 +72,11 @@ namespace ftk
     void FileBrowserModel::forward()
     {
         FTK_P();
-        if (!p.paths.empty() && p.currentPath < p.paths.size() - 1)
+        if (!p.paths.empty() && p.currentPath < static_cast<int>(p.paths.size()) - 1)
         {
             p.currentPath = p.currentPath + 1;
             p.path->setIfChanged(p.paths[p.currentPath]);
-            p.hasForward->setIfChanged(p.currentPath < p.paths.size() - 1);
+            p.hasForward->setIfChanged(p.currentPath < static_cast<int>(p.paths.size()) - 1);
             p.hasBack->setIfChanged(p.currentPath > 0);
         }
     }
@@ -93,7 +93,7 @@ namespace ftk
         {
             p.currentPath = p.currentPath - 1;
             p.path->setIfChanged(p.paths[p.currentPath]);
-            p.hasForward->setIfChanged(p.currentPath < p.paths.size() - 1);
+            p.hasForward->setIfChanged(p.currentPath < static_cast<int>(p.paths.size()) - 1);
             p.hasBack->setIfChanged(p.currentPath > 0);
         }
     }

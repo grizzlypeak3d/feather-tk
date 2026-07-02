@@ -239,12 +239,12 @@ namespace ftk
             else
             {
                 const ssize_t r = ::read(p.f, in, size * wordSize);
-                if (-1 == r)
+                if (r < 0)
                 {
                     throw std::runtime_error(
                         getErrorMessage(ErrorType::Read, p.path.u8string(), getErrorString()));
                 }
-                else if (r != size * wordSize)
+                else if (static_cast<size_t>(r) != size * wordSize)
                 {
                     throw std::runtime_error(
                         getErrorMessage(ErrorType::Read, p.path.u8string()));
@@ -259,12 +259,12 @@ namespace ftk
         case FileMode::ReadWrite:
         {
             const ssize_t r = ::read(p.f, in, size * wordSize);
-            if (-1 == r)
+            if (r < 0)
             {
                 throw std::runtime_error(
                     getErrorMessage(ErrorType::Read, p.path.u8string(), getErrorString()));
             }
-            else if (r != size * wordSize)
+            else if (static_cast<size_t>(r) != size * wordSize)
             {
                 throw std::runtime_error(
                     getErrorMessage(ErrorType::Read, p.path.u8string()));

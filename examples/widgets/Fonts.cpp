@@ -57,7 +57,7 @@ namespace widgets
         auto fileEdit = FileEdit::create(context, vLayout);
         auto fontSystem = context->getSystem<FontSystem>();
         fileEdit->setCallback(
-            [this, fontSystem](const Path& value)
+            [fontSystem](const Path& value)
             {
                 fontSystem->addFont(
                     value.getBase() + value.getNum(),

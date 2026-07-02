@@ -14,8 +14,6 @@ namespace ftk
         namespace
         {
             const int pboSizeMin = 1024;
-            const size_t statsAverageCount = 10;
-            const size_t statsTimer = 600; // 60Hz * 10 seconds
         }
 
         void Render::_init(

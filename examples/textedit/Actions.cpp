@@ -112,7 +112,7 @@ namespace textedit
             "Open",
             "FileOpen",
             KeyShortcut(Key::O, commandKeyModifier),
-            [this, appWeak]
+            [appWeak]
             {
                 auto app = appWeak.lock();
                 auto fileBrowserSystem = app->getContext()->getSystem<FileBrowserSystem>();
