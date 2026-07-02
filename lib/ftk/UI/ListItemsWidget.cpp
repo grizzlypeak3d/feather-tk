@@ -328,7 +328,7 @@ namespace ftk
         const bool focus = hasKeyFocus();
         for (size_t i = 0; i < p.buttons.size(); ++i)
         {
-            p.buttons[i]->setCurrent(current == i && focus);
+            p.buttons[i]->setCurrent(current == static_cast<int>(i) && focus);
         }
     }
 }

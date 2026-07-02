@@ -492,14 +492,14 @@ namespace ftk
                     memcpy(dataP, bitmapP, imageInfo.size.w);
                     break;
                 case 2:
-                    for (size_t x = 0; x < imageInfo.size.w; ++x)
+                    for (int x = 0; x < imageInfo.size.w; ++x)
                     {
                         dataP[x * 2 + 0] = bitmapP[x];
                         dataP[x * 2 + 1] = bitmapP[x];
                     }
                     break;
                 case 3:
-                    for (size_t x = 0; x < imageInfo.size.w; ++x)
+                    for (int x = 0; x < imageInfo.size.w; ++x)
                     {
                         dataP[x * 3 + 0] = bitmapP[x];
                         dataP[x * 3 + 1] = bitmapP[x];
@@ -507,7 +507,7 @@ namespace ftk
                     }
                     break;
                 case 4:
-                    for (size_t x = 0; x < imageInfo.size.w; ++x)
+                    for (int x = 0; x < imageInfo.size.w; ++x)
                     {
                         dataP[x * 4 + 0] = bitmapP[x];
                         dataP[x * 4 + 1] = bitmapP[x];

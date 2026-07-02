@@ -263,7 +263,7 @@ namespace widgets
             }
             ++i;
         }
-        if (i == children.size())
+        if (i == static_cast<int>(children.size()))
         {
             const Box2I& g = children.back()->getGeometry();
             out = Box2I(g.min.x, g.min.y + g.h() - _handle / 2, g.w(), _handle);

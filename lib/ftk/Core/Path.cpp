@@ -395,7 +395,7 @@ namespace ftk
         size_t requestPos = std::string::npos;
         if (size > 0)
         {
-            for (int i = 0; i < size; ++i)
+            for (int i = 0; i < static_cast<int>(size); ++i)
             {
                 if ('?' == _path[i])
                 {
@@ -416,7 +416,7 @@ namespace ftk
         size_t protocolSize = 0;
         if (size > 2)
         {
-            for (int i = 0; i < size - 3; ++i)
+            for (int i = 0; i < static_cast<int>(size) - 3; ++i)
             {
                 if (':' == _path[i] &&
                     '/' == _path[i + 1] &&

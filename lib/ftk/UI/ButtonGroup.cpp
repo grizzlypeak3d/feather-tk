@@ -101,7 +101,7 @@ namespace ftk
                     p.radio = index;
                     for (size_t i = 0; i < p.buttons.size(); ++i)
                     {
-                        p.buttons[i]->setChecked(i == index);
+                        p.buttons[i]->setChecked(static_cast<int>(i) == index);
                     }
                     if (changed && p.checkedCallback)
                     {
@@ -112,7 +112,7 @@ namespace ftk
                 case ButtonGroupType::Toggle:
                     for (size_t i = 0; i < p.buttons.size(); ++i)
                     {
-                        if (i != index)
+                        if (static_cast<int>(i) != index)
                         {
                             p.buttons[i]->setChecked(false);
                         }
@@ -147,14 +147,14 @@ namespace ftk
         case ButtonGroupType::Radio:
             for (size_t i = 0; i < p.buttons.size(); ++i)
             {
-                p.buttons[i]->setChecked(i == index);
+                p.buttons[i]->setChecked(static_cast<int>(i) == index);
             }
             p.radio = index;
             break;
         case ButtonGroupType::Toggle:
             for (size_t i = 0; i < p.buttons.size(); ++i)
             {
-                p.buttons[i]->setChecked(i == index ? value : false);
+                p.buttons[i]->setChecked(static_cast<int>(i) == index ? value : false);
             }
             break;
         default: break;

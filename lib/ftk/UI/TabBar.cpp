@@ -438,13 +438,13 @@ namespace ftk
         const bool focus = hasKeyFocus();
         for (size_t i = 0; i < p.buttons.size(); ++i)
         {
-            p.buttons[i]->setCurrent(p.currentFocus == i && focus);
+            p.buttons[i]->setCurrent(p.currentFocus == static_cast<int>(i) && focus);
         }
         for (size_t i = 0; i < p.closeButtons.size(); ++i)
         {
-            p.closeButtons[i]->setButtonRole(p.current == i ? ColorRole::Button : ColorRole::None);
-            p.closeButtons[i]->setTextRole(p.current == i ? ColorRole::Text : ColorRole::TextDisabled);
-            p.closeButtons[i]->setAccentUnderline(p.current == i);
+            p.closeButtons[i]->setButtonRole(p.current == static_cast<int>(i) ? ColorRole::Button : ColorRole::None);
+            p.closeButtons[i]->setTextRole(p.current == static_cast<int>(i) ? ColorRole::Text : ColorRole::TextDisabled);
+            p.closeButtons[i]->setAccentUnderline(p.current == static_cast<int>(i));
         }
         if (p.currentFocus >= 0 && p.currentFocus < static_cast<int>(p.buttons.size()))
         {
