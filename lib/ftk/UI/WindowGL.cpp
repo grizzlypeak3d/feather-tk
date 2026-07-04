@@ -283,41 +283,30 @@ namespace ftk
 
             const Size2I& bufferSize = getBufferSize();
             const WindowBufferType bufferType = getBufferType();
-            if (bufferType != WindowBufferType::U8)
+            const gl::TextureType textureType = getTextureType(bufferType);
+            if (gl::doCreate(p.buffer, bufferSize, textureType))
             {
-                const gl::TextureType textureType = getTextureType(bufferType);
-                if (gl::doCreate(p.buffer, bufferSize, textureType))
-                {
-                    p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
-                }
-            }
-            else
-            {
-                p.buffer.reset();
+                p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
             }
             if (p.buffer)
             {
-                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, p.buffer->getID());
-            }
-            p.render->begin(bufferSize);
-            const Box2I drawRect(V2I(), bufferSize);
-            p.render->setClipRectEnabled(false);
-            p.render->setClipRect(drawRect);
-            DrawEvent drawEvent(
-                fontSystem,
-                iconSystem,
-                getDisplayScale(),
-                style,
-                p.render);
-            _drawEventRecursive(
-                shared_from_this(),
-                drawRect,
-                drawEvent);
-            p.render->setClipRectEnabled(false);
-            p.render->end();
-            if (p.buffer)
-            {
-                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+                gl::OffscreenBufferBinding bufferBinding(p.buffer);
+                p.render->begin(bufferSize);
+                const Box2I drawRect(V2I(), bufferSize);
+                p.render->setClipRectEnabled(false);
+                p.render->setClipRect(drawRect);
+                DrawEvent drawEvent(
+                    fontSystem,
+                    iconSystem,
+                    getDisplayScale(),
+                    style,
+                    p.render);
+                _drawEventRecursive(
+                    shared_from_this(),
+                    drawRect,
+                    drawEvent);
+                p.render->setClipRectEnabled(false);
+                p.render->end();
             }
 
 #if defined(FTK_API_GL_4_1)
