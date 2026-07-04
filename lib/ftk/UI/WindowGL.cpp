@@ -282,30 +282,42 @@ namespace ftk
             p.window->makeCurrent();
 
             const Size2I& bufferSize = getBufferSize();
-            const gl::TextureType textureType = getTextureType(getBufferType());
-            if (gl::doCreate(p.buffer, bufferSize, textureType))
+            const WindowBufferType bufferType = getBufferType();
+            if (bufferType != WindowBufferType::U8)
             {
-                p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
+                const gl::TextureType textureType = getTextureType(bufferType);
+                if (gl::doCreate(p.buffer, bufferSize, textureType))
+                {
+                    p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
+                }
+            }
+            else
+            {
+                p.buffer.reset();
             }
             if (p.buffer)
             {
-                gl::OffscreenBufferBinding bufferBinding(p.buffer);
-                p.render->begin(bufferSize);
-                const Box2I drawRect(V2I(), bufferSize);
-                p.render->setClipRectEnabled(false);
-                p.render->setClipRect(drawRect);
-                DrawEvent drawEvent(
-                    fontSystem,
-                    iconSystem,
-                    getDisplayScale(),
-                    style,
-                    p.render);
-                _drawEventRecursive(
-                    shared_from_this(),
-                    drawRect,
-                    drawEvent);
-                p.render->setClipRectEnabled(false);
-                p.render->end();
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, p.buffer->getID());
+            }
+            p.render->begin(bufferSize);
+            const Box2I drawRect(V2I(), bufferSize);
+            p.render->setClipRectEnabled(false);
+            p.render->setClipRect(drawRect);
+            DrawEvent drawEvent(
+                fontSystem,
+                iconSystem,
+                getDisplayScale(),
+                style,
+                p.render);
+            _drawEventRecursive(
+                shared_from_this(),
+                drawRect,
+                drawEvent);
+            p.render->setClipRectEnabled(false);
+            p.render->end();
+            if (p.buffer)
+            {
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
             }
 
 #if defined(FTK_API_GL_4_1)
@@ -327,7 +339,7 @@ namespace ftk
                     GL_LINEAR);
             }
 #elif defined(FTK_API_GLES_2)
-            if (!p.shader)
+            if (p.buffer && !p.shader)
             {
                 try
                 {
@@ -374,7 +386,7 @@ namespace ftk
                     }
                 }
             }
-            if (p.shader)
+            if (p.buffer && p.shader)
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 glDisable(GL_BLEND);
