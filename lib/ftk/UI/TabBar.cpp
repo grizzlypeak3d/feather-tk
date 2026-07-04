@@ -71,12 +71,13 @@ namespace ftk
         p.buttonGroup->setClickedCallback(
             [this](int index)
             {
+                FTK_P();
                 takeKeyFocus();
-                _p->current = index;
-                _p->currentFocus = index;
-                if (_p->callback)
+                p.current = index;
+                p.currentFocus = index;
+                if (p.callback)
                 {
-                    _p->callback(index);
+                    p.callback(index);
                 }
                 _currentUpdate();
             });
@@ -84,28 +85,30 @@ namespace ftk
         p.closeButtonGroup->setClickedCallback(
             [this](int index)
             {
-                if (_p->closeCallback)
+                FTK_P();
+                if (p.closeCallback)
                 {
-                    _p->closeCallback(index);
+                    p.closeCallback(index);
                 }
             });
 
         p.menuButton->setClickedCallback(
             [this]
             {
+                FTK_P();
                 if (auto context = getContext())
                 {
-                    if (!_p->menu)
+                    if (!p.menu)
                     {
                         std::vector<ComboBoxItem> items;
-                        for (const auto& text : _p->text)
+                        for (const auto& text : p.text)
                         {
                             items.push_back(ComboBoxItem(text));
                         }
-                        _p->menu = ComboBoxMenu::create(context, items, _p->current);
-                        _p->menu->open(getWindow(), _p->menuButton->getGeometry());
+                        p.menu = ComboBoxMenu::create(context, items, p.current);
+                        p.menu->open(getWindow(), p.menuButton->getGeometry());
                         auto weak = std::weak_ptr<TabBar>(std::dynamic_pointer_cast<TabBar>(shared_from_this()));
-                        _p->menu->setCallback(
+                        p.menu->setCallback(
                             [weak](int index)
                             {
                                 if (auto widget = weak.lock())
@@ -121,7 +124,7 @@ namespace ftk
                                     }
                                 }
                             });
-                        _p->menu->setCloseCallback(
+                        p.menu->setCloseCallback(
                             [weak]
                             {
                                 if (auto widget = weak.lock())
@@ -132,8 +135,8 @@ namespace ftk
                     }
                     else
                     {
-                        _p->menu->close();
-                        _p->menu.reset();
+                        p.menu->close();
+                        p.menu.reset();
                     }
                 }
             });
