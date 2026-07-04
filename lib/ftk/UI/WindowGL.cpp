@@ -262,6 +262,7 @@ namespace ftk
             switch (value)
             {
             case WindowBufferType::U8: out = gl::TextureType::RGBA_U8; break;
+            case WindowBufferType::F16: out = gl::TextureType::RGBA_F16; break;
             case WindowBufferType::F32: out = gl::TextureType::RGBA_F32; break;
             default: break;
             }

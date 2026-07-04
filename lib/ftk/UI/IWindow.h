@@ -15,6 +15,7 @@ namespace ftk
     enum class FTK_API_TYPE WindowBufferType
     {
         U8,
+        F16,
         F32,
 
         Count,
@@ -24,7 +25,7 @@ namespace ftk
 
     //! Default window buffer type.
 #if defined(FTK_API_GL_4_1)
-    const WindowBufferType windowBufferTypeDefault = WindowBufferType::F32;
+    const WindowBufferType windowBufferTypeDefault = WindowBufferType::F16;
 #elif defined(FTK_API_GLES_2)
     const WindowBufferType windowBufferTypeDefault = WindowBufferType::U8;
 #endif // FTK_API_GL_4_1

@@ -8,14 +8,12 @@
 #include <ftk/UI/IPopup.h>
 #include <ftk/UI/Tooltip.h>
 
-#include <ftk/GL/GL.h>
-#include <ftk/GL/OffscreenBuffer.h>
-
 namespace ftk
 {
     FTK_ENUM_IMPL(
         WindowBufferType,
         "U8",
+        "F16",
         "F32");
 
     struct IWindow::Private
