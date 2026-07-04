@@ -179,16 +179,24 @@ namespace ftk
     {
         FTK_P();
         p.open = false;
-        setParent(nullptr);
-        auto widget = p.restoreFocus.lock();
+
+        // Only restore the key focus if this popup still contains it, so we
+        // don't steal the focus back from something opened on top of us.
+        std::shared_ptr<IWidget> restoreFocus;
+        if (containsKeyFocus())
+        {
+            restoreFocus = p.restoreFocus.lock();
+        }
         p.restoreFocus.reset();
+
+        setParent(nullptr);
         if (p.closeCallback)
         {
             p.closeCallback();
         }
-        if (widget)
+        if (restoreFocus)
         {
-            widget->takeKeyFocus();
+            restoreFocus->takeKeyFocus();
         }
     }
 

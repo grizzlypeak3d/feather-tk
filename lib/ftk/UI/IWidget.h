@@ -212,6 +212,9 @@ namespace ftk
         //! Does this widget have key focus?
         bool hasKeyFocus() const;
 
+        //! Does this widget, or any of its children, have key focus?
+        FTK_API bool containsKeyFocus() const;
+
         //! Take the key focus.
         FTK_API virtual void takeKeyFocus();
 
@@ -345,4 +348,3 @@ namespace ftk
 }
 
 #include <ftk/UI/IWidgetInline.h>
-

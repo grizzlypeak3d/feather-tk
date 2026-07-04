@@ -17,7 +17,6 @@ namespace ftk
         {
             bool init = true;
             int margin = 0;
-            int spacing = 0;
             int keyFocus = 0;
             int pad = 0;
             FontInfo fontInfo;
@@ -109,7 +108,6 @@ namespace ftk
         {
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.fontInfo = event.style->getFont(FontType::Regular, event.displayScale);

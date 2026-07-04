@@ -359,6 +359,22 @@ namespace ftk
         }
     }
 
+    bool IWidget::containsKeyFocus() const
+    {
+        if (_keyFocus)
+        {
+            return true;
+        }
+        for (const auto& child : _children)
+        {
+            if (child->containsKeyFocus())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void IWidget::setTooltip(const std::string& value)
     {
         _tooltip = value;
