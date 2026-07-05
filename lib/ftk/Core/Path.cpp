@@ -145,6 +145,7 @@ namespace ftk
         std::vector<FrameSeq> out;
         std::vector<int64_t> tmp = value;
         std::sort(tmp.begin(), tmp.end());
+        tmp.erase(std::unique(tmp.begin(), tmp.end()), tmp.end());
         for (size_t i = 0; i < tmp.size(); ++i)
         {
             size_t j = i + 2;
@@ -182,7 +183,8 @@ namespace ftk
     std::vector<int64_t> toFrames(const FrameSeq& value)
     {
         std::vector<int64_t> out;
-        for (int64_t frame = value.range.min(); frame <= value.range.max(); frame += value.inc)
+        const int64_t inc = value.inc > 0 ? value.inc : 1;
+        for (int64_t frame = value.range.min(); frame <= value.range.max(); frame += inc)
         {
             out.push_back(frame);
         }
@@ -280,9 +282,10 @@ namespace ftk
     void Path::setNum(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + value + getExt() + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        // Re-parse without preserving the old frame range: for a numeric value
+        // _parse derives the matching range, and for a "####" placeholder (or an
+        // empty value) _parse leaves _frames untouched, keeping an existing range.
         _parse(_options);
-        _frames = tmp;
     }
 
     void Path::setPad(int value)
@@ -291,7 +294,7 @@ namespace ftk
         std::string num = getNum();
         if (!num.empty())
         {
-            num = toString(std::atoi(num.c_str()), _pad);
+            num = toString(std::atoll(num.c_str()), _pad);
         }
         _path = getProtocol() + getDir() + getBase() + num + getExt() + getRequest();
         const std::optional<RangeI64> tmp = _frames;
@@ -343,7 +346,10 @@ namespace ftk
                 _pad = pad;
                 if (_frames.has_value())
                 {
+                    // setNum() re-derives _frames from the (single-frame) number
+                    // string, so restore the merged sequence range afterwards.
                     setNum(toString(_frames.value().min(), _pad));
+                    _frames = frames;
                 }
             }
         }
@@ -361,8 +367,8 @@ namespace ftk
                 out = true;
             }
             else if (dir.size() > 1 &&
-                dir[0] >= 'A' &&
-                dir[0] <= 'Z' &&
+                ((dir[0] >= 'A' && dir[0] <= 'Z') ||
+                 (dir[0] >= 'a' && dir[0] <= 'z')) &&
                 ':' == dir[1])
             {
                 out = true;
@@ -451,7 +457,8 @@ namespace ftk
         }
         if (std::string::npos == dirEnd &&
             size > 1 &&
-            _path[0] >= 'A' && _path[0] <= 'Z' &&
+            ((_path[0] >= 'A' && _path[0] <= 'Z') ||
+             (_path[0] >= 'a' && _path[0] <= 'z')) &&
             ':' == _path[1])
         {
             dirEnd = 1;
@@ -536,7 +543,7 @@ namespace ftk
             }
             if (_path[numPos] != '#')
             {
-                const int64_t frame = std::atoi(getNum().c_str());
+                const int64_t frame = std::atoll(getNum().c_str());
                 _frames = RangeI64(frame, frame);
             }
             size -= sizeTmp;
