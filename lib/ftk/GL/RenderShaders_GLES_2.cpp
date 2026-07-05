@@ -162,9 +162,8 @@ namespace ftk
                 "const int ImageType_YUV_420P_U16      = 25;\n"
                 "const int ImageType_YUV_422P_U16      = 26;\n"
                 "const int ImageType_YUV_444P_U16      = 27;\n"
-                "const int ImageType_ARGB_4444_Premult = 28;\n"
-                "const int ImageType_YUV_420SP_U8      = 29;\n"
-                "const int ImageType_YUV_420SP_U16     = 30;\n";
+                "const int ImageType_YUV_420SP_U8      = 28;\n"
+                "const int ImageType_YUV_420SP_U16     = 29;\n";
 
             const std::string channelDisplay =
                 "// enum ftk::ChannelDisplay\n"

@@ -50,8 +50,6 @@ namespace ftk
         "YUV 422P U16",
         "YUV 444P U16",
 
-        "ARGB 4444 Premult",
-
         "YUV 420SP U8",
         "YUV 420SP U16");
 
@@ -66,7 +64,6 @@ namespace ftk
             4, 4, 4, 4, 4,
             3, 3, 3,
             3, 3, 3,
-            4,
             3, 3
         };
         return values[static_cast<size_t>(value)];
@@ -83,7 +80,6 @@ namespace ftk
             8, 16, 32, 16, 32,
             8, 8, 8,
             16, 16, 16,
-            4,
             8, 16
         };
         return values[static_cast<size_t>(value)];
@@ -164,17 +160,15 @@ namespace ftk
         case ImageType::RGBA_F32: out = getAlignedByteCount(w * 4 * 4, alignment) * h; break;
 
             //! \todo Is YUV data aligned?
-        case ImageType::YUV_420P_U8:  out = w * h + (w / 2 * h / 2) + (w / 2 * h / 2); break;
-        case ImageType::YUV_422P_U8:  out = w * h + (w / 2 * h) + (w / 2 * h); break;
+        case ImageType::YUV_420P_U8:  out = w * h + ((w + 1) / 2) * ((h + 1) / 2) * 2; break;
+        case ImageType::YUV_422P_U8:  out = w * h + ((w + 1) / 2) * h * 2; break;
         case ImageType::YUV_444P_U8:  out = w * h * 3; break;
-        case ImageType::YUV_420P_U16: out = (w * h + (w / 2 * h / 2) + (w / 2 * h / 2)) * 2; break;
-        case ImageType::YUV_422P_U16: out = (w * h + (w / 2 * h) + (w / 2 * h)) * 2; break;
+        case ImageType::YUV_420P_U16: out = (w * h + ((w + 1) / 2) * ((h + 1) / 2) * 2) * 2; break;
+        case ImageType::YUV_422P_U16: out = (w * h + ((w + 1) / 2) * h * 2) * 2; break;
         case ImageType::YUV_444P_U16: out = (w * h * 3) * 2; break;
 
-        case ImageType::ARGB_4444_Premult: out = w * h * 4 * 2; break;
-
-        case ImageType::YUV_420SP_U8:  out = w * h + (w / 2 * h / 2) * 2; break;
-        case ImageType::YUV_420SP_U16: out = (w * h + (w / 2 * h / 2) * 2) * 2; break;
+        case ImageType::YUV_420SP_U8:  out = w * h + ((w + 1) / 2) * ((h + 1) / 2) * 2; break;
+        case ImageType::YUV_420SP_U16: out = (w * h + ((w + 1) / 2) * ((h + 1) / 2) * 2) * 2; break;
 
         default: break;
         }

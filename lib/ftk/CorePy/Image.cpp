@@ -45,8 +45,7 @@ namespace ftk
                 .value("YUV_444P_U8", ImageType::YUV_444P_U8)
                 .value("YUV_420P_U16", ImageType::YUV_420P_U16)
                 .value("YUV_422P_U16", ImageType::YUV_422P_U16)
-                .value("YUV_444P_U16", ImageType::YUV_444P_U16)
-                .value("ARGB_4444_Premult", ImageType::ARGB_4444_Premult);
+                .value("YUV_444P_U16", ImageType::YUV_444P_U16);
             FTK_ENUM_BIND(m, ImageType);
 
             m.def("getChannelCount", &getChannelCount);
