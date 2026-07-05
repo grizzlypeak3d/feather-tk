@@ -103,7 +103,8 @@ namespace ftk
     inline void ObservableMap<T, U>::setAlways(const std::map<T, U>& value)
     {
         _value = value;
-        for (const auto& i : IObservableMap<T, U>::_observers)
+        const auto observers = IObservableMap<T, U>::_observers;
+        for (const auto& i : observers)
         {
             if (auto observer = i.lock())
             {
@@ -118,7 +119,8 @@ namespace ftk
         if (value == _value)
             return false;
         _value = value;
-        for (const auto& i : IObservableMap<T, U>::_observers)
+        const auto observers = IObservableMap<T, U>::_observers;
+        for (const auto& i : observers)
         {
             if (auto observer = i.lock())
             {
@@ -134,7 +136,8 @@ namespace ftk
         if (_value.size())
         {
             _value.clear();
-            for (const auto& s : IObservableMap<T, U>::_observers)
+            const auto observers = IObservableMap<T, U>::_observers;
+        for (const auto& s : observers)
             {
                 if (auto observer = s.lock())
                 {
@@ -149,7 +152,8 @@ namespace ftk
     {
         _value[key] = value;
 
-        for (const auto& s : IObservableMap<T, U>::_observers)
+        const auto observers = IObservableMap<T, U>::_observers;
+        for (const auto& s : observers)
         {
             if (auto observer = s.lock())
             {
@@ -165,7 +169,8 @@ namespace ftk
         if (i != _value.end() && i->second == value)
             return false;
         _value[key] = value;
-        for (const auto& s : IObservableMap<T, U>::_observers)
+        const auto observers = IObservableMap<T, U>::_observers;
+        for (const auto& s : observers)
         {
             if (auto observer = s.lock())
             {

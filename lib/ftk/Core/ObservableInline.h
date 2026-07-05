@@ -104,7 +104,8 @@ namespace ftk
     {
         _value = value;
         bool hasExpired = false;
-        for (const auto& i : IObservable<T>::_observers)
+        const auto observers = IObservable<T>::_observers;
+        for (const auto& i : observers)
         {
             if (auto observer = i.lock())
             {
@@ -128,7 +129,8 @@ namespace ftk
             return false;
         _value = value;
         bool hasExpired = false;
-        for (const auto& i : IObservable<T>::_observers)
+        const auto observers = IObservable<T>::_observers;
+        for (const auto& i : observers)
         {
             if (auto observer = i.lock())
             {

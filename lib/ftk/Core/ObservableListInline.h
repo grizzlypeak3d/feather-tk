@@ -86,7 +86,8 @@ namespace ftk
     inline void IObservableList<T>::_notify(const std::vector<T>& value)
     {
         bool hasExpired = false;
-        for (const auto& i : _observers)
+        const auto observers = _observers;
+        for (const auto& i : observers)
         {
             if (auto observer = i.lock())
             {
