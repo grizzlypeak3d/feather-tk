@@ -10,7 +10,6 @@ endif()
 
 set(Freetype_ARGS
     ${ftk_DEPS_ARGS}
-    -DCMAKE_INSTALL_LIBDIR=lib
     -DFT_REQUIRE_ZLIB=ON
     -DFT_DISABLE_BZIP2=ON
     -DFT_DISABLE_PNG=ON

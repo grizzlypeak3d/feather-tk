@@ -14,8 +14,7 @@ endif()
 
 set(ZLIB_ARGS
     ${ftk_DEPS_ARGS}
-    -DSKIP_INSTALL_FILES=ON
-    -DCMAKE_POSITION_INDEPENDENT_CODE=ON)
+    -DSKIP_INSTALL_FILES=ON)
 
 ExternalProject_Add(
     ZLIB
