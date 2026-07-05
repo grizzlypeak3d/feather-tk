@@ -203,7 +203,7 @@ scl enable gcc-toolset-13 bash
 Clone and build:
 ```sh
 git clone https://github.com/grizzlypeak3d/feather-tk.git
-sh feather-tk/sbuild-linux.sh feather-tk
+sh feather-tk/sbuild-linux.sh
 ```
 
 ### macOS
@@ -212,7 +212,7 @@ Dependencies: Xcode, CMake 3.31
 
 ```sh
 git clone https://github.com/grizzlypeak3d/feather-tk.git
-sh feather-tk/sbuild-macos.sh feather-tk
+sh feather-tk/sbuild-macos.sh
 ```
 
 Notes for switching between architectures:
@@ -228,7 +228,7 @@ Dependencies: Visual Studio 2022, CMake 3.31
 Open "x64 Native Tools Command Prompt for VS 2022" from the Start menu, then:
 ```bat
 git clone https://github.com/grizzlypeak3d/feather-tk.git
-feather-tk\sbuild-win.bat feather-tk
+feather-tk\sbuild-win.bat
 ```
 
 ### Verify the build

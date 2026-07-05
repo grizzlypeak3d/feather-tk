@@ -2,11 +2,8 @@
 
 set -x
 
-SOURCE_DIR=$1
-BUILD_TYPE=Release
-if [ "$#" -eq 2 ]; then
-    BUILD_TYPE=$2
-fi
+SOURCE_DIR=${1:-feather-tk}
+BUILD_TYPE=${2:-Release}
 
 export JOBS=4
 export FTK_API=GL_4_1
