@@ -42,6 +42,7 @@ endif()
 set(ftk_IGNORE_PREFIX_PATH ${ftk_IGNORE_PREFIX_PATH_DEFAULT} CACHE STRING "Ignore the given prefix path")
 set(ftk_GCOV OFF CACHE BOOL "Enable gcov code coverage")
 set(ftk_GPROF OFF CACHE BOOL "Enable gprof code profiling")
+set(ftk_SANITIZE "" CACHE STRING "Enable sanitizers (comma-separated, e.g. address,undefined)")
 
 #-------------------------------------------------------------------------------
 # Internal configuration
@@ -103,6 +104,12 @@ if(ftk_GPROF)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+endif()
+if(ftk_SANITIZE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=${ftk_SANITIZE} -fno-omit-frame-pointer")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=${ftk_SANITIZE} -fno-omit-frame-pointer")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=${ftk_SANITIZE}")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=${ftk_SANITIZE}")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
