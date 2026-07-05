@@ -182,8 +182,6 @@ namespace ftk
                 }
                 catch (const std::exception&)
                 {}
-                //! \bug Why doesn't the read fail with an empty file on Windows?
-#if !defined(_WINDOWS)
                 try
                 {
                     const std::filesystem::path path = "FileIOTest5";
@@ -210,7 +208,6 @@ namespace ftk
                 }
                 catch (const std::exception&)
                 {}
-#endif
                 try
                 {
                     const std::filesystem::path path = "FileIOTest7";

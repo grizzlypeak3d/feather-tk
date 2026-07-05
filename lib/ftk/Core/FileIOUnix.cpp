@@ -363,7 +363,7 @@ namespace ftk
             p.size > 0)
         {
             p.mMap = mmap(0, p.size, PROT_READ, MAP_SHARED, p.f, 0);
-            madvise(p.mMap, p.size, MADV_SEQUENTIAL | MADV_SEQUENTIAL);
+            madvise(p.mMap, p.size, MADV_SEQUENTIAL);
             if (p.mMap == (void*)-1)
             {
                 throw std::runtime_error(

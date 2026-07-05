@@ -233,6 +233,11 @@ namespace ftk
                     throw std::runtime_error(
                         getErrorMessage(ErrorType::Read, p.path.u8string(), getLastError()));
                 }
+                if (n != size * wordSize)
+                {
+                    throw std::runtime_error(
+                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                }
                 if (p.endianConversion && wordSize > 1)
                 {
                     swapEndian(in, size, wordSize);
@@ -247,6 +252,11 @@ namespace ftk
             {
                 throw std::runtime_error(
                     getErrorMessage(ErrorType::Read, p.path.u8string(), getLastError()));
+            }
+            if (n != size * wordSize)
+            {
+                throw std::runtime_error(
+                    getErrorMessage(ErrorType::Read, p.path.u8string()));
             }
             if (p.endianConversion && wordSize > 1)
             {
