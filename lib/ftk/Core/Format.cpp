@@ -35,7 +35,7 @@ namespace ftk
         try
         {
             std::string subject = _text;
-            std::regex r("\\{([0-9]+)\\}");
+            static const std::regex r("\\{([0-9]+)\\}");
             std::smatch m;
             std::map<int, Match> matches;
             std::ptrdiff_t currentPos = 0;
