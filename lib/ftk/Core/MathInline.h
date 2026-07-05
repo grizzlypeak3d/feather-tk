@@ -24,16 +24,18 @@ namespace ftk
     template<class T, class U>
     constexpr T lerp(U value, T min, T max)
     {
-        return min + T(value * (max - min));
+        return T(min * (U(1) - value) + max * value);
     }
 
     constexpr float smoothStep(float value, float min, float max)
     {
-        return lerp(value * value * (3.F - (2.F * value)), min, max);
+        const float t = clamp(value, 0.F, 1.F);
+        return lerp(t * t * (3.F - (2.F * t)), min, max);
     }
 
     constexpr double smoothStep(double value, double min, double max)
     {
-        return lerp(value * value * (3. - (2. * value)), min, max);
+        const double t = clamp(value, 0.0, 1.0);
+        return lerp(t * t * (3. - (2. * t)), min, max);
     }
 }
