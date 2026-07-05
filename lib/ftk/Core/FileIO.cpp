@@ -207,8 +207,14 @@ namespace ftk
             case '\r':
                 // End of a comment or word.
                 parse = Parse::Word;
+                if (out[0])
+                {
+                    parse = Parse::End;
+                }
+                break;
             case ' ':
             case '\t':
+                // End of a word.
                 if (out[0])
                 {
                     parse = Parse::End;

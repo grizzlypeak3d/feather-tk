@@ -143,9 +143,9 @@ namespace gfx
     {
         Noise noise;
         V2I pos;
-        for (; pos.y < _cellsSize.h; pos.y = ++pos.y)
+        for (; pos.y < _cellsSize.h; ++pos.y)
         {
-            for (pos.x = 0; pos.x < _cellsSize.w; pos.x = ++pos.x)
+            for (pos.x = 0; pos.x < _cellsSize.w; ++pos.x)
             {
                 const double n = noise.get(pos.x / 10.0, pos.y / 10.0, _noiseZ / 10.0);
                 if (n > 0.1)

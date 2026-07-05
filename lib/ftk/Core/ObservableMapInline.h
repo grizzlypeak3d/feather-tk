@@ -197,7 +197,7 @@ namespace ftk
     inline std::vector<T> ObservableMap<T, U>::getKeys() const
     {
         std::vector<T> out;
-        for (const auto i : _value)
+        for (const auto& i : _value)
         {
             out.push_back(i.first);
         }
