@@ -34,20 +34,16 @@ namespace ftk
     class Color<1, T>
     {
     public:
-        constexpr Color();
+        constexpr Color() = default;
         explicit constexpr Color(T);
-        constexpr Color(const Color<1, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
-            
-        std::array<T, 1> e;
-        T& l;
 
-        constexpr Color<1, T>& operator = (const Color<1, T>&);
+        T l = T(0);
     };
 
     //! Two channel color (luminance and alpha).
@@ -55,22 +51,18 @@ namespace ftk
     class Color<2, T>
     {
     public:
-        constexpr Color();
+        constexpr Color() = default;
         explicit constexpr Color(T);
         constexpr Color(T, T);
-        constexpr Color(const Color<2, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
-            
-        std::array<T, 2> e;
-        T& l;
-        T& a;
 
-        constexpr Color<2, T>& operator = (const Color<2, T>&);
+        T l = T(0);
+        T a = T(0);
     };
 
     //! Three channel color (RGB).
@@ -78,22 +70,18 @@ namespace ftk
     class Color<3, T>
     {
     public:
-        constexpr Color();
+        constexpr Color() = default;
         constexpr Color(T, T, T);
-        constexpr Color(const Color<3, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
-            
-        std::array<T, 3> e;
-        T& r;
-        T& g;
-        T& b;
 
-        constexpr Color<3, T>& operator = (const Color<3, T>&);
+        T r = T(0);
+        T g = T(0);
+        T b = T(0);
     };
 
     //! Four channel color (RGBA).
@@ -101,24 +89,20 @@ namespace ftk
     class Color<4, T>
     {
     public:
-        constexpr Color();
+        constexpr Color() = default;
         constexpr Color(T, T, T);
         constexpr Color(T, T, T, T);
-        constexpr Color(const Color<4, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
-            
-        std::array<T, 4> e;
-        T& r;
-        T& g;
-        T& b;
-        T& a;
 
-        constexpr Color<4, T>& operator = (const Color<4, T>&);
+        T r = T(0);
+        T g = T(0);
+        T b = T(0);
+        T a = T(0);
     };
 
     typedef Color<1, float> Color1F;

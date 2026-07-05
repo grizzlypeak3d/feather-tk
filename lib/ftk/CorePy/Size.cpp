@@ -10,6 +10,7 @@
 #include <pybind11/stl.h>
 
 #include <sstream>
+#include <stdexcept>
 
 namespace py = pybind11;
 
@@ -23,9 +24,9 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<int, int>())
                 .def("__setitem__",
-                    [](Size2I& self, unsigned index, int v) { self.e.at(index) = v; })
+                    [](Size2I& self, unsigned index, int v) { if (index >= 2) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Size2I& self, unsigned index) { return self.e.at(index); })
+                    [](Size2I& self, unsigned index) { if (index >= 2) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("w", [](Size2I& self) { return self.w; }, [](Size2I& self, int v) { self.w = v; })
                 .def_property("h", [](Size2I& self) { return self.h; }, [](Size2I& self, int v) { self.h = v; })
                 .def_property_readonly("valid", &Size2I::isValid)
@@ -46,9 +47,9 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<float, float>())
                 .def("__setitem__",
-                    [](Size2F& self, unsigned index, float v) { self.e.at(index) = v; })
+                    [](Size2F& self, unsigned index, float v) { if (index >= 2) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Size2F& self, unsigned index) { return self.e.at(index); })
+                    [](Size2F& self, unsigned index) { if (index >= 2) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("w", [](Size2F& self) { return self.w; }, [](Size2F& self, int v) { self.w = v; })
                 .def_property("h", [](Size2F& self) { return self.h; }, [](Size2F& self, int v) { self.h = v; })
                 .def_property_readonly("valid", &Size2F::isValid)
@@ -69,9 +70,9 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<float, float, float>())
                 .def("__setitem__",
-                    [](Size3F& self, unsigned index, float v) { self.e.at(index) = v; })
+                    [](Size3F& self, unsigned index, float v) { if (index >= 3) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Size3F& self, unsigned index) { return self.e.at(index); })
+                    [](Size3F& self, unsigned index) { if (index >= 3) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("w", [](Size3F& self) { return self.w; }, [](Size3F& self, int v) { self.w = v; })
                 .def_property("h", [](Size3F& self) { return self.h; }, [](Size3F& self, int v) { self.h = v; })
                 .def_property("d", [](Size3F& self) { return self.d; }, [](Size3F& self, int v) { self.d = v; })

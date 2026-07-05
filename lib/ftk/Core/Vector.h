@@ -32,22 +32,18 @@ namespace ftk
     class Vector<2, T>
     {
     public:
-        constexpr Vector();
+        constexpr Vector() = default;
         constexpr Vector(T, T);
         explicit constexpr Vector(const Size<2, T>&);
-        constexpr Vector(const Vector<2, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
 
-        std::array<T, 2> e;
-        T& x;
-        T& y;
-            
-        constexpr Vector<2, T>& operator = (const Vector<2, T>&);
+        T x = T(0);
+        T y = T(0);
     };
 
     //! Three-dimensional vector.
@@ -55,23 +51,19 @@ namespace ftk
     class Vector<3, T>
     {
     public:
-        constexpr Vector();
+        constexpr Vector() = default;
         constexpr Vector(T, T, T);
         explicit constexpr Vector(const Size<3, T>&);
-        constexpr Vector(const Vector<3, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
 
-        std::array<T, 3> e;
-        T& x;
-        T& y;
-        T& z;
-
-        constexpr Vector<3, T>& operator = (const Vector<3, T>&);
+        T x = T(0);
+        T y = T(0);
+        T z = T(0);
     };
 
     //! Four-dimensional vector.
@@ -79,9 +71,8 @@ namespace ftk
     class Vector<4, T>
     {
     public:
-        constexpr Vector();
+        constexpr Vector() = default;
         constexpr Vector(T, T, T, T = T(1));
-        constexpr Vector(const Vector<4, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
@@ -89,13 +80,10 @@ namespace ftk
         constexpr const T* data() const;
         constexpr T* data();
 
-        std::array<T, 4> e;
-        T& x;
-        T& y;
-        T& z;
-        T& w;
-
-        constexpr Vector<4, T>& operator = (const Vector<4, T>&);
+        T x = T(0);
+        T y = T(0);
+        T z = T(0);
+        T w = T(0);
     };
 
     typedef Vector<2, int> V2I;

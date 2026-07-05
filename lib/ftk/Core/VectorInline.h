@@ -48,183 +48,139 @@ namespace ftk
     }
 
     template<typename T>
-    constexpr Vector<2, T>::Vector() :
-        e({ T(0), T(0) }),
-        x(e[0]),
-        y(e[1])
-    {}
-
-    template<typename T>
     constexpr Vector<2, T>::Vector(T x, T y) :
-        e({ x, y }),
-        x(e[0]),
-        y(e[1])
+        x(x),
+        y(y)
     {}
 
     template<typename T>
     constexpr Vector<2, T>::Vector(const Size<2, T>& size) :
-        e({ size.w, size.h }),
-        x(e[0]),
-        y(e[1])
+        x(size.w),
+        y(size.h)
     {}
 
     template<typename T>
-    constexpr Vector<2, T>::Vector(const Vector<2, T>& v) :
-        e(v.e),
-        x(e[0]),
-        y(e[1])
-    {}
-
-    template<typename T>
-    constexpr T Vector<2, T>::operator [] (int c) const
+    constexpr T Vector<2, T>::operator [] (int i) const
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return x;
+        default: return y;
+        }
     }
 
     template<typename T>
-    constexpr T& Vector<2, T>::operator [] (int c)
+    constexpr T& Vector<2, T>::operator [] (int i)
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return x;
+        default: return y;
+        }
     }
 
     template<typename T>
     constexpr const T* Vector<2, T>::data() const
     {
-        return e.data();
+        return &x;
     }
 
     template<typename T>
     constexpr T* Vector<2, T>::data()
     {
-        return e.data();
+        return &x;
     }
-            
-    template<typename T>
-    constexpr Vector<2, T>& Vector<2, T>::operator = (const Vector<2, T>& v)
-    {
-        e = v.e;
-        return *this;
-    }
-
-    template<typename T>
-    constexpr Vector<3, T>::Vector() :
-        e({ T(0), T(0), T(0) }),
-        x(e[0]),
-        y(e[1]),
-        z(e[2])
-    {}
 
     template<typename T>
     constexpr Vector<3, T>::Vector(T x, T y, T z) :
-        e({ x, y, z }),
-        x(e[0]),
-        y(e[1]),
-        z(e[2])
+        x(x),
+        y(y),
+        z(z)
     {}
 
     template<typename T>
     constexpr Vector<3, T>::Vector(const Size<3, T>& size) :
-        e({ size.w, size.h, size.d }),
-        x(e[0]),
-        y(e[1]),
-        z(e[2])
+        x(size.w),
+        y(size.h),
+        z(size.d)
     {}
 
     template<typename T>
-    constexpr Vector<3, T>::Vector(const Vector<3, T>& v) :
-        e(v.e),
-        x(e[0]),
-        y(e[1]),
-        z(e[2])
-    {}        
-
-    template<typename T>
-    constexpr T Vector<3, T>::operator [] (int c) const
+    constexpr T Vector<3, T>::operator [] (int i) const
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return x;
+        case 1: return y;
+        default: return z;
+        }
     }
 
     template<typename T>
-    constexpr T& Vector<3, T>::operator [] (int c)
+    constexpr T& Vector<3, T>::operator [] (int i)
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return x;
+        case 1: return y;
+        default: return z;
+        }
     }
 
     template<typename T>
     constexpr const T* Vector<3, T>::data() const
     {
-        return e.data();
+        return &x;
     }
 
     template<typename T>
     constexpr T* Vector<3, T>::data()
     {
-        return e.data();
+        return &x;
     }
-            
-    template<typename T>
-    constexpr Vector<3, T>& Vector<3, T>::operator = (const Vector<3, T>& v)
-    {
-        e = v.e;
-        return *this;
-    }
-
-    template<typename T>
-    constexpr Vector<4, T>::Vector() :
-        e({ T(0), T(0), T(0), T(0) }),
-        x(e[0]),
-        y(e[1]),
-        z(e[2]),
-        w(e[3])
-    {}
 
     template<typename T>
     constexpr Vector<4, T>::Vector(T x, T y, T z, T w) :
-        e({ x, y, z, w }),
-        x(e[0]),
-        y(e[1]),
-        z(e[2]),
-        w(e[3])
+        x(x),
+        y(y),
+        z(z),
+        w(w)
     {}
 
     template<typename T>
-    constexpr Vector<4, T>::Vector(const Vector<4, T>& v) :
-        e(v.e),
-        x(e[0]),
-        y(e[1]),
-        z(e[2]),
-        w(e[3])
-    {}        
-
-    template<typename T>
-    constexpr T Vector<4, T>::operator [] (int c) const
+    constexpr T Vector<4, T>::operator [] (int i) const
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        default: return w;
+        }
     }
 
     template<typename T>
-    constexpr T& Vector<4, T>::operator [] (int c)
+    constexpr T& Vector<4, T>::operator [] (int i)
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        default: return w;
+        }
     }
 
     template<typename T>
     constexpr const T* Vector<4, T>::data() const
     {
-        return e.data();
+        return &x;
     }
 
     template<typename T>
     constexpr T* Vector<4, T>::data()
     {
-        return e.data();
-    }
-            
-    template<typename T>
-    constexpr Vector<4, T>& Vector<4, T>::operator = (const Vector<4, T>& v)
-    {
-        e = v.e;
-        return *this;
+        return &x;
     }
 
     template<int C, typename T>

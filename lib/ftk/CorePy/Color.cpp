@@ -10,6 +10,7 @@
 #include <pybind11/stl.h>
 
 #include <sstream>
+#include <stdexcept>
 
 namespace py = pybind11;
 
@@ -23,9 +24,9 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<float>())
                 .def("__setitem__",
-                    [](Color1F& self, unsigned index, float v) { self.e.at(index) = v; })
+                    [](Color1F& self, unsigned index, float v) { if (index >= 1) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Color1F& self, unsigned index) { return self.e.at(index); })
+                    [](Color1F& self, unsigned index) { if (index >= 1) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("l", [](Color1F& self) { return self.l; }, [](Color1F& self, float v) { self.l = v; })
                 .def(py::self == py::self)
                 .def(py::self != py::self)
@@ -41,9 +42,9 @@ namespace ftk
                 .def(py::init<float>())
                 .def(py::init<float, float>())
                 .def("__setitem__",
-                    [](Color2F& self, unsigned index, float v) { self.e.at(index) = v; })
+                    [](Color2F& self, unsigned index, float v) { if (index >= 2) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Color2F& self, unsigned index) { return self.e.at(index); })
+                    [](Color2F& self, unsigned index) { if (index >= 2) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("l", [](Color2F& self) { return self.l; }, [](Color2F& self, float v) { self.l = v; })
                 .def_property("a", [](Color2F& self) { return self.a; }, [](Color2F& self, float v) { self.a = v; })
                 .def(py::self == py::self)
@@ -59,9 +60,9 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<float, float, float>())
                 .def("__setitem__",
-                    [](Color3F& self, unsigned index, float v) { self.e.at(index) = v; })
+                    [](Color3F& self, unsigned index, float v) { if (index >= 3) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Color3F& self, unsigned index) { return self.e.at(index); })
+                    [](Color3F& self, unsigned index) { if (index >= 3) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("r", [](Color3F& self) { return self.r; }, [](Color3F& self, float v) { self.r = v; })
                 .def_property("g", [](Color3F& self) { return self.g; }, [](Color3F& self, float v) { self.g = v; })
                 .def_property("b", [](Color3F& self) { return self.b; }, [](Color3F& self, float v) { self.b = v; })
@@ -79,9 +80,9 @@ namespace ftk
                 .def(py::init<float, float, float>())
                 .def(py::init<float, float, float, float>())
                 .def("__setitem__",
-                    [](Color4F& self, unsigned index, float v) { self.e.at(index) = v; })
+                    [](Color4F& self, unsigned index, float v) { if (index >= 4) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
-                    [](Color4F& self, unsigned index) { return self.e.at(index); })
+                    [](Color4F& self, unsigned index) { if (index >= 4) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
                 .def_property("r", [](Color4F& self) { return self.r; }, [](Color4F& self, float v) { self.r = v; })
                 .def_property("g", [](Color4F& self) { return self.g; }, [](Color4F& self, float v) { self.g = v; })
                 .def_property("b", [](Color4F& self) { return self.b; }, [](Color4F& self, float v) { self.b = v; })

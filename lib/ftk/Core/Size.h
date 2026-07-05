@@ -38,23 +38,19 @@ namespace ftk
     class Size<2, T>
     {
     public:
-        constexpr Size();
+        constexpr Size() = default;
         constexpr Size(T, T);
-        constexpr Size(const Size<2, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
-            
-        std::array<T, 2> e;
-        T& w;
-        T& h;
 
         constexpr bool isValid() const;
 
-        constexpr Size<2, T>& operator = (const Size<2, T>&);
+        T w = T(0);
+        T h = T(0);
     };
 
     //! Three-dimensional size.
@@ -62,24 +58,20 @@ namespace ftk
     class Size<3, T>
     {
     public:
-        constexpr Size();
+        constexpr Size() = default;
         constexpr Size(T, T, T);
-        constexpr Size(const Size<3, T>&);
 
         constexpr T operator [] (int) const;
         constexpr T& operator [] (int);
-            
+
         constexpr const T* data() const;
         constexpr T* data();
-            
-        std::array<T, 3> e;
-        T& w;
-        T& h;
-        T& d;
 
         constexpr bool isValid() const;
 
-        constexpr Size<3, T>& operator = (const Size<3, T>&);
+        T w = T(0);
+        T h = T(0);
+        T d = T(0);
     };
 
     typedef Size<2, int> Size2I;

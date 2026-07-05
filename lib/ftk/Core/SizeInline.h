@@ -48,122 +48,94 @@ namespace ftk
     }
 
     template<typename T>
-    constexpr Size<2, T>::Size() :
-        e({ T(0), T(0) }),
-        w(e[0]),
-        h(e[1])
-    {}
-
-    template<typename T>
     constexpr Size<2, T>::Size(T w, T h) :
-        e({ w, h }),
-        w(e[0]),
-        h(e[1])
+        w(w),
+        h(h)
     {}
 
     template<typename T>
-    constexpr Size<2, T>::Size(const Size<2, T>& v) :
-        e(v.e),
-        w(e[0]),
-        h(e[1])
-    {}
-
-    template<typename T>
-    constexpr T Size<2, T>::operator [] (int c) const
+    constexpr T Size<2, T>::operator [] (int i) const
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return w;
+        default: return h;
+        }
     }
 
     template<typename T>
-    constexpr T& Size<2, T>::operator [] (int c)
+    constexpr T& Size<2, T>::operator [] (int i)
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return w;
+        default: return h;
+        }
     }
 
     template<typename T>
     constexpr const T* Size<2, T>::data() const
     {
-        return e.data();
+        return &w;
     }
 
     template<typename T>
     constexpr T* Size<2, T>::data()
     {
-        return e.data();
+        return &w;
     }
 
     template<typename T>
     constexpr bool Size<2, T>::isValid() const
     {
-        return e[0] > 0 && e[1] > 0;
+        return w > 0 && h > 0;
     }
-
-    template<typename T>
-    constexpr Size<2, T>& Size<2, T>::operator = (const Size<2, T>& v)
-    {
-        e = v.e;
-        return *this;
-    }
-
-    template<typename T>
-    constexpr Size<3, T>::Size() :
-        e({ T(0), T(0), T(0) }),
-        w(e[0]),
-        h(e[1]),
-        d(e[2])
-    {}
 
     template<typename T>
     constexpr Size<3, T>::Size(T w, T h, T d) :
-        e({ w, h, d }),
-        w(e[0]),
-        h(e[1]),
-        d(e[2])
+        w(w),
+        h(h),
+        d(d)
     {}
 
     template<typename T>
-    constexpr Size<3, T>::Size(const Size<3, T>& v) :
-        e(v.e),
-        w(e[0]),
-        h(e[1]),
-        d(e[2])
-    {}
-
-    template<typename T>
-    constexpr T Size<3, T>::operator [] (int c) const
+    constexpr T Size<3, T>::operator [] (int i) const
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return w;
+        case 1: return h;
+        default: return d;
+        }
     }
 
     template<typename T>
-    constexpr T& Size<3, T>::operator [] (int c)
+    constexpr T& Size<3, T>::operator [] (int i)
     {
-        return e[c];
+        switch (i)
+        {
+        case 0: return w;
+        case 1: return h;
+        default: return d;
+        }
     }
 
     template<typename T>
     constexpr const T* Size<3, T>::data() const
     {
-        return e.data();
+        return &w;
     }
 
     template<typename T>
     constexpr T* Size<3, T>::data()
     {
-        return e.data();
-    }
-        
-    template<typename T>
-    constexpr bool Size<3, T>::isValid() const
-    {
-        return e[0] > 0 && e[1] > 0 && e[2] > 0;
+        return &w;
     }
 
     template<typename T>
-    constexpr Size<3, T>& Size<3, T>::operator = (const Size<3, T>& v)
+    constexpr bool Size<3, T>::isValid() const
     {
-        e = v.e;
-        return *this;
+        return w > 0 && h > 0 && d > 0;
     }
 
     constexpr float aspectRatio(const Size<2, int>& a)

@@ -117,7 +117,7 @@ namespace ftk
         std::sort(
             intersect.begin(),
             intersect.end(),
-            [value](const Intersect& a, const Intersect& b)
+            [](const Intersect& a, const Intersect& b)
             {
                 return a.area > b.area;
             });
