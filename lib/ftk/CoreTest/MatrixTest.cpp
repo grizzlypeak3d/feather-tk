@@ -131,7 +131,7 @@ namespace ftk
                 const auto m44 = rotateZ(90.F);
                 const auto v4 = m44 * V4F(1.F, 0.F, 0.F);
                 FTK_ASSERT(fuzzyCompare(v4.x, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.y, -1.F));
+                FTK_ASSERT(fuzzyCompare(v4.y, 1.F));
                 FTK_ASSERT(fuzzyCompare(v4.z, 0.F));
                 FTK_ASSERT(fuzzyCompare(v4.w, 1.F));
             }

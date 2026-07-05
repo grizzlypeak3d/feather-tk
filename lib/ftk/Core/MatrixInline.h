@@ -221,8 +221,8 @@ namespace ftk
         const T a = std::cos(deg2rad(angle));
         const T b = std::sin(deg2rad(angle));
         return Matrix<4, 4, T>(
-               a,   b,  T(0), T(0),
-              -b,   a,  T(0), T(0),
+               a,  -b,  T(0), T(0),
+               b,   a,  T(0), T(0),
             T(0), T(0), T(1), T(0),
             T(0), T(0), T(0), T(1));
     }
