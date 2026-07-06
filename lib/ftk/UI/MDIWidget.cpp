@@ -128,7 +128,7 @@ namespace ftk
             int border = 0;
             int handle = 0;
             int shadow = 0;
-            std::array<int, 4> margins;
+            std::array<int, 4> margins = { 0, 0, 0, 0 };
         };
         SizeData size;
 
