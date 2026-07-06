@@ -159,6 +159,21 @@ namespace ftk
             ErrorStruct error;
             size_t      scanlineSize = 0;
             ImageInfo   info;
+
+            ~Private()
+            {
+                if (f)
+                {
+                    fclose(f);
+                }
+                if (png || pngInfo || pngInfoEnd)
+                {
+                    png_destroy_read_struct(
+                        png ? &png : nullptr,
+                        pngInfo ? &pngInfo : nullptr,
+                        pngInfoEnd ? &pngInfoEnd : nullptr);
+                }
+            }
         };
 
         ImageReader::ImageReader(
@@ -262,20 +277,7 @@ namespace ftk
         }
 
         ImageReader::~ImageReader()
-        {
-            FTK_P();
-            if (p.f)
-            {
-                fclose(p.f);
-            }
-            if (p.png || p.pngInfo || p.pngInfoEnd)
-            {
-                png_destroy_read_struct(
-                    p.png ? &p.png : nullptr,
-                    p.pngInfo ? &p.pngInfo : nullptr,
-                    p.pngInfoEnd ? &p.pngInfoEnd : nullptr);
-            }
-        }
+        {}
 
         const ImageInfo& ImageReader::getInfo() const
         {

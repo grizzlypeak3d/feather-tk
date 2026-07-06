@@ -97,6 +97,20 @@ namespace ftk
             png_infop   pngInfo = nullptr;
             FILE* f = nullptr;
             ErrorStruct error;
+
+            ~Private()
+            {
+                if (f)
+                {
+                    fclose(f);
+                }
+                if (png || pngInfo)
+                {
+                    png_destroy_write_struct(
+                        png ? &png : nullptr,
+                        pngInfo ? &pngInfo : nullptr);
+                }
+            }
         };
 
         ImageWriter::ImageWriter(
@@ -169,18 +183,6 @@ namespace ftk
         }
 
         ImageWriter::~ImageWriter()
-        {
-            FTK_P();
-            if (p.f)
-            {
-                fclose(p.f);
-            }
-            if (p.png || p.pngInfo)
-            {
-                png_destroy_write_struct(
-                    p.png ? &p.png : nullptr,
-                    p.pngInfo ? &p.pngInfo : nullptr);
-            }
-        }
+        {}
     }
 }
