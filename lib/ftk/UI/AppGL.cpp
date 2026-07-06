@@ -438,7 +438,7 @@ namespace ftk
         }
 
 #if defined(FTK_SDL2)
-        std::string fromSDLEvent(uint32_t event)
+        [[maybe_unused]] std::string fromSDLEvent(uint32_t event)
         {
             std::string out = "Unknown";
             switch (event)
@@ -526,7 +526,7 @@ namespace ftk
             return out;
         }
 #elif defined(FTK_SDL3)
-        std::string fromSDLEvent(uint32_t event)
+        [[maybe_unused]] std::string fromSDLEvent(uint32_t event)
         {
             std::string out = "Unknown";
             switch (event)

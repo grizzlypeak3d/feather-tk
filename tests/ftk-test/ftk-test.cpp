@@ -297,7 +297,7 @@ namespace ftk
     }
 }
 
-FTK_MAIN()
+int main(int argc, char* argv[])
 {
     try
     {

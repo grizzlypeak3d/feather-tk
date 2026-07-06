@@ -30,6 +30,6 @@ namespace ftk
     } while(0)
 #else // FTK_ASSERT
 #define FTK_ASSERT(value) \
-    do {} while(0)
+    do { (void)sizeof(value); } while(0)
 #endif // FTK_ASSERT
 
