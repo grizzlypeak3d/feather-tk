@@ -5,12 +5,14 @@
 
 #include <ftk/Core/Util.h>
 
+#include <filesystem>
 #include <memory>
 #include <string>
 
 namespace ftk
 {
     class Context;
+    class TmpDir;
 
     namespace test
     {
@@ -32,11 +34,19 @@ namespace ftk
             virtual void run() = 0;
 
         protected:
+            //! Get a temporary directory for this test's file output. The
+            //! directory is created on first use and removed automatically when
+            //! the test is destroyed.
+            const std::filesystem::path& _getTempDir();
+
             void _print(const std::string&);
             void _error(const std::string&);
 
             std::shared_ptr<Context> _context;
             std::string _name;
+
+        private:
+            std::unique_ptr<TmpDir> _tmpDir;
         };
     }
 }

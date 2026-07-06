@@ -45,7 +45,7 @@ namespace ftk
             for (auto fileRead : getFileReadEnums())
             {
                 {
-                    const std::filesystem::path path = "FileIOTest";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest";
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     FTK_ASSERT(fileIO->isOpen());
                     FTK_ASSERT(path == fileIO->getPath());
@@ -104,7 +104,7 @@ namespace ftk
                     FTK_ASSERT(contents2 == "Hello world");
                 }
                 {
-                    const std::filesystem::path path = "FileIOTest2";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest2";
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     int8_t i8 = 1;
                     uint8_t u8 = 2;
@@ -146,7 +146,7 @@ namespace ftk
                     FTK_ASSERT(f == fb);
                 }
                 {
-                    const std::filesystem::path path = "FileIOTest3";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest3";
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     uint32_t u32 = 1;
                     FTK_ASSERT(!fileIO->hasEndianConversion());
@@ -176,7 +176,7 @@ namespace ftk
                 }
                 try
                 {
-                    const std::filesystem::path path = "FileIOTest4";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest4";
                     auto fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     FTK_ASSERT(false);
                 }
@@ -184,7 +184,7 @@ namespace ftk
                 {}
                 try
                 {
-                    const std::filesystem::path path = "FileIOTest5";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest5";
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     fileIO.reset();
 
@@ -197,7 +197,7 @@ namespace ftk
                 {}
                 try
                 {
-                    const std::filesystem::path path = "FileIOTest6";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest6";
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     fileIO.reset();
 
@@ -210,7 +210,7 @@ namespace ftk
                 {}
                 try
                 {
-                    const std::filesystem::path path = "FileIOTest7";
+                    const std::filesystem::path path = _getTempDir() / "FileIOTest7";
                     auto fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     fileIO->writeU8(1);
                     FTK_ASSERT(false);
@@ -218,7 +218,7 @@ namespace ftk
                 catch (const std::exception&)
                 {}
                 {
-                    const std::filesystem::path path = std::filesystem::u8path("大平原");
+                    const std::filesystem::path path = _getTempDir() / std::filesystem::u8path("大平原");
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     fileIO->writeU8(1);
                     fileIO.reset();
@@ -234,7 +234,7 @@ namespace ftk
         void FileIOTest::_functions()
         {
             {
-                const std::filesystem::path path = "FileIOTest8";
+                const std::filesystem::path path = _getTempDir() / "FileIOTest8";
                 auto fileIO = FileIO::create(path, FileMode::Write);
                 fileIO->write("Hello world");
                 fileIO.reset();
@@ -244,7 +244,7 @@ namespace ftk
                 FTK_ASSERT(contents == "Hello world");
             }
             {
-                const std::filesystem::path path = "FileIOTest9";
+                const std::filesystem::path path = _getTempDir() / "FileIOTest9";
                 writeLines(
                     path,
                     {
@@ -262,7 +262,7 @@ namespace ftk
                 }
             }
             {
-                const std::filesystem::path path = "FileIOTest10";
+                const std::filesystem::path path = _getTempDir() / "FileIOTest10";
                 auto fileIO = FileIO::create(path, FileMode::Write);
                 fileIO->write("Hello world");
                 fileIO.reset();
@@ -272,7 +272,7 @@ namespace ftk
                 FTK_ASSERT(line == "Hello world");
             }
             {
-                const std::filesystem::path path = "FileIOTest11";
+                const std::filesystem::path path = _getTempDir() / "FileIOTest11";
                 std::vector<std::string> contents;
                 contents.push_back("Hello");
                 contents.push_back("World");
@@ -280,7 +280,7 @@ namespace ftk
                 FTK_ASSERT(contents == readLines(path));
             }
             {
-                const std::filesystem::path path = "FileIOTest12";
+                const std::filesystem::path path = _getTempDir() / "FileIOTest12";
                 auto fileIO = FileIO::create(path, FileMode::Write);
                 fileIO->write("Hello world");
                 fileIO.reset();

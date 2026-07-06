@@ -401,7 +401,7 @@ namespace ftk
         void PathTest::_dirList()
         {
             {
-                std::filesystem::path dir("PathTest1");
+                std::filesystem::path dir = _getTempDir() / "PathTest1";
                 std::filesystem::create_directory(dir);
                 {
                     FileIO::create(dir / "render.exr", FileMode::Write);
@@ -457,7 +457,7 @@ namespace ftk
                 FTK_ASSERT("render.exr" == dirEntries[7].path.getFileName());
             }
             {
-                std::filesystem::path dir("PathTest2");
+                std::filesystem::path dir = _getTempDir() / "PathTest2";
                 std::filesystem::create_directory(dir);
                 for (int i = 0; i < 10; ++i)
                 {
@@ -478,7 +478,7 @@ namespace ftk
 
         void PathTest::_expandSeq()
         {
-            std::filesystem::path dir("PathTest3");
+            std::filesystem::path dir = _getTempDir() / "PathTest3";
             std::filesystem::create_directory(dir);
             FileIO::create(dir / "render.exr", FileMode::Write);
             for (int i = 0; i < 10; ++i)

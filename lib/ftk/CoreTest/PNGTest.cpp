@@ -57,7 +57,7 @@ namespace ftk
                             const ImageInfo info(size, imageType);
                             auto image = Image::create(info);
                             image->zero();
-                            const std::filesystem::path path = Format(
+                            const std::filesystem::path path = _getTempDir() / Format(
                                 "PNGTest_{0}_{1}_{2}.png").
                                 arg(size.w).
                                 arg(size.h).

@@ -3,6 +3,8 @@
 
 #include <ftk/TestLib/ITest.h>
 
+#include <ftk/Core/Path.h>
+
 #include <iostream>
 
 namespace ftk
@@ -22,6 +24,15 @@ namespace ftk
         const std::string& ITest::getName() const
         {
             return _name;
+        }
+
+        const std::filesystem::path& ITest::_getTempDir()
+        {
+            if (!_tmpDir)
+            {
+                _tmpDir = std::make_unique<TmpDir>();
+            }
+            return _tmpDir->getPath();
         }
         
         void ITest::_print(const std::string& value)
