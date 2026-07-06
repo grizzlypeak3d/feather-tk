@@ -1,8 +1,4 @@
-set(HEADERS ftk-test.h)
-
-set(SOURCE ftk-test.cpp)
-
-add_executable(ftk-test ${SOURCE} ${HEADERS})
+add_executable(ftk-test ftk-test.h ftk-test.cpp)
 
 target_include_directories(ftk-test PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 
