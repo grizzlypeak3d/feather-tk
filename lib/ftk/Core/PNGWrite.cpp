@@ -151,7 +151,7 @@ namespace ftk
             const ImageInfo& info = image->getInfo();
             if (!open(p.f, p.png, &p.pngInfo, info))
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(_path.u8string()));
+                throw std::runtime_error(Format("Cannot open: \"{0}\": {1}").arg(_path.u8string()).arg(p.error.message));
             }
 
             size_t scanlineByteCount = 0;

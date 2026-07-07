@@ -226,7 +226,7 @@ namespace ftk
                 channels,
                 bitDepth))
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(path.u8string()));
+                throw std::runtime_error(Format("Cannot open: \"{0}\": {1}").arg(path.u8string()).arg(p.error.message));
             }
             p.scanlineSize = width * channels * bitDepth / 8;
 
