@@ -23,13 +23,15 @@ namespace ftk
         std::map<std::shared_ptr<IWidget>, GridPos> gridPos;
         ColorRole rowBackgroundRole = ColorRole::None;
         SizeRole marginRole = SizeRole::None;
-        SizeRole spacingRole = SizeRole::Spacing;
+        SizeRole hSpacingRole = SizeRole::Spacing;
+        SizeRole vSpacingRole = SizeRole::Spacing;
 
         struct SizeData
         {
             bool init = true;
             int margin = 0;
-            int spacing = 0;
+            int hSpacing = 0;
+            int vSpacing = 0;
         };
         SizeData size;
 
@@ -162,15 +164,22 @@ namespace ftk
 
     SizeRole GridLayout::getSpacingRole() const
     {
-        return _p->spacingRole;
+        return _p->hSpacingRole;
     }
 
     void GridLayout::setSpacingRole(SizeRole value)
     {
+        setSpacingRole(value, value);
+    }
+
+    void GridLayout::setSpacingRole(SizeRole horizontal, SizeRole vertical)
+    {
         FTK_P();
-        if (value == p.spacingRole)
+        if (horizontal == p.hSpacingRole && vertical == p.vSpacingRole)
             return;
-        p.spacingRole = value;
+        p.hSpacingRole = horizontal;
+        p.vSpacingRole = vertical;
+        p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -208,11 +217,11 @@ namespace ftk
         p.getVisible(rowsVisibleCount, columnsVisibleCount);
         if (rowsVisibleCount > 0)
         {
-            out.h += (rowsVisibleCount - 1) * p.size.spacing;
+            out.h += (rowsVisibleCount - 1) * p.size.vSpacing;
         }
         if (columnsVisibleCount > 0)
         {
-            out.w += (columnsVisibleCount - 1) * p.size.spacing;
+            out.w += (columnsVisibleCount - 1) * p.size.hSpacing;
         }
 
         // Add the margin.
@@ -276,7 +285,7 @@ namespace ftk
         if (rowStretchCount > 0)
         {
             const int avail = g.h() -
-                (rowsVisibleCount - 1) * p.size.spacing -
+                (rowsVisibleCount - 1) * p.size.vSpacing -
                 totalSize.y;
             stretchSize.y = avail / static_cast<int>(rowStretchCount);
             stretchExtra.y = avail - stretchSize.y * static_cast<int>(rowStretchCount);
@@ -284,7 +293,7 @@ namespace ftk
         if (columnStretchCount > 0)
         {
             const int avail = g.w() -
-                (columnsVisibleCount - 1) * p.size.spacing -
+                (columnsVisibleCount - 1) * p.size.hSpacing -
                 totalSize.x;
             stretchSize.x = avail / static_cast<int>(columnStretchCount);
             stretchExtra.x = avail - stretchSize.x * static_cast<int>(columnStretchCount);
@@ -349,14 +358,14 @@ namespace ftk
             {
                 if (p.geom.rowsVisible[j])
                 {
-                    pos.y += p.geom.rowSizes[j] + (visible ? p.size.spacing : 0);
+                    pos.y += p.geom.rowSizes[j] + (visible ? p.size.vSpacing : 0);
                 }
             }
             for (int j = 0; j < i.second.column && j < static_cast<int>(columnSizes.size()); ++j)
             {
                 if (columnsVisible[j])
                 {
-                    pos.x += columnSizes[j] + (visible ? p.size.spacing : 0);
+                    pos.x += columnSizes[j] + (visible ? p.size.hSpacing : 0);
                 }
             }
             Size2I size;
@@ -393,7 +402,8 @@ namespace ftk
         {
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-            p.size.spacing = event.style->getSizeRole(p.spacingRole, event.displayScale);
+            p.size.hSpacing = event.style->getSizeRole(p.hSpacingRole, event.displayScale);
+            p.size.vSpacing = event.style->getSizeRole(p.vSpacingRole, event.displayScale);
         }
     }
 
@@ -418,7 +428,7 @@ namespace ftk
                             Box2I(g.min.x, y, g.w(), p.geom.rowSizes[i]),
                             event.style->getColorRole(p.rowBackgroundRole));
                     }
-                    y += p.geom.rowSizes[i] + p.size.spacing;
+                    y += p.geom.rowSizes[i] + p.size.vSpacing;
                     ++row;
                 }
             }

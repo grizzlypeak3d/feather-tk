@@ -61,6 +61,10 @@ namespace ftk
         //! Set the spacing role.
         FTK_API void setSpacingRole(SizeRole);
 
+        //! Set the spacing role for each direction. The horizontal spacing
+        //! is between columns and the vertical spacing is between rows.
+        FTK_API void setSpacingRole(SizeRole horizontal, SizeRole vertical);
+
         //! Remove all children from the layout.
         FTK_API void clear();
 
