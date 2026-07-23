@@ -7,6 +7,8 @@
 
 namespace ftk
 {
+    class TabBar;
+
     //! \name Layouts
     ///@{
 
@@ -30,6 +32,9 @@ namespace ftk
 
         //! Get the tabs.
         FTK_API const std::vector<std::string>& getTabs() const;
+
+        //! Get the tab bar.
+        FTK_API const std::shared_ptr<TabBar>& getTabBar() const;
 
         //! Add a tab.
         FTK_API void addTab(

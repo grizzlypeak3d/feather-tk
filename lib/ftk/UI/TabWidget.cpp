@@ -79,6 +79,11 @@ namespace ftk
         return _p->tabs->getTabs();
     }
 
+    const std::shared_ptr<TabBar>& TabWidget::getTabBar() const
+    {
+        return _p->tabs;
+    }
+
     void TabWidget::addTab(
         const std::string& value,
         const std::shared_ptr<IWidget>& widget,
