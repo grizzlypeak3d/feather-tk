@@ -118,6 +118,59 @@ namespace ftk
             }
             catch (const std::exception&)
             {}
+
+            std::vector<std::string> argv2 =
+            {
+                "-listOption", "one",
+                "-intListOption", "1",
+                "-listOption", "two words",
+                "-intListOption", "2",
+                "remainder"
+            };
+
+            auto listCmdLineOption = CmdLineListOption<std::string>::create(
+                { "-listOption" },
+                "This is a list option");
+            _print(listCmdLineOption->getHelp());
+            FTK_ASSERT(!listCmdLineOption->found());
+            listCmdLineOption->parse(argv2);
+            FTK_ASSERT(listCmdLineOption->found());
+            FTK_ASSERT(!listCmdLineOption->getMatchedName().empty());
+            const std::vector<std::string>& listOption = listCmdLineOption->getList();
+            FTK_ASSERT(2 == listOption.size());
+            FTK_ASSERT("one" == listOption[0]);
+            FTK_ASSERT("two words" == listOption[1]);
+
+            auto intListCmdLineOption = CmdLineListOption<int>::create(
+                { "-intListOption" },
+                "This is an integer list option");
+            _print(intListCmdLineOption->getHelp());
+            intListCmdLineOption->parse(argv2);
+            FTK_ASSERT(intListCmdLineOption->found());
+            const std::vector<int>& intListOption = intListCmdLineOption->getList();
+            FTK_ASSERT(2 == intListOption.size());
+            FTK_ASSERT(1 == intListOption[0]);
+            FTK_ASSERT(2 == intListOption[1]);
+
+            FTK_ASSERT(1 == argv2.size());
+            FTK_ASSERT("remainder" == argv2[0]);
+
+            argv2.push_back("-listOption");
+            try
+            {
+                listCmdLineOption->parse(argv2);
+                FTK_ASSERT(false);
+            }
+            catch (const std::exception&)
+            {}
+            argv2.push_back("-intListOption");
+            try
+            {
+                intListCmdLineOption->parse(argv2);
+                FTK_ASSERT(false);
+            }
+            catch (const std::exception&)
+            {}
         }
     }
 }

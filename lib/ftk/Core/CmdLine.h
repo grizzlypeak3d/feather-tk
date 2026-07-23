@@ -105,6 +105,34 @@ namespace ftk
         std::string _possibleValues;
     };
 
+    //! Command line option that can be repeated. Each occurrence adds a
+    //! value to the list.
+    template<typename T>
+    class CmdLineListOption : public ICmdLineOption
+    {
+    protected:
+        CmdLineListOption(
+            const std::vector<std::string>& names,
+            const std::string& help,
+            const std::string& group);
+
+    public:
+        //! Create a new command line option.
+        static std::shared_ptr<CmdLineListOption<T> > create(
+            const std::vector<std::string>& names,
+            const std::string& help,
+            const std::string& group = std::string());
+
+        //! Get the list of values.
+        const std::vector<T>& getList() const;
+
+        void parse(std::vector<std::string>& args) override;
+        bool found() const override;
+
+    private:
+        std::vector<T> _list;
+    };
+
     //! Base class for command line arguments.
     class FTK_API_TYPE ICmdLineArg : public std::enable_shared_from_this<ICmdLineArg>
     {

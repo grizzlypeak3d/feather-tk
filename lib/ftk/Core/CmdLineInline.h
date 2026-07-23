@@ -124,6 +124,81 @@ namespace ftk
         }
     }
 
+    template<typename T>
+    inline CmdLineListOption<T>::CmdLineListOption(
+        const std::vector<std::string>& names,
+        const std::string& help,
+        const std::string& group) :
+        ICmdLineOption(names, help, group)
+    {}
+
+    template<typename T>
+    inline std::shared_ptr<CmdLineListOption<T> > CmdLineListOption<T>::create(
+        const std::vector<std::string>& names,
+        const std::string& help,
+        const std::string& group)
+    {
+        return std::shared_ptr<CmdLineListOption<T> >(
+            new CmdLineListOption<T>(names, help, group));
+    }
+
+    template<typename T>
+    inline const std::vector<T>& CmdLineListOption<T>::getList() const
+    {
+        return _list;
+    }
+
+    template<typename T>
+    inline void CmdLineListOption<T>::parse(std::vector<std::string>& args)
+    {
+        for (const auto& name : _names)
+        {
+            auto i = std::find(args.begin(), args.end(), name);
+            while (i != args.end())
+            {
+                _matchedName = name;
+                i = args.erase(i);
+                T value = T();
+                if (!cmdLineParse(args, i, value))
+                {
+                    throw ParseError();
+                }
+                _list.push_back(value);
+                i = std::find(i, args.end(), name);
+            }
+        }
+    }
+
+    template<>
+    inline void CmdLineListOption<std::string>::parse(std::vector<std::string>& args)
+    {
+        for (const auto& name : _names)
+        {
+            auto i = std::find(args.begin(), args.end(), name);
+            while (i != args.end())
+            {
+                _matchedName = name;
+                i = args.erase(i);
+                if (i != args.end())
+                {
+                    _list.push_back(*i);
+                    i = args.erase(i);
+                }
+                else
+                {
+                    throw ParseError();
+                }
+                i = std::find(i, args.end(), name);
+            }
+        }
+    }
+
+    template<typename T>
+    inline bool CmdLineListOption<T>::found() const
+    {
+        return !_list.empty();
+    }
+
     inline ICmdLineArg::ICmdLineArg(
         const std::string& name,
         const std::string& help,
