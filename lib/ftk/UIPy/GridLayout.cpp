@@ -32,7 +32,10 @@ namespace ftk
                     py::arg("column"))
                 .def_property("rowBackgroundRole", &GridLayout::getRowBackgroundRole, &GridLayout::setRowBackgroundRole)
                 .def_property("marginRole", &GridLayout::getMarginRole, &GridLayout::setMarginRole)
-                .def_property("spacingRole", &GridLayout::getSpacingRole, &GridLayout::setSpacingRole)
+                .def_property("spacingRole",
+                    &GridLayout::getSpacingRole,
+                    py::overload_cast<SizeRole>(&GridLayout::setSpacingRole))
+                .def("setSpacingRole", py::overload_cast<SizeRole, SizeRole>(&GridLayout::setSpacingRole))
                 .def("clear", &GridLayout::clear);
         }
     }
