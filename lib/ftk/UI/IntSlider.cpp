@@ -422,7 +422,12 @@ namespace ftk
     Box2I IntSlider::_getInsideGeometry() const
     {
         FTK_P();
-        return margin(getGeometry(), -p.size.keyFocus);
+        // Draw at a fixed height, centered vertically, regardless of how
+        // the widget is stretched.
+        const Box2I& g = getGeometry();
+        const int h = std::min(p.size.sizeHint.h, g.h());
+        const Box2I g2(g.min.x, g.min.y + (g.h() - h) / 2, g.w(), h);
+        return margin(g2, -p.size.keyFocus);
     }
 
     Box2I IntSlider::_getHandleGeometry() const
