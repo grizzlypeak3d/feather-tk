@@ -92,12 +92,34 @@ namespace ftk
             GlobalMemoryStatusEx(&statex);
             return statex.ullTotalPhys;
         }
+
+        std::string getCPUName()
+        {
+            std::string out;
+            // The processor name is published in the registry, which works
+            // regardless of architecture (unlike the __cpuid brand string).
+            char buf[256];
+            DWORD size = sizeof(buf);
+            if (ERROR_SUCCESS == RegGetValueA(
+                HKEY_LOCAL_MACHINE,
+                "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+                "ProcessorNameString",
+                RRF_RT_REG_SZ,
+                nullptr,
+                buf,
+                &size))
+            {
+                out = std::string(buf);
+            }
+            return out;
+        }
     }
 
     SysInfo getSysInfo()
     {
         SysInfo out;
         out.name = getLabel(getWindowsVersion());
+        out.cpu = getCPUName();
         out.cores = std::thread::hardware_concurrency();
         out.ram = getRAMSize();
         const auto d = std::lldiv(getRAMSize(), gigabyte);

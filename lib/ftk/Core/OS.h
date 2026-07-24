@@ -17,6 +17,7 @@ namespace ftk
     struct FTK_API_TYPE SysInfo
     {
         std::string name;
+        std::string cpu;
         size_t      cores = 0;
         size_t      ram   = 0;
         size_t      ramGB = 0;

@@ -13,8 +13,10 @@
 #endif // __APPLE__
 
 #include <cstdlib>
+#include <fstream>
 #include <sstream>
 #include <thread>
+#include <vector>
 
 #include <sys/ioctl.h>
 #if defined(__APPLE__)
@@ -44,6 +46,44 @@ namespace ftk
             return out;
         }
         
+        std::string getCPUName()
+        {
+            std::string out;
+#if defined(__APPLE__)
+            size_t len = 0;
+            if (0 == sysctlbyname("machdep.cpu.brand_string", nullptr, &len, nullptr, 0) &&
+                len > 0)
+            {
+                std::vector<char> buf(len);
+                if (0 == sysctlbyname("machdep.cpu.brand_string", buf.data(), &len, nullptr, 0))
+                {
+                    out = std::string(buf.data());
+                }
+            }
+#else // __APPLE__
+            // Use the first "model name" line in /proc/cpuinfo.
+            std::ifstream is("/proc/cpuinfo");
+            std::string line;
+            while (std::getline(is, line))
+            {
+                const auto i = line.find("model name");
+                if (0 == i)
+                {
+                    const auto j = line.find(':');
+                    if (j != std::string::npos)
+                    {
+                        out = line.substr(j + 1);
+                        // Trim leading whitespace.
+                        const auto k = out.find_first_not_of(" \t");
+                        out = (k != std::string::npos) ? out.substr(k) : std::string();
+                    }
+                    break;
+                }
+            }
+#endif // __APPLE__
+            return out;
+        }
+
         size_t getRAMSize()
         {
             size_t out = 0;
@@ -78,6 +118,7 @@ namespace ftk
     {
         SysInfo out;
         out.name = getName();
+        out.cpu = getCPUName();
         out.cores = std::thread::hardware_concurrency();
         out.ram = getRAMSize();
         const auto d = std::lldiv(getRAMSize(), gigabyte);
