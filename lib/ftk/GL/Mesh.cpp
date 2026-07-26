@@ -622,7 +622,26 @@ namespace ftk
 
         void VBO::copy(const std::vector<uint8_t>& data)
         {
-            glBindBuffer(GL_ARRAY_BUFFER, _p->vbo);
+            FTK_P();
+            glBindBuffer(GL_ARRAY_BUFFER, p.vbo);
+
+            // Discard the previous contents before writing the new ones.
+            //
+            // Immediate mode drawing refills the same buffer many times a
+            // frame, and the GPU may still be reading the previous contents.
+            // Writing over them makes the driver either wait or schedule the
+            // copy on the GPU timeline: on the Metal backed GL driver each
+            // glBufferSubData then allocates a command buffer and blocks on it,
+            // which costs far more than the copy itself and puts a ceiling on
+            // draw calls per frame. Respecifying the buffer first tells the
+            // driver the old contents are not needed, so it can hand back fresh
+            // storage and write straight into it.
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                static_cast<GLsizei>(p.size * getByteCount(p.type)),
+                NULL,
+                GL_DYNAMIC_DRAW);
+
             glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizei>(data.size()), (void*)data.data());
         }
 
