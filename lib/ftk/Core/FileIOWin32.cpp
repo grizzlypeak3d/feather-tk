@@ -306,7 +306,8 @@ namespace ftk
     void FileIO::_open(
         const std::filesystem::path& path,
         FileMode mode,
-        FileRead readType)
+        FileRead readType,
+        FileAccess access)
     {
         FTK_P();
 
@@ -316,8 +317,10 @@ namespace ftk
         DWORD desiredAccess = 0;
         DWORD shareMode = 0;
         DWORD disposition = 0;
-        DWORD flags =
-            //FILE_ATTRIBUTE_NORMAL;
+        // The read ahead hint. These are only settable here, when the file is
+        // opened, so it cannot be changed later the way madvise() can.
+        DWORD flags = FileAccess::Random == access ?
+            FILE_FLAG_RANDOM_ACCESS :
             FILE_FLAG_SEQUENTIAL_SCAN;
         switch (mode)
         {

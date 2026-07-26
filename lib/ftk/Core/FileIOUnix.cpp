@@ -315,7 +315,8 @@ namespace ftk
     void FileIO::_open(
         const std::filesystem::path& path,
         FileMode mode,
-        FileRead readType)
+        FileRead readType,
+        FileAccess access)
     {
         FTK_P();
         
@@ -363,7 +364,10 @@ namespace ftk
             p.size > 0)
         {
             p.mMap = mmap(0, p.size, PROT_READ, MAP_SHARED, p.f, 0);
-            madvise(p.mMap, p.size, MADV_SEQUENTIAL);
+            madvise(
+                p.mMap,
+                p.size,
+                FileAccess::Random == access ? MADV_RANDOM : MADV_SEQUENTIAL);
             if (p.mMap == (void*)-1)
             {
                 throw std::runtime_error(

@@ -26,22 +26,29 @@ namespace ftk
         "Normal",
         "Memory Mapped");
 
+    FTK_ENUM_IMPL(
+        FileAccess,
+        "Sequential",
+        "Random");
+
     std::shared_ptr<FileIO> FileIO::create(
         const std::filesystem::path& path,
         FileMode mode,
-        FileRead readType)
+        FileRead readType,
+        FileAccess access)
     {
         auto out = std::shared_ptr<FileIO>(new FileIO);
-        out->_open(path, mode, readType);
+        out->_open(path, mode, readType, access);
         return out;
     }
 
     std::shared_ptr<FileIO> FileIO::create(
         const std::string& path,
         FileMode mode,
-        FileRead readType)
+        FileRead readType,
+        FileAccess access)
     {
-        return create(std::filesystem::u8path(path), mode, readType);
+        return create(std::filesystem::u8path(path), mode, readType, access);
     }
 
     std::shared_ptr<FileIO> FileIO::create(

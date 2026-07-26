@@ -38,6 +38,22 @@ namespace ftk
     };
     FTK_ENUM(FileRead);
 
+    //! Expected access pattern, used as a read ahead hint.
+    //!
+    //! Sequential asks the operating system to read ahead and to drop what has
+    //! been passed. That is wrong for a file read as scattered ranges, where the
+    //! read ahead is thrown away and costs more than it saves; a bundle of media
+    //! is read that way.
+    enum class FTK_API_TYPE FileAccess
+    {
+        Sequential,
+        Random,
+
+        Count,
+        First = Sequential
+    };
+    FTK_ENUM(FileAccess);
+
     //! In-memory file.
     struct FTK_API_TYPE MemFile
     {
@@ -79,13 +95,15 @@ namespace ftk
         FTK_API static std::shared_ptr<FileIO> create(
             const std::filesystem::path&,
             FileMode,
-            FileRead = FileRead::MMap);
+            FileRead = FileRead::MMap,
+            FileAccess = FileAccess::Sequential);
 
         //! Create a new file I/O object.
         FTK_API static std::shared_ptr<FileIO> create(
             const std::string&,
             FileMode,
-            FileRead = FileRead::MMap);
+            FileRead = FileRead::MMap,
+            FileAccess = FileAccess::Sequential);
 
         //! Create a read-only file I/O object from memory.
         FTK_API static std::shared_ptr<FileIO> create(
@@ -194,7 +212,7 @@ namespace ftk
         FTK_API static size_t getObjectCount();
 
     private:
-        void _open(const std::filesystem::path&, FileMode, FileRead);
+        void _open(const std::filesystem::path&, FileMode, FileRead, FileAccess);
         bool _close(std::string* error = nullptr);
 
         FTK_PRIVATE();
