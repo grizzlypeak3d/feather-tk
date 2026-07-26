@@ -511,6 +511,17 @@ namespace ftk
         }
     }
 
+    void prefetch(const void* p, size_t size)
+    {
+        if (p && size > 0)
+        {
+            WIN32_MEMORY_RANGE_ENTRY range;
+            range.VirtualAddress = const_cast<void*>(p);
+            range.NumberOfBytes = size;
+            PrefetchVirtualMemory(GetCurrentProcess(), 1, &range, 0);
+        }
+    }
+
     void truncateFile(const std::filesystem::path& path, size_t size)
     {
         HANDLE h = INVALID_HANDLE_VALUE;

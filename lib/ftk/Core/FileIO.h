@@ -200,6 +200,13 @@ namespace ftk
         FTK_PRIVATE();
     };
 
+    //! Ask the operating system to populate a range of a memory mapped file.
+    //!
+    //! Reading a mapped range without this faults it in a page at a time, and
+    //! the faults are synchronous and contend with each other when several
+    //! threads read from one mapping.
+    FTK_API void prefetch(const void*, size_t);
+
     //! Read the contents from a file.
     FTK_API std::string read(const std::shared_ptr<FileIO>&);
 

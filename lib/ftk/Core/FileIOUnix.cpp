@@ -482,6 +482,14 @@ namespace ftk
         }
     }
 
+    void prefetch(const void* p, size_t size)
+    {
+        if (p && size > 0)
+        {
+            madvise(const_cast<void*>(p), size, MADV_WILLNEED);
+        }
+    }
+
     void truncateFile(const std::filesystem::path& path, size_t size)
     {
         if (::truncate(path.u8string().c_str(), size) != 0)
