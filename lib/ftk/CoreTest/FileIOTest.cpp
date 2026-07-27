@@ -236,9 +236,18 @@ namespace ftk
             }
         }
         
+        namespace
+        {
+            // At file scope so the thread below needs no capture for it.
+            // Whether a constant like this has to be captured is a point the
+            // compilers disagree on: clang warns if it is captured, MSVC
+            // fails to build if it is not.
+            constexpr size_t readAtFileSize = 64 * 1024;
+        }
+
         void FileIOTest::_readAt()
         {
-            const size_t fileSize = 64 * 1024;
+            const size_t fileSize = readAtFileSize;
             std::vector<uint8_t> data(fileSize);
             for (size_t i = 0; i < fileSize; ++i)
             {
@@ -296,7 +305,8 @@ namespace ftk
                             for (size_t j = 0; j < 100; ++j)
                             {
                                 const size_t pos =
-                                    ((i * 100 + j) * 617) % (fileSize - buf.size());
+                                    ((i * 100 + j) * 617) %
+                                    (readAtFileSize - buf.size());
                                 fileIO->readAt(buf.data(), pos, buf.size());
                                 if (!std::equal(
                                     buf.begin(),
