@@ -106,6 +106,7 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Time.h>
 
+#include <algorithm>
 #include <iostream>
 
 namespace ftk
@@ -259,18 +260,19 @@ namespace ftk
             const auto& cmdLineTests = p.testNames->getList();
             if (!cmdLineTests.empty())
             {
+                // Every test whose name contains the argument, not just the
+                // first: a group name such as "io_tests" is the useful way to
+                // ask for part of the suite.
                 for (const auto& test : cmdLineTests)
                 {
-                    const auto i = std::find_if(
-                        p.tests.begin(),
-                        p.tests.end(),
-                        [test](const std::shared_ptr<test::ITest>& other)
-                        {
-                            return contains(other->getName(), test, CaseCompare::Insensitive);
-                        });
-                    if (i != p.tests.end())
+                    for (const auto& other : p.tests)
                     {
-                        runTests.push_back(*i);
+                        if (contains(other->getName(), test, CaseCompare::Insensitive) &&
+                            std::find(runTests.begin(), runTests.end(), other) ==
+                                runTests.end())
+                        {
+                            runTests.push_back(other);
+                        }
                     }
                 }
             }
