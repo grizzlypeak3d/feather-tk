@@ -530,19 +530,6 @@ namespace ftk
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
-
-                // Discard the previous contents before mapping. The texture and
-                // its buffer are reused every frame, so the transfer started by
-                // the last copy may still be reading this buffer, and mapping it
-                // for writing would then have to wait for that to finish.
-                // Respecifying it first lets the driver hand back fresh storage
-                // instead. See ftk::gl::VBO::copy(), which is the same hazard.
-                glBufferData(
-                    GL_PIXEL_UNPACK_BUFFER,
-                    p.info.getByteCount(),
-                    NULL,
-                    GL_STREAM_DRAW);
-
                 if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
                 {
                     memcpy(
@@ -598,15 +585,6 @@ namespace ftk
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
-
-                // Discard the previous contents first; see the comment in the
-                // overload above.
-                glBufferData(
-                    GL_PIXEL_UNPACK_BUFFER,
-                    p.info.getByteCount(),
-                    NULL,
-                    GL_STREAM_DRAW);
-
                 if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
                 {
                     memcpy(
