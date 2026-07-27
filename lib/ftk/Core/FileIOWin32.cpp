@@ -15,6 +15,10 @@
 #endif // NOMINMAX
 #include <windows.h>
 
+#include <algorithm>
+#include <cstring>
+#include <limits>
+
 namespace ftk
 {
     namespace
@@ -267,6 +271,89 @@ namespace ftk
         default: break;
         }
         p.pos += size * wordSize;
+    }
+
+    void FileIO::readAt(void* in, size_t pos, size_t size, size_t wordSize) const
+    {
+        FTK_P();
+
+        if (p.mode != FileMode::Read && p.mode != FileMode::ReadWrite)
+        {
+            throw std::runtime_error(
+                getErrorMessage(ErrorType::Read, p.path.u8string()));
+        }
+
+        const size_t byteCount = size * wordSize;
+        if (pos > p.size || byteCount > p.size - pos)
+        {
+            throw std::runtime_error(
+                getErrorMessage(
+                    p.memStart ? ErrorType::ReadMMap : ErrorType::Read,
+                    p.path.u8string()));
+        }
+
+        if (p.memStart)
+        {
+            if (p.endianConversion && wordSize > 1)
+            {
+                swapEndian(p.memStart + pos, in, size, wordSize);
+            }
+            else
+            {
+                std::memcpy(in, p.memStart + pos, byteCount);
+            }
+        }
+        else if (p.f != INVALID_HANDLE_VALUE)
+        {
+            uint8_t* out = reinterpret_cast<uint8_t*>(in);
+            size_t remaining = byteCount;
+            uint64_t offset = pos;
+            while (remaining > 0)
+            {
+                // The offset goes in an OVERLAPPED rather than a seek so that
+                // two threads cannot interleave between the two calls. The
+                // handle is synchronous, so this still moves the shared file
+                // position, and Windows serializes the reads; the position is
+                // put back below to keep read() working afterwards.
+                OVERLAPPED overlapped;
+                std::memset(&overlapped, 0, sizeof(overlapped));
+                overlapped.Offset     = static_cast<DWORD>(offset);
+                overlapped.OffsetHigh = static_cast<DWORD>(offset >> 32);
+                const DWORD request = static_cast<DWORD>(std::min<size_t>(
+                    remaining,
+                    std::numeric_limits<DWORD>::max()));
+                DWORD n = 0;
+                if (!::ReadFile(p.f, out, request, &n, &overlapped))
+                {
+                    throw std::runtime_error(
+                        getErrorMessage(ErrorType::Read, p.path.u8string(), getLastError()));
+                }
+                if (0 == n)
+                {
+                    throw std::runtime_error(
+                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                }
+                out       += n;
+                offset    += n;
+                remaining -= n;
+            }
+            LARGE_INTEGER v;
+            v.QuadPart = p.pos;
+            if (!::SetFilePointerEx(p.f, v, 0, FILE_BEGIN))
+            {
+                throw std::runtime_error(
+                    getErrorMessage(ErrorType::Seek, p.path.u8string(), getLastError()));
+            }
+            if (p.endianConversion && wordSize > 1)
+            {
+                swapEndian(in, size, wordSize);
+            }
+        }
+        else
+        {
+            throw std::runtime_error(
+                getErrorMessage(ErrorType::Read, p.path.u8string()));
+        }
     }
 
     void FileIO::write(const void* in, size_t size, size_t wordSize)

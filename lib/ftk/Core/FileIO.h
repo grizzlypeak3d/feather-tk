@@ -156,6 +156,15 @@ namespace ftk
         FTK_API void readU32(uint32_t*, size_t = 1);
         FTK_API void readF32(float*, size_t = 1);
 
+        //! Read from an absolute position, leaving the current position
+        //! unchanged.
+        //!
+        //! This touches none of the object's state, so several threads may
+        //! read from one file at once; seek() followed by read() cannot be
+        //! used that way. It may not run concurrently with the position
+        //! changing calls.
+        FTK_API void readAt(void*, size_t pos, size_t size, size_t wordSize = 1) const;
+
         ///@}
 
         //! \name Write

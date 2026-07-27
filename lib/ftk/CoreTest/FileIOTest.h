@@ -25,6 +25,7 @@ namespace ftk
         private:
             void _enums();
             void _members();
+            void _readAt();
             void _functions();
             void _operators();
         };

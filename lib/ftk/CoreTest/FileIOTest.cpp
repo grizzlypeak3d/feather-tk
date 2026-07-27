@@ -7,7 +7,11 @@
 #include <ftk/Core/FileIO.h>
 #include <ftk/Core/Format.h>
 
+#include <algorithm>
+#include <atomic>
 #include <limits>
+#include <thread>
+#include <utility>
 
 namespace ftk
 {
@@ -30,6 +34,7 @@ namespace ftk
         {
             _enums();
             _members();
+            _readAt();
             _functions();
             _operators();
         }
@@ -231,6 +236,135 @@ namespace ftk
             }
         }
         
+        void FileIOTest::_readAt()
+        {
+            const size_t fileSize = 64 * 1024;
+            std::vector<uint8_t> data(fileSize);
+            for (size_t i = 0; i < fileSize; ++i)
+            {
+                data[i] = static_cast<uint8_t>((i * 7 + 11) & 0xFF);
+            }
+            const std::filesystem::path path = _getTempDir() / "FileIOTestReadAt";
+            {
+                auto fileIO = FileIO::create(path, FileMode::Write);
+                fileIO->write(data.data(), data.size());
+            }
+
+            for (auto fileRead : getFileReadEnums())
+            {
+                auto fileIO = FileIO::create(path, FileMode::Read, fileRead);
+
+                const std::vector<std::pair<size_t, size_t> > ranges =
+                {
+                    { 0, 1 },
+                    { 0, fileSize },
+                    { 1, 4095 },
+                    { 4096, 8192 },
+                    { fileSize - 1, 1 },
+                    { fileSize, 0 }
+                };
+                for (const auto& range : ranges)
+                {
+                    std::vector<uint8_t> buf(range.second + 1);
+                    fileIO->readAt(buf.data(), range.first, range.second);
+                    FTK_ASSERT(std::equal(
+                        buf.begin(),
+                        buf.begin() + range.second,
+                        data.begin() + range.first));
+                }
+
+                // The current position is not disturbed.
+                fileIO->seek(100, SeekMode::Set);
+                uint8_t u8 = 0;
+                fileIO->read(&u8, 1);
+                std::vector<uint8_t> buf(1000);
+                fileIO->readAt(buf.data(), 5000, buf.size());
+                FTK_ASSERT(101 == fileIO->getPos());
+                fileIO->read(&u8, 1);
+                FTK_ASSERT(data[101] == u8);
+                FTK_ASSERT(102 == fileIO->getPos());
+
+                // Several threads read at once.
+                std::vector<std::thread> threads;
+                std::atomic<bool> ok(true);
+                for (size_t i = 0; i < 8; ++i)
+                {
+                    threads.push_back(std::thread(
+                        [fileIO, &data, &ok, i]
+                        {
+                            std::vector<uint8_t> buf(1024);
+                            for (size_t j = 0; j < 100; ++j)
+                            {
+                                const size_t pos =
+                                    ((i * 100 + j) * 617) % (fileSize - buf.size());
+                                fileIO->readAt(buf.data(), pos, buf.size());
+                                if (!std::equal(
+                                    buf.begin(),
+                                    buf.end(),
+                                    data.begin() + pos))
+                                {
+                                    ok = false;
+                                }
+                            }
+                        }));
+                }
+                for (auto& thread : threads)
+                {
+                    thread.join();
+                }
+                FTK_ASSERT(ok);
+
+                try
+                {
+                    fileIO->readAt(&u8, fileSize, 1);
+                    FTK_ASSERT(false);
+                }
+                catch (const std::exception&)
+                {}
+                try
+                {
+                    fileIO->readAt(&u8, fileSize + 1, 0);
+                    FTK_ASSERT(false);
+                }
+                catch (const std::exception&)
+                {}
+            }
+
+            // Endian conversion and word size match read().
+            {
+                auto a = FileIO::create(path, FileMode::Read);
+                a->setEndianConversion(true);
+                a->seek(64, SeekMode::Set);
+                std::vector<uint32_t> viaRead(16);
+                a->readU32(viaRead.data(), viaRead.size());
+
+                auto b = FileIO::create(path, FileMode::Read);
+                b->setEndianConversion(true);
+                std::vector<uint32_t> viaReadAt(16);
+                b->readAt(viaReadAt.data(), 64, viaReadAt.size(), 4);
+                FTK_ASSERT(viaRead == viaReadAt);
+            }
+
+            {
+                MemFile memFile(nullptr, data.data(), data.size());
+                auto fileIO = FileIO::create(path, memFile);
+                std::vector<uint8_t> buf(256);
+                fileIO->readAt(buf.data(), 1234, buf.size());
+                FTK_ASSERT(std::equal(buf.begin(), buf.end(), data.begin() + 1234));
+            }
+
+            try
+            {
+                const std::filesystem::path path2 = _getTempDir() / "FileIOTestReadAt2";
+                auto fileIO = FileIO::create(path2, FileMode::Write);
+                uint8_t u8 = 0;
+                fileIO->readAt(&u8, 0, 1);
+                FTK_ASSERT(false);
+            }
+            catch (const std::exception&)
+            {}
+        }
+
         void FileIOTest::_functions()
         {
             {

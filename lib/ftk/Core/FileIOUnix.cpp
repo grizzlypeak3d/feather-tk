@@ -280,10 +280,75 @@ namespace ftk
         p.pos += size * wordSize;
     }
 
+    void FileIO::readAt(void* in, size_t pos, size_t size, size_t wordSize) const
+    {
+        FTK_P();
+
+        if (p.mode != FileMode::Read && p.mode != FileMode::ReadWrite)
+        {
+            throw std::runtime_error(
+                getErrorMessage(ErrorType::Read, p.path.u8string()));
+        }
+
+        const size_t byteCount = size * wordSize;
+        if (pos > p.size || byteCount > p.size - pos)
+        {
+            throw std::runtime_error(
+                getErrorMessage(
+                    p.memStart ? ErrorType::ReadMMap : ErrorType::Read,
+                    p.path.u8string()));
+        }
+
+        if (p.memStart)
+        {
+            if (p.endianConversion && wordSize > 1)
+            {
+                swapEndian(p.memStart + pos, in, size, wordSize);
+            }
+            else
+            {
+                memcpy(in, p.memStart + pos, byteCount);
+            }
+        }
+        else if (p.f != -1)
+        {
+            uint8_t* out = reinterpret_cast<uint8_t*>(in);
+            size_t remaining = byteCount;
+            off_t offset = pos;
+            while (remaining > 0)
+            {
+                // A short read is not an error; large reads get broken up.
+                const ssize_t r = ::pread(p.f, out, remaining, offset);
+                if (r < 0)
+                {
+                    throw std::runtime_error(
+                        getErrorMessage(ErrorType::Read, p.path.u8string(), getErrorString()));
+                }
+                else if (0 == r)
+                {
+                    throw std::runtime_error(
+                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                }
+                out       += r;
+                offset    += r;
+                remaining -= r;
+            }
+            if (p.endianConversion && wordSize > 1)
+            {
+                swapEndian(in, size, wordSize);
+            }
+        }
+        else
+        {
+            throw std::runtime_error(
+                getErrorMessage(ErrorType::Read, p.path.u8string()));
+        }
+    }
+
     void FileIO::write(const void* in, size_t size, size_t wordSize)
     {
         FTK_P();
-        
+
         if (-1 == p.f)
         {
             throw std::runtime_error(
