@@ -233,12 +233,18 @@ namespace ftk
             const std::shared_ptr<Context>&);
 
         //! Open the file browser.
+        //!
+        //! The filter extensions (e.g. { ".djvr" }) restrict both the native and
+        //! the built-in dialog to those file types; an empty list shows all
+        //! files. The filter name labels the group in the native dialog.
         FTK_API void open(
             const std::shared_ptr<IWindow>&,
             const std::function<void(const Path&)>&,
             const std::string& title = "Open",
             const std::filesystem::path& = std::filesystem::path(),
-            FileBrowserMode = FileBrowserMode::Open);
+            FileBrowserMode = FileBrowserMode::Open,
+            const std::vector<std::string>& filterExtensions = {},
+            const std::string& filterName = "Supported");
 
         //! Get whether the native file dialog is used.
         FTK_API bool isNativeFileDialog() const;
