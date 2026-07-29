@@ -333,6 +333,15 @@ namespace ftk
         const std::filesystem::path&,
         const DirListOptions& = DirListOptions());
 
+    //! Find the frames of a sequence on disk.
+    //!
+    //! expandSeq() searches only when the path has no range yet, so it cannot
+    //! find the frames of a sequence whose range was stated rather than
+    //! discovered. This always searches.
+    FTK_API std::vector<FrameSeq> findSeq(
+        const Path&,
+        const PathOptions& = PathOptions());
+
     //! Expand a file sequence. This function will search the directory for
     //! other frames that match the given file name.
     FTK_API Path expandSeq(

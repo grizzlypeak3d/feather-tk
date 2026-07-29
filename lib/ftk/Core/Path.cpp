@@ -911,6 +911,35 @@ namespace ftk
         return out;
     }
 
+    std::vector<FrameSeq> findSeq(
+        const Path& path,
+        const PathOptions& pathOptions)
+    {
+        std::vector<int64_t> frames;
+        if (path.hasNum() || path.hasSeqWildcard())
+        {
+            const auto abs = std::filesystem::absolute(
+                std::filesystem::u8path(path.get()));
+            const auto parent = abs.parent_path();
+            if (std::filesystem::exists(parent))
+            {
+                for (const auto& i : std::filesystem::directory_iterator(parent))
+                {
+                    if (std::filesystem::is_directory(i.path()))
+                    {
+                        continue;
+                    }
+                    const Path entry(i.path().u8string(), pathOptions);
+                    if (path.seq(entry) && entry.getFrames().has_value())
+                    {
+                        frames.push_back(entry.getFrames().value().min());
+                    }
+                }
+            }
+        }
+        return toFrameSeq(frames);
+    }
+
     Path expandSeq(
         const Path& path,
         const PathOptions& pathOptions)
