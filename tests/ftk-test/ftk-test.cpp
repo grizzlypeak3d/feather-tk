@@ -11,6 +11,7 @@
 #include <ftk/UITest/ColorWidgetTest.h>
 #include <ftk/UITest/ComboBoxTest.h>
 #include <ftk/UITest/ConfirmDialogTest.h>
+#include <ftk/UITest/ContextMenuTest.h>
 #include <ftk/UITest/DoubleEditTest.h>
 #include <ftk/UITest/DoubleEditSliderTest.h>
 #include <ftk/UITest/DoubleSliderTest.h>
@@ -190,6 +191,7 @@ namespace ftk
             p.tests.push_back(ui_test::ColorWidgetTest::create(context));
             p.tests.push_back(ui_test::ComboBoxTest::create(context));
             p.tests.push_back(ui_test::ConfirmDialogTest::create(context));
+            p.tests.push_back(ui_test::ContextMenuTest::create(context));
             p.tests.push_back(ui_test::DoubleEditTest::create(context));
             p.tests.push_back(ui_test::DoubleEditSliderTest::create(context));
             p.tests.push_back(ui_test::DoubleSliderTest::create(context));

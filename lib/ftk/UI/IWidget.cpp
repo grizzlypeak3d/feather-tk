@@ -380,6 +380,12 @@ namespace ftk
         _tooltip = value;
     }
 
+    void IWidget::setContextMenuCallback(
+        const std::function<std::shared_ptr<Menu>(void)>& value)
+    {
+        _contextMenuCallback = value;
+    }
+
     void IWidget::childAddEvent(const ChildAddEvent&)
     {}
 

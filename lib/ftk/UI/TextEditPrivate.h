@@ -8,6 +8,8 @@
 
 namespace ftk
 {
+    class Menu;
+
     class TextEditWidget : public IMouseWidget
     {
     protected:
@@ -56,6 +58,8 @@ namespace ftk
         void textEvent(TextEvent&) override;
 
     private:
+        std::shared_ptr<Menu> _createContextMenu();
+
         TextEditPos _getCursorPos(const V2I&) const;
         void _cursorReset();
 

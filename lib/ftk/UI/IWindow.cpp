@@ -6,6 +6,7 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/IDialog.h>
 #include <ftk/UI/IPopup.h>
+#include <ftk/UI/Menu.h>
 #include <ftk/UI/Tooltip.h>
 
 namespace ftk
@@ -44,6 +45,11 @@ namespace ftk
         std::shared_ptr<Image> dragDropCursor;
         V2I dragDropCursorHotspot;
         std::weak_ptr<IWidget> dragDropHover;
+
+        // Keep the context menu alive; Menu::close() unparents itself and
+        // then keeps running, so the window's child list must not be the
+        // only owner. Released on the tick after it closes.
+        std::shared_ptr<Menu> contextMenu;
 
         bool tooltipsEnabled = true;
         std::shared_ptr<Tooltip> tooltip;
@@ -410,6 +416,12 @@ namespace ftk
     {
         IWidget::tickEvent(parentsVisible, parentsEnabled, event);
         FTK_P();
+
+        if (p.contextMenu && !p.contextMenu->isOpen())
+        {
+            p.contextMenu.reset();
+        }
+
         if (p.inside)
         {
             if (!p.mousePress.lock())
@@ -780,7 +792,13 @@ namespace ftk
             }
             if (!p.mouseClickEvent.accept)
             {
-                setKeyFocus(nullptr);
+                // Nothing claimed the button, so it is free to open a
+                // context menu. A widget that wants the right button for
+                // itself keeps it simply by accepting the press.
+                if (!(MouseButton::Right == button && _contextMenu(widgets)))
+                {
+                    setKeyFocus(nullptr);
+                }
             }
         }
         else
@@ -1030,6 +1048,35 @@ namespace ftk
                 _getKeyFocus(child, out);
             }
         }
+    }
+
+    bool IWindow::_contextMenu(
+        const std::list<std::shared_ptr<IWidget> >& widgets)
+    {
+        FTK_P();
+        bool out = false;
+        for (const auto& widget : widgets)
+        {
+            // A popup is already under the cursor and gets the click for
+            // its own dismissal; don't stack a menu on top of it.
+            if (std::dynamic_pointer_cast<IPopup>(widget))
+                break;
+
+            const auto& callback = widget->getContextMenuCallback();
+            if (!callback)
+                continue;
+            auto menu = callback();
+            if (!menu || menu->isEmpty())
+                continue;
+
+            p.contextMenu = menu;
+            menu->open(
+                std::dynamic_pointer_cast<IWindow>(shared_from_this()),
+                p.cursorPos);
+            out = true;
+            break;
+        }
+        return out;
     }
 
     void IWindow::_closeTooltip()

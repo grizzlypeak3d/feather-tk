@@ -7,6 +7,7 @@ set(HEADERS
     ColorWidgetTest.h
     ComboBoxTest.h
     ConfirmDialogTest.h
+    ContextMenuTest.h
     DoubleEditSliderTest.h
     DoubleEditTest.h
     DoubleModelTest.h
@@ -61,6 +62,7 @@ set(SOURCE
     ColorWidgetTest.cpp
     ComboBoxTest.cpp
     ConfirmDialogTest.cpp
+    ContextMenuTest.cpp
     DoubleEditSliderTest.cpp
     DoubleEditTest.cpp
     DoubleModelTest.cpp

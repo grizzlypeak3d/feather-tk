@@ -8,6 +8,7 @@
 namespace ftk
 {
     class LineEditModel;
+    class Menu;
 
     //! \name Text Widgets
     ///@{
@@ -121,6 +122,8 @@ namespace ftk
         FTK_API void textEvent(TextEvent&) override;
 
     private:
+        std::shared_ptr<Menu> _createContextMenu();
+
         Box2I _getAlignGeometry() const;
         Box2I _getMarginGeometry() const;
         Box2I _getTextGeometry() const;

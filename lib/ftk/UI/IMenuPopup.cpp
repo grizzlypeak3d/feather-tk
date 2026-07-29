@@ -143,6 +143,17 @@ namespace ftk
         }
     }
 
+    void IMenuPopup::open(
+        const std::shared_ptr<IWindow>& window,
+        const V2I& pos)
+    {
+        // An empty box collapses the four placement candidates in
+        // setGeometry() to the four quadrants around the position, and
+        // never contains the cursor, so the next click closes the popup
+        // instead of being swallowed as a click on the button.
+        open(window, Box2I(pos.x, pos.y, 0, 0));
+    }
+
     bool IMenuPopup::isOpen() const
     {
         return _p->open;

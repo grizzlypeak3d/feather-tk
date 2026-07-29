@@ -145,4 +145,10 @@ namespace ftk
     {
         return _tooltip;
     }
+
+    inline const std::function<std::shared_ptr<Menu>(void)>&
+        IWidget::getContextMenuCallback() const
+    {
+        return _contextMenuCallback;
+    }
 }

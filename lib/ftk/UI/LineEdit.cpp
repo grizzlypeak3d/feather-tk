@@ -9,6 +9,7 @@
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/LayoutUtil.h>
 #include <ftk/UI/LineEditModel.h>
+#include <ftk/UI/Menu.h>
 
 #include <ftk/Core/RenderUtil.h>
 
@@ -79,6 +80,7 @@ namespace ftk
         setAcceptsKeyFocus(true);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
+        setContextMenuCallback([this] { return _createContextMenu(); });
 
         p.model = model;
 
@@ -477,9 +479,12 @@ namespace ftk
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
-        p.cursorStart = _toCursor(event.pos.x - _getTextGeometry().min.x + p.scroll);
-        p.model->setCursor(p.cursorStart);
-        takeKeyFocus();
+        if (MouseButton::Left == event.button)
+        {
+            p.cursorStart = _toCursor(event.pos.x - _getTextGeometry().min.x + p.scroll);
+            p.model->setCursor(p.cursorStart);
+            takeKeyFocus();
+        }
     }
 
     void LineEdit::keyFocusEvent(bool value)
@@ -558,6 +563,91 @@ namespace ftk
             event.accept = true;
             p.model->input(event.text);
         }
+    }
+
+    std::shared_ptr<Menu> LineEdit::_createContextMenu()
+    {
+        FTK_P();
+        auto context = getContext();
+        if (!context)
+            return nullptr;
+
+        // The window opens the menu instead of delivering the press, so
+        // place the cursor here. An existing selection is left alone so
+        // that right clicking inside it can still act on it.
+        const LineEditSelection selection = p.model->getSelection();
+        const int cursor = _toCursor(
+            _getMousePos().x - _getTextGeometry().min.x + p.scroll);
+        if (!selection.isValid() ||
+            cursor < selection.min() ||
+            cursor > selection.max())
+        {
+            p.model->setCursor(cursor);
+        }
+        takeKeyFocus();
+
+        // Hold the model rather than the widget so the actions stay valid
+        // if the line edit is destroyed while the menu is open.
+        auto model = p.model;
+        const bool readOnly = model->isReadOnly();
+        const bool hasSelection = model->getSelection().isValid();
+        const bool hasClipboard =
+            !context->getSystem<ClipboardSystem>()->getText().empty();
+
+        auto out = Menu::create(context);
+
+        auto undo = Action::create(
+            "Undo",
+            "Undo",
+            KeyShortcut(Key::Z, commandKeyModifier),
+            [model] { model->undo(); });
+        out->addAction(undo);
+        out->setEnabled(undo, !readOnly && model->observeHasUndo()->get());
+
+        auto redo = Action::create(
+            "Redo",
+            "Redo",
+            KeyShortcut(Key::Y, commandKeyModifier),
+            [model] { model->redo(); });
+        out->addAction(redo);
+        out->setEnabled(redo, !readOnly && model->observeHasRedo()->get());
+
+        out->addDivider();
+
+        auto cut = Action::create(
+            "Cut",
+            "Cut",
+            KeyShortcut(Key::X, commandKeyModifier),
+            [model] { model->cut(); });
+        out->addAction(cut);
+        out->setEnabled(cut, !readOnly && hasSelection);
+
+        auto copy = Action::create(
+            "Copy",
+            "Copy",
+            KeyShortcut(Key::C, commandKeyModifier),
+            [model] { model->copy(); });
+        out->addAction(copy);
+        out->setEnabled(copy, hasSelection);
+
+        auto paste = Action::create(
+            "Paste",
+            "Paste",
+            KeyShortcut(Key::V, commandKeyModifier),
+            [model] { model->paste(); });
+        out->addAction(paste);
+        out->setEnabled(paste, !readOnly && hasClipboard);
+
+        out->addDivider();
+
+        auto selectAll = Action::create(
+            "Select All",
+            KeyShortcut(Key::A, commandKeyModifier),
+            [model] { model->selectAll(); });
+        out->addAction(selectAll);
+        out->setEnabled(selectAll, !model->getText().empty());
+
+        return out;
     }
 
     Box2I LineEdit::_getAlignGeometry() const

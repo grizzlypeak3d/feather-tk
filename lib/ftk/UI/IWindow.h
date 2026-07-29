@@ -215,6 +215,8 @@ namespace ftk
 
         void _hoverUpdate(MouseMoveEvent&);
 
+        bool _contextMenu(const std::list<std::shared_ptr<IWidget> >&);
+
         void _getKeyFocus(
             const std::shared_ptr<IWidget>&,
             std::list<std::shared_ptr<IWidget> >&);

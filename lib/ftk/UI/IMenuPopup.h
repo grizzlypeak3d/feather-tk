@@ -42,6 +42,12 @@ namespace ftk
             const std::shared_ptr<IWindow>&,
             const Box2I& buttonGeometry);
 
+        //! Open the popup at a position, for example at the cursor for a
+        //! context menu.
+        FTK_API void open(
+            const std::shared_ptr<IWindow>&,
+            const V2I& pos);
+
         //! Get whether the popup is open.
         FTK_API bool isOpen() const;
 

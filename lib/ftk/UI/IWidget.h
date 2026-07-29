@@ -6,11 +6,13 @@
 #include <ftk/UI/Event.h>
 #include <ftk/UI/WidgetOptions.h>
 
+#include <functional>
 #include <list>
 
 namespace ftk
 {
     class IWindow;
+    class Menu;
 
     //! Base class for widgets.
     class FTK_API_TYPE IWidget : public std::enable_shared_from_this<IWidget>
@@ -234,6 +236,30 @@ namespace ftk
 
         ///@}
 
+        //! Context menu.
+        ///@{
+
+        //! Get the context menu callback.
+        const std::function<std::shared_ptr<Menu>(void)>& getContextMenuCallback() const;
+
+        //! Set the context menu callback. The callback is invoked when the
+        //! widget is clicked with the right mouse button, and should return
+        //! the menu to show, or null for no menu. Widgets without a callback
+        //! pass the click to their parent.
+        //!
+        //! The click is offered to the widgets under the cursor first, so a
+        //! widget that uses the right button for something else keeps it by
+        //! accepting the press; only an unclaimed button opens a menu.
+        //!
+        //! The menu is created on demand rather than stored so that widgets
+        //! only pay for it when it is used, and so that it can reflect the
+        //! current state, for example disabling paste when the clipboard is
+        //! empty.
+        FTK_API void setContextMenuCallback(
+            const std::function<std::shared_ptr<Menu>(void)>&);
+
+        ///@}
+
         //! Events
         ///@{
 
@@ -344,6 +370,8 @@ namespace ftk
         bool _keyFocus = false;
 
         std::string _tooltip;
+
+        std::function<std::shared_ptr<Menu>(void)> _contextMenuCallback;
     };
 }
 
