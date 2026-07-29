@@ -107,11 +107,28 @@ namespace ftk
     //! Convert frame sequences to frames.
     FTK_API std::vector<int64_t> toFrames(const std::vector<FrameSeq>&);
 
+    //! Add a frame to a list of frame sequences, which is kept sorted and
+    //! merged. Frames already in the list are ignored.
+    //!
+    //! Adding frames in order gives the same result as toFrameSeq(); frames
+    //! added out of order may be split into a different set of sequences that
+    //! covers the same frames.
+    FTK_API void addFrame(std::vector<FrameSeq>&, int64_t);
+
+    //! Get the number of frames in a frame sequence.
+    FTK_API size_t getFrameCount(const FrameSeq&);
+
+    //! Get the number of frames in a list of frame sequences.
+    FTK_API size_t getFrameCount(const std::vector<FrameSeq>&);
+
+    //! Get the range spanned by a list of frame sequences.
+    FTK_API std::optional<RangeI64> getRange(const std::vector<FrameSeq>&);
+
     //! Convert a frame sequence to a label.
-    FTK_API std::string getLabel(const FrameSeq&);
+    FTK_API std::string getLabel(const FrameSeq&, int pad = 0);
 
     //! Convert frame sequences to a label.
-    FTK_API std::string getLabel(const std::vector<FrameSeq>&);
+    FTK_API std::string getLabel(const std::vector<FrameSeq>&, int pad = 0);
 
     //! File path.
     //! 
@@ -180,11 +197,29 @@ namespace ftk
         //! \name File Sequences
         ///@{
 
+        //! Get the range spanned by the sequence. This is the range from the
+        //! first to the last frame, which for a partial sequence includes
+        //! frames that are missing; use getSeq() for the frames themselves.
         const std::optional<RangeI64>& getFrames() const;
+
+        //! Set the sequence to a contiguous range of frames.
         FTK_API void setFrames(const RangeI64&);
+
+        //! Get the frames in the sequence.
+        const std::vector<FrameSeq>& getSeq() const;
+
+        //! Set the frames in the sequence. The list should be sorted and
+        //! merged, as returned by toFrameSeq().
+        FTK_API void setSeq(const std::vector<FrameSeq>&);
+
+        //! Get the number of frames in the sequence.
+        size_t getSeqSize() const;
 
         //! Get whether this is a sequence.
         bool isSeq() const;
+
+        //! Get whether this sequence is missing frames within its range.
+        bool isPartialSeq() const;
 
         //! Get whether this has a sequence wildcard ('#').
         bool hasSeqWildcard() const;
@@ -200,6 +235,11 @@ namespace ftk
 
         //! Add a path to this sequence.
         FTK_API bool addSeq(const Path&);
+
+        //! Group the sequence the way toFrameSeq() would. Paths built up with
+        //! addSeq() hold the right frames whatever order they arrive in, but
+        //! only reach the canonical grouping if they arrive in order.
+        FTK_API void normalizeSeq();
 
         ///@}
 
@@ -227,6 +267,7 @@ namespace ftk
 
     private:
         void _parse(const PathOptions&);
+        void _setSeq(const std::vector<FrameSeq>&);
 
         std::string _path;
         PathOptions _options;
@@ -238,6 +279,9 @@ namespace ftk
         int _pad = 0;
         std::pair<size_t, size_t> _ext = _invalid;
         std::pair<size_t, size_t> _request = _invalid;
+        std::vector<FrameSeq> _seq;
+        // The range spanned by _seq, cached so getFrames() can return a
+        // reference.
         std::optional<RangeI64> _frames;
     };
 

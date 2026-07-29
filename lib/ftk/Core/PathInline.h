@@ -112,9 +112,26 @@ namespace ftk
         return _frames;
     }
 
+    inline const std::vector<FrameSeq>& Path::getSeq() const
+    {
+        return _seq;
+    }
+
+    inline size_t Path::getSeqSize() const
+    {
+        return getFrameCount(_seq);
+    }
+
     inline bool Path::isSeq() const
     {
         return hasNum() && _frames.has_value() && !_frames.value().equal();
+    }
+
+    inline bool Path::isPartialSeq() const
+    {
+        return
+            _seq.size() > 1 ||
+            (1 == _seq.size() && _seq[0].inc > 1 && !_seq[0].range.equal());
     }
 
     inline bool Path::hasSeqWildcard() const
@@ -149,7 +166,7 @@ namespace ftk
 
     inline bool Path::operator == (const Path& other) const
     {
-        return _path == other._path && _frames == other._frames;
+        return _path == other._path && _seq == other._seq;
     }
 
     inline bool Path::operator != (const Path& other) const

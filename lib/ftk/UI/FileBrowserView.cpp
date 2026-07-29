@@ -524,6 +524,32 @@ namespace ftk
         }
         p.dirEntries = dirList(p.model->getPath(), dirListOptions);
 
+        // The frame range, with the number of frames when the sequence is
+        // missing some of them.
+        const auto frameRangeText = [](const Path& path)
+            {
+                std::string out = path.getFrameRange();
+                if (path.isPartialSeq())
+                {
+                    out += Format(" ({0})").
+                        arg(static_cast<int>(path.getSeqSize())).str();
+                }
+                return out;
+            };
+
+        // Columns are aligned by padding them to a common width, so the frame
+        // range column is only widened when a directory needs the room.
+        int frameRangeWidth = 8 + 1 + 8;
+        for (const auto& dirEntry : p.dirEntries)
+        {
+            if (dirEntry.path.isPartialSeq())
+            {
+                frameRangeWidth = std::max(
+                    frameRangeWidth,
+                    static_cast<int>(frameRangeText(dirEntry.path).size()));
+            }
+        }
+
         if (auto context = getContext())
         {
             for (size_t i = 0; i < p.dirEntries.size(); ++i)
@@ -535,11 +561,10 @@ namespace ftk
                 item.text.push_back(dirEntry.path.getFileName());
 
                 // Frame range.
-                if (dirEntry.path.getFrames().has_value() &&
-                    !dirEntry.path.getFrames().value().equal())
+                if (dirEntry.path.isSeq())
                 {
                     item.text.push_back(Format("{0}").
-                        arg(dirEntry.path.getFrameRange(), 8 + 1 + 8));
+                        arg(frameRangeText(dirEntry.path), frameRangeWidth));
                 }
 
                 // File extension.

@@ -202,16 +202,163 @@ namespace ftk
         return out;
     }
 
-    std::string getLabel(const FrameSeq& value)
+    namespace
+    {
+        int64_t seqInc(const FrameSeq& value)
+        {
+            return value.inc > 0 ? value.inc : 1;
+        }
+
+        bool seqContains(const FrameSeq& value, int64_t frame)
+        {
+            return
+                frame >= value.range.min() &&
+                frame <= value.range.max() &&
+                0 == (frame - value.range.min()) % seqInc(value);
+        }
+
+        // Merge a sequence with the one that follows it when together they
+        // form a single sequence with a constant increment. A sequence holding
+        // one frame has no increment of its own, so it takes the increment of
+        // whichever neighbor it is merged with.
+        void mergeSeq(std::vector<FrameSeq>& seqs, size_t i)
+        {
+            if (i + 1 >= seqs.size())
+            {
+                return;
+            }
+            FrameSeq& a = seqs[i];
+            const FrameSeq& b = seqs[i + 1];
+            const int64_t inc = a.range.equal() ?
+                b.range.min() - a.range.min() :
+                seqInc(a);
+            if (inc <= 0 ||
+                b.range.min() != a.range.max() + inc ||
+                (!b.range.equal() && seqInc(b) != inc))
+            {
+                return;
+            }
+            a.range = RangeI64(a.range.min(), b.range.max());
+            a.inc = static_cast<int>(inc);
+            seqs.erase(seqs.begin() + i + 1);
+        }
+    }
+
+    void addFrame(std::vector<FrameSeq>& seqs, int64_t frame)
+    {
+        // Find the first sequence starting after the frame.
+        const size_t i = std::upper_bound(
+            seqs.begin(),
+            seqs.end(),
+            frame,
+            [](int64_t frame, const FrameSeq& seq)
+            {
+                return frame < seq.range.min();
+            }) - seqs.begin();
+
+        // Try extending the preceding sequence.
+        if (i > 0)
+        {
+            FrameSeq& prev = seqs[i - 1];
+            if (seqContains(prev, frame))
+            {
+                return;
+            }
+            if (frame > prev.range.max())
+            {
+                const int64_t inc = prev.range.equal() ?
+                    frame - prev.range.min() :
+                    seqInc(prev);
+                if (frame == prev.range.max() + inc)
+                {
+                    prev.range = RangeI64(prev.range.min(), frame);
+                    prev.inc = static_cast<int>(inc);
+                    mergeSeq(seqs, i - 1);
+                    return;
+                }
+            }
+            else
+            {
+                // The frame falls within the preceding sequence but off its
+                // increment, so that sequence has to be split. Rebuild it
+                // along with its neighbors, since splitting it can leave
+                // pieces that belong with them.
+                const size_t begin = i >= 2 ? i - 2 : 0;
+                const size_t end = std::min(i + 1, seqs.size());
+                std::vector<int64_t> frames;
+                frames.push_back(frame);
+                for (size_t j = begin; j < end; ++j)
+                {
+                    const std::vector<int64_t> tmp = toFrames(seqs[j]);
+                    frames.insert(frames.end(), tmp.begin(), tmp.end());
+                }
+                const std::vector<FrameSeq> split = toFrameSeq(frames);
+                seqs.erase(seqs.begin() + begin, seqs.begin() + end);
+                seqs.insert(seqs.begin() + begin, split.begin(), split.end());
+                return;
+            }
+        }
+
+        // Try extending the following sequence backwards.
+        if (i < seqs.size())
+        {
+            FrameSeq& next = seqs[i];
+            const int64_t inc = next.range.equal() ?
+                next.range.min() - frame :
+                seqInc(next);
+            if (inc > 0 && frame == next.range.min() - inc)
+            {
+                next.range = RangeI64(frame, next.range.max());
+                next.inc = static_cast<int>(inc);
+                if (i > 0)
+                {
+                    mergeSeq(seqs, i - 1);
+                }
+                return;
+            }
+        }
+
+        seqs.insert(seqs.begin() + i, FrameSeq(frame));
+    }
+
+    size_t getFrameCount(const FrameSeq& value)
+    {
+        const int64_t inc = seqInc(value);
+        return static_cast<size_t>(
+            (value.range.max() - value.range.min()) / inc + 1);
+    }
+
+    size_t getFrameCount(const std::vector<FrameSeq>& value)
+    {
+        size_t out = 0;
+        for (const auto& i : value)
+        {
+            out += getFrameCount(i);
+        }
+        return out;
+    }
+
+    std::optional<RangeI64> getRange(const std::vector<FrameSeq>& value)
+    {
+        std::optional<RangeI64> out;
+        for (const auto& i : value)
+        {
+            out = out.has_value() ? expand(out.value(), i.range) : i.range;
+        }
+        return out;
+    }
+
+    std::string getLabel(const FrameSeq& value, int pad)
     {
         std::stringstream ss;
         if (value.range.equal())
         {
-            ss << value.range.min();
+            ss << toString(value.range.min(), pad);
         }
         else
         {
-            ss << value.range.min() << "-" << value.range.max();
+            ss << toString(value.range.min(), pad) << "-" <<
+                toString(value.range.max(), pad);
             if (value.inc > 1)
             {
                 ss << ":" << value.inc;
@@ -220,12 +367,12 @@ namespace ftk
         return ss.str();
     }
 
-    std::string getLabel(const std::vector<FrameSeq>& value)
+    std::string getLabel(const std::vector<FrameSeq>& value, int pad)
     {
         std::vector<std::string> tmp;
         for (const auto& i : value)
         {
-            tmp.push_back(getLabel(i));
+            tmp.push_back(getLabel(i, pad));
         }
         return join(tmp, ',');
     }
@@ -258,25 +405,25 @@ namespace ftk
     void Path::setProtocol(const std::string& value)
     {
         _path = value + getDir() + getBase() + getNum() + getExt() + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setDir(const std::string& value)
     {
         _path = getProtocol() + value + getBase() + getNum() + getExt() + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setBase(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getNum() + getExt() + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setNum(const std::string& value)
@@ -297,38 +444,44 @@ namespace ftk
             num = toString(std::atoll(num.c_str()), _pad);
         }
         _path = getProtocol() + getDir() + getBase() + num + getExt() + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setExt(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + value + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setRequest(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + getNum() + getExt() + value;
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setFileName(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getRequest();
-        const std::optional<RangeI64> tmp = _frames;
+        const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
-        _frames = tmp;
+        _setSeq(tmp);
     }
 
     void Path::setFrames(const RangeI64& value)
     {
+        _seq = { FrameSeq(value) };
         _frames = value;
+    }
+
+    void Path::setSeq(const std::vector<FrameSeq>& value)
+    {
+        _setSeq(value);
     }
 
     bool Path::addSeq(const Path& other)
@@ -336,24 +489,36 @@ namespace ftk
         bool out = seq(other);
         if (out)
         {
-            const std::optional<RangeI64> frames = _frames.has_value() && other._frames.has_value() ?
-                expand(_frames.value(), other._frames.value()) :
-                other._frames;
-            const int pad = std::max(_pad, other._pad);
-            if (frames != _frames || pad != _pad || hasSeqWildcard())
+            std::vector<FrameSeq> seq = _seq;
+            for (const auto& i : other._seq)
             {
-                _frames = frames;
-                _pad = pad;
-                if (_frames.has_value())
+                for (int64_t frame : toFrames(i))
                 {
-                    // setNum() re-derives _frames from the (single-frame) number
-                    // string, so restore the merged sequence range afterwards.
-                    setNum(toString(_frames.value().min(), _pad));
-                    _frames = frames;
+                    addFrame(seq, frame);
                 }
+            }
+            const int pad = std::max(_pad, other._pad);
+            if (seq != _seq || pad != _pad || hasSeqWildcard())
+            {
+                _pad = pad;
+                if (!seq.empty())
+                {
+                    // setNum() re-derives the sequence from the (single-frame)
+                    // number string, so restore the merged sequence afterwards.
+                    setNum(toString(seq.front().range.min(), _pad));
+                }
+                _setSeq(seq);
             }
         }
         return out;
+    }
+
+    void Path::normalizeSeq()
+    {
+        if (_seq.size() > 1)
+        {
+            _setSeq(toFrameSeq(toFrames(_seq)));
+        }
     }
 
     bool Path::isAbs() const
@@ -544,6 +709,7 @@ namespace ftk
             if (_path[numPos] != '#')
             {
                 const int64_t frame = std::atoll(getNum().c_str());
+                _seq = { FrameSeq(frame) };
                 _frames = RangeI64(frame, frame);
             }
             size -= sizeTmp;
@@ -556,6 +722,12 @@ namespace ftk
                 protocolDirSize,
                 size - protocolDirSize);
         }
+    }
+
+    void Path::_setSeq(const std::vector<FrameSeq>& value)
+    {
+        _seq = value;
+        _frames = getRange(_seq);
     }
 
     const std::pair<size_t, size_t> Path:: _invalid(std::string::npos, std::string::npos);
@@ -678,6 +850,13 @@ namespace ftk
         catch (const std::exception&)
         {}
 
+        // The directory is not listed in any particular order, so the
+        // sequences are only grouped once every frame has been added.
+        for (auto& i : out)
+        {
+            i.path.normalizeSeq();
+        }
+
         // Sort the entries.
         std::function<int(const DirEntry& a, const DirEntry& b)> sort;
         switch (options.sort)
@@ -762,6 +941,7 @@ namespace ftk
                         out.addSeq(entry);
                     }
                 }
+                out.normalizeSeq();
             }
         }
         return out;
