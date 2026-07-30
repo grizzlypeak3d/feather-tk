@@ -31,6 +31,9 @@ namespace ftk
 
             const std::string& getName() const;
 
+            //! Get the number of failures reported through _fail().
+            size_t getFailureCount() const;
+
             virtual void run() = 0;
 
         protected:
@@ -40,13 +43,24 @@ namespace ftk
             const std::filesystem::path& _getTempDir();
 
             void _print(const std::string&);
+
+            //! Report something the test tolerates: an expected exception, or
+            //! a capability the environment does not have. This does not fail
+            //! the test, which is why _fail() exists alongside it.
             void _error(const std::string&);
+
+            //! Report a genuine failure from a test that cannot use
+            //! FTK_ASSERT, either because it wants to carry a message or
+            //! because the check must survive a Release build, where
+            //! FTK_ASSERT compiles away.
+            void _fail(const std::string&);
 
             std::shared_ptr<Context> _context;
             std::string _name;
 
         private:
             std::unique_ptr<TmpDir> _tmpDir;
+            size_t _failureCount = 0;
         };
     }
 }
