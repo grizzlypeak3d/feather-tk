@@ -21,9 +21,18 @@ namespace ftk
             py::class_<IMenuPopup, IPopup, std::shared_ptr<IMenuPopup> >(m, "IMenuPopup")
                 .def(
                     "open",
-                    &IMenuPopup::open,
+                    py::overload_cast<
+                        const std::shared_ptr<IWindow>&,
+                        const Box2I&>(&IMenuPopup::open),
                     py::arg("window"),
                     py::arg("buttonGeometry"))
+                .def(
+                    "open",
+                    py::overload_cast<
+                        const std::shared_ptr<IWindow>&,
+                        const V2I&>(&IMenuPopup::open),
+                    py::arg("window"),
+                    py::arg("pos"))
                 .def("isOpen", &IMenuPopup::isOpen)
                 .def(
                     "setCloseCallback",
