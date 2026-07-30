@@ -320,8 +320,7 @@ namespace ftk
         FTK_P();
         FontInfo out;
         const auto& fonts = p.fonts->get();
-        const auto i = fonts.find(font);
-        if (i != fonts.end())
+        if (const auto i = fonts.find(font); i != fonts.end())
         {
             out.name = i->second;
             out.size *= scale;
@@ -334,8 +333,7 @@ namespace ftk
         FTK_P();
         FontInfo out;
         const auto& fonts = p.fonts->get();
-        const auto i = fonts.find(font);
-        if (i != fonts.end())
+        if (const auto i = fonts.find(font); i != fonts.end())
         {
             out.name = i->second;
             out.size = size * scale;

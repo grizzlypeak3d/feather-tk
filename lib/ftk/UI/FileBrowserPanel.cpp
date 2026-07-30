@@ -438,8 +438,7 @@ namespace ftk
                 FTK_P();
                 for (const auto& i : value.bellows)
                 {
-                    auto j = p.bellows.find(i.first);
-                    if (j != p.bellows.end())
+                    if (auto j = p.bellows.find(i.first); j != p.bellows.end())
                     {
                         j->second->setOpen(i.second);
                     }

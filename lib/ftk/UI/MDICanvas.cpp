@@ -330,8 +330,8 @@ namespace ftk
     {
         IMouseWidget::childRemoveEvent(event);
         FTK_P();
-        const auto i = p.childSizeHints.find(event.child);
-        if (i != p.childSizeHints.end())
+        if (const auto i = p.childSizeHints.find(event.child);
+            i != p.childSizeHints.end())
         {
             p.childSizeHints.erase(i);
         }

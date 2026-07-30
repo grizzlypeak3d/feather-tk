@@ -116,8 +116,8 @@ namespace ftk
     void Menu::setChecked(const std::shared_ptr<Action>& action, bool value)
     {
         FTK_P();
-        const auto i = p.actionToButton.find(action);
-        if (i != p.actionToButton.end())
+        if (const auto i = p.actionToButton.find(action);
+            i != p.actionToButton.end())
         {
             i->first->setChecked(value);
             i->second->setChecked(value);
@@ -127,8 +127,8 @@ namespace ftk
     void Menu::setEnabled(const std::shared_ptr<Action>& action, bool value)
     {
         FTK_P();
-        const auto i = p.actionToButton.find(action);
-        if (i != p.actionToButton.end())
+        if (const auto i = p.actionToButton.find(action);
+            i != p.actionToButton.end())
         {
             i->second->setEnabled(value);
         }
@@ -214,8 +214,8 @@ namespace ftk
     void Menu::setSubMenuEnabled(const std::shared_ptr<Menu>& menu, bool value)
     {
         FTK_P();
-        const auto i = p.subMenuToButton.find(menu);
-        if (i != p.subMenuToButton.end())
+        if (const auto i = p.subMenuToButton.find(menu);
+            i != p.subMenuToButton.end())
         {
             i->second->setEnabled(value);
         }
@@ -325,8 +325,8 @@ namespace ftk
                 if (p.current)
                 {
                     auto button = p.current;
-                    const auto i = p.buttonToSubMenu.find(button);
-                    if (i != p.buttonToSubMenu.end())
+                    if (const auto i = p.buttonToSubMenu.find(button);
+                        i != p.buttonToSubMenu.end())
                     {
                         _setCurrent(button);
                         if (!i->second->isEmpty())

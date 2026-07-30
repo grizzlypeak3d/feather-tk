@@ -1284,8 +1284,7 @@ namespace ftk
         {
             p.windows.erase(i);
         }
-        const auto j = p.mousePos.find(window);
-        if (j != p.mousePos.end())
+        if (const auto j = p.mousePos.find(window); j != p.mousePos.end())
         {
             p.mousePos.erase(j);
         }

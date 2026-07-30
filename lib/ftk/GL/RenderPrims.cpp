@@ -296,8 +296,8 @@ namespace ftk
                         if ((*glyphIt)->image && (*glyphIt)->image->isValid())
                         {
                             BoxPackID id = boxPackInvalidID;
-                            const auto j = p.glyphIDs.find((*glyphIt)->info);
-                            if (j != p.glyphIDs.end())
+                            if (const auto j = p.glyphIDs.find((*glyphIt)->info);
+                                j != p.glyphIDs.end())
                             {
                                 id = j->second;
                             }

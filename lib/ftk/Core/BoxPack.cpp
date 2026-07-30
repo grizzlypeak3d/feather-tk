@@ -41,8 +41,7 @@ namespace ftk
     std::shared_ptr<BoxPackNode> BoxPack::getNode(BoxPackID id)
     {
         std::shared_ptr<BoxPackNode> out;
-        const auto i = _idToNode.find(id);
-        if (i != _idToNode.end())
+        if (const auto i = _idToNode.find(id); i != _idToNode.end())
         {
             i->second->timestamp = _timestamp++;
             out = i->second;
@@ -164,8 +163,7 @@ namespace ftk
 
     void BoxPack::_removeFromMap(const std::shared_ptr<BoxPackNode>& node)
     {
-        const auto i = _idToNode.find(node->id);
-        if (i != _idToNode.end())
+        if (const auto i = _idToNode.find(node->id); i != _idToNode.end())
         {
             _idToNode.erase(i);
         }

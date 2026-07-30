@@ -75,8 +75,7 @@ namespace ftk
     template<typename T, typename U>
     inline void LRUCache<T, U>::add(const T& key, const U& value, size_t size)
     {
-        const auto i = _map.find(key);
-        if (i != _map.end())
+        if (const auto i = _map.find(key); i != _map.end())
         {
             // Update existing entry: adjust running size, move to front.
             _size -= i->second->size;
@@ -100,8 +99,7 @@ namespace ftk
     template<typename T, typename U>
     inline void LRUCache<T, U>::remove(const T& key)
     {
-        const auto i = _map.find(key);
-        if (i != _map.end())
+        if (const auto i = _map.find(key); i != _map.end())
         {
             _size -= i->second->size;
             _list.erase(i->second);

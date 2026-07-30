@@ -252,8 +252,7 @@ namespace ftk
                     _print("");
                 }
             }
-            auto i = groups.find(std::string());
-            if (i != groups.end())
+            if (auto i = groups.find(std::string()); i != groups.end())
             {
                 _print("Options:\n");
                 for (const auto& j : i->second)

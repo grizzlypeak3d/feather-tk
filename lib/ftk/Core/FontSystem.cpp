@@ -268,8 +268,7 @@ namespace ftk
         FTK_P();
         {
             std::unique_lock<std::mutex> lock(p.mutex);
-            auto i = p.fontData.find(name);
-            if (i != p.fontData.end())
+            if (auto i = p.fontData.find(name); i != p.fontData.end())
             {
                 p.fontData.erase(i);
             }

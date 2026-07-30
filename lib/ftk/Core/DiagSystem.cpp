@@ -205,8 +205,8 @@ namespace ftk
             lines.push_back(Format("    {0}:").arg(group));
             for (const auto& name : p.names[group])
             {
-                const auto i = samples.find(group + "/" + name);
-                if (i != samples.end())
+                if (const auto i = samples.find(group + "/" + name);
+                    i != samples.end())
                 {
                     lines.push_back(Format("    * {0}").arg(
                         Format(name).arg(!i->second.empty() ? i->second.back() : 0)));

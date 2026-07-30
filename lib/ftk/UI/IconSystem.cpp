@@ -278,8 +278,8 @@ namespace ftk
                             std::vector<uint8_t> resource;
                             if (resource.empty())
                             {
-                                const auto i = p.iconData.find(request->name);
-                                if (i != p.iconData.end())
+                                if (const auto i = p.iconData.find(request->name);
+                                    i != p.iconData.end())
                                 {
                                     resource = i->second;
                                 }

@@ -62,8 +62,7 @@ namespace ftk
         const auto& samples = system->getSamples();
         for (const auto& i : samples)
         {
-            const auto j = p.samples.find(i.first);
-            if (j != p.samples.end())
+            if (const auto j = p.samples.find(i.first); j != p.samples.end())
             {
                 j->second.first->setSamples(j->second.second, i.second);
             }
@@ -76,8 +75,8 @@ namespace ftk
                 FTK_P();
                 for (const auto& i : value)
                 {
-                    const auto j = p.samples.find(i.first);
-                    if (j != p.samples.end())
+                    if (const auto j = p.samples.find(i.first);
+                        j != p.samples.end())
                     {
                         j->second.first->addSample(j->second.second, i.second);
                     }

@@ -88,8 +88,7 @@ namespace ftk
     {
         FTK_P();
         std::pair<int, int> out(-1, -1);
-        const auto i = p.gridPos.find(widget);
-        if (i != p.gridPos.end())
+        if (const auto i = p.gridPos.find(widget); i != p.gridPos.end())
         {
             out.first = i->second.row;
             out.second = i->second.column;
@@ -101,8 +100,7 @@ namespace ftk
     {
         FTK_P();
         int out = -1;
-        const auto i = p.gridPos.find(widget);
-        if (i != p.gridPos.end())
+        if (const auto i = p.gridPos.find(widget); i != p.gridPos.end())
         {
             out = i->second.row;
         }
@@ -113,8 +111,7 @@ namespace ftk
     {
         FTK_P();
         int out = -1;
-        const auto i = p.gridPos.find(widget);
-        if (i != p.gridPos.end())
+        if (const auto i = p.gridPos.find(widget); i != p.gridPos.end())
         {
             out = i->second.column;
         }
@@ -438,8 +435,7 @@ namespace ftk
     void GridLayout::childRemoveEvent(const ChildRemoveEvent& event)
     {
         FTK_P();
-        const auto i = p.gridPos.find(event.child);
-        if (i != p.gridPos.end())
+        if (const auto i = p.gridPos.find(event.child); i != p.gridPos.end())
         {
             p.gridPos.erase(i);
         }
