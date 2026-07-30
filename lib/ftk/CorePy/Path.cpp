@@ -52,6 +52,41 @@ namespace ftk
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
+            py::class_<FrameSeq>(m, "FrameSeq")
+                .def(py::init<>())
+                .def(py::init<RangeI64, int>(), py::arg("range"), py::arg("inc") = 1)
+                .def(py::init<int64_t, int64_t, int>(), py::arg("min"), py::arg("max"), py::arg("inc") = 1)
+                .def(py::init<int64_t>(), py::arg("frame"))
+                .def_readwrite("range", &FrameSeq::range)
+                .def_readwrite("inc", &FrameSeq::inc)
+                .def(pybind11::self == pybind11::self)
+                .def(pybind11::self != pybind11::self);
+
+            m.def("toFrameSeq", &toFrameSeq, py::arg("frames"));
+            m.def(
+                "toFrames",
+                py::overload_cast<const std::vector<FrameSeq>&>(&toFrames),
+                py::arg("seq"));
+            m.def(
+                "addFrame",
+                [](std::vector<FrameSeq> seq, int64_t frame)
+                {
+                    addFrame(seq, frame);
+                    return seq;
+                },
+                py::arg("seq"),
+                py::arg("frame"));
+            m.def(
+                "getFrameCount",
+                py::overload_cast<const std::vector<FrameSeq>&>(&getFrameCount),
+                py::arg("seq"));
+            m.def("getRange", &getRange, py::arg("seq"));
+            m.def(
+                "getLabel",
+                py::overload_cast<const std::vector<FrameSeq>&, int>(&getLabel),
+                py::arg("seq"),
+                py::arg("pad") = 0);
+
             py::class_<Path>(m, "Path")
                 .def(py::init<>())
                 .def(py::init<std::string>())
@@ -79,7 +114,11 @@ namespace ftk
                     "getFileName",
                     [](const Path& path, bool dir) { return path.getFileName(dir); })
                 .def_property("frames", &Path::getFrames, &Path::setFrames)
+                // Not "seq", which is already the predicate below.
+                .def_property("frameSeq", &Path::getSeq, &Path::setSeq)
+                .def_property_readonly("seqSize", &Path::getSeqSize)
                 .def_property_readonly("isSeq", &Path::isSeq)
+                .def_property_readonly("isPartialSeq", &Path::isPartialSeq)
                 .def("getFrame", &Path::getFrame, py::arg("frame"), py::arg("dir") = false)
                 .def("getFrameRange", &Path::getFrameRange)
                 .def("seq", &Path::seq, py::arg("path"))

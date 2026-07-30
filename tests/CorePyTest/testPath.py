@@ -47,3 +47,42 @@ class PathTest(unittest.TestCase):
         path.request = ""
         self.assertEqual(path.get(), "http:///media/lighting000100.tiff")
 
+    def test_frameSeq(self):
+        seq = ftk.toFrameSeq([ 1, 2, 3, 10, 11, 20 ])
+        self.assertEqual(
+            [ (s.range.min, s.range.max, s.inc) for s in seq ],
+            [ (1, 3, 1), (10, 11, 1), (20, 20, 1) ])
+        self.assertEqual(ftk.getFrameCount(seq), 6)
+        self.assertEqual(ftk.toFrames(seq), [ 1, 2, 3, 10, 11, 20 ])
+        self.assertEqual(ftk.getLabel(seq), "1-3,10-11,20")
+        self.assertEqual(ftk.getLabel(seq, 4), "0001-0003,0010-0011,0020")
+
+        bounds = ftk.getRange(seq)
+        self.assertEqual(bounds.min, 1)
+        self.assertEqual(bounds.max, 20)
+        self.assertIsNone(ftk.getRange([]))
+
+        # addFrame() returns a new list rather than modifying in place.
+        self.assertEqual(ftk.getLabel(ftk.addFrame(seq, 12)), "1-3,10-12,20")
+
+    def test_pathSeq(self):
+        path = ftk.Path("/tmp/render.0001.exr")
+        self.assertEqual(
+            [ (s.range.min, s.range.max, s.inc) for s in path.frameSeq ],
+            [ (1, 1, 1) ])
+        self.assertEqual(path.seqSize, 1)
+        self.assertFalse(path.isPartialSeq)
+
+        # The frameSeq property and the seq() predicate are separate members
+        # that both have to stay reachable.
+        self.assertTrue(path.seq(ftk.Path("/tmp/render.0002.exr")))
+        self.assertFalse(path.seq(ftk.Path("/tmp/other.0002.exr")))
+
+        path.frameSeq = ftk.toFrameSeq([ 1, 2, 3, 5 ])
+        self.assertEqual(path.seqSize, 4)
+        self.assertTrue(path.isSeq)
+        self.assertTrue(path.isPartialSeq)
+        self.assertEqual(path.getFrameRange(), "0001-0005")
+        self.assertEqual(path.frames.min, 1)
+        self.assertEqual(path.frames.max, 5)
+

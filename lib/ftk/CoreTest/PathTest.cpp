@@ -243,6 +243,66 @@ namespace ftk
                 _print("Frame sequence: " + getLabel(seqs));
                 seqs.push_back(FrameSeq(4, 8, 2));
                 _print("Frame sequence: " + getLabel(seqs));
+                FTK_ASSERT("0-2,4-8:2" == getLabel(seqs));
+                FTK_ASSERT("0000-0002,0004-0008:2" == getLabel(seqs, 4));
+                FTK_ASSERT(6 == getFrameCount(seqs));
+                FTK_ASSERT(RangeI64(0, 8) == getRange(seqs));
+            }
+            {
+                std::vector<FrameSeq> seqs;
+                FTK_ASSERT(0 == getFrameCount(seqs));
+                FTK_ASSERT(!getRange(seqs).has_value());
+            }
+
+            // Adding frames in order should give the same sequences as
+            // converting them all at once.
+            {
+                const std::vector<std::vector<int64_t> > data =
+                {
+                    { 0 },
+                    { 0, 1 },
+                    { 0, 2 },
+                    { 0, 1, 2 },
+                    { 0, 1, 2, 4 },
+                    { 0, 1, 2, 4, 5 },
+                    { 0, 2, 4, 6 },
+                    { 0, 3, 6, 9 },
+                    { 0, 1, 2, 4, 6, 8 },
+                    { 0, 2, 4, 5, 6, 7 },
+                    { 1, 2, 3, 4, 5, 10, 11, 12, 20 }
+                };
+                for (const auto& frames : data)
+                {
+                    std::vector<FrameSeq> seqs;
+                    for (int64_t frame : frames)
+                    {
+                        addFrame(seqs, frame);
+                    }
+                    FTK_ASSERT(toFrameSeq(frames) == seqs);
+                    FTK_ASSERT(frames.size() == getFrameCount(seqs));
+                }
+            }
+
+            // Frames added out of order or repeated should still give the
+            // same set of frames.
+            {
+                const std::vector<std::vector<int64_t> > data =
+                {
+                    { 2, 0, 1 },
+                    { 0, 4, 2 },
+                    { 0, 2, 4, 1, 3 },
+                    { 20, 10, 11, 12, 1, 2, 3, 4, 5 },
+                    { 5, 5, 5, 1, 1 }
+                };
+                for (const auto& frames : data)
+                {
+                    std::vector<FrameSeq> seqs;
+                    for (int64_t frame : frames)
+                    {
+                        addFrame(seqs, frame);
+                    }
+                    FTK_ASSERT(toFrames(toFrameSeq(frames)) == toFrames(seqs));
+                }
             }
         }
 
@@ -355,6 +415,28 @@ namespace ftk
                 FTK_ASSERT(!p.addSeq(p3));
                 FTK_ASSERT(RangeI64(1, 100) == p.getFrames());
                 FTK_ASSERT("1-100" == p.getFrameRange());
+            }
+            {
+                // A sequence missing frames keeps the frames it has, not just
+                // the range they span.
+                Path p("render.1.exr");
+                FTK_ASSERT(!p.isPartialSeq());
+                FTK_ASSERT(1 == p.getSeqSize());
+                for (int frame : { 2, 3, 4, 5, 10, 11, 12 })
+                {
+                    FTK_ASSERT(p.addSeq(Path(Format("render.{0}.exr").arg(frame).str())));
+                }
+                FTK_ASSERT(p.isSeq());
+                FTK_ASSERT(p.isPartialSeq());
+                FTK_ASSERT(RangeI64(1, 12) == p.getFrames());
+                FTK_ASSERT(8 == p.getSeqSize());
+                FTK_ASSERT("1-5,10-12" == getLabel(p.getSeq()));
+                FTK_ASSERT("render.1.exr" == p.get());
+
+                // Setting a contiguous range replaces the sequence.
+                p.setFrames(RangeI64(1, 12));
+                FTK_ASSERT(!p.isPartialSeq());
+                FTK_ASSERT(12 == p.getSeqSize());
             }
             {
                 Path p("render.#.exr");
@@ -474,6 +556,32 @@ namespace ftk
                 _print("List 0: " + dirEntries[0].path.getFileName());
                 _print("List 1: " + dirEntries[1].path.getFileName());
             }
+            {
+                // A sequence with gaps.
+                std::filesystem::path dir = _getTempDir() / "PathTest4";
+                std::filesystem::create_directory(dir);
+                const std::vector<int> frames = { 1, 2, 3, 4, 5, 10, 11, 12, 20 };
+                for (int i : frames)
+                {
+                    FileIO::create(
+                        dir / Format("render.{0}.exr").arg(i, 4, '0').str(),
+                        FileMode::Write);
+                }
+                auto dirEntries = dirList(dir);
+                FTK_ASSERT(1 == dirEntries.size());
+                const Path& path = dirEntries[0].path;
+                _print("Partial sequence: " + getLabel(path.getSeq()));
+                FTK_ASSERT(path.isSeq());
+                FTK_ASSERT(path.isPartialSeq());
+                FTK_ASSERT(RangeI64(1, 20) == path.getFrames());
+                FTK_ASSERT(frames.size() == path.getSeqSize());
+                FTK_ASSERT("0001-0020" == path.getFrameRange());
+                FTK_ASSERT("render.0001.exr" == path.getFileName());
+                FTK_ASSERT("1-5,10-12,20" == getLabel(path.getSeq()));
+                FTK_ASSERT(
+                    std::vector<int64_t>(frames.begin(), frames.end()) ==
+                    toFrames(path.getSeq()));
+            }
         }
 
         void PathTest::_expandSeq()
@@ -505,6 +613,26 @@ namespace ftk
             path = expandSeq(Path((dir / "render.0.tiff").u8string()));
             FTK_ASSERT(0 == path.getFrames().value().min());
             FTK_ASSERT(0 == path.getFrames().value().max());
+
+            {
+                std::filesystem::path dir2 = _getTempDir() / "PathTest5";
+                std::filesystem::create_directory(dir2);
+                const std::vector<int> frames = { 1, 2, 3, 8, 9 };
+                for (int i : frames)
+                {
+                    FileIO::create(
+                        dir2 / Format("render.{0}.exr").arg(i, 4, '0').str(),
+                        FileMode::Write);
+                }
+                path = expandSeq(Path((dir2 / "render.####.exr").u8string()));
+                _print("Partial sequence: " + getLabel(path.getSeq()));
+                FTK_ASSERT(path.isPartialSeq());
+                FTK_ASSERT(RangeI64(1, 9) == path.getFrames());
+                FTK_ASSERT("1-3,8-9" == getLabel(path.getSeq()));
+                FTK_ASSERT(
+                    std::vector<int64_t>(frames.begin(), frames.end()) ==
+                    toFrames(path.getSeq()));
+            }
         }
     }
 }
