@@ -26,6 +26,11 @@ namespace ftk
             return _name;
         }
 
+        size_t ITest::getFailureCount() const
+        {
+            return _failureCount;
+        }
+
         const std::filesystem::path& ITest::_getTempDir()
         {
             if (!_tmpDir)
@@ -43,6 +48,12 @@ namespace ftk
         void ITest::_error(const std::string& value)
         {
             std::cout << _name << " ERROR: " << value << std::endl;
+        }
+
+        void ITest::_fail(const std::string& value)
+        {
+            ++_failureCount;
+            std::cout << _name << " FAIL: " << value << std::endl;
         }
     }
 }
