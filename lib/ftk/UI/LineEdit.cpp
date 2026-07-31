@@ -652,7 +652,7 @@ namespace ftk
 
     Box2I LineEdit::_getAlignGeometry() const
     {
-        return align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
+        return getGeometry();
     }
 
     Box2I LineEdit::_getMarginGeometry() const

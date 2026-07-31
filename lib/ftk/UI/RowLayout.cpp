@@ -275,7 +275,11 @@ namespace ftk
                 switch (p.orientation)
                 {
                 case Orientation::Horizontal:
-                    switch (getVAlign())
+                    // The child's alignment rather than the layout's, matching
+                    // the grid layout. The origin is reset each time around
+                    // since the children may no longer agree on it.
+                    pos.y = p.geom.g2.min.y;
+                    switch (child->getVAlign())
                     {
                     case VAlign::Fill:
                         size.h = p.geom.g2.h();
@@ -298,7 +302,8 @@ namespace ftk
                     }
                     break;
                 case Orientation::Vertical:
-                    switch (getHAlign())
+                    pos.x = p.geom.g2.min.x;
+                    switch (child->getHAlign())
                     {
                     case HAlign::Fill:
                         size.w = p.geom.g2.w();

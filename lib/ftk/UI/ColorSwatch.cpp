@@ -195,7 +195,7 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
+            p.draw->g = getGeometry();
             if (p.border)
             {
                 p.draw->g2 = margin(p.draw->g, -p.size.border);
