@@ -5,6 +5,7 @@
 
 #include <ftk/UI/ColorPopup.h>
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/LayoutUtil.h>
 
 #include <optional>
 
@@ -30,6 +31,7 @@ namespace ftk
 
         struct DrawData
         {
+            Box2I g;
             Box2I g2;
             TriMesh2F border;
         };
@@ -193,15 +195,15 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            const Box2I& g = getGeometry();
+            p.draw->g = align(getGeometry(), getSizeHint(), getHAlign(), getVAlign());
             if (p.border)
             {
-                p.draw->g2 = margin(g, -p.size.border);
-                p.draw->border = border(g, p.size.border);
+                p.draw->g2 = margin(p.draw->g, -p.size.border);
+                p.draw->border = border(p.draw->g, p.size.border);
             }
             else
             {
-                p.draw->g2 = g;
+                p.draw->g2 = p.draw->g;
             }
         }
 
