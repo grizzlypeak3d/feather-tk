@@ -210,6 +210,9 @@ namespace ftk
         _titleLabel->setFontSize(14);
         _titleLabel->setMarginRole(SizeRole::Margin);
         _titleLabel->setBackgroundRole(ColorRole::Header);
+        // The header spans the dialog, so the label fills rather than
+        // hugging its text.
+        _titleLabel->setHAlign(HAlign::Fill);
 
         _label = Label::create(context, text);
         _label->setMarginRole(SizeRole::MarginInside);

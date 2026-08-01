@@ -90,6 +90,9 @@ namespace ftk
         p.titleLabel->setFontSize(14);
         p.titleLabel->setMarginRole(SizeRole::Margin);
         p.titleLabel->setBackgroundRole(ColorRole::Header);
+        // The header spans the dialog, so the label fills rather than
+        // hugging its text.
+        p.titleLabel->setHAlign(HAlign::Fill);
 
         p.panelButton = ToolButton::create(context);
         p.panelButton->setCheckable(true);
