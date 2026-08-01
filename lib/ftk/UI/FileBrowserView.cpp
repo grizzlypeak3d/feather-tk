@@ -522,6 +522,13 @@ namespace ftk
         {
             dirListOptions.filterExt.push_back(ext);
         }
+        else
+        {
+            // A filter set by whoever opened the browser still applies when
+            // no single extension is picked; it is empty otherwise, which
+            // lists everything.
+            dirListOptions.filterExt = p.model->getExtsFilter();
+        }
         p.dirEntries = dirList(p.model->getPath(), dirListOptions);
 
         // The frame range, with the number of frames when the sequence is

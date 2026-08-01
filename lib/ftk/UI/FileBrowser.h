@@ -109,6 +109,20 @@ namespace ftk
         //! Set the current extension.
         FTK_API void setExt(const std::string&);
 
+        //! Get the extension filter.
+        FTK_API const std::vector<std::string>& getExtsFilter() const;
+
+        //! Get the label for the extension filter.
+        FTK_API const std::string& getExtsFilterLabel() const;
+
+        //! Set an extension filter, e.g. { ".djvr" }. Unlike setExts(), which
+        //! only fills the extensions combo box and leaves "*.*" showing every
+        //! file, a filter restricts the listing: the combo box narrows within
+        //! it. The label names the filter in place of "*.*".
+        FTK_API void setExtsFilter(
+            const std::vector<std::string>&,
+            const std::string& label = std::string());
+
     private:
         FTK_PRIVATE();
     };
@@ -219,6 +233,26 @@ namespace ftk
         FTK_PRIVATE();
     };
 
+    //! File browser open options.
+    struct FTK_API_TYPE FileBrowserOpenOptions
+    {
+        std::string           title = "Open";
+
+        //! The directory to open at. Empty stays wherever the browser was
+        //! last left.
+        std::filesystem::path path;
+
+        FileBrowserMode       mode = FileBrowserMode::Open;
+
+        //! Restrict the listing to these extensions, e.g. { ".djvr" }. Empty
+        //! shows every file.
+        std::vector<std::string> extensions;
+
+        //! Names the group of extensions: the filter group in the native
+        //! dialog, and the entry shown in place of "*.*" in the built-in one.
+        std::string           extensionsLabel = "Supported";
+    };
+
     //! File browser system.
     class FTK_API_TYPE FileBrowserSystem : public ISystem
     {
@@ -233,18 +267,10 @@ namespace ftk
             const std::shared_ptr<Context>&);
 
         //! Open the file browser.
-        //!
-        //! The filter extensions (e.g. { ".djvr" }) restrict both the native and
-        //! the built-in dialog to those file types; an empty list shows all
-        //! files. The filter name labels the group in the native dialog.
         FTK_API void open(
             const std::shared_ptr<IWindow>&,
             const std::function<void(const Path&)>&,
-            const std::string& title = "Open",
-            const std::filesystem::path& = std::filesystem::path(),
-            FileBrowserMode = FileBrowserMode::Open,
-            const std::vector<std::string>& filterExtensions = {},
-            const std::string& filterName = "Supported");
+            const FileBrowserOpenOptions& = FileBrowserOpenOptions());
 
         //! Get whether the native file dialog is used.
         FTK_API bool isNativeFileDialog() const;

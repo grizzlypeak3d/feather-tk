@@ -29,6 +29,14 @@ namespace ftk
                 .value("Dir", FileBrowserMode::Dir);
             FTK_ENUM_BIND(m, FileBrowserMode);
 
+            py::class_<FileBrowserOpenOptions>(m, "FileBrowserOpenOptions")
+                .def(py::init<>())
+                .def_readwrite("title", &FileBrowserOpenOptions::title)
+                .def_readwrite("path", &FileBrowserOpenOptions::path)
+                .def_readwrite("mode", &FileBrowserOpenOptions::mode)
+                .def_readwrite("extensions", &FileBrowserOpenOptions::extensions)
+                .def_readwrite("extensionsLabel", &FileBrowserOpenOptions::extensionsLabel);
+
             py::class_<FileBrowserOptions>(m, "FileBrowserOptions")
                 .def(py::init())
                 .def_readwrite("dirList", &FileBrowserOptions::dirList)
@@ -75,9 +83,7 @@ namespace ftk
                     &FileBrowserSystem::open,
                     py::arg("window"),
                     py::arg("callback"),
-                    py::arg("title") = "Open",
-                    py::arg("fileName") = std::string(),
-                    py::arg("mode") = FileBrowserMode::Open)
+                    py::arg("options") = FileBrowserOpenOptions())
                 .def_property(
                     "nativeFileDialog",
                     &FileBrowserSystem::isNativeFileDialog,

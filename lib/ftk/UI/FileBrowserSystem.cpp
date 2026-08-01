@@ -57,11 +57,7 @@ namespace ftk
     void FileBrowserSystem::open(
         const std::shared_ptr<IWindow>& window,
         const std::function<void(const Path&)>& callback,
-        const std::string& title,
-        const std::filesystem::path& path,
-        FileBrowserMode mode,
-        const std::vector<std::string>& filterExtensions,
-        const std::string& filterName)
+        const FileBrowserOpenOptions& options)
     {
         FTK_P();
         bool native = p.native;
@@ -72,7 +68,7 @@ namespace ftk
             // a comma-separated spec without leading dots, e.g. "djvr" or
             // "png,jpg".
             std::string spec;
-            for (const auto& ext : filterExtensions)
+            for (const auto& ext : options.extensions)
             {
                 std::string e = ext;
                 if (!e.empty() && '.' == e.front())
@@ -92,15 +88,15 @@ namespace ftk
             std::vector<nfdu8filteritem_t> filterItems;
             if (!spec.empty())
             {
-                filterItems.push_back({ filterName.c_str(), spec.c_str() });
+                filterItems.push_back({ options.extensionsLabel.c_str(), spec.c_str() });
             }
             const nfdu8filteritem_t* filterList = filterItems.empty() ? nullptr : filterItems.data();
             const nfdfiltersize_t filterCount = static_cast<nfdfiltersize_t>(filterItems.size());
-            const std::string defaultPathStr = path.u8string();
+            const std::string defaultPathStr = options.path.u8string();
             const nfdu8char_t* defaultPath = defaultPathStr.empty() ? nullptr : defaultPathStr.c_str();
 
             nfdu8char_t* outPath = nullptr;
-            switch (mode)
+            switch (options.mode)
             {
             case FileBrowserMode::Open:
                 NFD::OpenDialog(outPath, filterList, filterCount, defaultPath);
@@ -109,7 +105,7 @@ namespace ftk
                 NFD::SaveDialog(outPath, filterList, filterCount, defaultPath);
                 break;
             case FileBrowserMode::Dir:
-                NFD::PickFolder(outPath);
+                NFD::PickFolder(outPath, defaultPath);
                 break;
             default: break;
             }
@@ -129,20 +125,23 @@ namespace ftk
                 // When a filter is given, use a dedicated model so the shared
                 // model (configured elsewhere, e.g. for media) is left untouched.
                 std::shared_ptr<FileBrowserModel> model = p.model;
-                if (!filterExtensions.empty())
+                if (!options.extensions.empty())
                 {
                     model = FileBrowserModel::create(context);
                     model->setOptions(p.model->getOptions());
-                    model->setExts(filterExtensions);
-                    model->setExt(filterExtensions.front());
+                    // Carry the shared model's location across: a fresh one
+                    // starts at the working directory, which is not where the
+                    // user was.
+                    model->setPath(p.model->getPath());
+                    model->setExtsFilter(options.extensions, options.extensionsLabel);
                 }
                 p.fileBrowser = FileBrowser::create(
                     context,
-                    title,
-                    path,
-                    mode,
+                    options.title,
+                    options.path,
+                    options.mode,
                     model);
-                p.fileBrowser->setTitle(title);
+                p.fileBrowser->setTitle(options.title);
                 p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
                 p.fileBrowser->open(window);
                 p.fileBrowser->setCallback(

@@ -79,6 +79,12 @@ namespace ftk
 
         p.mode = mode;
         p.model = model;
+        // The path the browser was opened with, which until now was accepted
+        // and then dropped. An empty one keeps wherever the model already is.
+        if (!path.empty())
+        {
+            p.model->setPath(path);
+        }
 
         p.titleLabel = Label::create(context, title);
         p.titleLabel->setFontSize(14);
@@ -498,7 +504,11 @@ namespace ftk
         const std::string& ext = p.model->getExt();
 
         std::vector<std::string> extsLabels;
-        extsLabels.push_back("*.*");
+        const std::string& filterLabel = p.model->getExtsFilterLabel();
+        extsLabels.push_back(
+            !p.model->getExtsFilter().empty() && !filterLabel.empty() ?
+            filterLabel :
+            "*.*");
         for (const auto& ext : exts)
         {
             extsLabels.push_back("*" + ext);

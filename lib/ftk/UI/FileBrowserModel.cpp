@@ -15,6 +15,8 @@ namespace ftk
         std::shared_ptr<Observable<FileBrowserOptions> > options;
         std::shared_ptr<ObservableList<std::string> > exts;
         std::shared_ptr<Observable<std::string> > ext;
+        std::vector<std::string> extsFilter;
+        std::string extsFilterLabel;
     };
 
     FileBrowserModel::FileBrowserModel(const std::shared_ptr<Context>&) :
@@ -146,5 +148,28 @@ namespace ftk
     void FileBrowserModel::setExt(const std::string& value)
     {
         _p->ext->setIfChanged(value);
+    }
+
+    const std::vector<std::string>& FileBrowserModel::getExtsFilter() const
+    {
+        return _p->extsFilter;
+    }
+
+    const std::string& FileBrowserModel::getExtsFilterLabel() const
+    {
+        return _p->extsFilterLabel;
+    }
+
+    void FileBrowserModel::setExtsFilter(
+        const std::vector<std::string>& value,
+        const std::string& label)
+    {
+        FTK_P();
+        p.extsFilter = value;
+        p.extsFilterLabel = label;
+        // The filter is also the set of choices, and none of them is picked to
+        // begin with so that the listing opens showing all of them.
+        p.exts->setIfChanged(value);
+        p.ext->setIfChanged(std::string());
     }
 }

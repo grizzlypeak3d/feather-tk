@@ -177,6 +177,9 @@ namespace textedit
             if (doc->getPath().empty())
             {
                 auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();
+                FileBrowserOpenOptions options;
+                options.title = "Save";
+                options.mode = FileBrowserMode::Save;
                 fileBrowserSystem->open(
                     _mainWindow,
                     [this, doc](const Path& path)
@@ -193,9 +196,7 @@ namespace textedit
                                 _mainWindow);
                         }
                     },
-                    "Save",
-                    std::filesystem::path(),
-                    FileBrowserMode::Save);
+                    options);
             }
             else
             {
@@ -219,6 +220,9 @@ namespace textedit
         if (auto doc = std::dynamic_pointer_cast<Document>(_documentModel->getCurrent()))
         {
             auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();
+            FileBrowserOpenOptions options;
+            options.title = "Save As";
+            options.mode = FileBrowserMode::Save;
             fileBrowserSystem->open(
                 _mainWindow,
                 [this, doc](const Path& path)
@@ -235,9 +239,7 @@ namespace textedit
                             _mainWindow);
                     }
                 },
-                "Save As",
-                std::filesystem::path(),
-                FileBrowserMode::Save);
+                options);
         }
     }
 

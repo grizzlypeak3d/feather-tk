@@ -159,6 +159,10 @@ namespace ftk
         {
             if (auto fileBrowserSystem = context->getSystem<FileBrowserSystem>())
             {
+                FileBrowserOpenOptions options;
+                options.title = "File Browser";
+                options.path = std::filesystem::u8path(p.path.get());
+                options.mode = p.mode;
                 fileBrowserSystem->open(
                     getWindow(),
                     [this](const Path& value)
@@ -171,9 +175,7 @@ namespace ftk
                             p.callback(p.path);
                         }
                     },
-                    "File Browser",
-                    std::filesystem::u8path(p.path.get()),
-                    p.mode);
+                    options);
             }
         }
     }
