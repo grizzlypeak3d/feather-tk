@@ -35,6 +35,14 @@ namespace ftk
         //! Get whether the dialog is open.
         FTK_API bool isOpen() const;
 
+        //! Get the title.
+        FTK_API const std::string& getTitle() const;
+
+        //! Set the title, shown in a bar above the dialog. An empty title,
+        //! the default, has no bar. Titles belong to dialogs: a widget used
+        //! outside one does not carry a title bar around with it.
+        FTK_API void setTitle(const std::string&);
+
         //! Set the close callback.
         FTK_API void setCloseCallback(const std::function<void(void)>&);
 

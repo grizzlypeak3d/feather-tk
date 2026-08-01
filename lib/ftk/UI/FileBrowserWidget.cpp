@@ -29,7 +29,6 @@ namespace ftk
         std::shared_ptr<RecentFilesModel> recentFilesModel;
         Path selection;
 
-        std::shared_ptr<Label> titleLabel;
         std::shared_ptr<ToolButton> panelButton;
         std::shared_ptr<ToolButton> upButton;
         std::shared_ptr<ToolButton> forwardButton;
@@ -63,7 +62,6 @@ namespace ftk
 
     void FileBrowserWidget::_init(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::filesystem::path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
@@ -79,20 +77,10 @@ namespace ftk
 
         p.mode = mode;
         p.model = model;
-        // The path the browser was opened with, which until now was accepted
-        // and then dropped. An empty one keeps wherever the model already is.
         if (!path.empty())
         {
             p.model->setPath(path);
         }
-
-        p.titleLabel = Label::create(context, title);
-        p.titleLabel->setFontSize(14);
-        p.titleLabel->setMarginRole(SizeRole::Margin);
-        p.titleLabel->setBackgroundRole(ColorRole::Header);
-        // The header spans the dialog, so the label fills rather than
-        // hugging its text.
-        p.titleLabel->setHAlign(HAlign::Fill);
 
         p.panelButton = ToolButton::create(context);
         p.panelButton->setCheckable(true);
@@ -158,8 +146,6 @@ namespace ftk
 
         p.layout = VerticalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::None);
-        p.titleLabel->setParent(p.layout);
-        Divider::create(context, Orientation::Vertical, p.layout);
         auto vLayout = VerticalLayout::create(context, p.layout);
         vLayout->setSpacingRole(SizeRole::SpacingSmall);
         vLayout->setMarginRole(SizeRole::MarginSmall);
@@ -417,20 +403,14 @@ namespace ftk
 
     std::shared_ptr<FileBrowserWidget> FileBrowserWidget::create(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::filesystem::path& path,
         FileBrowserMode mode,
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<FileBrowserWidget>(new FileBrowserWidget);
-        out->_init(context, title, path, mode, model, parent);
+        out->_init(context, path, mode, model, parent);
         return out;
-    }
-
-    void FileBrowserWidget::setTitle(const std::string& value)
-    {
-        _p->titleLabel->setText(value);
     }
 
     void FileBrowserWidget::setCallback(const std::function<void(const Path&)>& value)

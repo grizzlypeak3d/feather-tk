@@ -153,7 +153,6 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent);
 
@@ -164,7 +163,6 @@ namespace ftk
 
         static std::shared_ptr<ProgressDialogWidget> create(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
@@ -186,7 +184,6 @@ namespace ftk
         void setGeometry(const Box2I&) override;
 
     private:
-        std::shared_ptr<Label> _titleLabel;
         std::shared_ptr<Label> _label;
         std::shared_ptr<ProgressWidget> _progressWidget;
         std::shared_ptr<Label> _messageLabel;
@@ -197,7 +194,6 @@ namespace ftk
 
     void ProgressDialogWidget::_init(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::string& text,
         const std::shared_ptr<IWidget>& parent)
     {
@@ -205,14 +201,6 @@ namespace ftk
 
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
-
-        _titleLabel = Label::create(context, title);
-        _titleLabel->setFontSize(14);
-        _titleLabel->setMarginRole(SizeRole::Margin);
-        _titleLabel->setBackgroundRole(ColorRole::Header);
-        // The header spans the dialog, so the label fills rather than
-        // hugging its text.
-        _titleLabel->setHAlign(HAlign::Fill);
 
         _label = Label::create(context, text);
         _label->setMarginRole(SizeRole::MarginInside);
@@ -229,8 +217,6 @@ namespace ftk
 
         _layout = VerticalLayout::create(context, shared_from_this());
         _layout->setSpacingRole(SizeRole::None);
-        _titleLabel->setParent(_layout);
-        Divider::create(context, Orientation::Vertical, _layout);
         auto vLayout = VerticalLayout::create(context, _layout);
         vLayout->setMarginRole(SizeRole::Margin);
         vLayout->setSpacingRole(SizeRole::SpacingSmall);
@@ -264,12 +250,11 @@ namespace ftk
 
     std::shared_ptr<ProgressDialogWidget> ProgressDialogWidget::create(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::string& text,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<ProgressDialogWidget>(new ProgressDialogWidget);
-        out->_init(context, title, text, parent);
+        out->_init(context, text, parent);
         return out;
     }
 
@@ -344,7 +329,9 @@ namespace ftk
         IDialog::_init(context, "ftk::ProgressDialog", parent);
         FTK_P();
 
-        p.widget = ProgressDialogWidget::create(context, title, text, shared_from_this());
+        setTitle(title);
+
+        p.widget = ProgressDialogWidget::create(context, text, shared_from_this());
 
         p.widget->setCancelCallback(
             [this]

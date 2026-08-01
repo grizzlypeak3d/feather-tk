@@ -133,7 +133,6 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::filesystem::path&,
             FileBrowserMode,
             const std::shared_ptr<FileBrowserModel>& model,
@@ -147,14 +146,10 @@ namespace ftk
         //! Create a new widget.
         FTK_API static std::shared_ptr<FileBrowserWidget> create(
             const std::shared_ptr<Context>&,
-            const std::string& title = "Open",
             const std::filesystem::path& = std::filesystem::path(),
             FileBrowserMode = FileBrowserMode::Open,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
-
-        //! Set the title.
-        FTK_API void setTitle(const std::string&);
 
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Path&)>&);
@@ -211,9 +206,6 @@ namespace ftk
             FileBrowserMode = FileBrowserMode::Open,
             const std::shared_ptr<FileBrowserModel>& model = nullptr,
             const std::shared_ptr<IWidget>& parent = nullptr);
-
-        //! Set the title.
-        FTK_API void setTitle(const std::string&);
 
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Path&)>&);

@@ -16,7 +16,6 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent);
 
@@ -27,7 +26,6 @@ namespace ftk
 
         static std::shared_ptr<MessageDialogWidget> create(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
@@ -38,7 +36,6 @@ namespace ftk
         void setCallback(const std::function<void(void)>&);
 
     private:
-        std::shared_ptr<Label> _titleLabel;
         std::shared_ptr<Label> _label;
         std::shared_ptr<ScrollWidget> _scrollWidget;
         std::shared_ptr<PushButton> _okButton;
@@ -49,7 +46,6 @@ namespace ftk
 
     void MessageDialogWidget::_init(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::string& text,
         const std::shared_ptr<IWidget>& parent)
     {
@@ -57,14 +53,6 @@ namespace ftk
 
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
-
-        _titleLabel = Label::create(context, title);
-        _titleLabel->setFontSize(14);
-        _titleLabel->setMarginRole(SizeRole::Margin);
-        _titleLabel->setBackgroundRole(ColorRole::Header);
-        // The header spans the dialog, so the label fills rather than
-        // hugging its text.
-        _titleLabel->setHAlign(HAlign::Fill);
 
         _label = Label::create(context, text);
         _label->setMarginRole(SizeRole::Margin);
@@ -79,8 +67,6 @@ namespace ftk
 
         _layout = VerticalLayout::create(context, shared_from_this());
         _layout->setSpacingRole(SizeRole::None);
-        _titleLabel->setParent(_layout);
-        Divider::create(context, Orientation::Vertical, _layout);
         _scrollWidget->setParent(_layout);
         Divider::create(context, Orientation::Vertical, _layout);
         auto hLayout = HorizontalLayout::create(context, _layout);
@@ -107,12 +93,11 @@ namespace ftk
 
     std::shared_ptr<MessageDialogWidget> MessageDialogWidget::create(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::string& text,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<MessageDialogWidget>(new MessageDialogWidget);
-        out->_init(context, title, text, parent);
+        out->_init(context, text, parent);
         return out;
     }
 
@@ -156,7 +141,9 @@ namespace ftk
         IDialog::_init(context, "ftk::MessageDialog", parent);
         FTK_P();
 
-        p.widget = MessageDialogWidget::create(context, title, text, shared_from_this());
+        setTitle(title);
+
+        p.widget = MessageDialogWidget::create(context, text, shared_from_this());
 
         p.widget->setCallback(
             [this]

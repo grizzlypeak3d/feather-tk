@@ -3,9 +3,12 @@
 
 #include <ftk/UI/IDialog.h>
 
+#include <ftk/UI/Divider.h>
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/IWindow.h>
+#include <ftk/UI/Label.h>
 
+#include <algorithm>
 #include <optional>
 
 namespace ftk
@@ -15,6 +18,14 @@ namespace ftk
         bool open = false;
         std::function<void(void)> closeCallback;
         std::weak_ptr<IWidget> restoreFocus;
+
+        std::string title;
+        std::shared_ptr<Label> titleLabel;
+        std::shared_ptr<Divider> titleDivider;
+
+        //! The title bar and the content together, which is what the border
+        //! and the shadow are drawn around.
+        Box2I geom;
 
         struct SizeData
         {
@@ -41,9 +52,39 @@ namespace ftk
         const std::shared_ptr<IWidget>& parent)
     {
         IPopup::_init(context, objectName, parent);
+        FTK_P();
         setBackgroundRole(ColorRole::Overlay);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
+
+        p.titleLabel = Label::create(context, shared_from_this());
+        p.titleLabel->setFont(FontType::Bold);
+        p.titleLabel->setMarginRole(SizeRole::MarginSmall);
+        p.titleLabel->setBackgroundRole(ColorRole::Header);
+        // The bar spans the dialog, which is the label's own background.
+        p.titleLabel->setHAlign(HAlign::Fill);
+        p.titleLabel->setVisible(false);
+
+        p.titleDivider = Divider::create(context, Orientation::Vertical, shared_from_this());
+        p.titleDivider->setVisible(false);
+    }
+
+    const std::string& IDialog::getTitle() const
+    {
+        return _p->title;
+    }
+
+    void IDialog::setTitle(const std::string& value)
+    {
+        FTK_P();
+        if (value == p.title)
+            return;
+        p.title = value;
+        p.titleLabel->setText(value);
+        p.titleLabel->setVisible(!value.empty());
+        p.titleDivider->setVisible(!value.empty());
+        setSizeUpdate();
+        setDrawUpdate();
     }
 
     IDialog::IDialog() :
@@ -115,14 +156,29 @@ namespace ftk
         IPopup::setGeometry(value);
         FTK_P();
 
-        bool changed = false;
-        const auto& children = getChildren();
-        if (!children.empty())
+        // The content is whichever child the subclass parented here; the
+        // title bar is the dialog's own.
+        std::shared_ptr<IWidget> content;
+        for (const auto& child : getChildren())
         {
-            const Box2I g = margin(value, -p.size.margin);
-            const Size2I sizeHint = children.front()->getSizeHint();
-            Size2I size;
-            switch (children.front()->getHStretch())
+            if (child != p.titleLabel && child != p.titleDivider)
+            {
+                content = child;
+                break;
+            }
+        }
+
+        const Box2I g = margin(value, -p.size.margin);
+        const bool title = p.titleLabel->isVisible(false);
+        const int titleH = title ?
+            (p.titleLabel->getSizeHint().h + p.titleDivider->getSizeHint().h) :
+            0;
+
+        Size2I size;
+        if (content)
+        {
+            const Size2I sizeHint = content->getSizeHint();
+            switch (content->getHStretch())
             {
             case Stretch::Expanding:
                 size.w = g.w();
@@ -132,28 +188,47 @@ namespace ftk
                 size.w = sizeHint.w;
                 break;
             }
-            switch (children.front()->getVStretch())
+            switch (content->getVStretch())
             {
             case Stretch::Expanding:
-                size.h = g.h();
+                size.h = g.h() - titleH;
                 break;
             case Stretch::Fixed:
             default:
                 size.h = sizeHint.h;
                 break;
             }
-
-            const Box2I g2(
-                g.x() + g.w() / 2 - size.w / 2,
-                g.y() + g.h() / 2 - size.h / 2,
-                size.w,
-                size.h);
-            changed = g2 != children.front()->getGeometry();
-            children.front()->setGeometry(g2);
+        }
+        // A long title widens the dialog rather than being clipped.
+        if (title)
+        {
+            size.w = std::max(size.w, p.titleLabel->getSizeHint().w);
         }
 
-        if (changed)
+        const Box2I geom(
+            g.x() + g.w() / 2 - size.w / 2,
+            g.y() + g.h() / 2 - (size.h + titleH) / 2,
+            size.w,
+            size.h + titleH);
+
+        int y = geom.min.y;
+        if (title)
         {
+            const int h = p.titleLabel->getSizeHint().h;
+            p.titleLabel->setGeometry(Box2I(geom.min.x, y, geom.w(), h));
+            y += h;
+            const int dividerH = p.titleDivider->getSizeHint().h;
+            p.titleDivider->setGeometry(Box2I(geom.min.x, y, geom.w(), dividerH));
+            y += dividerH;
+        }
+        if (content)
+        {
+            content->setGeometry(Box2I(geom.min.x, y, geom.w(), size.h));
+        }
+
+        if (geom != p.geom)
+        {
+            p.geom = geom;
             p.draw.reset();
         }
     }
@@ -202,11 +277,9 @@ namespace ftk
 
         if (!p.draw.has_value())
         {
-            const auto& children = getChildren();
-            if (!children.empty())
             {
                 p.draw = Private::DrawData();
-                p.draw->g = children.front()->getGeometry();
+                p.draw->g = p.geom;
                 p.draw->g2 = Box2I(
                     p.draw->g.min.x - p.size.shadow,
                     p.draw->g.min.y,
@@ -214,13 +287,6 @@ namespace ftk
                     p.draw->g.h() + p.size.shadow);
                 p.draw->shadow = shadow(p.draw->g2, p.size.shadow);
                 p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
-            }
-            else
-            {
-                p.draw->g = Box2I();
-                p.draw->g2 = Box2I();
-                p.draw->shadow = TriMesh2F();
-                p.draw->border = TriMesh2F();
             }
         }
 

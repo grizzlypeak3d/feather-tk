@@ -121,7 +121,6 @@ namespace ftk
                 auto model = FileBrowserModel::create(_context);
                 auto fileBrowserWidget = FileBrowserWidget::create(
                     _context,
-                    "Open",
                     path,
                     FileBrowserMode::Open,
                     model,

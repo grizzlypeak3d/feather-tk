@@ -16,7 +16,6 @@ namespace ftk
     protected:
         void _init(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::string& text,
             const std::string& confirm,
             const std::string& cancel,
@@ -29,7 +28,6 @@ namespace ftk
 
         static std::shared_ptr<ConfirmDialogWidget> create(
             const std::shared_ptr<Context>&,
-            const std::string& title,
             const std::string& text,
             const std::string& confirm,
             const std::string& cancel,
@@ -42,7 +40,6 @@ namespace ftk
         void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
-        std::shared_ptr<Label> _titleLabel;
         std::shared_ptr<Label> _label;
         std::shared_ptr<ScrollWidget> _scrollWidget;
         std::shared_ptr<PushButton> _okButton;
@@ -54,7 +51,6 @@ namespace ftk
 
     void ConfirmDialogWidget::_init(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::string& text,
         const std::string& confirm,
         const std::string& cancel,
@@ -64,14 +60,6 @@ namespace ftk
 
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
-
-        _titleLabel = Label::create(context, title);
-        _titleLabel->setFontSize(14);
-        _titleLabel->setMarginRole(SizeRole::Margin);
-        _titleLabel->setBackgroundRole(ColorRole::Header);
-        // The header spans the dialog, so the label fills rather than
-        // hugging its text.
-        _titleLabel->setHAlign(HAlign::Fill);
 
         _label = Label::create(context, text);
         _label->setMarginRole(SizeRole::Margin);
@@ -87,8 +75,6 @@ namespace ftk
 
         _layout = VerticalLayout::create(context, shared_from_this());
         _layout->setSpacingRole(SizeRole::None);
-        _titleLabel->setParent(_layout);
-        Divider::create(context, Orientation::Vertical, _layout);
         _scrollWidget->setParent(_layout);
         Divider::create(context, Orientation::Vertical, _layout);
         auto hLayout = HorizontalLayout::create(context, _layout);
@@ -125,14 +111,13 @@ namespace ftk
 
     std::shared_ptr<ConfirmDialogWidget> ConfirmDialogWidget::create(
         const std::shared_ptr<Context>& context,
-        const std::string& title,
         const std::string& text,
         const std::string& confirm,
         const std::string& cancel,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<ConfirmDialogWidget>(new ConfirmDialogWidget);
-        out->_init(context, title, text, confirm, cancel, parent);
+        out->_init(context, text, confirm, cancel, parent);
         return out;
     }
 
@@ -178,7 +163,9 @@ namespace ftk
         IDialog::_init(context, "ftk::ConfirmDialog", parent);
         FTK_P();
 
-        p.widget = ConfirmDialogWidget::create(context, title, text, confirm, cancel, shared_from_this());
+        setTitle(title);
+
+        p.widget = ConfirmDialogWidget::create(context, text, confirm, cancel, shared_from_this());
 
         p.widget->setCallback(
             [this](bool value)

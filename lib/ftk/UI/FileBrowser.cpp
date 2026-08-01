@@ -47,9 +47,10 @@ namespace ftk
         IDialog::_init(context, "ftk::FileBrowser", parent);
         FTK_P();
 
+        setTitle(title);
+
         p.widget = FileBrowserWidget::create(
             context,
-            title,
             path,
             mode,
             model,
@@ -80,11 +81,6 @@ namespace ftk
         auto out = std::shared_ptr<FileBrowser>(new FileBrowser);
         out->_init(context, title, path, mode, model, parent);
         return out;
-    }
-
-    void FileBrowser::setTitle(const std::string& value)
-    {
-        _p->widget->setTitle(value);
     }
 
     void FileBrowser::setCallback(const std::function<void(const Path&)>& value)
