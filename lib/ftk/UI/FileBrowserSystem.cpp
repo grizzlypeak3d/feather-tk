@@ -59,19 +59,54 @@ namespace ftk
         const std::function<void(const Path&)>& callback,
         const std::string& title,
         const std::filesystem::path& path,
-        FileBrowserMode mode)
+        FileBrowserMode mode,
+        const std::vector<std::string>& filterExtensions,
+        const std::string& filterName)
     {
         FTK_P();
         bool native = p.native;
 #if defined(FTK_NFD)
         if (native)
         {
+            // Build a single native filter group from the extensions. NFD wants
+            // a comma-separated spec without leading dots, e.g. "djvr" or
+            // "png,jpg".
+            std::string spec;
+            for (const auto& ext : filterExtensions)
+            {
+                std::string e = ext;
+                if (!e.empty() && '.' == e.front())
+                {
+                    e.erase(0, 1);
+                }
+                if (e.empty())
+                {
+                    continue;
+                }
+                if (!spec.empty())
+                {
+                    spec += ",";
+                }
+                spec += e;
+            }
+            std::vector<nfdu8filteritem_t> filterItems;
+            if (!spec.empty())
+            {
+                filterItems.push_back({ filterName.c_str(), spec.c_str() });
+            }
+            const nfdu8filteritem_t* filterList = filterItems.empty() ? nullptr : filterItems.data();
+            const nfdfiltersize_t filterCount = static_cast<nfdfiltersize_t>(filterItems.size());
+            const std::string defaultPathStr = path.u8string();
+            const nfdu8char_t* defaultPath = defaultPathStr.empty() ? nullptr : defaultPathStr.c_str();
+
             nfdu8char_t* outPath = nullptr;
             switch (mode)
             {
             case FileBrowserMode::Open:
+                NFD::OpenDialog(outPath, filterList, filterCount, defaultPath);
+                break;
             case FileBrowserMode::Save:
-                NFD::OpenDialog(outPath);
+                NFD::SaveDialog(outPath, filterList, filterCount, defaultPath);
                 break;
             case FileBrowserMode::Dir:
                 NFD::PickFolder(outPath);
@@ -91,12 +126,22 @@ namespace ftk
         {
             if (auto context = _context.lock())
             {
+                // When a filter is given, use a dedicated model so the shared
+                // model (configured elsewhere, e.g. for media) is left untouched.
+                std::shared_ptr<FileBrowserModel> model = p.model;
+                if (!filterExtensions.empty())
+                {
+                    model = FileBrowserModel::create(context);
+                    model->setOptions(p.model->getOptions());
+                    model->setExts(filterExtensions);
+                    model->setExt(filterExtensions.front());
+                }
                 p.fileBrowser = FileBrowser::create(
                     context,
                     title,
                     path,
                     mode,
-                    p.model);
+                    model);
                 p.fileBrowser->setTitle(title);
                 p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
                 p.fileBrowser->open(window);
