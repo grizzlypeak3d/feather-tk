@@ -5,6 +5,8 @@
 
 #include <ftk/UI/IMouseWidget.h>
 
+#include <ftk/Core/String.h>
+
 namespace ftk
 {
     //! \name Menu Widgets
@@ -75,6 +77,20 @@ namespace ftk
 
         //! Set the current item callback.
         FTK_API void setItemCallback(const std::function<void(const ComboBoxItem&)>&);
+
+        //! Get the number of characters shown when the box is closed.
+        FTK_API size_t getElide() const;
+
+        //! Get which end of an elided item is kept.
+        FTK_API ElideMode getElideMode() const;
+
+        //! Set the number of characters shown when the box is closed, and
+        //! which end of a longer item to keep. Zero, the default, shows the
+        //! whole of the longest item, which is what makes the box as wide as
+        //! its longest item however short the current one is. The menu is
+        //! never elided, so the whole of each item can still be read when
+        //! choosing.
+        FTK_API void setElide(size_t, ElideMode = ElideMode::Right);
 
         //! Get the font.
         FTK_API FontType getFont() const;

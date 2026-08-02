@@ -3,6 +3,8 @@
 
 #include <ftk/UI/ComboBoxPrivate.h>
 
+#include <ftk/Core/String.h>
+
 #include <ftk/UI/DrawUtil.h>
 
 #include <optional>
@@ -34,6 +36,8 @@ namespace ftk
         std::function<void(const ComboBoxItem&)> itemCallback;
         FontType font = FontType::Regular;
         std::string text;
+        size_t elide = 0;
+        ElideMode elideMode = ElideMode::Right;
         std::string icon;
         std::shared_ptr<Image> iconImage;
         std::shared_ptr<Image> arrowIconImage;
@@ -180,6 +184,28 @@ namespace ftk
         _p->itemCallback = value;
     }
 
+    size_t ComboBox::getElide() const
+    {
+        return _p->elide;
+    }
+
+    ElideMode ComboBox::getElideMode() const
+    {
+        return _p->elideMode;
+    }
+
+    void ComboBox::setElide(size_t value, ElideMode mode)
+    {
+        FTK_P();
+        if (value == p.elide && mode == p.elideMode)
+            return;
+        p.elide = value;
+        p.elideMode = mode;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     FontType ComboBox::getFont() const
     {
         return _p->font;
@@ -243,7 +269,9 @@ namespace ftk
             {
                 if (!i.text.empty())
                 {
-                    const Size2I textSize = event.fontSystem->getSize(i.text, p.size.fontInfo);
+                    const Size2I textSize = event.fontSystem->getSize(
+                        p.elide > 0 ? elide(i.text, p.elide, p.elideMode) : i.text,
+                        p.size.fontInfo);
                     p.size.textSize.w = std::max(p.size.textSize.w, textSize.w);
                     p.size.textSize.h = std::max(p.size.textSize.h, textSize.h);
                 }
@@ -368,7 +396,9 @@ namespace ftk
         {
             if (p.draw->glyphs.empty())
             {
-                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
+                p.draw->glyphs = event.fontSystem->getGlyphs(
+                    p.elide > 0 ? elide(p.text, p.elide, p.elideMode) : p.text,
+                    p.size.fontInfo);
             }
             event.render->drawText(
                 p.draw->glyphs,

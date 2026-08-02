@@ -59,8 +59,26 @@ namespace ftk
     //! Remove trailing newlines.
     FTK_API void removeTrailingNewlines(std::string&);
 
-    //! Elide a string.
-    FTK_API std::string elide(const std::string&, size_t = 32);
+    //! Which end of an elided string to keep.
+    enum class FTK_API_TYPE ElideMode
+    {
+        //! Keep the beginning: "ViewLayer.Combi..."
+        Right,
+
+        //! Keep the end, for names that differ where they finish, such as a
+        //! path or a layer: "...yer.Combined"
+        Left,
+
+        //! Keep both ends: "ViewLa...bined"
+        Middle
+    };
+
+    //! Elide a string to at most the given number of characters, not counting
+    //! the ellipsis.
+    FTK_API std::string elide(
+        const std::string&,
+        size_t = 32,
+        ElideMode = ElideMode::Right);
 
     //! Case compare.
     enum class FTK_API_TYPE CaseCompare

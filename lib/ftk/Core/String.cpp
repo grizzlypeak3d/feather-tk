@@ -277,14 +277,31 @@ namespace ftk
         }
     }
 
-    std::string elide(const std::string& value, size_t max)
+    std::string elide(const std::string& value, size_t max, ElideMode mode)
     {
-        std::string out = value.substr(0, max);
-        if (out.size() < value.size())
+        if (value.size() <= max)
         {
-            out.push_back('.');
-            out.push_back('.');
-            out.push_back('.');
+            return value;
+        }
+        const std::string ellipsis = "...";
+        std::string out;
+        switch (mode)
+        {
+        case ElideMode::Left:
+            out = ellipsis + value.substr(value.size() - max);
+            break;
+        case ElideMode::Middle:
+        {
+            // The odd character, if there is one, goes to the beginning.
+            const size_t head = max - max / 2;
+            out = value.substr(0, head) + ellipsis +
+                value.substr(value.size() - max / 2);
+            break;
+        }
+        case ElideMode::Right:
+        default:
+            out = value.substr(0, max) + ellipsis;
+            break;
         }
         return out;
     }
