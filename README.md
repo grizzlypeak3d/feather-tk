@@ -184,6 +184,10 @@ A CMake superbuild script builds all dependencies from source automatically.
 
 ### Linux
 
+Requirements:
+* Git
+* CMake 3.31
+
 Install system packages (Debian/Ubuntu):
 ```sh
 sudo apt-get install build-essential git cmake xorg-dev libglu1-mesa-dev mesa-common-dev mesa-utils
@@ -191,7 +195,7 @@ sudo apt-get install build-essential git cmake xorg-dev libglu1-mesa-dev mesa-co
 
 Install system packages (Rocky 8 and 9):
 ```sh
-sudo dnf install libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel mesa-libGL-devel
+sudo dnf install git libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel mesa-libGL-devel
 ```
 
 Rocky 8 additionally requires a newer compiler:
@@ -208,7 +212,10 @@ sh feather-tk/sbuild-linux.sh
 
 ### macOS
 
-Dependencies: Xcode, CMake 3.31
+Requirements:
+* Git
+* Xcode
+* CMake 3.31
 
 ```sh
 git clone https://github.com/grizzlypeak3d/feather-tk.git
@@ -223,7 +230,10 @@ alias intel="env /usr/bin/arch -x86_64 /bin/zsh --login"
 
 ### Windows
 
-Dependencies: Visual Studio 2022, CMake 3.31
+Requirements:
+* Git (https://git-scm.com)
+* Visual Studio 2022
+* CMake 3.31
 
 Open "x64 Native Tools Command Prompt for VS 2022" from the Start menu, then:
 ```bat
