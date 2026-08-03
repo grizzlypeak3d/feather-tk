@@ -115,6 +115,14 @@ namespace ftk
                 FTK_ASSERT(!contains(b, Box2I(-1, -1, 1, 1)));
                 FTK_ASSERT(contains(b, V2I(1, 1)));
                 FTK_ASSERT(!contains(b, V2I(-1, -1)));
+                // The edges, which an integer box holds: its size is
+                // max - min + 1, so the last row and column are inside it.
+                FTK_ASSERT(contains(b, b.min));
+                FTK_ASSERT(contains(b, b.max));
+                FTK_ASSERT(contains(b, V2I(b.max.x, b.min.y)));
+                FTK_ASSERT(contains(b, V2I(b.min.x, b.max.y)));
+                FTK_ASSERT(!contains(b, V2I(b.max.x + 1, b.max.y)));
+                FTK_ASSERT(!contains(b, V2I(b.max.x, b.max.y + 1)));
             }
             {
                 const Box2F b(0.F, 0.F, 2.F, 2.F);

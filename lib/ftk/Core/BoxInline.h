@@ -226,8 +226,8 @@ namespace ftk
     constexpr bool contains(const Box<2, int>& a, const Vector<2, int>& b)
     {
         return
-            b.x >= a.min.x && b.x < a.max.x &&
-            b.y >= a.min.y && b.y < a.max.y;
+            b.x >= a.min.x && b.x <= a.max.x &&
+            b.y >= a.min.y && b.y <= a.max.y;
     }
 
     template<>
