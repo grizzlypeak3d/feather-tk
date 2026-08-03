@@ -22,16 +22,25 @@ namespace ftk
         std::vector<std::filesystem::path> out;
         out.push_back(std::filesystem::path("/"));
 #if defined(__APPLE__)
-        for (const auto& i : std::filesystem::directory_iterator("/Volumes"))
-        {
-            out.push_back(i.path());
-        }
+        const std::filesystem::path mounts("/Volumes");
 #else // __APPLE__
-        for (const auto& i : std::filesystem::directory_iterator("/mnt"))
-        {
-            out.push_back(i.path());
-        }
+        const std::filesystem::path mounts("/mnt");
 #endif // __APPLE__
+        // The directory is not on every system -- a Linux install without
+        // /mnt, a sandbox without /Volumes -- and iterating one that is not
+        // there throws. This is called from a background thread, where that
+        // would stop the application rather than the listing.
+        try
+        {
+            for (const auto& i : std::filesystem::directory_iterator(mounts))
+            {
+                out.push_back(i.path());
+            }
+        }
+        catch (const std::exception&)
+        {
+            // Nothing to add: the drives are the ones that could be listed.
+        }
         return out;
     }
 
