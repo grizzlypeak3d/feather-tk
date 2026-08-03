@@ -9,6 +9,8 @@
 #include <ftk/UI/Menu.h>
 #include <ftk/UI/Tooltip.h>
 
+#include <ftk/Core/Assert.h>
+
 namespace ftk
 {
     FTK_ENUM_IMPL(
@@ -882,7 +884,14 @@ namespace ftk
         const Box2I& g = widget->getGeometry();
         if (!widget->isClipped() && g.w() > 0 && g.h() > 0)
         {
+            // Cleared before the drawing rather than only after it, so that
+            // a redraw asked for during the drawing can be told apart from
+            // the one that got us here. Either way it is thrown away, which
+            // is a thing to be caught rather than left to be discovered: a
+            // widget that needs another drawing has to ask from tickEvent().
+            widget->setDrawUpdate(false);
             widget->drawEvent(drawRect, event);
+            FTK_ASSERT(!widget->hasDrawUpdate());
             widget->setDrawUpdate(false);
             const Box2I childrenClipRect = intersect(
                 widget->getChildrenClipRect(),
