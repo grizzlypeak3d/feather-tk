@@ -68,8 +68,54 @@ namespace ftk
             [this]
             {
                 FTK_P();
+
+                // Writing the log must not be able to take the application
+                // down with it. The file can be locked or replaced underneath
+                // us at any moment -- a folder synced to a cloud drive does
+                // exactly that -- and an exception leaving this thread would
+                // call std::terminate. Reported in #549, where the
+                // application aborted every few seconds because the documents
+                // folder was inside a synced folder.
+                //
+                // A batch that cannot be written is dropped rather than kept
+                // to try again, so that a folder that never becomes writable
+                // does not grow the queue without bound. How many were lost
+                // is said in the file once one can be written again, since a
+                // gap in a log otherwise looks like nothing happened.
+                size_t dropped = 0;
+                const auto write =
+                    [&p, &dropped](const std::vector<LogItem>& items)
+                    {
+                        if (items.empty() && 0 == dropped)
+                            return;
+                        try
+                        {
+                            auto io = FileIO::create(p.path, FileMode::Append);
+                            if (dropped > 0)
+                            {
+                                io->write(
+                                    std::to_string(dropped) +
+                                    " log messages could not be written\n");
+                                dropped = 0;
+                            }
+                            for (const auto& item : items)
+                            {
+                                io->write(getLabel(item) + "\n");
+                            }
+                        }
+                        catch (const std::exception&)
+                        {
+                            dropped += items.size();
+                        }
+                    };
+
+                try
                 {
                     auto io = FileIO::create(p.path, FileMode::Write);
+                }
+                catch (const std::exception&)
+                {
+                    // No log file; the application carries on without one.
                 }
                 while (p.thread.running)
                 {
@@ -80,13 +126,7 @@ namespace ftk
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
                         std::swap(p.mutex.items, items);
                     }
-                    {
-                        auto io = FileIO::create(p.path, FileMode::Append);
-                        for (const auto& item : items)
-                        {
-                            io->write(getLabel(item) + "\n");
-                        }
-                    }
+                    write(items);
 
                     // Wait out the rest of the tick, but wake as soon as the
                     // destructor clears the flag. Sleeping instead made
@@ -107,13 +147,7 @@ namespace ftk
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
                     std::swap(p.mutex.items, items);
                 }
-                {
-                    auto io = FileIO::create(p.path, FileMode::Append);
-                    for (const auto& item : items)
-                    {
-                        io->write(getLabel(item) + "\n");
-                    }
-                }
+                write(items);
             });
     }
 
