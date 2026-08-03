@@ -49,11 +49,18 @@ namespace ftk
             //! the test, which is why _fail() exists alongside it.
             void _error(const std::string&);
 
-            //! Report a genuine failure from a test that cannot use
-            //! FTK_ASSERT, either because it wants to carry a message or
-            //! because the check must survive a Release build, where
-            //! FTK_ASSERT compiles away.
+            //! Report a genuine failure, with a message saying what was
+            //! expected and what happened. Use this where the message can say
+            //! something the expression cannot -- the values that did not
+            //! match, or which case failed. Where the expression is the whole
+            //! story, FTK_CHECK is shorter and names the line for free.
             void _fail(const std::string&);
+
+            //! Report a failed check. Use FTK_CHECK rather than calling this.
+            void _checkFailed(
+                const char* expression,
+                const char* file,
+                int line);
 
             std::shared_ptr<Context> _context;
             std::string _name;
@@ -65,6 +72,18 @@ namespace ftk
     }
 }
 
+//! Check a condition in a test.
+//!
+//! Unlike FTK_ASSERT this is compiled into every build, and it counts the
+//! failure and carries on rather than stopping the run -- one broken check
+//! should not hide every test after it. It reports through the test, so a
+//! helper that uses it has to be a member of one.
+#define FTK_CHECK(value) \
+    do { \
+        if (!(value)) \
+            _checkFailed(#value, __FILE__, __LINE__); \
+    } while (0)
+
 #define FTK_TEST_ENUM(ENUM) \
     for (auto i : get##ENUM##Enums()) \
     { \
@@ -74,8 +93,8 @@ namespace ftk
         const ENUM v = ENUM::First; \
         const std::string s = to_string(v); \
         ENUM v2 = ENUM::First; \
-        FTK_ASSERT(from_string(s, v2)); \
-        FTK_ASSERT(v == v2); \
+        FTK_CHECK(from_string(s, v2)); \
+        FTK_CHECK(v == v2); \
     } \
     { \
         const ENUM v = ENUM::First; \

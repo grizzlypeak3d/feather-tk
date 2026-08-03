@@ -48,12 +48,12 @@ namespace ftk
                 auto widget = Icon::create(_context, "PlaybackForward", layout);
                 widget->setIcon("PlaybackStop");
                 widget->setIcon("PlaybackStop");
-                FTK_ASSERT("PlaybackStop" == widget->getIcon());
+                FTK_CHECK("PlaybackStop" == widget->getIcon());
                 widget->setIcon("PlaybackForward");
                 widget->setIcon("PlaybackForward");
                 widget->setMarginRole(SizeRole::Margin);
                 widget->setMarginRole(SizeRole::Margin);
-                FTK_ASSERT(SizeRole::Margin == widget->getMarginRole());
+                FTK_CHECK(SizeRole::Margin == widget->getMarginRole());
                 widget->setMarginRole(SizeRole::None);
 
                 widget->setEnabled(false);

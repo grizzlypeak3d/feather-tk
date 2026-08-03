@@ -26,14 +26,14 @@ namespace ftk
         void FormatTest::run()
         {
             {
-                FTK_ASSERT("abcABC" == Format("{0}{1}").arg("abc").arg("ABC").str());
-                FTK_ASSERT("01" == Format("{0}{1}").arg(0).arg(1).str());
-                FTK_ASSERT("01" == Format("{0}{1}").arg(int8_t(0)).arg(int8_t(1)).str());
-                FTK_ASSERT("01" == Format("{0}{1}").arg(uint8_t(0)).arg(uint8_t(1)).str());
-                FTK_ASSERT("01" == Format("{0}{1}").arg(int16_t(0)).arg(int16_t(1)).str());
-                FTK_ASSERT("01" == Format("{0}{1}").arg(uint16_t(0)).arg(uint16_t(1)).str());
-                FTK_ASSERT("00.12" == Format("{0}{1}").arg(0.F).arg(.123F, 2).str());
-                FTK_ASSERT("00.12" == Format("{0}{1}").arg(0.0).arg(0.123, 2).str());
+                FTK_CHECK("abcABC" == Format("{0}{1}").arg("abc").arg("ABC").str());
+                FTK_CHECK("01" == Format("{0}{1}").arg(0).arg(1).str());
+                FTK_CHECK("01" == Format("{0}{1}").arg(int8_t(0)).arg(int8_t(1)).str());
+                FTK_CHECK("01" == Format("{0}{1}").arg(uint8_t(0)).arg(uint8_t(1)).str());
+                FTK_CHECK("01" == Format("{0}{1}").arg(int16_t(0)).arg(int16_t(1)).str());
+                FTK_CHECK("01" == Format("{0}{1}").arg(uint16_t(0)).arg(uint16_t(1)).str());
+                FTK_CHECK("00.12" == Format("{0}{1}").arg(0.F).arg(.123F, 2).str());
+                FTK_CHECK("00.12" == Format("{0}{1}").arg(0.0).arg(0.123, 2).str());
             }
             try
             {

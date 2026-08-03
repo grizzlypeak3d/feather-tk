@@ -51,14 +51,14 @@ namespace ftk
                     ComboBoxItem("Reverse", "PlaybackReverse")
                 };
                 auto widget = ComboBox::create(_context, items, layout);
-                FTK_ASSERT(items[0] != ComboBoxItem());
+                FTK_CHECK(items[0] != ComboBoxItem());
                 widget->setItems(items);
                 widget->setItems(items);
-                FTK_ASSERT(items == widget->getItems());
-                FTK_ASSERT(0 == widget->getCurrentIndex());
+                FTK_CHECK(items == widget->getItems());
+                FTK_CHECK(0 == widget->getCurrentIndex());
                 widget->setCurrentIndex(1);
                 widget->setCurrentIndex(1);
-                FTK_ASSERT(1 == widget->getCurrentIndex());
+                FTK_CHECK(1 == widget->getCurrentIndex());
                 int index = -1;
                 widget->setIndexCallback(
                     [&index](int value)
@@ -73,7 +73,7 @@ namespace ftk
                     });
                 widget->setFont(FontType::Mono);
                 widget->setFont(FontType::Mono);
-                FTK_ASSERT(FontType::Mono == widget->getFont());
+                FTK_CHECK(FontType::Mono == widget->getFont());
                 widget->setFont(FontType::Regular);
 
                 app->setDisplayScale(2.F);

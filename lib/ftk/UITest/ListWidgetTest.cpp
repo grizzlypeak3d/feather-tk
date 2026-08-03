@@ -61,17 +61,17 @@ namespace ftk
             };
             widget->setItems(items);
             widget->setItems(items);
-            FTK_ASSERT(items == widget->getItems());
+            FTK_CHECK(items == widget->getItems());
             app->tick();
             items.push_back(ListItem("Item 4"));
             widget->setItems(items);
             app->tick();
             widget->setSearch("4");
             widget->setSearch("4");
-            FTK_ASSERT("4" == widget->getSearch());
+            FTK_CHECK("4" == widget->getSearch());
             app->tick();
             widget->clearSearch();
-            FTK_ASSERT(widget->getSearch().empty());
+            FTK_CHECK(widget->getSearch().empty());
             app->tick();
         }
     }

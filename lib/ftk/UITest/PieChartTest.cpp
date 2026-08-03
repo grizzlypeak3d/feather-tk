@@ -34,8 +34,8 @@ namespace ftk
                 PieChartData a;
                 PieChartData b;
                 b.percentage = 50.F;
-                FTK_ASSERT(a == a);
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a == a);
+                FTK_CHECK(a != b);
             }
             {
                 std::vector<std::string> argv;
@@ -58,11 +58,11 @@ namespace ftk
                 data.push_back(PieChartData(10.F, Color4F(.8F, 1.F, 0.F)));
                 widget->setData(data);
                 widget->setData(data);
-                FTK_ASSERT(data == widget->getData());
+                FTK_CHECK(data == widget->getData());
                 app->tick();
                 widget->setSizeMult(2);
                 widget->setSizeMult(2);
-                FTK_ASSERT(2 == widget->getSizeMult());
+                FTK_CHECK(2 == widget->getSizeMult());
                 app->tick();
             }
         }

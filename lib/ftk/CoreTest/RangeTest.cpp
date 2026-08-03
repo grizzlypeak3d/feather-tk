@@ -36,37 +36,37 @@ namespace ftk
         {
             {
                 const RangeI r;
-                FTK_ASSERT(0 == r.min());
-                FTK_ASSERT(0 == r.max());
+                FTK_CHECK(0 == r.min());
+                FTK_CHECK(0 == r.max());
             }
             {
                 const RangeI r(1, 2);
-                FTK_ASSERT(1 == r.min());
-                FTK_ASSERT(2 == r.max());
+                FTK_CHECK(1 == r.min());
+                FTK_CHECK(2 == r.max());
             }
             {
                 const RangeI a;
                 RangeI b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b = RangeI(1, 2);
-                FTK_ASSERT(a != b);
-                FTK_ASSERT(a < b);
+                FTK_CHECK(a != b);
+                FTK_CHECK(a < b);
             }
         }
         
         void RangeTest::_functions()
         {
             {
-                FTK_ASSERT(contains(RangeI(0, 2), 1));
-                FTK_ASSERT(!contains(RangeI(0, 2), 3));
+                FTK_CHECK(contains(RangeI(0, 2), 1));
+                FTK_CHECK(!contains(RangeI(0, 2), 3));
             }
             {
-                FTK_ASSERT(intersects(RangeI(0, 2), RangeI(1, 3)));
-                FTK_ASSERT(!intersects(RangeI(0, 2), RangeI(3, 4)));
+                FTK_CHECK(intersects(RangeI(0, 2), RangeI(1, 3)));
+                FTK_CHECK(!intersects(RangeI(0, 2), RangeI(3, 4)));
             }
             {
-                FTK_ASSERT(expand(RangeI(), 2) == RangeI(0, 2));
-                FTK_ASSERT(expand(RangeI(0, 2), RangeI(1, 3)) == RangeI(0, 3));
+                FTK_CHECK(expand(RangeI(), 2) == RangeI(0, 2));
+                FTK_CHECK(expand(RangeI(0, 2), RangeI(1, 3)) == RangeI(0, 3));
             }
         }
 
@@ -78,7 +78,7 @@ namespace ftk
                 to_json(json, r);
                 RangeI r2;
                 from_json(json, r2);
-                FTK_ASSERT(r == r2);
+                FTK_CHECK(r == r2);
             }
             {
                 const RangeSizeT r(1, 2);
@@ -86,7 +86,7 @@ namespace ftk
                 to_json(json, r);
                 RangeSizeT r2;
                 from_json(json, r2);
-                FTK_ASSERT(r == r2);
+                FTK_CHECK(r == r2);
             }
             {
                 const RangeF r(1.F, 2.F);
@@ -94,7 +94,7 @@ namespace ftk
                 to_json(json, r);
                 RangeF r2;
                 from_json(json, r2);
-                FTK_ASSERT(r == r2);
+                FTK_CHECK(r == r2);
             }
             {
                 const RangeD r(1.0, 2.0);
@@ -102,7 +102,7 @@ namespace ftk
                 to_json(json, r);
                 RangeD r2;
                 from_json(json, r2);
-                FTK_ASSERT(r == r2);
+                FTK_CHECK(r == r2);
             }
             {
                 const RangeI r(1, 2);

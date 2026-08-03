@@ -55,26 +55,26 @@ namespace ftk
 
                 auto render = Render::create(logSystem, fontSystem);
                 render->begin(size);
-                FTK_ASSERT(render->getRenderSize() == size);
+                FTK_CHECK(render->getRenderSize() == size);
 
                 size = Size2I(1280, 960);
                 render->setRenderSize(size);
-                FTK_ASSERT(render->getRenderSize() == size);
+                FTK_CHECK(render->getRenderSize() == size);
                 
                 Box2I viewport(0, 0, 100, 100);
                 render->setViewport(viewport);
-                FTK_ASSERT(render->getViewport() == viewport);
+                FTK_CHECK(render->getViewport() == viewport);
                 
                 render->setClipRectEnabled(true);
-                FTK_ASSERT(render->getClipRectEnabled());
+                FTK_CHECK(render->getClipRectEnabled());
                 Box2I clipRect(0, 0, 50, 50);
                 render->setClipRect(clipRect);
-                FTK_ASSERT(clipRect == render->getClipRect());
+                FTK_CHECK(clipRect == render->getClipRect());
                 render->setClipRectEnabled(false);
                 
                 M44F transform = perspective(60.F, 1.F, .1F, 10000.F);
                 render->setTransform(transform);
-                FTK_ASSERT(transform == render->getTransform());
+                FTK_CHECK(transform == render->getTransform());
 
                 render->end();
             }

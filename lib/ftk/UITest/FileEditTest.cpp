@@ -49,7 +49,7 @@ namespace ftk
                 Path path(std::filesystem::current_path().u8string());
                 edit->setPath(path);
                 edit->setPath(path);
-                FTK_ASSERT(path == edit->getPath());
+                FTK_CHECK(path == edit->getPath());
                 edit->setCallback(
                     [&path](const Path& value)
                     {
@@ -58,7 +58,7 @@ namespace ftk
 
                 auto system = _context->getSystem<FileBrowserSystem>();
                 system->setNativeFileDialog(false);
-                FTK_ASSERT(!system->isNativeFileDialog());
+                FTK_CHECK(!system->isNativeFileDialog());
             }
         }
     }

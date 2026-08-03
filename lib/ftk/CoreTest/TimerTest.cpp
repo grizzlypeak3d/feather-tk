@@ -18,18 +18,18 @@ namespace ftk
             ITest(context, "ftk::core_test::TimerTest")
         {
             auto timer = Timer::create(context);
-            FTK_ASSERT(!timer->isRepeating());
+            FTK_CHECK(!timer->isRepeating());
             
             auto repeatTimer = Timer::create(context);
             repeatTimer->setRepeating(true);
-            FTK_ASSERT(repeatTimer->isRepeating());
+            FTK_CHECK(repeatTimer->isRepeating());
 
             const std::chrono::milliseconds timeout(5);
             timer->start(timeout, [] {});
-            FTK_ASSERT(timer->isActive());
-            FTK_ASSERT(timeout == timer->getTimeout());
+            FTK_CHECK(timer->isActive());
+            FTK_CHECK(timeout == timer->getTimeout());
             timer->stop();
-            FTK_ASSERT(!timer->isActive());
+            FTK_CHECK(!timer->isActive());
 
             bool timedout = false;
             timer->start(

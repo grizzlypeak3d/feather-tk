@@ -97,8 +97,8 @@ namespace ftk
                 argv[1][0] = 'b';
                 argv[1][1] = 0;
                 auto r = convert(2, argv);
-                FTK_ASSERT("a" == r[0]);
-                FTK_ASSERT("b" == r[1]);
+                FTK_CHECK("a" == r[0]);
+                FTK_CHECK("b" == r[1]);
                 delete [] argv[0];
                 delete [] argv[1];
             }
@@ -111,8 +111,8 @@ namespace ftk
                 argv[1][0] = L'b';
                 argv[1][1] = 0;
                 auto r = convert(2, argv);
-                FTK_ASSERT("a" == r[0]);
-                FTK_ASSERT("b" == r[1]);
+                FTK_CHECK("a" == r[0]);
+                FTK_CHECK("b" == r[1]);
                 delete [] argv[0];
                 delete [] argv[1];
             }
@@ -124,8 +124,8 @@ namespace ftk
             {
                 std::vector<std::string> argv = { "app", "arg", "-option", "42" };
                 auto app = App::create(_context, argv);
-                FTK_ASSERT("arg" == app->getArg());
-                FTK_ASSERT(42 == app->getOption());
+                FTK_CHECK("arg" == app->getArg());
+                FTK_CHECK(42 == app->getOption());
             }
             {
                 std::vector<std::string> argv = { "app"};

@@ -32,29 +32,29 @@ namespace ftk
         {
             {
                 const Vertex2 v;
-                FTK_ASSERT(0 == v.v);
-                FTK_ASSERT(0 == v.t);
-                FTK_ASSERT(0 == v.c);
+                FTK_CHECK(0 == v.v);
+                FTK_CHECK(0 == v.t);
+                FTK_CHECK(0 == v.c);
             }
             {
                 const Vertex2 v(1, 2, 3);
-                FTK_ASSERT(1 == v.v);
-                FTK_ASSERT(2 == v.t);
-                FTK_ASSERT(3 == v.c);
+                FTK_CHECK(1 == v.v);
+                FTK_CHECK(2 == v.t);
+                FTK_CHECK(3 == v.c);
             }
             {
                 const Vertex3 v;
-                FTK_ASSERT(0 == v.v);
-                FTK_ASSERT(0 == v.t);
-                FTK_ASSERT(0 == v.n);
-                FTK_ASSERT(0 == v.c);
+                FTK_CHECK(0 == v.v);
+                FTK_CHECK(0 == v.t);
+                FTK_CHECK(0 == v.n);
+                FTK_CHECK(0 == v.c);
             }
             {
                 const Vertex3 v(1, 2, 3, 4);
-                FTK_ASSERT(1 == v.v);
-                FTK_ASSERT(2 == v.t);
-                FTK_ASSERT(3 == v.n);
-                FTK_ASSERT(4 == v.c);
+                FTK_CHECK(1 == v.v);
+                FTK_CHECK(2 == v.t);
+                FTK_CHECK(3 == v.n);
+                FTK_CHECK(4 == v.c);
             }
         }
     }

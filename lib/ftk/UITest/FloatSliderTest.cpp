@@ -45,20 +45,20 @@ namespace ftk
                 app->tick();
 
                 auto slider = FloatSlider::create(_context, layout);
-                FTK_ASSERT(slider->getModel());
+                FTK_CHECK(slider->getModel());
                 float value = 0.F;
                 slider->setCallback([&value](float v) { value = v; });
                 slider->setValue(.9F);
                 app->tick();
-                FTK_ASSERT(.9F == slider->getValue());
+                FTK_CHECK(.9F == slider->getValue());
                 slider->setRange(0.F, .5F);
                 app->tick();
-                FTK_ASSERT(RangeF(0.F, .5F) == slider->getRange());
-                FTK_ASSERT(.5F == slider->getValue());
+                FTK_CHECK(RangeF(0.F, .5F) == slider->getRange());
+                FTK_CHECK(.5F == slider->getValue());
                 slider->setStep(.2F);
-                FTK_ASSERT(.2F == slider->getStep());
+                FTK_CHECK(.2F == slider->getStep());
                 slider->setLargeStep(.3F);
-                FTK_ASSERT(.3F == slider->getLargeStep());
+                FTK_CHECK(.3F == slider->getLargeStep());
             }
         }
     }

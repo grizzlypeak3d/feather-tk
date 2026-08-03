@@ -43,26 +43,26 @@ namespace ftk
         {
             {
                 const ImageInfo info;
-                FTK_ASSERT(!info.isValid());
-                FTK_ASSERT(0 == info.getByteCount());
+                FTK_CHECK(!info.isValid());
+                FTK_CHECK(0 == info.getByteCount());
             }
             {
                 const ImageInfo info(Size2I(1920, 1080), ImageType::RGB_U8);
-                FTK_ASSERT(info.isValid());
-                FTK_ASSERT(1920 * 1080 * 3 == info.getByteCount());
+                FTK_CHECK(info.isValid());
+                FTK_CHECK(1920 * 1080 * 3 == info.getByteCount());
             }
             {
                 const ImageInfo info(1920, 1080, ImageType::RGB_U8);
-                FTK_ASSERT(info.isValid());
-                FTK_ASSERT(1920 * 1080 * 3 == info.getByteCount());
+                FTK_CHECK(info.isValid());
+                FTK_CHECK(1920 * 1080 * 3 == info.getByteCount());
             }
             {
                 const ImageInfo a;
                 ImageInfo b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b.size.w = 1920;
                 b.size.h = 1080;
-                FTK_ASSERT(a != b);                
+                FTK_CHECK(a != b);                
             }
         }
         
@@ -70,34 +70,34 @@ namespace ftk
         {
             {
                 auto image = Image::create(ImageInfo());
-                FTK_ASSERT(!image->isValid());
+                FTK_CHECK(!image->isValid());
             }
             {
                 auto image = Image::create(Size2I(1920, 1080), ImageType::RGB_U8);
-                FTK_ASSERT(image->isValid());                
+                FTK_CHECK(image->isValid());                
             }
             {
                 auto image = Image::create(1920, 1080, ImageType::RGB_U8);
-                FTK_ASSERT(image->isValid());
+                FTK_CHECK(image->isValid());
             }
             {
                 const ImageInfo info(Size2I(1920, 1080), ImageType::RGB_U8);
                 auto image = Image::create(info);
                 image->zero();
-                FTK_ASSERT(info == image->getInfo());
-                FTK_ASSERT(info.size == image->getSize());
-                FTK_ASSERT(info.size.w == image->getWidth());
-                FTK_ASSERT(info.size.h == image->getHeight());
-                FTK_ASSERT(info.type == image->getType());
-                FTK_ASSERT(image->isValid());
+                FTK_CHECK(info == image->getInfo());
+                FTK_CHECK(info.size == image->getSize());
+                FTK_CHECK(info.size.w == image->getWidth());
+                FTK_CHECK(info.size.h == image->getHeight());
+                FTK_CHECK(info.type == image->getType());
+                FTK_CHECK(image->isValid());
                 ImageTags tags;
                 tags["Layer"] = "1";
                 image->setTags(tags);
-                FTK_ASSERT(tags == image->getTags());
-                FTK_ASSERT(1920 * 1080 * 3 == image->getByteCount());
-                FTK_ASSERT(image->getData());
+                FTK_CHECK(tags == image->getTags());
+                FTK_CHECK(1920 * 1080 * 3 == image->getByteCount());
+                FTK_CHECK(image->getData());
                 const std::shared_ptr<const Image> image2 = image;
-                FTK_ASSERT(image2->getData());
+                FTK_CHECK(image2->getData());
             }
         }
         

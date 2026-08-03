@@ -44,11 +44,11 @@ namespace ftk
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::Spacing);
-                FTK_ASSERT(SizeRole::Spacing == layout->getSpacingRole());
+                FTK_CHECK(SizeRole::Spacing == layout->getSpacingRole());
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::None);
-                FTK_ASSERT(SizeRole::None == layout->getMarginRole());
+                FTK_CHECK(SizeRole::None == layout->getMarginRole());
                 _test(_context, app, window, layout, Orientation::Horizontal);
                 layout->setParent(nullptr);
                 layout.reset();
@@ -71,7 +71,7 @@ namespace ftk
             auto spacer = Spacer::create(context, orientation, layout);
             spacer->setSpacingRole(SizeRole::SpacingLarge);
             spacer->setSpacingRole(SizeRole::SpacingLarge);
-            FTK_ASSERT(SizeRole::SpacingLarge == spacer->getSpacingRole());
+            FTK_CHECK(SizeRole::SpacingLarge == spacer->getSpacingRole());
             auto label1 = Label::create(context, "Label 1", layout);
             app->tick();
 
@@ -83,13 +83,13 @@ namespace ftk
                 label0->setStretch(Stretch::Fixed, Stretch::Fixed);
                 label0->setStretch(Stretch::Fixed, Stretch::Fixed);
                 label0->setStretch(Stretch::Expanding);
-                FTK_ASSERT(Stretch::Expanding == label0->getHStretch());
+                FTK_CHECK(Stretch::Expanding == label0->getHStretch());
                 app->tick();
                 label0->setHAlign(HAlign::Right);
                 label0->setHAlign(HAlign::Right);
                 label0->setAlign(HAlign::Center, VAlign::Center);
                 label0->setAlign(HAlign::Center, VAlign::Center);
-                FTK_ASSERT(HAlign::Center == label0->getHAlign());
+                FTK_CHECK(HAlign::Center == label0->getHAlign());
                 app->tick();
                 label0->setHAlign(HAlign::Left);
                 label1->setHAlign(HAlign::Right);
@@ -100,13 +100,13 @@ namespace ftk
                 label0->setStretch(Stretch::Fixed, Stretch::Fixed);
                 label0->setStretch(Stretch::Fixed, Stretch::Fixed);
                 label0->setStretch(Stretch::Expanding);
-                FTK_ASSERT(Stretch::Expanding == label0->getVStretch());
+                FTK_CHECK(Stretch::Expanding == label0->getVStretch());
                 app->tick();
                 label0->setVAlign(VAlign::Bottom);
                 label0->setVAlign(VAlign::Bottom);
                 label0->setAlign(HAlign::Center, VAlign::Center);
                 label0->setAlign(HAlign::Center, VAlign::Center);
-                FTK_ASSERT(VAlign::Center == label0->getVAlign());
+                FTK_CHECK(VAlign::Center == label0->getVAlign());
                 app->tick();
                 label0->setVAlign(VAlign::Top);
                 label1->setVAlign(VAlign::Bottom);
@@ -118,23 +118,23 @@ namespace ftk
             label0->hide();
             label0->hide();
             app->tick();
-            FTK_ASSERT(!label0->isVisible());
-            FTK_ASSERT(!label0->isVisible(false));
-            FTK_ASSERT(label0->isClipped());
+            FTK_CHECK(!label0->isVisible());
+            FTK_CHECK(!label0->isVisible(false));
+            FTK_CHECK(label0->isClipped());
             label0->show();
             app->tick();
 
             label0->setParent(nullptr);
             app->tick();
             auto children = layout->getChildren();
-            FTK_ASSERT(2 == children.size());
-            FTK_ASSERT(spacer == children.front());
+            FTK_CHECK(2 == children.size());
+            FTK_CHECK(spacer == children.front());
             label0->setParent(layout);
             app->tick();
             children = layout->getChildren();
-            FTK_ASSERT(3 == children.size());
-            FTK_ASSERT(spacer == children.front());
-            FTK_ASSERT(label0 == children.back());
+            FTK_CHECK(3 == children.size());
+            FTK_CHECK(spacer == children.front());
+            FTK_CHECK(label0 == children.back());
             label0->setParent(nullptr);
             app->tick();
 
@@ -142,7 +142,7 @@ namespace ftk
             spacer->setParent(nullptr);
             app->tick();
             children = layout->getChildren();
-            FTK_ASSERT(children.empty());
+            FTK_CHECK(children.empty());
         }
     }
 }

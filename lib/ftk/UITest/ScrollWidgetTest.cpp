@@ -69,7 +69,7 @@ namespace ftk
             }
             scrollWidget->setWidget(layout);
             scrollWidget->setWidget(layout);
-            FTK_ASSERT(layout == scrollWidget->getWidget());
+            FTK_CHECK(layout == scrollWidget->getWidget());
             app->tick();
 
             _print(Format("Scroll type: {0}").arg(scrollType));
@@ -78,7 +78,7 @@ namespace ftk
 
             V2I scroll(100, 100);
             scrollWidget->setScrollPos(scroll);
-            FTK_ASSERT(scrollWidget->getScrollPos() == scroll);
+            FTK_CHECK(scrollWidget->getScrollPos() == scroll);
             scrollWidget->setScrollPosCallback(
                 [&scroll](const V2I& value)
                 {
@@ -86,15 +86,15 @@ namespace ftk
                 });
             scrollWidget->setScrollBarsVisible(false);
             scrollWidget->setScrollBarsVisible(false);
-            FTK_ASSERT(!scrollWidget->areScrollBarsVisible());
+            FTK_CHECK(!scrollWidget->areScrollBarsVisible());
             scrollWidget->setScrollBarsVisible(true);
             scrollWidget->setScrollEventsEnabled(false);
             scrollWidget->setScrollEventsEnabled(false);
-            FTK_ASSERT(!scrollWidget->areScrollEventsEnabled());
+            FTK_CHECK(!scrollWidget->areScrollEventsEnabled());
             scrollWidget->setScrollEventsEnabled(true);
             scrollWidget->setBorder(false);
             scrollWidget->setBorder(false);
-            FTK_ASSERT(!scrollWidget->hasBorder());
+            FTK_CHECK(!scrollWidget->hasBorder());
             scrollWidget->setBorder(true);
 
             Size2I size = scrollWidget->getScrollSize();

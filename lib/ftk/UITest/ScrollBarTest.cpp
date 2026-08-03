@@ -55,10 +55,10 @@ namespace ftk
             auto widget = ScrollBar::create(context, orientation, layout);
             widget->setScrollSize(10000);
             widget->setScrollSize(10000);
-            FTK_ASSERT(10000 == widget->getScrollSize());
+            FTK_CHECK(10000 == widget->getScrollSize());
             widget->setScrollPos(1000);
             widget->setScrollPos(1000);
-            FTK_ASSERT(1000 == widget->getScrollPos());
+            FTK_CHECK(1000 == widget->getScrollPos());
 
             widget->setParent(nullptr);
         }

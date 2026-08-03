@@ -194,9 +194,9 @@ namespace ftk
                     RenderSizeState state(render);
                     const Size2I b(1920, 1080);
                     render->setRenderSize(b);
-                    FTK_ASSERT(b == render->getRenderSize());
+                    FTK_CHECK(b == render->getRenderSize());
                 }
-                FTK_ASSERT(a == render->getRenderSize());
+                FTK_CHECK(a == render->getRenderSize());
             }
             {
                 auto render = Render::create(logSystem, fontSystem);
@@ -206,9 +206,9 @@ namespace ftk
                     ViewportState state(render);
                     const Box2I b(0, 0, 640, 480);
                     render->setViewport(b);
-                    FTK_ASSERT(b == render->getViewport());
+                    FTK_CHECK(b == render->getViewport());
                 }
-                FTK_ASSERT(a == render->getViewport());
+                FTK_CHECK(a == render->getViewport());
             }
             {
                 auto render = Render::create(logSystem, fontSystem);
@@ -216,9 +216,9 @@ namespace ftk
                 {
                     ClipRectEnabledState state(render);
                     render->setClipRectEnabled(false);
-                    FTK_ASSERT(!render->getClipRectEnabled());
+                    FTK_CHECK(!render->getClipRectEnabled());
                 }
-                FTK_ASSERT(render->getClipRectEnabled());
+                FTK_CHECK(render->getClipRectEnabled());
             }
             {
                 auto render = Render::create(logSystem, fontSystem);
@@ -228,9 +228,9 @@ namespace ftk
                     ClipRectState state(render);
                     const Box2I b(0, 0, 640, 480);
                     render->setClipRect(b);
-                    FTK_ASSERT(b == render->getClipRect());
+                    FTK_CHECK(b == render->getClipRect());
                 }
-                FTK_ASSERT(a == render->getClipRect());
+                FTK_CHECK(a == render->getClipRect());
             }
             {
                 auto render = Render::create(logSystem, fontSystem);
@@ -240,9 +240,9 @@ namespace ftk
                     TransformState state(render);
                     const M44F b = scale(V3F(2.F, 2.F, 2.F));
                     render->setTransform(b);
-                    FTK_ASSERT(b == render->getTransform());
+                    FTK_CHECK(b == render->getTransform());
                 }
-                FTK_ASSERT(a == render->getTransform());
+                FTK_CHECK(a == render->getTransform());
             }
         }
     }

@@ -52,35 +52,35 @@ namespace ftk
                 });
 
             model->setValue(11);
-            FTK_ASSERT(11 == model->getValue());
-            FTK_ASSERT(11 == value);
+            FTK_CHECK(11 == model->getValue());
+            FTK_CHECK(11 == value);
 
             model->setRange(RangeI(0, 10));
-            FTK_ASSERT(RangeI(0, 10) == model->getRange());
-            FTK_ASSERT(RangeI(0, 10) == range);
-            FTK_ASSERT(10 == value);
+            FTK_CHECK(RangeI(0, 10) == model->getRange());
+            FTK_CHECK(RangeI(0, 10) == range);
+            FTK_CHECK(10 == value);
 
             model->setStep(2);
-            FTK_ASSERT(2 == model->getStep());
+            FTK_CHECK(2 == model->getStep());
             model->stepDec();
-            FTK_ASSERT(8 == value);
+            FTK_CHECK(8 == value);
             model->step();
-            FTK_ASSERT(10 == value);
+            FTK_CHECK(10 == value);
 
             model->setLargeStep(5);
-            FTK_ASSERT(5 == model->getLargeStep());
+            FTK_CHECK(5 == model->getLargeStep());
             model->largeStepDec();
-            FTK_ASSERT(5 == value);
+            FTK_CHECK(5 == value);
             model->largeStep();
-            FTK_ASSERT(10 == value);
+            FTK_CHECK(10 == value);
 
             model->setDefault(0);
-            FTK_ASSERT(0 == model->getDefault());
-            FTK_ASSERT(hasDefault);
+            FTK_CHECK(0 == model->getDefault());
+            FTK_CHECK(hasDefault);
             model->setDefault();
-            FTK_ASSERT(0 == value);
+            FTK_CHECK(0 == value);
             model->clearDefault();
-            FTK_ASSERT(!hasDefault);
+            FTK_CHECK(!hasDefault);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace ftk
             float split = .9F;
             splitter->setSplit(split);
             splitter->setSplit(split);
-            FTK_ASSERT(split == splitter->getSplit());
+            FTK_CHECK(split == splitter->getSplit());
             app->tick();
 
             auto label0 = Label::create(context, "Label 0", splitter);

@@ -39,9 +39,9 @@ namespace ftk
 
         void TimeTest::_rational()
         {
-            FTK_ASSERT(toRational(24.0) == std::make_pair(24, 1));
-            FTK_ASSERT(toRational(24.5) == std::make_pair(24, 1));
-            FTK_ASSERT(toRational(30.0) == std::make_pair(30, 1));
+            FTK_CHECK(toRational(24.0) == std::make_pair(24, 1));
+            FTK_CHECK(toRational(24.5) == std::make_pair(24, 1));
+            FTK_CHECK(toRational(30.0) == std::make_pair(30, 1));
         }
     }
 }

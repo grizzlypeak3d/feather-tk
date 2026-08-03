@@ -60,14 +60,14 @@ namespace ftk
                 };
                 widget->setTabs(tabs);
                 widget->setTabs(tabs);
-                FTK_ASSERT(tabs == widget->getTabs());
+                FTK_CHECK(tabs == widget->getTabs());
                 app->tick();
                 widget->addTab("Tab 2");
                 tabs.push_back("Tab 2");
-                FTK_ASSERT(tabs == widget->getTabs());
+                FTK_CHECK(tabs == widget->getTabs());
                 app->tick();
                 widget->clear();
-                FTK_ASSERT(widget->getTabs().empty());
+                FTK_CHECK(widget->getTabs().empty());
                 app->tick();
                 widget->setTabs(tabs);
                 int tab = 0;
@@ -78,7 +78,7 @@ namespace ftk
                     });
                 widget->setCurrent(2);
                 widget->setCurrent(2);
-                FTK_ASSERT(2 == widget->getCurrent());
+                FTK_CHECK(2 == widget->getCurrent());
                 app->tick();
             }
         }
@@ -109,10 +109,10 @@ namespace ftk
                 widget->addTab(tabs[0], label0);
                 auto label1 = Label::create(_context, "Label 1");
                 widget->addTab(tabs[1], label1);
-                FTK_ASSERT(tabs == widget->getTabs());
+                FTK_CHECK(tabs == widget->getTabs());
                 app->tick();
                 widget->clear();
-                FTK_ASSERT(widget->getTabs().empty());
+                FTK_CHECK(widget->getTabs().empty());
                 app->tick();
                 widget->addTab(tabs[0], label0);
                 widget->addTab(tabs[1], label1);
@@ -124,7 +124,7 @@ namespace ftk
                     });
                 widget->setCurrent(1);
                 widget->setCurrent(1);
-                FTK_ASSERT(1 == widget->getCurrent());
+                FTK_CHECK(1 == widget->getCurrent());
                 app->tick();
             }
         }

@@ -45,26 +45,26 @@ namespace ftk
                 app->tick();
 
                 auto edit = FloatEdit::create(_context, layout);
-                FTK_ASSERT(edit->getModel());
+                FTK_CHECK(edit->getModel());
                 float value = 0.F;
                 edit->setCallback([&value](float v) { value = v; });
                 edit->setValue(.9F);
                 app->tick();
-                FTK_ASSERT(.9F == edit->getValue());
+                FTK_CHECK(.9F == edit->getValue());
                 edit->setRange(0.F, .5F);
                 app->tick();
-                FTK_ASSERT(RangeF(0.F, .5F) == edit->getRange());
-                FTK_ASSERT(.5F == edit->getValue());
+                FTK_CHECK(RangeF(0.F, .5F) == edit->getRange());
+                FTK_CHECK(.5F == edit->getValue());
                 edit->setStep(.2F);
-                FTK_ASSERT(.2F == edit->getStep());
+                FTK_CHECK(.2F == edit->getStep());
                 edit->setLargeStep(.3F);
-                FTK_ASSERT(.3F == edit->getLargeStep());
+                FTK_CHECK(.3F == edit->getLargeStep());
                 edit->setPrecision(3);
                 edit->setPrecision(3);
-                FTK_ASSERT(3 == edit->getPrecision());
+                FTK_CHECK(3 == edit->getPrecision());
                 edit->setPrecision(2);
                 edit->setFont(FontType::Regular);
-                FTK_ASSERT(FontType::Regular == edit->getFont());
+                FTK_CHECK(FontType::Regular == edit->getFont());
                 edit->setFont(FontType::Mono);
             }
         }

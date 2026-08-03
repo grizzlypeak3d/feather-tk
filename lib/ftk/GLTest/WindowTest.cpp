@@ -32,7 +32,7 @@ namespace ftk
             {
                 Size2I size(1024, 1024);
                 auto window = Window::create(_context, "WindowTest", size);
-                FTK_ASSERT(window->getID());
+                FTK_CHECK(window->getID());
                 _print(Format("Screen: {0}").arg(window->getScreen()));
                 _print(Format("Full screen: {0}").arg(window->isFullScreen()));
                 _print(Format("Float on top: {0}").arg(window->isFloatOnTop()));

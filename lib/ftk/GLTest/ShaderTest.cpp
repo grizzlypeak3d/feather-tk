@@ -116,9 +116,9 @@ namespace ftk
                 auto window = createWindow(_context);
 
                 auto shader = Shader::create(vertexSource, fragmentSource);
-                FTK_ASSERT(vertexSource == shader->getVertexSource());
-                FTK_ASSERT(fragmentSource == shader->getFragmentSource());
-                FTK_ASSERT(shader->getProgram());
+                FTK_CHECK(vertexSource == shader->getVertexSource());
+                FTK_CHECK(fragmentSource == shader->getFragmentSource());
+                FTK_CHECK(shader->getProgram());
                 shader->bind();
                 shader->setUniform("i", 1);
                 shader->setUniform("f", 1.F);
@@ -140,14 +140,14 @@ namespace ftk
                 try
                 {
                     auto shader = Shader::create("!", "!");
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
                 try
                 {
                     auto shader = Shader::create(vertexSource, "!");
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}

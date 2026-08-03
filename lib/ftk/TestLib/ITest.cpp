@@ -6,6 +6,7 @@
 #include <ftk/Core/Path.h>
 
 #include <iostream>
+#include <sstream>
 
 namespace ftk
 {
@@ -54,6 +55,16 @@ namespace ftk
         {
             ++_failureCount;
             std::cout << _name << " FAIL: " << value << std::endl;
+        }
+
+        void ITest::_checkFailed(
+            const char* expression,
+            const char* file,
+            int line)
+        {
+            std::stringstream ss;
+            ss << expression << " (" << file << ":" << line << ")";
+            _fail(ss.str());
         }
     }
 }

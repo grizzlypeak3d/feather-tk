@@ -86,11 +86,11 @@ namespace ftk
                 app->tick();
 
                 menuBar->shortcut(Key::_4, static_cast<int>(KeyModifier::Control));
-                FTK_ASSERT(action4);
+                FTK_CHECK(action4);
                 menuBar->shortcut(Key::_5, static_cast<int>(KeyModifier::Control));
-                FTK_ASSERT(action5);
+                FTK_CHECK(action5);
                 menuBar->shortcut(Key::_5, static_cast<int>(KeyModifier::Control));
-                FTK_ASSERT(!action5);
+                FTK_CHECK(!action5);
 
                 app->setDisplayScale(2.F);
                 app->tick();

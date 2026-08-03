@@ -60,16 +60,16 @@ namespace ftk
                     });
                 edit->setText("Test");
                 edit->setText("Test");
-                FTK_ASSERT("Test" == edit->getText());
+                FTK_CHECK("Test" == edit->getText());
                 edit->clearText();
-                FTK_ASSERT(edit->getText().empty());
+                FTK_CHECK(edit->getText().empty());
                 edit->setFormat("00.00");
                 edit->setFormat("00.00");
-                FTK_ASSERT("00.00" == edit->getFormat());
+                FTK_CHECK("00.00" == edit->getFormat());
                 edit->setFormat("");
                 edit->setFont(FontType::Mono);
                 edit->setFont(FontType::Mono);
-                FTK_ASSERT(FontType::Mono == edit->getFont());
+                FTK_CHECK(FontType::Mono == edit->getFont());
                 edit->setFont(FontType::Regular);
 
                 edit->takeKeyFocus();
@@ -78,7 +78,7 @@ namespace ftk
                 app->tick();
                 edit->show();
                 app->tick();
-                FTK_ASSERT(!edit->hasKeyFocus());
+                FTK_CHECK(!edit->hasKeyFocus());
 
                 edit->takeKeyFocus();
                 app->tick();
@@ -86,7 +86,7 @@ namespace ftk
                 app->tick();
                 edit->setEnabled(true);
                 app->tick();
-                FTK_ASSERT(!edit->hasKeyFocus());
+                FTK_CHECK(!edit->hasKeyFocus());
 
                 // Undo/redo.
                 {
@@ -101,60 +101,60 @@ namespace ftk
                     auto hasRedoObserver = Observer<bool>::create(
                         model->observeHasRedo(),
                         [&hasRedo](bool value) { hasRedo = value; });
-                    FTK_ASSERT(!hasUndo);
-                    FTK_ASSERT(!hasRedo);
+                    FTK_CHECK(!hasUndo);
+                    FTK_CHECK(!hasRedo);
 
                     // Type three characters, then undo back to empty and
                     // redo back to "abc".
                     model->input("a");
                     model->input("b");
                     model->input("c");
-                    FTK_ASSERT("abc" == model->getText());
-                    FTK_ASSERT(3 == model->getCursor());
-                    FTK_ASSERT(hasUndo);
-                    FTK_ASSERT(!hasRedo);
+                    FTK_CHECK("abc" == model->getText());
+                    FTK_CHECK(3 == model->getCursor());
+                    FTK_CHECK(hasUndo);
+                    FTK_CHECK(!hasRedo);
                     model->undo();
-                    FTK_ASSERT("ab" == model->getText());
-                    FTK_ASSERT(2 == model->getCursor());
+                    FTK_CHECK("ab" == model->getText());
+                    FTK_CHECK(2 == model->getCursor());
                     model->undo();
                     model->undo();
-                    FTK_ASSERT(model->getText().empty());
-                    FTK_ASSERT(!hasUndo);
-                    FTK_ASSERT(hasRedo);
+                    FTK_CHECK(model->getText().empty());
+                    FTK_CHECK(!hasUndo);
+                    FTK_CHECK(hasRedo);
                     model->redo();
                     model->redo();
                     model->redo();
-                    FTK_ASSERT("abc" == model->getText());
-                    FTK_ASSERT(hasUndo);
-                    FTK_ASSERT(!hasRedo);
+                    FTK_CHECK("abc" == model->getText());
+                    FTK_CHECK(hasUndo);
+                    FTK_CHECK(!hasRedo);
 
                     // Undo of a selection-replace restores the selection.
                     model->setText("hello");
-                    FTK_ASSERT(!hasUndo);
+                    FTK_CHECK(!hasUndo);
                     model->setSelection(LineEditSelection(0, 5));
                     model->input("X");
-                    FTK_ASSERT("X" == model->getText());
+                    FTK_CHECK("X" == model->getText());
                     model->undo();
-                    FTK_ASSERT("hello" == model->getText());
-                    FTK_ASSERT(LineEditSelection(0, 5) == model->getSelection());
+                    FTK_CHECK("hello" == model->getText());
+                    FTK_CHECK(LineEditSelection(0, 5) == model->getSelection());
 
                     // A new edit after an undo truncates the redo branch.
                     model->setText("ab");
                     model->setCursor(2);
                     model->input("c");
                     model->undo();
-                    FTK_ASSERT("ab" == model->getText());
-                    FTK_ASSERT(hasRedo);
+                    FTK_CHECK("ab" == model->getText());
+                    FTK_CHECK(hasRedo);
                     model->input("d");
-                    FTK_ASSERT("abd" == model->getText());
-                    FTK_ASSERT(!hasRedo);
+                    FTK_CHECK("abd" == model->getText());
+                    FTK_CHECK(!hasRedo);
 
                     // Setting the text clears the undo history.
                     model->input("e");
-                    FTK_ASSERT(hasUndo);
+                    FTK_CHECK(hasUndo);
                     model->setText("zzz");
-                    FTK_ASSERT(!hasUndo);
-                    FTK_ASSERT(!hasRedo);
+                    FTK_CHECK(!hasUndo);
+                    FTK_CHECK(!hasRedo);
                 }
             }
         }

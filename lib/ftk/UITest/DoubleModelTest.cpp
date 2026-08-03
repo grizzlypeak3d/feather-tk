@@ -53,35 +53,35 @@ namespace ftk
                 });
 
             model->setValue(0.9);
-            FTK_ASSERT(0.9 == model->getValue());
-            FTK_ASSERT(0.9 == value);
+            FTK_CHECK(0.9 == model->getValue());
+            FTK_CHECK(0.9 == value);
 
             model->setRange(RangeD(0.0, 0.5));
-            FTK_ASSERT(RangeD(0.0, 0.5) == model->getRange());
-            FTK_ASSERT(RangeD(0.0, 0.5) == range);
-            FTK_ASSERT(0.5 == value);
+            FTK_CHECK(RangeD(0.0, 0.5) == model->getRange());
+            FTK_CHECK(RangeD(0.0, 0.5) == range);
+            FTK_CHECK(0.5 == value);
 
             model->setStep(0.2);
-            FTK_ASSERT(0.2 == model->getStep());
+            FTK_CHECK(0.2 == model->getStep());
             model->stepDec();
-            FTK_ASSERT(fuzzyCompare(0.3, value));
+            FTK_CHECK(fuzzyCompare(0.3, value));
             model->step();
-            FTK_ASSERT(fuzzyCompare(0.5, value));
+            FTK_CHECK(fuzzyCompare(0.5, value));
 
             model->setLargeStep(0.3);
-            FTK_ASSERT(0.3 == model->getLargeStep());
+            FTK_CHECK(0.3 == model->getLargeStep());
             model->largeStepDec();
-            FTK_ASSERT(fuzzyCompare(0.2, value));
+            FTK_CHECK(fuzzyCompare(0.2, value));
             model->largeStep();
-            FTK_ASSERT(fuzzyCompare(0.5, value));
+            FTK_CHECK(fuzzyCompare(0.5, value));
 
             model->setDefault(0.0);
-            FTK_ASSERT(0.0 == model->getDefault());
-            FTK_ASSERT(hasDefault);
+            FTK_CHECK(0.0 == model->getDefault());
+            FTK_CHECK(hasDefault);
             model->setDefault();
-            FTK_ASSERT(0.0 == value);
+            FTK_CHECK(0.0 == value);
             model->clearDefault();
-            FTK_ASSERT(!hasDefault);
+            FTK_CHECK(!hasDefault);
         }
     }
 }

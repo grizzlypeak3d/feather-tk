@@ -91,11 +91,11 @@ namespace ftk
                             arg(data.options.filters.magnify).
                             arg(data.options.pbo));
                         auto texture = Texture::create(data.info, data.options);
-                        FTK_ASSERT(data.info == texture->getImageInfo());
-                        FTK_ASSERT(data.info.size == texture->getSize());
-                        FTK_ASSERT(data.info.size.w == texture->getWidth());
-                        FTK_ASSERT(data.info.size.h == texture->getHeight());
-                        FTK_ASSERT(texture->getID());
+                        FTK_CHECK(data.info == texture->getImageInfo());
+                        FTK_CHECK(data.info.size == texture->getSize());
+                        FTK_CHECK(data.info.size.w == texture->getWidth());
+                        FTK_CHECK(data.info.size.h == texture->getHeight());
+                        FTK_CHECK(texture->getID());
                         auto image = Image::create(data.info);
                         texture->copy(image);
                         texture->copy(image, 0, 0);
@@ -122,9 +122,9 @@ namespace ftk
             {
                 const TextureOptions a;
                 TextureOptions b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b.pbo = true;
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a != b);
             }
         }
     }

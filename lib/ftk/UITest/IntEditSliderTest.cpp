@@ -45,24 +45,24 @@ namespace ftk
                 app->tick();
 
                 auto slider = IntEditSlider::create(_context, layout);
-                FTK_ASSERT(slider->getModel());
+                FTK_CHECK(slider->getModel());
                 int value = 0;
                 slider->setCallback([&value](int v) { value = v; });
                 slider->setValue(11);
                 app->tick();
-                FTK_ASSERT(11 == slider->getValue());
+                FTK_CHECK(11 == slider->getValue());
                 slider->setRange(0, 10);
                 app->tick();
-                FTK_ASSERT(RangeI(0, 10) == slider->getRange());
-                FTK_ASSERT(10 == slider->getValue());
+                FTK_CHECK(RangeI(0, 10) == slider->getRange());
+                FTK_CHECK(10 == slider->getValue());
                 slider->setStep(2);
-                FTK_ASSERT(2 == slider->getStep());
+                FTK_CHECK(2 == slider->getStep());
                 slider->setLargeStep(3);
-                FTK_ASSERT(3 == slider->getLargeStep());
+                FTK_CHECK(3 == slider->getLargeStep());
                 slider->setDefault(0);
-                FTK_ASSERT(0 == slider->getDefault());
+                FTK_CHECK(0 == slider->getDefault());
                 slider->setFont(FontType::Regular);
-                FTK_ASSERT(FontType::Regular == slider->getFont());
+                FTK_CHECK(FontType::Regular == slider->getFont());
                 slider->setFont(FontType::Mono);
             }
         }

@@ -42,16 +42,16 @@ namespace ftk
             {
                 const ImageFilters a;
                 ImageFilters b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b.minify = ImageFilter::Nearest;
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a != b);
             }
             {
                 const ImageOptions a;
                 ImageOptions b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b.cache = false;
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a != b);
             }
         }
     }

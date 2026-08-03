@@ -63,7 +63,7 @@ namespace ftk
                 sizeRoles[SizeRole::Border] = 10;
                 style->setSizeRoles(sizeRoles);
                 style->setSizeRoles(sizeRoles);
-                FTK_ASSERT(10 == style->getSizeRole(SizeRole::Border, 1.F));
+                FTK_CHECK(10 == style->getSizeRole(SizeRole::Border, 1.F));
                 app->tick();
 
                 Color4F color(1.F, 0.F, 0.F);
@@ -71,14 +71,14 @@ namespace ftk
                 colorRoles[ColorRole::Window] = color;
                 style->setColorRoles(colorRoles);
                 style->setColorRoles(colorRoles);
-                FTK_ASSERT(color == style->getColorRole(ColorRole::Window));
+                FTK_CHECK(color == style->getColorRole(ColorRole::Window));
                 app->tick();
 
                 auto fonts = style->getFonts();
                 fonts[FontType::Regular] = "test";
                 style->setFonts(fonts);
                 style->setFonts(fonts);
-                FTK_ASSERT("test" == style->getFont(FontType::Regular, 1.F).name);
+                FTK_CHECK("test" == style->getFont(FontType::Regular, 1.F).name);
                 app->tick();
             }
         }

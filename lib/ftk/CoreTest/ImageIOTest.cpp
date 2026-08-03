@@ -71,9 +71,9 @@ namespace ftk
             ImageIOOptions options2;
             options2["Compression"] = "RLE";
             ImageIOOptions options3 = merge(options, options2);
-            FTK_ASSERT(2 == options3.size());
-            FTK_ASSERT(options3["Layer"] == "1");
-            FTK_ASSERT(options3["Compression"] == "RLE");
+            FTK_CHECK(2 == options3.size());
+            FTK_CHECK(options3["Layer"] == "1");
+            FTK_CHECK(options3["Compression"] == "RLE");
         }
     }
 }

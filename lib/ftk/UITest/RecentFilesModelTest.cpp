@@ -47,8 +47,8 @@ namespace ftk
 
                 model->setRecentMax(2);
                 model->setRecentMax(2);
-                FTK_ASSERT(2 == model->getRecentMax());
-                FTK_ASSERT(2 == recentMax);
+                FTK_CHECK(2 == model->getRecentMax());
+                FTK_CHECK(2 == recentMax);
 
                 std::vector<std::filesystem::path> recent2;
                 recent2.push_back("path 0");
@@ -58,21 +58,21 @@ namespace ftk
                 recent2.clear();
                 recent2.push_back("path 1");
                 recent2.push_back("path 2");
-                FTK_ASSERT(recent2[0] == model->getRecent()[0].filename());
-                FTK_ASSERT(recent2[1] == model->getRecent()[1].filename());
+                FTK_CHECK(recent2[0] == model->getRecent()[0].filename());
+                FTK_CHECK(recent2[1] == model->getRecent()[1].filename());
                 model->addRecent("path 3");
                 recent2.clear();
                 recent2.push_back("path 2");
                 recent2.push_back("path 3");
-                FTK_ASSERT(recent2[0] == recent[0].filename());
-                FTK_ASSERT(recent2[1] == recent[1].filename());
+                FTK_CHECK(recent2[0] == recent[0].filename());
+                FTK_CHECK(recent2[1] == recent[1].filename());
 
                 model->setRecentMax(1);
                 recent2.clear();
                 recent2.push_back("path 3");
-                FTK_ASSERT(recent2[0] == recent[0].filename());
+                FTK_CHECK(recent2[0] == recent[0].filename());
                 model->addRecent("path 3");
-                FTK_ASSERT(recent2[0] == recent[0].filename());
+                FTK_CHECK(recent2[0] == recent[0].filename());
             }
         }
     }

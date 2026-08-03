@@ -52,18 +52,18 @@ namespace ftk
                 {
                     const std::filesystem::path path = _getTempDir() / "FileIOTest";
                     auto fileIO = FileIO::create(path, FileMode::Write);
-                    FTK_ASSERT(fileIO->isOpen());
-                    FTK_ASSERT(path == fileIO->getPath());
-                    FTK_ASSERT(0 == fileIO->getPos());
+                    FTK_CHECK(fileIO->isOpen());
+                    FTK_CHECK(path == fileIO->getPath());
+                    FTK_CHECK(0 == fileIO->getPos());
                     fileIO->write("Hello");
                     fileIO->seek(0, SeekMode::Set);
-                    FTK_ASSERT(0 == fileIO->getPos());
+                    FTK_CHECK(0 == fileIO->getPos());
                     fileIO->seek(1, SeekMode::Forward);
                     fileIO->seek(1, SeekMode::Forward);
-                    FTK_ASSERT(2 == fileIO->getPos());
-                    FTK_ASSERT(!fileIO->isEOF());
+                    FTK_CHECK(2 == fileIO->getPos());
+                    FTK_CHECK(!fileIO->isEOF());
                     fileIO->seek(5, SeekMode::Set);
-                    FTK_ASSERT(fileIO->isEOF());
+                    FTK_CHECK(fileIO->isEOF());
                     fileIO.reset();
                     
                     fileIO = FileIO::create(path, FileMode::Append);
@@ -72,12 +72,12 @@ namespace ftk
 
                     fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     const size_t size = fileIO->getSize();
-                    FTK_ASSERT(11 == size);
+                    FTK_CHECK(11 == size);
                     if (FileRead::MMap == fileRead)
                     {
-                        FTK_ASSERT(fileIO->getMemStart());
-                        FTK_ASSERT(fileIO->getMemEnd());
-                        FTK_ASSERT(fileIO->getMemP());
+                        FTK_CHECK(fileIO->getMemStart());
+                        FTK_CHECK(fileIO->getMemEnd());
+                        FTK_CHECK(fileIO->getMemP());
                     }
                     std::string contents;
                     while (!fileIO->isEOF())
@@ -86,15 +86,15 @@ namespace ftk
                         fileIO->read(&c, 1);
                         contents.push_back(c);
                     }
-                    FTK_ASSERT(contents == "Hello world");
+                    FTK_CHECK(contents == "Hello world");
                     fileIO->seek(0, SeekMode::Set);
-                    FTK_ASSERT(0 == fileIO->getPos());
+                    FTK_CHECK(0 == fileIO->getPos());
                     fileIO->seek(1, SeekMode::Forward);
                     fileIO->seek(1, SeekMode::Forward);
-                    FTK_ASSERT(2 == fileIO->getPos());
-                    FTK_ASSERT(!fileIO->isEOF());
+                    FTK_CHECK(2 == fileIO->getPos());
+                    FTK_CHECK(!fileIO->isEOF());
                     fileIO->seek(fileIO->getSize(), SeekMode::Set);
-                    FTK_ASSERT(fileIO->isEOF());
+                    FTK_CHECK(fileIO->isEOF());
                     fileIO.reset();
 
                     MemFile memFile(nullptr, (uint8_t*)contents.data(), contents.size());
@@ -106,7 +106,7 @@ namespace ftk
                         fileIO->read(&c, 1);
                         contents2.push_back(c);
                     }
-                    FTK_ASSERT(contents2 == "Hello world");
+                    FTK_CHECK(contents2 == "Hello world");
                 }
                 {
                     const std::filesystem::path path = _getTempDir() / "FileIOTest2";
@@ -142,48 +142,48 @@ namespace ftk
                     fileIO->read32(&i32b, 1);
                     fileIO->readU32(&u32b, 1);
                     fileIO->readF32(&fb, 1);
-                    FTK_ASSERT(i8 == i8b);
-                    FTK_ASSERT(u8 == u8b);
-                    FTK_ASSERT(i16 == i16b);
-                    FTK_ASSERT(u16 == u16b);
-                    FTK_ASSERT(i32 == i32b);
-                    FTK_ASSERT(u32 == u32b);
-                    FTK_ASSERT(f == fb);
+                    FTK_CHECK(i8 == i8b);
+                    FTK_CHECK(u8 == u8b);
+                    FTK_CHECK(i16 == i16b);
+                    FTK_CHECK(u16 == u16b);
+                    FTK_CHECK(i32 == i32b);
+                    FTK_CHECK(u32 == u32b);
+                    FTK_CHECK(f == fb);
                 }
                 {
                     const std::filesystem::path path = _getTempDir() / "FileIOTest3";
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     uint32_t u32 = 1;
-                    FTK_ASSERT(!fileIO->hasEndianConversion());
+                    FTK_CHECK(!fileIO->hasEndianConversion());
                     fileIO->setEndianConversion(true);
-                    FTK_ASSERT(fileIO->hasEndianConversion());
+                    FTK_CHECK(fileIO->hasEndianConversion());
                     fileIO->writeU32(u32);
                     fileIO.reset();
 
                     fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     uint32_t u32b = 0;
                     fileIO->readU32(&u32b, 1);
-                    FTK_ASSERT(u32 != u32b);
+                    FTK_CHECK(u32 != u32b);
                     fileIO.reset();
 
                     fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     fileIO->setEndianConversion(true);
                     u32b = 0;
                     fileIO->readU32(&u32b, 1);
-                    FTK_ASSERT(u32 == u32b);
+                    FTK_CHECK(u32 == u32b);
                     fileIO.reset();
 
                     fileIO = FileIO::create(path, FileMode::ReadWrite, fileRead);
                     fileIO->setEndianConversion(true);
                     u32b = 0;
                     fileIO->readU32(&u32b, 1);
-                    FTK_ASSERT(u32 == u32b);
+                    FTK_CHECK(u32 == u32b);
                 }
                 try
                 {
                     const std::filesystem::path path = _getTempDir() / "FileIOTest4";
                     auto fileIO = FileIO::create(path, FileMode::Read, fileRead);
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
@@ -196,7 +196,7 @@ namespace ftk
                     fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     uint8_t u8 = 0;
                     fileIO->readU8(&u8, 1);
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
@@ -209,7 +209,7 @@ namespace ftk
                     fileIO = FileIO::create(path, FileMode::ReadWrite, fileRead);
                     uint8_t u8 = 0;
                     fileIO->readU8(&u8, 1);
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
@@ -218,7 +218,7 @@ namespace ftk
                     const std::filesystem::path path = _getTempDir() / "FileIOTest7";
                     auto fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     fileIO->writeU8(1);
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
@@ -231,7 +231,7 @@ namespace ftk
                     fileIO = FileIO::create(path, FileMode::Read, fileRead);
                     uint8_t c = 0;
                     fileIO->readU8(&c);
-                    FTK_ASSERT(1 == c);
+                    FTK_CHECK(1 == c);
                 }
             }
         }
@@ -276,7 +276,7 @@ namespace ftk
                 {
                     std::vector<uint8_t> buf(range.second + 1);
                     fileIO->readAt(buf.data(), range.first, range.second);
-                    FTK_ASSERT(std::equal(
+                    FTK_CHECK(std::equal(
                         buf.begin(),
                         buf.begin() + range.second,
                         data.begin() + range.first));
@@ -288,10 +288,10 @@ namespace ftk
                 fileIO->read(&u8, 1);
                 std::vector<uint8_t> buf(1000);
                 fileIO->readAt(buf.data(), 5000, buf.size());
-                FTK_ASSERT(101 == fileIO->getPos());
+                FTK_CHECK(101 == fileIO->getPos());
                 fileIO->read(&u8, 1);
-                FTK_ASSERT(data[101] == u8);
-                FTK_ASSERT(102 == fileIO->getPos());
+                FTK_CHECK(data[101] == u8);
+                FTK_CHECK(102 == fileIO->getPos());
 
                 // Several threads read at once.
                 std::vector<std::thread> threads;
@@ -322,19 +322,19 @@ namespace ftk
                 {
                     thread.join();
                 }
-                FTK_ASSERT(ok);
+                FTK_CHECK(ok);
 
                 try
                 {
                     fileIO->readAt(&u8, fileSize, 1);
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
                 try
                 {
                     fileIO->readAt(&u8, fileSize + 1, 0);
-                    FTK_ASSERT(false);
+                    FTK_CHECK(false);
                 }
                 catch (const std::exception&)
                 {}
@@ -352,7 +352,7 @@ namespace ftk
                 b->setEndianConversion(true);
                 std::vector<uint32_t> viaReadAt(16);
                 b->readAt(viaReadAt.data(), 64, viaReadAt.size(), 4);
-                FTK_ASSERT(viaRead == viaReadAt);
+                FTK_CHECK(viaRead == viaReadAt);
             }
 
             {
@@ -360,7 +360,7 @@ namespace ftk
                 auto fileIO = FileIO::create(path, memFile);
                 std::vector<uint8_t> buf(256);
                 fileIO->readAt(buf.data(), 1234, buf.size());
-                FTK_ASSERT(std::equal(buf.begin(), buf.end(), data.begin() + 1234));
+                FTK_CHECK(std::equal(buf.begin(), buf.end(), data.begin() + 1234));
             }
 
             try
@@ -369,7 +369,7 @@ namespace ftk
                 auto fileIO = FileIO::create(path2, FileMode::Write);
                 uint8_t u8 = 0;
                 fileIO->readAt(&u8, 0, 1);
-                FTK_ASSERT(false);
+                FTK_CHECK(false);
             }
             catch (const std::exception&)
             {}
@@ -385,7 +385,7 @@ namespace ftk
 
                 fileIO = FileIO::create(path, FileMode::Read);
                 std::string contents = read(fileIO);
-                FTK_ASSERT(contents == "Hello world");
+                FTK_CHECK(contents == "Hello world");
             }
             {
                 const std::filesystem::path path = _getTempDir() / "FileIOTest9";
@@ -400,9 +400,9 @@ namespace ftk
                     auto io = FileIO::create(path, FileMode::Read, readType);
                     char buf[cStringSize];
                     readWord(io, buf);
-                    FTK_ASSERT(std::string("Hello") == std::string(buf));
+                    FTK_CHECK(std::string("Hello") == std::string(buf));
                     readWord(io, buf);
-                    FTK_ASSERT(std::string("world") == std::string(buf));
+                    FTK_CHECK(std::string("world") == std::string(buf));
                 }
             }
             {
@@ -413,7 +413,7 @@ namespace ftk
 
                 fileIO = FileIO::create(path, FileMode::Read);
                 std::string line = readLine(fileIO);
-                FTK_ASSERT(line == "Hello world");
+                FTK_CHECK(line == "Hello world");
             }
             {
                 const std::filesystem::path path = _getTempDir() / "FileIOTest11";
@@ -421,7 +421,7 @@ namespace ftk
                 contents.push_back("Hello");
                 contents.push_back("World");
                 writeLines(path, contents);
-                FTK_ASSERT(contents == readLines(path));
+                FTK_CHECK(contents == readLines(path));
             }
             {
                 const std::filesystem::path path = _getTempDir() / "FileIOTest12";
@@ -432,7 +432,7 @@ namespace ftk
                 truncateFile(path, 5);
                 fileIO = FileIO::create(path, FileMode::ReadWrite);
                 std::string contents = read(fileIO);
-                FTK_ASSERT(contents == "Hello");
+                FTK_CHECK(contents == "Hello");
             }
         }
         
@@ -442,9 +442,9 @@ namespace ftk
                 std::string contents = "Hello world";
                 MemFile a(nullptr, (uint8_t*)contents.data(), contents.size());
                 MemFile b(nullptr, (uint8_t*)contents.data(), contents.size());
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b = MemFile();
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a != b);
             }
         }
     }

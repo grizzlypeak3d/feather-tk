@@ -72,10 +72,10 @@ namespace ftk
 
                             auto read = io->read(path);
                             auto info2 = read->getInfo();
-                            FTK_ASSERT(info.size == info2.size);
-                            FTK_ASSERT(info.type == info2.type);
+                            FTK_CHECK(info.size == info2.size);
+                            FTK_CHECK(info.type == info2.type);
                             auto image2 = read->read();
-                            FTK_ASSERT(image2);
+                            FTK_CHECK(image2);
                             read.reset();
                             
                             auto fileIO = FileIO::create(path, FileMode::Read);
@@ -83,16 +83,16 @@ namespace ftk
                             MemFile memFile(fileIO, fileIO->getMemStart(), size);
                             read = io->read(path, memFile);
                             info2 = read->getInfo();
-                            FTK_ASSERT(info.size == info2.size);
-                            FTK_ASSERT(info.type == info2.type);
+                            FTK_CHECK(info.size == info2.size);
+                            FTK_CHECK(info.type == info2.type);
                             image2 = read->read();
-                            FTK_ASSERT(image2);
+                            FTK_CHECK(image2);
                             read.reset();
                             
                             truncateFile(path, 0);
                             read = io->read(path);
                             image2 = read->read();
-                            FTK_ASSERT(false);
+                            FTK_CHECK(false);
                         }
                         catch (const std::exception& e)
                         {

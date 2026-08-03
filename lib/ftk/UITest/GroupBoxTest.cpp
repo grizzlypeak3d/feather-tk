@@ -47,10 +47,10 @@ namespace ftk
                 auto widget = GroupBox::create(_context, "Test", layout);
                 widget->setText("Group");
                 widget->setText("Group");
-                FTK_ASSERT("Group" == widget->getText());
+                FTK_CHECK("Group" == widget->getText());
                 widget->setFont(FontType::Mono);
                 widget->setFont(FontType::Mono);
-                FTK_ASSERT(FontType::Mono == widget->getFont());
+                FTK_CHECK(FontType::Mono == widget->getFont());
                 widget->setFont(FontType::Regular);
                 app->tick();
             }

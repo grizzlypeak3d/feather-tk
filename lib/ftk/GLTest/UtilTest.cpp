@@ -28,8 +28,8 @@ namespace ftk
                 
         void UtilTest::run()
         {
-            FTK_ASSERT(4 == getMajorVersion("4.1.0 Driver 571.59"));
-            FTK_ASSERT(3 == getMajorVersion("OpenGL ES 3.2 Mesa 25.0.7"));
+            FTK_CHECK(4 == getMajorVersion("4.1.0 Driver 571.59"));
+            FTK_CHECK(3 == getMajorVersion("OpenGL ES 3.2 Mesa 25.0.7"));
         }
     }
 }

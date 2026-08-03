@@ -43,7 +43,7 @@ namespace ftk
                 auto window = Window::create(_context, app, "ftk::ui_test::App");
                 auto layout = VerticalLayout::create(_context, window);
                 auto button = PushButton::create(_context, "Button", layout);
-                FTK_ASSERT(app->getWindows().front() == window);
+                FTK_CHECK(app->getWindows().front() == window);
                 window->show();
                 window->setSize(Size2I(1280, 960));
 

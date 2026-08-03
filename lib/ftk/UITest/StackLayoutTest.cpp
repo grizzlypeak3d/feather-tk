@@ -47,35 +47,35 @@ namespace ftk
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::None);
-                FTK_ASSERT(SizeRole::None == layout->getMarginRole());
+                FTK_CHECK(SizeRole::None == layout->getMarginRole());
 
                 auto spacer0 = Spacer::create(_context, Orientation::Horizontal, layout);
                 auto spacer1 = Spacer::create(_context, Orientation::Horizontal, layout);
                 auto spacer2 = Spacer::create(_context, Orientation::Horizontal, layout);
                 app->tick();
-                FTK_ASSERT(0 == layout->getCurrentIndex());
-                FTK_ASSERT(spacer0->isVisible());
-                FTK_ASSERT(!spacer1->isVisible());
-                FTK_ASSERT(!spacer2->isVisible());
+                FTK_CHECK(0 == layout->getCurrentIndex());
+                FTK_CHECK(spacer0->isVisible());
+                FTK_CHECK(!spacer1->isVisible());
+                FTK_CHECK(!spacer2->isVisible());
 
                 layout->setCurrentIndex(1);
                 app->tick();
-                FTK_ASSERT(!spacer0->isVisible());
-                FTK_ASSERT(spacer1->isVisible());
-                FTK_ASSERT(!spacer2->isVisible());
+                FTK_CHECK(!spacer0->isVisible());
+                FTK_CHECK(spacer1->isVisible());
+                FTK_CHECK(!spacer2->isVisible());
 
                 layout->setCurrentWidget(spacer2);
                 app->tick();
-                FTK_ASSERT(spacer2 == layout->getCurrentWidget());
-                FTK_ASSERT(!spacer0->isVisible());
-                FTK_ASSERT(!spacer1->isVisible());
-                FTK_ASSERT(spacer2->isVisible());
+                FTK_CHECK(spacer2 == layout->getCurrentWidget());
+                FTK_CHECK(!spacer0->isVisible());
+                FTK_CHECK(!spacer1->isVisible());
+                FTK_CHECK(spacer2->isVisible());
 
                 spacer2->setParent(nullptr);
                 app->tick();
-                FTK_ASSERT(1 == layout->getCurrentIndex());
-                FTK_ASSERT(!spacer0->isVisible());
-                FTK_ASSERT(spacer1->isVisible());
+                FTK_CHECK(1 == layout->getCurrentIndex());
+                FTK_CHECK(!spacer0->isVisible());
+                FTK_CHECK(spacer1->isVisible());
             }
         }
     }

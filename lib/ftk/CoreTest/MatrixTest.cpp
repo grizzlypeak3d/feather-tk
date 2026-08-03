@@ -37,46 +37,46 @@ namespace ftk
         {
             {
                 const Matrix<2, 2, float> m;
-                FTK_ASSERT(0.F == m.get(0, 0));
-                FTK_ASSERT(m.data());
+                FTK_CHECK(0.F == m.get(0, 0));
+                FTK_CHECK(m.data());
             }
             {
                 Matrix<2, 2, float> m;
-                FTK_ASSERT(0.F == m.get(0, 0));
+                FTK_CHECK(0.F == m.get(0, 0));
                 m.set(0, 0, 1.F);
-                FTK_ASSERT(1.F == m.get(0, 0));
-                FTK_ASSERT(m.data());
+                FTK_CHECK(1.F == m.get(0, 0));
+                FTK_CHECK(m.data());
             }
             {
                 const M33F m;
-                FTK_ASSERT(1.F == m.get(0, 0));
-                FTK_ASSERT(m.data());
+                FTK_CHECK(1.F == m.get(0, 0));
+                FTK_CHECK(m.data());
             }
             {
                 M33F m;
-                FTK_ASSERT(1.F == m.get(0, 0));
+                FTK_CHECK(1.F == m.get(0, 0));
                 m.set(0, 0, 0.F);
-                FTK_ASSERT(0.F == m.get(0, 0));
-                FTK_ASSERT(m.data());
+                FTK_CHECK(0.F == m.get(0, 0));
+                FTK_CHECK(m.data());
             }
             {
                 const M33F m(
                     1.F, 2.F, 3.F,
                     4.F, 5.F, 6.F,
                     7.F, 8.F, 9.F);
-                FTK_ASSERT(9.F == m.get(2, 2));
+                FTK_CHECK(9.F == m.get(2, 2));
             }
             {
                 const M44F m;
-                FTK_ASSERT(1.F == m.get(0, 0));
-                FTK_ASSERT(m.data());
+                FTK_CHECK(1.F == m.get(0, 0));
+                FTK_CHECK(m.data());
             }
             {
                 M44F m;
-                FTK_ASSERT(1.F == m.get(0, 0));
+                FTK_CHECK(1.F == m.get(0, 0));
                 m.set(0, 0, 0.F);
-                FTK_ASSERT(0.F == m.get(0, 0));
-                FTK_ASSERT(m.data());
+                FTK_CHECK(0.F == m.get(0, 0));
+                FTK_CHECK(m.data());
             }
             {
                 const M44F m(
@@ -84,7 +84,7 @@ namespace ftk
                     5.F, 6.F, 7.F, 8.F,
                     9.F, 10.F, 11.F, 12.F,
                     13.F, 14.F, 15.F, 16.F);
-                FTK_ASSERT(16.F == m.get(3, 3));
+                FTK_CHECK(16.F == m.get(3, 3));
             }
         }
 
@@ -104,43 +104,43 @@ namespace ftk
             {
                 const auto m33 = translate(V2F(-1.F, -2.F));
                 const auto v2 = m33 * V2F(1.F, 2.f);
-                FTK_ASSERT(v2 == V2F(0.F, 0.F));
+                FTK_CHECK(v2 == V2F(0.F, 0.F));
             }
             {
                 const auto m44 = translate(V3F(-1.F, -2.F, -3.F));
                 const auto v3 = m44 * V3F(1.F, 2.F, 3.F);
-                FTK_ASSERT(v3 == V3F(0.F, 0.F, 0.F));
+                FTK_CHECK(v3 == V3F(0.F, 0.F, 0.F));
             }
             {
                 const auto m44 = rotateX(90.F);
                 const auto v4 = m44 * V4F(0.F, 0.F, 1.F);
-                FTK_ASSERT(fuzzyCompare(v4.x, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.y, -1.F));
-                FTK_ASSERT(fuzzyCompare(v4.z, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.w, 1.F));
+                FTK_CHECK(fuzzyCompare(v4.x, 0.F));
+                FTK_CHECK(fuzzyCompare(v4.y, -1.F));
+                FTK_CHECK(fuzzyCompare(v4.z, 0.F));
+                FTK_CHECK(fuzzyCompare(v4.w, 1.F));
             }
             {
                 const auto m44 = rotateY(90.F);
                 const auto v4 = m44 * V4F(1.F, 0.F, 0.F);
-                FTK_ASSERT(fuzzyCompare(v4.x, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.y, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.z, -1.F));
-                FTK_ASSERT(fuzzyCompare(v4.w, 1.F));
+                FTK_CHECK(fuzzyCompare(v4.x, 0.F));
+                FTK_CHECK(fuzzyCompare(v4.y, 0.F));
+                FTK_CHECK(fuzzyCompare(v4.z, -1.F));
+                FTK_CHECK(fuzzyCompare(v4.w, 1.F));
             }
             {
                 const auto m44 = rotateZ(90.F);
                 const auto v4 = m44 * V4F(1.F, 0.F, 0.F);
-                FTK_ASSERT(fuzzyCompare(v4.x, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.y, 1.F));
-                FTK_ASSERT(fuzzyCompare(v4.z, 0.F));
-                FTK_ASSERT(fuzzyCompare(v4.w, 1.F));
+                FTK_CHECK(fuzzyCompare(v4.x, 0.F));
+                FTK_CHECK(fuzzyCompare(v4.y, 1.F));
+                FTK_CHECK(fuzzyCompare(v4.z, 0.F));
+                FTK_CHECK(fuzzyCompare(v4.w, 1.F));
             }
             {
                 M44F a;
                 M44F b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b.set(0, 0, 0.F);
-                FTK_ASSERT(a != b);                
+                FTK_CHECK(a != b);                
             }
         }
         
@@ -152,7 +152,7 @@ namespace ftk
                 to_json(json, m);
                 M33F m1;
                 from_json(json, m1);
-                FTK_ASSERT(m == m1);
+                FTK_CHECK(m == m1);
             }
             {
                 const M44F m;
@@ -160,7 +160,7 @@ namespace ftk
                 to_json(json, m);
                 M44F m1;
                 from_json(json, m1);
-                FTK_ASSERT(m == m1);
+                FTK_CHECK(m == m1);
             }
             {
                 const M33F m;

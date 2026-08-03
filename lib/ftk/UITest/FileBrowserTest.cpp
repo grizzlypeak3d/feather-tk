@@ -79,13 +79,13 @@ namespace ftk
                 auto path = std::filesystem::current_path();
                 model->setPath(path);
                 model->setPath(path);
-                FTK_ASSERT(path == model->getPath());
+                FTK_CHECK(path == model->getPath());
                 view->reload();
                 FileBrowserOptions options;
                 options.dirList.sortReverse = true;
                 model->setOptions(options);
                 model->setOptions(options);
-                FTK_ASSERT(options == model->getOptions());
+                FTK_CHECK(options == model->getOptions());
                 view->setCallback(
                     [](const Path&)
                     {
@@ -129,7 +129,7 @@ namespace ftk
                 options.dirList.sortReverse = true;
                 model->setOptions(options);
                 model->setOptions(options);
-                FTK_ASSERT(options == model->getOptions());
+                FTK_CHECK(options == model->getOptions());
                 auto recentFilesModel = RecentFilesModel::create(_context);
                 fileBrowserWidget->setRecentFilesModel(recentFilesModel);
                 fileBrowserWidget->setCallback(
@@ -170,10 +170,10 @@ namespace ftk
                 FileBrowserOptions options;
                 options.dirList.sortReverse = true;
                 model->setOptions(options);
-                FTK_ASSERT(model->getOptions() == options);
+                FTK_CHECK(model->getOptions() == options);
                 auto recentFilesModel = RecentFilesModel::create(_context);
                 fileBrowser->setRecentFilesModel(recentFilesModel);
-                FTK_ASSERT(recentFilesModel == fileBrowser->getRecentFilesModel());
+                FTK_CHECK(recentFilesModel == fileBrowser->getRecentFilesModel());
                 fileBrowser->setCallback(
                     [](const Path&)
                     {
@@ -187,10 +187,10 @@ namespace ftk
 
                 fileBrowser->open(window);
                 app->tick();
-                FTK_ASSERT(fileBrowser->isOpen());
+                FTK_CHECK(fileBrowser->isOpen());
                 fileBrowser->close();
                 app->tick();
-                FTK_ASSERT(!fileBrowser->isOpen());
+                FTK_CHECK(!fileBrowser->isOpen());
             }
         }
     }

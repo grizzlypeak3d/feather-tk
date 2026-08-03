@@ -30,17 +30,17 @@ namespace ftk
             {
                 auto pack = BoxPack::create(Size2I(100, 100));
                 auto node = pack->insert(Size2I(100, 100));
-                FTK_ASSERT(node);
+                FTK_CHECK(node);
                 node = pack->insert(Size2I(100, 100));
-                FTK_ASSERT(node);
+                FTK_CHECK(node);
                 _printPack(pack);
             }
             {
                 auto pack = BoxPack::create(Size2I(100, 100));
                 auto node = pack->insert(Size2I(50, 100));
-                FTK_ASSERT(node);
+                FTK_CHECK(node);
                 node = pack->insert(Size2I(50, 100));
-                FTK_ASSERT(node);
+                FTK_CHECK(node);
                 _printPack(pack);
             }
             {
@@ -48,7 +48,7 @@ namespace ftk
                 for (size_t i = 0; i < 5; ++i)
                 {
                     auto node = pack->insert(Size2I(50, 50));
-                    FTK_ASSERT(node);
+                    FTK_CHECK(node);
                 }
                 _printPack(pack);
             }
@@ -57,7 +57,7 @@ namespace ftk
                 for (size_t i = 0; i < 5; ++i)
                 {
                     auto node = pack->insert(Size2I(50, 50));
-                    FTK_ASSERT(node);
+                    FTK_CHECK(node);
                 }
                 _printPack(pack);
             }

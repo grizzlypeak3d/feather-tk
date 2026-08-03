@@ -37,16 +37,16 @@ namespace ftk
             {
                 const FontInfo a;
                 const FontInfo b(getDefaultFont(FontType::Bold), 16);
-                FTK_ASSERT(a == a);
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a == a);
+                FTK_CHECK(a != b);
             }
             {
                 const GlyphInfo a;
                 const FontInfo fontInfo(getDefaultFont(FontType::Bold), 16);
                 const GlyphInfo b(1, fontInfo);
-                FTK_ASSERT(a == a);
-                FTK_ASSERT(a != b);
-                FTK_ASSERT(a < b);
+                FTK_CHECK(a == a);
+                FTK_CHECK(a != b);
+                FTK_CHECK(a < b);
             }
         }
 
@@ -97,7 +97,7 @@ namespace ftk
         {
             {
                 auto fontSystem = _context->getSystem<FontSystem>();
-                FTK_ASSERT(!fontSystem->addFont("", nullptr, 0));
+                FTK_CHECK(!fontSystem->addFont("", nullptr, 0));
             }
         }
     }

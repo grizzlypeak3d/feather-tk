@@ -47,14 +47,14 @@ namespace ftk
 
                 auto bellows = Bellows::create(_context, "Bellows", layout);
                 bellows->setText("Test");
-                FTK_ASSERT("Test" == bellows->getText());
+                FTK_CHECK("Test" == bellows->getText());
                 auto label = Label::create(_context, "Label");
                 bellows->setWidget(label);
                 bellows->setWidget(label);
-                FTK_ASSERT(label == bellows->getWidget());
+                FTK_CHECK(label == bellows->getWidget());
                 bellows->setOpen(true);
                 bellows->setOpen(true);
-                FTK_ASSERT(bellows->isOpen());
+                FTK_CHECK(bellows->isOpen());
                 bellows->setOpen(false);
 
                 bellows->hide();

@@ -50,11 +50,11 @@ namespace ftk
                 Color4F color(1.F, 1.F, 1.F, 1.F);
                 widget->setColor(color);
                 widget->setColor(color);
-                FTK_ASSERT(color == widget->getColor());
-                FTK_ASSERT(!widget->isEditable());
+                FTK_CHECK(color == widget->getColor());
+                FTK_CHECK(!widget->isEditable());
                 widget->setEditable(true);
                 widget->setEditable(true);
-                FTK_ASSERT(widget->isEditable());
+                FTK_CHECK(widget->isEditable());
                 widget->setCallback(
                     [&color](const Color4F& value)
                     {
@@ -62,19 +62,19 @@ namespace ftk
                     });
                 widget->setSizeRole(SizeRole::Margin);
                 widget->setSizeRole(SizeRole::Margin);
-                FTK_ASSERT(SizeRole::Margin == widget->getSizeRole());
+                FTK_CHECK(SizeRole::Margin == widget->getSizeRole());
                 widget->setSizeRole(SizeRole::Swatch);
 
                 auto popup = ColorPopup::create(_context, color);
                 popup->setPopupRole(ColorRole::Red);
                 popup->setPopupRole(ColorRole::Red);
-                FTK_ASSERT(ColorRole::Red == popup->getPopupRole());
+                FTK_CHECK(ColorRole::Red == popup->getPopupRole());
                 popup->open(window, widget->getGeometry());
                 app->tick();
-                FTK_ASSERT(popup->isOpen());
+                FTK_CHECK(popup->isOpen());
                 popup->close();
                 app->tick();
-                FTK_ASSERT(!popup->isOpen());
+                FTK_CHECK(!popup->isOpen());
             }
         }
     }

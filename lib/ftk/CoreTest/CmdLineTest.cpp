@@ -43,8 +43,8 @@ namespace ftk
                 "This is a flag option");
             _print(flagCmdLineOption->getHelp());
             flagCmdLineOption->parse(argv);
-            FTK_ASSERT(flagCmdLineOption->found());
-            FTK_ASSERT(!flagCmdLineOption->getMatchedName().empty());
+            FTK_CHECK(flagCmdLineOption->found());
+            FTK_CHECK(!flagCmdLineOption->getMatchedName().empty());
 
             auto boolCmdLineOption = CmdLineOption<bool>::create(
                 { "-boolOption" },
@@ -54,7 +54,7 @@ namespace ftk
                 join({ "0", "1" }, ", "));
             _print(boolCmdLineOption->getHelp());
             boolCmdLineOption->parse(argv);
-            FTK_ASSERT(boolCmdLineOption->getValue());
+            FTK_CHECK(boolCmdLineOption->getValue());
 
             auto intCmdLineOption = CmdLineOption<int>::create(
                 { "-intOption" },
@@ -63,50 +63,50 @@ namespace ftk
                 0);
             _print(intCmdLineOption->getHelp());
             intCmdLineOption->parse(argv);
-            FTK_ASSERT(10 == intCmdLineOption->getValue());
+            FTK_CHECK(10 == intCmdLineOption->getValue());
 
             auto intCmdLineArg = CmdLineArg<int>::create(
                 "int",
                 "This is an integer argument");
-            FTK_ASSERT(!intCmdLineArg->getName().empty());
-            FTK_ASSERT(!intCmdLineArg->isOptional());
+            FTK_CHECK(!intCmdLineArg->getName().empty());
+            FTK_CHECK(!intCmdLineArg->isOptional());
             _print(intCmdLineArg->getHelp());
             intCmdLineArg->parse(argv);
-            FTK_ASSERT(100 == intCmdLineArg->getValue());
+            FTK_CHECK(100 == intCmdLineArg->getValue());
 
             auto stringCmdLineArg = CmdLineArg<std::string>::create(
                 "string",
                 "This is a string argument");
-            FTK_ASSERT(!stringCmdLineArg->getName().empty());
-            FTK_ASSERT(!stringCmdLineArg->isOptional());
+            FTK_CHECK(!stringCmdLineArg->getName().empty());
+            FTK_CHECK(!stringCmdLineArg->isOptional());
             _print(stringCmdLineArg->getHelp());
             stringCmdLineArg->parse(argv);
-            FTK_ASSERT("string" == stringCmdLineArg->getValue());
+            FTK_CHECK("string" == stringCmdLineArg->getValue());
 
             auto listCmdLineArg = CmdLineListArg<std::string>::create(
                 "list",
                 "This is a list argument");
-            FTK_ASSERT(!listCmdLineArg->getName().empty());
-            FTK_ASSERT(!listCmdLineArg->isOptional());
+            FTK_CHECK(!listCmdLineArg->getName().empty());
+            FTK_CHECK(!listCmdLineArg->isOptional());
             _print(listCmdLineArg->getHelp());
             listCmdLineArg->parse(argv);
             const std::vector<std::string>& list = listCmdLineArg->getList();
-            FTK_ASSERT(3 == list.size());
-            FTK_ASSERT("list0" == list[0]);
-            FTK_ASSERT("list1" == list[1]);
-            FTK_ASSERT("list2" == list[2]);
+            FTK_CHECK(3 == list.size());
+            FTK_CHECK("list0" == list[0]);
+            FTK_CHECK("list1" == list[1]);
+            FTK_CHECK("list2" == list[2]);
 
             try
             {
                 intCmdLineArg->parse(argv);
-                FTK_ASSERT(false);
+                FTK_CHECK(false);
             }
             catch (const std::exception&)
             {}
             try
             {
                 stringCmdLineArg->parse(argv);
-                FTK_ASSERT(false);
+                FTK_CHECK(false);
             }
             catch (const std::exception&)
             {}
@@ -114,7 +114,7 @@ namespace ftk
             try
             {
                 intCmdLineOption->parse(argv);
-                FTK_ASSERT(false);
+                FTK_CHECK(false);
             }
             catch (const std::exception&)
             {}
@@ -132,34 +132,34 @@ namespace ftk
                 { "-listOption" },
                 "This is a list option");
             _print(listCmdLineOption->getHelp());
-            FTK_ASSERT(!listCmdLineOption->found());
+            FTK_CHECK(!listCmdLineOption->found());
             listCmdLineOption->parse(argv2);
-            FTK_ASSERT(listCmdLineOption->found());
-            FTK_ASSERT(!listCmdLineOption->getMatchedName().empty());
+            FTK_CHECK(listCmdLineOption->found());
+            FTK_CHECK(!listCmdLineOption->getMatchedName().empty());
             const std::vector<std::string>& listOption = listCmdLineOption->getList();
-            FTK_ASSERT(2 == listOption.size());
-            FTK_ASSERT("one" == listOption[0]);
-            FTK_ASSERT("two words" == listOption[1]);
+            FTK_CHECK(2 == listOption.size());
+            FTK_CHECK("one" == listOption[0]);
+            FTK_CHECK("two words" == listOption[1]);
 
             auto intListCmdLineOption = CmdLineListOption<int>::create(
                 { "-intListOption" },
                 "This is an integer list option");
             _print(intListCmdLineOption->getHelp());
             intListCmdLineOption->parse(argv2);
-            FTK_ASSERT(intListCmdLineOption->found());
+            FTK_CHECK(intListCmdLineOption->found());
             const std::vector<int>& intListOption = intListCmdLineOption->getList();
-            FTK_ASSERT(2 == intListOption.size());
-            FTK_ASSERT(1 == intListOption[0]);
-            FTK_ASSERT(2 == intListOption[1]);
+            FTK_CHECK(2 == intListOption.size());
+            FTK_CHECK(1 == intListOption[0]);
+            FTK_CHECK(2 == intListOption[1]);
 
-            FTK_ASSERT(1 == argv2.size());
-            FTK_ASSERT("remainder" == argv2[0]);
+            FTK_CHECK(1 == argv2.size());
+            FTK_CHECK("remainder" == argv2[0]);
 
             argv2.push_back("-listOption");
             try
             {
                 listCmdLineOption->parse(argv2);
-                FTK_ASSERT(false);
+                FTK_CHECK(false);
             }
             catch (const std::exception&)
             {}
@@ -167,7 +167,7 @@ namespace ftk
             try
             {
                 intListCmdLineOption->parse(argv2);
-                FTK_ASSERT(false);
+                FTK_CHECK(false);
             }
             catch (const std::exception&)
             {}

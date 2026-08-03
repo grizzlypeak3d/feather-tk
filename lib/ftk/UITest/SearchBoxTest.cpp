@@ -53,7 +53,7 @@ namespace ftk
                     });
                 widget->setText("Search");
                 widget->setText("Search");
-                FTK_ASSERT("Search" == widget->getText());
+                FTK_CHECK("Search" == widget->getText());
             }
         }
     }

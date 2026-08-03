@@ -47,11 +47,11 @@ namespace ftk
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::None);
                 layout->setSpacingRole(SizeRole::Spacing);
-                FTK_ASSERT(SizeRole::Spacing == layout->getSpacingRole());
+                FTK_CHECK(SizeRole::Spacing == layout->getSpacingRole());
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::Margin);
                 layout->setMarginRole(SizeRole::None);
-                FTK_ASSERT(SizeRole::None == layout->getMarginRole());
+                FTK_CHECK(SizeRole::None == layout->getMarginRole());
 
                 auto spacer0 = Spacer::create(_context, Orientation::Horizontal, layout);
                 auto spacer1 = Spacer::create(_context, Orientation::Horizontal, layout);

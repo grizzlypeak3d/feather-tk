@@ -65,7 +65,7 @@ namespace ftk
                 _test(app, window, layout, button);
                 std::string tooltip = "This is a tooltip";
                 button->setTooltip(tooltip);
-                FTK_ASSERT(tooltip == button->getTooltip());
+                FTK_CHECK(tooltip == button->getTooltip());
                 button->setParent(nullptr);
                 button.reset();
             }
@@ -77,51 +77,51 @@ namespace ftk
             const std::shared_ptr<VerticalLayout>& layout,
             const std::shared_ptr<IButton>& button)
         {
-            FTK_ASSERT(button->getParent());
-            FTK_ASSERT(button->getParentT<Window>());
-            FTK_ASSERT(button->getWindow());
+            FTK_CHECK(button->getParent());
+            FTK_CHECK(button->getParentT<Window>());
+            FTK_CHECK(button->getWindow());
 
             std::string text = "Playback";
             button->setText(text);
             button->setText(text);
-            FTK_ASSERT(text == button->getText());
+            FTK_CHECK(text == button->getText());
 
             FontType font = FontType::Mono;
             button->setFont(font);
             button->setFont(font);
-            FTK_ASSERT(font == button->getFont());
+            FTK_CHECK(font == button->getFont());
 
             button->setCheckable(true);
             button->setCheckable(true);
-            FTK_ASSERT(button->isCheckable());
+            FTK_CHECK(button->isCheckable());
             button->setChecked(true);
             button->setChecked(true);
-            FTK_ASSERT(button->isChecked());
+            FTK_CHECK(button->isChecked());
             button->setCheckable(false);
-            FTK_ASSERT(!button->isChecked());
+            FTK_CHECK(!button->isChecked());
             button->setCheckable(true);
 
             std::string icon = "PlaybackForward";
             button->setIcon(icon);
             button->setIcon(icon);
-            FTK_ASSERT(icon == button->getIcon());
+            FTK_CHECK(icon == button->getIcon());
             icon = "PlaybackStop";
             button->setCheckedIcon(icon);
             button->setCheckedIcon(icon);
-            FTK_ASSERT(icon == button->getCheckedIcon());
+            FTK_CHECK(icon == button->getCheckedIcon());
 
             ColorRole colorRole = ColorRole::Red;
             button->setBackgroundRole(colorRole);
             button->setBackgroundRole(colorRole);
-            FTK_ASSERT(colorRole == button->getBackgroundRole());
+            FTK_CHECK(colorRole == button->getBackgroundRole());
             colorRole = ColorRole::Green;
             button->setButtonRole(colorRole);
             button->setButtonRole(colorRole);
-            FTK_ASSERT(colorRole == button->getButtonRole());
+            FTK_CHECK(colorRole == button->getButtonRole());
             colorRole = ColorRole::Blue;
             button->setCheckedRole(colorRole);
             button->setCheckedRole(colorRole);
-            FTK_ASSERT(colorRole == button->getCheckedRole());
+            FTK_CHECK(colorRole == button->getCheckedRole());
 
             button->hide();
             button->hide();
@@ -141,7 +141,7 @@ namespace ftk
             button->setPressedCallback([&pressed] { pressed = true; });
             int clicks = 0;
             button->setRepeatClick(true);
-            FTK_ASSERT(button->hasRepeatClick());
+            FTK_CHECK(button->hasRepeatClick());
             button->setClickedCallback([&clicks] { ++clicks; });
             bool checked = false;
             button->setCheckedCallback([&checked](bool value) { checked = value; });

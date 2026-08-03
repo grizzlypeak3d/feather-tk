@@ -64,48 +64,48 @@ namespace ftk
                 app->tick();
 
                 auto widget0 = Widget::create(_context, layout);
-                FTK_ASSERT(0 == layout->getChildIndex(widget0));
+                FTK_CHECK(0 == layout->getChildIndex(widget0));
                 auto widget1 = Widget::create(_context, layout);
-                FTK_ASSERT(1 == layout->getChildIndex(widget1));
+                FTK_CHECK(1 == layout->getChildIndex(widget1));
                 auto widget2 = Widget::create(_context, layout);
-                FTK_ASSERT(2 == layout->getChildIndex(widget2));
+                FTK_CHECK(2 == layout->getChildIndex(widget2));
                 app->tick();
 
                 layout->moveToBack(widget2);
                 app->tick();
-                FTK_ASSERT(0 == layout->getChildIndex(widget2));
-                FTK_ASSERT(1 == layout->getChildIndex(widget0));
-                FTK_ASSERT(2 == layout->getChildIndex(widget1));
+                FTK_CHECK(0 == layout->getChildIndex(widget2));
+                FTK_CHECK(1 == layout->getChildIndex(widget0));
+                FTK_CHECK(2 == layout->getChildIndex(widget1));
 
                 layout->moveToFront(widget2);
                 app->tick();
-                FTK_ASSERT(0 == layout->getChildIndex(widget0));
-                FTK_ASSERT(1 == layout->getChildIndex(widget1));
-                FTK_ASSERT(2 == layout->getChildIndex(widget2));
+                FTK_CHECK(0 == layout->getChildIndex(widget0));
+                FTK_CHECK(1 == layout->getChildIndex(widget1));
+                FTK_CHECK(2 == layout->getChildIndex(widget2));
 
                 layout->moveToIndex(widget2, 2);
                 app->tick();
-                FTK_ASSERT(0 == layout->getChildIndex(widget0));
-                FTK_ASSERT(1 == layout->getChildIndex(widget1));
-                FTK_ASSERT(2 == layout->getChildIndex(widget2));
+                FTK_CHECK(0 == layout->getChildIndex(widget0));
+                FTK_CHECK(1 == layout->getChildIndex(widget1));
+                FTK_CHECK(2 == layout->getChildIndex(widget2));
 
                 layout->moveToIndex(widget2, 3);
                 app->tick();
-                FTK_ASSERT(0 == layout->getChildIndex(widget0));
-                FTK_ASSERT(1 == layout->getChildIndex(widget1));
-                FTK_ASSERT(2 == layout->getChildIndex(widget2));
+                FTK_CHECK(0 == layout->getChildIndex(widget0));
+                FTK_CHECK(1 == layout->getChildIndex(widget1));
+                FTK_CHECK(2 == layout->getChildIndex(widget2));
 
                 layout->moveToIndex(widget2, 1);
                 app->tick();
-                FTK_ASSERT(0 == layout->getChildIndex(widget0));
-                FTK_ASSERT(1 == layout->getChildIndex(widget2));
-                FTK_ASSERT(2 == layout->getChildIndex(widget1));
+                FTK_CHECK(0 == layout->getChildIndex(widget0));
+                FTK_CHECK(1 == layout->getChildIndex(widget2));
+                FTK_CHECK(2 == layout->getChildIndex(widget1));
 
                 layout->moveToIndex(widget0, 1);
                 app->tick();
-                FTK_ASSERT(0 == layout->getChildIndex(widget2));
-                FTK_ASSERT(1 == layout->getChildIndex(widget0));
-                FTK_ASSERT(2 == layout->getChildIndex(widget1));
+                FTK_CHECK(0 == layout->getChildIndex(widget2));
+                FTK_CHECK(1 == layout->getChildIndex(widget0));
+                FTK_CHECK(2 == layout->getChildIndex(widget1));
             }
         }
     }

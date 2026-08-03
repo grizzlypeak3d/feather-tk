@@ -77,45 +77,45 @@ namespace ftk
                     {
                         hasRedo = value;
                     });
-                FTK_ASSERT(!hasUndo);
-                FTK_ASSERT(!hasRedo);
+                FTK_CHECK(!hasUndo);
+                FTK_CHECK(!hasRedo);
 
                 commandStack->push(std::make_shared<AddCommand>(1, data));
                 commandStack->push(std::make_shared<AddCommand>(2, data));
                 commandStack->push(std::make_shared<AddCommand>(3, data));
-                FTK_ASSERT(6 == data->value);
-                FTK_ASSERT(hasUndo);
+                FTK_CHECK(6 == data->value);
+                FTK_CHECK(hasUndo);
 
                 commandStack->undo();
-                FTK_ASSERT(3 == data->value);
-                FTK_ASSERT(hasRedo);
+                FTK_CHECK(3 == data->value);
+                FTK_CHECK(hasRedo);
                 commandStack->redo();
-                FTK_ASSERT(6 == data->value);
+                FTK_CHECK(6 == data->value);
                 commandStack->undo();
-                FTK_ASSERT(3 == data->value);
+                FTK_CHECK(3 == data->value);
 
                 commandStack->undo();
-                FTK_ASSERT(1 == data->value);
+                FTK_CHECK(1 == data->value);
                 commandStack->undo();
-                FTK_ASSERT(0 == data->value);
-                FTK_ASSERT(!hasUndo);
+                FTK_CHECK(0 == data->value);
+                FTK_CHECK(!hasUndo);
 
                 commandStack->redo();
-                FTK_ASSERT(1 == data->value);
+                FTK_CHECK(1 == data->value);
                 commandStack->redo();
-                FTK_ASSERT(3 == data->value);
+                FTK_CHECK(3 == data->value);
                 commandStack->redo();
-                FTK_ASSERT(6 == data->value);
+                FTK_CHECK(6 == data->value);
 
                 commandStack->clear();
-                FTK_ASSERT(!hasUndo);
-                FTK_ASSERT(!hasRedo);
+                FTK_CHECK(!hasUndo);
+                FTK_CHECK(!hasRedo);
 
                 commandStack->push(std::make_shared<AddCommand>(1, data));
                 commandStack->undo();
-                FTK_ASSERT(hasRedo);
+                FTK_CHECK(hasRedo);
                 commandStack->push(std::make_shared<AddCommand>(2, data));
-                FTK_ASSERT(!hasRedo);
+                FTK_CHECK(!hasRedo);
             }
         }
     }

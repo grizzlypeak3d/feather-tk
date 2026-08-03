@@ -118,15 +118,15 @@ namespace ftk
                             arg(test.options.stencil).
                             arg(test.options.sampling));
                         auto offscreen = OffscreenBuffer::create(test.size, test.type, test.options);
-                        FTK_ASSERT(test.size == offscreen->getSize());
-                        FTK_ASSERT(test.size.w == offscreen->getWidth());
-                        FTK_ASSERT(test.size.h == offscreen->getHeight());
-                        FTK_ASSERT(test.type == offscreen->getType());
-                        FTK_ASSERT(test.options == offscreen->getOptions());
-                        FTK_ASSERT(offscreen->getID());
+                        FTK_CHECK(test.size == offscreen->getSize());
+                        FTK_CHECK(test.size.w == offscreen->getWidth());
+                        FTK_CHECK(test.size.h == offscreen->getHeight());
+                        FTK_CHECK(test.type == offscreen->getType());
+                        FTK_CHECK(test.options == offscreen->getOptions());
+                        FTK_CHECK(offscreen->getID());
                         if (test.type != TextureType::None)
                         {
-                            FTK_ASSERT(offscreen->getColorID());
+                            FTK_CHECK(offscreen->getColorID());
                             offscreen->bind();
                         }
                     }
@@ -146,18 +146,18 @@ namespace ftk
                 std::shared_ptr<OffscreenBuffer> buffer;
                 Size2I size(1920, 1080);
                 bool create = doCreate(buffer, size);
-                FTK_ASSERT(create);
+                FTK_CHECK(create);
                 buffer = OffscreenBuffer::create(size);
 
                 size = Size2I(1280, 960);
                 create = doCreate(buffer, size);
-                FTK_ASSERT(create);
+                FTK_CHECK(create);
                 buffer = OffscreenBuffer::create(size);
                 
                 OffscreenBufferOptions options;
                 options.depth = offscreenDepthDefault;
                 create = doCreate(buffer, size, offscreenColorDefault, options);
-                FTK_ASSERT(create);
+                FTK_CHECK(create);
                 buffer = OffscreenBuffer::create(size, offscreenColorDefault, options);
             }
         }
@@ -166,9 +166,9 @@ namespace ftk
         {
             const OffscreenBufferOptions a;
             OffscreenBufferOptions b;
-            FTK_ASSERT(a == b);
+            FTK_CHECK(a == b);
             b.depth = offscreenDepthDefault;
-            FTK_ASSERT(a != b);
+            FTK_CHECK(a != b);
         }
     }
 }

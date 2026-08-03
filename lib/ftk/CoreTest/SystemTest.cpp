@@ -60,8 +60,8 @@ namespace ftk
             ITest(context, "ftk::core_test::SystemTest")
         {
             auto system = System1::create(context);
-            FTK_ASSERT(system->getContext());
-            FTK_ASSERT(!system->getName().empty());
+            FTK_CHECK(system->getContext());
+            FTK_CHECK(!system->getName().empty());
             context->addSystem(system);
             context->addSystem(System2::create(context));
         }
@@ -80,9 +80,9 @@ namespace ftk
             {
                 LogItem a;
                 LogItem b;
-                FTK_ASSERT(a == b);
+                FTK_CHECK(a == b);
                 b.time = 1.F;
-                FTK_ASSERT(a != b);
+                FTK_CHECK(a != b);
             }
             {
                 auto logSystem = _context->getSystem<LogSystem>();

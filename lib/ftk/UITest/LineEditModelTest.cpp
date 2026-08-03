@@ -32,7 +32,7 @@ namespace ftk
                 std::string text = "abcdefghijklmnopqrstuvwxyz";
                 model->setText(text);
                 model->setText(text);
-                FTK_ASSERT(text == model->getText());
+                FTK_CHECK(text == model->getText());
 
                 std::string text2;
                 auto observer = Observer<std::string>::create(
@@ -41,14 +41,14 @@ namespace ftk
                     {
                         text2 = value;
                     });
-                FTK_ASSERT(text2 == text);
+                FTK_CHECK(text2 == text);
                 model->clearText();
-                FTK_ASSERT(text2 == std::string());
+                FTK_CHECK(text2 == std::string());
             }
             {
                 auto model = LineEditModel::create(_context);
-                FTK_ASSERT(model->key(Key::A));
-                FTK_ASSERT(model->key(Key::A, static_cast<int>(commandKeyModifier)));
+                FTK_CHECK(model->key(Key::A));
+                FTK_CHECK(model->key(Key::A, static_cast<int>(commandKeyModifier)));
             }
         }
     }

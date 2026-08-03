@@ -57,18 +57,18 @@ namespace ftk
                 auto canvas = MDICanvas::create(_context, window);
                 canvas->setCanvasSize(Size2I(100, 100));
                 canvas->setCanvasSize(Size2I(100, 100));
-                FTK_ASSERT(Size2I(100, 100) == canvas->getCanvasSize());
+                FTK_CHECK(Size2I(100, 100) == canvas->getCanvasSize());
                 canvas->setCanvasSize(Size2I(1000, 1000));
                 canvas->setGridSize(Size2I(2, 2));
                 canvas->setGridSize(Size2I(2, 2));
-                FTK_ASSERT(Size2I(2, 2) == canvas->getGridSize());
+                FTK_CHECK(Size2I(2, 2) == canvas->getGridSize());
                 canvas->setGridSize(Size2I(20, 20));
 
                 auto label = Label::create(_context, "Label");
                 auto widget = canvas->addWidget("Widget 0", V2I(100, 100), label);
-                FTK_ASSERT("Widget 0" == widget->getTitle());
+                FTK_CHECK("Widget 0" == widget->getTitle());
                 widget->setTitle("Widget");
-                FTK_ASSERT("Widget" == widget->getTitle());
+                FTK_CHECK("Widget" == widget->getTitle());
                 app->tick();
                 label.reset();
                 widget->setParent(nullptr);
@@ -78,7 +78,7 @@ namespace ftk
                 label = Label::create(_context, "Label 2");
                 widget->setWidget(label);
                 widget->setWidget(label);
-                FTK_ASSERT(label == widget->getWidget());
+                FTK_CHECK(label == widget->getWidget());
                 widget->setPos(V2I(200, 200));
                 widget->setSize(Size2I(1000, 1000));
             }

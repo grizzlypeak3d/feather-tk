@@ -33,20 +33,20 @@ namespace ftk
         {
             setEnv("FTK_OSTEST_ENV", "ABC");
             std::string s;
-            FTK_ASSERT(getEnv("FTK_OSTEST_ENV", s));
-            FTK_ASSERT("ABC" == s);
+            FTK_CHECK(getEnv("FTK_OSTEST_ENV", s));
+            FTK_CHECK("ABC" == s);
             setEnv("FTK_OSTEST_ENV", "123");
             int i = 0;
-            FTK_ASSERT(getEnv("FTK_OSTEST_ENV", i));
-            FTK_ASSERT(123 == i);
+            FTK_CHECK(getEnv("FTK_OSTEST_ENV", i));
+            FTK_CHECK(123 == i);
             setEnv("FTK_OSTEST_ENV", join({ "A", "B", "C" }, envListSeparator));
             std::vector<std::string> l;
-            FTK_ASSERT(getEnv("FTK_OSTEST_ENV", l));
-            FTK_ASSERT(std::vector<std::string>({ "A", "B", "C" }) == l);
+            FTK_CHECK(getEnv("FTK_OSTEST_ENV", l));
+            FTK_CHECK(std::vector<std::string>({ "A", "B", "C" }) == l);
             delEnv("FTK_OSTEST_ENV");
-            FTK_ASSERT(!getEnv("FTK_OSTEST_ENV", s));
-            FTK_ASSERT(!getEnv("FTK_OSTEST_ENV", i));
-            FTK_ASSERT(!getEnv("FTK_OSTEST_ENV", l));
+            FTK_CHECK(!getEnv("FTK_OSTEST_ENV", s));
+            FTK_CHECK(!getEnv("FTK_OSTEST_ENV", i));
+            FTK_CHECK(!getEnv("FTK_OSTEST_ENV", l));
         }
     }
 }

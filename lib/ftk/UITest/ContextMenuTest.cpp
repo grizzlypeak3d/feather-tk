@@ -161,27 +161,27 @@ namespace ftk
             // A left click does not open a menu.
             window->click(center(lineEdit), MouseButton::Left);
             app->tick();
-            FTK_ASSERT(window->getPopups().empty());
+            FTK_CHECK(window->getPopups().empty());
 
             // A right click on the line edit opens its text menu; the menu
             // itself holds the key focus while it is up.
             window->click(center(lineEdit), MouseButton::Right);
             app->tick();
-            FTK_ASSERT(1 == window->getPopups().size());
-            FTK_ASSERT(window->getPopups().front()->isOpen());
-            FTK_ASSERT(0 == layoutMenuCount);
+            FTK_CHECK(1 == window->getPopups().size());
+            FTK_CHECK(window->getPopups().front()->isOpen());
+            FTK_CHECK(0 == layoutMenuCount);
             {
                 auto menu = std::dynamic_pointer_cast<Menu>(
                     window->getPopups().front());
-                FTK_ASSERT(menu);
+                FTK_CHECK(menu);
                 const std::vector<std::string> text =
                 {
                     "Undo", "Redo", "Cut", "Copy", "Paste", "Select All"
                 };
-                FTK_ASSERT(text.size() == menu->getActions().size());
+                FTK_CHECK(text.size() == menu->getActions().size());
                 for (size_t i = 0; i < text.size(); ++i)
                 {
-                    FTK_ASSERT(text[i] == menu->getActions()[i]->getText());
+                    FTK_CHECK(text[i] == menu->getActions()[i]->getText());
                 }
             }
 
@@ -190,15 +190,15 @@ namespace ftk
             // opening so that it acts on the right widget.
             window->getPopups().front()->close();
             app->tick();
-            FTK_ASSERT(window->getPopups().empty());
-            FTK_ASSERT(lineEdit->hasKeyFocus());
+            FTK_CHECK(window->getPopups().empty());
+            FTK_CHECK(lineEdit->hasKeyFocus());
 
             // A right click on a widget without a callback walks up to the
             // first ancestor that has one.
             window->click(center(spacer), MouseButton::Right);
             app->tick();
-            FTK_ASSERT(1 == window->getPopups().size());
-            FTK_ASSERT(1 == layoutMenuCount);
+            FTK_CHECK(1 == window->getPopups().size());
+            FTK_CHECK(1 == layoutMenuCount);
             window->getPopups().front()->close();
             app->tick();
 
@@ -206,8 +206,8 @@ namespace ftk
             spacer->setContextMenuCallback([] { return nullptr; });
             window->click(center(spacer), MouseButton::Right);
             app->tick();
-            FTK_ASSERT(1 == window->getPopups().size());
-            FTK_ASSERT(2 == layoutMenuCount);
+            FTK_CHECK(1 == window->getPopups().size());
+            FTK_CHECK(2 == layoutMenuCount);
             window->getPopups().front()->close();
             app->tick();
 
@@ -219,9 +219,9 @@ namespace ftk
             app->tick();
             window->click(center(claim), MouseButton::Right);
             app->tick();
-            FTK_ASSERT(claim->pressed);
-            FTK_ASSERT(window->getPopups().empty());
-            FTK_ASSERT(2 == layoutMenuCount);
+            FTK_CHECK(claim->pressed);
+            FTK_CHECK(window->getPopups().empty());
+            FTK_CHECK(2 == layoutMenuCount);
             claim->setParent(nullptr);
             app->tick();
 
@@ -230,7 +230,7 @@ namespace ftk
                 [this] { return Menu::create(_context); });
             window->click(center(spacer), MouseButton::Right);
             app->tick();
-            FTK_ASSERT(window->getPopups().empty());
+            FTK_CHECK(window->getPopups().empty());
 
             // Opening at a position works near the window edges, where the
             // menu has to flip to stay on screen.
@@ -238,10 +238,10 @@ namespace ftk
             menu->addAction(Action::create("Action", [] {}));
             menu->open(window, V2I(windowSize.w - 1, windowSize.h - 1));
             app->tick();
-            FTK_ASSERT(1 == window->getPopups().size());
+            FTK_CHECK(1 == window->getPopups().size());
             menu->close();
             app->tick();
-            FTK_ASSERT(window->getPopups().empty());
+            FTK_CHECK(window->getPopups().empty());
         }
     }
 }

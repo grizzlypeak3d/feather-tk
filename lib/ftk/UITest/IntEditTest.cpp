@@ -45,22 +45,22 @@ namespace ftk
                 app->tick();
 
                 auto edit = IntEdit::create(_context, layout);
-                FTK_ASSERT(edit->getModel());
+                FTK_CHECK(edit->getModel());
                 int value = 0;
                 edit->setCallback([&value](int v) { value = v; });
                 edit->setValue(11);
                 app->tick();
-                FTK_ASSERT(11 == edit->getValue());
+                FTK_CHECK(11 == edit->getValue());
                 edit->setRange(0, 10);
                 app->tick();
-                FTK_ASSERT(RangeI(0, 10) == edit->getRange());
-                FTK_ASSERT(10 == edit->getValue());
+                FTK_CHECK(RangeI(0, 10) == edit->getRange());
+                FTK_CHECK(10 == edit->getValue());
                 edit->setStep(2);
-                FTK_ASSERT(2 == edit->getStep());
+                FTK_CHECK(2 == edit->getStep());
                 edit->setLargeStep(3);
-                FTK_ASSERT(3 == edit->getLargeStep());
+                FTK_CHECK(3 == edit->getLargeStep());
                 edit->setFont(FontType::Regular);
-                FTK_ASSERT(FontType::Regular == edit->getFont());
+                FTK_CHECK(FontType::Regular == edit->getFont());
                 edit->setFont(FontType::Mono);
             }
         }

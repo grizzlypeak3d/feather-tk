@@ -104,14 +104,14 @@ namespace ftk
                     {
                         const size_t size = mesh.triangles.size() * 3;
                         auto vbo = VBO::create(size, type);
-                        FTK_ASSERT(size == vbo->getSize());
-                        FTK_ASSERT(type == vbo->getType());
-                        FTK_ASSERT(vbo->getID());
+                        FTK_CHECK(size == vbo->getSize());
+                        FTK_CHECK(type == vbo->getType());
+                        FTK_CHECK(vbo->getID());
                         auto data = convert(mesh, type);
                         vbo->copy(data);
                         vbo->copy(data, 0, getByteCount(type));
                         auto vao = VAO::create(type, vbo->getID());
-                        FTK_ASSERT(vao->getID());
+                        FTK_CHECK(vao->getID());
                         vao->bind();
                         vao->draw(GL_TRIANGLES, 0, 3);
                     }

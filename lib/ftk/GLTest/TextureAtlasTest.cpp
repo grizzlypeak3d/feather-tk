@@ -62,16 +62,16 @@ namespace ftk
                     ImageType::L_U8,
                     ImageFilter::Linear,
                     0);
-                FTK_ASSERT(1024 == atlas->getSize());
-                FTK_ASSERT(ImageType::L_U8 == atlas->getType());
-                FTK_ASSERT(atlas->getTexture());
+                FTK_CHECK(1024 == atlas->getSize());
+                FTK_CHECK(ImageType::L_U8 == atlas->getType());
+                FTK_CHECK(atlas->getTexture());
                 
                 for (size_t i = 0; i < 10; ++i)
                 {
                     auto image = Image::create(512, 512, ImageType::L_U8);
                     TextureAtlasItem item;
-                    FTK_ASSERT(atlas->addItem(image, item));
-                    FTK_ASSERT(atlas->getItem(item.id, item));
+                    FTK_CHECK(atlas->addItem(image, item));
+                    FTK_CHECK(atlas->getItem(item.id, item));
                     _print(format(item));
                     _print(Format("Percentage: {0}").arg(atlas->getPercentageUsed()));
                 }

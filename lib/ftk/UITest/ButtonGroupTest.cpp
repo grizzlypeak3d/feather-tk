@@ -50,9 +50,9 @@ namespace ftk
                 auto button2 = PushButton::create(_context, "Button 0", layout);
                 auto group = ButtonGroup::create(_context, ButtonGroupType::Click);
                 group->addButton(button0);
-                FTK_ASSERT(!group->getButtons().empty());
+                FTK_CHECK(!group->getButtons().empty());
                 group->clearButtons();
-                FTK_ASSERT(group->getButtons().empty());
+                FTK_CHECK(group->getButtons().empty());
                 group->addButton(button0);
                 group->addButton(button1);
                 group->addButton(button2);

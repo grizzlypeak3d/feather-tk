@@ -36,10 +36,10 @@ namespace ftk
         {
             auto ovalue = Observable<bool>::create();
             ovalue = Observable<bool>::create(false);
-            FTK_ASSERT(!ovalue->get());                
+            FTK_CHECK(!ovalue->get());                
             {
                 auto observer = Observer<bool>::create(ovalue, [](bool) {});
-                FTK_ASSERT(ovalue->getObserversCount());                    
+                FTK_CHECK(ovalue->getObserversCount());                    
                 {
                     bool value = false;
                     auto observer1 = Observer<bool>::create(
@@ -49,20 +49,20 @@ namespace ftk
                             value = v;
                         });
 
-                    FTK_ASSERT(ovalue->setIfChanged(true));
-                    FTK_ASSERT(!ovalue->setIfChanged(true));
-                    FTK_ASSERT(value);
+                    FTK_CHECK(ovalue->setIfChanged(true));
+                    FTK_CHECK(!ovalue->setIfChanged(true));
+                    FTK_CHECK(value);
 
-                    FTK_ASSERT(ovalue->setIfChanged(false));
-                    FTK_ASSERT(!value);
+                    FTK_CHECK(ovalue->setIfChanged(false));
+                    FTK_CHECK(!value);
 
                     ovalue->setAlways(false);
-                    FTK_ASSERT(!value);
+                    FTK_CHECK(!value);
                     ovalue->setAlways(true);
-                    FTK_ASSERT(value);
+                    FTK_CHECK(value);
                 }
             }
-            FTK_ASSERT(!ovalue->getObserversCount());
+            FTK_CHECK(!ovalue->getObserversCount());
         }
 
         void ObservableTest::_list()
@@ -70,12 +70,12 @@ namespace ftk
             auto olist = ObservableList<int>::create();
             std::vector<int> list = { 0, 0 };
             olist = ObservableList<int>::create(list);
-            FTK_ASSERT(list == olist->get());                
+            FTK_CHECK(list == olist->get());                
             {
                 auto observer = ListObserver<int>::create(
                     olist,
                     [](const std::vector<int>&) {});
-                FTK_ASSERT(olist->getObserversCount());                    
+                FTK_CHECK(olist->getObserversCount());                    
                 {
                     auto observer1 = ListObserver<int>::create(
                         olist,
@@ -84,44 +84,44 @@ namespace ftk
                             list = value;
                         });
 
-                    FTK_ASSERT(olist->setIfChanged({ 1, 0 }));
-                    FTK_ASSERT(!olist->setIfChanged({ 1, 0 }));
-                    FTK_ASSERT(!list.empty() && list[0]);
+                    FTK_CHECK(olist->setIfChanged({ 1, 0 }));
+                    FTK_CHECK(!olist->setIfChanged({ 1, 0 }));
+                    FTK_CHECK(!list.empty() && list[0]);
 
-                    FTK_ASSERT(olist->setIfChanged({ 0, 0 }));
-                    FTK_ASSERT(!list.empty() && 0 == list[0]);
+                    FTK_CHECK(olist->setIfChanged({ 0, 0 }));
+                    FTK_CHECK(!list.empty() && 0 == list[0]);
                     olist->setAlways({ 0, 0 });
-                    FTK_ASSERT(!list.empty() && 0 == list[0]);
+                    FTK_CHECK(!list.empty() && 0 == list[0]);
                     olist->setAlways({ 1, 0 });
-                    FTK_ASSERT(!list.empty() && 1 == list[0]);
+                    FTK_CHECK(!list.empty() && 1 == list[0]);
 
                     olist->clear();
-                    FTK_ASSERT(list.empty());
+                    FTK_CHECK(list.empty());
 
                     olist->pushBack(1);
                     olist->pushBack(2);
-                    FTK_ASSERT(2 == olist->getSize());
-                    FTK_ASSERT(!olist->isEmpty());
-                    FTK_ASSERT(2 == olist->getItem(1));
-                    FTK_ASSERT(olist->contains(2));
-                    FTK_ASSERT(1 == olist->indexOf(2));
-                    FTK_ASSERT(!list.empty() && 1 == list[0]);
+                    FTK_CHECK(2 == olist->getSize());
+                    FTK_CHECK(!olist->isEmpty());
+                    FTK_CHECK(2 == olist->getItem(1));
+                    FTK_CHECK(olist->contains(2));
+                    FTK_CHECK(1 == olist->indexOf(2));
+                    FTK_CHECK(!list.empty() && 1 == list[0]);
                     olist->pushBack({ 3, 4 });
-                    FTK_ASSERT(4 == olist->getSize());
+                    FTK_CHECK(4 == olist->getSize());
 
                     olist->setItem(0, 1);
-                    FTK_ASSERT(!olist->setItemOnlyIfChanged(0, 1));
-                    FTK_ASSERT(olist->setItemOnlyIfChanged(0, 2));
+                    FTK_CHECK(!olist->setItemOnlyIfChanged(0, 1));
+                    FTK_CHECK(olist->setItemOnlyIfChanged(0, 2));
                     olist->replaceItems(2, 4, { 5, 6 });
-                    FTK_ASSERT(5 == olist->getItem(2));
-                    FTK_ASSERT(6 == olist->getItem(3));
+                    FTK_CHECK(5 == olist->getItem(2));
+                    FTK_CHECK(6 == olist->getItem(3));
                     olist->removeItems(2, 4);
                     olist->removeItem(1);
                     olist->removeItem(0);
-                    FTK_ASSERT(list.empty());
+                    FTK_CHECK(list.empty());
                 }
             }
-            FTK_ASSERT(!olist->getObserversCount());
+            FTK_CHECK(!olist->getObserversCount());
         }
         
         void ObservableTest::_map()
@@ -129,12 +129,12 @@ namespace ftk
             auto omap = ObservableMap<int, bool>::create();
             std::map<int, bool> map = { { 0, false }, { 0, false } };
             omap = ObservableMap<int, bool>::create(map);
-            FTK_ASSERT(map == omap->get());                
+            FTK_CHECK(map == omap->get());                
             {
                 auto observer = MapObserver<int, bool>::create(
                     omap,
                     [](const std::map<int, bool>&) {});
-                FTK_ASSERT(omap->getObserversCount());                    
+                FTK_CHECK(omap->getObserversCount());                    
                 {
                     auto observer1 = MapObserver<int, bool>::create(
                         omap,
@@ -143,36 +143,36 @@ namespace ftk
                             map = value;
                         });
 
-                    FTK_ASSERT(omap->setIfChanged({ { 0, true }, { 1, false } }));
-                    FTK_ASSERT(!omap->setIfChanged({ { 0, true }, { 1, false } }));
-                    FTK_ASSERT(!map.empty() && map[0]);
+                    FTK_CHECK(omap->setIfChanged({ { 0, true }, { 1, false } }));
+                    FTK_CHECK(!omap->setIfChanged({ { 0, true }, { 1, false } }));
+                    FTK_CHECK(!map.empty() && map[0]);
 
-                    FTK_ASSERT(omap->setIfChanged({ { 0, false }, { 1, false } }));
-                    FTK_ASSERT(!map.empty() && !map[0]);
+                    FTK_CHECK(omap->setIfChanged({ { 0, false }, { 1, false } }));
+                    FTK_CHECK(!map.empty() && !map[0]);
 
                     omap->setAlways({ { 0, false }, { 1, false } });
-                    FTK_ASSERT(!map.empty() && !map[0]);
+                    FTK_CHECK(!map.empty() && !map[0]);
                     omap->setAlways({ { 0, true }, { 1, false } });
-                    FTK_ASSERT(!map.empty() && map[0]);
+                    FTK_CHECK(!map.empty() && map[0]);
 
                     omap->clear();
-                    FTK_ASSERT(map.empty());
+                    FTK_CHECK(map.empty());
 
                     omap->setItem(0, false);
                     omap->setItem(1, true);
-                    FTK_ASSERT(2 == omap->getSize());
-                    FTK_ASSERT(!omap->isEmpty());
-                    FTK_ASSERT(omap->hasKey(1));
-                    FTK_ASSERT(omap->getKeys() == std::vector<int>({ 0, 1 }));
-                    FTK_ASSERT(omap->getItem(1));
-                    FTK_ASSERT(!map.empty() && map[1]);
+                    FTK_CHECK(2 == omap->getSize());
+                    FTK_CHECK(!omap->isEmpty());
+                    FTK_CHECK(omap->hasKey(1));
+                    FTK_CHECK(omap->getKeys() == std::vector<int>({ 0, 1 }));
+                    FTK_CHECK(omap->getItem(1));
+                    FTK_CHECK(!map.empty() && map[1]);
 
                     omap->setItem(1, false);
-                    FTK_ASSERT(!omap->setItemOnlyIfChanged(1, false));
-                    FTK_ASSERT(omap->setItemOnlyIfChanged(1, true));
+                    FTK_CHECK(!omap->setItemOnlyIfChanged(1, false));
+                    FTK_CHECK(omap->setItemOnlyIfChanged(1, true));
                 }
             }
-            FTK_ASSERT(!omap->getObserversCount());
+            FTK_CHECK(!omap->getObserversCount());
         }
     }
 }

@@ -45,27 +45,27 @@ namespace ftk
                 app->tick();
 
                 auto slider = DoubleEditSlider::create(_context, layout);
-                FTK_ASSERT(slider->getModel());
+                FTK_CHECK(slider->getModel());
                 double value = 0.0;
                 slider->setCallback([&value](double v) { value = v; });
                 slider->setValue(0.9);
                 app->tick();
-                FTK_ASSERT(0.9 == slider->getValue());
+                FTK_CHECK(0.9 == slider->getValue());
                 slider->setRange(0.0, 0.5);
                 app->tick();
-                FTK_ASSERT(RangeD(0.0, 0.5) == slider->getRange());
-                FTK_ASSERT(0.5 == slider->getValue());
+                FTK_CHECK(RangeD(0.0, 0.5) == slider->getRange());
+                FTK_CHECK(0.5 == slider->getValue());
                 slider->setStep(0.2);
-                FTK_ASSERT(0.2 == slider->getStep());
+                FTK_CHECK(0.2 == slider->getStep());
                 slider->setLargeStep(0.3);
-                FTK_ASSERT(0.3 == slider->getLargeStep());
+                FTK_CHECK(0.3 == slider->getLargeStep());
                 slider->setPrecision(3);
-                FTK_ASSERT(3 == slider->getPrecision());
+                FTK_CHECK(3 == slider->getPrecision());
                 slider->setPrecision(2);
                 slider->setDefault(0.0);
-                FTK_ASSERT(0.0 == slider->getDefault());
+                FTK_CHECK(0.0 == slider->getDefault());
                 slider->setFont(FontType::Regular);
-                FTK_ASSERT(FontType::Regular == slider->getFont());
+                FTK_CHECK(FontType::Regular == slider->getFont());
                 slider->setFont(FontType::Mono);
             }
         }

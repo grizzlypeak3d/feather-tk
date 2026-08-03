@@ -47,9 +47,9 @@ namespace ftk
                     { 1, 0, 3, 2 });
                 std::vector<uint8_t> out(result.size());
                 swapEndian(data.data(), out.data(), data.size() / 2, 2);
-                FTK_ASSERT(result == out);
+                FTK_CHECK(result == out);
                 swapEndian(data.data(), data.size() / 2, 2);
-                FTK_ASSERT(result == data);
+                FTK_CHECK(result == data);
             }
             {
                 std::vector<uint8_t> data(
@@ -58,9 +58,9 @@ namespace ftk
                     { 3, 2, 1, 0, 7, 6, 5, 4 });
                 std::vector<uint8_t> out(result.size());
                 swapEndian(data.data(), out.data(), data.size() / 4, 4);
-                FTK_ASSERT(result == out);
+                FTK_CHECK(result == out);
                 swapEndian(data.data(), data.size() / 4, 4);
-                FTK_ASSERT(result == data);
+                FTK_CHECK(result == data);
             }
             {
                 std::vector<uint8_t> data(
@@ -69,9 +69,9 @@ namespace ftk
                     { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 });
                 std::vector<uint8_t> out(result.size());
                 swapEndian(data.data(), out.data(), data.size() / 8, 8);
-                FTK_ASSERT(result == out);
+                FTK_CHECK(result == out);
                 swapEndian(data.data(), data.size() / 8, 8);
-                FTK_ASSERT(result == data);
+                FTK_CHECK(result == data);
             }
         }
         
@@ -82,15 +82,15 @@ namespace ftk
                 v = setBit(v, 0);
                 v = setBit(v, 3);
                 v = setBit(v, 7);
-                FTK_ASSERT(getBit(v, 0));
-                FTK_ASSERT(getBit(v, 3));
-                FTK_ASSERT(getBit(v, 7));
+                FTK_CHECK(getBit(v, 0));
+                FTK_CHECK(getBit(v, 3));
+                FTK_CHECK(getBit(v, 7));
                 v = clearBit(v, 0);
                 v = clearBit(v, 3);
                 v = clearBit(v, 7);
-                FTK_ASSERT(!getBit(v, 0));
-                FTK_ASSERT(!getBit(v, 3));
-                FTK_ASSERT(!getBit(v, 7));
+                FTK_CHECK(!getBit(v, 0));
+                FTK_CHECK(!getBit(v, 3));
+                FTK_CHECK(!getBit(v, 7));
                 v = toggleBit(v, 0);
                 v = toggleBit(v, 3);
                 v = toggleBit(v, 7);
@@ -101,15 +101,15 @@ namespace ftk
                 v = setBit(v, 0);
                 v = setBit(v, 7);
                 v = setBit(v, 15);
-                FTK_ASSERT(getBit(v, 0));
-                FTK_ASSERT(getBit(v, 7));
-                FTK_ASSERT(getBit(v, 15));
+                FTK_CHECK(getBit(v, 0));
+                FTK_CHECK(getBit(v, 7));
+                FTK_CHECK(getBit(v, 15));
                 v = clearBit(v, 0);
                 v = clearBit(v, 7);
                 v = clearBit(v, 15);
-                FTK_ASSERT(!getBit(v, 0));
-                FTK_ASSERT(!getBit(v, 7));
-                FTK_ASSERT(!getBit(v, 15));
+                FTK_CHECK(!getBit(v, 0));
+                FTK_CHECK(!getBit(v, 7));
+                FTK_CHECK(!getBit(v, 15));
                 v = toggleBit(v, 0);
                 v = toggleBit(v, 7);
                 v = toggleBit(v, 15);
