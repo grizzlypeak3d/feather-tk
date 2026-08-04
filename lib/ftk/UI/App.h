@@ -11,11 +11,13 @@
 #include <ftk/Core/ObservableMap.h>
 #include <ftk/Core/Observable.h>
 
+#include <filesystem>
 #include <list>
 
 namespace ftk
 {
     class FontSystem;
+    class Settings;
     class IWidget;
     class IWindow;
     class IconSystem;
@@ -52,6 +54,28 @@ namespace ftk
     //! Get display scales.
     FTK_API std::vector<float> getDisplayScales();
 
+    //! Where an application keeps its per-user files: the settings and the
+    //! log. Left empty, no files are kept and the application is responsible
+    //! for its own, which is what applications did before this existed.
+    //!
+    //! A suite of applications gives them all the same directory and tells
+    //! them apart by the base name, so that one directory holds the settings
+    //! and logs of all of them rather than one directory apiece.
+    struct FTK_API_TYPE AppFiles
+    {
+        //! Directory under the user's documents. Empty keeps no files.
+        std::string dirName;
+
+        //! Base name for the settings and log files. Empty uses the
+        //! application name.
+        std::string baseName;
+
+        //! Appended to the base name when greater than zero, so that two
+        //! major versions of an application do not read each other's
+        //! settings.
+        int version = 0;
+    };
+
     //! Base class for user interface applications.
     class FTK_API_TYPE App : public IApp
     {
@@ -62,7 +86,8 @@ namespace ftk
             const std::string& name,
             const std::string& summary,
             const std::vector<std::shared_ptr<ICmdLineArg> >& = {},
-            const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
+            const std::vector<std::shared_ptr<ICmdLineOption> >& = {},
+            const AppFiles& = AppFiles());
 
         App();
 
@@ -104,6 +129,20 @@ namespace ftk
 
         //! Get the style.
         FTK_API const std::shared_ptr<Style>& getStyle() const;
+
+        //! \name Files
+        ///@{
+
+        //! Get the settings. Null when no AppFiles was given.
+        FTK_API const std::shared_ptr<Settings>& getSettings() const;
+
+        //! Get the settings file path. Empty when no AppFiles was given.
+        FTK_API const std::filesystem::path& getSettingsPath() const;
+
+        //! Get the log file path. Empty when no AppFiles was given.
+        FTK_API const std::filesystem::path& getLogFilePath() const;
+
+        ///@}
 
         //! \name Color Style
         ///@{

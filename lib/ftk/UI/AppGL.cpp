@@ -6,6 +6,7 @@
 #include <ftk/UI/ClipboardSystem.h>
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Init.h>
+#include <ftk/UI/Settings.h>
 #include <ftk/UI/Util.h>
 #include <ftk/UI/Window.h>
 
@@ -17,6 +18,7 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
+#include <ftk/Core/FileLogSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
@@ -96,8 +98,16 @@ namespace ftk
             std::shared_ptr<CmdLineFlag> exit;
             std::shared_ptr<CmdLineOption<float> > displayScale;
             std::shared_ptr<CmdLineOption<ColorStyle> > colorStyle;
+            std::shared_ptr<CmdLineOption<std::string> > settingsFile;
+            std::shared_ptr<CmdLineOption<std::string> > logFile;
+            std::shared_ptr<CmdLineFlag> resetSettings;
         };
         CmdLine cmdLine;
+
+        std::filesystem::path settingsPath;
+        std::filesystem::path logFilePath;
+        std::shared_ptr<Settings> settings;
+        std::shared_ptr<FileLogSystem> fileLogSystem;
 
         std::shared_ptr<FontSystem> fontSystem;
         std::shared_ptr<IconSystem> iconSystem;
@@ -124,9 +134,24 @@ namespace ftk
         const std::string& name,
         const std::string& summary,
         const std::vector<std::shared_ptr<ICmdLineArg> >& cmdLineArgs,
-        const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions)
+        const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions,
+        const AppFiles& appFiles)
     {
         FTK_P();
+
+        // The defaults are shown in the help, so they are worked out before
+        // the command line is parsed and then overridden by it.
+        if (!appFiles.dirName.empty())
+        {
+            const std::string baseName = !appFiles.baseName.empty() ?
+                appFiles.baseName :
+                name;
+            const std::string stem = appFiles.version > 0 ?
+                Format("{0}.{1}").arg(baseName).arg(appFiles.version).str() :
+                baseName;
+            p.settingsPath = ::ftk::getSettingsPath(appFiles.dirName, stem + ".json");
+            p.logFilePath = ::ftk::getSettingsPath(appFiles.dirName, stem + ".log");
+        }
 
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptionsTmp = cmdLineOptions;
         p.cmdLine.exit = CmdLineFlag::create(
@@ -146,6 +171,26 @@ namespace ftk
             std::optional<ColorStyle>(),
             quotes(getColorStyleLabels()));
         cmdLineOptionsTmp.push_back(p.cmdLine.colorStyle);
+        if (!p.settingsPath.empty())
+        {
+            p.cmdLine.settingsFile = CmdLineOption<std::string>::create(
+                { "-settingsFile" },
+                "Settings file name.",
+                "Files",
+                Format("{0}").arg(p.settingsPath.u8string()));
+            cmdLineOptionsTmp.push_back(p.cmdLine.settingsFile);
+            p.cmdLine.logFile = CmdLineOption<std::string>::create(
+                { "-logFile" },
+                "Log file name.",
+                "Files",
+                Format("{0}").arg(p.logFilePath.u8string()));
+            cmdLineOptionsTmp.push_back(p.cmdLine.logFile);
+            p.cmdLine.resetSettings = CmdLineFlag::create(
+                { "-resetSettings" },
+                "Reset the settings to their defaults.",
+                "Files");
+            cmdLineOptionsTmp.push_back(p.cmdLine.resetSettings);
+        }
 
         IApp::_init(
             context,
@@ -155,6 +200,25 @@ namespace ftk
             cmdLineArgs,
             cmdLineOptionsTmp);
         uiInit(context);
+
+        if (!p.settingsPath.empty())
+        {
+            if (p.cmdLine.settingsFile->found())
+            {
+                p.settingsPath = std::filesystem::u8path(
+                    p.cmdLine.settingsFile->getValue());
+            }
+            if (p.cmdLine.logFile->found())
+            {
+                p.logFilePath = std::filesystem::u8path(
+                    p.cmdLine.logFile->getValue());
+            }
+            p.settings = Settings::create(
+                context,
+                p.settingsPath,
+                p.cmdLine.resetSettings->found());
+            p.fileLogSystem = FileLogSystem::create(context, p.logFilePath);
+        }
 
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Create app...");
@@ -281,6 +345,21 @@ namespace ftk
     const std::shared_ptr<IconSystem>& App::getIconSystem() const
     {
         return _p->iconSystem;
+    }
+
+    const std::shared_ptr<Settings>& App::getSettings() const
+    {
+        return _p->settings;
+    }
+
+    const std::filesystem::path& App::getSettingsPath() const
+    {
+        return _p->settingsPath;
+    }
+
+    const std::filesystem::path& App::getLogFilePath() const
+    {
+        return _p->logFilePath;
     }
 
     const std::shared_ptr<Style>& App::getStyle() const
