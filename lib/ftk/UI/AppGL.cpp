@@ -19,6 +19,7 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
 #include <ftk/Core/FileLogSystem.h>
+#include <ftk/Core/ImageIO.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
@@ -101,6 +102,7 @@ namespace ftk
             std::shared_ptr<CmdLineOption<std::string> > settingsFile;
             std::shared_ptr<CmdLineOption<std::string> > logFile;
             std::shared_ptr<CmdLineFlag> resetSettings;
+            std::shared_ptr<CmdLineOption<std::string> > screenshot;
         };
         CmdLine cmdLine;
 
@@ -108,6 +110,9 @@ namespace ftk
         std::filesystem::path logFilePath;
         std::shared_ptr<Settings> settings;
         std::shared_ptr<FileLogSystem> fileLogSystem;
+
+        std::shared_ptr<Timer> screenshotTimer;
+        int screenshotTicks = 0;
 
         std::shared_ptr<FontSystem> fontSystem;
         std::shared_ptr<IconSystem> iconSystem;
@@ -171,6 +176,11 @@ namespace ftk
             std::optional<ColorStyle>(),
             quotes(getColorStyleLabels()));
         cmdLineOptionsTmp.push_back(p.cmdLine.colorStyle);
+        p.cmdLine.screenshot = CmdLineOption<std::string>::create(
+            { "-screenshot" },
+            "Write a screenshot of the window to this file and then exit.",
+            "Testing");
+        cmdLineOptionsTmp.push_back(p.cmdLine.screenshot);
         if (!p.settingsPath.empty())
         {
             p.cmdLine.settingsFile = CmdLineOption<std::string>::create(
@@ -949,6 +959,11 @@ namespace ftk
             p.windows.front()->show();
         }
 
+        if (p.cmdLine.screenshot->found())
+        {
+            _screenshotInit(p.cmdLine.screenshot->getValue());
+        }
+
         while (p.running && !p.windows.empty())
         {
             auto logSystem = _context->getSystem<LogSystem>();
@@ -1400,6 +1415,86 @@ namespace ftk
                 event);
         }
         widget->tickEvent(visible, enabled, event);
+    }
+
+    void App::_screenshotInit(const std::string& fileName)
+    {
+        FTK_P();
+
+        // Driven from a timer inside the event loop, which is what realizes
+        // and sizes the window and leaves a readable offscreen buffer behind.
+        // The buffer is a frame behind, so the first ticks are let go by.
+        p.screenshotTimer = Timer::create(_context);
+        p.screenshotTimer->setRepeating(true);
+        auto weak = std::weak_ptr<App>(std::dynamic_pointer_cast<App>(shared_from_this()));
+        p.screenshotTimer->start(
+            std::chrono::milliseconds(100),
+            [weak, fileName]
+            {
+                auto app = weak.lock();
+                if (!app)
+                    return;
+                auto& p2 = *app->_p;
+                ++p2.screenshotTicks;
+                if (p2.screenshotTicks < 5)
+                    return;
+                app->writeScreenshot(std::filesystem::u8path(fileName));
+                app->exit();
+            });
+    }
+
+    bool App::writeScreenshot(const std::filesystem::path& path)
+    {
+        FTK_P();
+        auto logSystem = _context->getSystem<LogSystem>();
+        if (p.windows.empty())
+        {
+            logSystem->print("ftk::App", "No window to capture.", LogType::Error);
+            return false;
+        }
+        auto image = p.windows.front()->screenshot();
+        if (!image)
+        {
+            logSystem->print(
+                "ftk::App",
+                "Screenshot returned no image, the offscreen buffer was not ready.",
+                LogType::Error);
+            return false;
+        }
+
+        // Blending is done with straight alpha, so a semi-transparent overlay
+        // -- a dialog's dimming, say -- leaves that region with alpha < 1 even
+        // though its color is the correct darkened result. A window capture is
+        // logically opaque; left alone those pixels let whatever the image is
+        // shown against come through and the dimming reads inverted.
+        if (uint8_t* data = image->getData())
+        {
+            const Size2I size = image->getSize();
+            const size_t bytes = image->getByteCount();
+            if (bytes == static_cast<size_t>(size.w) * size.h * 4)
+            {
+                for (size_t i = 3; i < bytes; i += 4)
+                {
+                    data[i] = 255;
+                }
+            }
+        }
+
+        auto io = _context->getSystem<ImageIO>();
+        auto writer = io->write(path, image->getInfo());
+        if (!writer)
+        {
+            logSystem->print(
+                "ftk::App",
+                Format("Cannot write screenshot to \"{0}\"").arg(path.u8string()),
+                LogType::Error);
+            return false;
+        }
+        writer->write(image);
+        logSystem->print(
+            "ftk::App",
+            Format("Screenshot written to \"{0}\"").arg(path.u8string()));
+        return true;
     }
 
     void App::_monitorsUpdate()

@@ -142,6 +142,14 @@ namespace ftk
         //! Get the log file path. Empty when no AppFiles was given.
         FTK_API const std::filesystem::path& getLogFilePath() const;
 
+        //! Write a screenshot of the first window. Returns false when there
+        //! is no window, when the offscreen buffer is not ready, or when the
+        //! file cannot be written; the reason is logged.
+        //!
+        //! Only useful once the event loop has run: that is what realizes and
+        //! sizes the window and leaves a buffer behind to read.
+        FTK_API bool writeScreenshot(const std::filesystem::path&);
+
         ///@}
 
         //! \name Color Style
@@ -201,6 +209,8 @@ namespace ftk
         void _removeWindow(const std::shared_ptr<IWindow>&);
 
     private:
+        void _screenshotInit(const std::string& fileName);
+
         std::shared_ptr<IWindow> _getWindow(uint32_t id) const;
 
         void _tickRecursive(
