@@ -15,6 +15,9 @@ namespace ftk
     IBaseSystem::~IBaseSystem()
     {}
 
+    void IBaseSystem::shutdown()
+    {}
+
     void IBaseSystem::tick()
     {}
 

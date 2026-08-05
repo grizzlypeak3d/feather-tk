@@ -41,7 +41,9 @@ namespace ftk
     }
 
     Context::~Context()
-    {}
+    {
+        shutdown();
+    }
 
     std::shared_ptr<Context> Context::create()
     {
@@ -78,6 +80,19 @@ namespace ftk
     void Context::log(const std::string& prefix, const std::string& value, LogType type)
     {
         _logSystem->print(prefix, value, type);
+    }
+
+    void Context::shutdown()
+    {
+        // Stops the threads and leaves the systems in place. They are still
+        // referenced by whatever is being torn down around them, and one of
+        // them is the log system that the rest talk to on their way out.
+        // Stopped newest first, so a system still using an older one is
+        // stopped before it; systems are pushed to the front of the list.
+        for (const auto& system : _systems)
+        {
+            system->shutdown();
+        }
     }
 
     void Context::tick()

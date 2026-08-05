@@ -304,6 +304,14 @@ namespace ftk
     {
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Destroy app...");
+
+        // The application runs on the thread that owns the context, so this
+        // is where the systems' threads can be stopped while the context is
+        // still alive. Left to the context's destructor it would run on
+        // whichever thread happened to hold the last reference, which may be
+        // a system's own.
+        _p.reset();
+        _context->shutdown();
     }
 
     std::shared_ptr<App> App::create(

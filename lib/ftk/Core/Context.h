@@ -56,6 +56,20 @@ namespace ftk
         //! Tick the context.
         FTK_API void tick();
 
+        //! Stop the systems' threads.
+        //!
+        //! Call this from the thread that owns the context, before the last
+        //! reference to it goes. A system's thread may hold a reference of
+        //! its own while it works, and whichever thread drops the last one
+        //! runs this destructor: if that is a system's own thread, the system
+        //! ends up joining the thread it is running on. Stopping the threads
+        //! here means there is no such thread left to be last.
+        //!
+        //! Safe to call more than once. The destructor calls it, which covers
+        //! a context that is only ever used from one thread, but not one
+        //! whose systems are still working when it is let go.
+        FTK_API void shutdown();
+
     private:
         std::shared_ptr<LogSystem> _logSystem;
         std::list<std::shared_ptr<IBaseSystem> > _systems;
