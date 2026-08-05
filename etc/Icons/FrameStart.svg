@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="FrameStart.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -32,11 +32,11 @@
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1010"
-     inkscape:window-x="1913"
-     inkscape:window-y="-6"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1171"
+     inkscape:window-height="1027"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
      inkscape:pagecheckerboard="0"
      inkscape:showpageshadow="2"
      inkscape:deskcolor="#d1d1d1">
@@ -72,17 +72,15 @@
        inkscape:label="#g4524"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96">
-      <rect
-         style="opacity:1;fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.69284;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="rect831"
-         width="0.26458344"
-         height="3.1750045"
-         x="1.0583333"
-         y="292.76663" />
       <path
-         d="m 3.9186396,295.98594 -2.0970669,-1.46796 a 0.19999953,0.19999953 0 0 1 0,-0.32768 l 2.0970702,-1.46796 a 0.19999953,0.19999953 0 0 1 0.3146903,0.16385 v 2.9359 a 0.19999953,0.19999953 0 0 1 -0.3146936,0.16385"
+         id="rect831"
+         style="opacity:1;fill:#f0f0f0;stroke-width:0.69284"
+         d="M 0.99218748,292.76663 H 1.3890625 v 3.17501 H 0.99218748 Z"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         d="M 3.9338193,295.90723 1.937907,294.51008 a 0.19035231,0.19035231 0 0 1 0,-0.31188 l 1.9959154,-1.39715 a 0.19035231,0.19035231 0 0 1 0.2995108,0.15595 v 2.79428 a 0.19035231,0.19035231 0 0 1 -0.2995139,0.15595"
          stroke="#000000"
-         stroke-width="0.000971017"
+         stroke-width="0.000924179"
          stroke-linecap="round"
          stroke-linejoin="round"
          fill="none"

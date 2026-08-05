@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
    sodipodi:docname="ViewZoomIn.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -25,33 +25,34 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="31.659099"
-     inkscape:cx="6.9964088"
-     inkscape:cy="10.423544"
+     inkscape:zoom="41.277719"
+     inkscape:cx="10.090189"
+     inkscape:cy="10.332451"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1011"
+     inkscape:window-width="1312"
+     inkscape:window-height="969"
      inkscape:window-x="0"
-     inkscape:window-y="32"
-     inkscape:window-maximized="1"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      inkscape:snap-global="true"
      inkscape:pagecheckerboard="0"
      inkscape:object-nodes="false"
      inkscape:showpageshadow="2"
-     inkscape:deskcolor="#d1d1d1">
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:bbox-paths="false">
     <inkscape:grid
        type="xygrid"
        id="grid4526"
        empspacing="10"
        originx="0"
        originy="0"
-       spacingy="1"
-       spacingx="1"
+       spacingy="0.26458333"
+       spacingx="0.26458333"
        units="px" />
   </sodipodi:namedview>
   <metadata
@@ -77,8 +78,9 @@
        inkscape:export-ydpi="96">
       <path
          id="path927"
-         style="fill:#f0f0f0;stroke-width:0.264583"
-         d="M 2.6458333 291.97289 A 1.3229167 1.3229167 0 0 0 1.7104899 292.36047 A 1.3229167 1.3229167 0 0 0 1.7104899 294.23115 A 1.3229167 1.3229167 0 0 0 3.5811767 294.23115 A 1.3229167 1.3229167 0 0 0 3.5811767 292.36047 A 1.3229167 1.3229167 0 0 0 2.6458333 291.97289 z M 2.6458333 292.23748 A 1.0583333 1.0583333 0 0 1 3.394108 292.54754 A 1.0583333 1.0583333 0 0 1 3.394108 294.04408 A 1.0583333 1.0583333 0 0 1 1.8975586 294.04408 A 1.0583333 1.0583333 0 0 1 1.8975586 292.54754 A 1.0583333 1.0583333 0 0 1 2.6458333 292.23748 z " />
+         style="fill:#f0f0f0;stroke-width:0.999999"
+         d="M 10 1 A 5.0000002 5.0000002 0 0 0 6.4648438 2.4648438 A 5.0000002 5.0000002 0 0 0 6.4648438 9.5351562 A 5.0000002 5.0000002 0 0 0 13.535156 9.5351562 A 5.0000002 5.0000002 0 0 0 13.535156 2.4648438 A 5.0000002 5.0000002 0 0 0 10 1 z M 10 2.5 A 3.5005103 3.5002465 0 0 1 12.474609 3.5253906 A 3.5005103 3.5002465 0 0 1 12.474609 8.4746094 A 3.5005103 3.5002465 0 0 1 7.5253906 8.4746094 A 3.5005103 3.5002465 0 0 1 7.5253906 3.5253906 A 3.5005103 3.5002465 0 0 1 10 2.5 z "
+         transform="matrix(0.26458333,0,0,0.26458333,0,291.70831)" />
       <rect
          style="fill:#f0f0f0;stroke-width:0.264583"
          id="rect1034"
@@ -90,7 +92,7 @@
       <path
          id="rect831"
          style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 1.5875533,294.35413 -0.2645979,2e-5 -3.88e-5,1.05833 H 0.26462053 l 1.453e-5,0.26457 1.05829604,-1e-5 -2.89e-5,1.05836 0.2645978,-1e-5 2.19e-5,-1.05838 1.0583491,5e-5 -1.45e-5,-0.26457 -1.0583421,-3e-5 z"
+         d="m 1.6536724,294.35413 -0.396875,2e-5 -3.88e-5,0.99219 H 0.26462053 l 1.453e-5,0.39688 0.99213804,-1e-5 -2.89e-5,0.99219 0.3968749,-1e-5 2.19e-5,-0.99221 0.99223,5e-5 -1.45e-5,-0.39688 -0.992223,-3e-5 z"
          sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>

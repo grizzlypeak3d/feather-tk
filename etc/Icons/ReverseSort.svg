@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="ReverseSort.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -26,23 +26,30 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="30.65"
-     inkscape:cx="14.665579"
+     inkscape:cx="14.649266"
      inkscape:cy="9.4942904"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1011"
+     inkscape:window-width="1346"
+     inkscape:window-height="1027"
      inkscape:window-x="0"
-     inkscape:window-y="32"
-     inkscape:window-maximized="1"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
      inkscape:pagecheckerboard="0"
-     inkscape:snap-global="true">
+     inkscape:snap-global="true"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid4526"
-       empspacing="10" />
+       empspacing="10"
+       originx="0"
+       originy="0"
+       spacingy="0.26458333"
+       spacingx="0.26458333"
+       units="px" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -66,15 +73,15 @@
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96">
       <path
-         id="rect1997-6"
-         style="fill:#f0f0f0;stroke-width:0.79375"
-         d="m 0.66817673,294.91276 0.65473987,0.65474 v -2.80086 h 0.26458 v 2.80086 l 0.65474,-0.65474 0.1745164,0.19962 -0.8292564,0.82926 h -0.26458 l -0.84152957,-0.85347 z"
-         sodipodi:nodetypes="ccccccccccc" />
+         id="rect2"
+         style="fill:#f0f0f0;stroke-width:2.43593"
+         d="m 1.4471984,296.08195 -0.280603,-0.28061 -0.84180905,-0.84181 0.28060302,-0.2806 0.64337153,0.64337 v -2.55566 h 0.396875 v 2.55566 l 0.6433716,-0.64337 0.280603,0.2806 -0.8418091,0.84181 z"
+         sodipodi:nodetypes="cccccccccccc" />
       <path
-         id="path1395"
-         style="fill:#f0f0f0;stroke-width:0.79375"
-         d="m 3.0494301,293.79552 0.6547398,-0.65474 v 2.80086 h 0.26458 v -2.80086 l 0.65474,0.65474 0.1745164,-0.19962 -0.8292564,-0.82926 h -0.26458 l -0.8415295,0.85347 z"
-         sodipodi:nodetypes="ccccccccccc" />
+         id="path1"
+         style="fill:#f0f0f0;stroke-width:2.43593"
+         d="m 3.8364599,292.76664 -0.280603,0.28061 -0.841809,0.84181 0.280603,0.2806 0.6433715,-0.64337 v 2.55566 h 0.396875 v -2.55566 l 0.6433716,0.64337 0.280603,-0.2806 -0.8418091,-0.84181 z"
+         sodipodi:nodetypes="cccccccccccc" />
     </g>
   </g>
 </svg>
