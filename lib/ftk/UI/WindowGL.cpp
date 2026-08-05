@@ -239,6 +239,13 @@ namespace ftk
     {
         IWindow::setVisible(value);
         FTK_P();
+        // An offscreen window is visible to the widgets -- it ticks, lays out
+        // and draws into the buffer a screenshot is read from -- while the
+        // platform window it would be shown in stays hidden.
+        if (isOffscreen())
+        {
+            return;
+        }
         if (value)
         {
             p.window->show();
