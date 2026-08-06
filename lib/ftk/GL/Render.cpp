@@ -251,6 +251,16 @@ namespace ftk
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
             options.filters = imageFilters;
+            // The two pass path weighs the texels itself, so it wants them as
+            // they are rather than blended in pairs first.
+            if (ImageFilter::HighQuality == options.filters.minify)
+            {
+                options.filters.minify = ImageFilter::Nearest;
+            }
+            if (ImageFilter::HighQuality == options.filters.magnify)
+            {
+                options.filters.magnify = ImageFilter::Nearest;
+            }
             options.pbo = info.size.w >= pboSizeMin || info.size.h >= pboSizeMin;
             switch (info.type)
             {

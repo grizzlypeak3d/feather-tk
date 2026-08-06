@@ -101,6 +101,11 @@ namespace ftk
     {
         Nearest,
         Linear,
+        //! A separable two pass resample with a wide kernel, rather than the
+        //! four texels Linear reads. What it is for is minification: scaling
+        //! an image down far enough that Linear misses most of it, which is
+        //! what a thumbnail does and what the view does when it is zoomed out.
+        HighQuality,
 
         Count,
         First = Nearest

@@ -77,6 +77,11 @@ namespace ftk
                 const TriMesh2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const V2F& pos = V2F()) override;
+            FTK_API void drawTextureScaled(
+                unsigned int,
+                const Size2I& sourceSize,
+                const Box2I&,
+                bool mirrorV = true) override;
             FTK_API void drawTexture(
                 unsigned int,
                 const Box2I&,
@@ -115,6 +120,21 @@ namespace ftk
                 size_t offset = 0);
 
             void _drawTextMesh(const TriMesh2F&);
+
+            //! Draw an image with a separable two pass resample. Returns false
+            //! if the request is not one this can serve, leaving the caller to
+            //! draw it the ordinary way.
+            bool _drawImageScaled(
+                const std::shared_ptr<Image>&,
+                const TriMesh2F&,
+                const Color4F&,
+                const ImageOptions&,
+                const std::vector<std::shared_ptr<Texture> >&);
+
+            void _drawScaleQuad(const Box2F&);
+
+            //! Make sure the contribution tables match these sizes.
+            void _scaleContribUpdate(const Size2I& source, const Size2I& dest);
 
             FTK_PRIVATE();
         };

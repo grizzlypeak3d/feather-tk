@@ -390,6 +390,10 @@ namespace ftk
             const std::array<GLenum, static_cast<size_t>(ImageFilter::Count)> data =
             {
                 GL_NEAREST,
+                GL_LINEAR,
+                // Anything that treats this as a plain texture parameter --
+                // an offscreen buffer's own filters, or magnifying, which the
+                // two pass path does not serve -- gets the sensible thing.
                 GL_LINEAR
             };
             return data[static_cast<size_t>(value)];

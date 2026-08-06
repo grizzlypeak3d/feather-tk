@@ -386,6 +386,392 @@ namespace ftk
             }
         }
 
+        namespace
+        {
+            // Lanczos, windowed at three lobes. Wider than a cubic and the
+            // usual choice for reduction: it keeps detail a box or a triangle
+            // would smear, at the cost of a little ringing on hard edges.
+            const float lanczos3Support = 3.F;
+
+            float lanczos3(float x)
+            {
+                x = std::fabs(x);
+                if (x < 0.0001F)
+                    return 1.F;
+                if (x >= lanczos3Support)
+                    return 0.F;
+                const float pix = pi * x;
+                return
+                    (std::sin(pix) / pix) *
+                    (std::sin(pix / lanczos3Support) / (pix / lanczos3Support));
+            }
+
+            // Mitchell-Netravali with B = C = 1/3, which is what enlarging
+            // wants: Lanczos rings, and a halo along a hard edge is the last
+            // thing to put in front of someone judging a picture.
+            const float mitchellSupport = 2.F;
+
+            float mitchell(float x)
+            {
+                const float b = 1.F / 3.F;
+                const float c = 1.F / 3.F;
+                x = std::fabs(x);
+                const float x2 = x * x;
+                const float x3 = x2 * x;
+                if (x < 1.F)
+                {
+                    return (
+                        (12.F - 9.F * b - 6.F * c) * x3 +
+                        (-18.F + 12.F * b + 6.F * c) * x2 +
+                        (6.F - 2.F * b)) / 6.F;
+                }
+                if (x < mitchellSupport)
+                {
+                    return (
+                        (-b - 6.F * c) * x3 +
+                        (6.F * b + 30.F * c) * x2 +
+                        (-12.F * b - 48.F * c) * x +
+                        (8.F * b + 24.F * c)) / 6.F;
+                }
+                return 0.F;
+            }
+
+            // For each output pixel, the source coordinate and weight of every
+            // tap. Column = output pixel, row = tap; the shader walks the rows.
+            //
+            // The weights of a pixel are divided by their sum. That is not a
+            // correction for anything wrong: the kernel integrates to one, but
+            // the taps are a finite sample of it at whatever sub-pixel phase
+            // the output pixel lands on, and that sum drifts by a few percent
+            // as the phase moves. Left alone the drift beats against the output
+            // grid and shows up as bands across a flat area.
+            std::shared_ptr<Image> scaleContrib(int in, int out, int& taps)
+            {
+                // Which kernel is a question about this axis alone: an
+                // anamorphic picture can be reduced across and enlarged down.
+                const float scale = out / static_cast<float>(in);
+                const bool reducing = scale < 1.F;
+                float (*fnc)(float) = reducing ? lanczos3 : mitchell;
+                const float support = reducing ? lanczos3Support : mitchellSupport;
+                const float radius = reducing ? support / scale : support;
+                taps = static_cast<int>(std::ceil(radius * 2.F + 1.F));
+
+                auto data = Image::create(ImageInfo(out, taps, ImageType::LA_F32));
+                float* p = reinterpret_cast<float*>(data->getData());
+                for (int i = 0; i < out; ++i)
+                {
+                    // The centre of output pixel i in source pixels, and the
+                    // source pixels its kernel reaches.
+                    const float center = (i + .5F) / scale - .5F;
+                    const int left = static_cast<int>(std::ceil(center - radius));
+                    const int right = static_cast<int>(std::floor(center + radius));
+
+                    float sum = 0.F;
+                    int j = 0;
+                    int pixel = 0;
+                    for (int k = left; j < taps && k <= right; ++j, ++k)
+                    {
+                        // Outside the picture the edge pixel is repeated,
+                        // rather than dropped, so that the weights of a pixel
+                        // on the border still cover it.
+                        pixel = std::clamp(k, 0, in - 1);
+                        const float x = (center - k) * (reducing ? scale : 1.F);
+                        const float w = reducing ? fnc(x) * scale : fnc(x);
+                        // The texel's centre, which is what a nearest fetch of
+                        // this coordinate returns.
+                        p[(j * out + i) * 2 + 0] = (pixel + .5F) / in;
+                        p[(j * out + i) * 2 + 1] = w;
+                        sum += w;
+                    }
+                    for (; j < taps; ++j)
+                    {
+                        p[(j * out + i) * 2 + 0] = (pixel + .5F) / in;
+                        p[(j * out + i) * 2 + 1] = 0.F;
+                    }
+                    if (sum > 0.F)
+                    {
+                        for (j = 0; j < taps; ++j)
+                        {
+                            p[(j * out + i) * 2 + 1] /= sum;
+                        }
+                    }
+                }
+                return data;
+            }
+
+            std::shared_ptr<Texture> contribTexture(const std::shared_ptr<Image>& data)
+            {
+                TextureOptions options;
+                options.filters.minify = ImageFilter::Nearest;
+                options.filters.magnify = ImageFilter::Nearest;
+                auto out = Texture::create(data->getInfo(), options);
+                out->copy(data);
+                return out;
+            }
+        }
+
+        void Render::_scaleContribUpdate(const Size2I& source, const Size2I& dest)
+        {
+            FTK_P();
+            if (p.scale.xIn != source.w || p.scale.xOut != dest.w)
+            {
+                p.scale.xContrib = contribTexture(
+                    scaleContrib(source.w, dest.w, p.scale.xTaps));
+                p.scale.xIn = source.w;
+                p.scale.xOut = dest.w;
+            }
+            if (p.scale.yIn != source.h || p.scale.yOut != dest.h)
+            {
+                p.scale.yContrib = contribTexture(
+                    scaleContrib(source.h, dest.h, p.scale.yTaps));
+                p.scale.yIn = source.h;
+                p.scale.yOut = dest.h;
+            }
+        }
+
+        void Render::drawTextureScaled(
+            unsigned int id,
+            const Size2I& sourceSize,
+            const Box2I& rect,
+            bool mirrorV)
+        {
+            FTK_P();
+            const Size2I destSize = rect.size();
+            if (!sourceSize.isValid() || !destSize.isValid() ||
+                (destSize.w >= sourceSize.w && destSize.h >= sourceSize.h))
+            {
+                drawTexture(id, rect, mirrorV);
+                return;
+            }
+
+            if (!p.shaders["textureScale"])
+            {
+                p.shaders["textureScale"] = Shader::create(
+                    vertexSource(), textureScaleFragmentSource());
+                p.shaders["textureScale"]->bind();
+                p.shaders["textureScale"]->setUniform("transform.mvp", p.transform);
+            }
+            _scaleContribUpdate(sourceSize, destSize);
+
+            // Across first, into an intermediate that is already narrowed but
+            // still full height.
+            const Size2I tmpSize(destSize.w, sourceSize.h);
+            if (doCreate(p.scale.buffer, tmpSize, TextureType::RGBA_F16))
+            {
+                p.scale.buffer = OffscreenBuffer::create(tmpSize, TextureType::RGBA_F16);
+            }
+            if (!p.scale.buffer)
+            {
+                drawTexture(id, rect, mirrorV);
+                return;
+            }
+
+            // The viewport is taken as it is rather than through
+            // setViewport(), which derives it from the size passed to begin();
+            // this may be drawing into a buffer the caller sized itself.
+            GLint savedViewport[4] = { 0, 0, 0, 0 };
+            glGetIntegerv(GL_VIEWPORT, savedViewport);
+            const M44F savedTransform = p.transform;
+            auto& shader = p.shaders["textureScale"];
+
+            {
+                OffscreenBufferBinding binding(p.scale.buffer);
+                glViewport(0, 0, tmpSize.w, tmpSize.h);
+                glDisable(GL_BLEND);
+                setTransform(ortho(
+                    0.F, static_cast<float>(tmpSize.w),
+                    static_cast<float>(tmpSize.h), 0.F, -1.F, 1.F));
+                shader->bind();
+                shader->setUniform("scaleVertical", false);
+                shader->setUniform("scaleTaps", p.scale.xTaps);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, id);
+                shader->setUniform("textureSampler", 0);
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, p.scale.xContrib->getID());
+                shader->setUniform("scaleContrib", 3);
+                _drawScaleQuad(Box2F(0.F, 0.F, tmpSize.w, tmpSize.h));
+            }
+
+            glViewport(
+                savedViewport[0], savedViewport[1],
+                savedViewport[2], savedViewport[3]);
+            setTransform(savedTransform);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            shader->bind();
+            shader->setUniform("transform.mvp", p.transform);
+            shader->setUniform("scaleVertical", true);
+            shader->setUniform("scaleTaps", p.scale.yTaps);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, p.scale.buffer->getColorID());
+            shader->setUniform("textureSampler", 0);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, p.scale.yContrib->getID());
+            shader->setUniform("scaleContrib", 3);
+            _drawScaleQuad(Box2F(rect.min.x, rect.min.y, rect.w(), rect.h()));
+        }
+
+        bool Render::_drawImageScaled(
+            const std::shared_ptr<Image>& image,
+            const TriMesh2F& mesh,
+            const Color4F& color,
+            const ImageOptions& imageOptions,
+            const std::vector<std::shared_ptr<Texture> >& textures)
+        {
+            FTK_P();
+            const auto& info = image->getInfo();
+
+            // The destination this covers. Only an axis aligned rectangle can
+            // be resampled one axis at a time, so anything else goes the
+            // ordinary way.
+            if (mesh.v.size() != 4 || mesh.triangles.size() != 2)
+                return false;
+            float minX = mesh.v[0].x, maxX = mesh.v[0].x;
+            float minY = mesh.v[0].y, maxY = mesh.v[0].y;
+            for (const auto& v : mesh.v)
+            {
+                minX = std::min(minX, v.x); maxX = std::max(maxX, v.x);
+                minY = std::min(minY, v.y); maxY = std::max(maxY, v.y);
+            }
+            const int outW = static_cast<int>(std::round(maxX - minX));
+            const int outH = static_cast<int>(std::round(maxY - minY));
+            const int inW = info.size.w;
+            const int inH = info.size.h;
+            if (outW < 1 || outH < 1 || inW < 1 || inH < 1)
+                return false;
+            // A draw at the picture's own size has nothing to resample.
+            if (outW == inW && outH == inH)
+                return false;
+
+            if (!p.shaders["imageScaleX"])
+            {
+                p.shaders["imageScaleX"] = Shader::create(
+                    vertexSource(), imageScaleXFragmentSource());
+                p.shaders["imageScaleX"]->bind();
+                p.shaders["imageScaleX"]->setUniform("transform.mvp", p.transform);
+            }
+            if (!p.shaders["imageScaleY"])
+            {
+                p.shaders["imageScaleY"] = Shader::create(
+                    vertexSource(), imageScaleYFragmentSource());
+            }
+
+            _scaleContribUpdate(Size2I(inW, inH), Size2I(outW, outH));
+
+            // The intermediate: narrowed across, still full height.
+            const Size2I tmpSize(outW, inH);
+            if (doCreate(p.scale.buffer, tmpSize, TextureType::RGBA_F16))
+            {
+                p.scale.buffer = OffscreenBuffer::create(tmpSize, TextureType::RGBA_F16);
+            }
+            if (!p.scale.buffer)
+                return false;
+
+            GLint savedViewport[4] = { 0, 0, 0, 0 };
+            glGetIntegerv(GL_VIEWPORT, savedViewport);
+            const M44F savedTransform = p.transform;
+
+            // Pass one, across, into the intermediate.
+            {
+                OffscreenBufferBinding binding(p.scale.buffer);
+                glViewport(0, 0, tmpSize.w, tmpSize.h);
+                glDisable(GL_BLEND);
+                setTransform(ortho(
+                    0.F,
+                    static_cast<float>(tmpSize.w),
+                    static_cast<float>(tmpSize.h),
+                    0.F,
+                    -1.F,
+                    1.F));
+
+                auto& shader = p.shaders["imageScaleX"];
+                shader->bind();
+                shader->setUniform("imageType", static_cast<int>(info.type));
+                shader->setUniform("channelCount", getChannelCount(info.type));
+                VideoLevels videoLevels = info.videoLevels;
+                switch (imageOptions.videoLevels)
+                {
+                case InputVideoLevels::FullRange: videoLevels = VideoLevels::FullRange; break;
+                case InputVideoLevels::LegalRange: videoLevels = VideoLevels::LegalRange; break;
+                default: break;
+                }
+                shader->setUniform("videoLevels", static_cast<int>(videoLevels));
+                shader->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
+                shader->setUniform("mirrorX", info.layout.mirror.x);
+                shader->setUniform("scaleTaps", p.scale.xTaps);
+                _setActiveTextures(info, textures);
+                shader->setUniform("textureSampler0", 0);
+                shader->setUniform("textureSampler1", 1);
+                shader->setUniform("textureSampler2", 2);
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, p.scale.xContrib->getID());
+                shader->setUniform("scaleContrib", 3);
+
+                _drawScaleQuad(Box2F(0.F, 0.F, tmpSize.w, tmpSize.h));
+            }
+
+            // Pass two, down, over the destination.
+            glViewport(
+                savedViewport[0], savedViewport[1],
+                savedViewport[2], savedViewport[3]);
+            setTransform(savedTransform);
+            if (imageOptions.alphaBlend != AlphaBlend::None)
+            {
+                setAlphaBlend(imageOptions.alphaBlend);
+            }
+            else
+            {
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            }
+            auto& shader = p.shaders["imageScaleY"];
+            shader->bind();
+            shader->setUniform("transform.mvp", p.transform);
+            shader->setUniform("color", color);
+            shader->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
+            shader->setUniform("channelDisplay", static_cast<int>(imageOptions.channelDisplay));
+            shader->setUniform("mirrorY", info.layout.mirror.y);
+            shader->setUniform("scaleTaps", p.scale.yTaps);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, p.scale.buffer->getColorID());
+            shader->setUniform("textureSampler0", 0);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, p.scale.yContrib->getID());
+            shader->setUniform("scaleContrib", 3);
+
+            _drawScaleQuad(Box2F(minX, minY, maxX - minX, maxY - minY));
+            return true;
+        }
+
+        void Render::_drawScaleQuad(const Box2F& box)
+        {
+            FTK_P();
+            const auto m = mesh(box);
+            const size_t size = m.triangles.size();
+            if (!p.vbos["imageScale"] ||
+                (p.vbos["imageScale"] && p.vbos["imageScale"]->getSize() < size * 3))
+            {
+                p.vbos["imageScale"] = VBO::create(size * 3, VBOType::Pos2_F32_UV_U16);
+                p.vaos["imageScale"].reset();
+            }
+            if (p.vbos["imageScale"])
+            {
+                p.vbos["imageScale"]->copy(convert(m, VBOType::Pos2_F32_UV_U16));
+                p.diag.triangles += size;
+            }
+            if (!p.vaos["imageScale"] && p.vbos["imageScale"])
+            {
+                p.vaos["imageScale"] = VAO::create(
+                    p.vbos["imageScale"]->getType(), p.vbos["imageScale"]->getID());
+            }
+            if (p.vaos["imageScale"] && p.vbos["imageScale"])
+            {
+                p.vaos["imageScale"]->bind();
+                p.vaos["imageScale"]->draw(GL_TRIANGLES, 0, size * 3);
+            }
+        }
+
         void Render::drawImage(
             const std::shared_ptr<Image>& image,
             const TriMesh2F& mesh,
@@ -415,9 +801,15 @@ namespace ftk
                 _copyTextures(image, textures);
                 p.textureCache.add(image, textures, image->getByteCount());
             }
-            _setActiveTextures(info, textures);
             p.diag.textures += textures.size();
 
+            if (ImageFilter::HighQuality == imageOptions.imageFilters.minify &&
+                _drawImageScaled(image, mesh, color, imageOptions, textures))
+            {
+                return;
+            }
+
+            _setActiveTextures(info, textures);
             p.shaders["image"]->bind();
             p.shaders["image"]->setUniform("color", color);
             p.shaders["image"]->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);

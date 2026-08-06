@@ -83,4 +83,15 @@ namespace ftk
 
     IRenderFactory::~IRenderFactory()
     {}
+
+    void IRender::drawTextureScaled(
+        unsigned int id,
+        const Size2I&,
+        const Box2I& rect,
+        bool mirrorV)
+    {
+        // A renderer that has no two pass resample still has to draw
+        // something, and what it draws is what it drew before.
+        drawTexture(id, rect, mirrorV);
+    }
 }
