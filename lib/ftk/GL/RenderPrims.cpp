@@ -775,13 +775,18 @@ namespace ftk
                 savedViewport[0], savedViewport[1],
                 savedViewport[2], savedViewport[3]);
             setTransform(savedTransform);
+            // Blending was turned off for the first pass, and setAlphaBlend()
+            // only chooses the function -- it does not turn it back on, since
+            // everything else relies on begin() having enabled it once. Turn
+            // it on here or it stays off for the rest of the frame, and every
+            // glyph drawn afterwards is a filled rectangle.
+            glEnable(GL_BLEND);
             if (imageOptions.alphaBlend != AlphaBlend::None)
             {
                 setAlphaBlend(imageOptions.alphaBlend);
             }
             else
             {
-                glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }
             auto& shader = p.shaders["imageScaleY"];
@@ -800,6 +805,7 @@ namespace ftk
             shader->setUniform("scaleContrib", 3);
 
             _drawScaleQuad(Box2F(minX, minY, maxX - minX, maxY - minY));
+
 
             // See drawTextureScaled().
             glActiveTexture(GL_TEXTURE0);
