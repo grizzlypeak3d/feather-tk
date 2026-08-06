@@ -113,6 +113,7 @@ namespace ftk
 
         std::shared_ptr<Timer> screenshotTimer;
         int screenshotTicks = 0;
+        bool offscreen = false;
 
         std::shared_ptr<FontSystem> fontSystem;
         std::shared_ptr<IconSystem> iconSystem;
@@ -210,6 +211,10 @@ namespace ftk
             cmdLineArgs,
             cmdLineOptionsTmp);
         uiInit(context);
+
+        // Writing a screenshot is the whole of such a run, so there is nothing
+        // for a window on screen to be good for; see IWindow::setOffscreen().
+        p.offscreen = p.cmdLine.screenshot->found();
 
         if (!p.settingsPath.empty())
         {
@@ -1366,6 +1371,21 @@ namespace ftk
         }
     }
 
+    bool App::isOffscreen() const
+    {
+        return _p->offscreen;
+    }
+
+    void App::setOffscreen(bool value)
+    {
+        FTK_P();
+        p.offscreen = value;
+        for (const auto& window : p.windows)
+        {
+            window->setOffscreen(value);
+        }
+    }
+
     void App::_addWindow(const std::shared_ptr<IWindow>& window)
     {
         FTK_P();
@@ -1374,6 +1394,10 @@ namespace ftk
         {
             window->setDisplayScale(p.displayScale->get());
             window->setTooltipsEnabled(p.tooltipsEnabled->get());
+            // A run that exists to write a screenshot has no reason to put a
+            // window on screen, and one that is on screen can be clicked or
+            // hovered while the shot is being taken.
+            window->setOffscreen(p.offscreen);
             p.windows.push_back(window);
         }
     }

@@ -141,6 +141,18 @@ namespace ftk
         //! Window icons are not supported on macOS.
         FTK_API virtual void setIcon(const std::shared_ptr<Image>&);
 
+        //! Get whether the window is drawn without being shown.
+        FTK_API bool isOffscreen() const;
+
+        //! Set whether the window is drawn without being shown.
+        //!
+        //! The widgets still tick and draw into the offscreen buffer, so
+        //! screenshot() returns the same picture as it would from a window on
+        //! screen. What changes is that there is no window to be clicked,
+        //! hovered or raised over, which would otherwise put a highlight or a
+        //! tooltip into an automated capture.
+        FTK_API void setOffscreen(bool);
+
         //! Capture a screenshot.
         FTK_API virtual std::shared_ptr<Image> screenshot(const Box2I & = Box2I(0, 0, -1, -1));
 

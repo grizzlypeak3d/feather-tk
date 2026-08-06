@@ -26,6 +26,7 @@ namespace ftk
         Size2I windowSize;
         Size2I minSize;
         Size2I bufferSize;
+        bool offscreen = false;
         std::shared_ptr<Observable<bool> > fullScreen;
         std::shared_ptr<Observable<bool> > floatOnTop;
         std::shared_ptr<Observable<WindowBufferType> > bufferType;
@@ -360,6 +361,16 @@ namespace ftk
         return {};
     }
 
+    bool IWindow::isOffscreen() const
+    {
+        return _p->offscreen;
+    }
+
+    void IWindow::setOffscreen(bool value)
+    {
+        _p->offscreen = value;
+    }
+
     void IWindow::setVisible(bool value)
     {
         const bool changed = value != isVisible(false);
@@ -674,7 +685,13 @@ namespace ftk
     void IWindow::_cursorEnter(bool enter)
     {
         FTK_P();
-        p.inside = enter;
+        // A window that is never shown cannot be pointed at. It is told the
+        // cursor entered anyway -- the platform reports that when the window
+        // is exposed rather than when the pointer arrives -- and the position
+        // it would then hover is the origin, which is inside whatever sits in
+        // the top left corner, and raises that widget's tooltip a moment
+        // later.
+        p.inside = enter && !p.offscreen;
         if (!p.inside)
         {
             if (auto hover = p.hover.lock())

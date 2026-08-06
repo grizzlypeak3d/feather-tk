@@ -188,6 +188,21 @@ namespace ftk
 
         ///@}
 
+        //! \name Offscreen
+        ///@{
+
+        //! Get whether windows are drawn without being shown.
+        FTK_API bool isOffscreen() const;
+
+        //! Set whether windows are drawn without being shown, applying it to
+        //! the windows already added as well as later ones.
+        //!
+        //! Set by the -screenshot option; an application that takes its own
+        //! screenshots sets it for those runs. See IWindow::setOffscreen().
+        FTK_API void setOffscreen(bool);
+
+        ///@}
+
         //! Observe the monitors.
         FTK_API std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
 
