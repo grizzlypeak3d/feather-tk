@@ -406,6 +406,36 @@ namespace ftk
                     (std::sin(pix / lanczos3Support) / (pix / lanczos3Support));
             }
 
+            // Mitchell-Netravali with B = C = 1/3, which is what enlarging
+            // wants: Lanczos rings, and a halo along a hard edge is the last
+            // thing to put in front of someone judging a picture.
+            const float mitchellSupport = 2.F;
+
+            float mitchell(float x)
+            {
+                const float b = 1.F / 3.F;
+                const float c = 1.F / 3.F;
+                x = std::fabs(x);
+                const float x2 = x * x;
+                const float x3 = x2 * x;
+                if (x < 1.F)
+                {
+                    return (
+                        (12.F - 9.F * b - 6.F * c) * x3 +
+                        (-18.F + 12.F * b + 6.F * c) * x2 +
+                        (6.F - 2.F * b)) / 6.F;
+                }
+                if (x < mitchellSupport)
+                {
+                    return (
+                        (-b - 6.F * c) * x3 +
+                        (6.F * b + 30.F * c) * x2 +
+                        (-12.F * b - 48.F * c) * x +
+                        (8.F * b + 24.F * c)) / 6.F;
+                }
+                return 0.F;
+            }
+
             // For each output pixel, the source coordinate and weight of every
             // tap. Column = output pixel, row = tap; the shader walks the rows.
             //
@@ -417,10 +447,13 @@ namespace ftk
             // grid and shows up as bands across a flat area.
             std::shared_ptr<Image> scaleContrib(int in, int out, int& taps)
             {
+                // Which kernel is a question about this axis alone: an
+                // anamorphic picture can be reduced across and enlarged down.
                 const float scale = out / static_cast<float>(in);
-                const float radius = scale >= 1.F ?
-                    lanczos3Support :
-                    (lanczos3Support / scale);
+                const bool reducing = scale < 1.F;
+                float (*fnc)(float) = reducing ? lanczos3 : mitchell;
+                const float support = reducing ? lanczos3Support : mitchellSupport;
+                const float radius = reducing ? support / scale : support;
                 taps = static_cast<int>(std::ceil(radius * 2.F + 1.F));
 
                 auto data = Image::create(ImageInfo(out, taps, ImageType::LA_F32));
@@ -442,8 +475,8 @@ namespace ftk
                         // rather than dropped, so that the weights of a pixel
                         // on the border still cover it.
                         pixel = std::clamp(k, 0, in - 1);
-                        const float x = (center - k) * (scale < 1.F ? scale : 1.F);
-                        const float w = scale < 1.F ? lanczos3(x) * scale : lanczos3(x);
+                        const float x = (center - k) * (reducing ? scale : 1.F);
+                        const float w = reducing ? fnc(x) * scale : fnc(x);
                         // The texel's centre, which is what a nearest fetch of
                         // this coordinate returns.
                         p[(j * out + i) * 2 + 0] = (pixel + .5F) / in;
@@ -607,9 +640,8 @@ namespace ftk
             const int inH = info.size.h;
             if (outW < 1 || outH < 1 || inW < 1 || inH < 1)
                 return false;
-            // Only worth it going down; on the way up Linear is what this
-            // would reduce to anyway.
-            if (outW >= inW && outH >= inH)
+            // A draw at the picture's own size has nothing to resample.
+            if (outW == inW && outH == inH)
                 return false;
 
             if (!p.shaders["imageScaleX"])
