@@ -11,6 +11,7 @@ namespace ftk
 {
     namespace gl
     {
+
         void Render::drawRect(
             const Box2F& rect,
             const Color4F& color)
@@ -510,23 +511,69 @@ namespace ftk
             }
         }
 
+        namespace
+        {
+            // Enough for a comparison of a few pictures at one zoom; a zoom
+            // walks through sizes, so this is bounded rather than kept.
+            const size_t scaleTableMax = 8;
+            const size_t scaleBufferMax = 4;
+        }
+
         void Render::_scaleContribUpdate(const Size2I& source, const Size2I& dest)
         {
             FTK_P();
-            if (p.scale.xIn != source.w || p.scale.xOut != dest.w)
+            const auto find = [this](int in, int out, std::shared_ptr<Texture>& texture, int& taps)
             {
-                p.scale.xContrib = contribTexture(
-                    scaleContrib(source.w, dest.w, p.scale.xTaps));
-                p.scale.xIn = source.w;
-                p.scale.xOut = dest.w;
-            }
-            if (p.scale.yIn != source.h || p.scale.yOut != dest.h)
+                FTK_P();
+                for (auto i = p.scale.tables.begin(); i != p.scale.tables.end(); ++i)
+                {
+                    if (i->in == in && i->out == out)
+                    {
+                        // To the front, so what a frame keeps asking for is
+                        // not the thing that falls off the end.
+                        p.scale.tables.splice(p.scale.tables.begin(), p.scale.tables, i);
+                        texture = p.scale.tables.front().texture;
+                        taps = p.scale.tables.front().taps;
+                        return;
+                    }
+                }
+                Render::Private::ScaleData::Table table;
+                table.in = in;
+                table.out = out;
+                table.texture = contribTexture(scaleContrib(in, out, table.taps));
+                p.scale.tables.push_front(table);
+                while (p.scale.tables.size() > scaleTableMax)
+                {
+                    p.scale.tables.pop_back();
+                }
+                texture = table.texture;
+                taps = table.taps;
+            };
+            find(source.w, dest.w, p.scale.xContrib, p.scale.xTaps);
+            find(source.h, dest.h, p.scale.yContrib, p.scale.yTaps);
+        }
+
+        bool Render::_scaleBufferUpdate(const Size2I& size)
+        {
+            FTK_P();
+            for (auto i = p.scale.buffers.begin(); i != p.scale.buffers.end(); ++i)
             {
-                p.scale.yContrib = contribTexture(
-                    scaleContrib(source.h, dest.h, p.scale.yTaps));
-                p.scale.yIn = source.h;
-                p.scale.yOut = dest.h;
+                if (*i && (*i)->getSize() == size)
+                {
+                    p.scale.buffers.splice(p.scale.buffers.begin(), p.scale.buffers, i);
+                    p.scale.buffer = p.scale.buffers.front();
+                    return true;
+                }
             }
+            p.scale.buffer = OffscreenBuffer::create(size, TextureType::RGBA_F16);
+            if (!p.scale.buffer)
+                return false;
+            p.scale.buffers.push_front(p.scale.buffer);
+            while (p.scale.buffers.size() > scaleBufferMax)
+            {
+                p.scale.buffers.pop_back();
+            }
+            return true;
         }
 
         void Render::drawTextureScaled(
@@ -564,11 +611,7 @@ namespace ftk
             // Across first, into an intermediate that is already narrowed but
             // still full height.
             const Size2I tmpSize(destSize.w, sourceSize.h);
-            if (doCreate(p.scale.buffer, tmpSize, TextureType::RGBA_F16))
-            {
-                p.scale.buffer = OffscreenBuffer::create(tmpSize, TextureType::RGBA_F16);
-            }
-            if (!p.scale.buffer)
+            if (!_scaleBufferUpdate(tmpSize))
             {
                 drawTexture(id, rect, mirrorV);
                 return;
@@ -674,11 +717,7 @@ namespace ftk
 
             // The intermediate: narrowed across, still full height.
             const Size2I tmpSize(outW, inH);
-            if (doCreate(p.scale.buffer, tmpSize, TextureType::RGBA_F16))
-            {
-                p.scale.buffer = OffscreenBuffer::create(tmpSize, TextureType::RGBA_F16);
-            }
-            if (!p.scale.buffer)
+            if (!_scaleBufferUpdate(tmpSize))
                 return false;
 
             GLint savedViewport[4] = { 0, 0, 0, 0 };

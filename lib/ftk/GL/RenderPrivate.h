@@ -54,14 +54,26 @@ namespace ftk
             // so they are rebuilt only when those change.
             struct ScaleData
             {
+                // Kept by size rather than one of each: a comparison draws
+                // two pictures of different sizes in the same frame, and a
+                // single slot means each evicts the other -- an offscreen
+                // buffer and a pair of tables built and thrown away several
+                // times a frame, for as long as the playback runs.
+                struct Table
+                {
+                    std::shared_ptr<Texture> texture;
+                    int in = 0;
+                    int out = 0;
+                    int taps = 0;
+                };
+                std::list<Table> tables;
+                std::list<std::shared_ptr<OffscreenBuffer> > buffers;
+
+                // What the passes below are using now.
                 std::shared_ptr<OffscreenBuffer> buffer;
                 std::shared_ptr<Texture> xContrib;
                 std::shared_ptr<Texture> yContrib;
-                int xIn = 0;
-                int xOut = 0;
                 int xTaps = 0;
-                int yIn = 0;
-                int yOut = 0;
                 int yTaps = 0;
             };
             ScaleData scale;

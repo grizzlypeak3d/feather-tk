@@ -136,6 +136,10 @@ namespace ftk
             //! Make sure the contribution tables match these sizes.
             void _scaleContribUpdate(const Size2I& source, const Size2I& dest);
 
+            //! Make the intermediate for this size current, creating it if it
+            //! is not already kept. Returns false if it could not be made.
+            bool _scaleBufferUpdate(const Size2I&);
+
             FTK_PRIVATE();
         };
 
