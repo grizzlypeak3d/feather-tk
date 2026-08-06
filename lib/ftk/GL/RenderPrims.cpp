@@ -535,6 +535,14 @@ namespace ftk
             const Box2I& rect,
             bool mirrorV)
         {
+#if defined(FTK_API_GLES_2)
+            // Not served here. GLSL ES 1.00 requires a loop bound the compiler
+            // can see, and the tap count is only known once the scale is; the
+            // weights also want more precision than mediump, and a table of
+            // them is a float texture. High quality falls back to Linear
+            // rather than growing a second implementation.
+            drawTexture(id, rect, mirrorV);
+#else // FTK_API_GLES_2
             FTK_P();
             const Size2I destSize = rect.size();
             if (!sourceSize.isValid() || !destSize.isValid() ||
@@ -610,6 +618,7 @@ namespace ftk
             glBindTexture(GL_TEXTURE_2D, p.scale.yContrib->getID());
             shader->setUniform("scaleContrib", 3);
             _drawScaleQuad(Box2F(rect.min.x, rect.min.y, rect.w(), rect.h()));
+#endif // FTK_API_GLES_2
         }
 
         bool Render::_drawImageScaled(
@@ -619,6 +628,10 @@ namespace ftk
             const ImageOptions& imageOptions,
             const std::vector<std::shared_ptr<Texture> >& textures)
         {
+#if defined(FTK_API_GLES_2)
+            // See drawTextureScaled().
+            return false;
+#else // FTK_API_GLES_2
             FTK_P();
             const auto& info = image->getInfo();
 
@@ -742,6 +755,7 @@ namespace ftk
 
             _drawScaleQuad(Box2F(minX, minY, maxX - minX, maxY - minY));
             return true;
+#endif // FTK_API_GLES_2
         }
 
         void Render::_drawScaleQuad(const Box2F& box)

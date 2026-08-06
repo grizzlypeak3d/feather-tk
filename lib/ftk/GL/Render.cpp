@@ -251,8 +251,10 @@ namespace ftk
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
             options.filters = imageFilters;
+#if !defined(FTK_API_GLES_2)
             // The two pass path weighs the texels itself, so it wants them as
-            // they are rather than blended in pairs first.
+            // they are rather than blended in pairs first. Where that path is
+            // not served, High Quality is Linear and wants Linear's texels.
             if (ImageFilter::HighQuality == options.filters.minify)
             {
                 options.filters.minify = ImageFilter::Nearest;
@@ -261,6 +263,7 @@ namespace ftk
             {
                 options.filters.magnify = ImageFilter::Nearest;
             }
+#endif // FTK_API_GLES_2
             options.pbo = info.size.w >= pboSizeMin || info.size.h >= pboSizeMin;
             switch (info.type)
             {
