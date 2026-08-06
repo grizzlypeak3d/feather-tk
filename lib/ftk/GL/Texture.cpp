@@ -385,6 +385,32 @@ namespace ftk
             return !(*this == other);
         }
 
+        namespace
+        {
+            // Creating or uploading to a texture is not a drawing operation,
+            // so it should neither depend on which unit a draw happened to
+            // leave selected nor change it. bind() is the opposite: callers
+            // choose the unit and it binds there, which is how the planes of
+            // a YUV picture reach their samplers.
+            class UploadUnit
+            {
+            public:
+                UploadUnit()
+                {
+                    glGetIntegerv(GL_ACTIVE_TEXTURE, &_previous);
+                    glActiveTexture(GL_TEXTURE0);
+                }
+
+                ~UploadUnit()
+                {
+                    glActiveTexture(static_cast<GLenum>(_previous));
+                }
+
+            private:
+                GLint _previous = GL_TEXTURE0;
+            };
+        }
+
         unsigned int getTextureFilter(ImageFilter value)
         {
             const std::array<GLenum, static_cast<size_t>(ImageFilter::Count)> data =
@@ -446,6 +472,7 @@ namespace ftk
             }
 #endif // FTK_API_GL_4_1
 
+            const UploadUnit uploadUnit;
             glGenTextures(1, &p.id);
             glBindTexture(GL_TEXTURE_2D, p.id);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -526,6 +553,7 @@ namespace ftk
 
         bool Texture::copy(const std::shared_ptr<Image>& data)
         {
+            const UploadUnit uploadUnit;
             FTK_P();
             const auto& info = data->getInfo();
             if (!_isCompatible(info))
@@ -581,6 +609,7 @@ namespace ftk
 
         bool Texture::copy(const std::shared_ptr<Image>& data, int x, int y)
         {
+            const UploadUnit uploadUnit;
             FTK_P();
             const auto& info = data->getInfo();
             if (!_isCompatible(info))
@@ -636,6 +665,7 @@ namespace ftk
 
         bool Texture::copy(const uint8_t* data, const ImageInfo& info)
         {
+            const UploadUnit uploadUnit;
             FTK_P();
             if (!_isCompatible(info))
                 return false;
