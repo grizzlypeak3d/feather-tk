@@ -661,6 +661,13 @@ namespace ftk
             glBindTexture(GL_TEXTURE_2D, p.scale.yContrib->getID());
             shader->setUniform("scaleContrib", 3);
             _drawScaleQuad(Box2F(rect.min.x, rect.min.y, rect.w(), rect.h()));
+
+            // Back to the first unit. Texture::copy() and the Texture
+            // constructor bind without choosing a unit, so they land on
+            // whichever one was left active -- the glyph atlas uploads that
+            // way, and would otherwise be bound over whatever this left on
+            // unit three.
+            glActiveTexture(GL_TEXTURE0);
 #endif // FTK_API_GLES_2
         }
 
@@ -793,6 +800,9 @@ namespace ftk
             shader->setUniform("scaleContrib", 3);
 
             _drawScaleQuad(Box2F(minX, minY, maxX - minX, maxY - minY));
+
+            // See drawTextureScaled().
+            glActiveTexture(GL_TEXTURE0);
             return true;
 #endif // FTK_API_GLES_2
         }
