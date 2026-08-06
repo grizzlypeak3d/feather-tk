@@ -116,6 +116,18 @@ namespace ftk
 
             void _drawTextMesh(const TriMesh2F&);
 
+            //! Draw an image with a separable two pass resample. Returns false
+            //! if the request is not one this can serve, leaving the caller to
+            //! draw it the ordinary way.
+            bool _drawImageScaled(
+                const std::shared_ptr<Image>&,
+                const TriMesh2F&,
+                const Color4F&,
+                const ImageOptions&,
+                const std::vector<std::shared_ptr<Texture> >&);
+
+            void _drawScaleQuad(const Box2F&);
+
             FTK_PRIVATE();
         };
 

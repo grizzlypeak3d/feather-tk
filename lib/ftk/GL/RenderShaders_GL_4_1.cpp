@@ -300,6 +300,148 @@ namespace ftk
                 "}\n";
         }
 
+        namespace
+        {
+            // One tap of a separable resample. The contribution texture holds,
+            // for each output pixel, the source coordinate and weight of every
+            // tap: column = output pixel, row = tap. Built on the CPU because
+            // it depends only on the two sizes and the kernel, not on the
+            // picture, so a whole pass shares one table.
+            const std::string scaleTap =
+                "vec2 scaleTap(sampler2D contrib, float outCoord, int tap, int taps)\n"
+                "{\n"
+                "    float t = taps > 1 ?\n"
+                "        (float(tap) / float(taps - 1)) :\n"
+                "        0.0;\n"
+                "    return texture(contrib, vec2(outCoord, t)).rg;\n"
+                "}\n";
+        }
+
+        std::string imageScaleXFragmentSource()
+        {
+            // Pass one: resample across, and convert the picture to RGBA on
+            // the way so that the second pass has one plane to weigh rather
+            // than three.
+            return Format(
+                "#version 410\n"
+                "\n"
+                "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
+                "\n"
+                "{0}\n"
+                "\n"
+                "{1}\n"
+                "\n"
+                "{2}\n"
+                "\n"
+                "{3}\n"
+                "\n"
+                "uniform int       imageType;\n"
+                "uniform int       channelCount;\n"
+                "uniform int       videoLevels;\n"
+                "uniform vec4      yuvCoefficients;\n"
+                "uniform int       mirrorX;\n"
+                "uniform sampler2D textureSampler0;\n"
+                "uniform sampler2D textureSampler1;\n"
+                "uniform sampler2D textureSampler2;\n"
+                "uniform sampler2D scaleContrib;\n"
+                "uniform int       scaleTaps;\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = vec4(0.0);\n"
+                "    for (int i = 0; i < scaleTaps; ++i)\n"
+                "    {\n"
+                "        vec2 tap = scaleTap(scaleContrib, fTexture.x, i, scaleTaps);\n"
+                "        vec2 t = vec2(tap.x, fTexture.y);\n"
+                "        if (1 == mirrorX)\n"
+                "        {\n"
+                "            t.x = 1.0 - t.x;\n"
+                "        }\n"
+                "        c += tap.y * sampleTexture("
+                "            t,\n"
+                "            imageType,\n"
+                "            channelCount,\n"
+                "            videoLevels,\n"
+                "            yuvCoefficients,\n"
+                "            textureSampler0,\n"
+                "            textureSampler1,\n"
+                "            textureSampler2);\n"
+                "    }\n"
+                "    outColor = c;\n"
+                "}\n").
+                arg(imageType).
+                arg(videoLevels).
+                arg(sampleTexture).
+                arg(scaleTap);
+        }
+
+        std::string imageScaleYFragmentSource()
+        {
+            // Pass two: resample down the other axis, and apply what the image
+            // options say about the result -- which is done here rather than in
+            // the first pass because a channel shown on its own, or an alpha
+            // forced opaque, is a statement about the finished pixel.
+            return Format(
+                "#version 410\n"
+                "\n"
+                "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
+                "\n"
+                "{0}\n"
+                "\n"
+                "{1}\n"
+                "\n"
+                "uniform vec4      color;\n"
+                "uniform bool      opaque;\n"
+                "uniform int       channelDisplay;\n"
+                "uniform int       mirrorY;\n"
+                "uniform sampler2D textureSampler0;\n"
+                "uniform sampler2D scaleContrib;\n"
+                "uniform int       scaleTaps;\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = vec4(0.0);\n"
+                "    for (int i = 0; i < scaleTaps; ++i)\n"
+                "    {\n"
+                "        vec2 tap = scaleTap(scaleContrib, fTexture.y, i, scaleTaps);\n"
+                "        float y = tap.x;\n"
+                // Drawing the first pass into a texture turns it over once
+                // more than the single pass path, so this reads the opposite
+                // way round to the image shader.
+                "        if (1 == mirrorY)\n"
+                "        {\n"
+                "            y = 1.0 - y;\n"
+                "        }\n"
+                "        c += tap.y * texture(textureSampler0, vec2(fTexture.x, y));\n"
+                "    }\n"
+                "    outColor = c * color;\n"
+                "    if (opaque)\n"
+                "    {\n"
+                "        outColor.a = 1.0;\n"
+                "    }\n"
+                "    if (ChannelDisplay_Red == channelDisplay)\n"
+                "    {\n"
+                "        outColor.g = outColor.b = outColor.r;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Green == channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.b = outColor.g;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Blue == channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.g = outColor.b;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Alpha == channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.g = outColor.b = outColor.a;\n"
+                "    }\n"
+                "}\n").
+                arg(channelDisplay).
+                arg(scaleTap);
+        }
+
         std::string imageFragmentSource()
         {
             return Format(

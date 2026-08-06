@@ -35,7 +35,8 @@ namespace ftk
     FTK_ENUM_IMPL(
         ImageFilter,
         "Nearest",
-        "Linear");
+        "Linear",
+        "High Quality");
 
     void to_json(nlohmann::json& json, const ImageFilters& in)
     {

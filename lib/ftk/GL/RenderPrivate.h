@@ -5,6 +5,7 @@
 
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Mesh.h>
+#include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/Shader.h>
 #include <ftk/GL/TextureAtlas.h>
 
@@ -24,6 +25,8 @@ namespace ftk
         std::string textureFragmentSource();
         std::string textFragmentSource();
         std::string imageFragmentSource();
+        std::string imageScaleXFragmentSource();
+        std::string imageScaleYFragmentSource();
 
         struct Render::Private
         {
@@ -45,6 +48,23 @@ namespace ftk
             std::shared_ptr<gl::TextureAtlas> glyphAtlas;
             std::unordered_map<GlyphInfo, BoxPackID> glyphIDs;
             TriMesh2F textMesh;
+            // High quality scaling: the intermediate the first pass writes,
+            // and the contribution tables, which depend only on the two sizes
+            // so they are rebuilt only when those change.
+            struct ScaleData
+            {
+                std::shared_ptr<OffscreenBuffer> buffer;
+                std::shared_ptr<Texture> xContrib;
+                std::shared_ptr<Texture> yContrib;
+                int xIn = 0;
+                int xOut = 0;
+                int xTaps = 0;
+                int yIn = 0;
+                int yOut = 0;
+                int yTaps = 0;
+            };
+            ScaleData scale;
+
             std::map<std::string, std::shared_ptr<gl::VBO> > vbos;
             std::map<std::string, std::shared_ptr<gl::VAO> > vaos;
 
