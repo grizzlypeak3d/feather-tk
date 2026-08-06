@@ -477,6 +477,108 @@ namespace ftk
             }
         }
 
+        void Render::_scaleContribUpdate(const Size2I& source, const Size2I& dest)
+        {
+            FTK_P();
+            if (p.scale.xIn != source.w || p.scale.xOut != dest.w)
+            {
+                p.scale.xContrib = contribTexture(
+                    scaleContrib(source.w, dest.w, p.scale.xTaps));
+                p.scale.xIn = source.w;
+                p.scale.xOut = dest.w;
+            }
+            if (p.scale.yIn != source.h || p.scale.yOut != dest.h)
+            {
+                p.scale.yContrib = contribTexture(
+                    scaleContrib(source.h, dest.h, p.scale.yTaps));
+                p.scale.yIn = source.h;
+                p.scale.yOut = dest.h;
+            }
+        }
+
+        void Render::drawTextureScaled(
+            unsigned int id,
+            const Size2I& sourceSize,
+            const Box2I& rect,
+            bool mirrorV)
+        {
+            FTK_P();
+            const Size2I destSize = rect.size();
+            if (!sourceSize.isValid() || !destSize.isValid() ||
+                (destSize.w >= sourceSize.w && destSize.h >= sourceSize.h))
+            {
+                drawTexture(id, rect, mirrorV);
+                return;
+            }
+
+            if (!p.shaders["textureScale"])
+            {
+                p.shaders["textureScale"] = Shader::create(
+                    vertexSource(), textureScaleFragmentSource());
+                p.shaders["textureScale"]->bind();
+                p.shaders["textureScale"]->setUniform("transform.mvp", p.transform);
+            }
+            _scaleContribUpdate(sourceSize, destSize);
+
+            // Across first, into an intermediate that is already narrowed but
+            // still full height.
+            const Size2I tmpSize(destSize.w, sourceSize.h);
+            if (doCreate(p.scale.buffer, tmpSize, TextureType::RGBA_F16))
+            {
+                p.scale.buffer = OffscreenBuffer::create(tmpSize, TextureType::RGBA_F16);
+            }
+            if (!p.scale.buffer)
+            {
+                drawTexture(id, rect, mirrorV);
+                return;
+            }
+
+            // The viewport is taken as it is rather than through
+            // setViewport(), which derives it from the size passed to begin();
+            // this may be drawing into a buffer the caller sized itself.
+            GLint savedViewport[4] = { 0, 0, 0, 0 };
+            glGetIntegerv(GL_VIEWPORT, savedViewport);
+            const M44F savedTransform = p.transform;
+            auto& shader = p.shaders["textureScale"];
+
+            {
+                OffscreenBufferBinding binding(p.scale.buffer);
+                glViewport(0, 0, tmpSize.w, tmpSize.h);
+                glDisable(GL_BLEND);
+                setTransform(ortho(
+                    0.F, static_cast<float>(tmpSize.w),
+                    static_cast<float>(tmpSize.h), 0.F, -1.F, 1.F));
+                shader->bind();
+                shader->setUniform("scaleVertical", false);
+                shader->setUniform("scaleTaps", p.scale.xTaps);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, id);
+                shader->setUniform("textureSampler", 0);
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, p.scale.xContrib->getID());
+                shader->setUniform("scaleContrib", 3);
+                _drawScaleQuad(Box2F(0.F, 0.F, tmpSize.w, tmpSize.h));
+            }
+
+            glViewport(
+                savedViewport[0], savedViewport[1],
+                savedViewport[2], savedViewport[3]);
+            setTransform(savedTransform);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            shader->bind();
+            shader->setUniform("transform.mvp", p.transform);
+            shader->setUniform("scaleVertical", true);
+            shader->setUniform("scaleTaps", p.scale.yTaps);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, p.scale.buffer->getColorID());
+            shader->setUniform("textureSampler", 0);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, p.scale.yContrib->getID());
+            shader->setUniform("scaleContrib", 3);
+            _drawScaleQuad(Box2F(rect.min.x, rect.min.y, rect.w(), rect.h()));
+        }
+
         bool Render::_drawImageScaled(
             const std::shared_ptr<Image>& image,
             const TriMesh2F& mesh,
@@ -523,19 +625,7 @@ namespace ftk
                     vertexSource(), imageScaleYFragmentSource());
             }
 
-            // The tables, kept until the sizes change.
-            if (p.scale.xIn != inW || p.scale.xOut != outW)
-            {
-                p.scale.xContrib = contribTexture(scaleContrib(inW, outW, p.scale.xTaps));
-                p.scale.xIn = inW;
-                p.scale.xOut = outW;
-            }
-            if (p.scale.yIn != inH || p.scale.yOut != outH)
-            {
-                p.scale.yContrib = contribTexture(scaleContrib(inH, outH, p.scale.yTaps));
-                p.scale.yIn = inH;
-                p.scale.yOut = outH;
-            }
+            _scaleContribUpdate(Size2I(inW, inH), Size2I(outW, outH));
 
             // The intermediate: narrowed across, still full height.
             const Size2I tmpSize(outW, inH);
@@ -546,15 +636,14 @@ namespace ftk
             if (!p.scale.buffer)
                 return false;
 
-            const Box2I savedViewport = p.viewport;
+            GLint savedViewport[4] = { 0, 0, 0, 0 };
+            glGetIntegerv(GL_VIEWPORT, savedViewport);
             const M44F savedTransform = p.transform;
-            const Size2I savedSize = p.size;
 
             // Pass one, across, into the intermediate.
             {
                 OffscreenBufferBinding binding(p.scale.buffer);
-                p.size = tmpSize;
-                setViewport(Box2I(0, 0, tmpSize.w, tmpSize.h));
+                glViewport(0, 0, tmpSize.w, tmpSize.h);
                 glDisable(GL_BLEND);
                 setTransform(ortho(
                     0.F,
@@ -591,8 +680,9 @@ namespace ftk
             }
 
             // Pass two, down, over the destination.
-            p.size = savedSize;
-            setViewport(savedViewport);
+            glViewport(
+                savedViewport[0], savedViewport[1],
+                savedViewport[2], savedViewport[3]);
             setTransform(savedTransform);
             if (imageOptions.alphaBlend != AlphaBlend::None)
             {

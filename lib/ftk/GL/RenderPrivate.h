@@ -25,6 +25,7 @@ namespace ftk
         std::string textureFragmentSource();
         std::string textFragmentSource();
         std::string imageFragmentSource();
+        std::string textureScaleFragmentSource();
         std::string imageScaleXFragmentSource();
         std::string imageScaleYFragmentSource();
 

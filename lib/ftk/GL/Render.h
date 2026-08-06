@@ -77,6 +77,11 @@ namespace ftk
                 const TriMesh2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const V2F& pos = V2F()) override;
+            FTK_API void drawTextureScaled(
+                unsigned int,
+                const Size2I& sourceSize,
+                const Box2I&,
+                bool mirrorV = true) override;
             FTK_API void drawTexture(
                 unsigned int,
                 const Box2I&,
@@ -127,6 +132,9 @@ namespace ftk
                 const std::vector<std::shared_ptr<Texture> >&);
 
             void _drawScaleQuad(const Box2F&);
+
+            //! Make sure the contribution tables match these sizes.
+            void _scaleContribUpdate(const Size2I& source, const Size2I& dest);
 
             FTK_PRIVATE();
         };

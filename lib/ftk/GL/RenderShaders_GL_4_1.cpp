@@ -317,6 +317,40 @@ namespace ftk
                 "}\n";
         }
 
+        std::string textureScaleFragmentSource()
+        {
+            // One axis of a separable resample over an ordinary texture. Used
+            // for both passes; which axis is a uniform, so this compiles once.
+            return Format(
+                "#version 410\n"
+                "\n"
+                "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
+                "\n"
+                "{0}\n"
+                "\n"
+                "uniform sampler2D textureSampler;\n"
+                "uniform sampler2D scaleContrib;\n"
+                "uniform int       scaleTaps;\n"
+                "uniform bool      scaleVertical;\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = vec4(0.0);\n"
+                "    float outCoord = scaleVertical ? fTexture.y : fTexture.x;\n"
+                "    for (int i = 0; i < scaleTaps; ++i)\n"
+                "    {\n"
+                "        vec2 tap = scaleTap(scaleContrib, outCoord, i, scaleTaps);\n"
+                "        vec2 t = scaleVertical ?\n"
+                "            vec2(fTexture.x, tap.x) :\n"
+                "            vec2(tap.x, fTexture.y);\n"
+                "        c += tap.y * texture(textureSampler, t);\n"
+                "    }\n"
+                "    outColor = c;\n"
+                "}\n").
+                arg(scaleTap);
+        }
+
         std::string imageScaleXFragmentSource()
         {
             // Pass one: resample across, and convert the picture to RGBA on

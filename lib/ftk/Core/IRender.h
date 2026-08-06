@@ -147,6 +147,16 @@ namespace ftk
             const V2F& pos = V2F()) = 0;
 
         //! Draw a texture.
+        //! Reduce a texture with a separable two pass resample, drawing the
+        //! result into the box. Use when the reduction is large enough that
+        //! ImageFilter::Linear's four texels miss most of the source; see
+        //! ImageFilter::HighQuality.
+        FTK_API virtual void drawTextureScaled(
+            unsigned int,
+            const Size2I& sourceSize,
+            const Box2I& rect,
+            bool mirrorV = true);
+
         FTK_API virtual void drawTexture(
             unsigned int,
             const Box2I&,
