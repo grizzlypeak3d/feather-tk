@@ -425,9 +425,11 @@ namespace ftk
             }
 #endif // FTK_API_GL_4_1
 
-            // See setSwapEnabled(): this waits for the display, and a
-            // headless run has no reason to.
-            if (isSwapEnabled())
+            // Presenting to the windowing system, which an offscreen window
+            // has nothing to present to. The swap interval is 1, so this waits
+            // for the display: skipping it is what lets a headless run go
+            // faster than the monitor's refresh rate.
+            if (!isOffscreen())
             {
                 p.window->swap();
             }
