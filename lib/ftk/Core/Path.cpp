@@ -34,6 +34,13 @@ namespace ftk
 
     std::string appendSeparator(const std::string& value)
     {
+        // An empty directory means the current one. There is no separator to
+        // find, so the search below would fall through and add one, turning
+        // "" + "render.tif" into the absolute "/render.tif".
+        if (value.empty())
+        {
+            return value;
+        }
         std::string out = value;
         auto pos = out.find_first_of('/');
         if (pos != std::string::npos)

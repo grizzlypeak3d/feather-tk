@@ -118,6 +118,11 @@ namespace ftk
                 FTK_CHECK(appendSeparator("tmp") == "tmp/");
                 FTK_CHECK(appendSeparator("/tmp") == "/tmp/");
                 FTK_CHECK(appendSeparator("\\tmp") == "\\tmp\\");
+
+                // An empty directory has to stay relative: appending a
+                // separator would name the root instead.
+                FTK_CHECK(appendSeparator("").empty());
+                FTK_CHECK(Path("", "render.tif").get() == "render.tif");
             }
         }
 
