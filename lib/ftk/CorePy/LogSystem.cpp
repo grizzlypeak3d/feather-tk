@@ -7,6 +7,7 @@
 #include <ftk/Core/LogSystem.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/chrono.h>
 #include <pybind11/functional.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>

@@ -81,7 +81,7 @@ namespace ftk
                 LogItem a;
                 LogItem b;
                 FTK_CHECK(a == b);
-                b.time = 1.F;
+                b.time = std::chrono::system_clock::now();
                 FTK_CHECK(a != b);
             }
             {

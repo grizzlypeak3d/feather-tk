@@ -9,6 +9,7 @@
 
 #include <array>
 #include <mutex>
+#include <ctime>
 #include <sstream>
 
 namespace ftk
@@ -36,10 +37,22 @@ namespace ftk
     std::string getLabel(const LogItem& item, bool brief)
     {
         std::stringstream ss;
+        // The time is kept even in the brief form, which is what says these
+        // are a record of what happened rather than the current state. What
+        // brief drops is the prefix: "tl::ffmpeg::VideoRead" names the code
+        // that noticed, which is of no help to whoever is reading.
+        const std::time_t t = std::chrono::system_clock::to_time_t(item.time);
+        std::tm tm;
+#if defined(_WINDOWS)
+        localtime_s(&tm, &t);
+#else // _WINDOWS
+        localtime_r(&t, &tm);
+#endif // _WINDOWS
+        std::array<char, 32> buf;
+        std::strftime(buf.data(), buf.size(), "%Y-%m-%d %H:%M:%S", &tm);
+        ss << buf.data() << " ";
         if (!brief)
         {
-            ss.precision(2);
-            ss << std::fixed << item.time << " ";
             ss << item.prefix << ": ";
         }
         switch (item.type)
@@ -60,11 +73,6 @@ namespace ftk
 
     struct LogSystem::Private
     {
-        Private() :
-            startTime(std::chrono::steady_clock::now())
-        {}
-
-        const std::chrono::steady_clock::time_point startTime;
         std::shared_ptr<ObservableList<LogItem> > observableItems;
 
         std::mutex mutex;
@@ -98,11 +106,8 @@ namespace ftk
         LogType type)
     {
         FTK_P();
-        const auto now = std::chrono::steady_clock::now();
-        const std::chrono::duration<float> time = now - p.startTime;
-
         std::unique_lock<std::mutex> lock(p.mutex);
-        p.items.push_back({ time.count(), prefix, value, type });
+        p.items.push_back({ std::chrono::system_clock::now(), prefix, value, type });
     }
 
     std::shared_ptr<IObservableList<LogItem> > LogSystem::observeLogItems() const

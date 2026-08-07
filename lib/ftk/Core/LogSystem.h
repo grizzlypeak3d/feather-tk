@@ -28,7 +28,11 @@ namespace ftk
     //! Log item.
     struct FTK_API_TYPE LogItem
     {
-        float       time    = 0.F;
+        //! When the item was logged. Wall clock rather than time since the
+        //! application started: a log is read after the fact, and lining an
+        //! entry up with when something happened is the whole point of it.
+        std::chrono::system_clock::time_point time;
+
         std::string prefix;
         std::string message;
         LogType     type    = LogType::Message;
