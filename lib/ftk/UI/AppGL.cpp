@@ -232,6 +232,23 @@ namespace ftk
                 context,
                 p.settingsPath,
                 p.cmdLine.resetSettings->found());
+
+            // Keep the previous run's log. The file is written from the start
+            // each time, so without this the log of a crash is destroyed by
+            // the launch that follows it -- which is the launch someone makes
+            // to go and look at it. One file with a name of our choosing,
+            // replaced each run: nothing is searched for and nothing is
+            // deleted. A log worth more than that should be copied out of the
+            // application.
+            if (std::filesystem::exists(p.logFilePath))
+            {
+                std::filesystem::path previous = p.logFilePath;
+                previous.replace_extension("prev.log");
+                std::error_code ec;
+                std::filesystem::rename(p.logFilePath, previous, ec);
+                // Not being able to keep it is not a reason to fail to start.
+            }
+
             p.fileLogSystem = FileLogSystem::create(context, p.logFilePath);
         }
 
