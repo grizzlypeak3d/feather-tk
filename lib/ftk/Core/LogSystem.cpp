@@ -34,24 +34,23 @@ namespace ftk
         return !(*this == other);
     }
 
-    std::string getLabel(const LogItem& item, bool brief)
+    std::string getLabel(const LogItem& item, LogLabel label)
     {
         std::stringstream ss;
-        // The time is kept even in the brief form, which is what says these
-        // are a record of what happened rather than the current state. What
-        // brief drops is the prefix: "tl::ffmpeg::VideoRead" names the code
-        // that noticed, which is of no help to whoever is reading.
-        const std::time_t t = std::chrono::system_clock::to_time_t(item.time);
-        std::tm tm;
+        if (label != LogLabel::Message)
+        {
+            const std::time_t t = std::chrono::system_clock::to_time_t(item.time);
+            std::tm tm;
 #if defined(_WINDOWS)
-        localtime_s(&tm, &t);
+            localtime_s(&tm, &t);
 #else // _WINDOWS
-        localtime_r(&t, &tm);
+            localtime_r(&t, &tm);
 #endif // _WINDOWS
-        std::array<char, 32> buf;
-        std::strftime(buf.data(), buf.size(), "%Y-%m-%d %H:%M:%S", &tm);
-        ss << buf.data() << " ";
-        if (!brief)
+            std::array<char, 32> buf;
+            std::strftime(buf.data(), buf.size(), "%Y-%m-%d %H:%M:%S", &tm);
+            ss << buf.data() << " ";
+        }
+        if (LogLabel::Full == label)
         {
             ss << item.prefix << ": ";
         }

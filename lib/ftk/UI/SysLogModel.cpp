@@ -17,7 +17,7 @@ namespace ftk
 
     struct SysLogModel::Private
     {
-        std::shared_ptr<ObservableList<std::string> > messages;
+        std::shared_ptr<ObservableList<LogItem> > messages;
         std::shared_ptr<ObservableList<std::string> > log;
         std::shared_ptr<ListObserver<LogItem> > logObserver;
     };
@@ -26,7 +26,7 @@ namespace ftk
     {
         FTK_P();
 
-        p.messages = ObservableList<std::string>::create();
+        p.messages = ObservableList<LogItem>::create();
 
         p.log = ObservableList<std::string>::create();
 
@@ -36,7 +36,7 @@ namespace ftk
             [this](const std::vector<LogItem>& items)
             {
                 FTK_P();
-                std::list<std::string> messages(p.messages->get().begin(), p.messages->get().end());
+                std::list<LogItem> messages(p.messages->get().begin(), p.messages->get().end());
                 std::list<std::string> log(p.log->get().begin(), p.log->get().end());
                 for (const auto& item : items)
                 {
@@ -44,10 +44,7 @@ namespace ftk
                     {
                     case LogType::Warning:
                     case LogType::Error:
-                        for (const auto& i : split(getLabel(item, true), '\n', SplitOptions::KeepEmpty))
-                        {
-                            messages.push_back(i);
-                        }
+                        messages.push_back(item);
                         break;
                     default: break;
                     }
@@ -66,7 +63,7 @@ namespace ftk
                     log.pop_front();
                 }
 
-                p.messages->setIfChanged(std::vector<std::string>(messages.begin(), messages.end()));
+                p.messages->setIfChanged(std::vector<LogItem>(messages.begin(), messages.end()));
                 p.log->setIfChanged(std::vector<std::string>(log.begin(), log.end()));
             });
     }
@@ -86,7 +83,7 @@ namespace ftk
         return out;
     }
 
-    std::shared_ptr<IObservableList<std::string> > SysLogModel::observeMessages() const
+    std::shared_ptr<IObservableList<LogItem> > SysLogModel::observeMessages() const
     {
         return _p->messages;
     }

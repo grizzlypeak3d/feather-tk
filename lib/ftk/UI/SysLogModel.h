@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/LogSystem.h>
 #include <ftk/Core/ObservableList.h>
 
 #include <string>
@@ -30,7 +31,11 @@ namespace ftk
         static std::shared_ptr<SysLogModel> create(const std::shared_ptr<Context>&);
 
         //! Observe messages (warnings and errors).
-        std::shared_ptr<IObservableList<std::string> > observeMessages() const;
+        //!
+        //! The items are unformatted: a status bar wants the message alone,
+        //! while a list of what has happened wants the time with it, so the
+        //! choice belongs to whoever is showing them. See getLabel().
+        std::shared_ptr<IObservableList<LogItem> > observeMessages() const;
 
         //! Clear the messages.
         void clearMessages();

@@ -42,7 +42,22 @@ namespace ftk
     };
 
     //! Get a log item label.
-    FTK_API std::string getLabel(const LogItem&, bool brief = false);
+    //! What to include when a log item is formatted.
+    enum class FTK_API_TYPE LogLabel
+    {
+        //! Time, prefix and message: the log file.
+        Full,
+
+        //! Time and message, for a list of what has happened. The prefix
+        //! names the code that noticed, which does not help whoever reads it.
+        Time,
+
+        //! The message alone, for a status bar or an overlay. The time is
+        //! noise there: the message has only just appeared.
+        Message
+    };
+
+    FTK_API std::string getLabel(const LogItem&, LogLabel = LogLabel::Full);
         
     //! Log system.
     class FTK_API_TYPE LogSystem : public IBaseSystem
