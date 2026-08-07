@@ -182,10 +182,14 @@ namespace ftk
     void FileEdit::_widgetUpdate()
     {
         FTK_P();
-        p.lineEdit->setText(
-            p.lineEdit->hasKeyFocus() ?
-            p.path.get() :
-            p.path.getFileName());
+        // A file is recognizable by its name alone, so the name is all that is
+        // shown until the field is being edited. A directory is not: its last
+        // component says nothing about where it is, and for somewhere output is
+        // written that is the whole question.
+        const bool fileName =
+            FileBrowserMode::Dir != p.mode &&
+            !p.lineEdit->hasKeyFocus();
+        p.lineEdit->setText(fileName ? p.path.getFileName() : p.path.get());
         p.lineEdit->setTooltip(p.path.get());
     }
 }
