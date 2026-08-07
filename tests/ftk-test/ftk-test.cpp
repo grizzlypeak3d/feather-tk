@@ -259,6 +259,7 @@ namespace ftk
 
             // Get the tests to run.
             std::vector<std::shared_ptr<test::ITest> > runTests;
+            std::vector<std::string> unmatched;
             const auto& cmdLineTests = p.testNames->getList();
             if (!cmdLineTests.empty())
             {
@@ -267,14 +268,22 @@ namespace ftk
                 // ask for part of the suite.
                 for (const auto& test : cmdLineTests)
                 {
+                    size_t matched = 0;
                     for (const auto& other : p.tests)
                     {
-                        if (contains(other->getName(), test, CaseCompare::Insensitive) &&
-                            std::find(runTests.begin(), runTests.end(), other) ==
-                                runTests.end())
+                        if (contains(other->getName(), test, CaseCompare::Insensitive))
                         {
-                            runTests.push_back(other);
+                            ++matched;
+                            if (std::find(runTests.begin(), runTests.end(), other) ==
+                                runTests.end())
+                            {
+                                runTests.push_back(other);
+                            }
                         }
+                    }
+                    if (0 == matched)
+                    {
+                        unmatched.push_back(test);
                     }
                 }
             }
@@ -284,6 +293,17 @@ namespace ftk
                 {
                     runTests.push_back(test);
                 }
+            }
+
+            // A filter that matched nothing used to run zero tests and exit
+            // successfully, which reads exactly like a suite that passed.
+            if (!unmatched.empty())
+            {
+                for (const auto& name : unmatched)
+                {
+                    _print(Format("ERROR: no tests match: {0}").arg(name));
+                }
+                return 1;
             }
 
             // Run the tests.
@@ -299,6 +319,7 @@ namespace ftk
             const auto now = std::chrono::steady_clock::now();
             const std::chrono::duration<float> diff = now - p.startTime;
             _print(Format("Seconds elapsed: {0}").arg(diff.count(), 2));
+            _print(Format("Tests run: {0}").arg(runTests.size()));
             _print(Format("Failures: {0}").arg(failureCount));
 
             // The count is printed rather than returned: exit codes are
