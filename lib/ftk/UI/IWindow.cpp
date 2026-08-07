@@ -27,6 +27,7 @@ namespace ftk
         Size2I minSize;
         Size2I bufferSize;
         bool offscreen = false;
+        bool swapEnabled = true;
         std::shared_ptr<Observable<bool> > fullScreen;
         std::shared_ptr<Observable<bool> > floatOnTop;
         std::shared_ptr<Observable<WindowBufferType> > bufferType;
@@ -369,6 +370,16 @@ namespace ftk
     void IWindow::setOffscreen(bool value)
     {
         _p->offscreen = value;
+    }
+
+    bool IWindow::isSwapEnabled() const
+    {
+        return _p->swapEnabled;
+    }
+
+    void IWindow::setSwapEnabled(bool value)
+    {
+        _p->swapEnabled = value;
     }
 
     void IWindow::setVisible(bool value)

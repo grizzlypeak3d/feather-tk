@@ -153,6 +153,21 @@ namespace ftk
         //! tooltip into an automated capture.
         FTK_API void setOffscreen(bool);
 
+        //! Get whether the window presents to the windowing system.
+        FTK_API bool isSwapEnabled() const;
+
+        //! Set whether the window presents to the windowing system.
+        //!
+        //! The swap interval is 1, so presenting waits for the display. An
+        //! offscreen window has nothing to present, and turning this off is
+        //! what lets a headless run go faster than the monitor's refresh rate.
+        //!
+        //! It is off by default only where something asks for it, not for every
+        //! offscreen window: the screenshot harness counts its settle in ticks
+        //! rather than in seconds, so ticking faster gives media less real time
+        //! to arrive and makes captures of several files nondeterministic.
+        FTK_API void setSwapEnabled(bool);
+
         //! Capture a screenshot.
         FTK_API virtual std::shared_ptr<Image> screenshot(const Box2I & = Box2I(0, 0, -1, -1));
 

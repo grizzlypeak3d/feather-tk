@@ -425,7 +425,12 @@ namespace ftk
             }
 #endif // FTK_API_GL_4_1
 
-            p.window->swap();
+            // See setSwapEnabled(): this waits for the display, and a
+            // headless run has no reason to.
+            if (isSwapEnabled())
+            {
+                p.window->swap();
+            }
         }
     }
 
