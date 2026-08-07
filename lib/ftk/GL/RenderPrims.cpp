@@ -759,10 +759,7 @@ namespace ftk
                 shader->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
                 shader->setUniform("mirrorX", info.layout.mirror.x);
                 shader->setUniform("scaleTaps", p.scale.xTaps);
-                _setActiveTextures(info, textures);
-                shader->setUniform("textureSampler0", 0);
-                shader->setUniform("textureSampler1", 1);
-                shader->setUniform("textureSampler2", 2);
+                _setActiveTextures(shader, info, textures);
                 glActiveTexture(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, p.scale.xContrib->getID());
                 shader->setUniform("scaleContrib", 3);
@@ -878,8 +875,8 @@ namespace ftk
                 return;
             }
 
-            _setActiveTextures(info, textures);
             p.shaders["image"]->bind();
+            _setActiveTextures(p.shaders["image"], info, textures);
             p.shaders["image"]->setUniform("color", color);
             p.shaders["image"]->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
             p.shaders["image"]->setUniform("imageType", static_cast<int>(info.type));
@@ -900,24 +897,6 @@ namespace ftk
             p.shaders["image"]->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
             p.shaders["image"]->setUniform("mirrorX", info.layout.mirror.x);
             p.shaders["image"]->setUniform("mirrorY", info.layout.mirror.y);
-            switch (info.type)
-            {
-            case ImageType::YUV_420P_U8:
-            case ImageType::YUV_422P_U8:
-            case ImageType::YUV_444P_U8:
-            case ImageType::YUV_420P_U16:
-            case ImageType::YUV_422P_U16:
-            case ImageType::YUV_444P_U16:
-            case ImageType::YUV_420SP_U8:
-            case ImageType::YUV_420SP_U16:
-                p.shaders["image"]->setUniform("textureSampler0", 0);
-                p.shaders["image"]->setUniform("textureSampler1", 1);
-                p.shaders["image"]->setUniform("textureSampler2", 2);
-                break;
-            default:
-                p.shaders["image"]->setUniform("textureSampler0", 0);
-                break;
-            }
 
             if (imageOptions.alphaBlend != AlphaBlend::None)
             {

@@ -114,7 +114,10 @@ namespace ftk
                 const std::shared_ptr<Image>&,
                 const std::vector<std::shared_ptr<Texture> >&,
                 size_t offset = 0);
+            //! Bind the image's planes to consecutive texture units and point
+            //! the shader's samplers at them.
             void _setActiveTextures(
+                const std::shared_ptr<Shader>&,
                 const ImageInfo& info,
                 const std::vector<std::shared_ptr<Texture> >&,
                 size_t offset = 0);

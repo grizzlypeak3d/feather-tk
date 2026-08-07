@@ -465,67 +465,21 @@ namespace ftk
         }
 
         void Render::_setActiveTextures(
+            const std::shared_ptr<Shader>& shader,
             const ImageInfo& info,
             const std::vector<std::shared_ptr<Texture> >& textures,
             size_t offset)
         {
+            // How many units were bound, which is not the number of textures:
+            // the NV12 formats bind their interleaved chroma plane twice.
+            size_t units = 0;
             switch (info.type)
             {
             case ImageType::YUV_420P_U8:
-                if (3 == textures.size())
-                {
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
-                    textures[0]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 1 + offset));
-                    textures[1]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
-                    textures[2]->bind();
-                }
-                break;
             case ImageType::YUV_422P_U8:
-                if (3 == textures.size())
-                {
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
-                    textures[0]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 1 + offset));
-                    textures[1]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
-                    textures[2]->bind();
-                }
-                break;
             case ImageType::YUV_444P_U8:
-                if (3 == textures.size())
-                {
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
-                    textures[0]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 1 + offset));
-                    textures[1]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
-                    textures[2]->bind();
-                }
-                break;
             case ImageType::YUV_420P_U16:
-                if (3 == textures.size())
-                {
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
-                    textures[0]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 1 + offset));
-                    textures[1]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
-                    textures[2]->bind();
-                }
-                break;
             case ImageType::YUV_422P_U16:
-                if (3 == textures.size())
-                {
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
-                    textures[0]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 1 + offset));
-                    textures[1]->bind();
-                    glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
-                    textures[2]->bind();
-                }
-                break;
             case ImageType::YUV_444P_U16:
                 if (3 == textures.size())
                 {
@@ -535,6 +489,7 @@ namespace ftk
                     textures[1]->bind();
                     glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
                     textures[2]->bind();
+                    units = 3;
                 }
                 break;
             case ImageType::YUV_420SP_U8:
@@ -550,6 +505,7 @@ namespace ftk
                     textures[1]->bind();
                     glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + 2 + offset));
                     textures[1]->bind();
+                    units = 3;
                 }
                 break;
             default:
@@ -557,8 +513,23 @@ namespace ftk
                 {
                     glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));
                     textures[0]->bind();
+                    units = 1;
                 }
                 break;
+            }
+
+            // All three samplers stay active whatever the image type, because
+            // the shader branches on a uniform rather than at compile time.
+            // Aim the unused ones at the first plane instead of a unit with
+            // nothing bound: macOS logs "unit N ... is unloadable" when it
+            // validates the program. Setting them every time also matters --
+            // uniforms live on the shader, so a YUV image used to leave 1 and 2
+            // pointing at units that the next RGB image never binds.
+            for (size_t i = 0; i < 3; ++i)
+            {
+                shader->setUniform(
+                    "textureSampler" + std::to_string(i),
+                    static_cast<int>(offset + (i < units ? i : 0)));
             }
         }
         
