@@ -5,3 +5,6 @@ doxygen
 .vscode
 __pycache__
 .DS_Store
+
+# Personal build settings, read by etc/Config/default.cmake.
+etc/Config/local.cmake

@@ -1,21 +1,9 @@
 #!/bin/sh
 
-set -x
+# Usage: sh sbuild-macos.sh [source directory] [build type] [config]
+#
+# The config names a file in etc/Config; "default" builds everything. Personal
+# settings go in etc/Config/local.cmake, which is not tracked. For the number
+# of build jobs, export CMAKE_BUILD_PARALLEL_LEVEL.
 
-SOURCE_DIR=${1:-feather-tk}
-BUILD_TYPE=${2:-Release}
-
-export JOBS=4
-export FTK_API=GL_4_1
-export FTK_SDL2=ON
-export FTK_SDL3=OFF
-export FTK_NFD=OFF
-export FTK_PYTHON=OFF
-export FTK_TESTS=ON
-export FTK_EXAMPLES=ON
-export FTK_GCOV=OFF
-export BUILD_SHARED_LIBS=OFF
-export CMAKE_OSX_DEPLOYMENT_TARGET=10.15
-export CMAKE_OSX_ARCHITECTURES=arm64
-
-sh $SOURCE_DIR/etc/macOS/sbuild.sh $SOURCE_DIR $BUILD_TYPE
+sh ${1:-feather-tk}/etc/macOS/sbuild.sh ${1:-feather-tk} ${2:-Release} ${3:-default}

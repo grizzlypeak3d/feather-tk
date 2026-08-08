@@ -1,17 +1,14 @@
+rem Usage: sbuild-win.bat [source directory] [build type] [config]
+rem
+rem The config names a file in etc/Config; "default" builds everything.
+rem Personal settings go in etc/Config/local.cmake, which is not tracked. For
+rem the number of build jobs, set CMAKE_BUILD_PARALLEL_LEVEL.
+
 set SOURCE_DIR=%1
 set BUILD_TYPE=%2
+set CONFIG=%3
 IF "%SOURCE_DIR%"=="" set SOURCE_DIR=feather-tk
 IF "%BUILD_TYPE%"=="" set BUILD_TYPE=Release
+IF "%CONFIG%"=="" set CONFIG=default
 
-set JOBS=4
-set FTK_API=GL_4_1
-set FTK_SDL2=ON
-set FTK_SDL3=OFF
-set FTK_NFD=OFF
-set FTK_PYTHON=OFF
-set FTK_TESTS=ON
-set FTK_EXAMPLES=ON
-set FTK_GCOV=OFF
-set BUILD_SHARED_LIBS=OFF
-
-%SOURCE_DIR%\etc\Windows\sbuild.bat %SOURCE_DIR% %BUILD_TYPE%
+%SOURCE_DIR%\etc\Windows\sbuild.bat %SOURCE_DIR% %BUILD_TYPE% %CONFIG%
