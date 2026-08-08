@@ -8,6 +8,9 @@ set CONFIG=%3
 IF "%CONFIG%"=="" set CONFIG=default
 set CONFIG_FILE=%SOURCE_DIR%/etc/Config/%CONFIG%.cmake
 
+rem Build with every core unless told otherwise; cmake --build reads this.
+IF "%CMAKE_BUILD_PARALLEL_LEVEL%"=="" set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_PROCESSORS%
+
 cmake ^
     -S %SOURCE_DIR%/etc/SuperBuild ^
     -B sb-%BUILD_TYPE% ^

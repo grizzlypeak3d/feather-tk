@@ -7,16 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      JOBS: 4
-      FTK_API: GL_4_1
-      FTK_SDL2: ON
-      FTK_SDL3: OFF
-      FTK_NFD: OFF
-      FTK_PYTHON: ON
-      FTK_TESTS: ON
-      FTK_EXAMPLES: ON
-      FTK_GCOV: ON
-      BUILD_SHARED_LIBS: OFF
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     steps:
     - uses: actions/checkout@v6
@@ -36,7 +27,7 @@ jobs:
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/sbuild.sh ftk Debug
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux
 
     - name: Run tests
       run: |
@@ -44,7 +35,6 @@ jobs:
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
-      if: env.FTK_GCOV == 'ON'
       run: |
         cd build-Debug
         sh ../ftk/etc/Linux/lcov.sh
@@ -53,16 +43,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      JOBS: 4
-      FTK_API: GL_4_1
-      FTK_SDL2: OFF
-      FTK_SDL3: ON
-      FTK_NFD: OFF
-      FTK_PYTHON: ON
-      FTK_TESTS: ON
-      FTK_EXAMPLES: ON
-      FTK_GCOV: ON
-      BUILD_SHARED_LIBS: OFF
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     steps:
     - uses: actions/checkout@v6
@@ -82,7 +63,7 @@ jobs:
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/sbuild.sh ftk Debug
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-sdl3
 
     - name: Run tests
       run: |
@@ -90,7 +71,6 @@ jobs:
         xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
-      if: env.FTK_GCOV == 'ON'
       run: |
         cd build-Debug
         sh ../ftk/etc/Linux/lcov.sh
@@ -99,16 +79,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      JOBS: 4
-      FTK_API: GLES_2
-      FTK_SDL2: ON
-      FTK_SDL3: OFF
-      FTK_NFD: OFF
-      FTK_PYTHON: ON
-      FTK_TESTS: ON
-      FTK_EXAMPLES: ON
-      FTK_GCOV: OFF
-      BUILD_SHARED_LIBS: OFF
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     steps:
     - uses: actions/checkout@v6
@@ -128,7 +99,7 @@ jobs:
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/sbuild.sh ftk Debug
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-gles2
 
     - name: Run tests
       run: |
@@ -139,18 +110,7 @@ jobs:
     runs-on: macos-15-intel
 
     env:
-      JOBS: 4
-      FTK_API: GL_4_1
-      FTK_SDL2: ON
-      FTK_SDL3: OFF
-      FTK_NFD: OFF
-      FTK_PYTHON: ON
-      FTK_TESTS: ON
-      FTK_EXAMPLES: OFF
-      FTK_GCOV: OFF
-      BUILD_SHARED_LIBS: OFF
-      CMAKE_OSX_DEPLOYMENT_TARGET: 10.15
-      CMAKE_OSX_ARCHITECTURES: x86_64
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     steps:
     - uses: actions/checkout@v6
@@ -173,7 +133,7 @@ jobs:
     - name: Build
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        sh ftk/etc/macOS/sbuild.sh ftk Debug
+        sh ftk/etc/macOS/sbuild.sh ftk Debug ci
 
     # \bug Disable tests since macOS CI doesn't work with OpenGL?
     #- name: Run tests
@@ -186,18 +146,7 @@ jobs:
     runs-on: macos-latest
 
     env:
-      JOBS: 4
-      FTK_API: GL_4_1
-      FTK_SDL2: ON
-      FTK_SDL3: OFF
-      FTK_NFD: OFF
-      FTK_PYTHON: ON
-      FTK_TESTS: ON
-      FTK_EXAMPLES: OFF
-      FTK_GCOV: OFF
-      BUILD_SHARED_LIBS: OFF
-      CMAKE_OSX_DEPLOYMENT_TARGET: 14
-      CMAKE_OSX_ARCHITECTURES: arm64
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     steps:
     - uses: actions/checkout@v6
@@ -220,7 +169,7 @@ jobs:
     - name: Build
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        sh ftk/etc/macOS/sbuild.sh ftk Debug
+        sh ftk/etc/macOS/sbuild.sh ftk Debug ci
 
     # \bug Disable tests since macOS CI doesn't work with OpenGL?
     #- name: Run tests
@@ -233,16 +182,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      JOBS: 4
-      FTK_API: GL_4_1
-      FTK_SDL2: ON
-      FTK_SDL3: OFF
-      FTK_NFD: OFF
-      FTK_PYTHON: ON
-      FTK_TESTS: ON
-      FTK_EXAMPLES: OFF
-      FTK_GCOV: OFF
-      BUILD_SHARED_LIBS: OFF
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
 
     steps:
     - uses: actions/checkout@v6
@@ -265,7 +205,7 @@ jobs:
     - name: Build
       shell: cmd
       run: |
-        ftk\etc\Windows\sbuild.bat ftk Debug
+        ftk\etc\Windows\sbuild.bat ftk Debug ci
 
     # \bug Disable tests since Windows CI doesn't work with OpenGL?
     #- name: Run tests

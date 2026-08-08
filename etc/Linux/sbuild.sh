@@ -12,6 +12,12 @@ BUILD_TYPE=$2
 CONFIG=${3:-default}
 CONFIG_FILE=$SOURCE_DIR/etc/Config/$CONFIG.cmake
 
+# Build with every core unless told otherwise; "cmake --build" reads this.
+if [ -z "$CMAKE_BUILD_PARALLEL_LEVEL" ]; then
+    CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
+    export CMAKE_BUILD_PARALLEL_LEVEL
+fi
+
 cmake \
     -S $SOURCE_DIR/etc/SuperBuild \
     -B sb-$BUILD_TYPE \
