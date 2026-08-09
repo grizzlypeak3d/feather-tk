@@ -67,10 +67,14 @@ namespace ftk
     {}
 
     MouseMoveEvent::MouseMoveEvent(
-        const V2I & pos,
-        const V2I & prev) :
+        const V2I&  pos,
+        const V2I&  prev,
+        MouseButton button,
+        int         modifiers) :
         pos(pos),
-        prev(prev)
+        prev(prev),
+        button(button),
+        modifiers(modifiers)
     {}
 
     FTK_ENUM_IMPL(

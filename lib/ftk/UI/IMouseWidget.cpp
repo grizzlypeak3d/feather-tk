@@ -60,6 +60,8 @@ namespace ftk
             _mousePos = event.pos;
             _mousePress = true;
             _mousePressPos = event.pos;
+            _mousePressedButton = event.button;
+            _mousePressedModifiers = event.modifiers;
         }
     }
 
@@ -69,6 +71,8 @@ namespace ftk
         {
             event.accept = true;
             _mousePress = false;
+            _mousePressedButton = MouseButton::None;
+            _mousePressedModifiers = 0;
         }
     }
 
@@ -105,5 +109,15 @@ namespace ftk
     const V2I& IMouseWidget::_getMousePressPos() const
     {
         return _mousePressPos;
+    }
+
+    MouseButton IMouseWidget::_getMousePressButton() const
+    {
+        return _mousePressedButton;
+    }
+
+    int IMouseWidget::_getMousePressModifiers() const
+    {
+        return _mousePressedModifiers;
     }
 }

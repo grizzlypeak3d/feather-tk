@@ -41,6 +41,11 @@ namespace ftk
         bool _isMousePressed() const;
         const V2I& _getMousePressPos() const;
 
+        //! Get the button holding the press, and the modifiers it came with.
+        //! None and zero when nothing is pressed.
+        MouseButton _getMousePressButton() const;
+        int _getMousePressModifiers() const;
+
     private:
         bool _mouseHoverEnabled = false;
         bool _mousePressEnabled = false;
@@ -50,6 +55,8 @@ namespace ftk
         V2I _mousePos;
         bool _mousePress = false;
         V2I _mousePressPos;
+        MouseButton _mousePressedButton = MouseButton::None;
+        int _mousePressedModifiers = 0;
     };
 }
 

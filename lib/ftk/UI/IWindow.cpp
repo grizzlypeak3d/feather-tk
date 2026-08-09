@@ -709,8 +709,14 @@ namespace ftk
         p.cursorPosPrev = p.cursorPos;
         p.cursorPos = pos;
 
-        MouseMoveEvent event(p.cursorPos, p.cursorPosPrev);
+        // The button doing the dragging travels with the move, so a widget
+        // does not have to remember it from the press.
         auto widget = p.mousePress.lock();
+        MouseMoveEvent event(
+            p.cursorPos,
+            p.cursorPosPrev,
+            widget ? p.mouseClickEvent.button : MouseButton::None,
+            widget ? p.mouseClickEvent.modifiers : 0);
         if (widget)
         {
             if (p.dragDropData)

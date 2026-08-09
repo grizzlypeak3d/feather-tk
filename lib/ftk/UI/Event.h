@@ -100,21 +100,6 @@ namespace ftk
         V2I  pos;
     };
 
-    //! Mouse move event.
-    struct FTK_API_TYPE MouseMoveEvent
-    {
-        FTK_API MouseMoveEvent(
-            const V2I& pos,
-            const V2I& prev);
-
-        V2I                            pos;
-        V2I                            prev;
-        bool                           accept = false;
-        std::shared_ptr<IDragDropData> dragDropData;
-        std::shared_ptr<Image>         dragDropCursor;
-        V2I                            dragDropCursorHotspot;
-    };
-
     //! Mouse buttons.
     enum class FTK_API_TYPE MouseButton
     {
@@ -129,6 +114,33 @@ namespace ftk
         First = None
     };
     FTK_ENUM(MouseButton);
+
+    //! Mouse move event.
+    struct FTK_API_TYPE MouseMoveEvent
+    {
+        FTK_API MouseMoveEvent(
+            const V2I&  pos,
+            const V2I&  prev,
+            MouseButton button = MouseButton::None,
+            int         modifiers = 0);
+
+        V2I                            pos;
+        V2I                            prev;
+
+        //! The button held down during the move, and the modifiers it was
+        //! pressed with. None when nothing is held.
+        //!
+        //! Here because a widget that drags needs to know which button is
+        //! doing it, and without this every one of them records the button in
+        //! its press handler and clears it in its release handler.
+        MouseButton                    button = MouseButton::None;
+        int                            modifiers = 0;
+
+        bool                           accept = false;
+        std::shared_ptr<IDragDropData> dragDropData;
+        std::shared_ptr<Image>         dragDropCursor;
+        V2I                            dragDropCursorHotspot;
+    };
 
     //! Keyboard modifiers.
     //!
