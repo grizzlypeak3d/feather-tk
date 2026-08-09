@@ -1,81 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
+<!-- The undo arrow at the size the reset buttons want. This used to be a
+     cross, which next to a value reads as "remove this" rather than as "put
+     it back". -->
 <svg
    width="11"
    height="11"
-   viewBox="0 0 2.9104166 2.9104166"
+   viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
-   sodipodi:docname="Reset.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <defs
-     id="defs2" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="31.659099"
-     inkscape:cx="5.54343"
-     inkscape:cy="11.386932"
-     inkscape:document-units="px"
-     inkscape:current-layer="ForwardPlayback"
-     showgrid="true"
-     units="px"
-     inkscape:window-width="1312"
-     inkscape:window-height="969"
-     inkscape:window-x="426"
-     inkscape:window-y="190"
-     inkscape:window-maximized="0"
-     inkscape:pagecheckerboard="0"
-     inkscape:showpageshadow="2"
-     inkscape:deskcolor="#d1d1d1">
-    <inkscape:grid
-       type="xygrid"
-       id="grid4526"
-       empspacing="10"
-       originx="0"
-       originy="0"
-       spacingy="0.26458333"
-       spacingx="0.26458333"
-       units="px" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata5">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
+   xmlns:svg="http://www.w3.org/2000/svg">
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-291.70831)">
     <g
-       id="ForwardPlayback"
-       inkscape:label="#g4524"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96">
+       id="Reset">
       <path
-         id="rect831-8"
-         style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 0.28595089,294.05208 0.28048649,0.28077 0.88883482,-0.88859 0.8887485,0.8887 0.2823691,-0.28265 -0.8887486,-0.8887 0.8867716,-0.88674 -0.2804865,-0.28077 -0.8867766,0.88673 -0.88873525,-0.88849 -0.28237257,0.28264 0.88874572,0.8885 z"
-         sodipodi:nodetypes="ccccccccccccc" />
+         id="path5287"
+         style="fill:#f0f0f0;stroke-width:2.64583"
+         d="m 2.6458333,292.76664 a -1.5875,1.5875 0 0 1 1.5875,1.5875 -1.5875,1.5875 0 0 1 -1.5875,1.5875 -1.5875,1.5875 0 0 1 -1.5875,-1.5875 h 0.396875 a -1.190625,1.190625 0 0 0 1.190625,1.19063 -1.190625,1.190625 0 0 0 1.190625,-1.19063 -1.190625,1.190625 0 0 0 -1.190625,-1.19062 z" />
+      <path
+         id="path2"
+         style="fill:#f0f0f0;fill-opacity:1;stroke-width:3.18444"
+         d="m 1.7259929,292.96508 0.9198404,-0.66146 v 1.32291 z" />
     </g>
   </g>
 </svg>
