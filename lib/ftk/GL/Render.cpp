@@ -7,6 +7,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     namespace gl
@@ -142,8 +144,20 @@ namespace ftk
         {
             FTK_P();
             const auto now = std::chrono::steady_clock::now();
-            const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(now - p.startTime);
-            p.diag.time = diff.count();
+            const auto diff = std::chrono::duration_cast<std::chrono::microseconds>(
+                now - p.startTime);
+            p.frameTimes[p.frameTimePos] = diff.count();
+            p.frameTimePos = (p.frameTimePos + 1) % p.frameTimes.size();
+            p.frameTimeCount = std::min(p.frameTimeCount + 1, p.frameTimes.size());
+            int64_t total = 0;
+            int64_t peak = 0;
+            for (size_t i = 0; i < p.frameTimeCount; ++i)
+            {
+                total += p.frameTimes[i];
+                peak = std::max(peak, p.frameTimes[i]);
+            }
+            p.diag.time = total / static_cast<int64_t>(p.frameTimeCount);
+            p.diag.timePeak = peak;
         }
 
         Size2I Render::getRenderSize() const

@@ -14,6 +14,8 @@
 #include <map>
 #include <unordered_map>
 
+#include <array>
+
 namespace ftk
 {
     namespace gl
@@ -83,6 +85,12 @@ namespace ftk
 
             std::chrono::time_point<std::chrono::steady_clock> startTime;
             RenderDiag diag;
+
+            //! Frame times in microseconds, oldest overwritten first. About a
+            //! second at sixty frames a second.
+            std::array<int64_t, 60> frameTimes;
+            size_t frameTimePos = 0;
+            size_t frameTimeCount = 0;
         };
     }
 }

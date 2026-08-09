@@ -23,7 +23,19 @@ namespace ftk
     //! Render diagnostics.
     struct FTK_API_TYPE RenderDiag
     {
+        //! Mean frame time over the last few dozen frames, in microseconds.
+        //!
+        //! A mean rather than the last frame, and microseconds rather than
+        //! milliseconds, because this is read by a sampler that fires every
+        //! few seconds: one frame rounded to a millisecond varies by more than
+        //! the thing being measured, which makes the number useless for
+        //! comparing one configuration against another.
         int64_t time = 0;
+
+        //! The worst frame over the same window, in microseconds. The mean
+        //! says what it costs; the peak says whether it hitches.
+        int64_t timePeak = 0;
+
         int64_t triangles = 0;
         int64_t textures = 0;
         int64_t glyphs = 0;

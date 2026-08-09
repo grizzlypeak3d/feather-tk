@@ -65,11 +65,18 @@ namespace ftk
         auto diagSystem = context->getSystem<DiagSystem>();
         std::weak_ptr<Window> windowWeak(std::dynamic_pointer_cast<Window>(shared_from_this()));
         diagSystem->addSampler(
-            "ftk Frame/Time: {0}ms",
+            "ftk Frame/Time: {0}us",
             [windowWeak]
             {
                 auto window = windowWeak.lock();
                 return window ? window->_p->render->getDiag().time : 0;
+            });
+        diagSystem->addSampler(
+            "ftk Frame/Peak: {0}us",
+            [windowWeak]
+            {
+                auto window = windowWeak.lock();
+                return window ? window->_p->render->getDiag().timePeak : 0;
             });
         diagSystem->addSampler(
             "ftk Frame/Triangles: {0}",
