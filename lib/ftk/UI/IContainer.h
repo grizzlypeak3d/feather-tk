@@ -61,6 +61,11 @@ namespace ftk
 
     private:
         std::shared_ptr<IWidget> _widget;
+
+        //! Whether _setWidget() has been called at all, which is not the same
+        //! as the child being null: a container may be deliberately empty, but
+        //! one that never set a child at all is a subclass that forgot.
+        bool _widgetSet = false;
     };
 
     ///@}

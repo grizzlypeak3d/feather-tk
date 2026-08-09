@@ -156,7 +156,10 @@ namespace ftk
     void ScrollWidget::setWidget(const std::shared_ptr<IWidget>& value)
     {
         FTK_P();
-        if (p.widget)
+        // Only if it is still ours. A caller replacing the child may have put
+        // the old one inside the new one, and letting go of it then would take
+        // it back out again.
+        if (p.widget && p.widget->getParent() == _p->scrollArea)
         {
             p.widget->setParent(nullptr);
         }

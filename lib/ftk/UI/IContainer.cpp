@@ -3,6 +3,8 @@
 
 #include <ftk/UI/IContainer.h>
 
+#include <ftk/Core/Assert.h>
+
 namespace ftk
 {
     void IContainer::_init(
@@ -36,6 +38,7 @@ namespace ftk
             _widget->setParent(nullptr);
         }
         _widget = value;
+        _widgetSet = true;
         if (_widget)
         {
             _widget->setParent(shared_from_this());
@@ -51,6 +54,10 @@ namespace ftk
 
     void IContainer::setGeometry(const Box2I& value)
     {
+        // A subclass that never calls _setWidget() lays out nothing and draws
+        // nothing, and compiles perfectly well while doing it. That is a hard
+        // failure to find from the outside, so it is one to fail loudly on.
+        FTK_ASSERT(_widgetSet);
         IWidget::setGeometry(value);
         if (_widget)
         {
