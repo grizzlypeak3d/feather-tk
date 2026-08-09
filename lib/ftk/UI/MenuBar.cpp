@@ -123,6 +123,27 @@ namespace ftk
         return out;
     }
 
+    void MenuBar::insertMenu(
+        size_t index,
+        const std::string& text,
+        const std::shared_ptr<Menu>& menu)
+    {
+        FTK_P();
+        addMenu(text, menu);
+        if (index < p.menus.size() - 1 && !p.buttons.empty())
+        {
+            auto addedMenu = p.menus.back();
+            auto addedButton = p.buttons.back();
+            p.menus.pop_back();
+            p.buttons.pop_back();
+            p.menus.insert(p.menus.begin() + index, addedMenu);
+            p.buttons.insert(p.buttons.begin() + index, addedButton);
+            // The buttons look their index up when they are clicked, so only
+            // the layout order has to follow.
+            p.layout->moveToIndex(addedButton, index);
+        }
+    }
+
     void MenuBar::setMenuText(
         const std::shared_ptr<Menu>& menu,
         const std::string& text)

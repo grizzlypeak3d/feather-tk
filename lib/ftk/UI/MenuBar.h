@@ -40,6 +40,16 @@ namespace ftk
         //! Add a menu.
         FTK_API std::shared_ptr<Menu> addMenu(const std::string& text);
 
+        //! Insert a menu at the given position, clamped to the end.
+        //!
+        //! For replacing one of the menus a framework put there: remove it and
+        //! insert the application's own where it was, rather than appending it
+        //! after everything else and leaving File on the right hand side.
+        FTK_API void insertMenu(
+            size_t index,
+            const std::string& text,
+            const std::shared_ptr<Menu>&);
+
         //! Get a menu.
         FTK_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 
