@@ -60,6 +60,15 @@ namespace ftk
         FTK_API std::shared_ptr<IObservableMap<std::string, int64_t> > observeSamplesInc() const;
 
         FTK_API void tick() override;
+        //! Set how often the samplers are read.
+        //!
+        //! The default is a few seconds, which makes the graphs a trend over
+        //! minutes. An application wanting to see a hitch needs something
+        //! shorter, and one sampling something expensive may want longer --
+        //! sample often enough and the diagnostics become part of what they are
+        //! measuring.
+        FTK_API void setTickTime(const std::chrono::milliseconds&);
+
         FTK_API std::chrono::milliseconds getTickTime() const override;
 
     private:

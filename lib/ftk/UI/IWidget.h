@@ -54,6 +54,13 @@ namespace ftk
         std::shared_ptr<IWidget> getParent() const;
 
         //! Set the parent widget.
+        //!
+        //! A parent holds its children by shared pointer, so this is what
+        //! decides a widget's lifetime: dropping your own reference to a widget
+        //! does not destroy it while it still has a parent. A widget detached
+        //! and not re-parented is destroyed when the last other reference goes;
+        //! one that is only forgotten about stays in the tree, keeps its last
+        //! geometry, and goes on drawing.
         FTK_API void setParent(const std::shared_ptr<IWidget>&);
 
         //! Get the children widgets.
@@ -286,10 +293,13 @@ namespace ftk
         //! should be called.
         FTK_API virtual void clipEvent(const Box2I&, bool clipped);
 
-        //! Draw event.
+        //! Draw event. This runs before the children are drawn, so anything
+        //! drawn here is behind them; use drawOverlayEvent() to draw over them.
         FTK_API virtual void drawEvent(const Box2I&, const DrawEvent&);
 
-        //! Draw overlay event.
+        //! Draw overlay event. This runs after the children are drawn, which
+        //! is where a border or a highlight belongs when the children fill the
+        //! widget.
         FTK_API virtual void drawOverlayEvent(const Box2I&, const DrawEvent&);
 
         //! Mouse enter event.

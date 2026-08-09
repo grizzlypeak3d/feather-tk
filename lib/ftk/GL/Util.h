@@ -40,6 +40,32 @@ namespace ftk
             FTK_PRIVATE();
         };
 
+        //! Save the OpenGL state a widget is likely to change, and put it back
+        //! when finished.
+        //!
+        //! The renderer sets some state once for the whole frame and leaves it:
+        //! blending is enabled in begin() and the primitives only ever set the
+        //! blend function. A widget that draws its own OpenGL and does not put
+        //! things back therefore breaks the widgets drawn after it -- turning
+        //! blending off draws every glyph that follows as a solid box, which is
+        //! not a failure anyone traces back to the widget that caused it.
+        //!
+        //! Covers blending and its function, the depth test and its write mask,
+        //! face culling, the scissor test, and the program point size. Reading
+        //! state back is not free, so this is one call at the top of a draw
+        //! rather than something to sprinkle about; SetAndRestore is the finer
+        //! tool when only one capability is in question.
+        class FTK_API_TYPE StateSave
+        {
+        public:
+            FTK_API StateSave();
+
+            FTK_API ~StateSave();
+
+        private:
+            FTK_PRIVATE();
+        };
+
         //! Get an OpenGL error label.
         FTK_API std::string getErrorLabel(unsigned int);
         

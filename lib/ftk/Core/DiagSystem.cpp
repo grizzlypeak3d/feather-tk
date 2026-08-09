@@ -15,7 +15,7 @@ namespace ftk
 {
     namespace
     {
-        const std::chrono::seconds tickTime = std::chrono::seconds(3);
+        const std::chrono::seconds tickTimeDefault = std::chrono::seconds(3);
         const std::chrono::seconds logTickTime = std::chrono::seconds(9);
     }
     struct DiagSystem::Private
@@ -27,6 +27,9 @@ namespace ftk
         std::shared_ptr<ObservableMap<std::string, std::vector<int64_t> > > samples;
         std::shared_ptr<ObservableMap<std::string, int64_t> > samplesInc;
         std::shared_ptr<Timer> logTimer;
+        std::chrono::milliseconds tickTime =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                tickTimeDefault);
     };
 
     DiagSystem::DiagSystem(const std::shared_ptr<Context>& context) :
@@ -189,9 +192,14 @@ namespace ftk
         p.samples->setAlways(samples);
     }
 
+    void DiagSystem::setTickTime(const std::chrono::milliseconds& value)
+    {
+        _p->tickTime = value;
+    }
+
     std::chrono::milliseconds DiagSystem::getTickTime() const
     {
-        return std::chrono::seconds(tickTime);
+        return _p->tickTime;
     }
 
     void DiagSystem::_log()

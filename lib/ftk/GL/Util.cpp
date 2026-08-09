@@ -222,6 +222,73 @@ namespace ftk
             }
         }
 
+        namespace
+        {
+            void setEnabled(GLenum id, GLboolean value)
+            {
+                if (value)
+                {
+                    glEnable(id);
+                }
+                else
+                {
+                    glDisable(id);
+                }
+            }
+        }
+
+        struct StateSave::Private
+        {
+            GLboolean blend = GL_FALSE;
+            GLint blendSrcRGB = GL_ONE;
+            GLint blendDstRGB = GL_ZERO;
+            GLint blendSrcAlpha = GL_ONE;
+            GLint blendDstAlpha = GL_ZERO;
+            GLboolean depthTest = GL_FALSE;
+            GLboolean depthMask = GL_TRUE;
+            GLboolean cullFace = GL_FALSE;
+            GLboolean scissorTest = GL_FALSE;
+#if defined(FTK_API_GL_4_1)
+            GLboolean programPointSize = GL_FALSE;
+#endif // FTK_API_GL_4_1
+        };
+
+        StateSave::StateSave() :
+            _p(new Private)
+        {
+            FTK_P();
+            glGetBooleanv(GL_BLEND, &p.blend);
+            glGetIntegerv(GL_BLEND_SRC_RGB, &p.blendSrcRGB);
+            glGetIntegerv(GL_BLEND_DST_RGB, &p.blendDstRGB);
+            glGetIntegerv(GL_BLEND_SRC_ALPHA, &p.blendSrcAlpha);
+            glGetIntegerv(GL_BLEND_DST_ALPHA, &p.blendDstAlpha);
+            glGetBooleanv(GL_DEPTH_TEST, &p.depthTest);
+            glGetBooleanv(GL_DEPTH_WRITEMASK, &p.depthMask);
+            glGetBooleanv(GL_CULL_FACE, &p.cullFace);
+            glGetBooleanv(GL_SCISSOR_TEST, &p.scissorTest);
+#if defined(FTK_API_GL_4_1)
+            glGetBooleanv(GL_PROGRAM_POINT_SIZE, &p.programPointSize);
+#endif // FTK_API_GL_4_1
+        }
+
+        StateSave::~StateSave()
+        {
+            FTK_P();
+            setEnabled(GL_BLEND, p.blend);
+            glBlendFuncSeparate(
+                p.blendSrcRGB,
+                p.blendDstRGB,
+                p.blendSrcAlpha,
+                p.blendDstAlpha);
+            setEnabled(GL_DEPTH_TEST, p.depthTest);
+            glDepthMask(p.depthMask);
+            setEnabled(GL_CULL_FACE, p.cullFace);
+            setEnabled(GL_SCISSOR_TEST, p.scissorTest);
+#if defined(FTK_API_GL_4_1)
+            setEnabled(GL_PROGRAM_POINT_SIZE, p.programPointSize);
+#endif // FTK_API_GL_4_1
+        }
+
         std::string getErrorLabel(unsigned int value)
         {
             std::string out;

@@ -7,6 +7,7 @@
 
 namespace ftk
 {
+    class MenuBarButton;
     class Action;
 
     //! \name Menu Widgets
@@ -41,6 +42,13 @@ namespace ftk
         //! Get a menu.
         FTK_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 
+        //! Remove a menu, leaving the rest alone.
+        //!
+        //! Without this a bar whose menus come and go has to be cleared and
+        //! rebuilt, which throws away the menus that were not changing and
+        //! destroys the button that may be dispatching the click asking for it.
+        FTK_API void removeMenu(const std::string&);
+
         //! Clear the menus.
         FTK_API void clear();
 
@@ -54,6 +62,7 @@ namespace ftk
         FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
+        int _getIndex(const std::shared_ptr<MenuBarButton>&) const;
         void _setCurrent(int);
         void _currentUpdate();
 

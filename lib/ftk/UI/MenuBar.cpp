@@ -55,24 +55,27 @@ namespace ftk
         {
             auto button = MenuBarButton::create(context, text, p.layout);
 
-            const int index = static_cast<int>(p.buttons.size());
             p.buttons.push_back(button);
 
+            // The index is looked up when the callback runs rather than
+            // captured when it is made, so that removing a menu does not leave
+            // the buttons after it pointing at their old positions.
+            auto buttonWeak = std::weak_ptr<MenuBarButton>(button);
             button->setHoveredCallback(
-                [this, index](bool value)
+                [this, buttonWeak](bool value)
                 {
                     if (value)
                     {
                         if (_getOpenMenu() || hasKeyFocus())
                         {
-                            _setCurrent(index);
+                            _setCurrent(_getIndex(buttonWeak.lock()));
                         }
                     }
                 });
 
             auto menuWeak = std::weak_ptr<Menu>(menu);
             button->setPressedCallback(
-                [this, menuWeak, index]
+                [this, menuWeak, buttonWeak]
                 {
                     FTK_P();
                     auto menu = _getOpenMenu();
@@ -82,6 +85,7 @@ namespace ftk
                     }
                     else
                     {
+                        const int index = _getIndex(buttonWeak.lock());
                         takeKeyFocus();
                         _setCurrent(index);
                         _openMenu(index);
@@ -116,6 +120,45 @@ namespace ftk
             }
         }
         return out;
+    }
+
+    void MenuBar::removeMenu(const std::string& text)
+    {
+        FTK_P();
+        for (int index = 0;
+            index < static_cast<int>(p.menus.size()) &&
+            index < static_cast<int>(p.buttons.size());
+            ++index)
+        {
+            if (text == p.buttons[index]->getText())
+            {
+                if (auto menu = _getOpenMenu())
+                {
+                    menu->close();
+                }
+                p.menus[index]->setParent(nullptr);
+                p.buttons[index]->setParent(nullptr);
+                p.menus.erase(p.menus.begin() + index);
+                p.buttons.erase(p.buttons.begin() + index);
+                if (p.current >= static_cast<int>(p.buttons.size()))
+                {
+                    p.current = static_cast<int>(p.buttons.size()) - 1;
+                }
+                _currentUpdate();
+                break;
+            }
+        }
+    }
+
+    int MenuBar::_getIndex(const std::shared_ptr<MenuBarButton>& button) const
+    {
+        FTK_P();
+        for (int index = 0; index < static_cast<int>(p.buttons.size()); ++index)
+        {
+            if (button == p.buttons[index])
+                return index;
+        }
+        return -1;
     }
 
     void MenuBar::clear()
