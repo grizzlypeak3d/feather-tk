@@ -43,6 +43,12 @@ namespace ftk
             Box2I y = Box2I(0, 0, -1, -1);
             Box2I both = Box2I(0, 0, -1, -1);
 
+            //! The upright division either side of the crossing. Lighting the
+            //! whole plus means the flat division plus these, rather than the
+            //! two full strips, which would cover the crossing twice.
+            Box2I xAbove = Box2I(0, 0, -1, -1);
+            Box2I xBelow = Box2I(0, 0, -1, -1);
+
             std::vector<Box2I> borders;
         };
         SizeData size;
@@ -195,6 +201,16 @@ namespace ftk
             g.min.y + sy - half,
             p.size.handle,
             p.size.handle);
+        p.size.xAbove = Box2I(
+            p.size.x.min.x,
+            p.size.x.min.y,
+            p.size.x.w(),
+            p.size.both.min.y - p.size.x.min.y);
+        p.size.xBelow = Box2I(
+            p.size.x.min.x,
+            p.size.both.max.y + 1,
+            p.size.x.w(),
+            p.size.x.max.y - p.size.both.max.y);
 
         // The border is the outline of the plus the two divisions make, not
         // two lines laid across each other. Run each edge the whole way and
@@ -256,17 +272,28 @@ namespace ftk
             p.mouse.hover;
         if (Drag::None != state)
         {
-            const ColorRole role = Drag::None != p.mouse.pressed ?
+            const Color4F color = event.style->getColorRole(
+                Drag::None != p.mouse.pressed ?
                 ColorRole::Pressed :
-                ColorRole::Hover;
-            // Dragging the crossing moves both divisions, so both light up.
-            if (Drag::X == state || Drag::Both == state)
+                ColorRole::Hover);
+            // Dragging the crossing moves both divisions, so the whole plus
+            // lights up -- as the flat division and the upright one either side
+            // of it, since these colours are translucent and two full strips
+            // would cover the crossing twice and leave a brighter square there.
+            switch (state)
             {
-                event.render->drawRect(p.size.x, event.style->getColorRole(role));
-            }
-            if (Drag::Y == state || Drag::Both == state)
-            {
-                event.render->drawRect(p.size.y, event.style->getColorRole(role));
+            case Drag::X:
+                event.render->drawRect(p.size.x, color);
+                break;
+            case Drag::Y:
+                event.render->drawRect(p.size.y, color);
+                break;
+            case Drag::Both:
+                event.render->drawRects(
+                    { p.size.y, p.size.xAbove, p.size.xBelow },
+                    color);
+                break;
+            default: break;
             }
         }
         if (p.border)
