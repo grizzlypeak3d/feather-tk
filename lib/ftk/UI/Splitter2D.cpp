@@ -196,12 +196,31 @@ namespace ftk
             p.size.handle,
             p.size.handle);
 
+        // The border is the outline of the plus the two divisions make, not
+        // two lines laid across each other. Run each edge the whole way and
+        // they meet in the middle as a hash, drawn twice where they cross; so
+        // the upright edges carry on through the crossing to its far side and
+        // the flat ones stop at it, which leaves the corners closed and
+        // nothing overlapping.
+        const int b = p.size.border;
+        const int vx0 = p.size.x.min.x;
+        const int vx1 = p.size.x.max.x + 1;
+        const int hy0 = p.size.y.min.y;
+        const int hy1 = p.size.y.max.y + 1;
+        const int gx1 = g.max.x + 1;
+        const int gy1 = g.max.y + 1;
+        const int above = (hy0 + b) - g.min.y;
+        const int below = gy1 - (hy1 - b);
         p.size.borders =
         {
-            Box2I(p.size.x.min.x, p.size.x.min.y, p.size.border, p.size.x.h()),
-            Box2I(p.size.x.max.x + 1 - p.size.border, p.size.x.min.y, p.size.border, p.size.x.h()),
-            Box2I(p.size.y.min.x, p.size.y.min.y, p.size.y.w(), p.size.border),
-            Box2I(p.size.y.min.x, p.size.y.max.y + 1 - p.size.border, p.size.y.w(), p.size.border)
+            Box2I(vx0,     g.min.y,  b, above),
+            Box2I(vx1 - b, g.min.y,  b, above),
+            Box2I(vx0,     hy1 - b,  b, below),
+            Box2I(vx1 - b, hy1 - b,  b, below),
+            Box2I(g.min.x, hy0,      vx0 - g.min.x, b),
+            Box2I(g.min.x, hy1 - b,  vx0 - g.min.x, b),
+            Box2I(vx1,     hy0,      gx1 - vx1, b),
+            Box2I(vx1,     hy1 - b,  gx1 - vx1, b)
         };
     }
 
