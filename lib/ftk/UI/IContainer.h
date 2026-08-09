@@ -50,9 +50,13 @@ namespace ftk
         FTK_API void setGeometry(const Box2I&) override;
 
     protected:
-        //! Set the child filling this widget. Replacing it detaches the one
+        //! Set the child filling this widget. Replacing it lets go of the one
         //! before, so the caller does not have to remember that a parent owns
         //! its children.
+        //!
+        //! Letting go, not detaching: a caller rebuilding a tree may have put
+        //! the previous child inside the new one, and only what is still a
+        //! child of this widget is released.
         FTK_API void _setWidget(const std::shared_ptr<IWidget>&);
 
     private:

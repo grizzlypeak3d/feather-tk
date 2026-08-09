@@ -14,6 +14,7 @@ namespace ftk
         Orientation orientation = Orientation::Horizontal;
         float split = .5F;
         bool border = true;
+        std::function<void(float)> splitCallback;
 
         struct SizeData
         {
@@ -62,6 +63,22 @@ namespace ftk
         return out;
     }
 
+    void Splitter::setWidgets(const std::vector<std::shared_ptr<IWidget> >& value)
+    {
+        auto children = getChildren();
+        for (const auto& child : children)
+        {
+            child->setParent(nullptr);
+        }
+        for (const auto& widget : value)
+        {
+            if (widget)
+            {
+                widget->setParent(shared_from_this());
+            }
+        }
+    }
+
     float Splitter::getSplit() const
     {
         return _p->split;
@@ -75,6 +92,11 @@ namespace ftk
         p.split = value;
         setSizeUpdate();
         setDrawUpdate();
+    }
+
+    void Splitter::setSplitCallback(const std::function<void(float)>& value)
+    {
+        _p->splitCallback = value;
     }
 
     bool Splitter::hasBorder() const
@@ -312,6 +334,10 @@ namespace ftk
             }
             setSizeUpdate();
             setDrawUpdate();
+            if (p.splitCallback)
+            {
+                p.splitCallback(p.split);
+            }
         }
         else if (contains(p.size.g, event.pos) && !p.mouse.hoverHandle)
         {

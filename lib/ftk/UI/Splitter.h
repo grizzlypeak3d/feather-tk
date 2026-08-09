@@ -5,6 +5,9 @@
 
 #include <ftk/UI/IWidget.h>
 
+#include <functional>
+#include <vector>
+
 namespace ftk
 {
     //! \name Layouts
@@ -30,11 +33,26 @@ namespace ftk
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Set the widgets, replacing whatever is there.
+        //!
+        //! Building a tree of splitters by parenting each child one at a time
+        //! means taking the old one apart in the right order first, since a
+        //! parent owns its children: an old splitter whose only other reference
+        //! is dropped stays in the tree and goes on drawing. This does the
+        //! whole thing at once and detaches what it replaces.
+        FTK_API void setWidgets(const std::vector<std::shared_ptr<IWidget> >&);
+
         //! Get the split value.
         FTK_API float getSplit() const;
 
         //! Set the split value.
         FTK_API void setSplit(float);
+
+        //! Set the callback for the split being dragged.
+        //!
+        //! What a linked arrangement is built out of -- a four-up whose rows
+        //! divide together needs each splitter to hear about the other.
+        FTK_API void setSplitCallback(const std::function<void(float)>&);
 
         //! Get whether the splitter has a border.
         FTK_API bool hasBorder() const;
