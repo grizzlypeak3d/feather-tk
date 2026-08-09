@@ -87,6 +87,7 @@ set(HEADERS
     ShuttleWidget.h
     Spacer.h
     Splitter.h
+    Splitter2D.h
     StackLayout.h
     Style.h
     SysLogModel.h
@@ -206,6 +207,7 @@ set(SOURCE
     ShuttleWidget.cpp
     Spacer.cpp
     Splitter.cpp
+    Splitter2D.cpp
     StackLayout.cpp
     Style.cpp
     SysLogModel.cpp
