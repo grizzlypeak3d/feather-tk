@@ -87,6 +87,10 @@ namespace ftk
             [this, index](bool value)
             {
                 FTK_P();
+                // Held alive across the callback for the same reason as
+                // IButton: the cases below go on to touch the group's own
+                // buttons afterwards.
+                auto self = shared_from_this();
                 switch (p.type)
                 {
                 case ButtonGroupType::Check:

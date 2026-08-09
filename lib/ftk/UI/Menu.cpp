@@ -66,6 +66,12 @@ namespace ftk
             p.actionToButton[action] = button;
 
             auto buttonWeak = std::weak_ptr<MenuButton>(button);
+            // The menu holds itself weakly for the work that happens after an
+            // action's callback. Closing a menu from an action that rebuilds
+            // the menu bar it lives in is an ordinary thing to write, and it
+            // used to leave the menu reading its own freed members.
+            auto menuWeak = std::weak_ptr<Menu>(
+                std::dynamic_pointer_cast<Menu>(shared_from_this()));
             button->setHoveredCallback(
                 [this, buttonWeak](bool value)
                 {
@@ -79,22 +85,28 @@ namespace ftk
                     }
                 });
             button->setClickedCallback(
-                [this, action, buttonWeak]
+                [this, menuWeak, action, buttonWeak]
                 {
                     _setCurrent(buttonWeak.lock());
                     action->doCallback();
-                    if (!action->isCheckable())
+                    if (auto menu = menuWeak.lock())
                     {
-                        _accept();
+                        if (!action->isCheckable())
+                        {
+                            menu->_accept();
+                        }
                     }
                 });
             button->setCheckedCallback(
-                [this, action, buttonWeak](bool value)
+                [this, menuWeak, action, buttonWeak](bool value)
                 {
                     _setCurrent(buttonWeak.lock());
                     action->setChecked(value);
                     action->doCheckedCallback(value);
-                    _accept();
+                    if (auto menu = menuWeak.lock())
+                    {
+                        menu->_accept();
+                    }
                 });
             button->setEnabledCallback(
                 [this, buttonWeak](bool value)
@@ -159,6 +171,12 @@ namespace ftk
             p.buttonToSubMenu[button] = out;
 
             auto buttonWeak = std::weak_ptr<MenuButton>(button);
+            // The menu holds itself weakly for the work that happens after an
+            // action's callback. Closing a menu from an action that rebuilds
+            // the menu bar it lives in is an ordinary thing to write, and it
+            // used to leave the menu reading its own freed members.
+            auto menuWeak = std::weak_ptr<Menu>(
+                std::dynamic_pointer_cast<Menu>(shared_from_this()));
             button->setHoveredCallback(
                 [this, out, buttonWeak](bool value)
                 {

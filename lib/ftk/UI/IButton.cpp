@@ -197,6 +197,10 @@ namespace ftk
     void IButton::click()
     {
         FTK_P();
+        // Held alive across the callbacks. A callback is allowed to close the
+        // thing this button is part of, and this reads its own members after
+        // calling them.
+        auto self = shared_from_this();
         if (_clickedCallback)
         {
             _clickedCallback();
