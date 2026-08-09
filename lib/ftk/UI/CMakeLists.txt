@@ -31,6 +31,7 @@ set(HEADERS
     FloatEditSlider.h
     FloatModel.h
     FloatSlider.h
+    FlowLayout.h
     FormLayout.h
     GraphWidget.h
     GridLayout.h
@@ -151,6 +152,7 @@ set(SOURCE
     FloatEditSlider.cpp
     FloatModel.cpp
     FloatSlider.cpp
+    FlowLayout.cpp
     FormLayout.cpp
     GraphWidget.cpp
     GridLayout.cpp

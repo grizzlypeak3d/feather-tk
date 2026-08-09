@@ -6,6 +6,7 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/LayoutUtil.h>
+#include <ftk/UI/FlowLayout.h>
 #include <ftk/UI/RowLayout.h>
 
 #include <ftk/Core/Format.h>
@@ -329,7 +330,9 @@ namespace ftk
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
         auto label = Label::create(context, title, p.layout);
         p.graph->setParent(p.layout);
-        auto hLayout = HorizontalLayout::create(context, p.layout);
+        // A flow rather than a row: the legend is one entry per sampler, and
+        // a group with five of them does not fit across a docked panel.
+        auto hLayout = FlowLayout::create(context, p.layout);
         hLayout->setSpacingRole(SizeRole::SpacingSmall);
         for (const auto& i : labels)
         {
