@@ -78,32 +78,6 @@ namespace ftk
         return out;
     }
 
-    void CheckBox::setText(const std::string& value)
-    {
-        const bool changed = value != _text;
-        IButton::setText(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
-    void CheckBox::setFont(FontType value)
-    {
-        const bool changed = value != _font;
-        IButton::setFont(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-    
     Size2I CheckBox::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -127,6 +101,11 @@ namespace ftk
             p.size.init = true;
             p.draw.reset();
         }
+    }
+
+    void CheckBox::_sizeDirty()
+    {
+        _p->size.init = true;
     }
 
     void CheckBox::sizeHintEvent(const SizeHintEvent& event)

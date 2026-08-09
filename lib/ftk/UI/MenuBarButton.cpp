@@ -100,6 +100,11 @@ namespace ftk
         }
     }
 
+    void MenuBarButton::_sizeDirty()
+    {
+        _p->size.init = true;
+    }
+
     void MenuBarButton::sizeHintEvent(const SizeHintEvent& event)
     {
         IButton::sizeHintEvent(event);

@@ -105,6 +105,11 @@ namespace ftk
         }
     }
 
+    void ComboBoxButton::_sizeDirty()
+    {
+        _p->size.init = true;
+    }
+
     void ComboBoxButton::sizeHintEvent(const SizeHintEvent& event)
     {
         IButton::sizeHintEvent(event);

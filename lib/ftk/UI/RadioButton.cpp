@@ -76,32 +76,6 @@ namespace ftk
         return out;
     }
 
-    void RadioButton::setText(const std::string& value)
-    {
-        const bool changed = value != _text;
-        IButton::setText(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
-    void RadioButton::setFont(FontType value)
-    {
-        const bool changed = value != _font;
-        IButton::setFont(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-    
     Size2I RadioButton::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -124,6 +98,11 @@ namespace ftk
             p.size.init = true;
             p.draw.reset();
         }
+    }
+
+    void RadioButton::_sizeDirty()
+    {
+        _p->size.init = true;
     }
 
     void RadioButton::sizeHintEvent(const SizeHintEvent& event)

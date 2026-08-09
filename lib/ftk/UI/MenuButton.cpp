@@ -181,19 +181,6 @@ namespace ftk
         _p->enabledCallback = value;
     }
 
-    void MenuButton::setText(const std::string& value)
-    {
-        const bool changed = value != _text;
-        IButton::setText(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
     void MenuButton::setEnabled(bool value)
     {
         const bool changed = value != isEnabled(false);
@@ -231,6 +218,11 @@ namespace ftk
             p.size.init = true;
             p.draw.reset();
         }
+    }
+
+    void MenuButton::_sizeDirty()
+    {
+        _p->size.init = true;
     }
 
     void MenuButton::sizeHintEvent(const SizeHintEvent& event)

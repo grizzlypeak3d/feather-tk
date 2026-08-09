@@ -67,8 +67,6 @@ namespace ftk
         //! Set whether the button has a popup icon.
         void setPopupIcon(bool);
 
-        FTK_API void setText(const std::string&) override;
-        FTK_API void setFont(FontType) override;
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
@@ -79,6 +77,9 @@ namespace ftk
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
+
+    protected:
+        FTK_API void _sizeDirty() override;
 
     private:
         FTK_PRIVATE();

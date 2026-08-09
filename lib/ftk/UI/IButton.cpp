@@ -75,6 +75,7 @@ namespace ftk
         if (value == _text)
             return;
         _text = value;
+        _sizeDirty();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -89,6 +90,7 @@ namespace ftk
         if (value == _font)
             return;
         _font = value;
+        _sizeDirty();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -105,6 +107,7 @@ namespace ftk
             return;
         _icon = icon;
         _iconImage.reset();
+        _sizeDirty();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -121,6 +124,7 @@ namespace ftk
             return;
         _checkedIcon = icon;
         _checkedIconImage.reset();
+        _sizeDirty();
         setSizeUpdate();
         setDrawUpdate();
     }
@@ -129,6 +133,9 @@ namespace ftk
     {
         return _buttonRole;
     }
+
+    void IButton::_sizeDirty()
+    {}
 
     void IButton::setButtonRole(ColorRole value)
     {

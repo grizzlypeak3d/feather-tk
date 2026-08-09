@@ -29,7 +29,6 @@ namespace ftk
 
         void setCurrent(bool);
 
-        void setText(const std::string&) override;
 
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
@@ -37,6 +36,9 @@ namespace ftk
         void sizeHintEvent(const SizeHintEvent&) override;
         void clipEvent(const Box2I&, bool) override;
         void drawEvent(const Box2I&, const DrawEvent&) override;
+
+    protected:
+        void _sizeDirty() override;
 
     private:
         FTK_PRIVATE();

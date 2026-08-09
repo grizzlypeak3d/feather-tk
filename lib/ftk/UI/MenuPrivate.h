@@ -33,7 +33,6 @@ namespace ftk
 
         void setEnabledCallback(const std::function<void(bool)>&);
 
-        void setText(const std::string&) override;
 
         void setEnabled(bool) override;
         Size2I getSizeHint() const override;
@@ -44,6 +43,9 @@ namespace ftk
         void drawEvent(
             const Box2I&,
             const DrawEvent&) override;
+
+    protected:
+        void _sizeDirty() override;
 
     private:
         FTK_PRIVATE();

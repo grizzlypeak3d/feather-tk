@@ -218,32 +218,6 @@ namespace ftk
         setDrawUpdate();
     }
 
-    void ToolButton::setText(const std::string& value)
-    {
-        const bool changed = value != _text;
-        IButton::setText(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
-    void ToolButton::setFont(FontType value)
-    {
-        const bool changed = value != _font;
-        IButton::setFont(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
     void ToolButton::setAcceptsKeyFocus(bool value)
     {
         const bool changed = value != acceptsKeyFocus();
@@ -280,6 +254,11 @@ namespace ftk
             p.size.init = true;
             p.draw.reset();
         }
+    }
+
+    void ToolButton::_sizeDirty()
+    {
+        _p->size.init = true;
     }
 
     void ToolButton::sizeHintEvent(const SizeHintEvent& event)

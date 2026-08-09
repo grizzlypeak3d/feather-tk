@@ -40,13 +40,13 @@ namespace ftk
         FTK_API const std::string& getText() const;
 
         //! Set the text.
-        FTK_API virtual void setText(const std::string&);
+        FTK_API void setText(const std::string&);
 
         //! Get the font.
         FTK_API FontType getFont() const;
 
         //! Set the font.
-        FTK_API virtual void setFont(FontType);
+        FTK_API void setFont(FontType);
 
         //! Get the icon.
         FTK_API const std::string& getIcon() const;
@@ -110,6 +110,14 @@ namespace ftk
         FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     protected:
+        //! Called when something the size hint is measured from -- the text,
+        //! the font, an icon -- has changed. Subclasses that cache their
+        //! measurements override this to throw the cache away. Without it the
+        //! button keeps drawing what it first measured, which is a bug each
+        //! subclass otherwise has to remember not to have.
+        FTK_API virtual void _sizeDirty();
+
+
         std::string _text;
         FontType _font = FontType::Regular;
 

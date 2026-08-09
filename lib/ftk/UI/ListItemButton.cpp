@@ -100,6 +100,11 @@ namespace ftk
         }
     }
 
+    void ListItemButton::_sizeDirty()
+    {
+        _p->size.init = true;
+    }
+
     void ListItemButton::sizeHintEvent(const SizeHintEvent& event)
     {
         IButton::sizeHintEvent(event);

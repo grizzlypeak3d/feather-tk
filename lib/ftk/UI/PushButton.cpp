@@ -72,32 +72,6 @@ namespace ftk
         return out;
     }
 
-    void PushButton::setText(const std::string& value)
-    {
-        const bool changed = value != _text;
-        IButton::setText(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
-    void PushButton::setFont(FontType value)
-    {
-        const bool changed = value != _font;
-        IButton::setFont(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-
     Size2I PushButton::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -121,6 +95,11 @@ namespace ftk
             p.size.init = true;
             p.draw.reset();
         }
+    }
+
+    void PushButton::_sizeDirty()
+    {
+        _p->size.init = true;
     }
 
     void PushButton::sizeHintEvent(const SizeHintEvent& event)

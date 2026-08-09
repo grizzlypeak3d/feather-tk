@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- The undo arrow at the size the reset buttons want. This used to be a
      cross, which next to a value reads as "remove this" rather than as "put
-     it back". -->
+     it back". Drawn for this size rather than scaled down from Undo.svg: at
+     eleven pixels that ring came out thinner than a pixel. -->
 <svg
-   width="11"
-   height="11"
-   viewBox="0 0 5.2916665 5.2916666"
+   width="14"
+   height="14"
+   viewBox="0 0 14 14"
    version="1.1"
    id="svg8"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <g
-     id="layer1"
-     transform="translate(0,-291.70831)">
-    <g
-       id="Reset">
-      <path
-         id="path5287"
-         style="fill:#f0f0f0;stroke-width:2.64583"
-         d="m 2.6458333,292.76664 a -1.5875,1.5875 0 0 1 1.5875,1.5875 -1.5875,1.5875 0 0 1 -1.5875,1.5875 -1.5875,1.5875 0 0 1 -1.5875,-1.5875 h 0.396875 a -1.190625,1.190625 0 0 0 1.190625,1.19063 -1.190625,1.190625 0 0 0 1.190625,-1.19063 -1.190625,1.190625 0 0 0 -1.190625,-1.19062 z" />
-      <path
-         id="path2"
-         style="fill:#f0f0f0;fill-opacity:1;stroke-width:3.18444"
-         d="m 1.7259929,292.96508 0.9198404,-0.66146 v 1.32291 z" />
-    </g>
+  <g id="Reset" style="fill:#f0f0f0;fill-opacity:1;stroke:none">
+    <path
+       id="ring"
+       d="M 7,1.4 A 5.6,5.6 0 0 1 12.6,7 5.6,5.6 0 0 1 7,12.6 5.6,5.6 0 0 1 1.4,7 h 2.1 A 3.5,3.5 0 0 0 7,10.5 3.5,3.5 0 0 0 10.5,7 3.5,3.5 0 0 0 7,3.5 Z" />
+    <path
+       id="head"
+       d="M 2.45,2.45 7,0.35 v 4.2 z" />
   </g>
 </svg>

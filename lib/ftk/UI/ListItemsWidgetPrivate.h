@@ -36,6 +36,9 @@ namespace ftk
         FTK_API void clipEvent(const Box2I&, bool) override;
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
+    protected:
+        FTK_API void _sizeDirty() override;
+
     private:
         FTK_PRIVATE();
     };

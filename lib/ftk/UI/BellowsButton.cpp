@@ -88,6 +88,11 @@ namespace ftk
         }
     }
 
+    void BellowsButton::_sizeDirty()
+    {
+        _p->size.init = true;
+    }
+
     void BellowsButton::sizeHintEvent(const SizeHintEvent& event)
     {
         IButton::sizeHintEvent(event);

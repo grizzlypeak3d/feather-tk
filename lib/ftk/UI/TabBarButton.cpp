@@ -76,19 +76,6 @@ namespace ftk
         setDrawUpdate();
     }
 
-    void TabBarButton::setText(const std::string& value)
-    {
-        const bool changed = value != _text;
-        IButton::setText(value);
-        FTK_P();
-        if (changed)
-        {
-            p.size.init = true;
-            setSizeUpdate();
-            setDrawUpdate();
-        }
-    }
-    
     Size2I TabBarButton::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -116,6 +103,11 @@ namespace ftk
             p.size.init = true;
             p.draw.reset();
         }
+    }
+
+    void TabBarButton::_sizeDirty()
+    {
+        _p->size.init = true;
     }
 
     void TabBarButton::sizeHintEvent(const SizeHintEvent& event)

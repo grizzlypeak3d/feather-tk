@@ -34,6 +34,9 @@ namespace ftk
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
 
+    protected:
+        FTK_API void _sizeDirty() override;
+
     private:
         FTK_PRIVATE();
     };
