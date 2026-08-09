@@ -36,6 +36,7 @@ set(HEADERS
     GridLayout.h
     GroupBox.h
     IButton.h
+    IContainer.h
     IDialog.h
     IMenuPopup.h
     IMouseWidget.h
@@ -154,6 +155,7 @@ set(SOURCE
     GridLayout.cpp
     GroupBox.cpp
     IButton.cpp
+    IContainer.cpp
     IDialog.cpp
     IMenuPopup.cpp
     IMouseWidget.cpp
