@@ -123,6 +123,21 @@ namespace ftk
         return out;
     }
 
+    void MenuBar::setMenuText(
+        const std::shared_ptr<Menu>& menu,
+        const std::string& text)
+    {
+        FTK_P();
+        for (size_t i = 0; i < p.menus.size() && i < p.buttons.size(); ++i)
+        {
+            if (menu == p.menus[i])
+            {
+                p.buttons[i]->setText(text);
+                break;
+            }
+        }
+    }
+
     void MenuBar::removeMenu(const std::string& text)
     {
         FTK_P();

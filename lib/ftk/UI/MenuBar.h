@@ -43,6 +43,17 @@ namespace ftk
         //! Get a menu.
         FTK_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 
+        //! Set a menu's title.
+        //!
+        //! Taken by menu rather than by title, because the use for this is a
+        //! title that changes: a menu whose name is the thing it currently has
+        //! selected reads at a glance, where one with a fixed name has to be
+        //! opened to find out. Note that getMenu() and removeMenu() then follow
+        //! the current title.
+        FTK_API void setMenuText(
+            const std::shared_ptr<Menu>&,
+            const std::string&);
+
         //! Remove a menu, leaving the rest alone.
         //!
         //! Without this a bar whose menus come and go has to be cleared and
