@@ -65,19 +65,24 @@ namespace ftk
         auto diagSystem = context->getSystem<DiagSystem>();
         std::weak_ptr<Window> windowWeak(std::dynamic_pointer_cast<Window>(shared_from_this()));
         diagSystem->addSampler(
-            "ftk Frame/Time: {0}us",
+            "ftk Frame/Time: {0}ms",
             [windowWeak]
             {
                 auto window = windowWeak.lock();
                 return window ? window->_p->render->getDiag().time : 0;
-            });
+            },
+            // Sampled in microseconds so the graph keeps its detail, read in
+            // milliseconds because that is the unit a frame is thought about
+            // in.
+            DiagFormat{ 1000.0, 1 });
         diagSystem->addSampler(
-            "ftk Frame/Peak: {0}us",
+            "ftk Frame/Peak: {0}ms",
             [windowWeak]
             {
                 auto window = windowWeak.lock();
                 return window ? window->_p->render->getDiag().timePeak : 0;
-            });
+            },
+            DiagFormat{ 1000.0, 1 });
         diagSystem->addSampler(
             "ftk Frame/Triangles: {0}",
             [windowWeak]

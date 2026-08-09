@@ -23,6 +23,7 @@ namespace ftk
         std::vector<std::pair<std::string, std::function<int64_t(void)> > > samplers;
         std::vector<std::string> groups;
         std::map<std::string, std::vector<std::string> > names;
+        std::map<std::string, DiagFormat> formats;
         std::shared_ptr<Observable<size_t> > samplesMax;
         std::shared_ptr<ObservableMap<std::string, std::vector<int64_t> > > samples;
         std::shared_ptr<ObservableMap<std::string, int64_t> > samplesInc;
@@ -67,13 +68,17 @@ namespace ftk
         return std::shared_ptr<DiagSystem>(new DiagSystem(context));
     }
 
-    void DiagSystem::addSampler(const std::string& id, const std::function<int64_t(void)>& sampler)
+    void DiagSystem::addSampler(
+        const std::string& id,
+        const std::function<int64_t(void)>& sampler,
+        const DiagFormat& format)
     {
         FTK_P();
         auto i = id.find_first_of('/');
         if (!hasSampler(id) && i != std::string::npos)
         {
             p.samplers.push_back(std::make_pair(id, sampler));
+            p.formats[id] = format;
             const std::string group = id.substr(0, i);
             const std::string name = id.substr(i + 1);
             auto i = std::find(p.groups.begin(), p.groups.end(), group);
@@ -202,6 +207,23 @@ namespace ftk
         return _p->tickTime;
     }
 
+    DiagFormat DiagSystem::getFormat(const std::string& id) const
+    {
+        FTK_P();
+        const auto i = p.formats.find(id);
+        return i != p.formats.end() ? i->second : DiagFormat();
+    }
+
+    std::string diagText(
+        const std::string& format,
+        const DiagFormat& diagFormat,
+        int64_t value)
+    {
+        return diagFormat.precision >= 0 ?
+            Format(format).arg(value / diagFormat.divisor, diagFormat.precision) :
+            Format(format).arg(value);
+    }
+
     void DiagSystem::_log()
     {
         FTK_P();
@@ -217,7 +239,10 @@ namespace ftk
                     i != samples.end())
                 {
                     lines.push_back(Format("    * {0}").arg(
-                        Format(name).arg(!i->second.empty() ? i->second.back() : 0)));
+                        diagText(
+                            name,
+                            getFormat(group + "/" + name),
+                            !i->second.empty() ? i->second.back() : 0)));
                 }
             }
         }

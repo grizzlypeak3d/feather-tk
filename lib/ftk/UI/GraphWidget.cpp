@@ -303,13 +303,14 @@ namespace ftk
         std::shared_ptr<GraphSubWidget> graph;
         std::map<ColorRole, std::shared_ptr<Label> > labels;
         std::map<ColorRole, std::string> labelText;
+        std::map<ColorRole, DiagFormat> labelFormat;
         std::shared_ptr<VerticalLayout> layout;
     };
 
     void GraphWidget::_init(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::vector<std::pair<ColorRole, std::string> >& labels,
+        const std::vector<GraphLabel>& labels,
         const std::shared_ptr<IWidget>& parent)
     {
         IContainer::_init(context, "ftk::GraphWidget", parent);
@@ -321,8 +322,9 @@ namespace ftk
             auto label = Label::create(context);
             label->setTextRole(ColorRole::TextDisabled);
             label->setMarginRole(SizeRole::MarginInside);
-            p.labels[i.first] = label;
-            p.labelText[i.first] = i.second;
+            p.labels[i.colorRole] = label;
+            p.labelText[i.colorRole] = i.text;
+            p.labelFormat[i.colorRole] = i.format;
         }
 
         p.layout = VerticalLayout::create(context);
@@ -338,8 +340,8 @@ namespace ftk
         {
             auto hLayout2 = HorizontalLayout::create(context, hLayout);
             hLayout2->setSpacingRole(SizeRole::SpacingTool);
-            ColorWidget::create(context, i.first, hLayout2);
-            p.labels[i.first]->setParent(hLayout2);
+            ColorWidget::create(context, i.colorRole, hLayout2);
+            p.labels[i.colorRole]->setParent(hLayout2);
         }
     }
 
@@ -353,7 +355,7 @@ namespace ftk
     std::shared_ptr<GraphWidget> GraphWidget::create(
         const std::shared_ptr<Context>& context,
         const std::string& title,
-        const std::vector<std::pair<ColorRole, std::string> >& labels,
+        const std::vector<GraphLabel>& labels,
         const std::shared_ptr<IWidget>& parent)
     {
         auto out = std::shared_ptr<GraphWidget>(new GraphWidget);
@@ -369,7 +371,10 @@ namespace ftk
         const auto j = p.labelText.find(colorRole);
         if (i != p.labels.end() && j != p.labelText.end())
         {
-            i->second->setText(Format(j->second).arg(!value.empty() ? value.back() : 0));
+            i->second->setText(diagText(
+                j->second,
+                p.labelFormat[colorRole],
+                !value.empty() ? value.back() : 0));
         }
     }
 
@@ -381,7 +386,7 @@ namespace ftk
         const auto j = p.labelText.find(colorRole);
         if (i != p.labels.end() && j != p.labelText.end())
         {
-            i->second->setText(Format(j->second).arg(value));
+            i->second->setText(diagText(j->second, p.labelFormat[colorRole], value));
         }
     }
 

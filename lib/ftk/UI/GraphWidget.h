@@ -6,10 +6,21 @@
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
+#include <ftk/Core/DiagSystem.h>
+
 namespace ftk
 {
     //! \name Graph Widgets
     ///@{
+
+    //! One line on a graph: its colour, the format string for its readout,
+    //! and how the sample is turned into the number that format expects.
+    struct FTK_API_TYPE GraphLabel
+    {
+        ColorRole colorRole = ColorRole::None;
+        std::string text;
+        DiagFormat format;
+    };
 
     //! Graph widget.
     class FTK_API_TYPE GraphWidget : public IContainer
@@ -18,7 +29,7 @@ namespace ftk
         void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const std::vector<std::pair<ColorRole, std::string> >& labels,
+            const std::vector<GraphLabel>& labels,
             const std::shared_ptr<IWidget>& parent);
 
         GraphWidget();
@@ -30,7 +41,7 @@ namespace ftk
         FTK_API static std::shared_ptr<GraphWidget> create(
             const std::shared_ptr<Context>&,
             const std::string& title,
-            const std::vector<std::pair<ColorRole, std::string> >& labels,
+            const std::vector<GraphLabel>& labels,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the samples.

@@ -46,11 +46,14 @@ namespace ftk
         for (auto i = groups.rbegin(); i != groups.rend(); ++i)
         {
             const auto& group = *i;
-            std::vector<std::pair<ColorRole, std::string> > labels;
+            std::vector<GraphLabel> labels;
             const auto& names = system->getNames(group);
             for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
             {
-                labels.push_back(std::make_pair(colors[j], names[j]));
+                labels.push_back(GraphLabel{
+                    colors[j],
+                    names[j],
+                    system->getFormat(group + "/" + names[j])});
             }
             auto graph = GraphWidget::create(context, group, labels, p.layout);
             for (size_t j = 0; j < names.size() && j < colors.size(); ++j)

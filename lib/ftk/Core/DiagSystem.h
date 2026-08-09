@@ -15,6 +15,27 @@ namespace ftk
     //! \name Debugging
     ///@{
 
+    //! How a sample is turned into the number its format string expects.
+    //!
+    //! Samples are integers, which is right for counting things and wrong for
+    //! timing them: the resolution wanted for a graph and the unit wanted for
+    //! reading are not the same. Sample in microseconds, divide by a thousand
+    //! and show one decimal, and the graph keeps its detail while the label
+    //! says milliseconds.
+    struct FTK_API_TYPE DiagFormat
+    {
+        double divisor = 1.0;
+
+        //! Decimal places. Below zero formats the sample as the integer it is.
+        int precision = -1;
+    };
+
+    //! Apply a sampler's format to a sample.
+    FTK_API std::string diagText(
+        const std::string& format,
+        const DiagFormat&,
+        int64_t value);
+
     //! Diagnostics system.
     class FTK_API_TYPE DiagSystem : public ISystem
     {
@@ -30,7 +51,13 @@ namespace ftk
         FTK_API static std::shared_ptr<DiagSystem> create(const std::shared_ptr<Context>&);
 
         //! Add a sampler function.
-        FTK_API void addSampler(const std::string&, const std::function<int64_t(void)>&);
+        FTK_API void addSampler(
+            const std::string&,
+            const std::function<int64_t(void)>&,
+            const DiagFormat& = DiagFormat());
+
+        //! Get how a sampler's value should be formatted.
+        FTK_API DiagFormat getFormat(const std::string& id) const;
 
         //! Get the sampler groups.
         FTK_API const std::vector<std::string>& getGroups() const;
