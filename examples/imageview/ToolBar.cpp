@@ -17,10 +17,11 @@ namespace imageview
         const std::shared_ptr<Actions>& actions,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "examples::imageview::ToolBar", parent);
+        IContainer::_init(context, "examples::imageview::ToolBar", parent);
 
         // Create the layout.
-        _layout = HorizontalLayout::create(context, shared_from_this());
+        _layout = HorizontalLayout::create(context);
+        _setWidget(_layout);
         _layout->setSpacingRole(SizeRole::SpacingSmall);
 
         // Create the tool bars.
@@ -44,16 +45,7 @@ namespace imageview
         return out;
     }
     
-    Size2I ToolBar::getSizeHint() const
-    {
-        return _layout->getSizeHint();
-    }
 
-    void ToolBar::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _layout->setGeometry(value);
-    }
 
     void ToolBar::_createFileToolBar(
         const std::shared_ptr<Context>& context,

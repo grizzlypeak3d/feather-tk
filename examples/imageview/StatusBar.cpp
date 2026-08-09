@@ -18,13 +18,14 @@ namespace imageview
         const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "examples::imageview::StatusBar", parent);
+        IContainer::_init(context, "examples::imageview::StatusBar", parent);
 
         // Create the labels.
         _labels["Info"] = Label::create(context);
 
         // Layout the widgets.
-        _layout = HorizontalLayout::create(context, shared_from_this());
+        _layout = HorizontalLayout::create(context);
+        _setWidget(_layout);
         _layout->setMarginRole(SizeRole::MarginInside);
         _layout->setSpacingRole(SizeRole::SpacingSmall);
         _layout->addSpacer(Stretch::Expanding);
@@ -66,14 +67,5 @@ namespace imageview
         return out;
     }
 
-    ftk::Size2I StatusBar::getSizeHint() const
-    {
-        return _layout->getSizeHint();
-    }
 
-    void StatusBar::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _layout->setGeometry(value);
-    }
 }

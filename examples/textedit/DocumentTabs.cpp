@@ -16,9 +16,10 @@ namespace textedit
         const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "examples::textedit::DocumentTabs", parent);
+        IContainer::_init(context, "examples::textedit::DocumentTabs", parent);
 
-        _tabWidget = TabWidget::create(context, shared_from_this());
+        _tabWidget = TabWidget::create(context);
+        _setWidget(_tabWidget);
         _tabWidget->setClosable(true);
 
         // Set tab callbacks.
@@ -155,14 +156,5 @@ namespace textedit
         return out;
     }
 
-    Size2I DocumentTabs::getSizeHint() const
-    {
-        return _tabWidget->getSizeHint();
-    }
 
-    void DocumentTabs::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _tabWidget->setGeometry(value);
-    }
 }

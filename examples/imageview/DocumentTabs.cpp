@@ -19,9 +19,10 @@ namespace imageview
         const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "examples::imageview::DocumentTabs", parent);
+        IContainer::_init(context, "examples::imageview::DocumentTabs", parent);
 
-        _tabWidget = TabWidget::create(context, shared_from_this());
+        _tabWidget = TabWidget::create(context);
+        _setWidget(_tabWidget);
         _tabWidget->setClosable(true);
 
         _currentView = Observable<std::shared_ptr<ImageView> >::create();
@@ -133,14 +134,5 @@ namespace imageview
         return _currentView;
     }
 
-    Size2I DocumentTabs::getSizeHint() const
-    {
-        return _tabWidget->getSizeHint();
-    }
 
-    void DocumentTabs::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _tabWidget->setGeometry(value);
-    }
 }

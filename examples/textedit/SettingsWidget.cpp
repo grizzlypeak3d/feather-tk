@@ -22,7 +22,7 @@ namespace textedit
         const std::shared_ptr<App>& app,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "examples::textedit::SettingsWidget", parent);
+        IContainer::_init(context, "examples::textedit::SettingsWidget", parent);
 
         // Create the title label and close button.
         auto titleLabel = Label::create(context, "Settings");
@@ -59,7 +59,8 @@ namespace textedit
         _displayScaleComboBox->setHStretch(Stretch::Expanding);
 
         // Layout the widgets.
-        _layout = VerticalLayout::create(context, shared_from_this());
+        _layout = VerticalLayout::create(context);
+        _setWidget(_layout);
         _layout->setSpacingRole(SizeRole::None);
         auto hLayout = HorizontalLayout::create(context, _layout);
         hLayout->setSpacingRole(SizeRole::None);
@@ -203,14 +204,5 @@ namespace textedit
         return out;
     }
     
-    Size2I SettingsWidget::getSizeHint() const
-    {
-        return _layout->getSizeHint();
-    }
 
-    void SettingsWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _layout->setGeometry(value);
-    }
 }

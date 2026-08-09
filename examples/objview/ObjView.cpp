@@ -9,6 +9,7 @@
 #include "SettingsModel.h"
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Util.h>
 
 #include <ftk/Core/Error.h>
 #include <ftk/Core/Matrix.h>
@@ -442,6 +443,11 @@ namespace objview
                 _doRender = false;
                 gl::OffscreenBufferBinding binding(_buffer);
 
+                // Put back the OpenGL state this draw changes. The renderer
+                // sets some of it once for the whole frame, so a widget that
+                // leaves it changed breaks the widgets drawn after it.
+                const gl::StateSave stateSave;
+
                 // Save render state.
                 const ViewportState viewportState(event.render);
                 const ClipRectEnabledState clipRectEnabledState(event.render);
@@ -477,8 +483,6 @@ namespace objview
                     }
                     _vao->bind();
                     _vao->draw(GL_TRIANGLES, 0, _vbo->getSize());
-                    glDisable(GL_CULL_FACE);
-                    glDisable(GL_DEPTH_TEST);
                 }
 
                 // Draw the grid.
@@ -493,7 +497,6 @@ namespace objview
                     glEnable(GL_DEPTH_TEST);
                     _gridVao->bind();
                     _gridVao->draw(GL_TRIANGLES, 0, _gridVbo->getSize());
-                    glDisable(GL_DEPTH_TEST);
                 }
             }
         }

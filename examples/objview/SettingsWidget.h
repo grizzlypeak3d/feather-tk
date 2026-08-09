@@ -5,6 +5,7 @@
 
 #include "Settings.h"
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/CheckBox.h>
 #include <ftk/UI/ComboBox.h>
 #include <ftk/UI/IntEdit.h>
@@ -17,7 +18,7 @@ namespace objview
     class App;
 
     //! Settings widget.
-    class SettingsWidget : public ftk::IWidget
+    class SettingsWidget : public ftk::IContainer
     {
     protected:
         void _init(
@@ -36,8 +37,6 @@ namespace objview
             const std::shared_ptr<App>&,
             const std::shared_ptr<ftk::IWidget>& parent = nullptr);
 
-        ftk::Size2I getSizeHint() const override;
-        void setGeometry(const ftk::Box2I&) override;
 
     private:
         std::shared_ptr<ftk::ComboBox> _colorStyleComboBox;

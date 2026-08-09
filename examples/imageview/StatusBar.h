@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/DocumentModel.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
@@ -12,7 +13,7 @@ namespace imageview
     class App;
 
     //! Status bar widget.
-    class StatusBar : public ftk::IWidget
+    class StatusBar : public ftk::IContainer
     {
     protected:
         void _init(
@@ -31,8 +32,6 @@ namespace imageview
             const std::shared_ptr<App>&,
             const std::shared_ptr<ftk::IWidget>& parent = nullptr);
 
-        ftk::Size2I getSizeHint() const override;
-        void setGeometry(const ftk::Box2I&) override;
 
     private:
         std::map<std::string, std::shared_ptr<ftk::Label> > _labels;

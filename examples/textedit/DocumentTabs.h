@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/DocumentModel.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
@@ -14,7 +15,7 @@ namespace textedit
     class App;
 
     //! Document tabs widget.
-    class DocumentTabs : public ftk::IWidget
+    class DocumentTabs : public ftk::IContainer
     {
     protected:
         void _init(
@@ -33,8 +34,6 @@ namespace textedit
             const std::shared_ptr<App>&,
             const std::shared_ptr<ftk::IWidget>& parent = nullptr);
 
-        ftk::Size2I getSizeHint() const override;
-        void setGeometry(const ftk::Box2I&) override;
 
     private:
         std::shared_ptr<ftk::TabWidget> _tabWidget;

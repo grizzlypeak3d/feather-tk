@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/DocumentModel.h>
 #include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/TabWidget.h>
@@ -13,7 +14,7 @@ namespace imageview
     class ImageView;
 
     //! Document tabs widget.
-    class DocumentTabs : public ftk::IWidget
+    class DocumentTabs : public ftk::IContainer
     {
     protected:
         void _init(
@@ -40,8 +41,6 @@ namespace imageview
 
         ///@}
 
-        ftk::Size2I getSizeHint() const override;
-        void setGeometry(const ftk::Box2I&) override;
 
     private:
         std::shared_ptr<ftk::TabWidget> _tabWidget;

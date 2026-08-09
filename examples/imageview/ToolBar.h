@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
@@ -11,7 +12,7 @@ namespace imageview
     class Actions;
 
     //! Tool bar widget.
-    class ToolBar : public ftk::IWidget
+    class ToolBar : public ftk::IContainer
     {
     protected:
         void _init(
@@ -30,8 +31,6 @@ namespace imageview
             const std::shared_ptr<Actions>&,
             const std::shared_ptr<ftk::IWidget>& parent = nullptr);
 
-        ftk::Size2I getSizeHint() const override;
-        void setGeometry(const ftk::Box2I&) override;
 
     private:
         void _createFileToolBar(
