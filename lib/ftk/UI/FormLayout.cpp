@@ -19,9 +19,10 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FormLayout", parent);
+        IContainer::_init(context, "ftk::FormLayout", parent);
         FTK_P();
-        p.layout = GridLayout::create(context, shared_from_this());
+        p.layout = GridLayout::create(context);
+        _setWidget(p.layout);
     }
 
     FormLayout::FormLayout() :
@@ -204,14 +205,7 @@ namespace ftk
         return index;
     }
     
-    Size2I FormLayout::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void FormLayout::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

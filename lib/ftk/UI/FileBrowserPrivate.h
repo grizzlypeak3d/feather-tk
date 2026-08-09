@@ -3,13 +3,14 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/FileBrowserWidgets.h>
 
 #include <ftk/UI/IButton.h>
 
 namespace ftk
 {
-    class FileBrowserPanel : public IWidget
+    class FileBrowserPanel : public IContainer
     {
     protected:
         void _init(
@@ -29,8 +30,6 @@ namespace ftk
 
         void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

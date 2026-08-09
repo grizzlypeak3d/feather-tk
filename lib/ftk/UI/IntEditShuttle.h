@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 #include <ftk/UI/IntModel.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Integer value editor and shuttle.
-    class FTK_API_TYPE IntEditShuttle : public IWidget
+    class FTK_API_TYPE IntEditShuttle : public IContainer
     {
     protected:
         void _init(
@@ -85,8 +86,6 @@ namespace ftk
         //! Set the font.
         FTK_API void setFont(FontType);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

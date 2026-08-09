@@ -45,14 +45,15 @@ namespace ftk
         ButtonGroupType type,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::ListItemsWidget", parent);
+        IContainer::_init(context, "ftk::ListItemsWidget", parent);
         FTK_P();
 
         setAcceptsKeyFocus(true);
 
         p.buttonGroup = ButtonGroup::create(context, type);
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
 
         _itemsUpdate();
@@ -222,16 +223,9 @@ namespace ftk
         return out;
     }
     
-    Size2I ListItemsWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void ListItemsWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void ListItemsWidget::keyFocusEvent(bool value)
     {

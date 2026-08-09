@@ -19,12 +19,13 @@ namespace ftk
         Orientation orientation,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::ToolBar", parent);
+        IContainer::_init(context, "ftk::ToolBar", parent);
         FTK_P();
         switch (orientation)
         {
         case Orientation::Horizontal:
-            p.layout = HorizontalLayout::create(context, shared_from_this());
+            p.layout = HorizontalLayout::create(context);
+            _setWidget(p.layout);
             p.layout->setSpacingRole(SizeRole::SpacingTool);
             break;
         case Orientation::Vertical:
@@ -98,14 +99,7 @@ namespace ftk
         _p->layout->setSpacingRole(value);
     }
     
-    Size2I ToolBar::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void ToolBar::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/Menu.h>
 
 namespace ftk
@@ -14,7 +15,7 @@ namespace ftk
     ///@{
 
     //! Menu bar.
-    class FTK_API_TYPE MenuBar : public IWidget
+    class FTK_API_TYPE MenuBar : public IContainer
     {
     protected:
         void _init(
@@ -55,8 +56,6 @@ namespace ftk
         //! Handle keyboard shortcuts.
         FTK_API bool shortcut(Key, int);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
         FTK_API void keyFocusEvent(bool) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;

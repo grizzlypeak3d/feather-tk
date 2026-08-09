@@ -24,10 +24,11 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::DiagWidget", parent);
+        IContainer::_init(context, "ftk::DiagWidget", parent);
         FTK_P();
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
 
         const std::vector<ColorRole> colors =
@@ -110,14 +111,7 @@ namespace ftk
         _p->layout->setMarginRole(value);
     }
     
-    Size2I DiagWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void DiagWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

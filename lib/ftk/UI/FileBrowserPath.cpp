@@ -36,12 +36,13 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileBrowserPath", parent);
+        IContainer::_init(context, "ftk::FileBrowserPath", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.layout->setVAlign(VAlign::Center);
 
@@ -159,16 +160,9 @@ namespace ftk
         _p->editableCallback = value;
     }
     
-    Size2I FileBrowserPath::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void FileBrowserPath::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void FileBrowserPath::_widgetUpdate()
     {

@@ -20,12 +20,13 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::MenuBar", parent);
+        IContainer::_init(context, "ftk::MenuBar", parent);
         FTK_P();
 
         setAcceptsKeyFocus(true);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
     }
 
@@ -195,16 +196,9 @@ namespace ftk
         return out;
     }
     
-    Size2I MenuBar::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void MenuBar::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void MenuBar::keyFocusEvent(bool value)
     {

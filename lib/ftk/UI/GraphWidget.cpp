@@ -311,7 +311,7 @@ namespace ftk
         const std::vector<std::pair<ColorRole, std::string> >& labels,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::GraphWidget", parent);
+        IContainer::_init(context, "ftk::GraphWidget", parent);
         FTK_P();
 
         p.graph = GraphSubWidget::create(context);
@@ -324,7 +324,8 @@ namespace ftk
             p.labelText[i.first] = i.second;
         }
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
         auto label = Label::create(context, title, p.layout);
         p.graph->setParent(p.layout);
@@ -381,14 +382,7 @@ namespace ftk
         }
     }
 
-    Size2I GraphWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void GraphWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

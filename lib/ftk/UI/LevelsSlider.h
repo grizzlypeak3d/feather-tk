@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IMouseWidget.h>
 
 namespace ftk
@@ -157,7 +158,7 @@ namespace ftk
     };
 
     //! Color levels editors and slider.
-    class FTK_API_TYPE LevelsEditSlider : public IWidget
+    class FTK_API_TYPE LevelsEditSlider : public IContainer
     {
     protected:
         void _init(
@@ -210,8 +211,6 @@ namespace ftk
         //! Set the font.
         FTK_API void setFont(FontType);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();

@@ -22,7 +22,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::SearchBox", parent);
+        IContainer::_init(context, "ftk::SearchBox", parent);
         FTK_P();
 
         p.lineEdit = LineEdit::create(context);
@@ -30,7 +30,8 @@ namespace ftk
 
         p.button = ToolButton::create(context);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.lineEdit->setParent(p.layout);
         p.button->setParent(p.layout);
@@ -91,16 +92,9 @@ namespace ftk
         _p->callback = value;
     }
     
-    Size2I SearchBox::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void SearchBox::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void SearchBox::_widgetUpdate()
     {

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/FileBrowser.h>
 
 #include <ftk/Core/Path.h>
@@ -13,7 +14,7 @@ namespace ftk
     ///@{
 
     //! File edit widget.
-    class FTK_API_TYPE FileEdit : public IWidget
+    class FTK_API_TYPE FileEdit : public IContainer
     {
     protected:
         void _init(
@@ -46,8 +47,6 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Path&)>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
         FTK_API void dropEvent(DragDropEvent&) override;
 
     private:

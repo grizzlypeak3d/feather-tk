@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Graph widget.
-    class FTK_API_TYPE GraphWidget : public IWidget
+    class FTK_API_TYPE GraphWidget : public IContainer
     {
     protected:
         void _init(
@@ -38,8 +39,6 @@ namespace ftk
         //! Add a sample.
         void addSample(ColorRole, int64_t);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

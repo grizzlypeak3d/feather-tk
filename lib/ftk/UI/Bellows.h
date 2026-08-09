@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Bellows widget.
-    class FTK_API_TYPE Bellows : public IWidget
+    class FTK_API_TYPE Bellows : public IContainer
     {
     protected:
         void _init(
@@ -61,8 +62,6 @@ namespace ftk
         //! Set the tool widget.
         FTK_API void setToolWidget(const std::shared_ptr<IWidget>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

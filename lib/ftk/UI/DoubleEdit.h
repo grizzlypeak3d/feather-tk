@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/DoubleModel.h>
 #include <ftk/UI/IWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value editor.
-    class FTK_API_TYPE DoubleEdit : public IWidget
+    class FTK_API_TYPE DoubleEdit : public IContainer
     {
     protected:
         void _init(
@@ -103,8 +104,6 @@ namespace ftk
         FTK_API void setBorderRole(ColorRole);
 
         FTK_API void takeKeyFocus() override;
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
         FTK_API void scrollEvent(ScrollEvent&) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
@@ -116,7 +115,7 @@ namespace ftk
     };
 
     //! Double precision floating point reset button.
-    class FTK_API_TYPE DoubleResetButton : public IWidget
+    class FTK_API_TYPE DoubleResetButton : public IContainer
     {
     protected:
         void _init(
@@ -135,8 +134,6 @@ namespace ftk
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();

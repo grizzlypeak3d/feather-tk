@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/ButtonGroup.h>
 #include <ftk/UI/IWidget.h>
 
@@ -27,7 +28,7 @@ namespace ftk
     };
 
     //! List items widget.
-    class FTK_API_TYPE ListItemsWidget : public IWidget
+    class FTK_API_TYPE ListItemsWidget : public IContainer
     {
     protected:
         void _init(
@@ -88,8 +89,6 @@ namespace ftk
         //! Get an item rectangle.
         FTK_API Box2I getRect(int) const;
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
         FTK_API void keyFocusEvent(bool) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;

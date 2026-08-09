@@ -34,7 +34,7 @@ namespace ftk
         const std::shared_ptr<DoubleModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::DoubleEdit", parent);
+        IContainer::_init(context, "ftk::DoubleEdit", parent);
         FTK_P();
 
         p.model = model;
@@ -46,7 +46,8 @@ namespace ftk
 
         p.incButtons = IncButtons::create(context);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.lineEdit->setParent(p.layout);
         p.incButtons->setParent(p.layout);
@@ -247,16 +248,9 @@ namespace ftk
         _p->lineEdit->takeKeyFocus();
     }
 
-    Size2I DoubleEdit::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void DoubleEdit::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void DoubleEdit::scrollEvent(ScrollEvent& event)
     {
@@ -334,12 +328,13 @@ namespace ftk
         const std::shared_ptr<DoubleModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::DoubleResetButton", parent);
+        IContainer::_init(context, "ftk::DoubleResetButton", parent);
         FTK_P();
 
         p.model = model;
 
-        p.resetButton = ToolButton::create(context, shared_from_this());
+        p.resetButton = ToolButton::create(context);
+        _setWidget(p.resetButton);
         p.resetButton->setIcon("Reset");
         p.resetButton->setTooltip("Reset to the default value");
 
@@ -388,16 +383,9 @@ namespace ftk
         return out;
     }
     
-    Size2I DoubleResetButton::getSizeHint() const
-    {
-        return _p->resetButton->getSizeHint();
-    }
+    
 
-    void DoubleResetButton::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->resetButton->setGeometry(value);
-    }
+    
 
     void DoubleResetButton::_widgetUpdate()
     {

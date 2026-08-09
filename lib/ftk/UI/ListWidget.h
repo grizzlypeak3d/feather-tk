@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/ListItemsWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! List widget.
-    class FTK_API_TYPE ListWidget : public IWidget
+    class FTK_API_TYPE ListWidget : public IContainer
     {
     protected:
         void _init(
@@ -63,8 +64,6 @@ namespace ftk
         //! Clear the search.
         FTK_API void clearSearch();
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _scrollUpdate(int);

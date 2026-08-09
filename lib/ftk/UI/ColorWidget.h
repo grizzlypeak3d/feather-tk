@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -13,7 +14,7 @@ namespace ftk
     //! RGB color widget.
     //!
     //! \todo Add support for displaying pixel types like U8, U16, etc.?
-    class FTK_API_TYPE RGBColorWidget : public IWidget
+    class FTK_API_TYPE RGBColorWidget : public IContainer
     {
     protected:
         void _init(
@@ -48,8 +49,6 @@ namespace ftk
         //! Set the margin role.
         FTK_API void setMarginRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _colorUpdate();
@@ -58,7 +57,7 @@ namespace ftk
     };
 
     //! HSV color widget.
-    class FTK_API_TYPE HSVColorWidget : public IWidget
+    class FTK_API_TYPE HSVColorWidget : public IContainer
     {
     protected:
         void _init(
@@ -93,8 +92,6 @@ namespace ftk
         //! Set the margin role.
         FTK_API void setMarginRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _colorUpdate();
@@ -116,7 +113,7 @@ namespace ftk
     //! Color widget.
     //!
     //! \todo Add support for displaying pixel types like U8, U16, etc.?
-    class FTK_API_TYPE ColorWidget : public IWidget
+    class FTK_API_TYPE ColorWidget : public IContainer
     {
     protected:
         void _init(
@@ -151,8 +148,6 @@ namespace ftk
         //! Set the widget mode.
         FTK_API void setMode(ColorWidgetMode);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _modeUpdate();

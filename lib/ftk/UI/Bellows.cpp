@@ -21,7 +21,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::Bellows", parent);
+        IContainer::_init(context, "ftk::Bellows", parent);
         FTK_P();
 
         p.button = BellowsButton::create(context);
@@ -34,7 +34,8 @@ namespace ftk
         p.buttonLayout->setSpacingRole(SizeRole::None);
         p.button->setParent(p.buttonLayout);
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
         p.buttonLayout->setParent(p.layout);
 
@@ -148,14 +149,7 @@ namespace ftk
         }
     }
     
-    Size2I Bellows::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void Bellows::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

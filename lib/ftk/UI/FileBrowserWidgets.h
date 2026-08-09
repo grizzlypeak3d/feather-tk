@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/FileBrowser.h>
 
 #include <ftk/UI/IButton.h>
@@ -10,7 +11,7 @@
 namespace ftk
 {
     //! File browser path widget.
-    class FTK_API_TYPE FileBrowserPath : public IWidget
+    class FTK_API_TYPE FileBrowserPath : public IContainer
     {
     protected:
         void _init(
@@ -45,8 +46,6 @@ namespace ftk
         //! Set the editable callback.
         FTK_API void setEditableCallback(const std::function<void(bool)>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();
@@ -55,7 +54,7 @@ namespace ftk
     };
 
     //! File browser drives widget.
-    class FTK_API_TYPE FileBrowserDrives : public IWidget
+    class FTK_API_TYPE FileBrowserDrives : public IContainer
     {
     protected:
         void _init(
@@ -74,8 +73,6 @@ namespace ftk
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();
@@ -84,7 +81,7 @@ namespace ftk
     };
 
     //! File browser shortcuts widget.
-    class FTK_API_TYPE FileBrowserShortcuts : public IWidget
+    class FTK_API_TYPE FileBrowserShortcuts : public IContainer
     {
     protected:
         void _init(
@@ -103,8 +100,6 @@ namespace ftk
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();
@@ -113,7 +108,7 @@ namespace ftk
     };
 
     //! File browser recent paths widget.
-    class FTK_API_TYPE FileBrowserRecent : public IWidget
+    class FTK_API_TYPE FileBrowserRecent : public IContainer
     {
     protected:
         void _init(
@@ -138,8 +133,6 @@ namespace ftk
         //! Set the recent files model.
         FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();
@@ -148,7 +141,7 @@ namespace ftk
     };
 
     //! File browser settings widget.
-    class FTK_API_TYPE FileBrowserSettings : public IWidget
+    class FTK_API_TYPE FileBrowserSettings : public IContainer
     {
     protected:
         void _init(
@@ -167,8 +160,6 @@ namespace ftk
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();

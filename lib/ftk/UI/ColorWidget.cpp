@@ -36,7 +36,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::RGBColorWidget", parent);
+        IContainer::_init(context, "ftk::RGBColorWidget", parent);
         FTK_P();
 
         p.swatch = ColorSwatch::create(context);
@@ -51,7 +51,8 @@ namespace ftk
         p.sliders["A"] = ColorFloatEditSlider::create(context);
         p.sliders["A"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
         p.swatch->setParent(p.layout);
 
@@ -198,16 +199,9 @@ namespace ftk
         _p->layout->setMarginRole(value);
     }
 
-    Size2I RGBColorWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void RGBColorWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void RGBColorWidget::_colorUpdate()
     {
@@ -239,7 +233,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::HSVColorWidget", parent);
+        IContainer::_init(context, "ftk::HSVColorWidget", parent);
         FTK_P();
 
         p.swatch = ColorSwatch::create(context);
@@ -263,7 +257,8 @@ namespace ftk
         p.sliders["A"] = ColorFloatEditSlider::create(context);
         p.sliders["A"]->setColors({ V4F(0.F, 0.F, 0.F), V4F(1.F, 1.F, 1.F) });
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingSmall);
         p.swatch->setParent(p.layout);
 
@@ -427,16 +422,9 @@ namespace ftk
         _p->layout->setMarginRole(value);
     }
 
-    Size2I HSVColorWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void HSVColorWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void HSVColorWidget::_colorUpdate()
     {
@@ -477,7 +465,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::ColorWidget", parent);
+        IContainer::_init(context, "ftk::ColorWidget", parent);
         FTK_P();
 
         p.tabBar = TabBar::create(context);
@@ -486,7 +474,8 @@ namespace ftk
             p.tabBar->addTab(mode);
         }
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
         p.tabBar->setParent(p.layout);
         Divider::create(context, Orientation::Vertical, p.layout);
@@ -557,16 +546,9 @@ namespace ftk
         _modeUpdate();
     }
 
-    Size2I ColorWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void ColorWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void ColorWidget::_modeUpdate()
     {

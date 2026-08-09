@@ -21,12 +21,13 @@ namespace ftk
         ButtonGroupType type,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::ListWidget", parent);
+        IContainer::_init(context, "ftk::ListWidget", parent);
         FTK_P();
 
         p.widget = ListItemsWidget::create(context, type);
 
-        p.scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
+        p.scrollWidget = ScrollWidget::create(context, ScrollType::Both);
+        _setWidget(p.scrollWidget);
         p.scrollWidget->setWidget(p.widget);
 
         p.scrollToObserver = Observer<int>::create(
@@ -112,16 +113,9 @@ namespace ftk
         _p->widget->clearSearch();
     }
     
-    Size2I ListWidget::getSizeHint() const
-    {
-        return _p->scrollWidget->getSizeHint();
-    }
+    
 
-    void ListWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->scrollWidget->setGeometry(value);
-    }
+    
 
     void ListWidget::_scrollUpdate(int value)
     {

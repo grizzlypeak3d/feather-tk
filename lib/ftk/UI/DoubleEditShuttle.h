@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/DoubleModel.h>
 #include <ftk/UI/IWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value editor and shuttle.
-    class FTK_API_TYPE DoubleEditShuttle : public IWidget
+    class FTK_API_TYPE DoubleEditShuttle : public IContainer
     {
     protected:
         void _init(
@@ -91,8 +92,6 @@ namespace ftk
         //! Set the font.
         FTK_API void setFont(FontType);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

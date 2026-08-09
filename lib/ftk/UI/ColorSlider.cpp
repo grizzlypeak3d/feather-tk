@@ -210,7 +210,7 @@ namespace ftk
         const std::shared_ptr<IntModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::ColorIntEditSlider", parent);
+        IContainer::_init(context, "ftk::ColorIntEditSlider", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -223,7 +223,8 @@ namespace ftk
 
         p.resetButton = IntResetButton::create(context, p.model);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
@@ -327,16 +328,9 @@ namespace ftk
         setRange(RangeI(min, max));
     }
 
-    Size2I ColorIntEditSlider::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void ColorIntEditSlider::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     struct ColorFloatSlider::Private
     {
@@ -538,7 +532,7 @@ namespace ftk
         const std::shared_ptr<FloatModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::ColorFloatEditSlider", parent);
+        IContainer::_init(context, "ftk::ColorFloatEditSlider", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -551,7 +545,8 @@ namespace ftk
 
         p.resetButton = FloatResetButton::create(context, p.model);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
@@ -655,14 +650,7 @@ namespace ftk
         setRange(RangeF(min, max));
     }
 
-    Size2I ColorFloatEditSlider::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void ColorFloatEditSlider::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

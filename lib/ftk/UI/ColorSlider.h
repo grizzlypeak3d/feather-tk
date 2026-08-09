@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/FloatSlider.h>
 #include <ftk/UI/IntSlider.h>
 
@@ -51,7 +52,7 @@ namespace ftk
     };
 
     //! Color integer editor and slider.
-    class FTK_API_TYPE ColorIntEditSlider : public IWidget
+    class FTK_API_TYPE ColorIntEditSlider : public IContainer
     {
     protected:
         void _init(
@@ -102,8 +103,6 @@ namespace ftk
 
         ///@}
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();
@@ -149,7 +148,7 @@ namespace ftk
     };
 
     //! Color floating point editor and slider.
-    class FTK_API_TYPE ColorFloatEditSlider : public IWidget
+    class FTK_API_TYPE ColorFloatEditSlider : public IContainer
     {
     protected:
         void _init(
@@ -200,8 +199,6 @@ namespace ftk
 
         ///@}
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

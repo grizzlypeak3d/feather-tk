@@ -565,7 +565,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::LevelsEditSlider", parent);
+        IContainer::_init(context, "ftk::LevelsEditSlider", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -585,7 +585,8 @@ namespace ftk
         p.resetButton->setIcon("Reset");
         p.resetButton->setTooltip("Reset to the default value");
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.minEdit->setParent(p.layout);
         p.slider->setParent(p.layout);
@@ -756,16 +757,9 @@ namespace ftk
         _p->maxEdit->setFont(value);
     }
     
-    Size2I LevelsEditSlider::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void LevelsEditSlider::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void LevelsEditSlider::_widgetUpdate()
     {

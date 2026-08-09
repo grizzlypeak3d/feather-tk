@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Diagnostics widget.
-    class FTK_API_TYPE DiagWidget : public IWidget
+    class FTK_API_TYPE DiagWidget : public IContainer
     {
     protected:
         void _init(
@@ -34,8 +35,6 @@ namespace ftk
         //! Set the margin role.
         FTK_API void setMarginRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

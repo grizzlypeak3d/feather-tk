@@ -30,7 +30,7 @@ namespace ftk
         FileBrowserMode mode,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileEdit", parent);
+        IContainer::_init(context, "ftk::FileEdit", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -45,7 +45,8 @@ namespace ftk
         p.browseButton->setIcon("FileBrowser");
         p.browseButton->setTooltip("Open the file browser");
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.lineEdit->setParent(p.layout);
         p.browseButton->setParent(p.layout);
@@ -122,16 +123,9 @@ namespace ftk
         _p->callback = value;
     }
     
-    Size2I FileEdit::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void FileEdit::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void FileEdit::dropEvent(DragDropEvent& event)
     {

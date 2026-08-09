@@ -29,7 +29,7 @@ namespace ftk
         const std::shared_ptr<DoubleModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::DoubleEditSlider", parent);
+        IContainer::_init(context, "ftk::DoubleEditSlider", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -43,7 +43,8 @@ namespace ftk
 
         p.resetButton = DoubleResetButton::create(context, p.model);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
@@ -192,14 +193,7 @@ namespace ftk
         _p->edit->setFont(value);
     }
 
-    Size2I DoubleEditSlider::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void DoubleEditSlider::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

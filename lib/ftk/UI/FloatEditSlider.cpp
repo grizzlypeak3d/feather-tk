@@ -28,7 +28,7 @@ namespace ftk
         const std::shared_ptr<FloatModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FloatEditSlider", parent);
+        IContainer::_init(context, "ftk::FloatEditSlider", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -42,7 +42,8 @@ namespace ftk
 
         p.resetButton = FloatResetButton::create(context, p.model);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
@@ -191,14 +192,7 @@ namespace ftk
         _p->edit->setFont(value);
     }
     
-    Size2I FloatEditSlider::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void FloatEditSlider::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

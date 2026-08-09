@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/FloatModel.h>
 #include <ftk/UI/IWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Floating point value editor.
-    class FTK_API_TYPE FloatEdit : public IWidget
+    class FTK_API_TYPE FloatEdit : public IContainer
     {
     protected:
         void _init(
@@ -97,8 +98,6 @@ namespace ftk
         ///@}
 
         FTK_API void takeKeyFocus() override;
-        FTK_API Size2I getSizeHint() const override;
-        void setGeometry(const Box2I&) override;
         void scrollEvent(ScrollEvent&) override;
         void keyPressEvent(KeyEvent&) override;
         void keyReleaseEvent(KeyEvent&) override;
@@ -110,7 +109,7 @@ namespace ftk
     };
 
     //! Floating point reset button.
-    class FTK_API_TYPE FloatResetButton : public IWidget
+    class FTK_API_TYPE FloatResetButton : public IContainer
     {
     protected:
         void _init(
@@ -129,8 +128,6 @@ namespace ftk
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();

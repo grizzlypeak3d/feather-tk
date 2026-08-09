@@ -23,10 +23,11 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::TabWidget", parent);
+        IContainer::_init(context, "ftk::TabWidget", parent);
         FTK_P();
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
 
         p.tabs = TabBar::create(context, p.layout);
@@ -247,16 +248,9 @@ namespace ftk
         _p->tabs->setCloseCallback(value);
     }
     
-    Size2I TabWidget::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void TabWidget::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void TabWidget::_widgetUpdate()
     {

@@ -31,7 +31,7 @@ namespace ftk
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileBrowserDrives", parent);
+        IContainer::_init(context, "ftk::FileBrowserDrives", parent);
         FTK_P();
 
         setBackgroundRole(ColorRole::Base);
@@ -40,8 +40,8 @@ namespace ftk
 
         p.listWidget = ListItemsWidget::create(
             context,
-            ButtonGroupType::Click,
-            shared_from_this());
+            ButtonGroupType::Click);
+        _setWidget(p.listWidget);
 
         p.listWidget->setCallback(
             [this, model](int index, bool)
@@ -85,16 +85,9 @@ namespace ftk
         return out;
     }
 
-    Size2I FileBrowserDrives::getSizeHint() const
-    {
-        return _p->listWidget->getSizeHint();
-    }
+    
 
-    void FileBrowserDrives::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->listWidget->setGeometry(value);
-    }
+    
 
     struct FileBrowserShortcuts::Private
     {
@@ -107,15 +100,15 @@ namespace ftk
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileBrowserShortcuts", parent);
+        IContainer::_init(context, "ftk::FileBrowserShortcuts", parent);
         FTK_P();
 
         setBackgroundRole(ColorRole::Base);
 
         p.listWidget = ListItemsWidget::create(
             context,
-            ButtonGroupType::Click,
-            shared_from_this());
+            ButtonGroupType::Click);
+        _setWidget(p.listWidget);
 
         _widgetUpdate();
 
@@ -147,16 +140,9 @@ namespace ftk
         return out;
     }
 
-    Size2I FileBrowserShortcuts::getSizeHint() const
-    {
-        return _p->listWidget->getSizeHint();
-    }
+    
 
-    void FileBrowserShortcuts::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->listWidget->setGeometry(value);
-    }
+    
 
     void FileBrowserShortcuts::_widgetUpdate()
     {
@@ -188,15 +174,15 @@ namespace ftk
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileBrowserRecent", parent);
+        IContainer::_init(context, "ftk::FileBrowserRecent", parent);
         FTK_P();
 
         setBackgroundRole(ColorRole::Base);
 
         p.listWidget = ListItemsWidget::create(
             context,
-            ButtonGroupType::Click,
-            shared_from_this());
+            ButtonGroupType::Click);
+        _setWidget(p.listWidget);
 
         _widgetUpdate();
 
@@ -266,16 +252,9 @@ namespace ftk
         }
     }
     
-    Size2I FileBrowserRecent::getSizeHint() const
-    {
-        return _p->listWidget->getSizeHint();
-    }
+    
 
-    void FileBrowserRecent::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->listWidget->setGeometry(value);
-    }
+    
 
     void FileBrowserRecent::_widgetUpdate()
     {
@@ -311,7 +290,7 @@ namespace ftk
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileBrowserSettings", parent);
+        IContainer::_init(context, "ftk::FileBrowserSettings", parent);
         FTK_P();
 
         p.seqCheckBox = ftk::CheckBox::create(context);
@@ -320,7 +299,8 @@ namespace ftk
         p.hiddenCheckBox = ftk::CheckBox::create(context);
         p.hiddenCheckBox->setHStretch(ftk::Stretch::Expanding);
 
-        p.layout = FormLayout::create(context, shared_from_this());
+        p.layout = FormLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setMarginRole(ftk::SizeRole::MarginSmall);
         p.layout->addRow("File sequences:", p.seqCheckBox);
         p.layout->addRow("Show hidden:", p.hiddenCheckBox);
@@ -367,16 +347,9 @@ namespace ftk
         return out;
     }
 
-    Size2I FileBrowserSettings::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void FileBrowserSettings::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void FileBrowserSettings::_widgetUpdate()
     {
@@ -400,7 +373,7 @@ namespace ftk
         const std::shared_ptr<FileBrowserModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::FileBrowserPanel", parent);
+        IContainer::_init(context, "ftk::FileBrowserPanel", parent);
         FTK_P();
 
         p.drivesWidget = FileBrowserDrives::create(context, model);
@@ -408,7 +381,8 @@ namespace ftk
         p.recentWidget = FileBrowserRecent::create(context, model);
         p.settingsWidget = FileBrowserSettings::create(context, model);
 
-        p.layout = VerticalLayout::create(context, shared_from_this());
+        p.layout = VerticalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::Border);
         p.bellows["Drives"] = Bellows::create(context, "Drives", p.layout);
         p.bellows["Drives"]->setWidget(p.drivesWidget);
@@ -468,14 +442,7 @@ namespace ftk
         _p->recentWidget->setRecentFilesModel(value);
     }
 
-    Size2I FileBrowserPanel::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void FileBrowserPanel::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

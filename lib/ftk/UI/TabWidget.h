@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -13,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Tab widget.
-    class FTK_API_TYPE TabWidget : public IWidget
+    class FTK_API_TYPE TabWidget : public IContainer
     {
     protected:
         void _init(
@@ -90,8 +91,6 @@ namespace ftk
         //! Set the tab close callback.
         FTK_API void setCloseCallback(const std::function<void(int)>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();

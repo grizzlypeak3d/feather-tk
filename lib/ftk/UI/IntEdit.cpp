@@ -33,7 +33,7 @@ namespace ftk
         const std::shared_ptr<IntModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::IntEdit", parent);
+        IContainer::_init(context, "ftk::IntEdit", parent);
         FTK_P();
 
         p.model = model;
@@ -45,7 +45,8 @@ namespace ftk
 
         p.incButtons = IncButtons::create(context);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.lineEdit->setParent(p.layout);
         p.incButtons->setParent(p.layout);
@@ -222,16 +223,9 @@ namespace ftk
         _p->lineEdit->takeKeyFocus();
     }
 
-    Size2I IntEdit::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void IntEdit::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 
     void IntEdit::scrollEvent(ScrollEvent& event)
     {
@@ -309,12 +303,13 @@ namespace ftk
         const std::shared_ptr<IntModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::IntResetButton", parent);
+        IContainer::_init(context, "ftk::IntResetButton", parent);
         FTK_P();
 
         p.model = model;
 
-        p.resetButton = ToolButton::create(context, shared_from_this());
+        p.resetButton = ToolButton::create(context);
+        _setWidget(p.resetButton);
         p.resetButton->setIcon("Reset");
         p.resetButton->setTooltip("Reset to the default value");
 
@@ -363,16 +358,9 @@ namespace ftk
         return out;
     }
 
-    Size2I IntResetButton::getSizeHint() const
-    {
-        return _p->resetButton->getSizeHint();
-    }
+    
 
-    void IntResetButton::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->resetButton->setGeometry(value);
-    }
+    
 
     void IntResetButton::_widgetUpdate()
     {

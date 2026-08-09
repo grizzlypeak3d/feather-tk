@@ -29,7 +29,7 @@ namespace ftk
         const std::shared_ptr<IntModel>& model,
         const std::shared_ptr<IWidget>& parent)
     {
-        IWidget::_init(context, "ftk::IntEditShuttle", parent);
+        IContainer::_init(context, "ftk::IntEditShuttle", parent);
         FTK_P();
 
         setHStretch(Stretch::Expanding);
@@ -42,7 +42,8 @@ namespace ftk
 
         p.resetButton = IntResetButton::create(context, p.model);
 
-        p.layout = HorizontalLayout::create(context, shared_from_this());
+        p.layout = HorizontalLayout::create(context);
+        _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.shuttle->setParent(p.layout);
@@ -192,14 +193,7 @@ namespace ftk
         _p->edit->setFont(value);
     }
 
-    Size2I IntEditShuttle::getSizeHint() const
-    {
-        return _p->layout->getSizeHint();
-    }
+    
 
-    void IntEditShuttle::setGeometry(const Box2I& value)
-    {
-        IWidget::setGeometry(value);
-        _p->layout->setGeometry(value);
-    }
+    
 }

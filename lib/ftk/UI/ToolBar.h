@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -14,7 +15,7 @@ namespace ftk
     ///@{
         
     //! Tool bar.
-    class FTK_API_TYPE ToolBar : public IWidget
+    class FTK_API_TYPE ToolBar : public IContainer
     {
     protected:
         void _init(
@@ -54,8 +55,6 @@ namespace ftk
         //! Set the spacing role.
         FTK_API void setSpacingRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         FTK_PRIVATE();

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -13,7 +14,7 @@ namespace ftk
     //! Tab bar widget.
     //! 
     //! \todo Add scrolling for the tab buttons.
-    class FTK_API_TYPE TabBar : public IWidget
+    class FTK_API_TYPE TabBar : public IContainer
     {
     protected:
         void _init(
@@ -79,8 +80,6 @@ namespace ftk
         //! Set whether the scroll bar is visible.
         FTK_API void setScrollBarVisible(bool);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
         FTK_API void keyFocusEvent(bool) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;

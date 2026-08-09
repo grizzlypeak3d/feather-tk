@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 #include <ftk/UI/IntModel.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Integer value editor.
-    class FTK_API_TYPE IntEdit : public IWidget
+    class FTK_API_TYPE IntEdit : public IContainer
     {
     protected:
         void _init(
@@ -91,8 +92,6 @@ namespace ftk
         ///@}
 
         FTK_API void takeKeyFocus() override;
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
         FTK_API void scrollEvent(ScrollEvent&) override;
         FTK_API void keyPressEvent(KeyEvent&) override;
         FTK_API void keyReleaseEvent(KeyEvent&) override;
@@ -104,7 +103,7 @@ namespace ftk
     };
 
     //! Integer reset button.
-    class FTK_API_TYPE IntResetButton : public IWidget
+    class FTK_API_TYPE IntResetButton : public IContainer
     {
     protected:
         void _init(
@@ -123,8 +122,6 @@ namespace ftk
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
 
     private:
         void _widgetUpdate();
