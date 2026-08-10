@@ -122,6 +122,11 @@ namespace ftk
         _p->callback = value;
     }
     
+    const std::shared_ptr<LineEdit>& FileEdit::getLineEdit() const
+    {
+        return _p->lineEdit;
+    }
+
     Size2I FileEdit::getSizeHint() const
     {
         return _p->layout->getSizeHint();
