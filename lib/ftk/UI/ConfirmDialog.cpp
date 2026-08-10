@@ -35,6 +35,8 @@ namespace ftk
 
         void setCallback(const std::function<void(bool)>&);
 
+        const std::shared_ptr<PushButton>& getCancelButton() const;
+
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
         void sizeHintEvent(const SizeHintEvent&) override;
@@ -126,6 +128,11 @@ namespace ftk
         _callback = value;
     }
 
+    const std::shared_ptr<PushButton>& ConfirmDialogWidget::getCancelButton() const
+    {
+        return _cancelButton;
+    }
+
     Size2I ConfirmDialogWidget::getSizeHint() const
     {
         Size2I out = _layout->getSizeHint();
@@ -200,5 +207,13 @@ namespace ftk
     void ConfirmDialog::setCallback(const std::function<void(bool)>& value)
     {
         _p->callback = value;
+    }
+
+    std::shared_ptr<IWidget> ConfirmDialog::getKeyFocus() const
+    {
+        // A confirmation is asked because the answer is worth stopping for,
+        // so the key that takes the dialog at face value should be the one
+        // that changes nothing.
+        return _p->widget->getCancelButton();
     }
 }
