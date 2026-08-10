@@ -48,7 +48,7 @@ namespace ftk
         std::shared_ptr<Observable<std::string> > checkedIcon;
         std::shared_ptr<ObservableList<KeyShortcut> > shortcuts;
         std::function<void(void)> callback;
-        std::shared_ptr<Observable<bool> > checkable;
+        std::shared_ptr<Observable<ActionCheckType> > checkType;
         std::shared_ptr<Observable<bool> > checked;
         std::function<void(bool)> checkedCallback;
         std::shared_ptr<Observable<bool> > enabled;
@@ -69,7 +69,10 @@ namespace ftk
         p.checkedIcon = Observable<std::string>::create();
         p.shortcuts = ObservableList<KeyShortcut>::create({ shortcut });
         p.callback = callback;
-        p.checkable = Observable<bool>::create(bool(checkedCallback));
+        // A checked callback is what says the action carries a state; a
+        // group promotes it to Radio when it joins one.
+        p.checkType = Observable<ActionCheckType>::create(
+            checkedCallback ? ActionCheckType::Check : ActionCheckType::None);
         p.checked = Observable<bool>::create(false);
         p.checkedCallback = checkedCallback;
         p.enabled = Observable<bool>::create(true);
@@ -271,19 +274,9 @@ namespace ftk
         }
     }
 
-    bool Action::isCheckable() const
-    {
-        return _p->checkable->get();
-    }
-
     bool Action::isChecked() const
     {
         return _p->checked->get();
-    }
-
-    std::shared_ptr<IObservable<bool> > Action::observeCheckable() const
-    {
-        return _p->checkable;
     }
 
     std::shared_ptr<IObservable<bool> > Action::observeChecked() const
@@ -291,10 +284,25 @@ namespace ftk
         return _p->checked;
     }
 
-    void Action::setCheckable(bool value)
+    ActionCheckType Action::getCheckType() const
+    {
+        return _p->checkType->get();
+    }
+
+    std::shared_ptr<IObservable<ActionCheckType> > Action::observeCheckType() const
+    {
+        return _p->checkType;
+    }
+
+    void Action::setCheckType(ActionCheckType value)
     {
         FTK_P();
-        p.checkable->setIfChanged(value);
+        p.checkType->setIfChanged(value);
+    }
+
+    bool Action::isCheckable() const
+    {
+        return ActionCheckType::None != _p->checkType->get();
     }
 
     void Action::setChecked(bool value)
@@ -362,6 +370,12 @@ namespace ftk
         }
         return out;
     }
+
+    FTK_ENUM_IMPL(
+        ActionCheckType,
+        "None",
+        "Check",
+        "Radio");
 
     void to_json(nlohmann::json& json, const KeyShortcut& value)
     {

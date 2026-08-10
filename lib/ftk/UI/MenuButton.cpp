@@ -27,7 +27,7 @@ namespace ftk
         std::shared_ptr<Observer<std::string> > iconObserver;
         std::shared_ptr<Observer<std::string> > checkedIconObserver;
         std::shared_ptr<ListObserver<KeyShortcut> > shortcutsObserver;
-        std::shared_ptr<Observer<bool> > checkableObserver;
+        std::shared_ptr<Observer<ActionCheckType> > checkTypeObserver;
         std::shared_ptr<Observer<bool> > checkedObserver;
         std::shared_ptr<Observer<bool> > enabledObserver;
 
@@ -92,10 +92,13 @@ namespace ftk
                 {
                     setShortcuts(value);
                 });
-            p.checkableObserver = Observer<bool>::create(
-                action->observeCheckable(),
-                [this](bool value)
+            p.checkTypeObserver = Observer<ActionCheckType>::create(
+                action->observeCheckType(),
+                [this](ActionCheckType type)
                 {
+                    // Radio is checkable as far as the button is concerned;
+                    // the group is what stops it turning itself off.
+                    const bool value = ActionCheckType::None != type;
                     setCheckable(value);
                     if ("Empty" == getIcon() && getCheckedIcon().empty())
                     {

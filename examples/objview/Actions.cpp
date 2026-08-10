@@ -314,14 +314,18 @@ namespace objview
             { RenderMode::Normals, Key::_4 }
         };
         std::weak_ptr<App> appWeak(app);
+        _renderModeGroup = ActionGroup::create(ActionGroupType::Radio);
         for (auto e : getRenderModeEnums())
         {
             const std::string label = getLabel(e);
             const std::string key = "Render/" + label;
+            // A plain callback: picking a render mode sets it, and there is
+            // no such thing as un-setting it. The group draws the tick and
+            // keeps the four exclusive.
             _actions[key] = Action::create(
                 label,
                 shortcuts[e],
-                [appWeak, e](bool value)
+                [appWeak, e]
                 {
                     if (auto app = appWeak.lock())
                     {
@@ -332,6 +336,7 @@ namespace objview
                 });
             _actions[key]->setTooltip(label);
             _renderModeActions[e] = _actions[key];
+            _renderModeGroup->addAction(_actions[key]);
         }
 
         _actions["Render/Grid"] = Action::create(
@@ -364,11 +369,7 @@ namespace objview
             app->getSettingsModel()->observeRender(),
             [this](const RenderSettings& value)
             {
-                for (const auto e : getRenderModeEnums())
-                {
-                    const std::string key = "Render/" + getLabel(e);
-                    _actions[key]->setChecked(e == value.mode);
-                }
+                _renderModeGroup->setChecked(static_cast<int>(value.mode));
                 _actions["Render/Grid"]->setChecked(value.grid);
                 _actions["Render/Cull"]->setChecked(value.cull);
             });

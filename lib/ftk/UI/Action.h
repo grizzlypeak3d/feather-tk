@@ -26,6 +26,28 @@ namespace ftk
         FTK_API bool operator != (const KeyShortcut&) const;
     };
 
+    //! How an action carries a checked state.
+    enum class FTK_API_TYPE ActionCheckType
+    {
+        //! A command. Picking it does something and nothing is remembered.
+        None,
+
+        //! A switch. Picking it turns something on or off.
+        Check,
+
+        //! One of several. Picking it selects; picking the one already
+        //! selected leaves it selected, because there is no such thing as
+        //! none of them.
+        //!
+        //! Set by ActionGroup rather than by hand: an action is one of many
+        //! only in the company of the others.
+        Radio,
+
+        Count,
+        First = None
+    };
+    FTK_ENUM(ActionCheckType);
+
     //! Action.
     class FTK_API_TYPE Action : public std::enable_shared_from_this<Action>
     {
@@ -129,11 +151,15 @@ namespace ftk
         //! \name Checkable
         ///@{
 
+        FTK_API ActionCheckType getCheckType() const;
+        FTK_API std::shared_ptr<IObservable<ActionCheckType> > observeCheckType() const;
+        FTK_API void setCheckType(ActionCheckType);
+
+        //! Whether the action carries a checked state at all.
         FTK_API bool isCheckable() const;
+
         FTK_API bool isChecked() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeCheckable() const;
         FTK_API std::shared_ptr<IObservable<bool> > observeChecked() const;
-        FTK_API void setCheckable(bool);
         FTK_API void setChecked(bool);
         FTK_API void doCheckedCallback(bool);
 

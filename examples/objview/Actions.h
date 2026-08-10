@@ -5,7 +5,7 @@
 
 #include "Settings.h"
 
-#include <ftk/UI/Action.h>
+#include <ftk/UI/ActionGroup.h>
 #include <ftk/UI/DocumentModel.h>
 
 namespace objview
@@ -62,6 +62,11 @@ namespace objview
 
         std::map<std::string, std::shared_ptr<ftk::Action> > _actions;
         std::map<RenderMode, std::shared_ptr<ftk::Action> > _renderModeActions;
+
+        //! The render modes are one of four. The group keeps them exclusive
+        //! and stops the current one being un-picked, which a checkable
+        //! action on its own offers to do.
+        std::shared_ptr<ftk::ActionGroup> _renderModeGroup;
 
         std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;
         std::shared_ptr<ftk::Observer<WindowSettings> > _windowSettingsObserver;

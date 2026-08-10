@@ -1,5 +1,6 @@
 set(HEADERS
     Action.h
+    ActionGroup.h
     App.h
     Bellows.h
     ButtonGroup.h
@@ -114,6 +115,7 @@ set(PRIVATE_HEADERS
 
 set(SOURCE
     Action.cpp
+    ActionGroup.cpp
     Bellows.cpp
     BellowsButton.cpp
     ButtonGroup.cpp

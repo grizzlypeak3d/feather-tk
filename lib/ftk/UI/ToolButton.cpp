@@ -22,7 +22,7 @@ namespace ftk
 
         std::shared_ptr<Observer<std::string> > iconObserver;
         std::shared_ptr<Observer<std::string> > checkedIconObserver;
-        std::shared_ptr<Observer<bool> > checkableObserver;
+        std::shared_ptr<Observer<ActionCheckType> > checkTypeObserver;
         std::shared_ptr<Observer<bool> > checkedObserver;
         std::shared_ptr<Observer<bool> > enabledObserver;
         std::shared_ptr<Observer<std::string> > tooltipObserver;
@@ -92,11 +92,13 @@ namespace ftk
                 {
                     setCheckedIcon(value);
                 });
-            p.checkableObserver = Observer<bool>::create(
-                action->observeCheckable(),
-                [this](bool value)
+            p.checkTypeObserver = Observer<ActionCheckType>::create(
+                action->observeCheckType(),
+                [this](ActionCheckType value)
                 {
-                    setCheckable(value);
+                    // Radio is checkable as far as the button is concerned;
+                    // the group is what stops it turning itself off.
+                    setCheckable(ActionCheckType::None != value);
                 });
             p.checkedObserver = Observer<bool>::create(
                 action->observeChecked(),

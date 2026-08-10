@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the feather-tk project.
+
+#pragma once
+
+#include <ftk/TestLib/ITest.h>
+
+namespace ftk
+{
+    namespace ui_test
+    {
+        class ActionGroupTest : public test::ITest
+        {
+        protected:
+            ActionGroupTest(const std::shared_ptr<Context>&);
+
+        public:
+            virtual ~ActionGroupTest();
+
+            static std::shared_ptr<ActionGroupTest> create(
+                const std::shared_ptr<Context>&);
+
+            void run() override;
+
+        private:
+            void _radio();
+            void _check();
+            void _enums();
+        };
+    }
+}
