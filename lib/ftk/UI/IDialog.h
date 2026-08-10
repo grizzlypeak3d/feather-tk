@@ -60,6 +60,8 @@ namespace ftk
         FTK_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
+        void _takeKeyFocus();
+
         FTK_PRIVATE();
     };
 

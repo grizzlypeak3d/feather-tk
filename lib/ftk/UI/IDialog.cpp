@@ -101,13 +101,21 @@ namespace ftk
         p.restoreFocus = window->getKeyFocus();
         window->setKeyFocus(nullptr);
         setParent(window);
-        if (auto widget = getKeyFocus())
+        _takeKeyFocus();
+    }
+
+    void IDialog::_takeKeyFocus()
+    {
+        if (auto window = getWindow())
         {
-            widget->takeKeyFocus();
-        }
-        else if ((widget = window->getNextKeyFocus(shared_from_this())))
-        {
-            widget->takeKeyFocus();
+            if (auto widget = getKeyFocus())
+            {
+                widget->takeKeyFocus();
+            }
+            else if ((widget = window->getNextKeyFocus(shared_from_this())))
+            {
+                widget->takeKeyFocus();
+            }
         }
     }
 
@@ -265,6 +273,21 @@ namespace ftk
         if (clipped)
         {
             p.draw.reset();
+        }
+        else if (p.open)
+        {
+            // Opening runs before the first layout, and a widget that is
+            // still clipped then loses the focus again the moment it is laid
+            // out. Take it back once there is something laid out to give it
+            // to -- but only if nothing holds it, so this never steals from
+            // whatever the dialog put it on.
+            if (auto window = getWindow())
+            {
+                if (!window->getKeyFocus())
+                {
+                    _takeKeyFocus();
+                }
+            }
         }
     }
 
