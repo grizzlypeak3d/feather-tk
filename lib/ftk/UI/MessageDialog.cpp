@@ -35,6 +35,8 @@ namespace ftk
 
         void setCallback(const std::function<void(void)>&);
 
+        const std::shared_ptr<PushButton>& getOKButton() const;
+
     private:
         std::shared_ptr<Label> _label;
         std::shared_ptr<ScrollWidget> _scrollWidget;
@@ -113,6 +115,11 @@ namespace ftk
         return out;
     }
 
+    const std::shared_ptr<PushButton>& MessageDialogWidget::getOKButton() const
+    {
+        return _okButton;
+    }
+
     void MessageDialogWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
@@ -176,6 +183,11 @@ namespace ftk
     void MessageDialog::setCallback(const std::function<void(void)>& value)
     {
         _p->callback = value;
+    }
+
+    std::shared_ptr<IWidget> MessageDialog::getKeyFocus() const
+    {
+        return _p->widget->getOKButton();
     }
 
 }

@@ -106,16 +106,13 @@ namespace ftk
 
     void IDialog::_takeKeyFocus()
     {
-        if (auto window = getWindow())
+        // Only what the dialog names for itself. Falling back to the first
+        // widget that would take the focus lands it somewhere arbitrary --
+        // a scrolling block of text, or whichever button happens to be
+        // leftmost -- which reads as a default answer without being one.
+        if (auto widget = getKeyFocus())
         {
-            if (auto widget = getKeyFocus())
-            {
-                widget->takeKeyFocus();
-            }
-            else if ((widget = window->getNextKeyFocus(shared_from_this())))
-            {
-                widget->takeKeyFocus();
-            }
+            widget->takeKeyFocus();
         }
     }
 
