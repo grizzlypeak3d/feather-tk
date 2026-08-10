@@ -5,7 +5,7 @@
 
 #include "Settings.h"
 
-#include <ftk/UI/Action.h>
+#include <ftk/UI/ActionGroup.h>
 #include <ftk/UI/DocumentModel.h>
 
 namespace imageview
@@ -60,6 +60,11 @@ namespace imageview
         void _actionsUpdate();
 
         std::map<std::string, std::shared_ptr<ftk::Action> > _actions;
+
+        //! The channels exclude each other, but turning the current one off
+        //! is meaningful -- it goes back to showing colour. Toggle rather
+        //! than Radio, which has no "none of them".
+        std::shared_ptr<ftk::ActionGroup> _channelGroup;
 
         std::weak_ptr<ftk::IDocument> _current;
         std::shared_ptr<ftk::Observer<std::shared_ptr<ftk::IDocument> > > _currentObserver;

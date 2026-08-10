@@ -292,6 +292,12 @@ namespace imageview
             });
         _actions["View/Alpha"]->setTooltip("View the alpha channel");
 
+        _channelGroup = ActionGroup::create(ActionGroupType::Toggle);
+        _channelGroup->addAction(_actions["View/Red"]);
+        _channelGroup->addAction(_actions["View/Green"]);
+        _channelGroup->addAction(_actions["View/Blue"]);
+        _channelGroup->addAction(_actions["View/Alpha"]);
+
         _viewObserver = Observer<std::shared_ptr<ImageView> >::create(
             mainWindow->observeCurrentView(),
             [this](const std::shared_ptr<ImageView>& view)
@@ -302,19 +308,24 @@ namespace imageview
                         view->observeChannelDisplay(),
                         [this](ChannelDisplay value)
                         {
-                            _actions["View/Red"]->setChecked(ChannelDisplay::Red == value);
-                            _actions["View/Green"]->setChecked(ChannelDisplay::Green == value);
-                            _actions["View/Blue"]->setChecked(ChannelDisplay::Blue == value);
-                            _actions["View/Alpha"]->setChecked(ChannelDisplay::Alpha == value);
+                            // Colour is none of them, which the group spells
+                            // as no index.
+                            int index = -1;
+                            switch (value)
+                            {
+                            case ChannelDisplay::Red:   index = 0; break;
+                            case ChannelDisplay::Green: index = 1; break;
+                            case ChannelDisplay::Blue:  index = 2; break;
+                            case ChannelDisplay::Alpha: index = 3; break;
+                            default: break;
+                            }
+                            _channelGroup->setChecked(index);
                         });
                 }
                 else
                 {
                     _channelDisplayObserver.reset();
-                    _actions["View/Red"]->setChecked(false);
-                    _actions["View/Green"]->setChecked(false);
-                    _actions["View/Blue"]->setChecked(false);
-                    _actions["View/Alpha"]->setChecked(false);
+                    _channelGroup->setChecked(-1);
                 }
             });
     }
