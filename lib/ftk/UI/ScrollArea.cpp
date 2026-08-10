@@ -190,6 +190,14 @@ namespace ftk
             out.w = std::max(out.w, childSizeHint.w);
             out.h = std::max(out.h, childSizeHint.h);
         }
+        // A size role of "None" asks for the contents rather than a size to
+        // scroll them in, so that a scrolling widget can be given the height
+        // it needs -- inside a bellows, say, where the scroll bar would
+        // belong to whatever the bellows is in.
+        if (SizeRole::None == p.sizeHintRole)
+        {
+            return out;
+        }
         switch (p.scrollType)
         {
         case ScrollType::Horizontal:
