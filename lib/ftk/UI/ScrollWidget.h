@@ -139,8 +139,9 @@ namespace ftk
         FTK_API SizeRole getSizeHintRole() const;
 
         //! Set the size hint role, which is the size the contents are given
-        //! to scroll in. "None" asks for the size of the contents instead,
-        //! so that the widget takes the room it needs and does not scroll.
+        //! to scroll in. "None" asks for the height of the contents
+        //! instead, so that the widget takes the room it needs and does not
+        //! scroll vertically; the width is unaffected.
         FTK_API void setSizeHintRole(SizeRole);
 
         //! Get the margin role.
