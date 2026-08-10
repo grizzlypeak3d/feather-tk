@@ -335,7 +335,9 @@ namespace ftk
                     { "/tmp/render.1.exr", "", "/tmp/", "render.", "1", 0, ".exr", "" },
                     { "/tmp/render.0001.exr", "", "/tmp/", "render.", "0001", 4, ".exr", "" },
                     { "/tmp/render0001.exr", "", "/tmp/", "render", "0001", 4, ".exr", "" },
-                    { "/tmp/render-0001.exr", "", "/tmp/", "render", "-0001", 4, ".exr", "" },
+                    { "/tmp/render-0001.exr", "", "/tmp/", "render-", "0001", 4, ".exr", "" },
+                    { "/tmp/render-1.exr", "", "/tmp/", "render", "-1", 0, ".exr", "" },
+                    { "/tmp/render-12.exr", "", "/tmp/", "render", "-12", 0, ".exr", "" },
                     { ".", "", "", ".", "", 0, "", "" },
                     { "..", "", "", "..", "", 0, "", "" },
                     { "/.", "", "/", ".", "", 0, "", "" },
@@ -345,13 +347,14 @@ namespace ftk
                     { "/tmp/.dotdir/.dotfile", "", "/tmp/.dotdir/", ".dotfile", "", 0, "", "" },
                     { "0", "", "", "", "0", 1, "", "" },
                     { "0001", "", "", "", "0001", 4, "", "" },
-                    { "-0001", "", "", "", "-0001", 4, "", "" },
+                    { "-0001", "", "", "-", "0001", 4, "", "" },
+                    { "-1", "", "", "", "-1", 0, "", "" },
                     { "####", "", "", "", "####", 4, "", "" },
                     { "/tmp/0001", "", "/tmp/", "", "0001", 4, "", "" },
-                    { "/tmp/-0001", "", "/tmp/", "", "-0001", 4, "", "" },
+                    { "/tmp/-0001", "", "/tmp/", "-", "0001", 4, "", "" },
                     { "/tmp/####", "", "/tmp/", "", "####", 4, "", "" },
                     { "/tmp/0001.exr", "", "/tmp/", "", "0001", 4, ".exr", "" },
-                    { "/tmp/-0001.exr", "", "/tmp/", "", "-0001", 4, ".exr", "" },
+                    { "/tmp/-0001.exr", "", "/tmp/", "-", "0001", 4, ".exr", "" },
                     { "/tmp/####.exr", "", "/tmp/", "", "####", 4, ".exr", "" },
                     { "0001.exr", "", "", "", "0001", 4, ".exr", "" },
                     { "####.exr", "", "", "", "####", 4, ".exr", "" },
@@ -397,6 +400,21 @@ namespace ftk
                 FTK_CHECK(tmp == "render.0100.exr");
                 tmp = Path("/tmp/render.0001.exr").getFrame(100, true);
                 FTK_CHECK(tmp == "/tmp/render.0100.exr");
+            }
+            {
+                // The sign goes in front of the padding rather than being
+                // padded around, so that a negative frame gives back a name
+                // that can be read again.
+                FTK_CHECK("0001" == toString(1, 4));
+                FTK_CHECK("-0001" == toString(-1, 4));
+                FTK_CHECK("1" == toString(1));
+                FTK_CHECK("-1" == toString(-1));
+                FTK_CHECK("/tmp/render-2.exr" ==
+                    Path("/tmp/render-1.exr").getFrame(-2, true));
+                // A minus in front of padded digits belongs to the base, so
+                // this is frame two of "shot-", not minus two of "shot".
+                FTK_CHECK("/tmp/shot-0000002.tif" ==
+                    Path("/tmp/shot-0000001.tif").getFrame(2, true));
             }
             {
                 PathOptions options;

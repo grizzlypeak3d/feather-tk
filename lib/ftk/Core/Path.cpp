@@ -103,8 +103,11 @@ namespace ftk
         std::stringstream ss;
         if (pad > 0)
         {
-            ss << std::setfill('0');
-            ss << std::setw(pad);
+            // The padding is the number of digits, and the sign goes in
+            // front of it rather than being padded around: four digits of
+            // minus one is "-0001", not "00-1".
+            ss << std::internal << std::setfill('0');
+            ss << std::setw(frame < 0 ? pad + 1 : pad);
         }
         ss << frame;
         return ss.str();
@@ -686,10 +689,15 @@ namespace ftk
             {
                 numPos = std::string::npos;
             }
+            // A minus in front of the digits is a sign, unless the digits
+            // are padded with zeros: nobody writes "-0000001" to mean minus
+            // one, while "shot-0000001.exr" is an everyday name and the
+            // minus belongs to the base of it.
             if (options.seqNegative &&
                 numPos != std::string::npos &&
                 numPos > protocolDirSize &&
-                '-' == _path[numPos - 1])
+                '-' == _path[numPos - 1] &&
+                '0' != _path[numPos])
             {
                 --numPos;
             }
@@ -705,13 +713,6 @@ namespace ftk
             else if ('#' == _path[numPos])
             {
                 _pad = static_cast<int>(sizeTmp);
-            }
-            if (options.seqNegative &&
-                '-' == _path[numPos] &&
-                numPos < size - 1 &&
-                '0' == _path[numPos + 1])
-            {
-                _pad = static_cast<int>(sizeTmp) - 1;
             }
             if (_path[numPos] != '#')
             {
