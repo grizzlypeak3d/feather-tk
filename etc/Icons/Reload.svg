@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="Reload.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -27,15 +27,15 @@
      inkscape:pageshadow="2"
      inkscape:zoom="32"
      inkscape:cx="12.265625"
-     inkscape:cy="8.453125"
+     inkscape:cy="8.4375"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
      units="px"
      inkscape:window-width="1312"
      inkscape:window-height="969"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-x="582"
+     inkscape:window-y="47"
      inkscape:window-maximized="0"
      inkscape:pagecheckerboard="0"
      inkscape:object-nodes="false"
@@ -83,7 +83,7 @@
          d="m 2.6458333,292.76664 a 1.5875,1.5875 0 0 0 -1.5875,1.5875 1.5875,1.5875 0 0 0 1.5875,1.5875 1.5875,1.5875 0 0 0 1.5875,-1.5875 h -0.396875 a 1.190625,1.190625 0 0 1 -1.190625,1.19063 1.190625,1.190625 0 0 1 -1.190625,-1.19063 1.190625,1.190625 0 0 1 1.190625,-1.19062 z" />
       <path
          style="fill:#f0f0f0;fill-opacity:1;stroke-width:3.18444"
-         d="m 3.5656737,292.96508 -0.9198404,-0.66146 v 1.32291 z"
+         d="m 3.7496425,292.96509 -1.1038092,-0.79376 v 1.5875 z"
          id="path2" />
     </g>
   </g>

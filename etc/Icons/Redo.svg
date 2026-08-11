@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="Redo.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="29.344931"
      inkscape:cx="12.455303"
-     inkscape:cy="9.7631852"
+     inkscape:cy="9.7461466"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
@@ -78,7 +78,7 @@
          transform="matrix(0.26458333,0,0,0.26458333,0,291.70831)" />
       <path
          style="fill:#f0f0f0;fill-opacity:1;stroke-width:3.18444"
-         d="m 3.5656737,292.96508 -0.9198404,-0.66146 v 1.32291 z"
+         d="m 3.7496425,292.96509 -1.1038092,-0.79376 v 1.5875 z"
          id="path2" />
     </g>
   </g>

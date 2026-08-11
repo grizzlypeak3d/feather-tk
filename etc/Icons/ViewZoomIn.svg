@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="ViewZoomIn.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="41.277719"
-     inkscape:cx="10.090189"
-     inkscape:cy="10.332451"
+     inkscape:zoom="29.187755"
+     inkscape:cx="9.1305412"
+     inkscape:cy="10.415327"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
@@ -35,7 +35,7 @@
      inkscape:window-width="1312"
      inkscape:window-height="969"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="27"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
@@ -92,7 +92,7 @@
       <path
          id="rect831"
          style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 1.6536724,294.35413 -0.396875,2e-5 -3.88e-5,0.99219 H 0.26462053 l 1.453e-5,0.39688 0.99213804,-1e-5 -2.89e-5,0.99219 0.3968749,-1e-5 2.19e-5,-0.99221 0.99223,5e-5 -1.45e-5,-0.39688 -0.992223,-3e-5 z"
+         d="m 1.3891036,294.61873 -0.39687498,2e-5 -3.88e-5,0.99217 H -1.453e-5 L 0,296.0078 l 0.99220432,-10e-6 -2.89e-5,0.9922 0.39687488,-1e-5 2.19e-5,-0.99222 0.9921777,5e-5 -1.45e-5,-0.39688 -0.9921707,-3e-5 z"
          sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>

@@ -34,7 +34,7 @@
      units="px"
      inkscape:window-width="1312"
      inkscape:window-height="969"
-     inkscape:window-x="0"
+     inkscape:window-x="335"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
@@ -84,14 +84,14 @@
          y="210.32071"
          transform="rotate(-45)" />
       <path
-         id="rect831"
-         style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 0.26462053,295.34633 1.453e-5,0.39687 2.38123594,10e-6 -1.45e-5,-0.39687 z"
-         sodipodi:nodetypes="ccccc" />
-      <path
          id="path927"
          style="fill:#f0f0f0;stroke-width:0.264583"
          d="m 2.6458333,291.97289 a 1.3229167,1.3229167 0 0 0 -0.9353434,0.38758 1.3229167,1.3229167 0 0 0 0,1.87068 1.3229167,1.3229167 0 0 0 1.8706867,0 1.3229167,1.3229167 0 0 0 0,-1.87068 1.3229167,1.3229167 0 0 0 -0.9353433,-0.38758 z m 0,0.39688 a 0.92617667,0.92610687 0 0 1 0.6547403,0.2713 0.92617667,0.92610687 0 0 1 0,1.30948 0.92617667,0.92610687 0 0 1 -1.3094807,0 0.92617667,0.92610687 0 0 1 0,-1.30948 0.92617667,0.92610687 0 0 1 0.6547404,-0.2713 z" />
+      <path
+         id="rect831"
+         style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M -1.453e-5,295.61092 0,296.0078 l 2.3812499,1e-5 -1.45e-5,-0.39688 z"
+         sodipodi:nodetypes="ccccc" />
     </g>
   </g>
 </svg>
