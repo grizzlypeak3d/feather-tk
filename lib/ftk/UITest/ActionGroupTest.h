@@ -25,6 +25,7 @@ namespace ftk
         private:
             void _radio();
             void _check();
+            void _toolBar();
             void _enums();
         };
     }

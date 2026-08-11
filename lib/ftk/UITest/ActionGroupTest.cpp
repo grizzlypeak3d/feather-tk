@@ -4,6 +4,10 @@
 #include <ftk/UITest/ActionGroupTest.h>
 
 #include <ftk/UI/ActionGroup.h>
+#include <ftk/UI/App.h>
+#include <ftk/UI/ToolBar.h>
+#include <ftk/UI/ToolButton.h>
+#include <ftk/UI/Window.h>
 
 #include <ftk/Core/Assert.h>
 
@@ -28,6 +32,7 @@ namespace ftk
         {
             _radio();
             _check();
+            _toolBar();
             _enums();
         }
 
@@ -119,6 +124,51 @@ namespace ftk
             FTK_CHECK(actions[1]->isChecked());
             FTK_CHECK(3 == reported.size());
             FTK_CHECK(!reported[2].second);
+        }
+
+        void ActionGroupTest::_toolBar()
+        {
+            // The same action shown in a tool bar. A menu writes a click back
+            // to the action; a tool bar used not to, so the group heard
+            // nothing and the button drifted away from what it was showing.
+            std::vector<std::string> argv;
+            argv.push_back("ActionGroupTest");
+            auto app = App::create(
+                _context, argv, "ActionGroupTest", "Action group test.");
+            auto window = Window::create(_context, app, "ActionGroupTest");
+            window->show();
+            app->tick();
+
+            auto group = ActionGroup::create(ActionGroupType::Radio);
+            auto toolBar = ToolBar::create(_context, Orientation::Horizontal, window);
+            std::vector<std::shared_ptr<Action> > actions;
+            std::vector<std::shared_ptr<ToolButton> > buttons;
+            for (int i = 0; i < 3; ++i)
+            {
+                auto action = Action::create("Action", "Empty", [] {});
+                group->addAction(action);
+                actions.push_back(action);
+                buttons.push_back(toolBar->addAction(action));
+            }
+            group->setChecked(0);
+            app->tick();
+
+            // Picking another one moves the selection and the buttons follow.
+            buttons[2]->click();
+            app->tick();
+            FTK_CHECK(2 == group->getChecked());
+            FTK_CHECK(actions[2]->isChecked());
+            FTK_CHECK(!actions[0]->isChecked());
+            FTK_CHECK(buttons[2]->isChecked());
+            FTK_CHECK(!buttons[0]->isChecked());
+
+            // Picking the one already current leaves it current, and leaves
+            // the button showing it.
+            buttons[2]->click();
+            app->tick();
+            FTK_CHECK(2 == group->getChecked());
+            FTK_CHECK(actions[2]->isChecked());
+            FTK_CHECK(buttons[2]->isChecked());
         }
 
         void ActionGroupTest::_enums()
