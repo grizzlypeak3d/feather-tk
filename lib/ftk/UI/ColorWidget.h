@@ -39,7 +39,7 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
-        //! Set the callback with a flag for whether the widget is presssed.
+        //! Set the callback with a flag for whether the widget is pressed.
         FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the margin role.
@@ -84,7 +84,7 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
-        //! Set the callback with a flag for whether the widget is presssed.
+        //! Set the callback with a flag for whether the widget is pressed.
         FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the margin role.
@@ -142,7 +142,7 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Color4F&)>&);
 
-        //! Set the callback with a flag for whether the widget is presssed.
+        //! Set the callback with a flag for whether the widget is pressed.
         FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the widget mode.
