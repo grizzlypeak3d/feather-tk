@@ -155,6 +155,21 @@ namespace ftk
         return out;
     }
 
+    int Splitter2D::_split(int size, float split) const
+    {
+        FTK_P();
+        // A division straddles its split, so one hard against an end leaves
+        // half of it outside the widget, drawn over whatever the widget's
+        // neighbour happens to be. Kept away from the ends by half a handle,
+        // which still collapses a child to nothing: the division simply sits
+        // flush against the edge rather than across it.
+        const int half = p.size.handle / 2;
+        return clamp(
+            static_cast<int>(size * split),
+            half,
+            std::max(size - half, half));
+    }
+
     void Splitter2D::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
@@ -171,8 +186,8 @@ namespace ftk
         }
 
         const int half = p.size.handle / 2;
-        const int sx = g.w() * p.split.x;
-        const int sy = g.h() * p.split.y;
+        const int sx = _split(g.w(), p.split.x);
+        const int sy = _split(g.h(), p.split.y);
         const int x0 = g.min.x;
         const int y0 = g.min.y;
         const int x1 = g.min.x + sx + half;

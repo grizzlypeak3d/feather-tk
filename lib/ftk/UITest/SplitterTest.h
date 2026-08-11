@@ -31,6 +31,11 @@ namespace ftk
                 const std::shared_ptr<App>&,
                 const std::shared_ptr<Window>&,
                 Orientation);
+
+            void _test2D(
+                const std::shared_ptr<Context>&,
+                const std::shared_ptr<App>&,
+                const std::shared_ptr<Window>&);
         };
     }
 }

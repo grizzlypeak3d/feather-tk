@@ -143,6 +143,21 @@ namespace ftk
         return out;
     }
 
+    int Splitter::_split(int size) const
+    {
+        FTK_P();
+        // The handle straddles the split, so a split hard against either end
+        // leaves half of it outside the widget, drawn over whatever the
+        // widget's neighbour happens to be. Kept away from the ends by half a
+        // handle, which still collapses a child to nothing: the handle simply
+        // sits flush against the edge rather than across it.
+        const int half = p.size.handle / 2;
+        return clamp(
+            static_cast<int>(size * p.split),
+            half,
+            std::max(size - half, half));
+    }
+
     void Splitter::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
@@ -171,7 +186,7 @@ namespace ftk
             {
             case Orientation::Horizontal:
             {
-                const int s = g.w() * p.split;
+                const int s = _split(g.w());
                 childGeometry.push_back(Box2I(
                     g.min.x,
                     g.min.y,
@@ -201,7 +216,7 @@ namespace ftk
             }
             case Orientation::Vertical:
             {
-                const int s = g.h() * p.split;
+                const int s = _split(g.h());
                 childGeometry.push_back(Box2I(
                     g.min.x,
                     g.min.y,

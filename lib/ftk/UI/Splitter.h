@@ -72,6 +72,10 @@ namespace ftk
         FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
+        //! Where the split falls along the given size, in pixels, kept far
+        //! enough from either end for the whole handle to fit inside.
+        int _split(int size) const;
+
         FTK_PRIVATE();
     };
 
