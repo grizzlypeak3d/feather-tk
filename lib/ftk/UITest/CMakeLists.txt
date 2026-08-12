@@ -17,6 +17,7 @@ set(HEADERS
     EventTest.h
     FileBrowserTest.h
     FileEditTest.h
+    FloatEditShuttleTest.h
     FloatEditSliderTest.h
     FloatEditTest.h
     FloatModelTest.h
@@ -74,6 +75,7 @@ set(SOURCE
     EventTest.cpp
     FileBrowserTest.cpp
     FileEditTest.cpp
+    FloatEditShuttleTest.cpp
     FloatEditSliderTest.cpp
     FloatEditTest.cpp
     FloatModelTest.cpp

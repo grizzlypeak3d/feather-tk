@@ -22,6 +22,7 @@
 #include <ftk/UITest/FileBrowserTest.h>
 #include <ftk/UITest/FileEditTest.h>
 #include <ftk/UITest/FloatEditTest.h>
+#include <ftk/UITest/FloatEditShuttleTest.h>
 #include <ftk/UITest/FloatEditSliderTest.h>
 #include <ftk/UITest/FloatSliderTest.h>
 #include <ftk/UITest/FloatModelTest.h>
@@ -204,6 +205,7 @@ namespace ftk
             p.tests.push_back(ui_test::FileBrowserTest::create(context));
             p.tests.push_back(ui_test::FileEditTest::create(context));
             p.tests.push_back(ui_test::FloatEditTest::create(context));
+            p.tests.push_back(ui_test::FloatEditShuttleTest::create(context));
             p.tests.push_back(ui_test::FloatEditSliderTest::create(context));
             p.tests.push_back(ui_test::FloatSliderTest::create(context));
             p.tests.push_back(ui_test::FloatModelTest::create(context));
