@@ -36,6 +36,15 @@ namespace ftk
         IMouseWidget::_init(context, "tl::ui::ShuttleWidget", parent);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
+
+        // Said once, here, rather than by every widget that puts a shuttle in
+        // a row. What the value means belongs to whoever owns it; what the
+        // dragging does belongs to this, and it is the same wherever it is
+        // used. Replaceable by setTooltip() for anything that wants to say
+        // more.
+        setTooltip(
+            "Drag to change the value\n"
+            "Ctrl for finer steps, Shift for coarser");
     }
 
     ShuttleWidget::ShuttleWidget() :
