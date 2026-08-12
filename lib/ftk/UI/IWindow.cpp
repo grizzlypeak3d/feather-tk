@@ -702,6 +702,53 @@ namespace ftk
         }
     }
 
+    void IWindow::layout(const Size2I& size)
+    {
+        _setSize(size, size);
+    }
+
+    void IWindow::click(const V2I& pos, MouseButton button, int modifiers)
+    {
+        _cursorEnter(true);
+        _cursorPos(pos);
+        _mouseButton(button, true, modifiers);
+        _mouseButton(button, false, modifiers);
+    }
+
+    void IWindow::drag(
+        const std::vector<V2I>& path,
+        int modifiers,
+        bool release)
+    {
+        if (path.size() < 2)
+            return;
+        _cursorEnter(true);
+        _cursorPos(path[0]);
+        _mouseButton(MouseButton::Left, true, modifiers);
+        const int steps = 8;
+        for (size_t leg = 1; leg < path.size(); ++leg)
+        {
+            const V2I& from = path[leg - 1];
+            const V2I& to = path[leg];
+            for (int i = 1; i <= steps; ++i)
+            {
+                _cursorPos(V2I(
+                    from.x + (to.x - from.x) * i / steps,
+                    from.y + (to.y - from.y) * i / steps));
+            }
+        }
+        if (release)
+        {
+            _mouseButton(MouseButton::Left, false, modifiers);
+        }
+    }
+
+    void IWindow::keyPress(Key key, int modifiers)
+    {
+        _key(key, true, modifiers);
+        _key(key, false, modifiers);
+    }
+
     void IWindow::_cursorPos(const V2I& pos)
     {
         FTK_P();

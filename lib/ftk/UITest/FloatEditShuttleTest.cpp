@@ -15,59 +15,6 @@ namespace ftk
 {
     namespace ui_test
     {
-        namespace
-        {
-            //! A window that can be laid out and dragged in, so that the
-            //! shuttle can be driven the way a person drives it.
-            class TestWindow : public Window
-            {
-            protected:
-                TestWindow() = default;
-
-            public:
-                static std::shared_ptr<TestWindow> create(
-                    const std::shared_ptr<Context>& context,
-                    const std::shared_ptr<App>& app,
-                    const std::string& title,
-                    const Size2I& size)
-                {
-                    auto out = std::shared_ptr<TestWindow>(new TestWindow);
-                    out->_init(context, app, title, size);
-                    return out;
-                }
-
-                //! Lay the window out, without depending on the window system
-                //! to deliver a resize.
-                void resize(const Size2I& size)
-                {
-                    _setSize(size, size);
-                }
-
-                void drag(const V2I& from, const V2I& to, int modifiers = 0)
-                {
-                    _cursorEnter(true);
-                    _cursorPos(from);
-                    _mouseButton(MouseButton::Left, true, modifiers);
-                    _cursorPos(to);
-                    _mouseButton(MouseButton::Left, false, modifiers);
-                }
-            };
-
-            //! The shuttle inside the widget, which is what has to be dragged.
-            std::shared_ptr<ShuttleWidget> findShuttle(
-                const std::shared_ptr<IWidget>& widget)
-            {
-                if (auto out = std::dynamic_pointer_cast<ShuttleWidget>(widget))
-                    return out;
-                for (const auto& child : widget->getChildren())
-                {
-                    if (auto out = findShuttle(child))
-                        return out;
-                }
-                return nullptr;
-            }
-        }
-
         FloatEditShuttleTest::FloatEditShuttleTest(
             const std::shared_ptr<Context>& context) :
             ITest(context, "ftk::ui_test::FloatEditShuttleTest")
@@ -93,13 +40,13 @@ namespace ftk
                 "FloatEditShuttleTest",
                 "Float edit shuttle test.");
             const Size2I size(1280, 960);
-            auto window = TestWindow::create(
+            auto window = Window::create(
                 _context, app, "FloatEditShuttleTest", size);
             auto layout = VerticalLayout::create(_context, window);
             layout->setMarginRole(SizeRole::MarginLarge);
             window->show();
             app->tick();
-            window->resize(size);
+            window->layout(size);
             app->tick();
 
             auto shuttle = FloatEditShuttle::create(_context, layout);
@@ -119,19 +66,19 @@ namespace ftk
             shuttle->setPressedCallback(
                 [&released](float, bool pressed) { released = !pressed; });
             app->tick();
-            window->resize(size);
+            window->layout(size);
             app->tick();
 
             // Dragged the way a person drags it. The value has to be reported
             // while the drag is happening: the shuttle writes to the model
             // without going through the edit, and a listener that only hears
             // about it on release is a listener watching a stale number.
-            auto widget = findShuttle(shuttle);
+            auto widget = findChild<ShuttleWidget>(shuttle);
             FTK_CHECK(widget);
             const Box2I& g = widget->getGeometry();
             FTK_CHECK(g.isValid());
             const V2I from(g.min.x + g.w() / 2, g.min.y + g.h() / 2);
-            window->drag(from, V2I(from.x + g.h() * 2, from.y));
+            window->drag({ from, V2I(from.x + g.h() * 2, from.y) });
             app->tick();
             FTK_CHECK(count > 0);
             FTK_CHECK(value > 0.F);
@@ -140,7 +87,7 @@ namespace ftk
 
             // And the other way.
             const float forward = value;
-            window->drag(from, V2I(from.x - g.h() * 2, from.y));
+            window->drag({ from, V2I(from.x - g.h() * 2, from.y) });
             app->tick();
             FTK_CHECK(shuttle->getValue() < forward);
 
@@ -153,17 +100,17 @@ namespace ftk
             const V2I to(from.x + g.h() * 2, from.y);
 
             shuttle->setValue(0.F);
-            window->drag(from, to);
+            window->drag({ from, to });
             app->tick();
             const float plain = shuttle->getValue();
 
             shuttle->setValue(0.F);
-            window->drag(from, to, static_cast<int>(KeyModifier::Control));
+            window->drag({ from, to }, static_cast<int>(KeyModifier::Control));
             app->tick();
             const float fine = shuttle->getValue();
 
             shuttle->setValue(0.F);
-            window->drag(from, to, static_cast<int>(KeyModifier::Shift));
+            window->drag({ from, to }, static_cast<int>(KeyModifier::Shift));
             app->tick();
             const float coarse = shuttle->getValue();
 

@@ -38,23 +38,6 @@ namespace ftk
                     return out;
                 }
 
-                //! Lay the window out, without depending on the window
-                //! system to deliver a resize. Until this happens the
-                //! window and everything in it has an empty geometry, and
-                //! nothing is under the cursor.
-                void resize(const Size2I& size)
-                {
-                    _setSize(size, size);
-                }
-
-                void click(const V2I& pos, MouseButton button)
-                {
-                    _cursorEnter(true);
-                    _cursorPos(pos);
-                    _mouseButton(button, true, 0);
-                    _mouseButton(button, false, 0);
-                }
-
                 //! Get the menus the window is currently showing.
                 std::vector<std::shared_ptr<IMenuPopup> > getPopups() const
                 {
@@ -155,7 +138,7 @@ namespace ftk
                 });
 
             window->show();
-            window->resize(windowSize);
+            window->layout(windowSize);
             app->tick();
 
             // A left click does not open a menu.

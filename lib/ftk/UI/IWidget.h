@@ -383,6 +383,15 @@ namespace ftk
 
         std::function<std::shared_ptr<Menu>(void)> _contextMenuCallback;
     };
+
+    //! Find the first widget of the given type at or below this one.
+    //!
+    //! For reaching inside a compound widget from outside it -- the shuttle
+    //! within a numeric editor, the slider within another -- which anything
+    //! automating the interface has to do, because what it needs to aim at is
+    //! rarely the widget it was handed.
+    template<typename T>
+    std::shared_ptr<T> findChild(const std::shared_ptr<IWidget>&);
 }
 
 #include <ftk/UI/IWidgetInline.h>

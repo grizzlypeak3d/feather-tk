@@ -151,4 +151,19 @@ namespace ftk
     {
         return _contextMenuCallback;
     }
+
+    template<typename T>
+    inline std::shared_ptr<T> findChild(const std::shared_ptr<IWidget>& widget)
+    {
+        if (!widget)
+            return nullptr;
+        if (auto out = std::dynamic_pointer_cast<T>(widget))
+            return out;
+        for (const auto& child : widget->getChildren())
+        {
+            if (auto out = findChild<T>(child))
+                return out;
+        }
+        return nullptr;
+    }
 }

@@ -133,6 +133,49 @@ namespace ftk
 
         ///@}
 
+        //! Automation
+        //!
+        //! Working the window without a person at it: tests, screenshot
+        //! harnesses, demos, anything that has to press a button and see what
+        //! happens. Public rather than protected because the callers are not
+        //! all tests -- an application that captures its own screenshots needs
+        //! exactly this, and every one that has needed it so far has grown its
+        //! own copy by subclassing to reach the platform's entry points.
+        ///@{
+
+        //! Lay the window out at a size, as a resize from the window system
+        //! would.
+        //!
+        //! Until this happens the window and everything in it has an empty
+        //! geometry, and nothing is under the cursor -- so a test that reads a
+        //! geometry, or aims at one, is reading and aiming at nothing. It does
+        //! not fail; it passes, having checked nothing.
+        FTK_API void layout(const Size2I&);
+
+        //! Move the cursor there, press, release.
+        FTK_API void click(
+            const V2I&,
+            MouseButton = MouseButton::Left,
+            int modifiers = 0);
+
+        //! Press at the first point, move through the rest, release.
+        //!
+        //! Moved in steps between the points rather than jumped, because a
+        //! widget that treats a drag as one gesture and a widget that treats
+        //! every move as a separate edit look identical from a single move --
+        //! and the difference between them is the whole question for undo.
+        //! Points beyond the second are how a drag that goes somewhere and
+        //! comes back is written.
+        FTK_API void drag(
+            const std::vector<V2I>&,
+            int modifiers = 0,
+            bool release = true);
+
+        //! Press a key and release it.
+        FTK_API void keyPress(Key, int modifiers = 0);
+
+        ///@}
+
         //! Set the window icon.
         //! 
         //! Icon images should be of type ImageType::RGBA_U8, with no
