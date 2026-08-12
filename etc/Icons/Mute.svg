@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="Mute.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="31.659099"
      inkscape:cx="10.818375"
-     inkscape:cy="11.071067"
+     inkscape:cy="11.08686"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
@@ -39,11 +39,18 @@
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
-     inkscape:pagecheckerboard="0">
+     inkscape:pagecheckerboard="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid4526"
-       empspacing="10" />
+       empspacing="10"
+       originx="0"
+       originy="0"
+       spacingy="0.26458333"
+       spacingx="0.26458333"
+       units="px" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -73,9 +80,9 @@
          d="M 2.1166666,296.20623 1.0583333,295.14789 H 0.26458332 v -1.5875 H 1.0583333 l 1.0583333,-1.05833 z"
          style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
-         id="rect831"
-         style="opacity:1;fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 5.0057522,293.59782 -0.2807295,-0.28054 -0.8883125,0.88864 -0.8884468,-0.88865 -0.2807885,0.28047 0.8884467,0.88865 -0.8887497,0.88879 0.2807294,0.28053 0.8887497,-0.88879 0.8886809,0.88872 0.2807886,-0.28047 -0.8886759,-0.88872 z"
+         id="rect831-8"
+         style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 4.8188907,293.78505 -0.2806472,-0.28062 -0.7015975,0.70154 -0.7015944,-0.70159 -0.2806263,0.28064 0.7016014,0.70159 -0.7016117,0.70157 0.28064,0.28063 0.7016209,-0.70159 0.7015403,0.70161 0.2806262,-0.28065 -0.7015494,-0.70159 z"
          sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>

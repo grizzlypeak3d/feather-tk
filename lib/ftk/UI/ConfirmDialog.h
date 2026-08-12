@@ -39,6 +39,8 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(bool)>&);
 
+        FTK_API std::shared_ptr<IWidget> getKeyFocus() const override;
+
     private:
         FTK_PRIVATE();
     };

@@ -34,8 +34,8 @@
      units="px"
      inkscape:window-width="1171"
      inkscape:window-height="1027"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-x="600"
+     inkscape:window-y="57"
      inkscape:window-maximized="0"
      inkscape:pagecheckerboard="0"
      inkscape:showpageshadow="2"
@@ -78,7 +78,7 @@
       <path
          id="rect831"
          style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 1.6536724,294.35413 -0.396875,2e-5 -3.88e-5,0.99219 H 0.26462053 l 1.453e-5,0.39688 0.99213804,-1e-5 -2.89e-5,0.99219 0.3968749,-1e-5 2.19e-5,-0.99221 0.99223,5e-5 -1.45e-5,-0.39688 -0.992223,-3e-5 z"
+         d="m 1.3891036,294.61873 -0.39687498,2e-5 -3.88e-5,0.99217 H -1.453e-5 L 0,296.0078 l 0.99220432,-10e-6 -2.89e-5,0.9922 0.39687488,-1e-5 2.19e-5,-0.99222 0.9921777,5e-5 -1.45e-5,-0.39688 -0.9921707,-3e-5 z"
          sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>

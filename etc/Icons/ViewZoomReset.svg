@@ -7,7 +7,7 @@
    viewBox="0 0 5.2916665 5.2916666"
    version="1.1"
    id="svg8"
-   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="ViewZoomReset.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -27,14 +27,14 @@
      inkscape:pageshadow="2"
      inkscape:zoom="31.659099"
      inkscape:cx="6.6173709"
-     inkscape:cy="8.5757336"
+     inkscape:cy="8.5599404"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
      showgrid="true"
      units="px"
      inkscape:window-width="1312"
      inkscape:window-height="969"
-     inkscape:window-x="0"
+     inkscape:window-x="224"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
@@ -84,14 +84,14 @@
          y="210.32071"
          transform="rotate(-45)" />
       <path
-         id="rect831-9"
-         style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 0.56660925,294.37553 -0.28077122,0.28048 0.88859217,0.88884 -0.88870291,0.88875 0.28265101,0.28237 0.8887028,-0.88876 0.8867346,0.88678 0.2807712,-0.28049 -0.886732,-0.88677 0.8884914,-0.88874 -0.2826407,-0.28237 -0.8884982,0.88874 z"
-         sodipodi:nodetypes="ccccccccccccc" />
-      <path
          id="path927"
          style="fill:#f0f0f0;stroke-width:0.264583"
          d="m 2.6458333,291.97289 a 1.3229167,1.3229167 0 0 0 -0.9353434,0.38758 1.3229167,1.3229167 0 0 0 0,1.87068 1.3229167,1.3229167 0 0 0 1.8706867,0 1.3229167,1.3229167 0 0 0 0,-1.87068 1.3229167,1.3229167 0 0 0 -0.9353433,-0.38758 z m 0,0.39688 a 0.92617667,0.92610687 0 0 1 0.6547403,0.2713 0.92617667,0.92610687 0 0 1 0,1.30948 0.92617667,0.92610687 0 0 1 -1.3094807,0 0.92617667,0.92610687 0 0 1 0,-1.30948 0.92617667,0.92610687 0 0 1 0.6547404,-0.2713 z" />
+      <path
+         id="rect831"
+         style="fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:0.748355;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 2.172871,295.10781 -0.2806472,-0.28062 -0.7015975,0.70154 -0.70159446,-0.70159 -0.28062626,0.28064 0.70160147,0.70159 -0.70161178,0.70157 0.28063999,0.28063 0.70162094,-0.70159 0.7015403,0.70161 0.2806262,-0.28065 -0.7015494,-0.70159 z"
+         sodipodi:nodetypes="ccccccccccccc" />
     </g>
   </g>
 </svg>

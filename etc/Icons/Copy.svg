@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.386364"
-     inkscape:cx="5.9187817"
+     inkscape:cx="5.9411167"
      inkscape:cy="14.383756"
      inkscape:document-units="px"
      inkscape:current-layer="ForwardPlayback"
@@ -78,7 +78,8 @@
       <path
          id="rect2"
          style="fill:#f0f0f0;stroke-width:2.43593"
-         d="M 1.4552083 294.35414 L 1.1746053 294.63475 L 0.33279622 295.47656 L 0.61339924 295.75716 L 1.2567708 295.11379 L 1.2567708 296.73539 L 1.6536458 296.73539 L 1.6536458 295.11379 L 2.2970174 295.75716 L 2.5776204 295.47656 L 1.7358113 294.63475 L 1.4552083 294.35414 z " />
+         d="m 1.190625,296.99998 -1.12241211,-1.12241 0.28060302,-0.2806 0.64337157,0.64337 v -1.62161 H 1.3890625 v 1.62161 l 0.6433715,-0.64337 0.2806031,0.2806 z"
+         sodipodi:nodetypes="cccccccccc" />
     </g>
   </g>
 </svg>

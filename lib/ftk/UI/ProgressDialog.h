@@ -61,6 +61,8 @@ namespace ftk
         //! Set the value.
         FTK_API void setValue(double);
 
+        FTK_API std::shared_ptr<IWidget> getKeyFocus() const override;
+
     private:
         FTK_PRIVATE();
     };

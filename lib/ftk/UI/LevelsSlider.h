@@ -116,7 +116,7 @@ namespace ftk
         FTK_API void setValue(const RangeF&);
         FTK_API void setCallback(const std::function<void(const RangeF&)>&);
 
-        //! Set the value callback with a flag for whether the slider is presssed.
+        //! Set the value callback with a flag for whether the slider is pressed.
         FTK_API void setPressedCallback(const std::function<void(const RangeF&, bool)>&);
 
         ///@}
@@ -182,7 +182,7 @@ namespace ftk
         FTK_API void setValue(const RangeF&);
         FTK_API void setCallback(const std::function<void(const RangeF&)>&);
 
-        //! Set the value callback with a flag for whether the slider is presssed.
+        //! Set the value callback with a flag for whether the slider is pressed.
         FTK_API void setPressedCallback(const std::function<void(const RangeF&, bool)>&);
 
         ///@}

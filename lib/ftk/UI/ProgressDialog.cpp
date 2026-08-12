@@ -180,6 +180,8 @@ namespace ftk
 
         void setCancelCallback(const std::function<void(void)>&);
 
+        const std::shared_ptr<PushButton>& getCancelButton() const;
+
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;
 
@@ -315,6 +317,11 @@ namespace ftk
         _layout->setGeometry(value);
     }
 
+    const std::shared_ptr<PushButton>& ProgressDialogWidget::getCancelButton() const
+    {
+        return _cancelButton;
+    }
+
     struct ProgressDialog::Private
     {
         std::shared_ptr<ProgressDialogWidget> widget;
@@ -401,5 +408,10 @@ namespace ftk
     void ProgressDialog::setValue(double value)
     {
         _p->widget->setValue(value);
+    }
+
+    std::shared_ptr<IWidget> ProgressDialog::getKeyFocus() const
+    {
+        return _p->widget->getCancelButton();
     }
 }

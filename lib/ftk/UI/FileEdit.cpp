@@ -123,7 +123,11 @@ namespace ftk
         _p->callback = value;
     }
     
-    
+    const std::shared_ptr<LineEdit>& FileEdit::getLineEdit() const
+    {
+        return _p->lineEdit;
+    }
+
 
     
 

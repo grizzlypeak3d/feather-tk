@@ -190,16 +190,30 @@ namespace ftk
             out.w = std::max(out.w, childSizeHint.w);
             out.h = std::max(out.h, childSizeHint.h);
         }
+        // A size role of "None" asks for the height of the contents rather
+        // than a height to scroll them in, so that a scrolling widget can be
+        // given the room it needs -- inside a bellows, say, where the scroll
+        // bar would belong to whatever the bellows is in. The width is still
+        // the role: a single long line should scroll where it is rather than
+        // widen everything around it.
+        const bool contentHeight = SizeRole::None == p.sizeHintRole;
         switch (p.scrollType)
         {
         case ScrollType::Horizontal:
             out.w = p.size.sizeHint;
             break;
         case ScrollType::Vertical:
-            out.h = p.size.sizeHint;
+            if (!contentHeight)
+            {
+                out.h = p.size.sizeHint;
+            }
             break;
         case ScrollType::Both:
-            out.w = out.h = p.size.sizeHint;
+            out.w = p.size.sizeHint;
+            if (!contentHeight)
+            {
+                out.h = p.size.sizeHint;
+            }
             break;
         default: break;
         }
@@ -288,7 +302,13 @@ namespace ftk
         if (p.size.init)
         {
             p.size.init = false;
-            p.size.sizeHint = event.style->getSizeRole(p.sizeHintRole, event.displayScale);
+            // "None" frees the height, so the width falls back to the
+            // default rather than to the nothing the role is worth.
+            p.size.sizeHint = event.style->getSizeRole(
+                SizeRole::None == p.sizeHintRole ?
+                    SizeRole::ScrollArea :
+                    p.sizeHintRole,
+                event.displayScale);
         }
     }
 }
