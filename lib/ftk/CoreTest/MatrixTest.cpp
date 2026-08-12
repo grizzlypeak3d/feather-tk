@@ -6,7 +6,9 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Matrix.h>
 
+#include <cmath>
 #include <sstream>
+#include <vector>
 
 namespace ftk
 {
@@ -29,6 +31,7 @@ namespace ftk
         {
             _members();
             _functions();
+            _rotateXYZ();
             _operators();
             _serialize();
         }
@@ -99,6 +102,104 @@ namespace ftk
             perspective(60.F, 1.F, .1F, 10000.F);
         }
         
+        void MatrixTest::_rotateXYZ()
+        {
+            // Rotations are compared through their matrices, never angles
+            // against angles: the same rotation has more than one set of
+            // angles, so two sets that differ are not two rotations that
+            // differ, and a test that says otherwise fails on correct
+            // answers.
+            const auto same = [](const M44F& a, const M44F& b) -> bool
+            {
+                for (int row = 0; row < 3; ++row)
+                {
+                    for (int column = 0; column < 3; ++column)
+                    {
+                        if (std::abs(a.get(row, column) -
+                            b.get(row, column)) > .001F)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            };
+            const auto close = [](float a, float b, float tolerance = .001F)
+            {
+                return std::abs(a - b) < tolerance;
+            };
+
+            FTK_CHECK(rotateXYZ(V3F(90.F, 0.F, 0.F)) == rotateX(90.F));
+            FTK_CHECK(rotateXYZ(V3F(0.F, 90.F, 0.F)) == rotateY(90.F));
+            FTK_CHECK(rotateXYZ(V3F(0.F, 0.F, 90.F)) == rotateZ(90.F));
+
+            // Round trips: build a rotation, read the angles back, build it
+            // again. Asked from where it already is, the answer is where it
+            // is -- nothing reading its own angles back should see them
+            // rewritten as a different description of the same pose.
+            const std::vector<V3F> angles =
+            {
+                V3F(0.F, 0.F, 0.F),
+                V3F(30.F, 0.F, 0.F),
+                V3F(0.F, 30.F, 0.F),
+                V3F(0.F, 0.F, 30.F),
+                V3F(30.F, 40.F, 50.F),
+                V3F(-30.F, -40.F, -50.F),
+                V3F(170.F, 10.F, -170.F),
+                V3F(10.F, 130.F, 20.F),
+                V3F(-95.F, 85.F, 175.F)
+            };
+            for (const auto& i : angles)
+            {
+                const M44F m = rotateXYZ(i);
+                const V3F back = getRotateXYZ(m, i);
+                FTK_CHECK(same(m, rotateXYZ(back)));
+                FTK_CHECK(close(back.x, i.x));
+                FTK_CHECK(close(back.y, i.y));
+                FTK_CHECK(close(back.z, i.z));
+            }
+
+            // A full turn about Z a degree at a time, the way a drag arrives.
+            // It has to come out at 360 rather than back at zero: whatever is
+            // reading these should be able to see that it has been round.
+            V3F previous;
+            for (int i = 1; i <= 360; ++i)
+            {
+                previous = getRotateXYZ(
+                    rotateZ(static_cast<float>(i)), previous);
+            }
+            FTK_CHECK(close(previous.z, 360.F, .01F));
+            for (int i = 359; i >= 0; --i)
+            {
+                previous = getRotateXYZ(
+                    rotateZ(static_cast<float>(i)), previous);
+            }
+            FTK_CHECK(close(previous.z, 0.F, .01F));
+
+            // Past where the Y angle folds. asin only reaches a quarter turn,
+            // so carrying on needs the other set of angles; taking the nearer
+            // one has to hold the pose steady whatever the three numbers do.
+            previous = V3F(0.F, 0.F, 0.F);
+            for (int i = 1; i <= 180; ++i)
+            {
+                const M44F m = rotateY(static_cast<float>(i));
+                previous = getRotateXYZ(m, previous);
+                FTK_CHECK(same(m, rotateXYZ(previous)));
+            }
+
+            // Straight up and straight down, where only the sum of the X and
+            // Z rotations is decided. Any answer will do as long as it builds
+            // the rotation asked for.
+            for (float y : { 90.F, -90.F })
+            {
+                for (float z : { 0.F, 45.F, -120.F })
+                {
+                    const M44F m = rotateXYZ(V3F(0.F, y, z));
+                    FTK_CHECK(same(m, rotateXYZ(getRotateXYZ(m, V3F(0.F, y, z)))));
+                }
+            }
+        }
+
         void MatrixTest::_operators()
         {
             {

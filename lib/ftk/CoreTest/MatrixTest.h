@@ -25,6 +25,7 @@ namespace ftk
         private:
             void _members();
             void _functions();
+            void _rotateXYZ();
             void _operators();
             void _serialize();
         };

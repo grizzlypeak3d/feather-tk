@@ -102,6 +102,30 @@ namespace ftk
     template<typename T>
     Matrix<4, 4, T> rotateZ(T);
 
+    //! Create a rotation matrix from angles about the X, Y and Z axes,
+    //! applied in that order.
+    template<typename T>
+    Matrix<4, 4, T> rotateXYZ(const Vector<3, T>&);
+
+    //! Get angles rotateXYZ() builds the given rotation from.
+    //!
+    //! Two sets of angles describe any rotation, and each of those has more
+    //! versions of itself whole turns apart, so which one to return cannot be
+    //! derived -- it has to be asked for. The one returned is whichever is
+    //! nearest \a nearAngles.
+    //!
+    //! A manipulator dragging a rotation passes the angles its last move
+    //! wrote. That is what keeps a gesture round and round winding past a
+    //! full turn rather than starting again at zero, and what stops a drag
+    //! crossing the pose where the Y angle folds back from taking the long
+    //! way round to describe it. Somewhere with no previous answer to be near
+    //! -- reading a matrix that arrived from elsewhere -- can pass zero.
+    //!
+    //! Straight up or straight down the Y axis, the X and Z rotations are
+    //! about the same axis and only their sum is decided; it is given to Z.
+    template<typename T>
+    Vector<3, T> getRotateXYZ(const Matrix<4, 4, T>&, const Vector<3, T>& nearAngles);
+
     //! Create a scale matrix.
     template<typename T>
     constexpr Matrix<4, 4, T> scale(const Vector<3, T>&);

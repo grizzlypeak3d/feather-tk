@@ -228,6 +228,68 @@ namespace ftk
     }
 
     template<typename T>
+    inline Matrix<4, 4, T> rotateXYZ(const Vector<3, T>& angles)
+    {
+        return rotateZ(angles.z) * rotateY(angles.y) * rotateX(angles.x);
+    }
+
+    template<typename T>
+    inline Vector<3, T> getRotateXYZ(
+        const Matrix<4, 4, T>& value,
+        const Vector<3, T>& nearAngles)
+    {
+        //! The same angle wound to within half a turn of another.
+        const auto wind = [](T angle, T nearAngle) -> T
+        {
+            return angle +
+                std::round((nearAngle - angle) / T(360)) * T(360);
+        };
+        //! How far apart two sets of angles are. Squared, since only the
+        //! comparison is wanted.
+        const auto distance =
+            [](const Vector<3, T>& a, const Vector<3, T>& b) -> T
+        {
+            const Vector<3, T> d(a.x - b.x, a.y - b.y, a.z - b.z);
+            return d.x * d.x + d.y * d.y + d.z * d.z;
+        };
+
+        Vector<3, T> a;
+        Vector<3, T> b;
+        if (std::abs(value.get(2, 0)) > T(.999999))
+        {
+            const bool up = value.get(2, 0) < T(0);
+            const T sum = up ?
+                -std::atan2(value.get(0, 1), value.get(1, 1)) :
+                std::atan2(-value.get(0, 1), value.get(1, 1));
+            a = Vector<3, T>(T(0), up ? T(90) : T(-90), rad2deg(sum));
+            b = a;
+        }
+        else
+        {
+            const T y = std::asin(clamp(-value.get(2, 0), T(-1), T(1)));
+            a = Vector<3, T>(
+                rad2deg(std::atan2(value.get(2, 1), value.get(2, 2))),
+                rad2deg(y),
+                rad2deg(std::atan2(value.get(1, 0), value.get(0, 0))));
+            // The other way to the same place: the Y angle taken over the top
+            // instead of under it, with the other two turned half round.
+            b = Vector<3, T>(
+                rad2deg(std::atan2(-value.get(2, 1), -value.get(2, 2))),
+                T(180) - rad2deg(y),
+                rad2deg(std::atan2(-value.get(1, 0), -value.get(0, 0))));
+        }
+        a = Vector<3, T>(
+            wind(a.x, nearAngles.x),
+            wind(a.y, nearAngles.y),
+            wind(a.z, nearAngles.z));
+        b = Vector<3, T>(
+            wind(b.x, nearAngles.x),
+            wind(b.y, nearAngles.y),
+            wind(b.z, nearAngles.z));
+        return distance(a, nearAngles) <= distance(b, nearAngles) ? a : b;
+    }
+
+    template<typename T>
     constexpr Matrix<4, 4, T> scale(const Vector<3, T>& value)
     {
         return Matrix<4, 4, T>(
