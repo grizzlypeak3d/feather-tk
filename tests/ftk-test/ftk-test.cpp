@@ -22,6 +22,8 @@
 #include <ftk/UITest/FileBrowserTest.h>
 #include <ftk/UITest/FileEditTest.h>
 #include <ftk/UITest/FloatEditTest.h>
+#include <ftk/UI/App.h>
+
 #include <ftk/UITest/FloatEditShuttleTest.h>
 #include <ftk/UITest/FloatEditSliderTest.h>
 #include <ftk/UITest/FloatSliderTest.h>
@@ -340,6 +342,12 @@ int main(int argc, char* argv[])
 {
     try
     {
+        // The suite makes dozens of applications and shows a window from most
+        // of them. On screen they flicker past over whatever the person at the
+        // keyboard is doing, and any one of them can be clicked into while a
+        // test is driving it.
+        ftk::App::setOffscreenDefault(true);
+
         auto context = ftk::Context::create();
         auto args = ftk::convert(argc, argv);
         auto app = ftk::tests::App::create(context, args);

@@ -201,6 +201,20 @@ namespace ftk
         //! screenshots sets it for those runs. See IWindow::setOffscreen().
         FTK_API void setOffscreen(bool);
 
+        //! Set whether applications start offscreen, before any of them
+        //! exist.
+        //!
+        //! For test runners and batch tools. An application that is not there
+        //! to be looked at should not be putting windows over whatever the
+        //! person at the keyboard is doing -- and a window that can be
+        //! clicked while something drives it is a run that can be interfered
+        //! with, which is worse than untidy.
+        //!
+        //! Static because the decision belongs to whoever started the process
+        //! rather than to any one application in it, and a test suite makes
+        //! dozens.
+        FTK_API static void setOffscreenDefault(bool);
+
         ///@}
 
         //! Observe the monitors.

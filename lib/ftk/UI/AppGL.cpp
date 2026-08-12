@@ -40,6 +40,9 @@ namespace ftk
     namespace
     {
         const std::chrono::milliseconds timeout(5);
+
+        //! Set before any application exists; see App::setOffscreenDefault().
+        bool offscreenDefault = false;
     }
 
     bool MonitorInfo::operator == (const MonitorInfo& other) const
@@ -162,7 +165,10 @@ namespace ftk
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptionsTmp = cmdLineOptions;
         p.cmdLine.exit = CmdLineFlag::create(
             { "-exit" },
-            "Start the user interface and then exit.",
+            "Start the user interface and then exit. The windows are not "
+            "shown: there is nobody to show them to, and a window that "
+            "appears for a few frames in the middle of a test run is one "
+            "that can be clicked into by accident.",
             "Testing");
         cmdLineOptionsTmp.push_back(p.cmdLine.exit);
         p.cmdLine.displayScale = CmdLineOption<float>::create(
@@ -214,7 +220,12 @@ namespace ftk
 
         // Writing a screenshot is the whole of such a run, so there is nothing
         // for a window on screen to be good for; see IWindow::setOffscreen().
-        p.offscreen = p.cmdLine.screenshot->found();
+        // A process that asked for it up front -- a test runner -- gets it
+        // whether or not this particular application was asked.
+        p.offscreen =
+            p.cmdLine.screenshot->found() ||
+            p.cmdLine.exit->found() ||
+            offscreenDefault;
 
         if (!p.settingsPath.empty())
         {
@@ -1391,6 +1402,11 @@ namespace ftk
     bool App::isOffscreen() const
     {
         return _p->offscreen;
+    }
+
+    void App::setOffscreenDefault(bool value)
+    {
+        offscreenDefault = value;
     }
 
     void App::setOffscreen(bool value)
