@@ -228,6 +228,28 @@ namespace ftk
     }
 
     template<typename T>
+    inline Matrix<4, 4, T> rotate(T angle, const Vector<3, T>& axis)
+    {
+        const T length = std::sqrt(
+            axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
+        if (length <= T(0))
+        {
+            return Matrix<4, 4, T>();
+        }
+        const T x = axis.x / length;
+        const T y = axis.y / length;
+        const T z = axis.z / length;
+        const T c = std::cos(deg2rad(angle));
+        const T s = std::sin(deg2rad(angle));
+        const T t = T(1) - c;
+        return Matrix<4, 4, T>(
+            c + x * x * t,     x * y * t - z * s, x * z * t + y * s, T(0),
+            y * x * t + z * s, c + y * y * t,     y * z * t - x * s, T(0),
+            z * x * t - y * s, z * y * t + x * s, c + z * z * t,     T(0),
+            T(0),              T(0),              T(0),              T(1));
+    }
+
+    template<typename T>
     inline Matrix<4, 4, T> rotateXYZ(const Vector<3, T>& angles)
     {
         return rotateZ(angles.z) * rotateY(angles.y) * rotateX(angles.x);

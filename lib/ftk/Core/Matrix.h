@@ -102,6 +102,12 @@ namespace ftk
     template<typename T>
     Matrix<4, 4, T> rotateZ(T);
 
+    //! Create a rotation matrix about an arbitrary axis.
+    //!
+    //! The axis is normalized; a zero-length one gives the identity.
+    template<typename T>
+    Matrix<4, 4, T> rotate(T angle, const Vector<3, T>& axis);
+
     //! Create a rotation matrix from angles about the X, Y and Z axes,
     //! applied in that order.
     template<typename T>

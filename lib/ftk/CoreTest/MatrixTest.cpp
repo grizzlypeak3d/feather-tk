@@ -129,6 +129,25 @@ namespace ftk
                 return std::abs(a - b) < tolerance;
             };
 
+            // About each of the three axes in turn, the general one has to
+            // agree with the one written out by hand. Three chances to have
+            // a sign the wrong way round, and each of the three catches a
+            // different pair of elements.
+            for (float angle : { 30.F, -30.F, 90.F, 170.F })
+            {
+                FTK_CHECK(same(
+                    rotate(angle, V3F(1.F, 0.F, 0.F)), rotateX(angle)));
+                FTK_CHECK(same(
+                    rotate(angle, V3F(0.F, 1.F, 0.F)), rotateY(angle)));
+                FTK_CHECK(same(
+                    rotate(angle, V3F(0.F, 0.F, 1.F)), rotateZ(angle)));
+                // Length is not meant to matter, and no axis at all is the
+                // identity rather than a division by zero.
+                FTK_CHECK(same(
+                    rotate(angle, V3F(0.F, 5.F, 0.F)), rotateY(angle)));
+            }
+            FTK_CHECK(rotate(90.F, V3F(0.F, 0.F, 0.F)) == M44F());
+
             FTK_CHECK(rotateXYZ(V3F(90.F, 0.F, 0.F)) == rotateX(90.F));
             FTK_CHECK(rotateXYZ(V3F(0.F, 90.F, 0.F)) == rotateY(90.F));
             FTK_CHECK(rotateXYZ(V3F(0.F, 0.F, 90.F)) == rotateZ(90.F));
