@@ -26,6 +26,11 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Get the keyboard modifiers held during the drag. Read from
+        //! within a delta callback by anything that scales what a notch is
+        //! worth.
+        FTK_API int getModifiers() const;
+
         FTK_API void setCallback(const std::function<void(int)>&);
         FTK_API void setDeltaCallback(const std::function<void(int)>&);
         FTK_API void setActiveCallback(const std::function<void(bool)>&);

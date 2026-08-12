@@ -67,7 +67,20 @@ namespace ftk
             [this](int value)
             {
                 FTK_P();
-                p.model->setValue(p.model->getValue() + p.model->getStep() * value);
+                // Shift is the large step, which is what a scroll over an
+                // edit already means here. Control is the fine one: a tenth,
+                // rounded up so an integer still moves by at least one.
+                int step = p.model->getStep();
+                const int modifiers = p.shuttle->getModifiers();
+                if (modifiers & static_cast<int>(KeyModifier::Control))
+                {
+                    step = std::max(1, step / 10);
+                }
+                else if (modifiers & static_cast<int>(KeyModifier::Shift))
+                {
+                    step = p.model->getLargeStep();
+                }
+                p.model->setValue(p.model->getValue() + step * value);
             });
         p.shuttle->setActiveCallback(
             [this](bool pressed)

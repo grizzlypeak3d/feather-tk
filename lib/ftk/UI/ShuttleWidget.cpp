@@ -16,6 +16,7 @@ namespace ftk
         int iconIndex = 0;
         std::function<void(int)> callback;
         std::function<void(int)> deltaCallback;
+        int modifiers = 0;
         std::function<void(bool)> activeCallback;
 
         struct SizeData
@@ -51,6 +52,11 @@ namespace ftk
         auto out = std::shared_ptr<ShuttleWidget>(new ShuttleWidget);
         out->_init(context, parent);
         return out;
+    }
+
+    int ShuttleWidget::getModifiers() const
+    {
+        return _p->modifiers;
     }
 
     void ShuttleWidget::setCallback(const std::function<void(int)>& value)
@@ -161,6 +167,9 @@ namespace ftk
         const Box2I& g = getGeometry();
         if (_isMousePressed() && g.isValid())
         {
+            // Kept from the move rather than from the press, so a modifier
+            // taken up part way through a drag takes effect from there.
+            p.modifiers = event.modifiers;
             const int d = event.pos.x - _getMousePressPos().x;
             const int v = d / (g.h() / 4);
             if (v != p.value)
@@ -187,6 +196,7 @@ namespace ftk
         FTK_P();
         setDrawUpdate();
         p.value = 0;
+        p.modifiers = event.modifiers;
         if (p.activeCallback)
         {
             p.activeCallback(true);

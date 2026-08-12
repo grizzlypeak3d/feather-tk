@@ -43,13 +43,13 @@ namespace ftk
                     _setSize(size, size);
                 }
 
-                void drag(const V2I& from, const V2I& to)
+                void drag(const V2I& from, const V2I& to, int modifiers = 0)
                 {
                     _cursorEnter(true);
                     _cursorPos(from);
-                    _mouseButton(MouseButton::Left, true, 0);
+                    _mouseButton(MouseButton::Left, true, modifiers);
                     _cursorPos(to);
-                    _mouseButton(MouseButton::Left, false, 0);
+                    _mouseButton(MouseButton::Left, false, modifiers);
                 }
             };
 
@@ -143,6 +143,34 @@ namespace ftk
             window->drag(from, V2I(from.x - g.h() * 2, from.y));
             app->tick();
             FTK_CHECK(shuttle->getValue() < forward);
+
+            // What a notch is worth depends on what is held: Control is
+            // finer, Shift is the large step. The same drag three ways has to
+            // give three different distances, or the modifiers are being
+            // read and thrown away.
+            shuttle->setStep(1.F);
+            shuttle->setLargeStep(10.F);
+            const V2I to(from.x + g.h() * 2, from.y);
+
+            shuttle->setValue(0.F);
+            window->drag(from, to);
+            app->tick();
+            const float plain = shuttle->getValue();
+
+            shuttle->setValue(0.F);
+            window->drag(from, to, static_cast<int>(KeyModifier::Control));
+            app->tick();
+            const float fine = shuttle->getValue();
+
+            shuttle->setValue(0.F);
+            window->drag(from, to, static_cast<int>(KeyModifier::Shift));
+            app->tick();
+            const float coarse = shuttle->getValue();
+
+            FTK_CHECK(plain > 0.F);
+            FTK_CHECK(fine > 0.F);
+            FTK_CHECK(fine < plain);
+            FTK_CHECK(coarse > plain);
         }
     }
 }
