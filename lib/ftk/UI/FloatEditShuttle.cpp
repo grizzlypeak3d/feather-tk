@@ -32,7 +32,6 @@ namespace ftk
         IContainer::_init(context, "ftk::FloatEditShuttle", parent);
         FTK_P();
 
-        setHStretch(Stretch::Expanding);
 
         p.model = model;
 

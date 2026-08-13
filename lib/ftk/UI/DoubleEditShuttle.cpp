@@ -33,7 +33,6 @@ namespace ftk
         IContainer::_init(context, "ftk::DoubleEditShuttle", parent);
         FTK_P();
 
-        setHStretch(Stretch::Expanding);
 
         p.model = model;
 
