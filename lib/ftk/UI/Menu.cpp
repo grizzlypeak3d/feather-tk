@@ -284,14 +284,24 @@ namespace ftk
                     KeyShortcut(shortcut, modifiers));
                 if (i.first->isEnabled() && j != shortcuts.end())
                 {
+                    // In the order IButton::_click() runs them, and both of
+                    // them: it calls the clicked callback and then, if the
+                    // button is checkable, the checked one. Running only one
+                    // of the two made an action do different things
+                    // depending on whether it was typed or clicked, which
+                    // caught out every action given a plain callback and then
+                    // put in a radio group.
+                    i.first->doCallback();
                     if (i.first->isCheckable())
                     {
+                        // Toggled, including for a radio action, because that
+                        // is what the button does and ActionGroup is written
+                        // to expect it -- it turns a radio action straight
+                        // back on and says nothing about the moment in
+                        // between. Selecting here instead would be a second
+                        // answer to a question already answered there.
                         setChecked(i.first, !i.first->isChecked());
                         i.first->doCheckedCallback(i.first->isChecked());
-                    }
-                    else
-                    {
-                        i.first->doCallback();
                     }
                     out = true;
                 }

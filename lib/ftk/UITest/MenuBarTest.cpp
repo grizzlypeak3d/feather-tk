@@ -4,6 +4,7 @@
 #include <ftk/UITest/MenuBarTest.h>
 
 #include <ftk/UI/App.h>
+#include <ftk/UI/ActionGroup.h>
 #include <ftk/UI/MenuBar.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
@@ -84,6 +85,53 @@ namespace ftk
                     [&action5](bool value) { action5 = value; }));
                 menuBar->addMenu("Menu 2", menu);
                 app->tick();
+
+                // A shortcut has to do what a click does. IButton::_click()
+                // runs the clicked callback and then, if the button is
+                // checkable, the checked one -- so an action carrying both
+                // has to see both, whichever way it was reached. Given only
+                // one of them, an action with a plain callback in a radio
+                // group did nothing at all from the keyboard.
+                {
+                    auto radioMenu = Menu::create(_context);
+                    auto group = ActionGroup::create(ActionGroupType::Radio);
+                    int plain = 0;
+                    int checkedCount = 0;
+                    auto radio1 = Action::create(
+                        "Radio 1",
+                        KeyShortcut(Key::F1),
+                        [&plain] { ++plain; });
+                    auto radio2 = Action::create(
+                        "Radio 2",
+                        KeyShortcut(Key::F2),
+                        [&plain] { ++plain; });
+                    group->addAction(radio1);
+                    group->addAction(radio2);
+                    radioMenu->addAction(radio1);
+                    radioMenu->addAction(radio2);
+                    group->setCheckedCallback(
+                        [&checkedCount](int, bool) { ++checkedCount; });
+                    menuBar->addMenu("Radio", radioMenu);
+                    app->tick();
+
+                    FTK_CHECK(radio1->isCheckable());
+                    menuBar->shortcut(Key::F2, 0);
+                    // The plain callback ran, which is the whole report: it
+                    // used to be skipped for anything checkable.
+                    FTK_CHECK(1 == plain);
+                    FTK_CHECK(radio2->isChecked());
+                    FTK_CHECK(!radio1->isChecked());
+
+                    // And again on the one already selected. The shortcut
+                    // toggles it off, exactly as the button would, and
+                    // ActionGroup turns it straight back on -- so it ends up
+                    // selected either way, and the group reports nothing.
+                    const int before = checkedCount;
+                    menuBar->shortcut(Key::F2, 0);
+                    FTK_CHECK(2 == plain);
+                    FTK_CHECK(radio2->isChecked());
+                    FTK_CHECK(before == checkedCount);
+                }
 
                 menuBar->shortcut(Key::_4, static_cast<int>(KeyModifier::Control));
                 FTK_CHECK(action4);
