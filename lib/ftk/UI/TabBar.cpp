@@ -310,10 +310,6 @@ namespace ftk
     {
         _p->scrollWidget->setScrollBarsVisible(value);
     }
-    
-    
-
-    
 
     void TabBar::keyFocusEvent(bool value)
     {
@@ -439,9 +435,18 @@ namespace ftk
         }
         for (size_t i = 0; i < p.closeButtons.size(); ++i)
         {
-            p.closeButtons[i]->setButtonRole(p.current == static_cast<int>(i) ? ColorRole::Button : ColorRole::None);
-            p.closeButtons[i]->setTextRole(p.current == static_cast<int>(i) ? ColorRole::Text : ColorRole::TextDisabled);
-            p.closeButtons[i]->setAccentUnderline(p.current == static_cast<int>(i));
+            // The same rule the tab's own button uses, because the two
+            // underlines are read as one: the close button sits inside the
+            // tab and its accent continues the tab's along the bottom edge.
+            // Given only the current tab's colour it went two-tone as soon
+            // as the tab was focused.
+            const bool current = p.current == static_cast<int>(i);
+            const bool currentFocus = focus && p.currentFocus == static_cast<int>(i);
+            p.closeButtons[i]->setButtonRole(current ? ColorRole::Button : ColorRole::None);
+            p.closeButtons[i]->setTextRole(current ? ColorRole::Text : ColorRole::TextDisabled);
+            p.closeButtons[i]->setAccentUnderline(
+                currentFocus ? ColorRole::KeyFocus :
+                (current ? ColorRole::Checked : ColorRole::None));
         }
         if (p.currentFocus >= 0 && p.currentFocus < static_cast<int>(p.buttons.size()))
         {

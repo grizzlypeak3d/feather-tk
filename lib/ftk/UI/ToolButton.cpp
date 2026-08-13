@@ -15,7 +15,7 @@ namespace ftk
         std::shared_ptr<Action> action;
         SizeRole marginRole = SizeRole::MarginInside;
         SizeRole cornerRadiusRole = SizeRole::CornerRadius;
-        bool accentUnderline = false;
+        ColorRole accentUnderline = ColorRole::None;
         bool popupIcon = false;
         float popupIconScale = 1.F;
         std::shared_ptr<Image> popupImage;
@@ -196,12 +196,12 @@ namespace ftk
         setDrawUpdate();
     }
 
-    bool ToolButton::hasAccentUnderline() const
+    ColorRole ToolButton::hasAccentUnderline() const
     {
         return _p->accentUnderline;
     }
 
-    void ToolButton::setAccentUnderline(bool value)
+    void ToolButton::setAccentUnderline(ColorRole value)
     {
         FTK_P();
         if (value == p.accentUnderline)
@@ -389,12 +389,12 @@ namespace ftk
         }
 
         // Draw the active accent underline (e.g. the current tab's close button).
-        if (p.accentUnderline)
+        if (p.accentUnderline != ColorRole::None)
         {
             const Box2I& g = p.draw->bg;
             event.render->drawRect(
                 Box2I(g.x(), g.y() + g.h() - p.size.keyFocus, g.w(), p.size.keyFocus),
-                event.style->getColorRole(ColorRole::Checked));
+                event.style->getColorRole(p.accentUnderline));
         }
 
         // Draw the icon.
