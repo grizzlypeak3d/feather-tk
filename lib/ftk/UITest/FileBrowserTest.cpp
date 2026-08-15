@@ -13,6 +13,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Time.h>
 
+#include <fstream>
+
 namespace ftk
 {
     namespace ui_test
@@ -34,6 +36,7 @@ namespace ftk
         {
             _shortcuts();
             _view();
+            _selection();
             _widget();
             _dialog();
         }
@@ -103,6 +106,94 @@ namespace ftk
             }
         }
 
+        void FileBrowserTest::_selection()
+        {
+            {
+                std::vector<std::string> argv;
+                argv.push_back("FileBrowserTest");
+                auto app = App::create(
+                    _context,
+                    argv,
+                    "FileBrowserTest",
+                    "File browser test.");
+                auto window = Window::create(_context, app, "FileBrowserTest");
+                window->show();
+                app->tick();
+
+                // A directory of our own, so that what is selected can be
+                // counted against what is there.
+                const std::filesystem::path path =
+                    std::filesystem::temp_directory_path() / "ftkFileBrowserSelectionTest";
+                std::filesystem::remove_all(path);
+                std::filesystem::create_directories(path);
+                // Named rather than numbered: files that differ only by a
+                // number are one image sequence to the listing, and would be
+                // one thing to select rather than four.
+                const std::vector<std::string> fileNames =
+                {
+                    "alpha.txt",
+                    "beta.txt",
+                    "gamma.txt",
+                    "delta.txt"
+                };
+                const size_t fileCount = fileNames.size();
+                for (const auto& fileName : fileNames)
+                {
+                    std::ofstream(path / fileName);
+                }
+
+                auto model = FileBrowserModel::create(_context);
+                auto view = FileBrowserView::create(
+                    _context, FileBrowserMode::Open, model, window);
+                model->setPath(path);
+                view->reload();
+                app->tick();
+
+                std::vector<Path> selection;
+                view->setSelectCallback(
+                    [&selection](const std::vector<Path>& value)
+                    {
+                        selection = value;
+                    });
+
+                FTK_CHECK(!view->isMultiple());
+                view->setMultiple(true);
+                FTK_CHECK(view->isMultiple());
+
+                // The first one.
+                KeyEvent key(Key::Home, 0, V2I());
+                view->keyPressEvent(key);
+                FTK_CHECK(1 == view->getSelection().size());
+                FTK_CHECK(1 == selection.size());
+
+                // Shift extends from it rather than replacing it.
+                key = KeyEvent(Key::Down, static_cast<int>(KeyModifier::Shift), V2I());
+                view->keyPressEvent(key);
+                FTK_CHECK(2 == view->getSelection().size());
+                FTK_CHECK(2 == selection.size());
+
+                // And to the end of the listing.
+                key = KeyEvent(Key::End, static_cast<int>(KeyModifier::Shift), V2I());
+                view->keyPressEvent(key);
+                FTK_CHECK(fileCount == view->getSelection().size());
+
+                // Without the shift it is one again.
+                key = KeyEvent(Key::Home, 0, V2I());
+                view->keyPressEvent(key);
+                FTK_CHECK(1 == view->getSelection().size());
+
+                // What was selected while several were allowed cannot be
+                // handed to something that takes one.
+                key = KeyEvent(Key::End, static_cast<int>(KeyModifier::Shift), V2I());
+                view->keyPressEvent(key);
+                FTK_CHECK(fileCount == view->getSelection().size());
+                view->setMultiple(false);
+                FTK_CHECK(1 == view->getSelection().size());
+
+                std::filesystem::remove_all(path);
+            }
+        }
+
         void FileBrowserTest::_widget()
         {
             {
@@ -133,9 +224,12 @@ namespace ftk
                 auto recentFilesModel = RecentFilesModel::create(_context);
                 fileBrowserWidget->setRecentFilesModel(recentFilesModel);
                 fileBrowserWidget->setCallback(
-                    [](const Path&)
+                    [](const std::vector<Path>&)
                     {
                     });
+                fileBrowserWidget->setMultiple(true);
+                FTK_CHECK(fileBrowserWidget->isMultiple());
+                fileBrowserWidget->setMultiple(false);
                 bool cancel = false;
                 fileBrowserWidget->setCancelCallback(
                     [&cancel]
@@ -175,9 +269,12 @@ namespace ftk
                 fileBrowser->setRecentFilesModel(recentFilesModel);
                 FTK_CHECK(recentFilesModel == fileBrowser->getRecentFilesModel());
                 fileBrowser->setCallback(
-                    [](const Path&)
+                    [](const std::vector<Path>&)
                     {
                     });
+                fileBrowser->setMultiple(true);
+                FTK_CHECK(fileBrowser->isMultiple());
+                fileBrowser->setMultiple(false);
                 bool close = false;
                 fileBrowser->setCloseCallback(
                     [&close]

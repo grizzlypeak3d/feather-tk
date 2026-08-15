@@ -79,6 +79,11 @@ namespace ftk
                 .def("setCallback", &FileBrowserView::setCallback)
                 .def("setSelectCallback", &FileBrowserView::setSelectCallback)
                 .def_property(
+                    "multiple",
+                    &FileBrowserView::isMultiple,
+                    &FileBrowserView::setMultiple)
+                .def_property_readonly("selection", &FileBrowserView::getSelection)
+                .def_property(
                     "search",
                     &FileBrowserView::getSearch,
                     &FileBrowserView::setSearch)

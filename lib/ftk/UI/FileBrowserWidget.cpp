@@ -27,7 +27,7 @@ namespace ftk
         FileBrowserMode mode = FileBrowserMode::Open;
         std::shared_ptr<FileBrowserModel> model;
         std::shared_ptr<RecentFilesModel> recentFilesModel;
-        Path selection;
+        std::vector<Path> selection;
 
         std::shared_ptr<ToolButton> panelButton;
         std::shared_ptr<ToolButton> upButton;
@@ -49,7 +49,7 @@ namespace ftk
         std::shared_ptr<Splitter> splitter;
         std::shared_ptr<VerticalLayout> layout;
 
-        std::function<void(const Path&)> callback;
+        std::function<void(const std::vector<Path>&)> callback;
         std::function<void(void)> cancelCallback;
 
         std::shared_ptr<Observer<int> > currentObserver;
@@ -237,20 +237,32 @@ namespace ftk
                 FTK_P();
                 if (p.callback)
                 {
-                    p.callback(value);
+                    p.callback({ value });
                 }
             });
         p.view->setSelectCallback(
-            [this](const Path& value)
+            [this](const std::vector<Path>& value)
             {
                 FTK_P();
                 p.selection = value;
-                p.fileEdit->setText(value.getFileName());
+
+                // The edit names the one file, or counts them: the names do
+                // not fit and are on the screen above anyway.
+                std::string text;
+                if (1 == value.size())
+                {
+                    text = value.front().getFileName();
+                }
+                else if (!value.empty())
+                {
+                    text = Format("{0} files").arg(value.size());
+                }
+                p.fileEdit->setText(text);
                 switch (p.mode)
                 {
                 case FileBrowserMode::Open:
                 case FileBrowserMode::Save:
-                    p.okButton->setEnabled(!value.isEmpty());
+                    p.okButton->setEnabled(!value.empty());
                     break;
                 default: break;
                 }
@@ -313,7 +325,7 @@ namespace ftk
                 switch (p.mode)
                 {
                 case FileBrowserMode::Open:
-                    if (!p.selection.isEmpty())
+                    if (!p.selection.empty())
                     {
                         _accept(p.selection);
                     }
@@ -322,14 +334,14 @@ namespace ftk
                 {
                     Path path(p.model->getPath().u8string());
                     path.setFileName(p.fileEdit->getText());
-                    _accept(path);
+                    _accept({ path });
                     break;
                 }
                 case FileBrowserMode::Dir:
                     _accept(
-                        !p.selection.isEmpty() ?
+                        !p.selection.empty() ?
                         p.selection :
-                        Path(p.model->getPath().u8string()));
+                        std::vector<Path>{ Path(p.model->getPath().u8string()) });
                     break;
                 default: break;
                 }
@@ -413,9 +425,20 @@ namespace ftk
         return out;
     }
 
-    void FileBrowserWidget::setCallback(const std::function<void(const Path&)>& value)
+    void FileBrowserWidget::setCallback(
+        const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->callback = value;
+    }
+
+    bool FileBrowserWidget::isMultiple() const
+    {
+        return _p->view->isMultiple();
+    }
+
+    void FileBrowserWidget::setMultiple(bool value)
+    {
+        _p->view->setMultiple(value);
     }
 
     void FileBrowserWidget::setCancelCallback(const std::function<void(void)>& value)
@@ -456,12 +479,12 @@ namespace ftk
         _p->layout->setGeometry(value);
     }
 
-    void FileBrowserWidget::_accept(const Path& path)
+    void FileBrowserWidget::_accept(const std::vector<Path>& paths)
     {
         FTK_P();
         if (p.callback)
         {
-            p.callback(path);
+            p.callback(paths);
         }
     }
 

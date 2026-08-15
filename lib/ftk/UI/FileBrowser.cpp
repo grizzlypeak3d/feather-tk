@@ -83,9 +83,20 @@ namespace ftk
         return out;
     }
 
-    void FileBrowser::setCallback(const std::function<void(const Path&)>& value)
+    void FileBrowser::setCallback(
+        const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->widget->setCallback(value);
+    }
+
+    bool FileBrowser::isMultiple() const
+    {
+        return _p->widget->isMultiple();
+    }
+
+    void FileBrowser::setMultiple(bool value)
+    {
+        _p->widget->setMultiple(value);
     }
 
     const std::shared_ptr<FileBrowserModel>& FileBrowser::getModel() const

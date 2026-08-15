@@ -59,6 +59,25 @@ namespace ftk
         const std::function<void(const Path&)>& callback,
         const FileBrowserOpenOptions& options)
     {
+        // The first of them: a caller that takes one file gets one whatever
+        // the options say, rather than silently losing the rest.
+        open(
+            window,
+            [callback](const std::vector<Path>& value)
+            {
+                if (!value.empty())
+                {
+                    callback(value.front());
+                }
+            },
+            options);
+    }
+
+    void FileBrowserSystem::open(
+        const std::shared_ptr<IWindow>& window,
+        const std::function<void(const std::vector<Path>&)>& callback,
+        const FileBrowserOpenOptions& options)
+    {
         FTK_P();
         bool native = p.native;
 #if defined(FTK_NFD)
@@ -95,24 +114,54 @@ namespace ftk
             const std::string defaultPathStr = options.path.u8string();
             const nfdu8char_t* defaultPath = defaultPathStr.empty() ? nullptr : defaultPathStr.c_str();
 
-            nfdu8char_t* outPath = nullptr;
-            switch (options.mode)
+            // Opening more than one is its own call and returns a path set
+            // rather than a path, so it is handled apart from the rest.
+            if (FileBrowserMode::Open == options.mode && options.multiple)
             {
-            case FileBrowserMode::Open:
-                NFD::OpenDialog(outPath, filterList, filterCount, defaultPath);
-                break;
-            case FileBrowserMode::Save:
-                NFD::SaveDialog(outPath, filterList, filterCount, defaultPath);
-                break;
-            case FileBrowserMode::Dir:
-                NFD::PickFolder(outPath, defaultPath);
-                break;
-            default: break;
+                const nfdpathset_t* outPaths = nullptr;
+                if (NFD_OKAY == NFD::OpenDialogMultiple(
+                    outPaths, filterList, filterCount, defaultPath))
+                {
+                    std::vector<Path> paths;
+                    nfdpathsetsize_t count = 0;
+                    NFD::PathSet::Count(outPaths, count);
+                    for (nfdpathsetsize_t i = 0; i < count; ++i)
+                    {
+                        nfdu8char_t* outPath = nullptr;
+                        if (NFD_OKAY == NFD::PathSet::GetPath(outPaths, i, outPath))
+                        {
+                            paths.push_back(Path(std::string(outPath)));
+                            NFD::PathSet::FreePath(outPath);
+                        }
+                    }
+                    NFD::PathSet::Free(outPaths);
+                    if (!paths.empty())
+                    {
+                        callback(paths);
+                    }
+                }
             }
-            if (outPath)
+            else
             {
-                callback(Path(std::string(outPath)));
-                NFD::FreePath(outPath);
+                nfdu8char_t* outPath = nullptr;
+                switch (options.mode)
+                {
+                case FileBrowserMode::Open:
+                    NFD::OpenDialog(outPath, filterList, filterCount, defaultPath);
+                    break;
+                case FileBrowserMode::Save:
+                    NFD::SaveDialog(outPath, filterList, filterCount, defaultPath);
+                    break;
+                case FileBrowserMode::Dir:
+                    NFD::PickFolder(outPath, defaultPath);
+                    break;
+                default: break;
+                }
+                if (outPath)
+                {
+                    callback({ Path(std::string(outPath)) });
+                    NFD::FreePath(outPath);
+                }
             }
         }
 #else  // FTK_NFD
@@ -142,10 +191,12 @@ namespace ftk
                     options.mode,
                     model);
                 p.fileBrowser->setTitle(options.title);
+                p.fileBrowser->setMultiple(
+                    FileBrowserMode::Open == options.mode && options.multiple);
                 p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
                 p.fileBrowser->open(window);
                 p.fileBrowser->setCallback(
-                    [this, callback](const Path& value)
+                    [this, callback](const std::vector<Path>& value)
                     {
                         callback(value);
                         _p->fileBrowser->close();

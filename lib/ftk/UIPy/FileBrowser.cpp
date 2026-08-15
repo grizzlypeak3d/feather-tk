@@ -35,7 +35,8 @@ namespace ftk
                 .def_readwrite("path", &FileBrowserOpenOptions::path)
                 .def_readwrite("mode", &FileBrowserOpenOptions::mode)
                 .def_readwrite("extensions", &FileBrowserOpenOptions::extensions)
-                .def_readwrite("extensionsLabel", &FileBrowserOpenOptions::extensionsLabel);
+                .def_readwrite("extensionsLabel", &FileBrowserOpenOptions::extensionsLabel)
+                .def_readwrite("multiple", &FileBrowserOpenOptions::multiple);
 
             py::class_<FileBrowserOptions>(m, "FileBrowserOptions")
                 .def(py::init())
@@ -80,7 +81,18 @@ namespace ftk
                     py::init(&FileBrowserSystem::create),
                     py::arg("context"))
                 .def("open",
-                    &FileBrowserSystem::open,
+                    static_cast<void (FileBrowserSystem::*)(
+                        const std::shared_ptr<IWindow>&,
+                        const std::function<void(const Path&)>&,
+                        const FileBrowserOpenOptions&)>(&FileBrowserSystem::open),
+                    py::arg("window"),
+                    py::arg("callback"),
+                    py::arg("options") = FileBrowserOpenOptions())
+                .def("openMultiple",
+                    static_cast<void (FileBrowserSystem::*)(
+                        const std::shared_ptr<IWindow>&,
+                        const std::function<void(const std::vector<Path>&)>&,
+                        const FileBrowserOpenOptions&)>(&FileBrowserSystem::open),
                     py::arg("window"),
                     py::arg("callback"),
                     py::arg("options") = FileBrowserOpenOptions())

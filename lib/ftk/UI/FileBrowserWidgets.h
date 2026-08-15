@@ -8,6 +8,8 @@
 
 #include <ftk/UI/IButton.h>
 
+#include <set>
+
 namespace ftk
 {
     //! File browser path widget.
@@ -195,8 +197,21 @@ namespace ftk
         //! Set the callback.
         FTK_API void setCallback(const std::function<void(const Path&)>&);
 
-        //! Set the selection callback.
-        FTK_API void setSelectCallback(const std::function<void(const Path&)>&);
+        //! Set the selection callback. More than one path only when
+        //! selecting more than one is allowed; empty when nothing is
+        //! selected.
+        FTK_API void setSelectCallback(const std::function<void(const std::vector<Path>&)>&);
+
+        //! Get whether more than one file can be selected.
+        FTK_API bool isMultiple() const;
+
+        //! Set whether more than one file can be selected. Shift extends the
+        //! selection from the current item and the command key adds to it;
+        //! without this a click replaces whatever was selected.
+        FTK_API void setMultiple(bool);
+
+        //! Get the selection.
+        FTK_API std::vector<Path> getSelection() const;
 
         //! Get the search filter.
         FTK_API const std::string& getSearch() const;
@@ -227,6 +242,9 @@ namespace ftk
         int _getItem(const V2I&) const;
         void _directoryUpdate();
         void _setCurrent(int);
+        void _toggleCurrent(int);
+        void _selectRange(int);
+        void _selectionUpdate(const std::set<int>&, bool currentChanged);
         void _clearCurrent();
         void _doubleClick(int);
 

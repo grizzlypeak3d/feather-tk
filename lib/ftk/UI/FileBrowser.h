@@ -152,10 +152,16 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Path&)>&);
+        FTK_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
         //! Set the cancel callback.
         FTK_API void setCancelCallback(const std::function<void(void)>&);
+
+        //! Get whether more than one file can be selected.
+        FTK_API bool isMultiple() const;
+
+        //! Set whether more than one file can be selected.
+        FTK_API void setMultiple(bool);
 
         //! Get the file browser model.
         FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
@@ -173,7 +179,7 @@ namespace ftk
         FTK_API void setGeometry(const Box2I&) override;
 
     private:
-        void _accept(const Path&);
+        void _accept(const std::vector<Path>&);
 
         void _optionsUpdate();
         void _extsUpdate();
@@ -208,7 +214,13 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Path&)>&);
+        FTK_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
+
+        //! Get whether more than one file can be selected.
+        FTK_API bool isMultiple() const;
+
+        //! Set whether more than one file can be selected.
+        FTK_API void setMultiple(bool);
 
         //! Get the file browser model.
         FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
@@ -243,6 +255,10 @@ namespace ftk
         //! Names the group of extensions: the filter group in the native
         //! dialog, and the entry shown in place of "*.*" in the built-in one.
         std::string           extensionsLabel = "Supported";
+
+        //! Allow more than one file to be chosen. Only meaningful when
+        //! opening; there is one file to save to and one directory to pick.
+        bool                  multiple = false;
     };
 
     //! File browser system.
@@ -262,6 +278,14 @@ namespace ftk
         FTK_API void open(
             const std::shared_ptr<IWindow>&,
             const std::function<void(const Path&)>&,
+            const FileBrowserOpenOptions& = FileBrowserOpenOptions());
+
+        //! Open the file browser for more than one file. Set
+        //! FileBrowserOpenOptions::multiple for the choosing to allow it;
+        //! without that this reports the one file chosen.
+        FTK_API void open(
+            const std::shared_ptr<IWindow>&,
+            const std::function<void(const std::vector<Path>&)>&,
             const FileBrowserOpenOptions& = FileBrowserOpenOptions());
 
         //! Get whether the native file dialog is used.

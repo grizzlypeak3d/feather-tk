@@ -9,6 +9,7 @@
 #include <ftk/Core/Path.h>
 #include <ftk/Core/String.h>
 
+#include <algorithm>
 #include <filesystem>
 #include <optional>
 
@@ -35,9 +36,17 @@ namespace ftk
         std::string search;
         std::vector<DirEntry> dirEntries;
         std::shared_ptr<Observable<int> > current;
+
+        // Which items are selected, and where a range is measured from. The
+        // current item is where the keyboard is rather than what is chosen:
+        // with one selected they are the same, with several they are not.
+        bool multiple = false;
+        std::set<int> selection;
+        int anchor = -1;
+
         std::vector<FileBrowserItem> items;
         std::function<void(const Path&)> callback;
-        std::function<void(const Path&)> selectCallback;
+        std::function<void(const std::vector<Path>&)> selectCallback;
 
         std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
         std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
@@ -145,9 +154,44 @@ namespace ftk
         _p->callback = value;
     }
 
-    void FileBrowserView::setSelectCallback(const std::function<void(const Path&)>& value)
+    void FileBrowserView::setSelectCallback(
+        const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->selectCallback = value;
+    }
+
+    bool FileBrowserView::isMultiple() const
+    {
+        return _p->multiple;
+    }
+
+    void FileBrowserView::setMultiple(bool value)
+    {
+        FTK_P();
+        if (value == p.multiple)
+            return;
+        p.multiple = value;
+
+        // Back to the one the keyboard is on: a selection made while several
+        // were allowed cannot be handed to something that takes one.
+        if (!p.multiple && p.selection.size() > 1)
+        {
+            _setCurrent(p.current->get());
+        }
+    }
+
+    std::vector<Path> FileBrowserView::getSelection() const
+    {
+        FTK_P();
+        std::vector<Path> out;
+        for (int i : p.selection)
+        {
+            if (i >= 0 && i < static_cast<int>(p.dirEntries.size()))
+            {
+                out.push_back(p.dirEntries[i].path);
+            }
+        }
+        return out;
     }
 
     const std::string& FileBrowserView::getSearch() const
@@ -264,7 +308,17 @@ namespace ftk
         FTK_P();
         const Box2I& g = getGeometry();
 
-        // Draw the current state.
+        // Draw the selection. Filled, so that several selected items read as
+        // a block rather than as several outlines.
+        for (int i : p.selection)
+        {
+            event.render->drawRect(
+                move(getRect(i), g.min),
+                event.style->getColorRole(ColorRole::Checked));
+        }
+
+        // Draw the current state. Over the selection: with several selected
+        // this is the one the keyboard is on, which the fill cannot say.
         if (p.current->get() != -1)
         {
             const Box2I g2 = move(getRect(p.current->get()), g.min);
@@ -379,7 +433,20 @@ namespace ftk
         }
         if (p.mouse.hover != -1)
         {
-            _setCurrent(p.mouse.hover);
+            if (p.multiple &&
+                (static_cast<int>(KeyModifier::Shift) & event.modifiers))
+            {
+                _selectRange(p.mouse.hover);
+            }
+            else if (p.multiple &&
+                (static_cast<int>(commandKeyModifier) & event.modifiers))
+            {
+                _toggleCurrent(p.mouse.hover);
+            }
+            else
+            {
+                _setCurrent(p.mouse.hover);
+            }
             p.mouse.pressed = p.mouse.hover;
             setDrawUpdate();
         }
@@ -421,7 +488,35 @@ namespace ftk
     void FileBrowserView::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
-        if (0 == event.modifiers)
+        if (p.multiple &&
+            static_cast<int>(KeyModifier::Shift) == event.modifiers)
+        {
+            switch (event.key)
+            {
+            case Key::Up:
+                event.accept = true;
+                takeKeyFocus();
+                _selectRange(p.current->get() - 1);
+                break;
+            case Key::Down:
+                event.accept = true;
+                takeKeyFocus();
+                _selectRange(p.current->get() + 1);
+                break;
+            case Key::Home:
+                event.accept = true;
+                takeKeyFocus();
+                _selectRange(0);
+                break;
+            case Key::End:
+                event.accept = true;
+                takeKeyFocus();
+                _selectRange(static_cast<int>(p.dirEntries.size()) - 1);
+                break;
+            default: break;
+            }
+        }
+        if (!event.accept && 0 == event.modifiers)
         {
             switch (event.key)
             {
@@ -620,31 +715,77 @@ namespace ftk
         const int tmp = !p.dirEntries.empty() ?
             clamp(index, 0, static_cast<int>(p.dirEntries.size()) - 1) :
             -1;
-        Path path;
+        std::set<int> selection;
         if (tmp != -1)
         {
-            path = p.dirEntries[tmp].path;
+            selection.insert(tmp);
         }
-        if (p.current->setIfChanged(tmp))
+        p.anchor = tmp;
+        _selectionUpdate(selection, p.current->setIfChanged(tmp));
+    }
+
+    void FileBrowserView::_toggleCurrent(int index)
+    {
+        FTK_P();
+        if (index < 0 || index >= static_cast<int>(p.dirEntries.size()))
+            return;
+        std::set<int> selection = p.selection;
+        const auto i = selection.find(index);
+        if (i != selection.end())
         {
-            if (p.selectCallback)
-            {
-                p.selectCallback(path);
-            }
-            setDrawUpdate();
+            selection.erase(i);
         }
+        else
+        {
+            selection.insert(index);
+        }
+        p.anchor = index;
+        _selectionUpdate(selection, p.current->setIfChanged(index));
+    }
+
+    void FileBrowserView::_selectRange(int index)
+    {
+        FTK_P();
+        if (p.dirEntries.empty())
+            return;
+        const int tmp = clamp(index, 0, static_cast<int>(p.dirEntries.size()) - 1);
+
+        // Measured from wherever the selection was last started: with nothing
+        // to extend from, this is that first click instead.
+        if (p.anchor < 0 || p.anchor >= static_cast<int>(p.dirEntries.size()))
+        {
+            _setCurrent(tmp);
+            return;
+        }
+        std::set<int> selection;
+        for (int i = std::min(p.anchor, tmp); i <= std::max(p.anchor, tmp); ++i)
+        {
+            selection.insert(i);
+        }
+        _selectionUpdate(selection, p.current->setIfChanged(tmp));
+    }
+
+    void FileBrowserView::_selectionUpdate(
+        const std::set<int>& selection,
+        bool currentChanged)
+    {
+        FTK_P();
+        const bool selectionChanged = selection != p.selection;
+        if (!selectionChanged && !currentChanged)
+            return;
+        p.selection = selection;
+        if (selectionChanged && p.selectCallback)
+        {
+            p.selectCallback(getSelection());
+        }
+        setDrawUpdate();
     }
 
     void FileBrowserView::_clearCurrent()
     {
         FTK_P();
-        if (p.current->setIfChanged(-1))
-        {
-            if (p.selectCallback)
-            {
-                p.selectCallback(Path());
-            }
-        }
+        p.anchor = -1;
+        _selectionUpdate(std::set<int>(), p.current->setIfChanged(-1));
     }
 
     void FileBrowserView::_doubleClick(int index)

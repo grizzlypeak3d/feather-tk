@@ -25,6 +25,7 @@ namespace ftk
         private:
             void _shortcuts();
             void _view();
+            void _selection();
             void _widget();
             void _dialog();
         };
