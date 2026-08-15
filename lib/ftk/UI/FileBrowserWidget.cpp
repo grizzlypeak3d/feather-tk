@@ -232,12 +232,12 @@ namespace ftk
             });
 
         p.view->setCallback(
-            [this](const Path& value)
+            [this](const std::vector<Path>& value)
             {
                 FTK_P();
                 if (p.callback)
                 {
-                    p.callback({ value });
+                    p.callback(value);
                 }
             });
         p.view->setSelectCallback(

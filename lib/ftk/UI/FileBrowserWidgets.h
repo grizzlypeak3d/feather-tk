@@ -194,8 +194,9 @@ namespace ftk
         //! Reload the directory.
         FTK_API void reload();
 
-        //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Path&)>&);
+        //! Set the callback. Carries everything selected, so that opening
+        //! one of several chosen files opens the ones chosen.
+        FTK_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
         //! Set the selection callback. More than one path only when
         //! selecting more than one is allowed; empty when nothing is

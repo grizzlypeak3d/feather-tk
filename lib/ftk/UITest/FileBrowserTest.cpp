@@ -6,6 +6,7 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/FileBrowserPrivate.h>
 #include <ftk/UI/RecentFilesModel.h>
+#include <ftk/UI/PushButton.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
 
@@ -90,7 +91,7 @@ namespace ftk
                 model->setOptions(options);
                 FTK_CHECK(options == model->getOptions());
                 view->setCallback(
-                    [](const Path&)
+                    [](const std::vector<Path>&)
                     {
                     });
 
@@ -190,7 +191,191 @@ namespace ftk
                 view->setMultiple(false);
                 FTK_CHECK(1 == view->getSelection().size());
 
+                // And the whole way through the widget: what the view has
+                // selected is what the Ok button hands back.
+                {
+                    auto widget = FileBrowserWidget::create(
+                        _context, path, FileBrowserMode::Open, model, window);
+                    widget->setMultiple(true);
+                    std::vector<Path> accepted;
+                    widget->setCallback(
+                        [&accepted](const std::vector<Path>& value)
+                        {
+                            accepted = value;
+                        });
+                    app->tick();
+
+                    auto widgetView = widget->getView();
+                    KeyEvent k(Key::Home, 0, V2I());
+                    widgetView->keyPressEvent(k);
+                    k = KeyEvent(Key::End, static_cast<int>(KeyModifier::Shift), V2I());
+                    widgetView->keyPressEvent(k);
+                    FTK_CHECK(fileCount == widgetView->getSelection().size());
+
+                    _click(widget, "Ok");
+                    FTK_CHECK(fileCount == accepted.size());
+                }
+
+                // Chosen with the mouse rather than the keyboard, which is
+                // how it is actually done: shift extends from the last click.
+                {
+                    auto widget = FileBrowserWidget::create(
+                        _context, path, FileBrowserMode::Open, model, window);
+                    widget->setMultiple(true);
+                    std::vector<Path> accepted;
+                    widget->setCallback(
+                        [&accepted](const std::vector<Path>& value)
+                        {
+                            accepted = value;
+                        });
+                    window->setGeometry(Box2I(0, 0, 1280, 960));
+                    app->tick();
+
+                    auto widgetView = widget->getView();
+                    auto pos = [widgetView](int index)
+                    {
+                        const Box2I r = widgetView->getRect(index);
+                        return widgetView->getGeometry().min +
+                            V2I(r.min.x + 1, r.min.y + 1);
+                    };
+
+                    MouseClickEvent press(MouseButton::Left, 0, pos(0));
+                    widgetView->mousePressEvent(press);
+                    MouseClickEvent release(MouseButton::Left, 0, pos(0));
+                    widgetView->mouseReleaseEvent(release);
+                    FTK_CHECK(1 == widgetView->getSelection().size());
+
+                    const int shift = static_cast<int>(KeyModifier::Shift);
+                    press = MouseClickEvent(MouseButton::Left, shift, pos(3));
+                    widgetView->mousePressEvent(press);
+                    release = MouseClickEvent(MouseButton::Left, shift, pos(3));
+                    widgetView->mouseReleaseEvent(release);
+                    FTK_CHECK(fileCount == widgetView->getSelection().size());
+
+                    _click(widget, "Ok");
+                    FTK_CHECK(fileCount == accepted.size());
+                }
+
+                // Added to one at a time, and opened with the keyboard: the
+                // Ok button is not the only way out of the browser, and the
+                // other ways were handing back the current item alone.
+                {
+                    auto widget = FileBrowserWidget::create(
+                        _context, path, FileBrowserMode::Open, model, window);
+                    widget->setMultiple(true);
+                    std::vector<Path> accepted;
+                    widget->setCallback(
+                        [&accepted](const std::vector<Path>& value)
+                        {
+                            accepted = value;
+                        });
+                    window->setGeometry(Box2I(0, 0, 1280, 960));
+                    app->tick();
+
+                    auto widgetView = widget->getView();
+                    auto pos = [widgetView](int index)
+                    {
+                        const Box2I r = widgetView->getRect(index);
+                        return widgetView->getGeometry().min +
+                            V2I(r.min.x + 1, r.min.y + 1);
+                    };
+
+                    // The command key adds rather than replaces.
+                    const int command = static_cast<int>(commandKeyModifier);
+                    for (size_t i = 0; i < fileCount; ++i)
+                    {
+                        MouseClickEvent press(
+                            MouseButton::Left, command, pos(static_cast<int>(i)));
+                        widgetView->mousePressEvent(press);
+                        MouseClickEvent release(
+                            MouseButton::Left, command, pos(static_cast<int>(i)));
+                        widgetView->mouseReleaseEvent(release);
+                    }
+                    FTK_CHECK(fileCount == widgetView->getSelection().size());
+
+                    KeyEvent k(Key::Return, 0, V2I());
+                    widgetView->keyPressEvent(k);
+                    FTK_CHECK(fileCount == accepted.size());
+
+                    // One on its own is still the one opened, whichever it is.
+                    accepted.clear();
+                    MouseClickEvent press(MouseButton::Left, 0, pos(1));
+                    widgetView->mousePressEvent(press);
+                    MouseClickEvent release(MouseButton::Left, 0, pos(1));
+                    widgetView->mouseReleaseEvent(release);
+                    k = KeyEvent(Key::Return, 0, V2I());
+                    widgetView->keyPressEvent(k);
+                    FTK_CHECK(1 == accepted.size());
+                }
+
+                // And the way an application reaches it: through the system,
+                // which is where the choice between this browser and the
+                // platform's own is made.
+                {
+                    auto system = _context->getSystem<FileBrowserSystem>();
+                    const bool native = system->isNativeFileDialog();
+                    system->setNativeFileDialog(false);
+
+                    // Acted on one at a time, and acting reaches back into
+                    // the browser: an application that remembers what it
+                    // opened is sharing this model with the browser that is
+                    // still up.
+                    auto recentFilesModel2 = RecentFilesModel::create(_context);
+                    system->setRecentFilesModel(recentFilesModel2);
+                    std::vector<Path> opened;
+                    FileBrowserOpenOptions openOptions;
+                    openOptions.multiple = true;
+                    openOptions.path = path;
+                    system->open(
+                        window,
+                        [&opened, recentFilesModel2](const std::vector<Path>& value)
+                        {
+                            for (const auto& i : value)
+                            {
+                                opened.push_back(i);
+                                recentFilesModel2->addRecent(
+                                    std::filesystem::u8path(i.get()));
+                            }
+                        },
+                        openOptions);
+                    app->tick();
+
+                    auto dialog = _find<FileBrowser>(window);
+                    FTK_CHECK(dialog);
+                    auto dialogView = std::dynamic_pointer_cast<FileBrowserView>(
+                        dialog->getKeyFocus());
+                    FTK_CHECK(dialogView);
+                    KeyEvent k(Key::Home, 0, V2I());
+                    dialogView->keyPressEvent(k);
+                    k = KeyEvent(Key::End, static_cast<int>(KeyModifier::Shift), V2I());
+                    dialogView->keyPressEvent(k);
+                    FTK_CHECK(fileCount == dialogView->getSelection().size());
+
+                    _click(dialog, "Ok");
+                    FTK_CHECK(fileCount == opened.size());
+
+                    system->setNativeFileDialog(native);
+                }
+
                 std::filesystem::remove_all(path);
+            }
+        }
+
+        void FileBrowserTest::_click(
+            const std::shared_ptr<IWidget>& widget,
+            const std::string& text)
+        {
+            if (auto button = std::dynamic_pointer_cast<PushButton>(widget))
+            {
+                if (text == button->getText())
+                {
+                    button->click();
+                    return;
+                }
+            }
+            for (const auto& child : widget->getChildren())
+            {
+                _click(child, text);
             }
         }
 

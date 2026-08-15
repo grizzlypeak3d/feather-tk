@@ -45,7 +45,7 @@ namespace ftk
         int anchor = -1;
 
         std::vector<FileBrowserItem> items;
-        std::function<void(const Path&)> callback;
+        std::function<void(const std::vector<Path>&)> callback;
         std::function<void(const std::vector<Path>&)> selectCallback;
 
         std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
@@ -149,7 +149,8 @@ namespace ftk
         _directoryUpdate();
     }
 
-    void FileBrowserView::setCallback(const std::function<void(const Path&)>& value)
+    void FileBrowserView::setCallback(
+        const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->callback = value;
     }
@@ -801,7 +802,22 @@ namespace ftk
             case FileBrowserMode::Save:
                 if (!dirEntry.isDir && p.callback)
                 {
-                    p.callback(dirEntry.path);
+                    // Everything selected when this is one of them, which is
+                    // what opening from a selection means; on its own it is
+                    // the one opened. Return comes through here as well, and
+                    // that is the way several get opened at once -- the Ok
+                    // button is not the only way out of the browser.
+                    std::vector<Path> paths;
+                    if (p.selection.size() > 1 &&
+                        p.selection.find(index) != p.selection.end())
+                    {
+                        paths = getSelection();
+                    }
+                    else
+                    {
+                        paths.push_back(dirEntry.path);
+                    }
+                    p.callback(paths);
                 }
                 else if (dirEntry.isDir)
                 {
