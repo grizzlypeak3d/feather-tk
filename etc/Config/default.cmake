@@ -15,6 +15,12 @@
 # environment; "cmake --build" reads it without being told.
 
 include("${CMAKE_CURRENT_LIST_DIR}/local.cmake" OPTIONAL)
+# Say so: the file is not tracked, so a build that behaves oddly has nothing
+# else to notice it by. Every config reaches this file, so once here covers
+# all of them.
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/local.cmake")
+    message(STATUS "etc/Config/local.cmake is in use; personal settings are affecting this build")
+endif()
 
 set(ftk_API "GL_4_1" CACHE STRING "Graphics API")
 set(ftk_SDL2 ON CACHE BOOL "Build SDL2")
