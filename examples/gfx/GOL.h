@@ -44,6 +44,5 @@ namespace gfx
         size_t _currentCells = 0;
         double _noiseZ = 0.0;
         std::shared_ptr<ftk::Timer> _timer;
-        //std::shared_ptr<ftk::Timer> _timer2;
     };
 }

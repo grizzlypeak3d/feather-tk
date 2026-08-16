@@ -537,8 +537,9 @@ namespace ftk
             // Aim the unused ones at the first plane instead of a unit with
             // nothing bound: macOS logs "unit N ... is unloadable" when it
             // validates the program. Setting them every time also matters --
-            // uniforms live on the shader, so a YUV image used to leave 1 and 2
-            // pointing at units that the next RGB image never binds.
+            // uniforms live on the shader, so a YUV image would otherwise
+            // leave 1 and 2 pointing at units that the next RGB image never
+            // binds.
             for (size_t i = 0; i < 3; ++i)
             {
                 shader->setUniform(

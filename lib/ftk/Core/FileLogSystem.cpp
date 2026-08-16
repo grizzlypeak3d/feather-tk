@@ -72,10 +72,8 @@ namespace ftk
                 // Writing the log must not be able to take the application
                 // down with it. The file can be locked or replaced underneath
                 // us at any moment -- a folder synced to a cloud drive does
-                // exactly that -- and an exception leaving this thread would
-                // call std::terminate. Reported in #549, where the
-                // application aborted every few seconds because the documents
-                // folder was inside a synced folder.
+                // exactly that (#549) -- and an exception leaving this thread
+                // would call std::terminate.
                 //
                 // A batch that cannot be written is dropped rather than kept
                 // to try again, so that a folder that never becomes writable
@@ -129,7 +127,7 @@ namespace ftk
                     write(items);
 
                     // Wait out the rest of the tick, but wake as soon as the
-                    // destructor clears the flag. Sleeping instead made
+                    // destructor clears the flag. Sleeping instead would make
                     // shutdown wait for the current tick to expire.
                     const auto t1 = std::chrono::steady_clock::now();
                     const auto period =

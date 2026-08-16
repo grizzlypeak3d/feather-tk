@@ -438,8 +438,8 @@ namespace ftk
             // The same rule the tab's own button uses, because the two
             // underlines are read as one: the close button sits inside the
             // tab and its accent continues the tab's along the bottom edge.
-            // Given only the current tab's colour it went two-tone as soon
-            // as the tab was focused.
+            // Given only the current tab's colour it would go two-tone as
+            // soon as the tab is focused.
             const bool current = p.current == static_cast<int>(i);
             const bool currentFocus = focus && p.currentFocus == static_cast<int>(i);
             p.closeButtons[i]->setButtonRole(current ? ColorRole::Button : ColorRole::None);

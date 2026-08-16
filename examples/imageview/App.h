@@ -51,7 +51,7 @@ namespace imageview
 
         //! \name File I/O
         //! 
-        //! These are wrappers methods that do error handling.
+        //! Wrapper methods that handle errors.
         //! 
         ///@{
 

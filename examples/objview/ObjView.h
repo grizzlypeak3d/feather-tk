@@ -71,7 +71,6 @@ namespace objview
         ftk::M44F _getProjectionTransform() const;
         ftk::M44F _getMVPTransform(float distance) const;
         ftk::Box3F _getObjectBBoxTransformed() const;
-        ftk::Box2I _getScreenBBox(const ftk::M44F&) const;
 
         std::shared_ptr<ftk::TriMesh3F> _mesh;
         ftk::Box3F _objectBBox;

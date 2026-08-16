@@ -56,7 +56,7 @@ namespace ftk
 
     //! Where an application keeps its per-user files: the settings and the
     //! log. Left empty, no files are kept and the application is responsible
-    //! for its own, which is what applications did before this existed.
+    //! for its own.
     //!
     //! A suite of applications gives them all the same directory and tells
     //! them apart by the base name, so that one directory holds the settings

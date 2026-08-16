@@ -77,11 +77,11 @@ namespace ftk
             setCheckedCallback(
                 [this](bool value)
                 {
-                    // Written back to the action, not only reported. A menu
-                    // does this and a tool bar did not, so the same action
-                    // shown in both had a checked state that only one of them
-                    // could change -- and anything watching the action, such
-                    // as an ActionGroup, never heard from the tool bar at all.
+                    // Written back to the action, not only reported, matching
+                    // what a menu does. Without it the same action shown in
+                    // both has a checked state only the menu can change -- and
+                    // anything watching the action, such as an ActionGroup,
+                    // never hears from the tool bar at all.
                     _p->action->setChecked(value);
                     _p->action->doCheckedCallback(value);
                 });

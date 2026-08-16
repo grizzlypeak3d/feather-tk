@@ -68,8 +68,8 @@ namespace ftk
             auto buttonWeak = std::weak_ptr<MenuButton>(button);
             // The menu holds itself weakly for the work that happens after an
             // action's callback. Closing a menu from an action that rebuilds
-            // the menu bar it lives in is an ordinary thing to write, and it
-            // used to leave the menu reading its own freed members.
+            // the menu bar it lives in is an ordinary thing to write, and
+            // would otherwise leave the menu reading its own freed members.
             auto menuWeak = std::weak_ptr<Menu>(
                 std::dynamic_pointer_cast<Menu>(shared_from_this()));
             button->setHoveredCallback(
@@ -173,8 +173,8 @@ namespace ftk
             auto buttonWeak = std::weak_ptr<MenuButton>(button);
             // The menu holds itself weakly for the work that happens after an
             // action's callback. Closing a menu from an action that rebuilds
-            // the menu bar it lives in is an ordinary thing to write, and it
-            // used to leave the menu reading its own freed members.
+            // the menu bar it lives in is an ordinary thing to write, and
+            // would otherwise leave the menu reading its own freed members.
             auto menuWeak = std::weak_ptr<Menu>(
                 std::dynamic_pointer_cast<Menu>(shared_from_this()));
             button->setHoveredCallback(
@@ -287,10 +287,10 @@ namespace ftk
                     // In the order IButton::_click() runs them, and both of
                     // them: it calls the clicked callback and then, if the
                     // button is checkable, the checked one. Running only one
-                    // of the two made an action do different things
-                    // depending on whether it was typed or clicked, which
-                    // caught out every action given a plain callback and then
-                    // put in a radio group.
+                    // of the two would make an action do different things
+                    // depending on whether it is typed or clicked, catching
+                    // out any action given a plain callback and then put in
+                    // a radio group.
                     i.first->doCallback();
                     if (i.first->isCheckable())
                     {

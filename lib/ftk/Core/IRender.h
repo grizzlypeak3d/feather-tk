@@ -158,7 +158,6 @@ namespace ftk
             const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
             const V2F& pos = V2F()) = 0;
 
-        //! Draw a texture.
         //! Reduce a texture with a separable two pass resample, drawing the
         //! result into the box. Use when the reduction is large enough that
         //! ImageFilter::Linear's four texels miss most of the source; see

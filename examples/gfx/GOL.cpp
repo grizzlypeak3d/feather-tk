@@ -17,15 +17,6 @@ namespace gfx
 
         _timer = Timer::create(context);
         _timer->setRepeating(true);
-
-        /*_timer2 = Timer::create(context);
-        _timer2->setRepeating(true);
-        _timer2->start(
-            std::chrono::milliseconds(10 * 1000),
-            [this]
-            {
-                _randomize(_currentCells);
-            });*/
     }
 
     GOLWidget::~GOLWidget()

@@ -514,11 +514,6 @@ namespace objview
             const unsigned int id = _buffer->getColorID();
             event.render->drawTexture(id, g, true);
         }
-
-        //const Box2I sb = _getScreenBBox(mvp);
-        //event.render->drawRect(
-        //    Box2I(g.min.x + sb.min.x, g.min.y + sb.min.y, sb.w(), sb.h()),
-        //    Color4F(1.F, 0.F, 0.F, .1F));
     }
 
     void ObjView::mouseEnterEvent(ftk::MouseEnterEvent& event)
@@ -610,21 +605,5 @@ namespace objview
             v[i] = m * v[i];
         }
         return bbox(v);
-    }
-
-    ftk::Box2I ObjView::_getScreenBBox(const ftk::M44F& mvp) const
-    {
-        auto v = points(_objectBBox);
-        std::vector<V2I> v2;
-        const Size2I size = getGeometry().size();
-        for (size_t i = 0; i < v.size(); ++i)
-        {
-            const V3F vt = mvp * v[i];
-            v2.push_back(V2I(
-                (vt.x + 1.F) / 2.F * size.w,
-                (vt.y + 1.F) / 2.F * size.h));
-        }
-        const Box2I b = ftk::bbox(v2);
-        return Box2I(b.min.x, size.h - b.min.y - b.h(), b.w(), b.h());
     }
 }

@@ -303,8 +303,9 @@ namespace ftk
                 }
             }
 
-            // A filter that matched nothing used to run zero tests and exit
-            // successfully, which reads exactly like a suite that passed.
+            // A filter that matches nothing has to fail loudly: running zero
+            // tests and exiting successfully reads exactly like a suite that
+            // passed.
             if (!unmatched.empty())
             {
                 for (const auto& name : unmatched)
@@ -342,10 +343,8 @@ int main(int argc, char* argv[])
 {
     try
     {
-        // The suite makes dozens of applications and shows a window from most
-        // of them. On screen they flicker past over whatever the person at the
-        // keyboard is doing, and any one of them can be clicked into while a
-        // test is driving it.
+        // Keep the suite's dozens of windows off the screen and out of reach
+        // of stray clicks; see App::setOffscreenDefault().
         ftk::App::setOffscreenDefault(true);
 
         auto context = ftk::Context::create();

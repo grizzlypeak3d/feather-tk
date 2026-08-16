@@ -138,9 +138,8 @@ namespace ftk
         //! Working the window without a person at it: tests, screenshot
         //! harnesses, demos, anything that has to press a button and see what
         //! happens. Public rather than protected because the callers are not
-        //! all tests -- an application that captures its own screenshots needs
-        //! exactly this, and every one that has needed it so far has grown its
-        //! own copy by subclassing to reach the platform's entry points.
+        //! all tests -- an application that captures its own screenshots
+        //! needs exactly this.
         ///@{
 
         //! Lay the window out at a size, as a resize from the window system

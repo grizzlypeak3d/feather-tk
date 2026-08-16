@@ -36,41 +36,25 @@ namespace ftk
     constexpr char envListSeparator = ':';
 #endif // _WINDOWS
 
-    //! Get an environment variable.
-    //! 
-    //! Throws:
-    //! - std::exception
+    //! Get an environment variable. Throws std::exception on failure.
     FTK_API bool getEnv(const std::string& name, std::string&);
 
-    //! Get an environment variable and convert it to an integer. If the
-    //! variable is empty then zero is returned.
-    //!
-    //! Throws:
-    //! - std::exception
+    //! Get an environment variable and convert it to an integer; an empty
+    //! variable gives zero. Throws std::exception on failure.
     FTK_API bool getEnv(const std::string& name, int& value);
 
     //! Get an environment variable and convert it to a list of strings.
-    //!
-    //! Throws:
-    //! - std::exception
+    //! Throws std::exception on failure.
     FTK_API bool getEnv(const std::string& name, std::vector<std::string>&);
 
-    //! Set an environment variable.
-    //! 
-    //! Throws:
-    //! - std::exception
+    //! Set an environment variable. Throws std::exception on failure.
     FTK_API bool setEnv(const std::string& name, const std::string&);
 
-    //! Delete an environment variable.
-    //! 
-    //! Throws:
-    //! - std::exception
+    //! Delete an environment variable. Throws std::exception on failure.
     FTK_API bool delEnv(const std::string& name);
 
-    //! Open the given URL in the default browser.
-    //!
-    //! Throws:
-    //! - std::exception
+    //! Open the given URL in the default browser. Throws std::exception on
+    //! failure.
     FTK_API void openURL(const std::string&);
 
     ///@}
