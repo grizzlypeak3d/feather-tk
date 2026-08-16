@@ -481,4 +481,14 @@ namespace ftk
     {
         return objectCount;
     }
+
+    void releaseChild(
+        const std::shared_ptr<IWidget>& parent,
+        const std::shared_ptr<IWidget>& child)
+    {
+        if (child && child->getParent() == parent)
+        {
+            child->setParent(nullptr);
+        }
+    }
 }

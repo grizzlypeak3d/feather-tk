@@ -30,13 +30,7 @@ namespace ftk
     {
         if (value == _widget)
             return;
-        // Only let go of the previous child if it is still ours. A caller
-        // rebuilding a tree may have already put it somewhere inside the new
-        // one, and detaching it then would take it back out again.
-        if (_widget && _widget->getParent() == shared_from_this())
-        {
-            _widget->setParent(nullptr);
-        }
+        releaseChild(shared_from_this(), _widget);
         _widget = value;
         _widgetSet = true;
         if (_widget)

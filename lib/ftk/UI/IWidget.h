@@ -384,6 +384,16 @@ namespace ftk
         std::function<std::shared_ptr<Menu>(void)> _contextMenuCallback;
     };
 
+    //! Release a child from the given parent, unless it has been reparented.
+    //!
+    //! For replacing one child with another: a caller rebuilding a tree may
+    //! have already put the old child inside the new one, and detaching it
+    //! then would take it back out again. Only a widget that is still a
+    //! child of the given parent is released.
+    FTK_API void releaseChild(
+        const std::shared_ptr<IWidget>& parent,
+        const std::shared_ptr<IWidget>& child);
+
     //! Find the first widget of the given type at or below this one.
     //!
     //! For reaching inside a compound widget from outside it -- the shuttle

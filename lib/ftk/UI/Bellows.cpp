@@ -92,13 +92,7 @@ namespace ftk
         FTK_P();
         if (value == p.widget)
             return;
-        // Only if it is still ours. A caller replacing the child may have put
-        // the old one inside the new one, and letting go of it then would take
-        // it back out again.
-        if (p.widget && p.widget->getParent() == _p->layout)
-        {
-            p.widget->setParent(nullptr);
-        }
+        releaseChild(p.layout, p.widget);
         p.widget = value;
         if (p.widget)
         {
@@ -141,13 +135,7 @@ namespace ftk
     void Bellows::setToolWidget(const std::shared_ptr<IWidget>& value)
     {
         FTK_P();
-        // Only if it is still ours. A caller replacing the child may have put
-        // the old one inside the new one, and letting go of it then would take
-        // it back out again.
-        if (p.toolWidget && p.toolWidget->getParent() == p.buttonLayout)
-        {
-            p.toolWidget->setParent(nullptr);
-        }
+        releaseChild(p.buttonLayout, p.toolWidget);
         p.toolWidget = value;
         if (p.toolWidget)
         {
