@@ -103,12 +103,13 @@ add_dependencies(ftkResource ftk-resource)
 install(
     TARGETS ftkResource
     EXPORT ftkResourceTargets
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/ftk/Resource)
+    PUBLIC_HEADER DESTINATION include/ftk/Resource COMPONENT dev)
 install(
     EXPORT ftkResourceTargets
     FILE ftkResourceTargets.cmake
     DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::)
+    NAMESPACE ftk::
+    COMPONENT dev)

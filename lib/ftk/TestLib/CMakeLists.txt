@@ -15,12 +15,13 @@ set_target_properties(ftkTestLib PROPERTIES PUBLIC_HEADER "${HEADERS}")
 install(
     TARGETS ftkTestLib
     EXPORT ftkTestLibTargets
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/ftk/TestLib)
+    PUBLIC_HEADER DESTINATION include/ftk/TestLib COMPONENT dev)
 install(
     EXPORT ftkTestLibTargets
     FILE ftkTestLibTargets.cmake
     DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::)
+    NAMESPACE ftk::
+    COMPONENT dev)

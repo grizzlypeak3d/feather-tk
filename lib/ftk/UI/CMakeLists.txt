@@ -264,12 +264,13 @@ set_target_properties(ftkUI PROPERTIES PUBLIC_HEADER "${HEADERS}")
 install(
     TARGETS ftkUI
     EXPORT ftkUITargets
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/ftk/UI)
+    PUBLIC_HEADER DESTINATION include/ftk/UI COMPONENT dev)
 install(
     EXPORT ftkUITargets
     FILE ftkUITargets.cmake
     DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::)
+    NAMESPACE ftk::
+    COMPONENT dev)

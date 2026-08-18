@@ -65,12 +65,13 @@ set_target_properties(ftkGL PROPERTIES PUBLIC_HEADER "${HEADERS}")
 install(
     TARGETS ftkGL
     EXPORT ftkGLTargets
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/ftk/GL)
+    PUBLIC_HEADER DESTINATION include/ftk/GL COMPONENT dev)
 install(
     EXPORT ftkGLTargets
     FILE ftkGLTargets.cmake
     DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::)
+    NAMESPACE ftk::
+    COMPONENT dev)

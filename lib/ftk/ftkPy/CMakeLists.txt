@@ -8,6 +8,6 @@ set_target_properties(ftkPy PROPERTIES FOLDER lib)
 set_target_properties(ftkPy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(TARGETS ftkPy
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin)

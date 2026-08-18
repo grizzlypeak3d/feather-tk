@@ -26,5 +26,6 @@ if(PROJECT_IS_TOP_LEVEL)
         EXPORT ftk-resourceTargets
         FILE ftk-resourceTargets.cmake
         DESTINATION "lib/cmake/ftk"
-        NAMESPACE ftk::)
+        NAMESPACE ftk::
+        COMPONENT dev)
 endif()

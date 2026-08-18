@@ -41,7 +41,7 @@ set_target_properties(ftkCorePy PROPERTIES FOLDER lib)
 set_target_properties(ftkCorePy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(TARGETS ftkCorePy
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/ftk/CorePy)
+    PUBLIC_HEADER DESTINATION include/ftk/CorePy COMPONENT dev)

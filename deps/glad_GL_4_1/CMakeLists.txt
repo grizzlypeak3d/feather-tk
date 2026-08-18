@@ -16,19 +16,22 @@ set_target_properties(ftkglad PROPERTIES FOLDER deps)
 install(
     TARGETS ftkglad
     EXPORT ftkgladTargets
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin)
 install(
     EXPORT ftkgladTargets
     FILE ftkgladTargets.cmake
     DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::)
+    NAMESPACE ftk::
+    COMPONENT dev)
 install(
     DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}/ftk/glad"
-    DESTINATION "include/ftk")
+    DESTINATION "include/ftk"
+    COMPONENT dev)
 install(
     DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}/ftk/KHR"
-    DESTINATION "include/ftk")
+    DESTINATION "include/ftk"
+    COMPONENT dev)

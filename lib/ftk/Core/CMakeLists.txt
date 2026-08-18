@@ -156,12 +156,13 @@ set_target_properties(ftkCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
 install(
     TARGETS ftkCore
     EXPORT ftkCoreTargets
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib COMPONENT dev
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/ftk/Core)
+    PUBLIC_HEADER DESTINATION include/ftk/Core COMPONENT dev)
 install(
     EXPORT ftkCoreTargets
     FILE ftkCoreTargets.cmake
     DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::)
+    NAMESPACE ftk::
+    COMPONENT dev)
