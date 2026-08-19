@@ -984,6 +984,52 @@ namespace ftk
         return out;
     }
 
+    void to_json(nlohmann::json& json, const Path& value)
+    {
+        // Only when the name does not already say it: a file with no number
+        // in it, and a frame parsed out of a name, both come back from the
+        // name alone.
+        if (Path(value.get()).getSeq() == value.getSeq())
+        {
+            json = value.get();
+        }
+        else
+        {
+            json["Path"] = value.get();
+            nlohmann::json seq = nlohmann::json::array();
+            for (const auto& i : value.getSeq())
+            {
+                seq.push_back({ i.range.min(), i.range.max(), i.inc });
+            }
+            json["Seq"] = seq;
+        }
+    }
+
+    void from_json(const nlohmann::json& json, Path& value)
+    {
+        if (json.is_string())
+        {
+            value = Path(json.get<std::string>());
+            return;
+        }
+        value = Path(json.at("Path").get<std::string>());
+        if (json.contains("Seq"))
+        {
+            std::vector<FrameSeq> seq;
+            for (const auto& i : json.at("Seq"))
+            {
+                if (i.is_array() && i.size() >= 3)
+                {
+                    seq.push_back(FrameSeq(
+                        i[0].get<int64_t>(),
+                        i[1].get<int64_t>(),
+                        i[2].get<int>()));
+                }
+            }
+            value.setSeq(seq);
+        }
+    }
+
     void to_json(nlohmann::json& json, const PathOptions& value)
     {
         json["SeqNegative"] = value.seqNegative;

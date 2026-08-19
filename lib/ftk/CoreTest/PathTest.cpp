@@ -36,6 +36,73 @@ namespace ftk
             _path();
             _dirList();
             _expandSeq();
+            _serialize();
+        }
+
+        void PathTest::_serialize()
+        {
+            // A path whose name says what it covers is written as that name,
+            // so the ordinary case reads and writes as it always did.
+            for (const std::string& name : {
+                "render.exr",
+                "render.0001.exr" })
+            {
+                const Path path(name);
+                nlohmann::json json;
+                to_json(json, path);
+                FTK_CHECK(json.is_string());
+                Path out;
+                from_json(json, out);
+                FTK_CHECK(path == out);
+            }
+
+            // A sequence carries the frames it covers beside the name, since
+            // the name cannot say them.
+            {
+                Path path("render.0001.exr");
+                path.setFrames(RangeI64(1, 25));
+                nlohmann::json json;
+                to_json(json, path);
+                FTK_CHECK(!json.is_string());
+                Path out;
+                from_json(json, out);
+                FTK_CHECK(path == out);
+                FTK_CHECK(out.isSeq());
+                FTK_CHECK(RangeI64(1, 25) == out.getFrames().value());
+            }
+
+            // The holes as well: a sequence missing its middle spans the same
+            // range as the whole one and is a different thing to read.
+            {
+                Path path("render.0001.exr");
+                path.setSeq({ FrameSeq(1, 3), FrameSeq(25, 25) });
+                nlohmann::json json;
+                to_json(json, path);
+                _print(Format("Sparse sequence: {0}").arg(json.dump()));
+                Path out;
+                from_json(json, out);
+                FTK_CHECK(path == out);
+                FTK_CHECK(path.getSeq() == out.getSeq());
+                FTK_CHECK(out.isPartialSeq());
+
+                // And is not the same as the full range it spans.
+                Path full("render.0001.exr");
+                full.setFrames(RangeI64(1, 25));
+                FTK_CHECK(full != out);
+            }
+
+            // A step is carried as well, which a name would have to invent a
+            // way to say.
+            {
+                Path path("render.0001.exr");
+                path.setSeq({ FrameSeq(1, 25, 2) });
+                nlohmann::json json;
+                to_json(json, path);
+                Path out;
+                from_json(json, out);
+                FTK_CHECK(path.getSeq() == out.getSeq());
+                FTK_CHECK(2 == out.getSeq()[0].inc);
+            }
         }
 
         void PathTest::_enums()

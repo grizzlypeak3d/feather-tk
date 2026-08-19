@@ -348,9 +348,23 @@ namespace ftk
         const Path&,
         const PathOptions& = PathOptions());
 
+    //! Serialize a path.
+    //!
+    //! The frames a path covers are its own state rather than part of its
+    //! name, so a path written as its name alone comes back naming one file.
+    //! This writes them beside it, as data: a sequence has a run for each
+    //! hole in it, with a step as well as a range, and a name made to carry
+    //! all of that would have to be parsed back out again.
+    //!
+    //! A path whose name already says what it covers -- a single file, or one
+    //! frame -- is written as that name, so the ordinary case reads and
+    //! writes as it always did.
+    FTK_API void to_json(nlohmann::json&, const Path&);
+
     FTK_API void to_json(nlohmann::json&, const PathOptions&);
     FTK_API void to_json(nlohmann::json&, const DirListOptions&);
 
+    FTK_API void from_json(const nlohmann::json&, Path&);
     FTK_API void from_json(const nlohmann::json&, PathOptions&);
     FTK_API void from_json(const nlohmann::json&, DirListOptions&);
 
