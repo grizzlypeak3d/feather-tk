@@ -408,7 +408,9 @@ namespace ftk
                 // The largest a thumbnail is allowed to be. A row is only as
                 // wide as its own image, but a panorama is held to this
                 // rather than given the width its aspect asks for.
-                const int h = event.style->getSizeRole(SizeRole::Thumbnail, event.displayScale);
+                const int h = getThumbnailHeight(
+                    p.options.thumbnails,
+                    event.style->getSizeRole(SizeRole::Thumbnail, event.displayScale));
                 p.size.thumbnail = Size2I(h * 16 / 9, h);
             }
             for (size_t i = 0; i < p.dirEntries.size() && i < p.items.size(); ++i)
@@ -895,6 +897,7 @@ namespace ftk
 
                 item.thumbnail =
                     p.thumbnails &&
+                    FileBrowserThumbnails::Off != p.options.thumbnails &&
                     !dirEntry.isDir &&
                     p.thumbnails->isSupported(dirEntry.path);
 

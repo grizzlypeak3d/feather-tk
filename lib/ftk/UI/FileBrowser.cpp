@@ -8,6 +8,8 @@
 #include <ftk/Core/Error.h>
 #include <ftk/Core/String.h>
 
+#include <algorithm>
+#include <array>
 #include <sstream>
 
 namespace ftk
@@ -17,10 +19,33 @@ namespace ftk
         "File",
         "Dir");
 
+    FTK_ENUM_IMPL(
+        FileBrowserThumbnails,
+        "Off",
+        "Small",
+        "Medium",
+        "Large");
+
+    int getThumbnailHeight(FileBrowserThumbnails value, int sizeRole)
+    {
+        // The style says how large a thumbnail is, and this says how much of
+        // one is wanted, so a theme that wants them bigger moves all three.
+        int out = 0;
+        switch (value)
+        {
+        case FileBrowserThumbnails::Small:  out = sizeRole / 2; break;
+        case FileBrowserThumbnails::Medium: out = sizeRole;     break;
+        case FileBrowserThumbnails::Large:  out = sizeRole * 2; break;
+        default: break;
+        }
+        return out;
+    }
+
     bool FileBrowserOptions::operator == (const FileBrowserOptions& other) const
     {
         return
             dirList == other.dirList &&
+            thumbnails == other.thumbnails &&
             panel == other.panel &&
             pathEditable == other.pathEditable &&
             bellows == other.bellows;
@@ -125,6 +150,7 @@ namespace ftk
     void to_json(nlohmann::json& json, const FileBrowserOptions& value)
     {
         json["DirList"] = value.dirList;
+        json["Thumbnails"] = to_string(value.thumbnails);
         json["Panel"] = value.panel;
         json["PathEditable"] = value.pathEditable;
         for (const auto& i : value.bellows)
@@ -136,6 +162,7 @@ namespace ftk
     void from_json(const nlohmann::json& json, FileBrowserOptions& value)
     {
         json.at("DirList").get_to(value.dirList);
+        from_string(json.at("Thumbnails").get<std::string>(), value.thumbnails);
         json.at("Panel").get_to(value.panel);
         json.at("PathEditable").get_to(value.pathEditable);
         for (auto i = json.at("Bellows").begin(); i != json.at("Bellows").end(); ++i)

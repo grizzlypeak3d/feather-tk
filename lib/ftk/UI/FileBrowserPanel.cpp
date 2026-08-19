@@ -6,6 +6,7 @@
 #include <ftk/UI/Bellows.h>
 #include <ftk/UI/ButtonGroup.h>
 #include <ftk/UI/CheckBox.h>
+#include <ftk/UI/ComboBox.h>
 #include <ftk/UI/DrivesModel.h>
 #include <ftk/UI/FormLayout.h>
 #include <ftk/UI/ListItemsWidget.h>
@@ -282,6 +283,7 @@ namespace ftk
     struct FileBrowserSettings::Private
     {
         FileBrowserOptions options;
+        std::shared_ptr<ftk::ComboBox> thumbnailsComboBox;
         std::shared_ptr<ftk::CheckBox> seqCheckBox;
         std::shared_ptr<ftk::CheckBox> hiddenCheckBox;
         std::shared_ptr<FormLayout> layout;
@@ -296,6 +298,15 @@ namespace ftk
         IContainer::_init(context, "ftk::FileBrowserSettings", parent);
         FTK_P();
 
+        p.thumbnailsComboBox = ftk::ComboBox::create(
+            context, getFileBrowserThumbnailsLabels());
+        p.thumbnailsComboBox->setHStretch(ftk::Stretch::Expanding);
+        p.thumbnailsComboBox->setTooltip(
+            "How large the thumbnails are.\n"
+            "\n"
+            "Reading them is work, and a directory at the\n"
+            "other end of a network is where that is felt.");
+
         p.seqCheckBox = ftk::CheckBox::create(context);
         p.seqCheckBox->setHStretch(ftk::Stretch::Expanding);
 
@@ -305,8 +316,17 @@ namespace ftk
         p.layout = FormLayout::create(context);
         _setWidget(p.layout);
         p.layout->setMarginRole(ftk::SizeRole::MarginSmall);
+        p.layout->addRow("Thumbnails:", p.thumbnailsComboBox);
         p.layout->addRow("File sequences:", p.seqCheckBox);
         p.layout->addRow("Show hidden:", p.hiddenCheckBox);
+
+        p.thumbnailsComboBox->setIndexCallback(
+            [model](int value)
+            {
+                FileBrowserOptions options = model->getOptions();
+                options.thumbnails = static_cast<FileBrowserThumbnails>(value);
+                model->setOptions(options);
+            });
 
         p.seqCheckBox->setCheckedCallback(
             [model](bool value)
@@ -328,6 +348,8 @@ namespace ftk
             model->observeOptions(),
             [this](const FileBrowserOptions& value)
             {
+                _p->thumbnailsComboBox->setCurrentIndex(
+                    static_cast<int>(value.thumbnails));
                 _p->seqCheckBox->setChecked(value.dirList.seq);
                 _p->hiddenCheckBox->setChecked(value.dirList.hidden);
             });

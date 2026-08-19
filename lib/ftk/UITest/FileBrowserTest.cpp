@@ -95,6 +95,25 @@ namespace ftk
                     {
                     });
 
+                // Every thumbnail size, since each one changes how large the
+                // rows are and what is asked of the thumbnails.
+                for (auto thumbnails : getFileBrowserThumbnailsEnums())
+                {
+                    options.thumbnails = thumbnails;
+                    model->setOptions(options);
+                    app->tick();
+                    FTK_CHECK(thumbnails == model->getOptions().thumbnails);
+
+                    // And survives being written down.
+                    nlohmann::json json;
+                    to_json(json, options);
+                    FileBrowserOptions out;
+                    from_json(json, out);
+                    FTK_CHECK(options == out);
+                }
+                options.thumbnails = FileBrowserThumbnails::Medium;
+                model->setOptions(options);
+
                 options.dirList.sort = DirListSort::Extension;
                 model->setOptions(options);
                 app->tick();

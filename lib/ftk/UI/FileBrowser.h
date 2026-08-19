@@ -32,10 +32,31 @@ namespace ftk
     };
     FTK_ENUM(FileBrowserMode);
 
+    //! File browser thumbnails.
+    //!
+    //! How large the thumbnails are, and whether to ask for them at all:
+    //! reading them is work, and a directory on the other end of a network
+    //! is somewhere that work is felt.
+    enum class FTK_API_TYPE FileBrowserThumbnails
+    {
+        Off,
+        Small,
+        Medium,
+        Large,
+
+        Count,
+        First = Off
+    };
+    FTK_ENUM(FileBrowserThumbnails);
+
+    //! Get the height of a thumbnail, from the style's size for one.
+    FTK_API int getThumbnailHeight(FileBrowserThumbnails, int sizeRole);
+
     //! File browser options.
     struct FTK_API_TYPE FileBrowserOptions
     {
         DirListOptions              dirList;
+        FileBrowserThumbnails       thumbnails   = FileBrowserThumbnails::Medium;
         bool                        panel        = true;
         bool                        pathEditable = false;
         std::map<std::string, bool> bellows =
