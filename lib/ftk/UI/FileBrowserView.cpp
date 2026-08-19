@@ -30,16 +30,21 @@ namespace ftk
             std::shared_ptr<Image> thumbnailImage;
             FileBrowserThumbnailRequest thumbnailRequest;
 
+            // What the row gives its image, which is the thumbnail's own size
+            // once one has arrived. Kept when the image is let go of, so that
+            // scrolling back does not move the rows around.
+            Size2I imageSize;
+
             std::vector<std::string> text;
             std::vector<Size2I> textSizes;
             Size2I size;
         };
 
-        // The image centered in the box, as large as it fits. Thumbnails
-        // arrive at the height they were asked for but at whatever width the
-        // file's aspect gives, which is wider than the box for a scope image
-        // and narrower for a portrait one.
-        Box2I fit(const std::shared_ptr<Image>& image, const Box2I& box)
+        // As large as the image fits in the box. Thumbnails arrive at the
+        // height they were asked for but at whatever width the file's aspect
+        // gives, which is wider than the box for a scope image and narrower
+        // for a portrait one.
+        Size2I fitSize(const std::shared_ptr<Image>& image, const Size2I& box)
         {
             const Size2I& size = image->getSize();
             const Size2I imageSize(
@@ -48,14 +53,31 @@ namespace ftk
             if (imageSize.w <= 0 || imageSize.h <= 0)
                 return box;
             const float scale = std::min(
-                box.w() / static_cast<float>(imageSize.w),
-                box.h() / static_cast<float>(imageSize.h));
-            const Size2I out(imageSize.w * scale, imageSize.h * scale);
-            return Box2I(
-                box.min.x + box.w() / 2 - out.w / 2,
-                box.min.y + box.h() / 2 - out.h / 2,
-                out.w,
-                out.h);
+                box.w / static_cast<float>(imageSize.w),
+                box.h / static_cast<float>(imageSize.h));
+            return Size2I(imageSize.w * scale, imageSize.h * scale);
+        }
+
+        // What a row gives its image. A row expecting a thumbnail holds the
+        // largest one open until it arrives, so that the rows do not move
+        // under the pointer as the images land; anything else is as big as
+        // its icon and no bigger.
+        Size2I itemImageSize(const FileBrowserItem& item, const Size2I& thumbnailBox)
+        {
+            Size2I out;
+            if (item.thumbnailImage)
+            {
+                out = fitSize(item.thumbnailImage, thumbnailBox);
+            }
+            else if (item.thumbnail)
+            {
+                out = thumbnailBox;
+            }
+            else if (item.icon)
+            {
+                out = item.icon->getSize();
+            }
+            return out;
         }
     }
 
@@ -299,6 +321,7 @@ namespace ftk
         // Collect the thumbnails that have arrived. Only the rows in view
         // have a request outstanding, so this does not walk a directory of
         // thousands on every tick.
+        bool sizeUpdate = false;
         bool drawUpdate = false;
         auto i = p.thumbnailRequests.begin();
         while (i != p.thumbnailRequests.end())
@@ -314,13 +337,26 @@ namespace ftk
             {
                 item.thumbnailImage = item.thumbnailRequest.future.get();
                 item.thumbnailRequest = FileBrowserThumbnailRequest();
+                if (!item.thumbnailImage)
+                {
+                    // The file claimed a format but had no image in it. Give
+                    // the row back to its icon rather than leaving the room
+                    // for a thumbnail that is not coming, and stop asking.
+                    item.thumbnail = false;
+                }
+                item.imageSize = itemImageSize(item, p.size.thumbnail);
                 i = p.thumbnailRequests.erase(i);
+                sizeUpdate = true;
                 drawUpdate = true;
             }
             else
             {
                 ++i;
             }
+        }
+        if (sizeUpdate)
+        {
+            setSizeUpdate();
         }
         if (drawUpdate)
         {
@@ -346,6 +382,7 @@ namespace ftk
             {
                 item.thumbnailImage.reset();
             }
+            p.size.init = true;
         }
         if (!p.directoryImage)
         {
@@ -367,36 +404,42 @@ namespace ftk
             p.size.thumbnail = Size2I();
             if (p.thumbnails)
             {
-                // A box of a fixed size rather than each image's own: the
-                // name column starts in the same place in every row, and a
-                // row does not shift when its thumbnail arrives.
+                // The largest a thumbnail is allowed to be. A row is only as
+                // wide as its own image, but a panorama is held to this
+                // rather than given the width its aspect asks for.
                 const int h = event.style->getSizeRole(SizeRole::Thumbnail, event.displayScale);
                 p.size.thumbnail = Size2I(h * 16 / 9, h);
             }
-            const Size2I imageSize = p.thumbnails ?
-                p.size.thumbnail :
-                (p.directoryImage ?
-                    p.directoryImage->getSize() :
-                    (p.fileImage ? p.fileImage->getSize() : Size2I()));
-            p.size.sizeHint = Size2I();
             for (size_t i = 0; i < p.dirEntries.size() && i < p.items.size(); ++i)
             {
                 auto& item = p.items[i];
                 item.icon = p.dirEntries[i].isDir ? p.directoryImage : p.fileImage;
-                item.size = imageSize;
+                item.imageSize = itemImageSize(item, p.size.thumbnail);
                 item.textSizes.clear();
                 for (const auto& text : item.text)
                 {
-                    const Size2I textSize = event.fontSystem->getSize(text, p.size.fontInfo);
-                    item.textSizes.push_back(textSize);
-                    item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
-                    item.size.h = std::max(
-                        item.size.h,
-                        std::max(textSize.h + p.size.margin * 2, imageSize.h) + p.size.keyFocus * 2);
+                    item.textSizes.push_back(
+                        event.fontSystem->getSize(text, p.size.fontInfo));
                 }
-                p.size.sizeHint.w = std::max(p.size.sizeHint.w, item.size.w);
-                p.size.sizeHint.h += item.size.h;
             }
+        }
+
+        // The rows are measured apart from the text, which does not change
+        // when a thumbnail arrives: a directory of thousands is not worth
+        // measuring again for every image that lands.
+        p.size.sizeHint = Size2I();
+        for (auto& item : p.items)
+        {
+            item.size = item.imageSize;
+            for (const auto& textSize : item.textSizes)
+            {
+                item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
+                item.size.h = std::max(
+                    item.size.h,
+                    std::max(textSize.h + p.size.margin * 2, item.imageSize.h) + p.size.keyFocus * 2);
+            }
+            p.size.sizeHint.w = std::max(p.size.sizeHint.w, item.size.w);
+            p.size.sizeHint.h += item.size.h;
         }
     }
 
@@ -472,54 +515,38 @@ namespace ftk
 
             if (intersects(g2, drawRect))
             {
-                if (p.thumbnails)
+                const Box2I imageRect(
+                    x,
+                    y + item.size.h / 2 - item.imageSize.h / 2,
+                    item.imageSize.w,
+                    item.imageSize.h);
+                if (item.thumbnailImage)
                 {
-                    const Box2I box(
-                        x,
-                        y + item.size.h / 2 - p.size.thumbnail.h / 2,
-                        p.size.thumbnail.w,
-                        p.size.thumbnail.h);
-                    if (item.thumbnailImage)
-                    {
-                        // Not cached: a directory holds more thumbnails than
-                        // the render's texture cache is meant to carry.
-                        ImageOptions imageOptions;
-                        imageOptions.cache = false;
-                        event.render->drawImage(
-                            item.thumbnailImage,
-                            fit(item.thumbnailImage, box),
-                            Color4F(1.F, 1.F, 1.F),
-                            imageOptions);
-                    }
-                    else if (item.icon)
-                    {
-                        // Centered in the thumbnail's place, so that the
-                        // columns stay put whether an image arrived or not.
-                        const Size2I& iconSize = item.icon->getSize();
-                        event.render->drawImage(
-                            item.icon,
-                            Box2I(
-                                box.min.x + box.w() / 2 - iconSize.w / 2,
-                                box.min.y + box.h() / 2 - iconSize.h / 2,
-                                iconSize.w,
-                                iconSize.h),
-                            event.style->getColorRole(ColorRole::Text));
-                    }
-                    x += p.size.thumbnail.w;
+                    // Not cached: a directory holds more thumbnails than the
+                    // render's texture cache is meant to carry.
+                    ImageOptions imageOptions;
+                    imageOptions.cache = false;
+                    event.render->drawImage(
+                        item.thumbnailImage,
+                        imageRect,
+                        Color4F(1.F, 1.F, 1.F),
+                        imageOptions);
                 }
                 else if (item.icon)
                 {
+                    // Centered in what the row gave the image, which is the
+                    // icon's own size unless a thumbnail is on its way.
                     const Size2I& iconSize = item.icon->getSize();
                     event.render->drawImage(
                         item.icon,
                         Box2I(
-                            x,
-                            y + item.size.h / 2 - iconSize.h / 2,
+                            imageRect.min.x + imageRect.w() / 2 - iconSize.w / 2,
+                            imageRect.min.y + imageRect.h() / 2 - iconSize.h / 2,
                             iconSize.w,
                             iconSize.h),
                         event.style->getColorRole(ColorRole::Text));
-                    x += iconSize.w;
                 }
+                x += item.imageSize.w;
                 int rightColumnsSize = 0;
                 for (int j = 1; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
                 {
