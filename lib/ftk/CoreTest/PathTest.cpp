@@ -36,7 +36,58 @@ namespace ftk
             _path();
             _dirList();
             _expandSeq();
+            _seqChanges();
             _serialize();
+        }
+
+        void PathTest::_seqChanges()
+        {
+            // The frames of a sequence are found again rather than
+            // remembered: frames written since it was opened are picked up,
+            // and frames that have gone leave the holes they left. Reopening
+            // a render in progress rests on this.
+            const std::filesystem::path dir = _getTempDir() / "PathTestSeqChanges";
+            std::filesystem::remove_all(dir);
+            std::filesystem::create_directory(dir);
+            const auto frameFile = [&dir](int frame)
+                {
+                    return dir / Format("render.{0}.exr").arg(frame, 4, '0').str();
+                };
+            for (int i = 1; i <= 3; ++i)
+            {
+                FileIO::create(frameFile(i), FileMode::Write);
+            }
+
+            Path path = expandSeq(Path(frameFile(1).u8string()));
+            FTK_CHECK("1-3" == getLabel(path.getSeq()));
+
+            for (int i = 4; i <= 6; ++i)
+            {
+                FileIO::create(frameFile(i), FileMode::Write);
+            }
+
+            // Not by expanding it again: a path that already covers a range
+            // has said what it covers, and expandSeq() leaves it alone. Going
+            // to look is what findSeq() is for.
+            FTK_CHECK("1-3" == getLabel(expandSeq(path).getSeq()));
+            path.setSeq(findSeq(path));
+            FTK_CHECK("1-6" == getLabel(path.getSeq()));
+
+            // Frames taken away leave the holes they left.
+            std::filesystem::remove(frameFile(3));
+            std::filesystem::remove(frameFile(4));
+            path.setSeq(findSeq(path));
+            _print("Frames removed: " + getLabel(path.getSeq()));
+            FTK_CHECK("1-2,5-6" == getLabel(path.getSeq()));
+            FTK_CHECK(path.isPartialSeq());
+
+            // And all of them gone finds nothing, rather than a sequence of
+            // nothing: what that means is the caller's to decide.
+            for (int i = 1; i <= 6; ++i)
+            {
+                std::filesystem::remove(frameFile(i));
+            }
+            FTK_CHECK(findSeq(path).empty());
         }
 
         void PathTest::_serialize()
