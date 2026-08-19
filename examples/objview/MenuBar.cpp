@@ -29,14 +29,15 @@ namespace objview
 
         // Observe the recent files and update the menu.
         std::weak_ptr<App> appWeak(app);
-        _recentFilesObserver = ListObserver<std::filesystem::path>::create(
+        _recentFilesObserver = ListObserver<Path>::create(
             app->getRecentFilesModel()->observeRecent(),
-            [this, appWeak](const std::vector<std::filesystem::path>& value)
+            [this, appWeak](const std::vector<Path>& value)
             {
                 _menus["File/Recent"]->clear();
                 for (auto i = value.rbegin(); i != value.rend(); ++i)
                 {
-                    const std::filesystem::path path = *i;
+                    const std::filesystem::path path =
+                        std::filesystem::u8path(i->get());
                     auto action = Action::create(
                         path.filename().u8string(),
                         [appWeak, path]

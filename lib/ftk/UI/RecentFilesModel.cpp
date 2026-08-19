@@ -9,10 +9,29 @@
 
 namespace ftk
 {
+    namespace
+    {
+        // Absolute, without going through a filesystem path and back: a
+        // sequence's range is the path's own state rather than part of its
+        // name, and would not survive the trip.
+        Path absolutePath(const Path& value)
+        {
+            Path out = value;
+            std::error_code ec;
+            const std::filesystem::path abs = std::filesystem::absolute(
+                std::filesystem::u8path(out.getDir()), ec);
+            if (!ec)
+            {
+                out.setDir(appendSeparator(abs.u8string()));
+            }
+            return out;
+        }
+    }
+
     struct RecentFilesModel::Private
     {
         std::shared_ptr<Observable<size_t> > recentMax;
-        std::shared_ptr<ObservableList<std::filesystem::path> > recent;
+        std::shared_ptr<ObservableList<Path> > recent;
     };
 
     void RecentFilesModel::_init(const std::shared_ptr<Context>& context)
@@ -20,7 +39,7 @@ namespace ftk
         FTK_P();
 
         p.recentMax = Observable<size_t>::create(10);
-        p.recent = ObservableList<std::filesystem::path>::create();
+        p.recent = ObservableList<Path>::create();
     }
 
     RecentFilesModel::RecentFilesModel() :
@@ -65,23 +84,23 @@ namespace ftk
         }
     }
 
-    const std::vector<std::filesystem::path>& RecentFilesModel::getRecent() const
+    const std::vector<Path>& RecentFilesModel::getRecent() const
     {
         return _p->recent->get();
     }
 
-    std::shared_ptr<IObservableList<std::filesystem::path> > RecentFilesModel::observeRecent() const
+    std::shared_ptr<IObservableList<Path> > RecentFilesModel::observeRecent() const
     {
         return _p->recent;
     }
 
-    void RecentFilesModel::setRecent(const std::vector<std::filesystem::path>& value)
+    void RecentFilesModel::setRecent(const std::vector<Path>& value)
     {
         FTK_P();
-        std::vector<std::filesystem::path> recent;
+        std::vector<Path> recent;
         for (const auto& path : value)
         {
-            recent.push_back(std::filesystem::absolute(path));
+            recent.push_back(absolutePath(path));
         }
         while (recent.size() > p.recentMax->get())
         {
@@ -90,10 +109,10 @@ namespace ftk
         p.recent->setIfChanged(recent);
     }
 
-    void RecentFilesModel::addRecent(const std::filesystem::path& value)
+    void RecentFilesModel::addRecent(const Path& value)
     {
         FTK_P();
-        const std::filesystem::path abs = std::filesystem::absolute(value);
+        const Path abs = absolutePath(value);
         auto recent = p.recent->get();
         auto i = recent.begin();
         while (i != recent.end())

@@ -11,6 +11,31 @@
 
 using namespace ftk;
 
+namespace
+{
+    // These documents are single files, so a recent one is a file name and
+    // the model's paths carry nothing more.
+    std::vector<Path> toPaths(const std::vector<std::filesystem::path>& value)
+    {
+        std::vector<Path> out;
+        for (const auto& i : value)
+        {
+            out.push_back(Path(i.u8string()));
+        }
+        return out;
+    }
+
+    std::vector<std::filesystem::path> toFilePaths(const std::vector<Path>& value)
+    {
+        std::vector<std::filesystem::path> out;
+        for (const auto& i : value)
+        {
+            out.push_back(std::filesystem::u8path(i.get()));
+        }
+        return out;
+    }
+}
+
 namespace textedit
 {
     void App::_init(
@@ -34,7 +59,7 @@ namespace textedit
     {
         if (_settingsModel && _recentFilesModel)
         {
-            _settingsModel->setRecentFiles(_recentFilesModel->getRecent());
+            _settingsModel->setRecentFiles(toFilePaths(_recentFilesModel->getRecent()));
         }
     }
 
@@ -73,7 +98,7 @@ namespace textedit
         {
             auto doc = Document::create(_context, path);
             _documentModel->add(doc);
-            _recentFilesModel->addRecent(path);
+            _recentFilesModel->addRecent(Path(path.u8string()));
         }
         catch (const std::exception& e)
         {
@@ -93,7 +118,7 @@ namespace textedit
             {
                 auto doc = Document::create(_context, path);
                 _documentModel->add(doc);
-                _recentFilesModel->addRecent(path);
+                _recentFilesModel->addRecent(Path(path.u8string()));
             }
             catch (const std::exception& e)
             {
@@ -284,7 +309,7 @@ namespace textedit
         _settingsModel = SettingsModel::create(_context, getDefaultDisplayScale());
         _documentModel = DocumentModel::create(_context);
         _recentFilesModel = RecentFilesModel::create(_context);
-        _recentFilesModel->setRecent(_settingsModel->getRecentFiles());
+        _recentFilesModel->setRecent(toPaths(_settingsModel->getRecentFiles()));
 
         // Initialize the file browser.
         auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();

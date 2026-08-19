@@ -59,7 +59,7 @@ namespace ftk
                 auto model = FileBrowserModel::create(_context);
                 auto panel = FileBrowserPanel::create(_context, model, window);
                 auto recentFilesModel = RecentFilesModel::create(_context);
-                recentFilesModel->addRecent(std::filesystem::current_path());
+                recentFilesModel->addRecent(Path(std::filesystem::current_path().u8string()));
                 panel->setRecentFilesModel(recentFilesModel);
             }
         }
@@ -333,8 +333,7 @@ namespace ftk
                             for (const auto& i : value)
                             {
                                 opened.push_back(i);
-                                recentFilesModel2->addRecent(
-                                    std::filesystem::u8path(i.get()));
+                                recentFilesModel2->addRecent(i);
                             }
                         },
                         openOptions);

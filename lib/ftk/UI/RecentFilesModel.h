@@ -5,8 +5,7 @@
 
 #include <ftk/Core/ObservableList.h>
 #include <ftk/Core/Observable.h>
-
-#include <filesystem>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {
@@ -42,16 +41,20 @@ namespace ftk
         FTK_API void setRecentMax(size_t);
 
         //! Get the list of recent files.
-        FTK_API const std::vector<std::filesystem::path>& getRecent() const;
+        //!
+        //! Paths rather than file names: a sequence's range is the path's own
+        //! and is what says whether the entry was one frame or the sequence
+        //! it sits in, so opening it again opens what it opened before.
+        FTK_API const std::vector<Path>& getRecent() const;
 
         //! Observe the list of recent files.
-        FTK_API std::shared_ptr<IObservableList<std::filesystem::path> > observeRecent() const;
+        FTK_API std::shared_ptr<IObservableList<Path> > observeRecent() const;
 
         //! Set the recent files.
-        FTK_API void setRecent(const std::vector<std::filesystem::path>&);
+        FTK_API void setRecent(const std::vector<Path>&);
 
         //! Add a recent file.
-        FTK_API void addRecent(const std::filesystem::path&);
+        FTK_API void addRecent(const Path&);
 
     private:
         FTK_PRIVATE();

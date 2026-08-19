@@ -164,9 +164,11 @@ namespace ftk
     struct FileBrowserRecent::Private
     {
         std::shared_ptr<RecentFilesModel> recentFilesModel;
+        // The directories the recent files are in, which is what this lists:
+        // a browser goes to a place rather than to a file.
         std::vector<std::filesystem::path> recent;
         std::shared_ptr<ListItemsWidget> listWidget;
-        std::shared_ptr<ListObserver<std::filesystem::path> > recentObserver;
+        std::shared_ptr<ListObserver<Path> > recentObserver;
     };
 
     void FileBrowserRecent::_init(
@@ -225,14 +227,15 @@ namespace ftk
         p.recentFilesModel = value;
         if (p.recentFilesModel)
         {
-            p.recentObserver = ListObserver<std::filesystem::path>::create(
+            p.recentObserver = ListObserver<Path>::create(
                 p.recentFilesModel->observeRecent(),
-                [this](const std::vector<std::filesystem::path>& paths)
+                [this](const std::vector<Path>& paths)
                 {
                     _p->recent.clear();
                     for (auto i = paths.rbegin(); i != paths.rend(); ++i)
                     {
-                        auto tmp = *i;
+                        std::filesystem::path tmp =
+                            std::filesystem::u8path(i->get());
                         if (!std::filesystem::is_directory(tmp))
                         {
                             tmp = tmp.parent_path();

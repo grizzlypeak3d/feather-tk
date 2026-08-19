@@ -7,6 +7,8 @@
 #include <ftk/UI/Menu.h>
 #include <ftk/UI/MenuBar.h>
 
+#include <ftk/Core/Path.h>
+
 namespace objview
 {
     class Actions;
@@ -53,6 +55,6 @@ namespace objview
 
         std::map<std::string, std::shared_ptr<ftk::Menu> > _menus;
 
-        std::shared_ptr<ftk::ListObserver<std::filesystem::path> > _recentFilesObserver;
+        std::shared_ptr<ftk::ListObserver<ftk::Path> > _recentFilesObserver;
     };
 }

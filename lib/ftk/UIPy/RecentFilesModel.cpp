@@ -41,16 +41,16 @@ namespace ftk
                         std::vector<std::string> out;
                         for (const auto& recent : model.getRecent())
                         {
-                            out.push_back(recent.u8string());
+                            out.push_back(recent.get());
                         }
                         return out;
                     },
                     [](RecentFilesModel& model, const std::vector<std::string>& value)
                     {
-                        std::vector<std::filesystem::path> paths;
+                        std::vector<Path> paths;
                         for (const auto& i : value)
                         {
-                            paths.push_back(std::filesystem::u8path(i));
+                            paths.push_back(Path(i));
                         }
                         model.setRecent(paths);
                     })
