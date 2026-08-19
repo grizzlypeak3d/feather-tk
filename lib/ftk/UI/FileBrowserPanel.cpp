@@ -316,6 +316,7 @@ namespace ftk
         p.layout = FormLayout::create(context);
         _setWidget(p.layout);
         p.layout->setMarginRole(ftk::SizeRole::MarginSmall);
+        p.layout->setSpacingRole(ftk::SizeRole::SpacingSmall);
         p.layout->addRow("Thumbnails:", p.thumbnailsComboBox);
         p.layout->addRow("File sequences:", p.seqCheckBox);
         p.layout->addRow("Show hidden:", p.hiddenCheckBox);
