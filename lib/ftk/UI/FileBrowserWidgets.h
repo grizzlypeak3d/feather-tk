@@ -228,6 +228,7 @@ namespace ftk
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void styleEvent(const StyleEvent&) override;
+        FTK_API void tickEvent(bool, bool, const TickEvent&) override;
         FTK_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_API void drawEvent(const Box2I& drawRect, const DrawEvent&) override;
         FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
@@ -242,6 +243,7 @@ namespace ftk
     private:
         int _getItem(const V2I&) const;
         void _directoryUpdate();
+        void _cancelThumbnails();
         void _setCurrent(int);
         void _toggleCurrent(int);
         void _selectRange(int);

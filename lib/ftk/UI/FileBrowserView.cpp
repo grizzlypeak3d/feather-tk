@@ -5,6 +5,7 @@
 
 #include <ftk/UI/DrawUtil.h>
 
+#include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
 #include <ftk/Core/String.h>
@@ -22,10 +23,40 @@ namespace ftk
         struct FileBrowserItem
         {
             std::shared_ptr<Image> icon;
+
+            // Whether a thumbnail is wanted for this row. Directories, and
+            // files the application cannot read, keep their icon.
+            bool thumbnail = false;
+            std::shared_ptr<Image> thumbnailImage;
+            FileBrowserThumbnailRequest thumbnailRequest;
+
             std::vector<std::string> text;
             std::vector<Size2I> textSizes;
             Size2I size;
         };
+
+        // The image centered in the box, as large as it fits. Thumbnails
+        // arrive at the height they were asked for but at whatever width the
+        // file's aspect gives, which is wider than the box for a scope image
+        // and narrower for a portrait one.
+        Box2I fit(const std::shared_ptr<Image>& image, const Box2I& box)
+        {
+            const Size2I& size = image->getSize();
+            const Size2I imageSize(
+                size.w * image->getInfo().pixelAspectRatio,
+                size.h);
+            if (imageSize.w <= 0 || imageSize.h <= 0)
+                return box;
+            const float scale = std::min(
+                box.w() / static_cast<float>(imageSize.w),
+                box.h() / static_cast<float>(imageSize.h));
+            const Size2I out(imageSize.w * scale, imageSize.h * scale);
+            return Box2I(
+                box.min.x + box.w() / 2 - out.w / 2,
+                box.min.y + box.h() / 2 - out.h / 2,
+                out.w,
+                out.h);
+        }
     }
 
     struct FileBrowserView::Private
@@ -56,6 +87,12 @@ namespace ftk
         std::shared_ptr<Image> directoryImage;
         std::shared_ptr<Image> fileImage;
 
+        std::shared_ptr<IFileBrowserThumbnails> thumbnails;
+
+        // The rows with a request outstanding: what the tick collects, and
+        // what scrolling out of view cancels.
+        std::set<int> thumbnailRequests;
+
         struct SizeData
         {
             bool init = true;
@@ -64,6 +101,7 @@ namespace ftk
             int pad = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
+            Size2I thumbnail;
             Size2I sizeHint;
         };
         SizeData size;
@@ -131,7 +169,9 @@ namespace ftk
     {}
 
     FileBrowserView::~FileBrowserView()
-    {}
+    {
+        _cancelThumbnails();
+    }
 
     std::shared_ptr<FileBrowserView> FileBrowserView::create(
         const std::shared_ptr<Context>& context,
@@ -248,6 +288,46 @@ namespace ftk
         }
     }
 
+    void FileBrowserView::tickEvent(
+        bool parentsVisible,
+        bool parentsEnabled,
+        const TickEvent& event)
+    {
+        IMouseWidget::tickEvent(parentsVisible, parentsEnabled, event);
+        FTK_P();
+
+        // Collect the thumbnails that have arrived. Only the rows in view
+        // have a request outstanding, so this does not walk a directory of
+        // thousands on every tick.
+        bool drawUpdate = false;
+        auto i = p.thumbnailRequests.begin();
+        while (i != p.thumbnailRequests.end())
+        {
+            if (*i < 0 || *i >= static_cast<int>(p.items.size()))
+            {
+                i = p.thumbnailRequests.erase(i);
+                continue;
+            }
+            auto& item = p.items[*i];
+            if (item.thumbnailRequest.future.valid() &&
+                item.thumbnailRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+            {
+                item.thumbnailImage = item.thumbnailRequest.future.get();
+                item.thumbnailRequest = FileBrowserThumbnailRequest();
+                i = p.thumbnailRequests.erase(i);
+                drawUpdate = true;
+            }
+            else
+            {
+                ++i;
+            }
+        }
+        if (drawUpdate)
+        {
+            setDrawUpdate();
+        }
+    }
+
     void FileBrowserView::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
@@ -258,6 +338,14 @@ namespace ftk
             p.iconScale = event.displayScale;
             p.directoryImage.reset();
             p.fileImage.reset();
+
+            // The thumbnails were made for the old scale; the next draw asks
+            // for them again at the new one.
+            _cancelThumbnails();
+            for (auto& item : p.items)
+            {
+                item.thumbnailImage.reset();
+            }
         }
         if (!p.directoryImage)
         {
@@ -276,15 +364,26 @@ namespace ftk
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
-            const int imageHeight = p.directoryImage ?
-                p.directoryImage->getHeight() :
-                (p.fileImage ? p.fileImage->getHeight() : 0);
+            p.size.thumbnail = Size2I();
+            if (p.thumbnails)
+            {
+                // A box of a fixed size rather than each image's own: the
+                // name column starts in the same place in every row, and a
+                // row does not shift when its thumbnail arrives.
+                const int h = event.style->getSizeRole(SizeRole::Thumbnail, event.displayScale);
+                p.size.thumbnail = Size2I(h * 16 / 9, h);
+            }
+            const Size2I imageSize = p.thumbnails ?
+                p.size.thumbnail :
+                (p.directoryImage ?
+                    p.directoryImage->getSize() :
+                    (p.fileImage ? p.fileImage->getSize() : Size2I()));
             p.size.sizeHint = Size2I();
             for (size_t i = 0; i < p.dirEntries.size() && i < p.items.size(); ++i)
             {
                 auto& item = p.items[i];
                 item.icon = p.dirEntries[i].isDir ? p.directoryImage : p.fileImage;
-                item.size = item.icon ? item.icon->getSize() : Size2I();
+                item.size = imageSize;
                 item.textSizes.clear();
                 for (const auto& text : item.text)
                 {
@@ -293,7 +392,7 @@ namespace ftk
                     item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
                     item.size.h = std::max(
                         item.size.h,
-                        std::max(textSize.h + p.size.margin * 2, imageHeight) + p.size.keyFocus * 2);
+                        std::max(textSize.h + p.size.margin * 2, imageSize.h) + p.size.keyFocus * 2);
                 }
                 p.size.sizeHint.w = std::max(p.size.sizeHint.w, item.size.w);
                 p.size.sizeHint.h += item.size.h;
@@ -337,15 +436,78 @@ namespace ftk
                 event.style->getColorRole(ColorRole::Hover));
         }
 
-        // Draw the items.
+        // Draw the items, asking for the thumbnails along the way. Rows half
+        // a screen beyond the view are asked for so that scrolling has them
+        // ready rather than blank, and rows several screens away are let go
+        // of: a directory of thousands would otherwise finish with a
+        // thumbnail held for every one of them.
+        const Box2I requestRect = margin(drawRect, 0, drawRect.h() / 2);
+        const Box2I retainRect = margin(drawRect, 0, drawRect.h() * 4);
+        std::set<int> thumbnailRequests;
         int y = g.min.y;
-        for (const auto& item : p.items)
+        for (size_t i = 0; i < p.items.size(); ++i)
         {
+            auto& item = p.items[i];
             int x = g.min.x + p.size.pad;
             const Box2I g2(x, y, item.size.w, item.size.h);
+            const Box2I rowRect(g.min.x, y, g.w(), item.size.h);
+
+            if (item.thumbnail && intersects(rowRect, requestRect))
+            {
+                if (!item.thumbnailImage && !item.thumbnailRequest.future.valid())
+                {
+                    item.thumbnailRequest = p.thumbnails->request(
+                        p.dirEntries[i].path,
+                        p.size.thumbnail.h);
+                }
+                if (item.thumbnailRequest.future.valid())
+                {
+                    thumbnailRequests.insert(static_cast<int>(i));
+                }
+            }
+            else if (!intersects(rowRect, retainRect))
+            {
+                item.thumbnailImage.reset();
+            }
+
             if (intersects(g2, drawRect))
             {
-                if (item.icon)
+                if (p.thumbnails)
+                {
+                    const Box2I box(
+                        x,
+                        y + item.size.h / 2 - p.size.thumbnail.h / 2,
+                        p.size.thumbnail.w,
+                        p.size.thumbnail.h);
+                    if (item.thumbnailImage)
+                    {
+                        // Not cached: a directory holds more thumbnails than
+                        // the render's texture cache is meant to carry.
+                        ImageOptions imageOptions;
+                        imageOptions.cache = false;
+                        event.render->drawImage(
+                            item.thumbnailImage,
+                            fit(item.thumbnailImage, box),
+                            Color4F(1.F, 1.F, 1.F),
+                            imageOptions);
+                    }
+                    else if (item.icon)
+                    {
+                        // Centered in the thumbnail's place, so that the
+                        // columns stay put whether an image arrived or not.
+                        const Size2I& iconSize = item.icon->getSize();
+                        event.render->drawImage(
+                            item.icon,
+                            Box2I(
+                                box.min.x + box.w() / 2 - iconSize.w / 2,
+                                box.min.y + box.h() / 2 - iconSize.h / 2,
+                                iconSize.w,
+                                iconSize.h),
+                            event.style->getColorRole(ColorRole::Text));
+                    }
+                    x += p.size.thumbnail.w;
+                }
+                else if (item.icon)
                 {
                     const Size2I& iconSize = item.icon->getSize();
                     event.render->drawImage(
@@ -359,29 +521,51 @@ namespace ftk
                     x += iconSize.w;
                 }
                 int rightColumnsSize = 0;
-                for (int i = 1; i < static_cast<int>(item.text.size()) && i < static_cast<int>(item.textSizes.size()); ++i)
+                for (int j = 1; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
                 {
-                    rightColumnsSize += item.textSizes[i].w + p.size.pad * 2 + p.size.margin * 2;
+                    rightColumnsSize += item.textSizes[j].w + p.size.pad * 2 + p.size.margin * 2;
                 }
-                for (int i = 0; i < static_cast<int>(item.text.size()) && i < static_cast<int>(item.textSizes.size()); ++i)
+                for (int j = 0; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
                 {
-                    const auto glyphs = event.fontSystem->getGlyphs(item.text[i], p.size.fontInfo);
+                    const auto glyphs = event.fontSystem->getGlyphs(item.text[j], p.size.fontInfo);
                     event.render->drawText(
                         glyphs,
                         p.size.fontMetrics,
-                        V2I(x + p.size.pad + p.size.margin, y + item.size.h / 2 - item.textSizes[i].h / 2),
+                        V2I(x + p.size.pad + p.size.margin, y + item.size.h / 2 - item.textSizes[j].h / 2),
                         event.style->getColorRole(ColorRole::Text, isEnabled()));
-                    if (0 == i)
+                    if (0 == j)
                     {
                         x = g.max.x - rightColumnsSize;
                     }
                     else
                     {
-                        x += item.textSizes[i].w + +p.size.pad * 2 + p.size.margin * 2;
+                        x += item.textSizes[j].w + +p.size.pad * 2 + p.size.margin * 2;
                     }
                 }
             }
             y += item.size.h;
+        }
+
+        // Cancel the rows that left the band while their request was still
+        // in the queue, so that the thumbnail thread is not left reading
+        // files nobody is looking at any more.
+        if (p.thumbnails)
+        {
+            std::vector<uint64_t> cancel;
+            for (int i : p.thumbnailRequests)
+            {
+                if (thumbnailRequests.find(i) == thumbnailRequests.end() &&
+                    i >= 0 && i < static_cast<int>(p.items.size()))
+                {
+                    cancel.push_back(p.items[i].thumbnailRequest.id);
+                    p.items[i].thumbnailRequest = FileBrowserThumbnailRequest();
+                }
+            }
+            p.thumbnailRequests = thumbnailRequests;
+            if (!cancel.empty())
+            {
+                p.thumbnails->cancelRequests(cancel);
+            }
         }
     }
 
@@ -606,8 +790,19 @@ namespace ftk
     {
         FTK_P();
 
+        _cancelThumbnails();
         p.dirEntries.clear();
         p.items.clear();
+
+        // Looked up here rather than held from the start: the browser can be
+        // built before the application has registered its thumbnails.
+        if (auto context = getContext())
+        {
+            if (auto system = context->getSystem<FileBrowserSystem>())
+            {
+                p.thumbnails = system->getThumbnails();
+            }
+        }
 
         const auto& options = p.model->getOptions();
         auto dirListOptions = options.dirList;
@@ -660,6 +855,11 @@ namespace ftk
                 const DirEntry& dirEntry = p.dirEntries[i];
                 FileBrowserItem item;
 
+                item.thumbnail =
+                    p.thumbnails &&
+                    !dirEntry.isDir &&
+                    p.thumbnails->isSupported(dirEntry.path);
+
                 // File name.
                 item.text.push_back(dirEntry.path.getFileName());
 
@@ -701,13 +901,35 @@ namespace ftk
                 // \todo std::format is available in C++20.
                 //text = std::format("{}", dirEntry.time);
 
-                p.items.push_back(item);
+                p.items.push_back(std::move(item));
             }
         }
 
         setSizeUpdate();
         setDrawUpdate();
         p.size.init = true;
+    }
+
+    void FileBrowserView::_cancelThumbnails()
+    {
+        FTK_P();
+        if (p.thumbnails)
+        {
+            std::vector<uint64_t> cancel;
+            for (int i : p.thumbnailRequests)
+            {
+                if (i >= 0 && i < static_cast<int>(p.items.size()))
+                {
+                    cancel.push_back(p.items[i].thumbnailRequest.id);
+                    p.items[i].thumbnailRequest = FileBrowserThumbnailRequest();
+                }
+            }
+            if (!cancel.empty())
+            {
+                p.thumbnails->cancelRequests(cancel);
+            }
+        }
+        p.thumbnailRequests.clear();
     }
 
     void FileBrowserView::_setCurrent(int index)

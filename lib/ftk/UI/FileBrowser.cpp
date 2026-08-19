@@ -31,6 +31,9 @@ namespace ftk
         return !(*this == other);
     }
 
+    IFileBrowserThumbnails::~IFileBrowserThumbnails()
+    {}
+
     struct FileBrowser::Private
     {
         std::shared_ptr<FileBrowserWidget> widget;

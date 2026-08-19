@@ -24,6 +24,7 @@ namespace ftk
         "Spacing Large",
         "Spacing Tool",
         "Icon",
+        "Thumbnail",
         "Border",
         "Key Focus",
         "Label Pad",
@@ -50,6 +51,7 @@ namespace ftk
         out[SizeRole::SpacingLarge] = 20;
         out[SizeRole::SpacingTool] = 2;
         out[SizeRole::Icon] = 20;
+        out[SizeRole::Thumbnail] = 40;
         out[SizeRole::Border] = 1;
         out[SizeRole::KeyFocus] = 2;
         out[SizeRole::LabelPad] = 4;

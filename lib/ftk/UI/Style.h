@@ -27,6 +27,7 @@ namespace ftk
         SpacingLarge,
         SpacingTool,
         Icon,
+        Thumbnail,
         Border,
         KeyFocus,
         LabelPad,

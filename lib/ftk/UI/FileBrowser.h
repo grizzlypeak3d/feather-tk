@@ -6,9 +6,11 @@
 #include <ftk/UI/IDialog.h>
 
 #include <ftk/Core/ISystem.h>
+#include <ftk/Core/Image.h>
 #include <ftk/Core/Path.h>
 
 #include <filesystem>
+#include <future>
 
 namespace ftk
 {
@@ -46,6 +48,37 @@ namespace ftk
 
         FTK_API bool operator == (const FileBrowserOptions&) const;
         FTK_API bool operator != (const FileBrowserOptions&) const;
+    };
+
+    //! File browser thumbnail request.
+    struct FTK_API_TYPE FileBrowserThumbnailRequest
+    {
+        uint64_t id = 0;
+        std::future<std::shared_ptr<Image> > future;
+    };
+
+    //! Base class for file browser thumbnails.
+    //!
+    //! Reading the images is not something ftk can do; an application that
+    //! can registers an implementation of this with FileBrowserSystem, and
+    //! the browser shows thumbnails in place of the file icons.
+    class FTK_API_TYPE IFileBrowserThumbnails
+    {
+    public:
+        FTK_API virtual ~IFileBrowserThumbnails() = 0;
+
+        //! Get whether a thumbnail can be made for the given path. Asked of
+        //! every entry in a directory, so this is meant to be as cheap as
+        //! looking at the extension rather than opening the file.
+        virtual bool isSupported(const Path&) const = 0;
+
+        //! Request a thumbnail of the given height. The future carries a null
+        //! image when the file turned out to have nothing to show.
+        virtual FileBrowserThumbnailRequest request(const Path&, int height) = 0;
+
+        //! Cancel requests. The browser cancels what scrolls out of view, so
+        //! this is asked for often and with ids that may already be finished.
+        virtual void cancelRequests(const std::vector<uint64_t>&) = 0;
     };
 
     //! File browser model.
@@ -302,6 +335,12 @@ namespace ftk
 
         //! Set the recent files model.
         FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+
+        //! Get the thumbnails.
+        FTK_API const std::shared_ptr<IFileBrowserThumbnails>& getThumbnails() const;
+
+        //! Set the thumbnails. Without one the browser shows file icons.
+        FTK_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
 
     private:
         FTK_PRIVATE();

@@ -22,6 +22,7 @@ namespace ftk
         bool native = true;
         std::shared_ptr<FileBrowserModel> model;
         std::shared_ptr<RecentFilesModel> recentFilesModel;
+        std::shared_ptr<IFileBrowserThumbnails> thumbnails;
 
         std::shared_ptr<FileBrowser> fileBrowser;
     };
@@ -233,5 +234,15 @@ namespace ftk
     void FileBrowserSystem::setRecentFilesModel(const std::shared_ptr<RecentFilesModel>& value)
     {
         _p->recentFilesModel = value;
+    }
+
+    const std::shared_ptr<IFileBrowserThumbnails>& FileBrowserSystem::getThumbnails() const
+    {
+        return _p->thumbnails;
+    }
+
+    void FileBrowserSystem::setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>& value)
+    {
+        _p->thumbnails = value;
     }
 }
