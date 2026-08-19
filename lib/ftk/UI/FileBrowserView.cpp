@@ -124,6 +124,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I thumbnail;
+            int imageColumn = 0;
             Size2I sizeHint;
         };
         SizeData size;
@@ -424,13 +425,23 @@ namespace ftk
             }
         }
 
+        // The images share a column as wide as the widest of them, so that
+        // the names start in the same place down the directory. The rows are
+        // still only as tall as what is in them; it is ragged text that is
+        // hard to read, not a little space before it.
+        p.size.imageColumn = 0;
+        for (const auto& item : p.items)
+        {
+            p.size.imageColumn = std::max(p.size.imageColumn, item.imageSize.w);
+        }
+
         // The rows are measured apart from the text, which does not change
         // when a thumbnail arrives: a directory of thousands is not worth
         // measuring again for every image that lands.
         p.size.sizeHint = Size2I();
         for (auto& item : p.items)
         {
-            item.size = item.imageSize;
+            item.size = Size2I(p.size.imageColumn, item.imageSize.h);
             for (const auto& textSize : item.textSizes)
             {
                 item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
@@ -546,7 +557,7 @@ namespace ftk
                             iconSize.h),
                         event.style->getColorRole(ColorRole::Text));
                 }
-                x += item.imageSize.w;
+                x += p.size.imageColumn;
                 int rightColumnsSize = 0;
                 for (int j = 1; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
                 {
