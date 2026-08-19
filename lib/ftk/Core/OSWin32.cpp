@@ -160,6 +160,40 @@ namespace ftk
         return _wputenv_s(utf16.from_bytes(name).c_str(), utf16.from_bytes(std::string()).c_str()) == 0;
     }
 
+    std::filesystem::path getExePath()
+    {
+        std::filesystem::path out;
+        std::vector<wchar_t> buf(MAX_PATH);
+        for (;;)
+        {
+            const DWORD size = GetModuleFileNameW(
+                NULL, buf.data(), static_cast<DWORD>(buf.size()));
+            if (0 == size)
+            {
+                break;
+            }
+            if (size < buf.size())
+            {
+                out = std::filesystem::path(std::wstring(buf.data(), size));
+                break;
+            }
+            // Truncated, and it does not say by how much; ask again with
+            // more room.
+            buf.resize(buf.size() * 2);
+        }
+        if (!out.empty())
+        {
+            std::error_code ec;
+            const std::filesystem::path canonical =
+                std::filesystem::canonical(out, ec);
+            if (!ec)
+            {
+                out = canonical;
+            }
+        }
+        return out;
+    }
+
     void openURL(const std::string& value)
     {
         ShellExecute(0, 0, value.c_str(), 0, 0, SW_SHOW);

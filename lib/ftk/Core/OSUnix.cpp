@@ -7,6 +7,7 @@
 #include <ftk/Core/Memory.h>
 
 #if defined(__APPLE__)
+#include <mach-o/dyld.h>
 #include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CFBundle.h>
 #include <CoreServices/CoreServices.h>
@@ -144,6 +145,43 @@ namespace ftk
     bool delEnv(const std::string& name)
     {
         return ::unsetenv(name.c_str()) == 0;
+    }
+
+    std::filesystem::path getExePath()
+    {
+        std::filesystem::path out;
+#if defined(__APPLE__)
+        // Asked twice: the first call says how much room the path needs.
+        uint32_t size = 0;
+        _NSGetExecutablePath(nullptr, &size);
+        std::vector<char> buf(size + 1, 0);
+        if (0 == _NSGetExecutablePath(buf.data(), &size))
+        {
+            out = std::filesystem::path(buf.data());
+        }
+#else // __APPLE__
+        std::error_code ec;
+        const std::filesystem::path link =
+            std::filesystem::read_symlink("/proc/self/exe", ec);
+        if (!ec)
+        {
+            out = link;
+        }
+#endif // __APPLE__
+        if (!out.empty())
+        {
+            // The symbolic links along the way are followed, so that an
+            // application started through one still finds what was installed
+            // beside it.
+            std::error_code ec;
+            const std::filesystem::path canonical =
+                std::filesystem::canonical(out, ec);
+            if (!ec)
+            {
+                out = canonical;
+            }
+        }
+        return out;
     }
 
     void openURL(const std::string& value)

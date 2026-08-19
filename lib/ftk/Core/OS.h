@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Export.h>
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -55,6 +56,13 @@ namespace ftk
 
     //! Open the given URL in the default browser. Throws std::exception on
     //! failure.
+    //! Get the path of the running executable.
+    //!
+    //! Not argv[0], which is however the program was invoked and need not be
+    //! a path at all. This is what an application looks for the things
+    //! installed beside it from.
+    FTK_API std::filesystem::path getExePath();
+
     FTK_API void openURL(const std::string&);
 
     ///@}

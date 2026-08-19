@@ -4,8 +4,12 @@
 #include <ftk/CoreTest/OSTest.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/OS.h>
+
 #include <ftk/Core/String.h>
+
+#include <filesystem>
 
 namespace ftk
 {
@@ -27,8 +31,25 @@ namespace ftk
         void OSTest::run()
         {
             _env();
+            _exePath();
         }
         
+        void OSTest::_exePath()
+        {
+            // Where the running program is, which is what an application
+            // looks for the things installed beside it from.
+            const std::filesystem::path path = getExePath();
+            _print(Format("Executable: {0}").arg(path.u8string()));
+            FTK_CHECK(!path.empty());
+            FTK_CHECK(path.is_absolute());
+            FTK_CHECK(std::filesystem::exists(path));
+
+            // The test runner, whatever it is called and wherever it was
+            // started from -- not the working directory, and not argv[0].
+            FTK_CHECK(!path.filename().empty());
+            FTK_CHECK(std::filesystem::is_directory(path.parent_path()));
+        }
+
         void OSTest::_env()
         {
             setEnv("FTK_OSTEST_ENV", "ABC");
