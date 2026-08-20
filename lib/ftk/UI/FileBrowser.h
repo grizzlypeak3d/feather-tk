@@ -14,6 +14,7 @@
 
 namespace ftk
 {
+    class App;
     class FileBrowserView;
     class RecentFilesModel;
 
@@ -348,6 +349,24 @@ namespace ftk
         //! Set whether the native file dialog is used.
         FTK_API void setNativeFileDialog(bool);
 
+        //! Get whether the file browser is shown in a window of its own.
+        FTK_API bool isFloating() const;
+
+        //! Set whether the file browser is shown in a window of its own.
+        //!
+        //! The dialog covers the window it was opened from, which hides
+        //! whatever the choice is being made about. A floating browser
+        //! leaves it visible and usable. Takes effect the next time the
+        //! browser is opened, and has no bearing on the native dialog,
+        //! which is a window of its own either way.
+        FTK_API void setFloating(bool);
+
+        //! Close the file browser if it is floating.
+        //!
+        //! A window of its own is not a child of anything, so it outlives
+        //! the window it was opened from unless something closes it.
+        FTK_API void close();
+
         //! Get the file browser model.
         FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
 
@@ -364,6 +383,19 @@ namespace ftk
         FTK_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
 
     private:
+        void _openDialog(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWindow>&,
+            const std::function<void(const std::vector<Path>&)>&,
+            const FileBrowserOpenOptions&,
+            const std::shared_ptr<FileBrowserModel>&);
+        void _openWindow(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<App>&,
+            const std::function<void(const std::vector<Path>&)>&,
+            const FileBrowserOpenOptions&,
+            const std::shared_ptr<FileBrowserModel>&);
+
         FTK_PRIVATE();
     };
 

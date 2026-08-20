@@ -40,6 +40,7 @@ namespace ftk
             _selection();
             _widget();
             _dialog();
+            _floating();
         }
 
         void FileBrowserTest::_shortcuts()
@@ -377,6 +378,92 @@ namespace ftk
 
                 std::filesystem::remove_all(path);
             }
+        }
+
+        void FileBrowserTest::_floating()
+        {
+            std::vector<std::string> argv;
+            argv.push_back("FileBrowserTest");
+            auto app = App::create(
+                _context,
+                argv,
+                "FileBrowserTest",
+                "File browser test");
+            auto window = Window::create(_context, app, "FileBrowserTest");
+            window->show();
+            app->tick();
+
+            const std::filesystem::path path =
+                std::filesystem::temp_directory_path() / "FileBrowserFloating";
+            std::filesystem::remove_all(path);
+            std::filesystem::create_directory(path);
+            {
+                std::ofstream os(path / "file.txt");
+                os << "file" << std::endl;
+            }
+
+            auto system = _context->getSystem<FileBrowserSystem>();
+            const bool native = system->isNativeFileDialog();
+            const bool floating = system->isFloating();
+            system->setNativeFileDialog(false);
+            system->setFloating(true);
+
+            std::vector<Path> opened;
+            FileBrowserOpenOptions openOptions;
+            openOptions.path = path;
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+
+            // A window of its own, rather than something covering the one it
+            // was opened from: that window is untouched and there is now a
+            // second one.
+            FTK_CHECK(!_find<FileBrowser>(window));
+            FTK_CHECK(2 == app->getWindows().size());
+            auto browserWindow = app->getWindows().back();
+            FTK_CHECK(browserWindow != window);
+            auto widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+
+            // Choosing reports the file and takes the window away again.
+            auto view = widget->getView();
+            KeyEvent k(Key::Home, 0, V2I());
+            view->keyPressEvent(k);
+            _click(browserWindow, "Ok");
+            FTK_CHECK(1 == opened.size());
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // Closing it without choosing reports nothing and does the same.
+            opened.clear();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            system->close();
+            app->tick();
+            FTK_CHECK(opened.empty());
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // Closing one that is not open is not an error: an application
+            // does this when its own window goes away.
+            system->close();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            system->setFloating(floating);
+            system->setNativeFileDialog(native);
+            std::filesystem::remove_all(path);
         }
 
         void FileBrowserTest::_click(
