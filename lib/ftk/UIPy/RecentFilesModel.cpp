@@ -22,8 +22,7 @@ namespace ftk
     {
         void recentFilesModel(py::module_& m)
         {
-            observable<std::filesystem::path>(m, "Path");
-            observableList<std::filesystem::path>(m, "Path");
+            observableList<Path>(m, "Path");
 
             py::class_<RecentFilesModel, std::shared_ptr<RecentFilesModel> >(m, "RecentFilesModel")
                 .def(

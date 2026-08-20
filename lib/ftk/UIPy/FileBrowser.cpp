@@ -29,6 +29,8 @@ namespace ftk
                 .value("Dir", FileBrowserMode::Dir);
             FTK_ENUM_BIND(m, FileBrowserMode);
 
+            observable<std::filesystem::path>(m, "FileSystemPath");
+
             py::class_<FileBrowserOpenOptions>(m, "FileBrowserOpenOptions")
                 .def(py::init<>())
                 .def_readwrite("title", &FileBrowserOpenOptions::title)

@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/DrivesModel.h>
 
 #include <ftk/Core/Context.h>
@@ -18,6 +20,8 @@ namespace ftk
     {
         void drivesModel(py::module_& m)
         {
+            observableList<std::filesystem::path>(m, "FileSystemPath");
+
             py::class_<DrivesModel, std::shared_ptr<DrivesModel> >(m, "DrivesModel")
                 .def(
                     py::init(&DrivesModel::create),

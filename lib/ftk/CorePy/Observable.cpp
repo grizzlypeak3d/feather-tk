@@ -27,6 +27,7 @@ namespace ftk
             observable<double>(m, "Double");
             observable<bool>(m, "Bool");
             observable<std::string>(m, "String");
+            observable<size_t>(m, "SizeT");
             observable<RangeI>(m, "RangeI");
             observable<RangeF>(m, "RangeF");
             observable<RangeD>(m, "RangeD");
