@@ -362,6 +362,13 @@ namespace ftk
             const std::function<void(const std::vector<Path>&)>&,
             const FileBrowserOpenOptions& = FileBrowserOpenOptions());
 
+        //! Get whether the native file dialog can be used.
+        //!
+        //! It is not built everywhere: it means linking to the desktop's own
+        //! file dialog, which is not wanted on every platform. Where it is
+        //! not built, setNativeFileDialog() is remembered but has no effect.
+        FTK_API bool isNativeFileDialogAvailable() const;
+
         //! Get whether the native file dialog is used.
         FTK_API bool isNativeFileDialog() const;
 

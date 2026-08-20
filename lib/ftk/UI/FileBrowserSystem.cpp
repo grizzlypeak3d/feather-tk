@@ -361,6 +361,15 @@ namespace ftk
         _p->floating = value;
     }
 
+    bool FileBrowserSystem::isNativeFileDialogAvailable() const
+    {
+#if defined(FTK_NFD)
+        return true;
+#else  // FTK_NFD
+        return false;
+#endif  // FTK_NFD
+    }
+
     bool FileBrowserSystem::isNativeFileDialog() const
     {
         return _p->native;
