@@ -291,9 +291,13 @@ namespace ftk
             uint8_t* data = out->getData();
             for (uint16_t y = 0; y < p.info.size.h; ++y, data += p.scanlineSize)
             {
+                // A truncated file used to stop here and return the image
+                // anyway, with everything past this row never written to.
+                // A caller has no way to tell that from a picture.
                 if (!scanline(p.png, data))
                 {
-                    break;
+                    throw std::runtime_error(Format("Cannot read: \"{0}\": {1}").
+                        arg(_path.u8string()).arg(p.error.message));
                 }
             }
             end(p.png, p.pngInfoEnd);
