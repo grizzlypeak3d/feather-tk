@@ -49,6 +49,7 @@ namespace ftk
                     "samplesMax",
                     &DiagSystem::getSamplesMax,
                     &DiagSystem::setSamplesMax)
+                .def("observeSamplesMax", &DiagSystem::observeSamplesMax)
                 .def_property_readonly("samples", &DiagSystem::getSamples)
                 .def_property(
                     "tickTime",

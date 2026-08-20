@@ -62,6 +62,7 @@ namespace ftk
                     py::arg("context"))
                 .def_property_readonly("fonts", &FontSystem::getFonts)
                 .def_property_readonly("glyphCacheSize", &FontSystem::getGlyphCacheSize)
+                .def("observeGlyphCacheSize", &FontSystem::observeGlyphCacheSize)
                 .def_property_readonly("glyphCachePercentage", &FontSystem::getGlyphCachePercentage)
                 .def("getMetrics", &FontSystem::getMetrics, py::arg("fontInfo"))
                 .def(
