@@ -47,6 +47,7 @@ namespace ftk
                 py::arg("pad") = 0);
 
             py::class_<PathOptions>(m, "PathOptions")
+                .def(py::init())
                 .def_readwrite("seqNegative", &PathOptions::seqNegative)
                 .def_readwrite("seqMaxDigits", &PathOptions::seqMaxDigits)
                 .def(pybind11::self == pybind11::self)
@@ -138,6 +139,7 @@ namespace ftk
             FTK_ENUM_BIND(m, DirListSort);
 
             py::class_<DirListOptions>(m, "DirListOptions")
+                .def(py::init())
                 .def_readwrite("sort", &DirListOptions::sort)
                 .def_readwrite("sortReverse", &DirListOptions::sortReverse)
                 .def_readwrite("filter", &DirListOptions::filter)
