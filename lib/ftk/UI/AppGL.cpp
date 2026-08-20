@@ -1225,7 +1225,11 @@ namespace ftk
 
 #if defined(FTK_SDL2)
                 case SDL_KEYDOWN:
-                    if (auto window = p.activeWindow.lock())
+                    // To the window SDL tagged the event with, which is the
+                    // one holding the keyboard. Sending it where the pointer
+                    // is instead meant typing went to whatever the mouse was
+                    // over, and nowhere at all once it left the window.
+                    if (auto window = _getWindow(event.key.windowID))
                     {
                         window->_key(
                             fromSDLKey(event.key.keysym.sym),
@@ -1235,7 +1239,11 @@ namespace ftk
                     break;
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_KEY_DOWN:
-                    if (auto window = p.activeWindow.lock())
+                    // To the window SDL tagged the event with, which is the
+                    // one holding the keyboard. Sending it where the pointer
+                    // is instead meant typing went to whatever the mouse was
+                    // over, and nowhere at all once it left the window.
+                    if (auto window = _getWindow(event.key.windowID))
                     {
                         window->_key(
                             fromSDLKey(event.key.key),
@@ -1247,7 +1255,7 @@ namespace ftk
 
 #if defined(FTK_SDL2)
                 case SDL_KEYUP:
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = _getWindow(event.key.windowID))
                     {
                         window->_key(
                             fromSDLKey(event.key.keysym.sym),
@@ -1257,7 +1265,7 @@ namespace ftk
                     break;
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_KEY_UP:
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = _getWindow(event.key.windowID))
                     {
                         window->_key(
                             fromSDLKey(event.key.key),
@@ -1269,14 +1277,14 @@ namespace ftk
 
 #if defined(FTK_SDL2)
                 case SDL_TEXTINPUT:
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = _getWindow(event.text.windowID))
                     {
                         window->_text(event.text.text);
                     }
                     break;
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_TEXT_INPUT:
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = _getWindow(event.text.windowID))
                     {
                         window->_text(event.text.text);
                     }
