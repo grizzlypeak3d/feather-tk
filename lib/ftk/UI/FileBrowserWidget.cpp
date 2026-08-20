@@ -49,6 +49,7 @@ namespace ftk
         std::shared_ptr<PushButton> okButton;
         std::shared_ptr<PushButton> cancelButton;
         std::function<void(bool)> pinnedCallback;
+        bool focusTaken = false;
         std::shared_ptr<Splitter> splitter;
         std::shared_ptr<VerticalLayout> layout;
 
@@ -481,6 +482,44 @@ namespace ftk
         FTK_P();
         p.recentFilesModel = value;
         p.panelWidget->setRecentFilesModel(value);
+    }
+
+    void FileBrowserWidget::clipEvent(const Box2I& box, bool clipped)
+    {
+        IMouseWidget::clipEvent(box, clipped);
+        FTK_P();
+        // The list takes the key focus when the browser first has a place on
+        // screen, rather than when it is opened. A widget that has not been
+        // laid out yet counts as clipped, and being clipped releases the key
+        // focus, so anything taken before this is given straight back.
+        if (!clipped && !p.focusTaken)
+        {
+            p.focusTaken = true;
+            p.view->takeKeyFocus();
+        }
+    }
+
+    void FileBrowserWidget::keyPressEvent(KeyEvent& event)
+    {
+        FTK_P();
+        // Escape cancels, the same as the button, once nothing inside the
+        // browser is holding the key focus -- the list takes the first press
+        // to let go of it. Reached through the widgets under the pointer,
+        // the way the window sends a key that the focus did not take. The
+        // dialog does this for itself; a browser in a window of its own has
+        // nothing above it to do it.
+        if (!event.accept && Key::Escape == event.key && 0 == event.modifiers)
+        {
+            if (p.cancelCallback)
+            {
+                event.accept = true;
+                p.cancelCallback();
+            }
+        }
+        if (!event.accept)
+        {
+            IMouseWidget::keyPressEvent(event);
+        }
     }
 
     std::shared_ptr<FileBrowserView> FileBrowserWidget::getView() const

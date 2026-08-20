@@ -251,6 +251,8 @@ namespace ftk
 
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void clipEvent(const Box2I&, bool clipped) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
 
     private:
         void _accept(const std::vector<Path>&);

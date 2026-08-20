@@ -320,10 +320,6 @@ namespace ftk
                     [this] { _p->closing.reset(); });
             });
         p.window->show();
-
-        // The dialog opens with the file list focused; a window of its own
-        // has to be told.
-        p.widget->getView()->takeKeyFocus();
     }
 
     void FileBrowserSystem::close()

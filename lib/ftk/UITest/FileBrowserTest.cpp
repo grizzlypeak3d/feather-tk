@@ -494,6 +494,50 @@ namespace ftk
             FTK_CHECK(opened.empty());
             FTK_CHECK(1 == app->getWindows().size());
 
+            // Escape cancels, on the first press: the list holding the key
+            // focus is not a reason to spend one on leaving it.
+            opened.clear();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            browserWindow = app->getWindows().back();
+            widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+            // Laid out, so that the browser stops being clipped and takes
+            // the key focus for the list. Nothing is clipped or unclipped in
+            // a window that was never given a size.
+            browserWindow->layout(Size2I(1024, 720));
+            app->tick();
+            FTK_CHECK(widget->getView()->hasKeyFocus());
+
+            // Clicked in the list, which is where the pointer has to be for
+            // the second press below, and puts the focus back on the list.
+            browserWindow->click(V2I(700, 500));
+            app->tick();
+            FTK_CHECK(widget->getView()->hasKeyFocus());
+
+            // Escape is overloaded. The first press puts the list down and
+            // goes no further: closing here would leave no way to let go of
+            // the focus.
+            browserWindow->keyPress(Key::Escape);
+            app->tick();
+            FTK_CHECK(!widget->getView()->hasKeyFocus());
+            FTK_CHECK(2 == app->getWindows().size());
+
+            // The second closes. Nothing holds the focus now, so the window
+            // sends the key to the widgets under the pointer, and the
+            // browser is one of them.
+            browserWindow->keyPress(Key::Escape);
+            app->tick();
+            FTK_CHECK(opened.empty());
+            FTK_CHECK(1 == app->getWindows().size());
+
             // Closing one that is not open is not an error: an application
             // does this when its own window goes away.
             system->close();
