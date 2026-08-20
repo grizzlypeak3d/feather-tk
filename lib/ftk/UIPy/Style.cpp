@@ -29,6 +29,7 @@ namespace ftk
                 .value("SpacingLarge", SizeRole::SpacingLarge)
                 .value("SpacingTool", SizeRole::SpacingTool)
                 .value("SizeRole_Icon", SizeRole::Icon)
+                .value("Thumbnail", SizeRole::Thumbnail)
                 .value("Border", SizeRole::Border)
                 .value("KeyFocus", SizeRole::KeyFocus)
                 .value("LabelPad", SizeRole::LabelPad)
@@ -39,13 +40,16 @@ namespace ftk
                 .value("Swatch", SizeRole::Swatch)
                 .value("SwatchLarge", SizeRole::SwatchLarge)
                 .value("Shadow", SizeRole::Shadow)
-                .value("DragLength", SizeRole::DragLength);
+                .value("DragLength", SizeRole::DragLength)
+                .value("CornerRadius", SizeRole::CornerRadius);
             FTK_ENUM_BIND(m, SizeRole);
 
             py::enum_<ColorRole>(m, "ColorRole")
                 .value("_None", ColorRole::None)
                 .value("Window", ColorRole::Window)
                 .value("Base", ColorRole::Base)
+                .value("Well", ColorRole::Well)
+                .value("Header", ColorRole::Header)
                 .value("Button", ColorRole::Button)
                 .value("Text", ColorRole::Text)
                 .value("TextDisabled", ColorRole::TextDisabled)
