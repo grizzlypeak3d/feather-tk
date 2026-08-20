@@ -19,4 +19,8 @@ target_link_libraries(gfx ftkUI)
 
 set_target_properties(gfx PROPERTIES FOLDER examples)
 
-add_test(NAME gfx COMMAND gfx -exit -log)
+# The example opens a window, so it cannot run where there is no
+# OpenGL. It is still built, which is the compile check.
+if(NOT ftk_TESTS_NO_GL)
+    add_test(NAME gfx COMMAND gfx -exit -log)
+endif()

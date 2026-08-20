@@ -6,4 +6,8 @@ target_link_libraries(simple ftkUI)
 
 set_target_properties(simple PROPERTIES FOLDER examples)
 
-add_test(NAME simple COMMAND simple -exit -log)
+# The example opens a window, so it cannot run where there is no
+# OpenGL. It is still built, which is the compile check.
+if(NOT ftk_TESTS_NO_GL)
+    add_test(NAME simple COMMAND simple -exit -log)
+endif()

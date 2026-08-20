@@ -35,4 +35,8 @@ target_link_libraries(imageview ftkUI)
 
 set_target_properties(imageview PROPERTIES FOLDER examples)
 
-add_test(NAME imageview COMMAND imageview -exit -log)
+# The example opens a window, so it cannot run where there is no
+# OpenGL. It is still built, which is the compile check.
+if(NOT ftk_TESTS_NO_GL)
+    add_test(NAME imageview COMMAND imageview -exit -log)
+endif()

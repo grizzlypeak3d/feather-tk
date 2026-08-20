@@ -51,4 +51,8 @@ target_link_libraries(widgets ftkUI)
 
 set_target_properties(widgets PROPERTIES FOLDER examples)
 
-add_test(NAME widgets COMMAND widgets -exit -log)
+# The example opens a window, so it cannot run where there is no
+# OpenGL. It is still built, which is the compile check.
+if(NOT ftk_TESTS_NO_GL)
+    add_test(NAME widgets COMMAND widgets -exit -log)
+endif()

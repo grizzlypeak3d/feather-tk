@@ -33,4 +33,8 @@ target_link_libraries(textedit ftkUI)
 
 set_target_properties(textedit PROPERTIES FOLDER examples)
 
-add_test(NAME textedit COMMAND textedit -exit -log)
+# The example opens a window, so it cannot run where there is no
+# OpenGL. It is still built, which is the compile check.
+if(NOT ftk_TESTS_NO_GL)
+    add_test(NAME textedit COMMAND textedit -exit -log)
+endif()
