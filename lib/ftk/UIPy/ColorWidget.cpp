@@ -17,12 +17,12 @@ namespace ftk
     {
         void colorWidget(py::module_& m)
         {
-            py::class_<ColorWidget, IWidget, std::shared_ptr<ColorWidget> >(m, "ColorWidget")
+            py::class_<ColorWidget, IContainer, std::shared_ptr<ColorWidget> >(m, "ColorWidget")
                 .def(
                     py::init(&ColorWidget::create),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
-                .def_property("color", &ColorWidget::getColor, &ColorWidget::setColor)
+                .def_property("color", &ColorWidget::getColor, &ColorWidget::setColor, py::return_value_policy::copy)
                 .def("setCallback", &ColorWidget::setCallback)
                 .def("setPressedCallback", &ColorWidget::setPressedCallback);
         }

@@ -40,7 +40,7 @@ namespace ftk
                     py::arg("context"),
                     py::arg("orientation"),
                     py::arg("parent") = nullptr)
-                .def_property("margins", &RowLayout::getMargins, &RowLayout::setMargins)
+                .def_property("margins", &RowLayout::getMargins, &RowLayout::setMargins, py::return_value_policy::copy)
                 .def_property("marginRole", &RowLayout::getMarginRole, &RowLayout::setMarginRole)
                 .def_property("spacingRole", &RowLayout::getSpacingRole, &RowLayout::setSpacingRole)
                 .def("addSpacer", py::overload_cast<Stretch>(&RowLayout::addSpacer), py::arg("stretch"))

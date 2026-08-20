@@ -17,7 +17,7 @@ namespace ftk
     {
         void tabBar(py::module_& m)
         {
-            py::class_<TabBar, IWidget, std::shared_ptr<TabBar> >(m, "TabBar")
+            py::class_<TabBar, IContainer, std::shared_ptr<TabBar> >(m, "TabBar")
                 .def(
                     py::init(&TabBar::create),
                     py::arg("context"),

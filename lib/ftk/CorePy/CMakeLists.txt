@@ -12,13 +12,19 @@ set(SOURCE
     Color.cpp
     Command.cpp
     Context.cpp
+    DiagSystem.cpp
+    FileLogSystem.cpp
     FontSystem.cpp
     IApp.cpp
     IRender.cpp
     ISystem.cpp
     Image.cpp
     LogSystem.cpp
+    Math.cpp
+    Matrix.cpp
     Memory.cpp
+    Mesh.cpp
+    Noise.cpp
     OS.cpp
     Observable.cpp
     ObservableList.cpp
@@ -26,10 +32,13 @@ set(SOURCE
     Path.cpp
     Random.cpp
     Range.cpp
+    RenderOptions.cpp
     Size.cpp
     String.cpp
+    Time.cpp
     Timer.cpp
-    Vector.cpp)
+    Vector.cpp
+    Version.cpp)
 
 add_library(ftkCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 

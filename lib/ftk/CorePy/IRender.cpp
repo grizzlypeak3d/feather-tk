@@ -17,14 +17,6 @@ namespace ftk
     {
         void iRender(py::module_& m)
         {
-            py::class_<RenderOptions>(m, "RenderOptions")
-                .def_readwrite("clear", &RenderOptions::clear)
-                .def_readwrite("clearColor", &RenderOptions::clearColor)
-                .def_readwrite("textureCacheByteCount", &RenderOptions::textureCacheByteCount)
-                .def_readwrite("log", &RenderOptions::log)
-                .def(py::self == py::self)
-                .def(py::self != py::self);
-
             py::class_<IRender, std::shared_ptr<IRender> >(m, "IRender")
                 .def(
                     "begin",

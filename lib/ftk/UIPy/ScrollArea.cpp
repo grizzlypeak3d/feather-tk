@@ -32,9 +32,9 @@ namespace ftk
                     py::arg("type") = ScrollType::Both,
                     py::arg("parent") = nullptr)
                 .def_property("scrollType", &ScrollArea::getScrollType, &ScrollArea::setScrollType)
-                .def_property_readonly("scrollSize", &ScrollArea::getScrollSize)
+                .def_property_readonly("scrollSize", &ScrollArea::getScrollSize, py::return_value_policy::copy)
                 .def("setScrollSizeCallback", &ScrollArea::setScrollSizeCallback)
-                .def_property("scrollPos", &ScrollArea::getScrollPos, &ScrollArea::setScrollPos)
+                .def_property("scrollPos", &ScrollArea::getScrollPos, &ScrollArea::setScrollPos, py::return_value_policy::copy)
                 .def("setScrollPosCallback", &ScrollArea::setScrollPosCallback)
                 .def("scrollTo", &ScrollArea::scrollTo)
                 .def_property("areaResizable", &ScrollArea::isAreaResizable, &ScrollArea::setAreaResizable)

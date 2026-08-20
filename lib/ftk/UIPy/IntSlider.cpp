@@ -21,7 +21,7 @@ namespace ftk
                 .def_property("value", &IIntSlider::getValue, &IIntSlider::setValue)
                 .def("setCallback", &IIntSlider::setCallback)
                 .def("setPressedCallback", &IIntSlider::setPressedCallback)
-                .def_property("range", &IIntSlider::getRange, py::overload_cast<const RangeI&>(&IIntSlider::setRange))
+                .def_property("range", &IIntSlider::getRange, py::overload_cast<const RangeI&>(&IIntSlider::setRange), py::return_value_policy::copy)
                 .def("setRange", py::overload_cast<int, int>(&IIntSlider::setRange))
                 .def_property("step", &IIntSlider::getStep, &IIntSlider::setStep)
                 .def_property("largeStep", &IIntSlider::getLargeStep, &IIntSlider::setLargeStep)

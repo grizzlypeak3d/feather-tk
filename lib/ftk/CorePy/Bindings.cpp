@@ -25,20 +25,29 @@ namespace ftk
             color(m);
             command(m);
             context(m);
+            diagSystem(m);
+            fileLogSystem(m);
             fontSystem(m);
             iApp(m);
             iRender(m);
             image(m);
             logSystem(m);
+            math(m);
+            matrix(m);
             memory(m);
+            mesh(m);
+            noise(m);
             os(m);
             path(m);
             random(m);
             range(m);
+            renderOptions(m);
             size(m);
             string(m);
+            time(m);
             timer(m);
             vector(m);
+            version(m);
         }
     }
 }

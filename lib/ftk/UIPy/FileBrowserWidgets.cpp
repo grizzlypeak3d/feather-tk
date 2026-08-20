@@ -20,7 +20,7 @@ namespace ftk
     {
         void fileBrowserWidgets(py::module_& m)
         {
-            py::class_<FileBrowserPath, IWidget, std::shared_ptr<FileBrowserPath> >(m, "FileBrowserPath")
+            py::class_<FileBrowserPath, IContainer, std::shared_ptr<FileBrowserPath> >(m, "FileBrowserPath")
                 .def(
                     py::init(&FileBrowserPath::create),
                     py::arg("context"),
@@ -36,21 +36,21 @@ namespace ftk
                     &FileBrowserPath::setEditable)
                 .def("setEditableCallback", &FileBrowserPath::setEditableCallback);
 
-            py::class_<FileBrowserDrives, IWidget, std::shared_ptr<FileBrowserDrives> >(m, "FileBrowserDrives")
+            py::class_<FileBrowserDrives, IContainer, std::shared_ptr<FileBrowserDrives> >(m, "FileBrowserDrives")
                 .def(
                     py::init(&FileBrowserDrives::create),
                     py::arg("context"),
                     py::arg("model"),
                     py::arg("parent") = nullptr);
 
-            py::class_<FileBrowserShortcuts, IWidget, std::shared_ptr<FileBrowserShortcuts> >(m, "FileBrowserShortcuts")
+            py::class_<FileBrowserShortcuts, IContainer, std::shared_ptr<FileBrowserShortcuts> >(m, "FileBrowserShortcuts")
                 .def(
                     py::init(&FileBrowserShortcuts::create),
                     py::arg("context"),
                     py::arg("model"),
                     py::arg("parent") = nullptr);
 
-            py::class_<FileBrowserRecent, IWidget, std::shared_ptr<FileBrowserRecent> >(m, "FileBrowserRecent")
+            py::class_<FileBrowserRecent, IContainer, std::shared_ptr<FileBrowserRecent> >(m, "FileBrowserRecent")
                 .def(
                     py::init(&FileBrowserRecent::create),
                     py::arg("context"),
@@ -61,7 +61,7 @@ namespace ftk
                     &FileBrowserRecent::getRecentFilesModel,
                     &FileBrowserRecent::setRecentFilesModel);
 
-            py::class_<FileBrowserSettings, IWidget, std::shared_ptr<FileBrowserSettings> >(m, "FileBrowserSettings")
+            py::class_<FileBrowserSettings, IContainer, std::shared_ptr<FileBrowserSettings> >(m, "FileBrowserSettings")
                 .def(
                     py::init(&FileBrowserSettings::create),
                     py::arg("context"),

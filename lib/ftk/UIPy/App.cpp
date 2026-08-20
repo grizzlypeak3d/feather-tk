@@ -82,7 +82,7 @@ namespace ftk
                 .def_property_readonly("style", &App::getStyle)
                 .def_property("colorStyle", &App::getColorStyle, &App::setColorStyle)
                 .def_property_readonly("observeColorStyle", &App::observeColorStyle)
-                .def_property("customColorRoles", &App::getCustomColorRoles, &App::setCustomColorRoles)
+                .def_property("customColorRoles", &App::getCustomColorRoles, &App::setCustomColorRoles, py::return_value_policy::copy)
                 .def_property_readonly("observeCustomColorRoles", &App::observeCustomColorRoles)
                 .def_property_readonly("defaultDisplayScale", &App::getDefaultDisplayScale)
                 .def_property("displayScale", &App::getDisplayScale, &App::setDisplayScale)

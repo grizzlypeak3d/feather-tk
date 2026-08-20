@@ -16,7 +16,7 @@ namespace ftk
     {
         void formLayout(py::module_& m)
         {
-            py::class_<FormLayout, IWidget, std::shared_ptr<FormLayout> >(m, "FormLayout")
+            py::class_<FormLayout, IContainer, std::shared_ptr<FormLayout> >(m, "FormLayout")
                 .def(
                     py::init(&FormLayout::create),
                     py::arg("context"),

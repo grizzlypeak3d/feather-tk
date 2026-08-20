@@ -28,6 +28,7 @@ namespace ftk
             event(m);
             widgetOptions(m);
             iWidget(m);
+            iContainer(m);
             iWindow(m);
             iMouseWidget(m);
             iPopup(m);
@@ -39,6 +40,7 @@ namespace ftk
             window(m);
 
             action(m);
+            actionGroup(m);
             app(m);
             bellows(m);
             buttonGroup(m);
@@ -49,33 +51,46 @@ namespace ftk
             colorWidget(m);
             comboBox(m);
             confirmDialog(m);
+            diagWidget(m);
             dialogSystem(m);
             divider(m);
             documentModel(m);
             doubleModel(m);
             doubleEdit(m);
             doubleEditSlider(m);
+            doubleEditShuttle(m);
             doubleSlider(m);
+            drivesModel(m);
             fileBrowser(m);
             fileBrowserWidgets(m);
             fileEdit(m);
             floatModel(m);
             floatEdit(m);
             floatEditSlider(m);
+            floatEditShuttle(m);
             floatSlider(m);
+            flowLayout(m);
             formLayout(m);
+            graphWidget(m);
             gridLayout(m);
             groupBox(m);
             icon(m);
             iconSystem(m);
             imageWidget(m);
+            incButtons(m);
             intModel(m);
             intEdit(m);
             intEditSlider(m);
+            intEditShuttle(m);
             intSlider(m);
+            // After intSlider() and floatSlider(): the color sliders
+            // derive from IIntSlider and IFloatSlider, registered there.
+            colorSlider(m);
             label(m);
+            levelsSlider(m);
             lineEditModel(m);
             lineEdit(m);
+            listItemsWidget(m);
             listWidget(m);
             mainWindow(m);
             mdiCanvas(m);
@@ -85,25 +100,31 @@ namespace ftk
             menuBar(m);
             messageDialog(m);
             overlayLayout(m);
+            pieChart(m);
             progressDialog(m);
             pushButton(m);
             radioButton(m);
             recentFilesModel(m);
             rowLayout(m);
+            screenshotTag(m);
             scrollArea(m);
             scrollBar(m);
             scrollWidget(m);
             searchBox(m);
+            shuttleWidget(m);
             spacer(m);
             splitter(m);
+            splitter2D(m);
             stackLayout(m);
             svgWidget(m);
+            sysLogModel(m);
             tabBar(m);
             tabWidget(m);
             textEditModel(m);
             textEdit(m);
             toolBar(m);
             toolButton(m);
+            tooltip(m);
         }
     }
 }

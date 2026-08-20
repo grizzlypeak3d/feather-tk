@@ -4,6 +4,7 @@
 #include <ftk/CorePy/Bindings.h>
 
 #include <ftk/Core/Observable.h>
+#include <ftk/Core/Range.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
@@ -26,6 +27,9 @@ namespace ftk
             observable<double>(m, "Double");
             observable<bool>(m, "Bool");
             observable<std::string>(m, "String");
+            observable<RangeI>(m, "RangeI");
+            observable<RangeF>(m, "RangeF");
+            observable<RangeD>(m, "RangeD");
         }
     }
 }

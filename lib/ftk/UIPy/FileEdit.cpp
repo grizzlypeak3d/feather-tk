@@ -20,7 +20,7 @@ namespace ftk
     {
         void fileEdit(py::module_& m)
         {
-            py::class_<FileEdit, IWidget, std::shared_ptr<FileEdit> >(m, "FileEdit")
+            py::class_<FileEdit, IContainer, std::shared_ptr<FileEdit> >(m, "FileEdit")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,

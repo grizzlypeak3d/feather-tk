@@ -50,7 +50,7 @@ namespace ftk
                 .def_property("readOnly", &TextEdit::isReadOnly, &TextEdit::setReadOnly)
                 .def("selectAll", &TextEdit::selectAll)
                 .def("clearSelection", &TextEdit::clearSelection)
-                .def_property("options", &TextEdit::getOptions, &TextEdit::setOptions)
+                .def_property("options", &TextEdit::getOptions, &TextEdit::setOptions, py::return_value_policy::copy)
                 .def("observeOptions", &TextEdit::observeOptions)
                 .def_property("sizeHintRole",
                     &TextEdit::getSizeHintRole,

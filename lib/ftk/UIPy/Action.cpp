@@ -106,7 +106,7 @@ namespace ftk
                 .def_property_readonly("observeIcon", &Action::observeIcon)
                 .def_property("checkedIcon", &Action::getCheckedIcon, &Action::setCheckedIcon)
                 .def_property_readonly("observeCheckedIcon", &Action::observeCheckedIcon)
-                .def_property("shortcuts", &Action::getShortcuts, &Action::setShortcuts)
+                .def_property("shortcuts", &Action::getShortcuts, &Action::setShortcuts, py::return_value_policy::copy)
                 .def("doCallback", &Action::doCallback)
                 .def_property("checkType", &Action::getCheckType, &Action::setCheckType)
                 .def_property_readonly("checkable", &Action::isCheckable)

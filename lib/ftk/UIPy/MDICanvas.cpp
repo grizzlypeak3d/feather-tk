@@ -22,8 +22,8 @@ namespace ftk
                     py::init(&MDICanvas::create),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
-                .def_property("canvasSize", &MDICanvas::getCanvasSize, &MDICanvas::setCanvasSize)
-                .def_property("gridSize", &MDICanvas::getGridSize, &MDICanvas::setGridSize)
+                .def_property("canvasSize", &MDICanvas::getCanvasSize, &MDICanvas::setCanvasSize, py::return_value_policy::copy)
+                .def_property("gridSize", &MDICanvas::getGridSize, &MDICanvas::setGridSize, py::return_value_policy::copy)
                 .def("addWidget", &MDICanvas::addWidget)
                 .def("setChildGeometryCallback", &MDICanvas::setChildGeometryCallback);
         }

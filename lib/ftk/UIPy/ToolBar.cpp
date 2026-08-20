@@ -19,7 +19,7 @@ namespace ftk
     {
         void toolBar(py::module_& m)
         {
-            py::class_<ToolBar, IWidget, std::shared_ptr<ToolBar> >(m, "ToolBar")
+            py::class_<ToolBar, IContainer, std::shared_ptr<ToolBar> >(m, "ToolBar")
                 .def(
                     py::init(&ToolBar::create),
                     py::arg("context"),

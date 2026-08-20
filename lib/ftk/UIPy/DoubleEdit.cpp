@@ -17,7 +17,7 @@ namespace ftk
     {
         void doubleEdit(py::module_& m)
         {
-            py::class_<DoubleEdit, IWidget, std::shared_ptr<DoubleEdit> >(m, "DoubleEdit")
+            py::class_<DoubleEdit, IContainer, std::shared_ptr<DoubleEdit> >(m, "DoubleEdit")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,
@@ -34,7 +34,7 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def_property("value", &DoubleEdit::getValue, &DoubleEdit::setValue)
                 .def("setCallback", &DoubleEdit::setCallback)
-                .def_property("range", &DoubleEdit::getRange, py::overload_cast<const RangeD&>(&DoubleEdit::setRange))
+                .def_property("range", &DoubleEdit::getRange, py::overload_cast<const RangeD&>(&DoubleEdit::setRange), py::return_value_policy::copy)
                 .def("setRange", py::overload_cast<double, double>(&DoubleEdit::setRange))
                 .def_property("step", &DoubleEdit::getStep, &DoubleEdit::setStep)
                 .def_property("largeStep", &DoubleEdit::getLargeStep, &DoubleEdit::setLargeStep)

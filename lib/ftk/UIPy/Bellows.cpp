@@ -17,7 +17,7 @@ namespace ftk
     {
         void bellows(py::module_& m)
         {
-            py::class_<Bellows, IWidget, std::shared_ptr<Bellows> >(m, "Bellows")
+            py::class_<Bellows, IContainer, std::shared_ptr<Bellows> >(m, "Bellows")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,

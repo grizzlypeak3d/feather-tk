@@ -63,7 +63,8 @@ namespace ftk
                 .def_property(
                     "options",
                     &FileBrowserModel::getOptions,
-                    &FileBrowserModel::setOptions)
+                    &FileBrowserModel::setOptions,
+                    py::return_value_policy::copy)
                 .def_property_readonly("observeOptions", &FileBrowserModel::observeOptions)
                 .def_property(
                     "exts",

@@ -16,7 +16,7 @@ namespace ftk
     {
         void menuBar(py::module_& m)
         {
-            py::class_<MenuBar, IWidget, std::shared_ptr<MenuBar> >(m, "MenuBar")
+            py::class_<MenuBar, IContainer, std::shared_ptr<MenuBar> >(m, "MenuBar")
                 .def(
                     py::init(&MenuBar::create),
                     py::arg("context"),

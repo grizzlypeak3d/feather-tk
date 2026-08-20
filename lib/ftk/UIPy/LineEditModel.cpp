@@ -42,7 +42,7 @@ namespace ftk
                 .def("observeReadOnly", &LineEditModel::observeReadOnly)
                 .def_property("cursor", &LineEditModel::getCursor, &LineEditModel::setCursor)
                 .def("observeCursor", &LineEditModel::observeCursor)
-                .def_property("selection", &LineEditModel::getSelection, &LineEditModel::setSelection)
+                .def_property("selection", &LineEditModel::getSelection, &LineEditModel::setSelection, py::return_value_policy::copy)
                 .def("observeSelection", &LineEditModel::observeSelection)
                 .def("selectAll", &LineEditModel::selectAll)
                 .def("clearSelection", &LineEditModel::clearSelection)

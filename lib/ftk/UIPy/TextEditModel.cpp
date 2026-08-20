@@ -58,9 +58,9 @@ namespace ftk
                 .def("clearText", &TextEditModel::clearText)
                 .def_property("readOnly", &TextEditModel::isReadOnly, &TextEditModel::setReadOnly)
                 .def("observeReadOnly", &TextEditModel::observeReadOnly)
-                .def_property("cursor", &TextEditModel::getCursor, &TextEditModel::setCursor)
+                .def_property("cursor", &TextEditModel::getCursor, &TextEditModel::setCursor, py::return_value_policy::copy)
                 .def("observeCursor", &TextEditModel::observeCursor)
-                .def_property("selection", &TextEditModel::getSelection, &TextEditModel::setSelection)
+                .def_property("selection", &TextEditModel::getSelection, &TextEditModel::setSelection, py::return_value_policy::copy)
                 .def("observeSelection", &TextEditModel::observeSelection)
                 .def("selectAll", &TextEditModel::selectAll)
                 .def("clearSelection", &TextEditModel::clearSelection)
@@ -71,7 +71,7 @@ namespace ftk
                 .def("paste", &TextEditModel::paste)
                 .def("input", &TextEditModel::input, py::arg("text"))
                 .def("key", &TextEditModel::key, py::arg("key"), py::arg("modifiers") = 0)
-                .def_property("options", &TextEditModel::getOptions, &TextEditModel::setOptions)
+                .def_property("options", &TextEditModel::getOptions, &TextEditModel::setOptions, py::return_value_policy::copy)
                 .def("observeOptions", &TextEditModel::observeOptions)
                 .def("setPageRows", &TextEditModel::setPageRows, py::arg("rows"));
         }

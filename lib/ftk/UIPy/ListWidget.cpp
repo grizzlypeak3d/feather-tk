@@ -17,18 +17,7 @@ namespace ftk
     {
         void listWidget(py::module_& m)
         {
-            py::class_<ListItem>(m, "ListItem")
-                .def(py::init<>())
-                .def(
-                    py::init<const std::string&, const std::string&>(),
-                    py::arg("text"),
-                    py::arg("tooltip") = std::string())
-                .def_readwrite("text", &ListItem::text)
-                .def_readwrite("tooltip", &ListItem::tooltip)
-                .def("__eq__", &ListItem::operator==)
-                .def("__ne__", &ListItem::operator!=);
-
-            py::class_<ListWidget, IWidget, std::shared_ptr<ListWidget> >(m, "ListWidget")
+            py::class_<ListWidget, IContainer, std::shared_ptr<ListWidget> >(m, "ListWidget")
                 .def(
                     py::init(&ListWidget::create),
                     py::arg("context"),

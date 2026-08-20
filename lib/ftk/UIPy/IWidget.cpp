@@ -128,7 +128,7 @@ namespace ftk
                     py::arg("horizontal"),
                     py::arg("vertical"))
                 .def("setGeometry", &IWidget::setGeometry)
-                .def_property_readonly("geometry", &IWidget::getGeometry)
+                .def_property_readonly("geometry", &IWidget::getGeometry, py::return_value_policy::copy)
                 .def("setPos", &IWidget::setPos)
                 .def("setSize", &IWidget::setSize)
 

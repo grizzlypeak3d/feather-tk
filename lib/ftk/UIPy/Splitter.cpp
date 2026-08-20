@@ -6,6 +6,7 @@
 #include <ftk/UI/Splitter.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
@@ -22,8 +23,10 @@ namespace ftk
                     py::arg("context"),
                     py::arg("orientation"),
                     py::arg("parent") = nullptr)
+                .def("setWidgets", &Splitter::setWidgets)
                 .def_property("split", &Splitter::getSplit, &Splitter::setSplit)
-                .def_property("spacingRole", &Splitter::hasBorder, &Splitter::setBorder);
+                .def("setSplitCallback", &Splitter::setSplitCallback)
+                .def_property("border", &Splitter::hasBorder, &Splitter::setBorder);
         }
     }
 }

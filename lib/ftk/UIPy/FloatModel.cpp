@@ -5,8 +5,6 @@
 
 #include <ftk/UI/FloatModel.h>
 
-#include <ftk/Core/Context.h>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -19,7 +17,25 @@ namespace ftk
         void floatModel(py::module_& m)
         {
             py::class_<FloatModel, std::shared_ptr<FloatModel> >(m, "FloatModel")
-                .def(py::init(&FloatModel::create));
+                .def(py::init(&FloatModel::create))
+                .def_property("value", &FloatModel::getValue, &FloatModel::setValue)
+                .def("observeValue", &FloatModel::observeValue)
+                .def_property("range", &FloatModel::getRange, &FloatModel::setRange, py::return_value_policy::copy)
+                .def("observeRange", &FloatModel::observeRange)
+                .def_property("step", &FloatModel::getStep, &FloatModel::setStep)
+                .def_property("largeStep", &FloatModel::getLargeStep, &FloatModel::setLargeStep)
+                .def("stepInc", py::overload_cast<>(&FloatModel::step))
+                .def("stepDec", &FloatModel::stepDec)
+                .def("largeStepInc", py::overload_cast<>(&FloatModel::largeStep))
+                .def("largeStepDec", &FloatModel::largeStepDec)
+                .def_property_readonly("hasDefault", &FloatModel::hasDefault)
+                .def("observeHasDefault", &FloatModel::observeHasDefault)
+                .def_property("defaultValue",
+                    &FloatModel::getDefault,
+                    py::overload_cast<float>(&FloatModel::setDefault))
+                .def("observeDefault", &FloatModel::observeDefault)
+                .def("setDefault", py::overload_cast<>(&FloatModel::setDefault))
+                .def("clearDefault", &FloatModel::clearDefault);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace ftk
     {
         void intEditSlider(py::module_& m)
         {
-            py::class_<IntEditSlider, IWidget, std::shared_ptr<IntEditSlider> >(m, "IntEditSlider")
+            py::class_<IntEditSlider, IContainer, std::shared_ptr<IntEditSlider> >(m, "IntEditSlider")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,
@@ -34,7 +34,7 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def_property("value", &IntEditSlider::getValue, &IntEditSlider::setValue)
                 .def("setCallback", &IntEditSlider::setCallback)
-                .def_property("range", &IntEditSlider::getRange, py::overload_cast<const RangeI&>(&IntEditSlider::setRange))
+                .def_property("range", &IntEditSlider::getRange, py::overload_cast<const RangeI&>(&IntEditSlider::setRange), py::return_value_policy::copy)
                 .def("setRange", py::overload_cast<int, int>(&IntEditSlider::setRange))
                 .def_property("step", &IntEditSlider::getStep, &IntEditSlider::setStep)
                 .def_property("largeStep", &IntEditSlider::getLargeStep, &IntEditSlider::setLargeStep)

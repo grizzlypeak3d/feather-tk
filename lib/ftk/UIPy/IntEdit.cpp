@@ -17,7 +17,7 @@ namespace ftk
     {
         void intEdit(py::module_& m)
         {
-            py::class_<IntEdit, IWidget, std::shared_ptr<IntEdit> >(m, "IntEdit")
+            py::class_<IntEdit, IContainer, std::shared_ptr<IntEdit> >(m, "IntEdit")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<Context>&,
@@ -34,7 +34,7 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def_property("value", &IntEdit::getValue, &IntEdit::setValue)
                 .def("setCallback", &IntEdit::setCallback)
-                .def_property("range", &IntEdit::getRange, py::overload_cast<const RangeI&>(&IntEdit::setRange))
+                .def_property("range", &IntEdit::getRange, py::overload_cast<const RangeI&>(&IntEdit::setRange), py::return_value_policy::copy)
                 .def("setRange", py::overload_cast<int, int>(&IntEdit::setRange))
                 .def_property("step", &IntEdit::getStep, &IntEdit::setStep)
                 .def_property("largeStep", &IntEdit::getLargeStep, &IntEdit::setLargeStep)

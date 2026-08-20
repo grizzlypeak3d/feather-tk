@@ -18,7 +18,9 @@ namespace ftk
                     pybind11::arg("callback"),
                     pybind11::arg("action") = ObserverAction::Trigger);
             name = "IObservable" + type;
-            pybind11::class_<IObservable<T>, std::shared_ptr<IObservable<T> > >(m, name.c_str());
+            pybind11::class_<IObservable<T>, std::shared_ptr<IObservable<T> > >(m, name.c_str())
+                .def("get", &IObservable<T>::get)
+                .def("getObserversCount", &IObservable<T>::getObserversCount);
             name = "Observable" + type;
             pybind11::class_<Observable<T>, IObservable<T>, std::shared_ptr<Observable<T> > >(m, name.c_str())
                 .def(pybind11::init(pybind11::overload_cast<const T&>(&Observable<T>::create)))

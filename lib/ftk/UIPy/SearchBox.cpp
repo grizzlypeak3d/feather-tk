@@ -17,7 +17,7 @@ namespace ftk
     {
         void searchBox(py::module_& m)
         {
-            py::class_<SearchBox, IWidget, std::shared_ptr<SearchBox> >(m, "SearchBox")
+            py::class_<SearchBox, IContainer, std::shared_ptr<SearchBox> >(m, "SearchBox")
                 .def(
                     py::init(&SearchBox::create),
                     py::arg("context"),

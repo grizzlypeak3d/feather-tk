@@ -103,14 +103,14 @@ namespace ftk
                 .def(py::init(py::overload_cast<const ImageInfo&>(&Image::create)))
                 .def(py::init(py::overload_cast<const Size2I&, ImageType>(&Image::create)))
                 .def(py::init(py::overload_cast<int, int, ImageType>(&Image::create)))
-                .def_property_readonly("info", &Image::getInfo)
-                .def_property_readonly("size", &Image::getSize)
+                .def_property_readonly("info", &Image::getInfo, py::return_value_policy::copy)
+                .def_property_readonly("size", &Image::getSize, py::return_value_policy::copy)
                 .def_property_readonly("width", &Image::getWidth)
                 .def_property_readonly("height", &Image::getHeight)
                 .def_property_readonly("aspect", &Image::getAspect)
                 .def_property_readonly("type", &Image::getType)
                 .def_property_readonly("valid", &Image::isValid)
-                .def_property("tags", &Image::getTags, &Image::setTags)
+                .def_property("tags", &Image::getTags, &Image::setTags, py::return_value_policy::copy)
                 .def_property_readonly("byteCount", &Image::getByteCount)
                 .def("zero", &Image::zero);
         }
