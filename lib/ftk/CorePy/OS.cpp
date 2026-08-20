@@ -15,6 +15,11 @@ namespace ftk
     {
         void os(py::module_& m)
         {
+            m.def(
+                "openURL",
+                &openURL,
+                py::arg("url"),
+                "Open a URL in an external application.");
             py::class_<SysInfo>(m, "SystInfo")
                 .def_readwrite("name", &SysInfo::name)
                 .def_readwrite("cores", &SysInfo::cores)
