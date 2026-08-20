@@ -9,6 +9,13 @@ include("${CMAKE_CURRENT_LIST_DIR}/local.cmake" OPTIONAL)
 # fails only here.
 set(ftk_PYTHON ON CACHE BOOL "Build support for Python")
 
+# The macOS and Windows runners have no working OpenGL, so the tests that make
+# a context are left out there rather than the suite being skipped. Linux runs
+# everything under xvfb.
+if(APPLE OR WIN32)
+    set(ftk_TESTS_NO_GL ON CACHE BOOL "")
+endif()
+
 # The examples are built on Linux only, where they are cheapest.
 set(ftk_EXAMPLES OFF CACHE BOOL "Build examples")
 

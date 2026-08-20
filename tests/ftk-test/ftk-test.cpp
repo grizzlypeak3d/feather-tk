@@ -122,6 +122,7 @@ namespace ftk
         struct App::Private
         {
             std::shared_ptr<CmdLineListArg<std::string> > testNames;
+            std::shared_ptr<CmdLineFlag> noGL;
             std::vector<std::shared_ptr<test::ITest> > tests;
             std::chrono::steady_clock::time_point startTime;
         };
@@ -135,14 +136,27 @@ namespace ftk
                 "Test",
                 "Names of the tests to run.",
                 true);
+            p.noGL = CmdLineFlag::create(
+                { "-noGL" },
+                "Run only the tests that do not need OpenGL.");
             IApp::_init(
                 context,
                 argv,
                 "ftk-test",
                 "Test application",
-                { p.testNames });
+                { p.testNames },
+                { p.noGL });
             p.startTime = std::chrono::steady_clock::now();
-            uiInit(context);
+
+            // The UI initialization makes an OpenGL context, so a binary that
+            // always called it needed OpenGL to start whatever was being run
+            // -- which is why the platforms whose runners have no working
+            // OpenGL run none of the suite. The core tests need none of it.
+            const bool gl = !p.noGL->found();
+            if (gl)
+            {
+                uiInit(context);
+            }
 
             p.tests.push_back(core_test::AppTest::create(context));
             p.tests.push_back(core_test::BoxPackTest::create(context));
@@ -178,71 +192,77 @@ namespace ftk
             p.tests.push_back(core_test::VectorTest::create(context));
 
 #if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
-            p.tests.push_back(gl_test::MeshTest::create(context));
-            p.tests.push_back(gl_test::OffscreenBufferTest::create(context));
-            p.tests.push_back(gl_test::TextureAtlasTest::create(context));
-            p.tests.push_back(gl_test::TextureTest::create(context));
-            p.tests.push_back(gl_test::RenderTest::create(context));
-            p.tests.push_back(gl_test::ShaderTest::create(context));
-            p.tests.push_back(gl_test::UtilTest::create(context));
-            p.tests.push_back(gl_test::WindowTest::create(context));
+            if (gl)
+            {
+                p.tests.push_back(gl_test::MeshTest::create(context));
+                p.tests.push_back(gl_test::OffscreenBufferTest::create(context));
+                p.tests.push_back(gl_test::TextureAtlasTest::create(context));
+                p.tests.push_back(gl_test::TextureTest::create(context));
+                p.tests.push_back(gl_test::RenderTest::create(context));
+                p.tests.push_back(gl_test::ShaderTest::create(context));
+                p.tests.push_back(gl_test::UtilTest::create(context));
+                p.tests.push_back(gl_test::WindowTest::create(context));
+            }
 #endif // FTK_API_GL_4_1
 
-            p.tests.push_back(ui_test::ActionTest::create(context));
-            p.tests.push_back(ui_test::AppTest::create(context));
-            p.tests.push_back(ui_test::BellowsTest::create(context));
-            p.tests.push_back(ui_test::ButtonTest::create(context));
-            p.tests.push_back(ui_test::ButtonGroupTest::create(context));
-            p.tests.push_back(ui_test::ColorWidgetTest::create(context));
-            p.tests.push_back(ui_test::ComboBoxTest::create(context));
-            p.tests.push_back(ui_test::ConfirmDialogTest::create(context));
-            p.tests.push_back(ui_test::ContextMenuTest::create(context));
-            p.tests.push_back(ui_test::DoubleEditTest::create(context));
-            p.tests.push_back(ui_test::DoubleEditSliderTest::create(context));
-            p.tests.push_back(ui_test::DoubleSliderTest::create(context));
-            p.tests.push_back(ui_test::DoubleModelTest::create(context));
-            p.tests.push_back(ui_test::DragDropTest::create(context));
-            p.tests.push_back(ui_test::DrawUtilTest::create(context));
-            p.tests.push_back(ui_test::EventTest::create(context));
-            p.tests.push_back(ui_test::FileBrowserTest::create(context));
-            p.tests.push_back(ui_test::FileEditTest::create(context));
-            p.tests.push_back(ui_test::FloatEditTest::create(context));
-            p.tests.push_back(ui_test::FloatEditShuttleTest::create(context));
-            p.tests.push_back(ui_test::FloatEditSliderTest::create(context));
-            p.tests.push_back(ui_test::FloatSliderTest::create(context));
-            p.tests.push_back(ui_test::FloatModelTest::create(context));
-            p.tests.push_back(ui_test::GridLayoutTest::create(context));
-            p.tests.push_back(ui_test::GroupBoxTest::create(context));
-            p.tests.push_back(ui_test::IWidgetTest::create(context));
-            p.tests.push_back(ui_test::IconTest::create(context));
-            p.tests.push_back(ui_test::IntEditTest::create(context));
-            p.tests.push_back(ui_test::IntEditSliderTest::create(context));
-            p.tests.push_back(ui_test::IntSliderTest::create(context));
-            p.tests.push_back(ui_test::IntModelTest::create(context));
-            p.tests.push_back(ui_test::LabelTest::create(context));
-            p.tests.push_back(ui_test::LayoutUtilTest::create(context));
-            p.tests.push_back(ui_test::LineEditModelTest::create(context));
-            p.tests.push_back(ui_test::LineEditTest::create(context));
-            p.tests.push_back(ui_test::ListWidgetTest::create(context));
-            p.tests.push_back(ui_test::MDIWidgetTest::create(context));
-            p.tests.push_back(ui_test::MenuBarTest::create(context));
-            p.tests.push_back(ui_test::MessageDialogTest::create(context));
-            p.tests.push_back(ui_test::PieChartTest::create(context));
-            p.tests.push_back(ui_test::ProgressDialogTest::create(context));
-            p.tests.push_back(ui_test::RecentFilesModelTest::create(context));
-            p.tests.push_back(ui_test::RowLayoutTest::create(context));
-            p.tests.push_back(ui_test::ScrollAreaTest::create(context));
-            p.tests.push_back(ui_test::ScrollBarTest::create(context));
-            p.tests.push_back(ui_test::ScrollWidgetTest::create(context));
-            p.tests.push_back(ui_test::SearchBoxTest::create(context));
-            p.tests.push_back(ui_test::SplitterTest::create(context));
-            p.tests.push_back(ui_test::ActionGroupTest::create(context));
-            p.tests.push_back(ui_test::FlowLayoutTest::create(context));
-            p.tests.push_back(ui_test::StackLayoutTest::create(context));
-            p.tests.push_back(ui_test::StyleTest::create(context));
-            p.tests.push_back(ui_test::TabWidgetTest::create(context));
-            p.tests.push_back(ui_test::TextEditModelTest::create(context));
-            p.tests.push_back(ui_test::WidgetOptionsTest::create(context));
+            if (gl)
+            {
+                p.tests.push_back(ui_test::ActionTest::create(context));
+                p.tests.push_back(ui_test::AppTest::create(context));
+                p.tests.push_back(ui_test::BellowsTest::create(context));
+                p.tests.push_back(ui_test::ButtonTest::create(context));
+                p.tests.push_back(ui_test::ButtonGroupTest::create(context));
+                p.tests.push_back(ui_test::ColorWidgetTest::create(context));
+                p.tests.push_back(ui_test::ComboBoxTest::create(context));
+                p.tests.push_back(ui_test::ConfirmDialogTest::create(context));
+                p.tests.push_back(ui_test::ContextMenuTest::create(context));
+                p.tests.push_back(ui_test::DoubleEditTest::create(context));
+                p.tests.push_back(ui_test::DoubleEditSliderTest::create(context));
+                p.tests.push_back(ui_test::DoubleSliderTest::create(context));
+                p.tests.push_back(ui_test::DoubleModelTest::create(context));
+                p.tests.push_back(ui_test::DragDropTest::create(context));
+                p.tests.push_back(ui_test::DrawUtilTest::create(context));
+                p.tests.push_back(ui_test::EventTest::create(context));
+                p.tests.push_back(ui_test::FileBrowserTest::create(context));
+                p.tests.push_back(ui_test::FileEditTest::create(context));
+                p.tests.push_back(ui_test::FloatEditTest::create(context));
+                p.tests.push_back(ui_test::FloatEditShuttleTest::create(context));
+                p.tests.push_back(ui_test::FloatEditSliderTest::create(context));
+                p.tests.push_back(ui_test::FloatSliderTest::create(context));
+                p.tests.push_back(ui_test::FloatModelTest::create(context));
+                p.tests.push_back(ui_test::GridLayoutTest::create(context));
+                p.tests.push_back(ui_test::GroupBoxTest::create(context));
+                p.tests.push_back(ui_test::IWidgetTest::create(context));
+                p.tests.push_back(ui_test::IconTest::create(context));
+                p.tests.push_back(ui_test::IntEditTest::create(context));
+                p.tests.push_back(ui_test::IntEditSliderTest::create(context));
+                p.tests.push_back(ui_test::IntSliderTest::create(context));
+                p.tests.push_back(ui_test::IntModelTest::create(context));
+                p.tests.push_back(ui_test::LabelTest::create(context));
+                p.tests.push_back(ui_test::LayoutUtilTest::create(context));
+                p.tests.push_back(ui_test::LineEditModelTest::create(context));
+                p.tests.push_back(ui_test::LineEditTest::create(context));
+                p.tests.push_back(ui_test::ListWidgetTest::create(context));
+                p.tests.push_back(ui_test::MDIWidgetTest::create(context));
+                p.tests.push_back(ui_test::MenuBarTest::create(context));
+                p.tests.push_back(ui_test::MessageDialogTest::create(context));
+                p.tests.push_back(ui_test::PieChartTest::create(context));
+                p.tests.push_back(ui_test::ProgressDialogTest::create(context));
+                p.tests.push_back(ui_test::RecentFilesModelTest::create(context));
+                p.tests.push_back(ui_test::RowLayoutTest::create(context));
+                p.tests.push_back(ui_test::ScrollAreaTest::create(context));
+                p.tests.push_back(ui_test::ScrollBarTest::create(context));
+                p.tests.push_back(ui_test::ScrollWidgetTest::create(context));
+                p.tests.push_back(ui_test::SearchBoxTest::create(context));
+                p.tests.push_back(ui_test::SplitterTest::create(context));
+                p.tests.push_back(ui_test::ActionGroupTest::create(context));
+                p.tests.push_back(ui_test::FlowLayoutTest::create(context));
+                p.tests.push_back(ui_test::StackLayoutTest::create(context));
+                p.tests.push_back(ui_test::StyleTest::create(context));
+                p.tests.push_back(ui_test::TabWidgetTest::create(context));
+                p.tests.push_back(ui_test::TextEditModelTest::create(context));
+                p.tests.push_back(ui_test::WidgetOptionsTest::create(context));
+            }
         }
 
         App::App() :

@@ -12,6 +12,15 @@ target_link_libraries(ftk-test ftkCoreTest)
 
 set_target_properties(ftk-test PROPERTIES FOLDER tests)
 
-add_test(
-    NAME ftk-test
-    COMMAND ftk-test -log)
+# The macOS and Windows CI runners have no working OpenGL. Leaving out the
+# tests that make a context is better than skipping the suite, which is what
+# those platforms did before.
+if(ftk_TESTS_NO_GL)
+    add_test(
+        NAME ftk-test
+        COMMAND ftk-test -log -noGL)
+else()
+    add_test(
+        NAME ftk-test
+        COMMAND ftk-test -log)
+endif()
