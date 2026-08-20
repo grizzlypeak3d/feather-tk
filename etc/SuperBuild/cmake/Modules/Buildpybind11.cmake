@@ -2,7 +2,7 @@ include(ExternalProject)
 
 set(pybind11_GIT_REPOSITORY "https://github.com/pybind/pybind11.git")
 # \bug This needs to match the version used by OpenTimelineIO
-set(pybind11_GIT_TAG "v2.13.6")
+set(pybind11_GIT_TAG "v3.0.2")
 
 set(pybind11_ARGS
     ${ftk_DEPS_ARGS}
