@@ -25,7 +25,9 @@ namespace ftk
         RecentFilesModel();
 
     public:
-        FTK_API ~RecentFilesModel();
+        // Virtual so the Python bindings can downcast subclasses, which
+        // shared_ptr's deleter never needed.
+        FTK_API virtual ~RecentFilesModel();
 
         //! Create a new model.
         FTK_API static std::shared_ptr<RecentFilesModel> create(
