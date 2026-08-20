@@ -83,6 +83,7 @@ namespace ftk
                 .value("Right", MouseButton::Right)
                 .value("Extra1", MouseButton::Extra1)
                 .value("Extra2", MouseButton::Extra2);
+            FTK_ENUM_BIND(m, MouseButton);
 
             py::enum_<KeyModifier>(m, "KeyModifier")
                 .value("_None", KeyModifier::None)
