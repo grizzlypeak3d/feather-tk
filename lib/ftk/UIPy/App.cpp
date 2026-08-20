@@ -13,6 +13,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 using namespace pybind11::literals;
 namespace py = pybind11;
@@ -30,10 +31,11 @@ namespace ftk
                 const std::string& name,
                 const std::string& summary,
                 const std::vector<std::shared_ptr<ICmdLineArg> >& cmdLineArgs,
-                const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions)
+                const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions,
+                const AppFiles& appFiles)
             {
                 auto out = std::shared_ptr<PyApp>(new PyApp);
-                out->_init(context, argv, name, summary, cmdLineArgs, cmdLineOptions);
+                out->_init(context, argv, name, summary, cmdLineArgs, cmdLineOptions, appFiles);
                 return out;
             }
 
@@ -59,6 +61,22 @@ namespace ftk
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
+            py::class_<AppFiles>(m, "AppFiles")
+                .def(
+                    py::init([](
+                        const std::string& dirName,
+                        const std::string& baseName,
+                        int version)
+                    {
+                        return AppFiles{ dirName, baseName, version };
+                    }),
+                    py::arg("dirName") = std::string(),
+                    py::arg("baseName") = std::string(),
+                    py::arg("version") = 0)
+                .def_readwrite("dirName", &AppFiles::dirName)
+                .def_readwrite("baseName", &AppFiles::baseName)
+                .def_readwrite("version", &AppFiles::version);
+
             //py::class_<App, IApp, std::shared_ptr<App> >(m, "App")
             py::class_<App, IApp, std::shared_ptr<App>, PyApp>(m, "App")
                 .def(
@@ -68,13 +86,18 @@ namespace ftk
                         const std::string&,
                         const std::string&,
                         const std::vector<std::shared_ptr<ICmdLineArg> >&,
-                        const std::vector<std::shared_ptr<ICmdLineOption> >&>(&PyApp::create)),
+                        const std::vector<std::shared_ptr<ICmdLineOption> >&,
+                        const AppFiles&>(&PyApp::create)),
                     py::arg("context"),
                     py::arg("argv"),
                     py::arg("name"),
                     py::arg("summary"),
                     py::arg("cmdLineArgs") = std::vector<std::shared_ptr<ICmdLineArg> >(),
-                    py::arg("cmdLineOptions") = std::vector<std::shared_ptr<ICmdLineOption> >())
+                    py::arg("cmdLineOptions") = std::vector<std::shared_ptr<ICmdLineOption> >(),
+                    py::arg("appFiles") = AppFiles())
+                .def_property_readonly("settings", &App::getSettings)
+                .def_property_readonly("settingsPath", &App::getSettingsPath)
+                .def_property_readonly("logFilePath", &App::getLogFilePath)
                 .def_property_readonly("windows", &App::getWindows)
                 .def_property_readonly("observeMonitors", &App::observeMonitors)
                 .def_property_readonly("fontSystem", &App::getFontSystem)
