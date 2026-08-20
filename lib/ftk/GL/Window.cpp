@@ -434,6 +434,11 @@ namespace ftk
             return _p->floatOnTop;
         }
 
+        void Window::raise()
+        {
+            SDL_RaiseWindow(_p->sdlWindow);
+        }
+
         void Window::setFloatOnTop(bool value)
         {
             FTK_P();

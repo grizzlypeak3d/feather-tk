@@ -170,6 +170,9 @@ namespace ftk
         _p->floatOnTop->setIfChanged(value);
     }
 
+    void IWindow::raise()
+    {}
+
     const Size2I& IWindow::getBufferSize() const
     {
         return _p->bufferSize;

@@ -34,6 +34,9 @@ namespace ftk
 
         std::shared_ptr<Window> window;
         std::shared_ptr<FileBrowserWidget> widget;
+        //! The window the browser was opened from, to be given the focus
+        //! back when the browser goes.
+        std::weak_ptr<IWindow> openedFrom;
         //! The window being let go of, and the timer that lets go. See
         //! the close callback in _openWindow().
         std::shared_ptr<Window> closing;
@@ -210,6 +213,7 @@ namespace ftk
                 }
                 if (app)
                 {
+                    p.openedFrom = window;
                     _openWindow(context, app, callback, options, model);
                 }
                 else
@@ -317,7 +321,20 @@ namespace ftk
                 p.widget.reset();
                 p.closeTimer->start(
                     std::chrono::milliseconds(0),
-                    [this] { _p->closing.reset(); });
+                    [this]
+                    {
+                        FTK_P();
+                        p.closing.reset();
+                        // After letting go of it, so that the window being
+                        // given the focus is not the one being taken away.
+                        // Which window the platform would otherwise pick is
+                        // up to it, and it is not always the one asked from.
+                        if (auto openedFrom = p.openedFrom.lock())
+                        {
+                            openedFrom->raise();
+                        }
+                        p.openedFrom.reset();
+                    });
             });
         p.window->show();
     }

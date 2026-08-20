@@ -88,6 +88,10 @@ namespace ftk
         FTK_API std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
         FTK_API virtual void setFloatOnTop(bool);
 
+        //! Raise the window above the others and give it the input focus.
+        //! Does nothing where there is no window manager to ask.
+        FTK_API virtual void raise();
+
         ///@}
 
         //! Buffer
