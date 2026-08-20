@@ -3,6 +3,7 @@
 
 #include <ftk/UI/FileBrowserPrivate.h>
 
+#include <ftk/UI/CheckBox.h>
 #include <ftk/UI/ComboBox.h>
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/Label.h>
@@ -44,8 +45,11 @@ namespace ftk
         std::shared_ptr<ComboBox> extsComboBox;
         std::shared_ptr<ComboBox> sortComboBox;
         std::shared_ptr<ToolButton> reverseSortButton;
+        std::shared_ptr<CheckBox> pinCheckBox;
         std::shared_ptr<PushButton> okButton;
         std::shared_ptr<PushButton> cancelButton;
+        std::function<void(bool)> pinnedCallback;
+        bool focusTaken = false;
         std::shared_ptr<Splitter> splitter;
         std::shared_ptr<VerticalLayout> layout;
 
@@ -137,6 +141,12 @@ namespace ftk
         p.reverseSortButton->setIcon("ReverseSort");
         p.reverseSortButton->setTooltip("Reverse sorting");
 
+        p.pinCheckBox = CheckBox::create(context);
+        p.pinCheckBox->setText("Pin");
+        p.pinCheckBox->setTooltip(
+            "Keep the file browser open after choosing a file.");
+        p.pinCheckBox->setVisible(false);
+
         p.okButton = PushButton::create(context);
         p.okButton->setText("Ok");
         p.okButton->setEnabled(FileBrowserMode::Dir == mode);
@@ -172,6 +182,7 @@ namespace ftk
         p.sortComboBox->setParent(hLayout);
         p.reverseSortButton->setParent(hLayout);
         hLayout->addSpacer(SizeRole::None, Stretch::Expanding);
+        p.pinCheckBox->setParent(hLayout);
         p.okButton->setParent(hLayout);
         p.cancelButton->setParent(hLayout);
 
@@ -316,6 +327,16 @@ namespace ftk
                 FileBrowserOptions options = p.model->getOptions();
                 options.dirList.sortReverse = value;
                 p.model->setOptions(options);
+            });
+
+        p.pinCheckBox->setCheckedCallback(
+            [this](bool value)
+            {
+                FTK_P();
+                if (p.pinnedCallback)
+                {
+                    p.pinnedCallback(value);
+                }
             });
 
         p.okButton->setClickedCallback(
@@ -463,9 +484,72 @@ namespace ftk
         p.panelWidget->setRecentFilesModel(value);
     }
 
+    void FileBrowserWidget::clipEvent(const Box2I& box, bool clipped)
+    {
+        IMouseWidget::clipEvent(box, clipped);
+        FTK_P();
+        // The list takes the key focus when the browser first has a place on
+        // screen, rather than when it is opened. A widget that has not been
+        // laid out yet counts as clipped, and being clipped releases the key
+        // focus, so anything taken before this is given straight back.
+        if (!clipped && !p.focusTaken)
+        {
+            p.focusTaken = true;
+            p.view->takeKeyFocus();
+        }
+    }
+
+    void FileBrowserWidget::keyPressEvent(KeyEvent& event)
+    {
+        FTK_P();
+        // Escape cancels, the same as the button, once nothing inside the
+        // browser is holding the key focus -- the list takes the first press
+        // to let go of it. Reached through the widgets under the pointer,
+        // the way the window sends a key that the focus did not take. The
+        // dialog does this for itself; a browser in a window of its own has
+        // nothing above it to do it.
+        if (!event.accept && Key::Escape == event.key && 0 == event.modifiers)
+        {
+            if (p.cancelCallback)
+            {
+                event.accept = true;
+                p.cancelCallback();
+            }
+        }
+        if (!event.accept)
+        {
+            IMouseWidget::keyPressEvent(event);
+        }
+    }
+
     std::shared_ptr<FileBrowserView> FileBrowserWidget::getView() const
     {
         return _p->view;
+    }
+
+    bool FileBrowserWidget::isPinVisible() const
+    {
+        return _p->pinCheckBox->isVisible();
+    }
+
+    void FileBrowserWidget::setPinVisible(bool value)
+    {
+        _p->pinCheckBox->setVisible(value);
+    }
+
+    bool FileBrowserWidget::isPinned() const
+    {
+        return _p->pinCheckBox->isChecked();
+    }
+
+    void FileBrowserWidget::setPinned(bool value)
+    {
+        _p->pinCheckBox->setChecked(value);
+    }
+
+    void FileBrowserWidget::setPinnedCallback(const std::function<void(bool)>& value)
+    {
+        _p->pinnedCallback = value;
     }
     
     Size2I FileBrowserWidget::getSizeHint() const

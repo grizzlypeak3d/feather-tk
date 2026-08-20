@@ -3,9 +3,13 @@
 
 #include <ftk/UI/FileBrowser.h>
 
+#include <ftk/UI/App.h>
+#include <ftk/UI/FileBrowserWidgets.h>
 #include <ftk/UI/RecentFilesModel.h>
+#include <ftk/UI/Window.h>
 
 #include <ftk/Core/Path.h>
+#include <ftk/Core/Timer.h>
 
 #if defined(FTK_NFD)
 #include <nfd.hpp>
@@ -20,11 +24,23 @@ namespace ftk
     struct FileBrowserSystem::Private
     {
         bool native = true;
+        bool floating = false;
+        bool pinned = false;
         std::shared_ptr<FileBrowserModel> model;
         std::shared_ptr<RecentFilesModel> recentFilesModel;
         std::shared_ptr<IFileBrowserThumbnails> thumbnails;
 
         std::shared_ptr<FileBrowser> fileBrowser;
+
+        std::shared_ptr<Window> window;
+        std::shared_ptr<FileBrowserWidget> widget;
+        //! The window the browser was opened from, to be given the focus
+        //! back when the browser goes.
+        std::weak_ptr<IWindow> openedFrom;
+        //! The window being let go of, and the timer that lets go. See
+        //! the close callback in _openWindow().
+        std::shared_ptr<Window> closing;
+        std::shared_ptr<Timer> closeTimer;
     };
 
     FileBrowserSystem::FileBrowserSystem(const std::shared_ptr<Context>& context) :
@@ -35,6 +51,7 @@ namespace ftk
 
         p.model = FileBrowserModel::create(context);
         p.recentFilesModel = RecentFilesModel::create(context);
+        p.closeTimer = Timer::create(context);
 
 #if defined(FTK_NFD)
         NFD::Init();
@@ -185,30 +202,185 @@ namespace ftk
                     model->setPath(p.model->getPath());
                     model->setExtsFilter(options.extensions, options.extensionsLabel);
                 }
-                p.fileBrowser = FileBrowser::create(
-                    context,
-                    options.title,
-                    options.path,
-                    options.mode,
-                    model);
-                p.fileBrowser->setTitle(options.title);
-                p.fileBrowser->setMultiple(
-                    FileBrowserMode::Open == options.mode && options.multiple);
-                p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
-                p.fileBrowser->open(window);
-                p.fileBrowser->setCallback(
-                    [this, callback](const std::vector<Path>& value)
-                    {
-                        callback(value);
-                        _p->fileBrowser->close();
-                    });
-                p.fileBrowser->setCloseCallback(
-                    [this]
-                    {
-                        _p->fileBrowser.reset();
-                    });
+
+                // A window of its own needs the application to make one. A
+                // window that has outlived its application has none, and the
+                // dialog is the answer that always works.
+                std::shared_ptr<App> app;
+                if (p.floating && window)
+                {
+                    app = window->getApp();
+                }
+                if (app)
+                {
+                    p.openedFrom = window;
+                    _openWindow(context, app, callback, options, model);
+                }
+                else
+                {
+                    _openDialog(context, window, callback, options, model);
+                }
             }
         }
+    }
+
+    void FileBrowserSystem::_openDialog(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWindow>& window,
+        const std::function<void(const std::vector<Path>&)>& callback,
+        const FileBrowserOpenOptions& options,
+        const std::shared_ptr<FileBrowserModel>& model)
+    {
+        FTK_P();
+        p.fileBrowser = FileBrowser::create(
+            context,
+            options.title,
+            options.path,
+            options.mode,
+            model);
+        p.fileBrowser->setTitle(options.title);
+        p.fileBrowser->setMultiple(
+            FileBrowserMode::Open == options.mode && options.multiple);
+        p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
+        p.fileBrowser->open(window);
+        p.fileBrowser->setCallback(
+            [this, callback](const std::vector<Path>& value)
+            {
+                callback(value);
+                _p->fileBrowser->close();
+            });
+        p.fileBrowser->setCloseCallback(
+            [this]
+            {
+                _p->fileBrowser.reset();
+            });
+    }
+
+    void FileBrowserSystem::_openWindow(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<App>& app,
+        const std::function<void(const std::vector<Path>&)>& callback,
+        const FileBrowserOpenOptions& options,
+        const std::shared_ptr<FileBrowserModel>& model)
+    {
+        FTK_P();
+
+        // One at a time, the way the dialog is one at a time. Opening the
+        // browser again while it is up replaces it rather than leaving two
+        // windows answering different callbacks.
+        close();
+
+        p.window = Window::create(context, app, options.title, Size2I(1024, 720));
+        p.widget = FileBrowserWidget::create(
+            context,
+            options.path,
+            options.mode,
+            model,
+            p.window);
+        p.widget->setMultiple(
+            FileBrowserMode::Open == options.mode && options.multiple);
+        p.widget->setRecentFilesModel(p.recentFilesModel);
+
+        // Only a window of its own can be pinned, so this is the only place
+        // the pin is offered.
+        p.widget->setPinVisible(true);
+        p.widget->setPinned(p.pinned);
+        p.widget->setPinnedCallback(
+            [this](bool value)
+            {
+                _p->pinned = value;
+            });
+
+        p.widget->setCallback(
+            [this, callback](const std::vector<Path>& value)
+            {
+                callback(value);
+                // Pinned, the browser stays up for the next one. The caller
+                // has already been told about this one, so what it does with
+                // the window underneath is its own business.
+                if (!_p->pinned)
+                {
+                    close();
+                }
+            });
+        p.widget->setCancelCallback(
+            [this]
+            {
+                close();
+            });
+        p.window->setCloseCallback(
+            [this]
+            {
+                FTK_P();
+                // Freeing the window here would take the widget whose
+                // callback is running down with it, and the OpenGL context
+                // with that, from inside that window's own event handling.
+                // So it is held until the next tick and let go of there.
+                p.closing = p.window;
+                p.window.reset();
+                p.widget.reset();
+                p.closeTimer->start(
+                    std::chrono::milliseconds(0),
+                    [this]
+                    {
+                        FTK_P();
+                        p.closing.reset();
+                        // After letting go of it, so that the window being
+                        // given the focus is not the one being taken away.
+                        // Which window the platform would otherwise pick is
+                        // up to it, and it is not always the one asked from.
+                        if (auto openedFrom = p.openedFrom.lock())
+                        {
+                            openedFrom->raise();
+                        }
+                        p.openedFrom.reset();
+                    });
+            });
+        p.window->show();
+    }
+
+    void FileBrowserSystem::close()
+    {
+        FTK_P();
+        if (auto window = p.window)
+        {
+            // The close callback does the letting go.
+            window->close();
+        }
+    }
+
+    bool FileBrowserSystem::isPinned() const
+    {
+        return _p->pinned;
+    }
+
+    void FileBrowserSystem::setPinned(bool value)
+    {
+        FTK_P();
+        p.pinned = value;
+        if (p.widget)
+        {
+            p.widget->setPinned(value);
+        }
+    }
+
+    bool FileBrowserSystem::isFloating() const
+    {
+        return _p->floating;
+    }
+
+    void FileBrowserSystem::setFloating(bool value)
+    {
+        _p->floating = value;
+    }
+
+    bool FileBrowserSystem::isNativeFileDialogAvailable() const
+    {
+#if defined(FTK_NFD)
+        return true;
+#else  // FTK_NFD
+        return false;
+#endif  // FTK_NFD
     }
 
     bool FileBrowserSystem::isNativeFileDialog() const

@@ -40,6 +40,7 @@ namespace ftk
             _selection();
             _widget();
             _dialog();
+            _floating();
         }
 
         void FileBrowserTest::_shortcuts()
@@ -360,6 +361,12 @@ namespace ftk
 
                     auto dialog = _find<FileBrowser>(window);
                     FTK_CHECK(dialog);
+
+                    // No pin here: a dialog that would not close covers what
+                    // it was opened from for good.
+                    auto dialogWidget = _find<FileBrowserWidget>(dialog);
+                    FTK_CHECK(dialogWidget);
+                    FTK_CHECK(!dialogWidget->isPinVisible());
                     auto dialogView = std::dynamic_pointer_cast<FileBrowserView>(
                         dialog->getKeyFocus());
                     FTK_CHECK(dialogView);
@@ -377,6 +384,169 @@ namespace ftk
 
                 std::filesystem::remove_all(path);
             }
+        }
+
+        void FileBrowserTest::_floating()
+        {
+            std::vector<std::string> argv;
+            argv.push_back("FileBrowserTest");
+            auto app = App::create(
+                _context,
+                argv,
+                "FileBrowserTest",
+                "File browser test");
+            auto window = Window::create(_context, app, "FileBrowserTest");
+            window->show();
+            app->tick();
+
+            const std::filesystem::path path =
+                std::filesystem::temp_directory_path() / "FileBrowserFloating";
+            std::filesystem::remove_all(path);
+            std::filesystem::create_directory(path);
+            {
+                std::ofstream os(path / "file.txt");
+                os << "file" << std::endl;
+            }
+
+            auto system = _context->getSystem<FileBrowserSystem>();
+            const bool native = system->isNativeFileDialog();
+            const bool floating = system->isFloating();
+            system->setNativeFileDialog(false);
+            system->setFloating(true);
+
+            std::vector<Path> opened;
+            FileBrowserOpenOptions openOptions;
+            openOptions.path = path;
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+
+            // A window of its own, rather than something covering the one it
+            // was opened from: that window is untouched and there is now a
+            // second one.
+            FTK_CHECK(!_find<FileBrowser>(window));
+            FTK_CHECK(2 == app->getWindows().size());
+            auto browserWindow = app->getWindows().back();
+            FTK_CHECK(browserWindow != window);
+            auto widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+            FTK_CHECK(!widget->isPinned());
+
+            // Choosing reports the file and takes the window away again.
+            auto view = widget->getView();
+            KeyEvent k(Key::Home, 0, V2I());
+            view->keyPressEvent(k);
+            _click(browserWindow, "Ok");
+            FTK_CHECK(1 == opened.size());
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // Pinned, choosing reports the file and leaves the browser up,
+            // so the next one can be chosen without asking for it again.
+            opened.clear();
+            system->setPinned(true);
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            browserWindow = app->getWindows().back();
+            widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+            FTK_CHECK(widget->isPinned());
+            // The pin is offered only here: a dialog that would not close
+            // would cover what it was opened from for good.
+            FTK_CHECK(widget->isPinVisible());
+            view = widget->getView();
+            k = KeyEvent(Key::Home, 0, V2I());
+            view->keyPressEvent(k);
+            _click(browserWindow, "Ok");
+            FTK_CHECK(1 == opened.size());
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            system->close();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+            system->setPinned(false);
+
+            // Closing it without choosing reports nothing and does the same.
+            opened.clear();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            system->close();
+            app->tick();
+            FTK_CHECK(opened.empty());
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // Escape cancels, on the first press: the list holding the key
+            // focus is not a reason to spend one on leaving it.
+            opened.clear();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            browserWindow = app->getWindows().back();
+            widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+            // Laid out, so that the browser stops being clipped and takes
+            // the key focus for the list. Nothing is clipped or unclipped in
+            // a window that was never given a size.
+            browserWindow->layout(Size2I(1024, 720));
+            app->tick();
+            FTK_CHECK(widget->getView()->hasKeyFocus());
+
+            // Clicked in the list, which is where the pointer has to be for
+            // the second press below, and puts the focus back on the list.
+            browserWindow->click(V2I(700, 500));
+            app->tick();
+            FTK_CHECK(widget->getView()->hasKeyFocus());
+
+            // Escape is overloaded. The first press puts the list down and
+            // goes no further: closing here would leave no way to let go of
+            // the focus.
+            browserWindow->keyPress(Key::Escape);
+            app->tick();
+            FTK_CHECK(!widget->getView()->hasKeyFocus());
+            FTK_CHECK(2 == app->getWindows().size());
+
+            // The second closes. Nothing holds the focus now, so the window
+            // sends the key to the widgets under the pointer, and the
+            // browser is one of them.
+            browserWindow->keyPress(Key::Escape);
+            app->tick();
+            FTK_CHECK(opened.empty());
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // Closing one that is not open is not an error: an application
+            // does this when its own window goes away.
+            system->close();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            system->setFloating(floating);
+            system->setNativeFileDialog(native);
+            std::filesystem::remove_all(path);
         }
 
         void FileBrowserTest::_click(

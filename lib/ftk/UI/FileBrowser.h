@@ -14,6 +14,7 @@
 
 namespace ftk
 {
+    class App;
     class FileBrowserView;
     class RecentFilesModel;
 
@@ -229,8 +230,29 @@ namespace ftk
         //! Get the file browser view.
         FTK_API std::shared_ptr<FileBrowserView> getView() const;
 
+        //! Get whether the pin is shown.
+        FTK_API bool isPinVisible() const;
+
+        //! Set whether the pin is shown.
+        //!
+        //! Pinning only means anything to a browser in a window of its own:
+        //! a dialog that would not close covers what it was opened from
+        //! for good.
+        FTK_API void setPinVisible(bool);
+
+        //! Get whether the browser is pinned.
+        FTK_API bool isPinned() const;
+
+        //! Set whether the browser is pinned.
+        FTK_API void setPinned(bool);
+
+        //! Set the pinned callback.
+        FTK_API void setPinnedCallback(const std::function<void(bool)>&);
+
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
+        FTK_API void clipEvent(const Box2I&, bool clipped) override;
+        FTK_API void keyPressEvent(KeyEvent&) override;
 
     private:
         void _accept(const std::vector<Path>&);
@@ -342,11 +364,46 @@ namespace ftk
             const std::function<void(const std::vector<Path>&)>&,
             const FileBrowserOpenOptions& = FileBrowserOpenOptions());
 
+        //! Get whether the native file dialog can be used.
+        //!
+        //! It is not built everywhere: it means linking to the desktop's own
+        //! file dialog, which is not wanted on every platform. Where it is
+        //! not built, setNativeFileDialog() is remembered but has no effect.
+        FTK_API bool isNativeFileDialogAvailable() const;
+
         //! Get whether the native file dialog is used.
         FTK_API bool isNativeFileDialog() const;
 
         //! Set whether the native file dialog is used.
         FTK_API void setNativeFileDialog(bool);
+
+        //! Get whether the file browser is shown in a window of its own.
+        FTK_API bool isFloating() const;
+
+        //! Get whether the browser stays open once a file is chosen.
+        FTK_API bool isPinned() const;
+
+        //! Set whether the browser stays open once a file is chosen.
+        //!
+        //! Only a floating browser can be pinned. Choosing reports the file
+        //! and leaves the browser up, so that a run of files can be opened
+        //! one after another without asking for the browser each time.
+        FTK_API void setPinned(bool);
+
+        //! Set whether the file browser is shown in a window of its own.
+        //!
+        //! The dialog covers the window it was opened from, which hides
+        //! whatever the choice is being made about. A floating browser
+        //! leaves it visible and usable. Takes effect the next time the
+        //! browser is opened, and has no bearing on the native dialog,
+        //! which is a window of its own either way.
+        FTK_API void setFloating(bool);
+
+        //! Close the file browser if it is floating.
+        //!
+        //! A window of its own is not a child of anything, so it outlives
+        //! the window it was opened from unless something closes it.
+        FTK_API void close();
 
         //! Get the file browser model.
         FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
@@ -364,6 +421,19 @@ namespace ftk
         FTK_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
 
     private:
+        void _openDialog(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWindow>&,
+            const std::function<void(const std::vector<Path>&)>&,
+            const FileBrowserOpenOptions&,
+            const std::shared_ptr<FileBrowserModel>&);
+        void _openWindow(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<App>&,
+            const std::function<void(const std::vector<Path>&)>&,
+            const FileBrowserOpenOptions&,
+            const std::shared_ptr<FileBrowserModel>&);
+
         FTK_PRIVATE();
     };
 

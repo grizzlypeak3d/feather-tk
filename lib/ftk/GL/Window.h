@@ -117,6 +117,10 @@ namespace ftk
             //! Set whether the window has text input.
             FTK_API void setTextInput(bool);
 
+            //! Raise the window above the others and give it the input
+            //! focus.
+            FTK_API void raise();
+
             //! Swap the buffers.
             FTK_API void swap();
 

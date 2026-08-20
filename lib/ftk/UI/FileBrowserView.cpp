@@ -785,6 +785,10 @@ namespace ftk
                 _doubleClick(p.current->get());
                 break;
             case Key::Escape:
+                // Escape is overloaded: it lets go of the list first, and
+                // only closes the browser once the list is no longer holding
+                // it. Closing on the first press would leave no way to put
+                // the focus down.
                 if (hasKeyFocus())
                 {
                     event.accept = true;

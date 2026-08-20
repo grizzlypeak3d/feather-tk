@@ -49,6 +49,7 @@ namespace ftk
             }
             void _widget();
             void _dialog();
+            void _floating();
         };
     }
 }

@@ -171,6 +171,11 @@ namespace ftk
         _p->window->setFloatOnTop(value);
     }
 
+    void Window::raise()
+    {
+        _p->window->raise();
+    }
+
     void Window::setTextInput(bool value)
     {
         IWindow::setTextInput(value);
