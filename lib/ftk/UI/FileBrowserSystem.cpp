@@ -25,6 +25,7 @@ namespace ftk
     {
         bool native = true;
         bool floating = false;
+        bool pinned = false;
         std::shared_ptr<FileBrowserModel> model;
         std::shared_ptr<RecentFilesModel> recentFilesModel;
         std::shared_ptr<IFileBrowserThumbnails> thumbnails;
@@ -275,11 +276,28 @@ namespace ftk
         p.widget->setMultiple(
             FileBrowserMode::Open == options.mode && options.multiple);
         p.widget->setRecentFilesModel(p.recentFilesModel);
+
+        // Only a window of its own can be pinned, so this is the only place
+        // the pin is offered.
+        p.widget->setPinVisible(true);
+        p.widget->setPinned(p.pinned);
+        p.widget->setPinnedCallback(
+            [this](bool value)
+            {
+                _p->pinned = value;
+            });
+
         p.widget->setCallback(
             [this, callback](const std::vector<Path>& value)
             {
                 callback(value);
-                close();
+                // Pinned, the browser stays up for the next one. The caller
+                // has already been told about this one, so what it does with
+                // the window underneath is its own business.
+                if (!_p->pinned)
+                {
+                    close();
+                }
             });
         p.widget->setCancelCallback(
             [this]
@@ -315,6 +333,21 @@ namespace ftk
         {
             // The close callback does the letting go.
             window->close();
+        }
+    }
+
+    bool FileBrowserSystem::isPinned() const
+    {
+        return _p->pinned;
+    }
+
+    void FileBrowserSystem::setPinned(bool value)
+    {
+        FTK_P();
+        p.pinned = value;
+        if (p.widget)
+        {
+            p.widget->setPinned(value);
         }
     }
 

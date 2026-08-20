@@ -230,6 +230,25 @@ namespace ftk
         //! Get the file browser view.
         FTK_API std::shared_ptr<FileBrowserView> getView() const;
 
+        //! Get whether the pin is shown.
+        FTK_API bool isPinVisible() const;
+
+        //! Set whether the pin is shown.
+        //!
+        //! Pinning only means anything to a browser in a window of its own:
+        //! a dialog that would not close covers what it was opened from
+        //! for good.
+        FTK_API void setPinVisible(bool);
+
+        //! Get whether the browser is pinned.
+        FTK_API bool isPinned() const;
+
+        //! Set whether the browser is pinned.
+        FTK_API void setPinned(bool);
+
+        //! Set the pinned callback.
+        FTK_API void setPinnedCallback(const std::function<void(bool)>&);
+
         FTK_API Size2I getSizeHint() const override;
         FTK_API void setGeometry(const Box2I&) override;
 
@@ -351,6 +370,16 @@ namespace ftk
 
         //! Get whether the file browser is shown in a window of its own.
         FTK_API bool isFloating() const;
+
+        //! Get whether the browser stays open once a file is chosen.
+        FTK_API bool isPinned() const;
+
+        //! Set whether the browser stays open once a file is chosen.
+        //!
+        //! Only a floating browser can be pinned. Choosing reports the file
+        //! and leaves the browser up, so that a run of files can be opened
+        //! one after another without asking for the browser each time.
+        FTK_API void setPinned(bool);
 
         //! Set whether the file browser is shown in a window of its own.
         //!

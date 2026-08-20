@@ -361,6 +361,12 @@ namespace ftk
 
                     auto dialog = _find<FileBrowser>(window);
                     FTK_CHECK(dialog);
+
+                    // No pin here: a dialog that would not close covers what
+                    // it was opened from for good.
+                    auto dialogWidget = _find<FileBrowserWidget>(dialog);
+                    FTK_CHECK(dialogWidget);
+                    FTK_CHECK(!dialogWidget->isPinVisible());
                     auto dialogView = std::dynamic_pointer_cast<FileBrowserView>(
                         dialog->getKeyFocus());
                     FTK_CHECK(dialogView);
@@ -429,6 +435,7 @@ namespace ftk
             FTK_CHECK(browserWindow != window);
             auto widget = _find<FileBrowserWidget>(browserWindow);
             FTK_CHECK(widget);
+            FTK_CHECK(!widget->isPinned());
 
             // Choosing reports the file and takes the window away again.
             auto view = widget->getView();
@@ -438,6 +445,38 @@ namespace ftk
             FTK_CHECK(1 == opened.size());
             app->tick();
             FTK_CHECK(1 == app->getWindows().size());
+
+            // Pinned, choosing reports the file and leaves the browser up,
+            // so the next one can be chosen without asking for it again.
+            opened.clear();
+            system->setPinned(true);
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            browserWindow = app->getWindows().back();
+            widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+            FTK_CHECK(widget->isPinned());
+            // The pin is offered only here: a dialog that would not close
+            // would cover what it was opened from for good.
+            FTK_CHECK(widget->isPinVisible());
+            view = widget->getView();
+            k = KeyEvent(Key::Home, 0, V2I());
+            view->keyPressEvent(k);
+            _click(browserWindow, "Ok");
+            FTK_CHECK(1 == opened.size());
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            system->close();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+            system->setPinned(false);
 
             // Closing it without choosing reports nothing and does the same.
             opened.clear();

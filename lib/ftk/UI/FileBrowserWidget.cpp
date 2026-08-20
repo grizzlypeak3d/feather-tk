@@ -3,6 +3,7 @@
 
 #include <ftk/UI/FileBrowserPrivate.h>
 
+#include <ftk/UI/CheckBox.h>
 #include <ftk/UI/ComboBox.h>
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/Label.h>
@@ -44,8 +45,10 @@ namespace ftk
         std::shared_ptr<ComboBox> extsComboBox;
         std::shared_ptr<ComboBox> sortComboBox;
         std::shared_ptr<ToolButton> reverseSortButton;
+        std::shared_ptr<CheckBox> pinCheckBox;
         std::shared_ptr<PushButton> okButton;
         std::shared_ptr<PushButton> cancelButton;
+        std::function<void(bool)> pinnedCallback;
         std::shared_ptr<Splitter> splitter;
         std::shared_ptr<VerticalLayout> layout;
 
@@ -137,6 +140,12 @@ namespace ftk
         p.reverseSortButton->setIcon("ReverseSort");
         p.reverseSortButton->setTooltip("Reverse sorting");
 
+        p.pinCheckBox = CheckBox::create(context);
+        p.pinCheckBox->setText("Pin");
+        p.pinCheckBox->setTooltip(
+            "Keep the file browser open after choosing a file.");
+        p.pinCheckBox->setVisible(false);
+
         p.okButton = PushButton::create(context);
         p.okButton->setText("Ok");
         p.okButton->setEnabled(FileBrowserMode::Dir == mode);
@@ -172,6 +181,7 @@ namespace ftk
         p.sortComboBox->setParent(hLayout);
         p.reverseSortButton->setParent(hLayout);
         hLayout->addSpacer(SizeRole::None, Stretch::Expanding);
+        p.pinCheckBox->setParent(hLayout);
         p.okButton->setParent(hLayout);
         p.cancelButton->setParent(hLayout);
 
@@ -316,6 +326,16 @@ namespace ftk
                 FileBrowserOptions options = p.model->getOptions();
                 options.dirList.sortReverse = value;
                 p.model->setOptions(options);
+            });
+
+        p.pinCheckBox->setCheckedCallback(
+            [this](bool value)
+            {
+                FTK_P();
+                if (p.pinnedCallback)
+                {
+                    p.pinnedCallback(value);
+                }
             });
 
         p.okButton->setClickedCallback(
@@ -466,6 +486,31 @@ namespace ftk
     std::shared_ptr<FileBrowserView> FileBrowserWidget::getView() const
     {
         return _p->view;
+    }
+
+    bool FileBrowserWidget::isPinVisible() const
+    {
+        return _p->pinCheckBox->isVisible();
+    }
+
+    void FileBrowserWidget::setPinVisible(bool value)
+    {
+        _p->pinCheckBox->setVisible(value);
+    }
+
+    bool FileBrowserWidget::isPinned() const
+    {
+        return _p->pinCheckBox->isChecked();
+    }
+
+    void FileBrowserWidget::setPinned(bool value)
+    {
+        _p->pinCheckBox->setChecked(value);
+    }
+
+    void FileBrowserWidget::setPinnedCallback(const std::function<void(bool)>& value)
+    {
+        _p->pinnedCallback = value;
     }
     
     Size2I FileBrowserWidget::getSizeHint() const
