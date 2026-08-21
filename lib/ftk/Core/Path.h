@@ -333,6 +333,15 @@ namespace ftk
         const std::filesystem::path&,
         const DirListOptions& = DirListOptions());
 
+    //! List directory contents.
+    //!
+    //! The name is UTF-8, which is what the paths ftk hands out hold. Without
+    //! this overload the conversion is left to the implementation, and on
+    //! Windows that reads a narrow string as the active code page.
+    FTK_API std::vector<DirEntry> dirList(
+        const std::string&,
+        const DirListOptions& = DirListOptions());
+
     //! Find the frames of a sequence on disk.
     //!
     //! expandSeq() searches only when the path has no range yet, so it cannot

@@ -919,6 +919,13 @@ namespace ftk
         return out;
     }
 
+    std::vector<DirEntry> dirList(
+        const std::string& dir,
+        const DirListOptions& options)
+    {
+        return dirList(std::filesystem::u8path(dir), options);
+    }
+
     std::vector<FrameSeq> findSeq(
         const Path& path,
         const PathOptions& pathOptions)

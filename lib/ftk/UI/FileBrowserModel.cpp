@@ -71,6 +71,11 @@ namespace ftk
         }
     }
 
+    void FileBrowserModel::setPath(const std::string& value)
+    {
+        setPath(std::filesystem::u8path(value));
+    }
+
     void FileBrowserModel::forward()
     {
         FTK_P();

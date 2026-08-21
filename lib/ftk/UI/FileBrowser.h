@@ -125,6 +125,14 @@ namespace ftk
         //! Set the current path.
         FTK_API void setPath(const std::filesystem::path&);
 
+        //! Set the current path.
+        //!
+        //! The name is UTF-8, which is what a path read back from the
+        //! settings holds. Without this overload the conversion is left to
+        //! the implementation, and on Windows that reads a narrow string as
+        //! the active code page.
+        FTK_API void setPath(const std::string&);
+
         //! Go forward to the next path.
         FTK_API void forward();
 
