@@ -14,8 +14,7 @@
 #include <Shlobj.h>
 #include <shellapi.h>
 
-#include <codecvt>
-#include <locale>
+#include <string>
 
 namespace ftk
 {
@@ -28,21 +27,17 @@ namespace ftk
             result = GetLogicalDriveStringsW(result, buf.data());
             if (result)
             {
-                try
+                for (WCHAR* p = buf.data(), *end = buf.data() + result; p < end && *p; ++p)
                 {
-                    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> utf16;
-                    for (WCHAR* p = buf.data(), *end = buf.data() + result; p < end && *p; ++p)
-                    {
-                        WCHAR* p2 = p;
-                        for (; p2 < end && *p2; ++p2)
-                            ;
-                        out.push_back(utf16.to_bytes(std::wstring(p, p2 - p)));
-                        p = p2;
-                    }
-                }
-                catch (const std::exception&)
-                {
-                    //! \bug How should we handle this error?
+                    WCHAR* p2 = p;
+                    for (; p2 < end && *p2; ++p2)
+                        ;
+                    // The wide string goes straight into the path. Converting
+                    // it to UTF-8 first would be undone on the way in: a path
+                    // built from a narrow string reads it as the ANSI code
+                    // page, not as UTF-8.
+                    out.push_back(std::filesystem::path(std::wstring(p, p2 - p)));
+                    p = p2;
                 }
             }
         }
@@ -66,8 +61,10 @@ namespace ftk
         HRESULT result = SHGetKnownFolderPath(id, 0, NULL, &path);
         if (S_OK == result && path)
         {
-            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> utf16;
-            out = utf16.to_bytes(path);
+            // Wide throughout: a user whose account name is not representable
+            // in the ANSI code page would otherwise get a mangled home
+            // directory here, and with it the wrong settings and log files.
+            out = std::filesystem::path(path);
         }
         CoTaskMemFree(path);
         return out;
@@ -75,24 +72,30 @@ namespace ftk
 
     std::filesystem::path createTmpDir()
     {
-        std::string out;
-        char path[MAX_PATH];
-        DWORD r = GetTempPath(MAX_PATH, path);
+        // The narrow GetTempPath() would give the temporary directory in the
+        // ANSI code page, which u8path() then read as UTF-8; a user whose
+        // account name is not ASCII got a name that was neither.
+        std::filesystem::path out;
+        WCHAR path[MAX_PATH];
+        const DWORD r = GetTempPathW(MAX_PATH, path);
         if (r)
         {
-            out = std::string(path);
             GUID guid;
             CoCreateGuid(&guid);
             const uint8_t* guidP = reinterpret_cast<const uint8_t*>(&guid);
+            std::wstring name;
             for (int i = 0; i < 16; ++i)
             {
-                char buf[3] = "";
-                sprintf_s(buf, 3, "%02x", guidP[i]);
-                out += buf;
+                WCHAR buf[3] = L"";
+                swprintf_s(buf, 3, L"%02x", guidP[i]);
+                name += buf;
             }
 
-            CreateDirectory(out.c_str(), NULL);
+            // The returned length excludes the terminator, and the path
+            // already ends with a separator.
+            out = std::filesystem::path(std::wstring(path, r) + name);
+            CreateDirectoryW(out.c_str(), NULL);
         }
-        return std::filesystem::u8path(out);
+        return out;
     }
 }
