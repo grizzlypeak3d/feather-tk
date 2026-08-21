@@ -188,6 +188,20 @@ namespace ftk
     {
         std::atomic<size_t> objectCount = 0;
         std::atomic<size_t> totalByteCount = 0;
+
+        // Room past the end of the image data. FFmpeg's sws_scale() writes
+        // its output a SIMD register at a time and runs off the end of the
+        // last row by as much as a register; the image has to carry the
+        // slack or the write lands outside the allocation.
+        //
+        // Sixty-four because that is what FFmpeg itself pads by --
+        // AV_INPUT_BUFFER_PADDING_SIZE, raised from 8 to 16 to 32 to 64 as
+        // the registers grew. Named here rather than taken from FFmpeg: this
+        // library sits underneath it and does not otherwise know it exists.
+        //
+        // Sixteen was the value before, and a build with a checked heap
+        // caught a write thirty-two bytes past the end of it.
+        constexpr size_t dataPadding = 64;
     }
 
     Image::Image(const ImageInfo& info, uint8_t* externalData) :
@@ -204,9 +218,7 @@ namespace ftk
         }
         else
         {
-            // Allocate a bit of extra space since FFmpeg sws_scale()
-            // can read past the end.
-            _data = new uint8_t[_byteCount + 16];
+            _data = new uint8_t[_byteCount + dataPadding];
         }
     }
 
