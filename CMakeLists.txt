@@ -136,12 +136,7 @@ if(ftk_nfd)
 endif()
 
 if(ftk_PYTHON)
-    # Development.Module rather than Development: the latter also brings
-    # Development.Embed, whose Python3::Python links libpython. Nothing here
-    # hosts an interpreter -- these are extension modules, which are loaded
-    # by one -- and linking libpython into a module gives macOS a second copy
-    # of the interpreter's state alongside the one already loaded.
-    find_package(Python3 REQUIRED Interpreter Development.Module)
+    find_package(Python3 REQUIRED Interpreter Development)
     find_package(pybind11 REQUIRED)
 endif()
 
