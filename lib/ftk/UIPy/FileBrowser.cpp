@@ -56,7 +56,12 @@ namespace ftk
                 .def_property(
                     "path",
                     &FileBrowserModel::getPath,
-                    &FileBrowserModel::setPath)
+                    // Named, because setPath is overloaded on the path and a
+                    // UTF-8 string and its address alone does not say which.
+                    // The path one: pybind11's filesystem caster already
+                    // brings str and os.PathLike across as a path.
+                    py::overload_cast<
+                        const std::filesystem::path&>(&FileBrowserModel::setPath))
                 .def_property_readonly("observePath", &FileBrowserModel::observePath)
                 .def("forward", &FileBrowserModel::forward)
                 .def_property_readonly("observeHasForward", &FileBrowserModel::observeHasForward)
