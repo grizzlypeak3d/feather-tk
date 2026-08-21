@@ -31,7 +31,22 @@ set(ftk_TESTS ON CACHE BOOL "Build tests")
 set(ftk_EXAMPLES ON CACHE BOOL "Build examples")
 set(ftk_GCOV OFF CACHE BOOL "Build with gcov support")
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+# Shared when Python is on, the same rule tlRender, DJV and DJV Studio
+# carry. Each binding module would otherwise link its own static copy of the
+# stack, and two copies of a library in one process do not share its type
+# information -- on macOS SDL announces the duplicate as an Objective-C class
+# implemented twice.
+#
+# Not on Windows. The libraries do carry export macros -- FTK_API, chosen by
+# the FTK_EXPORTS and FTK_STATIC definitions this flag sets -- but FTK_EXPORTS
+# is defined PUBLIC, so a project consuming these libraries compiles their API
+# as dllexport where it should be dllimport. Windows can be shared once that
+# is sorted.
+if(WIN32)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+else()
+    set(BUILD_SHARED_LIBS ${ftk_PYTHON} CACHE BOOL "Build shared libraries")
+endif()
 
 if(APPLE)
     # The deployment target is policy: the oldest system that is supported.

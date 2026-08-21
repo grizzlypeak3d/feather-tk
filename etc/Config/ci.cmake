@@ -1,13 +1,11 @@
-# What continuous integration builds everywhere.
+# What continuous integration builds everywhere: the default configuration,
+# which is no Python bindings and static libraries. The -python
+# configurations beside this one are the other half, and each platform is
+# built both ways.
 #
 # Overrides come before the file they are based on: a plain cache set does not
 # overwrite a value that is already there, so the first to set a value wins.
 include("${CMAKE_CURRENT_LIST_DIR}/local.cmake" OPTIONAL)
-
-# On here and off in the default build. Nothing else compiles the Python
-# bindings, so an API change that breaks them builds clean everywhere else and
-# fails only here.
-set(ftk_PYTHON ON CACHE BOOL "Build support for Python")
 
 # The macOS and Windows runners have no working OpenGL, so the tests that make
 # a context are left out there rather than the suite being skipped. Linux runs

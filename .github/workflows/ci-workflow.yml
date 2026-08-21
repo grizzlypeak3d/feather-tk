@@ -39,6 +39,42 @@ jobs:
         cd build-Debug
         sh ../ftk/etc/Linux/lcov.sh
 
+
+  linux-build-python:
+    runs-on: ubuntu-latest
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        path: ftk
+        submodules: recursive
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+
+    - name: Setup environment
+      run: |
+        echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=$PWD/install-Debug/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
+        sh ftk/etc/Linux/setup-gha.sh
+
+    - name: Build
+      run: |
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-python
+
+    - name: Run tests
+      run: |
+        cd build-Debug
+        xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
+    
+    - name: Code coverage
+      run: |
+        cd build-Debug
+        sh ../ftk/etc/Linux/lcov.sh
   linux-sdl3-build:
     runs-on: ubuntu-latest
 
@@ -180,6 +216,43 @@ jobs:
         cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
+
+  macos-build-python:
+    runs-on: macos-latest
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        path: ftk
+        submodules: recursive
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+
+    # \bug DYLD_LIBRARY_PATH is not being set here?
+    - name: Setup environment
+      run: |
+        echo "$PWD/install-Debug/bin" >> $GITHUB_PATH
+        echo "DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
+        cmake --version
+        python --version
+
+    - name: Build
+      run: |
+        export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
+        sh ftk/etc/macOS/sbuild.sh ftk Debug ci-macos-python
+
+    # The runner has no working OpenGL; ci.cmake leaves out the tests that
+    # make a context.
+    - name: Run tests
+      run: |
+        export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
+        cd build-Debug
+        ctest --verbose --rerun-failed --output-on-failure -C Debug
   windows-build:
     runs-on: windows-latest
 
@@ -217,3 +290,41 @@ jobs:
         cd build-Debug
         ctest --verbose --rerun-failed --output-on-failure -C Debug
 
+
+
+  windows-build-python:
+    runs-on: windows-latest
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        path: ftk
+        submodules: recursive
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+
+    # \bug Any spaces before the ">>" will be considered part of the path.
+    - name: Setup environment
+      shell: cmd
+      run: |
+        echo %CD%\install-Debug\bin>> %GITHUB_PATH%
+        echo %CD%\install-Debug\lib>> %GITHUB_PATH%
+        echo PYTHONPATH=%CD%\install-Debug\lib >> %GITHUB_ENV%
+        cmake --version
+
+    - name: Build
+      shell: cmd
+      run: |
+        ftk\etc\Windows\sbuild.bat ftk Debug ci-windows-python
+
+    # The runner has no working OpenGL; ci.cmake leaves out the tests that
+    # make a context.
+    - name: Run tests
+      shell: cmd
+      run: |
+        cd build-Debug
+        ctest --verbose --rerun-failed --output-on-failure -C Debug
