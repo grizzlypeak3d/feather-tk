@@ -44,7 +44,11 @@ add_library(ftkCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 
 target_include_directories(ftkCorePy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 
-target_link_libraries(ftkCorePy ftkCore Python3::Python)
+# pybind11::headers gives the pybind11 and Python headers without linking
+# libpython, which is what an extension module needs. The module target that
+# pulls this in is built by pybind11_add_module(), which resolves the Python
+# symbols against the interpreter that loads it.
+target_link_libraries(ftkCorePy ftkCore pybind11::headers)
 
 set_target_properties(ftkCorePy PROPERTIES FOLDER lib)
 set_target_properties(ftkCorePy PROPERTIES PUBLIC_HEADER "${HEADERS}")
