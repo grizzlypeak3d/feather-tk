@@ -53,10 +53,15 @@ target_include_directories(ftkGL
         $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(ftkGL PUBLIC ftkCore ftkglad)
+# Public because this is not the only library that calls SDL: the UI does,
+# for the window and the clipboard, and so does tlRender for the audio. A
+# private link reaches them anyway while everything is static -- the symbols
+# wait for the program, or a static SDL is folded into this library and
+# re-exported -- and stops reaching them the moment either becomes shared.
 if(ftk_SDL2)
-    target_link_libraries(ftkGL PRIVATE SDL2::SDL2)
+    target_link_libraries(ftkGL PUBLIC SDL2::SDL2)
 elseif(ftk_SDL3)
-    target_link_libraries(ftkGL PRIVATE SDL3::SDL3)
+    target_link_libraries(ftkGL PUBLIC SDL3::SDL3)
 endif()
 
 set_target_properties(ftkGL PROPERTIES FOLDER lib)
