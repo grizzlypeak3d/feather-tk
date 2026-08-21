@@ -11,5 +11,10 @@ if(ftk_PYTHON)
     if(ftk_TESTS_NO_GL)
         list(APPEND PYTHON_TEST_ENV "FTK_TESTS_NO_GL=set:1")
     endif()
-    set_tests_properties(ftkPy-test PROPERTIES ENVIRONMENT_MODIFICATION "${PYTHON_TEST_ENV}")
+    # A hang should fail rather than run until the job is killed, the same as
+    # the C++ suite next door. This one runs in seconds, so 900 only ever
+    # fires on a hang.
+    set_tests_properties(ftkPy-test PROPERTIES
+        ENVIRONMENT_MODIFICATION "${PYTHON_TEST_ENV}"
+        TIMEOUT 900)
 endif()
