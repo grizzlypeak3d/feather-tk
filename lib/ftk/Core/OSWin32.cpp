@@ -113,6 +113,43 @@ namespace ftk
             }
             return out;
         }
+
+        std::string getCodePage()
+        {
+            const UINT acp = ::GetACP();
+            std::string out = std::to_string(acp);
+            // Naming the two that change how paths behave, so the log does
+            // not need a code page table to read. 65001 is the "Use Unicode
+            // UTF-8 for worldwide language support" setting, which makes
+            // narrow conversions lossless and the rest of this moot.
+            switch (acp)
+            {
+            case CP_UTF8: out += " (UTF-8)"; break;
+            case 949:     out += " (Korean)"; break;
+            default: break;
+            }
+            return out;
+        }
+
+        std::string getLocale()
+        {
+            std::string out;
+            wchar_t buf[LOCALE_NAME_MAX_LENGTH];
+            if (const int size = ::GetUserDefaultLocaleName(
+                buf, LOCALE_NAME_MAX_LENGTH))
+            {
+                // A locale name is ASCII ("en-US"), so it narrows a character
+                // at a time rather than going through a code page that this
+                // function is itself reporting on. The returned size counts
+                // the terminator.
+                out.reserve(size - 1);
+                for (int i = 0; i < size - 1; ++i)
+                {
+                    out.push_back(static_cast<char>(buf[i]));
+                }
+            }
+            return out;
+        }
     }
 
     SysInfo getSysInfo()
@@ -124,6 +161,8 @@ namespace ftk
         out.ram = getRAMSize();
         const auto d = std::lldiv(getRAMSize(), gigabyte);
         out.ramGB = d.quot + (d.rem ? 1 : 0);
+        out.codePage = getCodePage();
+        out.locale = getLocale();
         return out;
     }
 

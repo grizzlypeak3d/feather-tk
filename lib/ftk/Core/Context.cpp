@@ -27,12 +27,16 @@ namespace ftk
             "ftk::Context",
             Format(
                 "System information:\n"
-                "    * Name:  {0}\n"
-                "    * Cores: {1}\n"
-                "    * RAM:   {2}GB").
+                "    * Name:      {0}\n"
+                "    * Cores:     {1}\n"
+                "    * RAM:       {2}GB\n"
+                "    * Locale:    {3}\n"
+                "    * Code page: {4}").
             arg(sysInfo.name).
             arg(sysInfo.cores).
-            arg(sysInfo.ramGB));
+            arg(sysInfo.ramGB).
+            arg(sysInfo.locale).
+            arg(sysInfo.codePage));
 
         addSystem(TimerSystem::create(shared_from_this()));
         addSystem(DiagSystem::create(shared_from_this()));

@@ -13,8 +13,10 @@
 #include <CoreServices/CoreServices.h>
 #endif // __APPLE__
 
+#include <clocale>
 #include <cstdlib>
 #include <fstream>
+#include <langinfo.h>
 #include <sstream>
 #include <thread>
 #include <vector>
@@ -113,8 +115,32 @@ namespace ftk
 #endif // __APPLE__
             return out;
         }
+
+        std::string getCodePage()
+        {
+            // Paths here are bytes and are treated as UTF-8 throughout, so
+            // this cannot go wrong the way the Windows code page can. It is
+            // reported anyway so that logs from the two platforms answer the
+            // same questions.
+            std::string out;
+            if (const char* p = ::nl_langinfo(CODESET))
+            {
+                out = p;
+            }
+            return out;
+        }
+
+        std::string getLocale()
+        {
+            std::string out;
+            if (const char* p = std::setlocale(LC_CTYPE, nullptr))
+            {
+                out = p;
+            }
+            return out;
+        }
     }
-    
+
     SysInfo getSysInfo()
     {
         SysInfo out;
@@ -124,6 +150,8 @@ namespace ftk
         out.ram = getRAMSize();
         const auto d = std::lldiv(getRAMSize(), gigabyte);
         out.ramGB = d.quot + (d.rem ? 1 : 0);
+        out.codePage = getCodePage();
+        out.locale = getLocale();
         return out;
     }
             

@@ -22,6 +22,16 @@ namespace ftk
         size_t      cores = 0;
         size_t      ram   = 0;
         size_t      ramGB = 0;
+
+        //! The encoding the platform converts narrow strings through: the
+        //! ANSI code page on Windows, the locale's character set elsewhere.
+        //! Worth having in the log because a file name the encoding cannot
+        //! represent is why a path can open on one machine and not another,
+        //! and nothing else on the machine says which encoding it is.
+        std::string codePage;
+
+        //! The user's locale, which is what selects the code page above.
+        std::string locale;
     };
 
     //! Get operating system information.
