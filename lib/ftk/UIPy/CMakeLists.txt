@@ -103,6 +103,9 @@ set(SOURCE
     Window.cpp)
 
 add_library(ftkUIPy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(ftkUIPy PRIVATE FTK_EXPORTS)
+endif()
 
 target_include_directories(ftkUIPy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

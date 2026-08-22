@@ -41,6 +41,9 @@ set(SOURCE
     Version.cpp)
 
 add_library(ftkCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(ftkCorePy PRIVATE FTK_EXPORTS)
+endif()
 
 target_include_directories(ftkCorePy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

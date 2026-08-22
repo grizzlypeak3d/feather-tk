@@ -131,7 +131,7 @@ add_library(ftkCore ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 
 target_compile_definitions(ftkCore PUBLIC $<$<CONFIG:Debug>:FTK_ASSERT>)
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(ftkCore PUBLIC FTK_EXPORTS)
+    target_compile_definitions(ftkCore PRIVATE FTK_EXPORTS)
 else()
     target_compile_definitions(ftkCore PUBLIC FTK_STATIC)
 endif()
