@@ -159,7 +159,20 @@ namespace ftk
             {
                 FileBrowserOpenOptions options;
                 options.title = "File Browser";
-                options.path = std::filesystem::u8path(p.path.get());
+                // The browser opens at a directory while the edit holds a
+                // file, so what is passed is the directory that file is in:
+                // handing over the file itself asked for a listing of it and
+                // got nothing, which is no help to someone changing it. A
+                // directory is passed as it stands, whether it is what is
+                // being picked or what the field was left holding.
+                std::filesystem::path path =
+                    std::filesystem::u8path(p.path.get());
+                std::error_code ec;
+                if (!path.empty() && !std::filesystem::is_directory(path, ec))
+                {
+                    path = path.parent_path();
+                }
+                options.path = path;
                 options.mode = p.mode;
                 fileBrowserSystem->open(
                     getWindow(),
