@@ -26,6 +26,7 @@ namespace ftk
         bool native = true;
         bool floating = false;
         bool pinned = false;
+        Size2I windowSize = Size2I(1024, 720);
         std::shared_ptr<FileBrowserModel> model;
         std::shared_ptr<RecentFilesModel> recentFilesModel;
         std::shared_ptr<IFileBrowserThumbnails> thumbnails;
@@ -37,6 +38,9 @@ namespace ftk
         //! The window the browser was opened from, to be given the focus
         //! back when the browser goes.
         std::weak_ptr<IWindow> openedFrom;
+        //! Keeps the browser in the same layer as the window it was
+        //! opened from. See _openWindow().
+        std::shared_ptr<Observer<bool> > floatOnTopObserver;
         //! The window being let go of, and the timer that lets go. See
         //! the close callback in _openWindow().
         std::shared_ptr<Window> closing;
@@ -270,7 +274,7 @@ namespace ftk
         // windows answering different callbacks.
         close();
 
-        p.window = Window::create(context, app, options.title, Size2I(1024, 720));
+        p.window = Window::create(context, app, options.title, p.windowSize);
         p.widget = FileBrowserWidget::create(
             context,
             options.path,
@@ -280,6 +284,24 @@ namespace ftk
         p.widget->setMultiple(
             FileBrowserMode::Open == options.mode && options.multiple);
         p.widget->setRecentFilesModel(p.recentFilesModel);
+
+        // A browser underneath an always on top window is one that cannot
+        // be seen, which is the opposite of what a window of its own is
+        // for. Observed rather than read once: the window it was opened
+        // from stays usable while the browser is up, so this can be turned
+        // on and off underneath it.
+        if (auto openedFrom = p.openedFrom.lock())
+        {
+            p.floatOnTopObserver = Observer<bool>::create(
+                openedFrom->observeFloatOnTop(),
+                [this](bool value)
+                {
+                    if (_p->window)
+                    {
+                        _p->window->setFloatOnTop(value);
+                    }
+                });
+        }
 
         // Only a window of its own can be pinned, so this is the only place
         // the pin is offered.
@@ -312,10 +334,16 @@ namespace ftk
             [this]
             {
                 FTK_P();
+                // Asked while there is still a window to ask, so that
+                // opening the browser again puts it back the size it was
+                // left at.
+                p.windowSize = p.window->getSize();
+
                 // Freeing the window here would take the widget whose
                 // callback is running down with it, and the OpenGL context
                 // with that, from inside that window's own event handling.
                 // So it is held until the next tick and let go of there.
+                p.floatOnTopObserver.reset();
                 p.closing = p.window;
                 p.window.reset();
                 p.widget.reset();
@@ -372,6 +400,20 @@ namespace ftk
     void FileBrowserSystem::setFloating(bool value)
     {
         _p->floating = value;
+    }
+
+    Size2I FileBrowserSystem::getWindowSize() const
+    {
+        FTK_P();
+        // An open window is the one that knows: it may have been resized
+        // since it was created, and the size is not written down until it
+        // closes.
+        return p.window ? p.window->getSize() : p.windowSize;
+    }
+
+    void FileBrowserSystem::setWindowSize(const Size2I& value)
+    {
+        _p->windowSize = value;
     }
 
     bool FileBrowserSystem::isNativeFileDialogAvailable() const

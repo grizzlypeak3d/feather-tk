@@ -407,6 +407,16 @@ namespace ftk
         //! which is a window of its own either way.
         FTK_API void setFloating(bool);
 
+        //! Get the size a floating file browser opens at.
+        //!
+        //! While one is open this is the size it has been resized to, so
+        //! that an application saving this gets the size the browser was
+        //! left at rather than the one it was given.
+        FTK_API Size2I getWindowSize() const;
+
+        //! Set the size a floating file browser opens at.
+        FTK_API void setWindowSize(const Size2I&);
+
         //! Close the file browser if it is floating.
         //!
         //! A window of its own is not a child of anything, so it outlives
