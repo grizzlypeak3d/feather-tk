@@ -12,7 +12,7 @@ namespace ftk
     class FTK_API_TYPE ISystem : public IBaseSystem
     {
     protected:
-        ISystem(
+        FTK_API ISystem(
             const std::shared_ptr<Context>&,
             const std::string& name);
 

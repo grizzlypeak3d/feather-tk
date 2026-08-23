@@ -18,11 +18,11 @@ namespace ftk
     class FTK_API_TYPE MenuBar : public IContainer
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent);
 
-        MenuBar();
+        FTK_API MenuBar();
 
     public:
         FTK_API virtual ~MenuBar();

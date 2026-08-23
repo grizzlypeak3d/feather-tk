@@ -16,12 +16,12 @@ namespace ftk
     class FTK_API_TYPE IDialog : public IPopup
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        IDialog();
+        FTK_API IDialog();
 
     public:
         FTK_API virtual ~IDialog() = 0;

@@ -18,12 +18,12 @@ namespace ftk
     class FTK_API_TYPE ToolBar : public IContainer
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent);
 
-        ToolBar();
+        FTK_API ToolBar();
 
     public:
         FTK_API virtual ~ToolBar();

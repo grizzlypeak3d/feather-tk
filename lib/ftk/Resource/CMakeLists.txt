@@ -89,7 +89,22 @@ foreach(RESOURCE ${RESOURCES})
     list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BASE}.cpp)
 endforeach()
 
-add_library(ftkResource ${HEADERS} ${SOURCE})
+# Static, whatever the rest of the build is. The resources are data at
+# namespace scope with no export macro on them, so a shared build on Windows
+# produces a library that exports nothing and no import library beside it:
+#
+#     LINK : fatal error LNK1104: cannot open file 'ftkResource.lib'
+#
+# CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS does not answer this the way it does for
+# the dependencies: it writes a module definition file from the functions the
+# objects hold, and these hold none. Marking the data instead would mean the
+# generator and every extern declaration that names it.
+#
+# Static suits them anyway. They are an implementation detail rather than API,
+# and each resource is its own object file, so a consumer links only the ones
+# it names -- FontSystem and IconSystem take the ones they use and nothing more.
+add_library(ftkResource STATIC ${HEADERS} ${SOURCE})
+set_target_properties(ftkResource PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_compile_definitions(ftkResource PUBLIC FTK_CJK)
 

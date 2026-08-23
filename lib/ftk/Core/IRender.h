@@ -47,7 +47,7 @@ namespace ftk
         FTK_NON_COPYABLE(IRender);
 
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<LogSystem>&,
             const std::shared_ptr<FontSystem>&);
 

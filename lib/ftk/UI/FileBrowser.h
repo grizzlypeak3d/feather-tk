@@ -194,7 +194,7 @@ namespace ftk
     class FTK_API_TYPE FileBrowserWidget : public IMouseWidget
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::filesystem::path&,
             FileBrowserMode,
@@ -275,7 +275,7 @@ namespace ftk
     class FTK_API_TYPE FileBrowser : public IDialog
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
             const std::filesystem::path&,

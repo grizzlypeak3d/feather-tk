@@ -113,7 +113,9 @@ set(SOURCE
     TextEditModelTest.cpp
     WidgetOptionsTest.cpp)
 
-add_library(ftkUITest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+# Static, for the reason in ftk's TestLib.
+add_library(ftkUITest STATIC ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+set_target_properties(ftkUITest PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(ftkUITest PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

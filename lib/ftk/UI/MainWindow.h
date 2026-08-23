@@ -14,12 +14,12 @@ namespace ftk
     class FTK_API_TYPE MainWindow : public Window
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const Size2I&);
 
-        MainWindow();
+        FTK_API MainWindow();
 
     public:
         FTK_API virtual ~MainWindow();

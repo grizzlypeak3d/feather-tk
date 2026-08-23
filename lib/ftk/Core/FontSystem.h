@@ -41,9 +41,9 @@ namespace ftk
         std::string name = getDefaultFont(FontType::Regular);
         int         size = 12;
 
-        bool operator == (const FontInfo&) const;
-        bool operator != (const FontInfo&) const;
-        bool operator < (const FontInfo&) const;
+        FTK_API bool operator == (const FontInfo&) const;
+        FTK_API bool operator != (const FontInfo&) const;
+        FTK_API bool operator < (const FontInfo&) const;
     };
 
     //! Font metrics.
@@ -63,9 +63,9 @@ namespace ftk
         uint32_t code     = 0;
         FontInfo fontInfo;
 
-        bool operator == (const GlyphInfo&) const;
-        bool operator != (const GlyphInfo&) const;
-        bool operator < (const GlyphInfo&) const;
+        FTK_API bool operator == (const GlyphInfo&) const;
+        FTK_API bool operator != (const GlyphInfo&) const;
+        FTK_API bool operator < (const GlyphInfo&) const;
     };
 
     //! Font glyph.

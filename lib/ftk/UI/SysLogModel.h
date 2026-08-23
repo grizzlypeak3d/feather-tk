@@ -28,23 +28,23 @@ namespace ftk
         virtual ~SysLogModel();
 
         //! Create a new model.
-        static std::shared_ptr<SysLogModel> create(const std::shared_ptr<Context>&);
+        FTK_API static std::shared_ptr<SysLogModel> create(const std::shared_ptr<Context>&);
 
         //! Observe messages (warnings and errors).
         //!
         //! The items are unformatted: a status bar wants the message alone,
         //! while a list of what has happened wants the time with it, so the
         //! choice belongs to whoever is showing them. See getLabel().
-        std::shared_ptr<IObservableList<LogItem> > observeMessages() const;
+        FTK_API std::shared_ptr<IObservableList<LogItem> > observeMessages() const;
 
         //! Clear the messages.
-        void clearMessages();
+        FTK_API void clearMessages();
 
         //! Observe the log.
-        std::shared_ptr<IObservableList<std::string> > observeLog() const;
+        FTK_API std::shared_ptr<IObservableList<std::string> > observeLog() const;
 
         //! Clear the log.
-        void clearLog();
+        FTK_API void clearLog();
 
     private:
         FTK_PRIVATE();

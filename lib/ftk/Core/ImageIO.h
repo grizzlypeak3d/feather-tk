@@ -64,7 +64,7 @@ namespace ftk
             FTK_NON_COPYABLE(IImagePlugin);
 
         protected:
-            IImagePlugin(
+            FTK_API IImagePlugin(
                 const std::string& name,
                 const std::vector<std::string>& exts);
 

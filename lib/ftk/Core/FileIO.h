@@ -64,8 +64,8 @@ namespace ftk
         const uint8_t* p = nullptr;
         size_t size = 0;
 
-        bool operator == (const MemFile&) const;
-        bool operator != (const MemFile&) const;
+        FTK_API bool operator == (const MemFile&) const;
+        FTK_API bool operator != (const MemFile&) const;
     };
 
     //! Seek modes.

@@ -39,7 +39,7 @@ namespace ftk
         FTK_API const std::string& getText() const;
 
         //! Set the text.
-        void setText(const std::string&);
+        FTK_API void setText(const std::string&);
 
         //! Get the widget.
         FTK_API const std::shared_ptr<IWidget>& getWidget() const;

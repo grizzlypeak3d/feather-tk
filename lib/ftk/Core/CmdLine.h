@@ -19,7 +19,7 @@ namespace ftk
         FTK_NON_COPYABLE(ICmdLineOption);
 
     protected:
-        ICmdLineOption(
+        FTK_API ICmdLineOption(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group = std::string());

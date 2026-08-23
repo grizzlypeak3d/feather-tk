@@ -11,13 +11,13 @@ namespace ftk
     class FTK_API_TYPE Window : public IWindow
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const std::string& title,
             const Size2I&);
 
-        Window();
+        FTK_API Window();
 
     public:
         FTK_API virtual ~Window();
@@ -48,10 +48,10 @@ namespace ftk
         FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
-        void _makeCurrent();
+        FTK_API void _makeCurrent();
         void _clearCurrent();
 
-        void _update(
+        FTK_API void _update(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             const std::shared_ptr<Style>&) override;

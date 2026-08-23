@@ -49,7 +49,7 @@ namespace ftk
             const std::shared_ptr<IWidget>&);
 
         //! Set the child geometry callback.
-        void setChildGeometryCallback(
+        FTK_API void setChildGeometryCallback(
             const std::function<void(const std::vector<Box2I>&)>&);
 
         FTK_API Size2I getSizeHint() const override;

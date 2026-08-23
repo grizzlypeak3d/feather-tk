@@ -3,7 +3,11 @@ set(PRIVATE_HEADERS)
 
 set(SOURCE ITest.cpp)
 
-add_library(ftkTestLib ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+# Static. The test libraries are linked only by the test programs beside them
+# and carry no export macros, so a shared build on Windows would give each one
+# a library that exports nothing and no import library to link against.
+add_library(ftkTestLib STATIC ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+set_target_properties(ftkTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(ftkTestLib PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

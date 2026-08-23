@@ -35,7 +35,7 @@ namespace ftk
         FTK_NON_COPYABLE(IApp);
 
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::vector<std::string>& argv,
             const std::string& name,
@@ -43,7 +43,7 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineArg> >& = {},
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
-        IApp();
+        FTK_API IApp();
 
     public:
         FTK_API virtual ~IApp() = 0;
@@ -66,7 +66,7 @@ namespace ftk
     protected:
         void _parseCmdLine();
 
-        void _print(const std::string&);
+        FTK_API void _print(const std::string&);
         void _printError(const std::string&);
 
         std::shared_ptr<Context> _context;

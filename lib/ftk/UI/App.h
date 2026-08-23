@@ -32,8 +32,8 @@ namespace ftk
         V2F         dpi;
         Box2I       bounds;
 
-        bool operator == (const MonitorInfo&) const;
-        bool operator != (const MonitorInfo&) const;
+        FTK_API bool operator == (const MonitorInfo&) const;
+        FTK_API bool operator != (const MonitorInfo&) const;
     };
 
     //! Color style.
@@ -80,7 +80,7 @@ namespace ftk
     class FTK_API_TYPE App : public IApp
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::vector<std::string>&,
             const std::string& name,
@@ -89,7 +89,7 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {},
             const AppFiles& = AppFiles());
 
-        App();
+        FTK_API App();
 
     public:
         FTK_API virtual ~App();

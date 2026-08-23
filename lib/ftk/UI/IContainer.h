@@ -33,12 +33,12 @@ namespace ftk
         FTK_NON_COPYABLE(IContainer);
 
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
 
-        IContainer();
+        FTK_API IContainer();
 
     public:
         FTK_API virtual ~IContainer() = 0;

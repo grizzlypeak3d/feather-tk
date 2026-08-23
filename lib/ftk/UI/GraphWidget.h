@@ -45,10 +45,10 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the samples.
-        void setSamples(ColorRole, const std::vector<int64_t>&);
+        FTK_API void setSamples(ColorRole, const std::vector<int64_t>&);
 
         //! Add a sample.
-        void addSample(ColorRole, int64_t);
+        FTK_API void addSample(ColorRole, int64_t);
 
 
     private:

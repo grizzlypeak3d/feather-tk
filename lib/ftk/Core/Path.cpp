@@ -738,7 +738,6 @@ namespace ftk
         _frames = getRange(_seq);
     }
 
-    const std::pair<size_t, size_t> Path:: _invalid(std::string::npos, std::string::npos);
 
     FTK_ENUM_IMPL(
         DirListSort,

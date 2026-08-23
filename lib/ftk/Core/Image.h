@@ -148,14 +148,14 @@ namespace ftk
         float getAspect() const;
 
         //! Get the number of bytes used to store an image.
-        size_t getByteCount() const;
+        FTK_API size_t getByteCount() const;
 
-        bool operator == (const ImageInfo&) const;
-        bool operator != (const ImageInfo&) const;
+        FTK_API bool operator == (const ImageInfo&) const;
+        FTK_API bool operator != (const ImageInfo&) const;
     };
 
     //! Get an image information label.
-    std::string getLabel(const ImageInfo&);
+    FTK_API std::string getLabel(const ImageInfo&);
 
     //! Image tags.
     typedef std::map<std::string, std::string> ImageTags;
@@ -211,7 +211,7 @@ namespace ftk
         FTK_API void setTags(const ImageTags&);
 
         //! Get the number of bytes used to store the image data.
-        size_t getByteCount() const;
+        FTK_API size_t getByteCount() const;
 
         //! Get the image data.
         const uint8_t* getData() const;

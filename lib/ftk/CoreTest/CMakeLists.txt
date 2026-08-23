@@ -67,7 +67,9 @@ set(SOURCE
     TimerTest.cpp
     VectorTest.cpp)
 
-add_library(ftkCoreTest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+# Static, for the reason in ftk's TestLib.
+add_library(ftkCoreTest STATIC ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+set_target_properties(ftkCoreTest PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(ftkCoreTest PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

@@ -20,12 +20,12 @@ namespace ftk
         FTK_NON_COPYABLE(IWidget);
 
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
 
-        IWidget();
+        FTK_API IWidget();
 
     public:
         FTK_API virtual ~IWidget() = 0;
@@ -43,7 +43,7 @@ namespace ftk
 
         bool hasProperty(const std::string& key) const;
         std::string getProperty(const std::string& key) const;
-        void setProperty(const std::string& key, const std::string& value);
+        FTK_API void setProperty(const std::string& key, const std::string& value);
 
         ///@}
 
@@ -71,7 +71,7 @@ namespace ftk
         std::shared_ptr<T> getParentT() const;
 
         //! Get the child widget drawing order index.
-        int getChildIndex(const std::shared_ptr<IWidget>&) const;
+        FTK_API int getChildIndex(const std::shared_ptr<IWidget>&) const;
 
         //! Move the child widget to the front of the drawing order.
         FTK_API void moveToFront(const std::shared_ptr<IWidget>&);
@@ -98,7 +98,7 @@ namespace ftk
         void setSizeUpdate(bool value = true);
 
         //! Get the size hint.
-        virtual Size2I getSizeHint() const;
+        FTK_API virtual Size2I getSizeHint() const;
 
         //! Get the horizontal layout stretch.
         Stretch getHStretch() const;

@@ -42,8 +42,8 @@ namespace ftk
         //! Enable logging.
         bool log = true;
 
-        bool operator == (const RenderOptions&) const;
-        bool operator != (const RenderOptions&) const;
+        FTK_API bool operator == (const RenderOptions&) const;
+        FTK_API bool operator != (const RenderOptions&) const;
     };
 
     //! Line drawing options.
@@ -51,8 +51,8 @@ namespace ftk
     {
         float width = 1.F;
 
-        bool operator == (const LineOptions&) const;
-        bool operator != (const LineOptions&) const;
+        FTK_API bool operator == (const LineOptions&) const;
+        FTK_API bool operator != (const LineOptions&) const;
     };
 
     //! Channel display.
@@ -118,8 +118,8 @@ namespace ftk
         ImageFilter minify  = ImageFilter::Linear;
         ImageFilter magnify = ImageFilter::Linear;
 
-        bool operator == (const ImageFilters&) const;
-        bool operator != (const ImageFilters&) const;
+        FTK_API bool operator == (const ImageFilters&) const;
+        FTK_API bool operator != (const ImageFilters&) const;
     };
 
     //! Image options.
@@ -131,8 +131,8 @@ namespace ftk
         ImageFilters     imageFilters;
         bool             cache          = true;
 
-        bool operator == (const ImageOptions&) const;
-        bool operator != (const ImageOptions&) const;
+        FTK_API bool operator == (const ImageOptions&) const;
+        FTK_API bool operator != (const ImageOptions&) const;
     };
         
     FTK_API void to_json(nlohmann::json&, const ImageFilters&);

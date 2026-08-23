@@ -62,10 +62,10 @@ namespace ftk
         void setAccentUnderline(ColorRole);
 
         //! Get whether the button has a popup icon.
-        bool hasPopupIcon() const;
+        FTK_API bool hasPopupIcon() const;
 
         //! Set whether the button has a popup icon.
-        void setPopupIcon(bool);
+        FTK_API void setPopupIcon(bool);
 
 
         FTK_API Size2I getSizeHint() const override;

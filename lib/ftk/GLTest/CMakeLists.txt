@@ -19,7 +19,9 @@ set(SOURCE
     UtilTest.cpp
     WindowTest.cpp)
 
-add_library(ftkGLTest ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+# Static, for the reason in ftk's TestLib.
+add_library(ftkGLTest STATIC ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+set_target_properties(ftkGLTest PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(ftkGLTest PRIVATE ${PROJECT_SOURCE_DIR}/lib ${ftk_GLAD_DIR})
 

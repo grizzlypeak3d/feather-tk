@@ -20,9 +20,9 @@ namespace ftk
         FTK_NON_COPYABLE(RecentFilesModel);
 
     protected:
-        void _init(const std::shared_ptr<Context>&);
+        FTK_API void _init(const std::shared_ptr<Context>&);
 
-        RecentFilesModel();
+        FTK_API RecentFilesModel();
 
     public:
         // Virtual so the Python bindings can downcast subclasses, which

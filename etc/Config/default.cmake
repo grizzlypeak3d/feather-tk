@@ -37,16 +37,28 @@ set(ftk_GCOV OFF CACHE BOOL "Build with gcov support")
 # information -- on macOS SDL announces the duplicate as an Objective-C class
 # implemented twice.
 #
-# Not on Windows. The libraries do carry export macros -- FTK_API, chosen by
-# the FTK_EXPORTS and FTK_STATIC definitions this flag sets -- but FTK_EXPORTS
-# is defined PUBLIC, so a project consuming these libraries compiles their API
-# as dllexport where it should be dllimport. Windows can be shared once that
-# is sorted.
-if(WIN32)
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
-else()
-    set(BUILD_SHARED_LIBS ${ftk_PYTHON} CACHE BOOL "Build shared libraries")
-endif()
+# Windows as well, now. Three things were in the way and none of them was the
+# export macros being absent:
+#
+# * FTK_API_TYPE on a class is empty on Windows -- only the per-member
+#   FTK_API carries the declspec there, where the other platforms get the
+#   whole class from one visibility attribute. The members that had been
+#   marked at the class level alone are marked individually.
+# * OpenTimelineIO defined OTIO_EXPORTS PUBLIC, so everything consuming it
+#   compiled its API as dllexport where it wanted dllimport, and its own
+#   members were marked the same class-at-a-time way. The super build patches
+#   both until that is upstream.
+# * The libraries with no API of their own -- resources, glad, the test
+#   helpers -- are built static. A shared library exporting nothing gets no
+#   import library on Windows, and the first thing to ask for one stops.
+#
+# One wrinkle is left. FTK_API is a single macro for every library in this
+# project rather than one apiece, so a library compiling a sibling's headers
+# has FTK_EXPORTS set for its own API and reads the sibling's as dllexport.
+# Functions live with that -- the linker takes them from the import library --
+# and data does not, so a variable exported across two of these libraries will
+# not link. There is none today.
+set(BUILD_SHARED_LIBS ${ftk_PYTHON} CACHE BOOL "Build shared libraries")
 
 if(APPLE)
     # The deployment target is policy: the oldest system that is supported.

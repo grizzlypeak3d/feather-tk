@@ -75,10 +75,10 @@ namespace ftk
         ///@{
 
         //! Get whether the scrolled area is resizable.
-        bool isAreaResizable() const;
+        FTK_API bool isAreaResizable() const;
 
         //! Set whether the scrolled area is resizable.
-        void setAreaResizable(bool);
+        FTK_API void setAreaResizable(bool);
 
         //! Get the size hint role.
         FTK_API SizeRole getSizeHintRole() const;

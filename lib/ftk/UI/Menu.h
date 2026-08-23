@@ -17,11 +17,11 @@ namespace ftk
     class FTK_API_TYPE Menu : public IMenuPopup
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent);
 
-        Menu();
+        FTK_API Menu();
 
     public:
         FTK_API virtual ~Menu();

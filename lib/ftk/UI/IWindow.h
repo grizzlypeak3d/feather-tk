@@ -34,7 +34,7 @@ namespace ftk
     class FTK_API_TYPE IWindow : public IWidget
     {
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const std::string& title);
@@ -221,7 +221,7 @@ namespace ftk
         FTK_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
-        virtual void _setSize(
+        FTK_API virtual void _setSize(
             const Size2I& windowSize, 
             const Size2I& bufferSize);
 
@@ -235,9 +235,9 @@ namespace ftk
 
         bool _key(Key, bool press, int modifiers);
         void _text(const std::string&);
-        void _cursorEnter(bool enter);
-        void _cursorPos(const V2I&);
-        void _mouseButton(MouseButton, bool press, int modifiers);
+        FTK_API void _cursorEnter(bool enter);
+        FTK_API void _cursorPos(const V2I&);
+        FTK_API void _mouseButton(MouseButton, bool press, int modifiers);
         void _scroll(const V2F&, int modifiers);
         void _drop(const V2I& pos, const std::shared_ptr<IDragDropData>&);
 

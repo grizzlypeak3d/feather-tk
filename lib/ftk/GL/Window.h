@@ -37,7 +37,7 @@ namespace ftk
             FTK_NON_COPYABLE(Window);
 
         protected:
-            Window(
+            FTK_API Window(
                 const std::shared_ptr<Context>&,
                 const std::string& title,
                 const Size2I&,

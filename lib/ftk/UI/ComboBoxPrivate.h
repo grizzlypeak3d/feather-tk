@@ -22,7 +22,7 @@ namespace ftk
     public:
         virtual ~ComboBoxButton();
 
-        static std::shared_ptr<ComboBoxButton> create(
+        FTK_API static std::shared_ptr<ComboBoxButton> create(
             const std::shared_ptr<Context>&,
             const ComboBoxItem&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -57,13 +57,13 @@ namespace ftk
     public:
         virtual ~ComboBoxMenu();
 
-        static std::shared_ptr<ComboBoxMenu> create(
+        FTK_API static std::shared_ptr<ComboBoxMenu> create(
             const std::shared_ptr<Context>&,
             const std::vector<ComboBoxItem>&,
             int currentIndex,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        void setCallback(const std::function<void(int)>&);
+        FTK_API void setCallback(const std::function<void(int)>&);
 
         void setGeometry(const Box2I&) override;
         void keyFocusEvent(bool) override;

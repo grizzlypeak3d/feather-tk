@@ -13,7 +13,7 @@ namespace ftk
         FTK_NON_COPYABLE(IMouseWidget);
 
     protected:
-        void _init(
+        FTK_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
@@ -30,16 +30,16 @@ namespace ftk
         FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     protected:
-        void _setMouseHoverEnabled(bool);
-        void _setMousePressEnabled(
+        FTK_API void _setMouseHoverEnabled(bool);
+        FTK_API void _setMousePressEnabled(
             bool,
             MouseButton = MouseButton::Left,
             int modifiers = -1);
 
-        bool _isMouseInside() const;
-        const V2I& _getMousePos() const;
-        bool _isMousePressed() const;
-        const V2I& _getMousePressPos() const;
+        FTK_API bool _isMouseInside() const;
+        FTK_API const V2I& _getMousePos() const;
+        FTK_API bool _isMousePressed() const;
+        FTK_API const V2I& _getMousePressPos() const;
 
         //! Get the button holding the press, and the modifiers it came with.
         //! None and zero when nothing is pressed.

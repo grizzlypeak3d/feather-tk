@@ -79,23 +79,23 @@ namespace ftk
         bool   seqNegative  = true;
         size_t seqMaxDigits = 9;
 
-        bool operator == (const PathOptions&) const;
-        bool operator != (const PathOptions&) const;
+        FTK_API bool operator == (const PathOptions&) const;
+        FTK_API bool operator != (const PathOptions&) const;
     };
 
     //! Frame sequence.
     struct FTK_API_TYPE FrameSeq
     {
         FrameSeq() = default;
-        explicit FrameSeq(const RangeI64&, int inc = 1);
-        FrameSeq(int64_t, int64_t, int inc = 1);
-        explicit FrameSeq(int64_t);
+        FTK_API explicit FrameSeq(const RangeI64&, int inc = 1);
+        FTK_API FrameSeq(int64_t, int64_t, int inc = 1);
+        FTK_API explicit FrameSeq(int64_t);
 
         RangeI64 range;
         int      inc = 1;
 
-        bool operator == (const FrameSeq&) const;
-        bool operator != (const FrameSeq&) const;
+        FTK_API bool operator == (const FrameSeq&) const;
+        FTK_API bool operator != (const FrameSeq&) const;
     };
 
     //! Convert frames to frame sequences.
@@ -247,7 +247,7 @@ namespace ftk
         ///@{
 
         //! Get whether the path is absolute.
-        bool isAbs() const;
+        FTK_API bool isAbs() const;
 
         //! Test whether this extension matches one in the given list.
         FTK_API bool testExt(const std::vector<std::string>&) const;
@@ -257,13 +257,13 @@ namespace ftk
         //! \name Constants
         ///@{
 
-        static std::string getNumbers();
-        static std::string getPathSeparators();
+        FTK_API static std::string getNumbers();
+        FTK_API static std::string getPathSeparators();
 
         ///@}
 
-        bool operator == (const Path&) const;
-        bool operator != (const Path&) const;
+        FTK_API bool operator == (const Path&) const;
+        FTK_API bool operator != (const Path&) const;
 
     private:
         void _parse(const PathOptions&);
@@ -271,7 +271,17 @@ namespace ftk
 
         std::string _path;
         PathOptions _options;
-        static const std::pair<size_t, size_t> _invalid;
+        // constexpr, so it needs no definition of its own and no export.
+        // It is data, and data is where a single FTK_API across several
+        // libraries shows: ftkUI compiles ftkCore's headers with FTK_EXPORTS
+        // set for its own API, so it sees this as dllexport where it wants
+        // dllimport. A function survives that -- the linker takes it from the
+        // import library -- and a variable does not:
+        //
+        //     error LNK2001: unresolved external symbol
+        //     private: static struct std::pair<...> const ftk::Path::_invalid
+        static constexpr std::pair<size_t, size_t> _invalid{
+            std::string::npos, std::string::npos };
         std::pair<size_t, size_t> _protocol = _invalid;
         std::pair<size_t, size_t> _dir = _invalid;
         std::pair<size_t, size_t> _base = _invalid;
@@ -312,8 +322,8 @@ namespace ftk
         size_t                   seqMaxDigits = 9;
         bool                     hidden       = false;
 
-        bool operator == (const DirListOptions&) const;
-        bool operator != (const DirListOptions&) const;
+        FTK_API bool operator == (const DirListOptions&) const;
+        FTK_API bool operator != (const DirListOptions&) const;
     };
 
     //! Directory list entry.
@@ -324,8 +334,8 @@ namespace ftk
         size_t                          size = 0;
         std::filesystem::file_time_type time;
 
-        bool operator == (const DirEntry&) const;
-        bool operator != (const DirEntry&) const;
+        FTK_API bool operator == (const DirEntry&) const;
+        FTK_API bool operator != (const DirEntry&) const;
     };
 
     //! List directory contents.

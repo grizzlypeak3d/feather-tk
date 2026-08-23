@@ -49,7 +49,7 @@ namespace ftk
         bool colorRoleChange    = false;
         bool fontChange         = false;
 
-        bool hasChanges() const;
+        FTK_API bool hasChanges() const;
     };
 
     //! Size hint event.
