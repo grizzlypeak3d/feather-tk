@@ -35,7 +35,7 @@ namespace ftk
             Count,
             First = Pos2_F32
         };
-        FTK_ENUM(VBOType);
+        FTK_ENUM(FTK_GL_API, VBOType);
 
         //! Get the number of bytes used to store vertex buffer object types.
         FTK_GL_API std::size_t getByteCount(VBOType);

@@ -24,7 +24,7 @@ namespace ftk
         Count,
         First = Message
     };
-    FTK_ENUM(LogType);
+    FTK_ENUM(FTK_CORE_API, LogType);
 
     //! Log item.
     struct FTK_CORE_API_TYPE LogItem

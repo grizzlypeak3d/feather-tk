@@ -41,7 +41,7 @@ namespace ftk
         Count,
         First = Home
     };
-    FTK_ENUM(UserPath);
+    FTK_ENUM(FTK_CORE_API, UserPath);
 
     //! Get a user path.
     FTK_CORE_API std::filesystem::path getUserPath(UserPath);
@@ -307,7 +307,7 @@ namespace ftk
         Count,
         First = Name
     };
-    FTK_ENUM(DirListSort);
+    FTK_ENUM(FTK_CORE_API, DirListSort);
 
     //! Directory list options.
     struct FTK_CORE_API_TYPE DirListOptions

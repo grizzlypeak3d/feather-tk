@@ -31,7 +31,7 @@ namespace ftk
         Count,
         First = North
     };
-    FTK_ENUM(MDIResize);
+    FTK_ENUM(FTK_UI_API, MDIResize);
 
     //! Get a resize box.
     Box2I getResizeBox(MDIResize, const Box2I&, int handle);

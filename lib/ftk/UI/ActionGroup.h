@@ -26,7 +26,7 @@ namespace ftk
         Count,
         First = Click
     };
-    FTK_ENUM(ActionGroupType);
+    FTK_ENUM(FTK_UI_API, ActionGroupType);
 
     //! A group of related actions.
     //!

@@ -28,7 +28,7 @@ namespace ftk
         Count,
         First = Regular
     };
-    FTK_ENUM(FontType);
+    FTK_ENUM(FTK_CORE_API, FontType);
 
     //! Get a built-in font.
     FTK_CORE_API std::string getDefaultFont(FontType);

@@ -114,7 +114,7 @@ namespace ftk
         Count,
         First = None
     };
-    FTK_ENUM(MouseButton);
+    FTK_ENUM(FTK_UI_API, MouseButton);
 
     //! Mouse move event.
     struct FTK_UI_API_TYPE MouseMoveEvent
@@ -339,7 +339,7 @@ namespace ftk
         Count,
         First = Unknown
     };
-    FTK_ENUM(Key);
+    FTK_ENUM(FTK_UI_API, Key);
 
     //! Get whether the given key is a control key.
     bool isControlKey(Key);

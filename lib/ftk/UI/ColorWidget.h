@@ -109,7 +109,7 @@ namespace ftk
         Count,
         First = RGB
     };
-    FTK_ENUM(ColorWidgetMode);
+    FTK_ENUM(FTK_UI_API, ColorWidgetMode);
 
     //! Color widget.
     //!

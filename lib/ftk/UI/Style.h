@@ -45,7 +45,7 @@ namespace ftk
         Count,
         First = None
     };
-    FTK_ENUM(SizeRole);
+    FTK_ENUM(FTK_UI_API, SizeRole);
 
     //! Get the default size roles.
     FTK_UI_API std::map<SizeRole, int> getDefaultSizeRoles();
@@ -81,7 +81,7 @@ namespace ftk
         Count,
         First = None
     };
-    FTK_ENUM(ColorRole);
+    FTK_ENUM(FTK_UI_API, ColorRole);
 
     //! Get default color roles.
     FTK_UI_API std::map<ColorRole, Color4F> getDefaultColorRoles();

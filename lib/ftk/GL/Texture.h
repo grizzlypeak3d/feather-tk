@@ -46,7 +46,7 @@ namespace ftk
             Count,
             First = L_U8
         };
-        FTK_ENUM(TextureType);
+        FTK_ENUM(FTK_GL_API, TextureType);
 
         //! Get a texture type for the given image type.
         FTK_GL_API TextureType getTextureType(ImageType);

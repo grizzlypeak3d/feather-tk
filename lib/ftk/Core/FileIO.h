@@ -26,7 +26,7 @@ namespace ftk
         Count,
         First = Read
     };
-    FTK_ENUM(FileMode);
+    FTK_ENUM(FTK_CORE_API, FileMode);
 
     //! File read type.
     enum class FTK_CORE_API_TYPE FileRead
@@ -37,7 +37,7 @@ namespace ftk
         Count,
         First = Normal
     };
-    FTK_ENUM(FileRead);
+    FTK_ENUM(FTK_CORE_API, FileRead);
 
     //! Expected access pattern, used as a read ahead hint.
     //!
@@ -53,7 +53,7 @@ namespace ftk
         Count,
         First = Sequential
     };
-    FTK_ENUM(FileAccess);
+    FTK_ENUM(FTK_CORE_API, FileAccess);
 
     //! In-memory file.
     struct FTK_CORE_API_TYPE MemFile
@@ -79,7 +79,7 @@ namespace ftk
         Count,
         First = Set
     };
-    FTK_ENUM(SeekMode);
+    FTK_ENUM(FTK_CORE_API, SeekMode);
 
     //! File I/O.
     class FTK_CORE_API_TYPE FileIO : public std::enable_shared_from_this<FileIO>

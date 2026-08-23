@@ -22,7 +22,7 @@ namespace ftk
         Count,
         First = Click
     };
-    FTK_ENUM(ButtonGroupType);
+    FTK_ENUM(FTK_UI_API, ButtonGroupType);
 
     //! Button group.
     class FTK_UI_API_TYPE ButtonGroup : public std::enable_shared_from_this<ButtonGroup>

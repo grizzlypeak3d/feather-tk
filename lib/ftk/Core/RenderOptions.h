@@ -68,7 +68,7 @@ namespace ftk
         Count,
         First = Color
     };
-    FTK_ENUM(ChannelDisplay);
+    FTK_ENUM(FTK_CORE_API, ChannelDisplay);
 
     //! Input video levels.
     enum class FTK_CORE_API_TYPE InputVideoLevels
@@ -80,7 +80,7 @@ namespace ftk
         Count,
         First = FromFile
     };
-    FTK_ENUM(InputVideoLevels);
+    FTK_ENUM(FTK_CORE_API, InputVideoLevels);
 
     //! Alpha channel blending.
     //!
@@ -95,7 +95,7 @@ namespace ftk
         Count,
         First = None
     };
-    FTK_ENUM(AlphaBlend);
+    FTK_ENUM(FTK_CORE_API, AlphaBlend);
 
     //! Image filtering.
     enum class FTK_CORE_API_TYPE ImageFilter
@@ -111,7 +111,7 @@ namespace ftk
         Count,
         First = Nearest
     };
-    FTK_ENUM(ImageFilter);
+    FTK_ENUM(FTK_CORE_API, ImageFilter);
 
     //! Image filters.
     struct FTK_CORE_API_TYPE ImageFilters

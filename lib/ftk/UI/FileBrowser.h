@@ -32,7 +32,7 @@ namespace ftk
         Count,
         First = Open
     };
-    FTK_ENUM(FileBrowserMode);
+    FTK_ENUM(FTK_UI_API, FileBrowserMode);
 
     //! File browser thumbnails.
     //!
@@ -49,7 +49,7 @@ namespace ftk
         Count,
         First = Off
     };
-    FTK_ENUM(FileBrowserThumbnails);
+    FTK_ENUM(FTK_UI_API, FileBrowserThumbnails);
 
     //! Get the height of a thumbnail, from the style's size for one.
     FTK_UI_API int getThumbnailHeight(FileBrowserThumbnails, int sizeRole);

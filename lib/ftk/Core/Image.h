@@ -64,7 +64,7 @@ namespace ftk
         Count,
         First = None
     };
-    FTK_ENUM(ImageType);
+    FTK_ENUM(FTK_CORE_API, ImageType);
 
     //! Get the number of channels for the given image type.
     FTK_CORE_API int getChannelCount(ImageType);
@@ -81,7 +81,7 @@ namespace ftk
         Count,
         First = FullRange
     };
-    FTK_ENUM(VideoLevels);
+    FTK_ENUM(FTK_CORE_API, VideoLevels);
 
     //! YUV coefficients.
     enum class FTK_CORE_API_TYPE YUVCoefficients
@@ -92,7 +92,7 @@ namespace ftk
         Count,
         First = REC709
     };
-    FTK_ENUM(YUVCoefficients);
+    FTK_ENUM(FTK_CORE_API, YUVCoefficients);
 
     //! Get YUV coefficients.
     FTK_CORE_API V4F getYUVCoefficients(YUVCoefficients);

@@ -33,7 +33,7 @@ namespace ftk
         Count,
         First = MSB
     };
-    FTK_ENUM(Endian);
+    FTK_ENUM(FTK_CORE_API, Endian);
 
     //! Get the current endian.
     FTK_CORE_API Endian getEndian();

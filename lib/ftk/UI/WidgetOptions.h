@@ -21,7 +21,7 @@ namespace ftk
         Count,
         First = Horizontal
     };
-    FTK_ENUM(Orientation);
+    FTK_ENUM(FTK_UI_API, Orientation);
 
     //! Layout stretch.
     enum class FTK_UI_API_TYPE Stretch
@@ -32,7 +32,7 @@ namespace ftk
         Count,
         First = Fixed
     };
-    FTK_ENUM(Stretch);
+    FTK_ENUM(FTK_UI_API, Stretch);
 
     //! Horizontal alignment.
     enum class FTK_UI_API_TYPE HAlign
@@ -45,7 +45,7 @@ namespace ftk
         Count,
         First = Left
     };
-    FTK_ENUM(HAlign);
+    FTK_ENUM(FTK_UI_API, HAlign);
 
     //! Vertical alignment.
     enum class FTK_UI_API_TYPE VAlign
@@ -58,5 +58,5 @@ namespace ftk
         Count,
         First = Top
     };
-    FTK_ENUM(VAlign);
+    FTK_ENUM(FTK_UI_API, VAlign);
 }

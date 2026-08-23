@@ -22,7 +22,7 @@ namespace ftk
         Count,
         First = Both
     };
-    FTK_ENUM(ScrollType);
+    FTK_ENUM(FTK_UI_API, ScrollType);
 
     //! Scroll area.
     class FTK_UI_API_TYPE ScrollArea : public IWidget

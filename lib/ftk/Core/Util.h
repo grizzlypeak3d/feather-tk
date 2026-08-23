@@ -30,13 +30,23 @@
 //! * iostream
 //! * string
 //! * vector
-#define FTK_ENUM(ENUM) \
-    FTK_CORE_API std::vector<ENUM> get##ENUM##Enums(); \
-    FTK_CORE_API std::vector<std::string> get##ENUM##Labels(); \
-    FTK_CORE_API std::string getLabel(ENUM); \
-    FTK_CORE_API std::string to_string(ENUM); \
-    FTK_CORE_API bool from_string(const std::string&, ENUM&); \
-    FTK_CORE_API std::ostream& operator << (std::ostream&, ENUM)
+//!
+//! API is the export macro of the library the enum belongs to. This macro
+//! cannot know which that is -- it is expanded wherever it is used, and
+//! every library here has an export macro of its own -- so the caller names
+//! it. Naming another library's macro declares these as imported from there
+//! and then defines them here, which the compiler reports as:
+//!
+//!     warning C4273: inconsistent dll linkage
+//!
+//! A library built static has no export macro and passes nothing.
+#define FTK_ENUM(API, ENUM) \
+    API std::vector<ENUM> get##ENUM##Enums(); \
+    API std::vector<std::string> get##ENUM##Labels(); \
+    API std::string getLabel(ENUM); \
+    API std::string to_string(ENUM); \
+    API bool from_string(const std::string&, ENUM&); \
+    API std::ostream& operator << (std::ostream&, ENUM)
 
 //! Implementation macro for enum utilities.
 //! 

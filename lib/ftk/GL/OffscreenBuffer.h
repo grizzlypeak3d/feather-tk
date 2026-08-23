@@ -33,7 +33,7 @@ namespace ftk
             Count,
             First = None
         };
-        FTK_ENUM(OffscreenDepth);
+        FTK_ENUM(FTK_GL_API, OffscreenDepth);
 
         //! Default offscreen depth buffer.
 #if defined(FTK_API_GL_4_1)
@@ -51,7 +51,7 @@ namespace ftk
             Count,
             First = None
         };
-        FTK_ENUM(OffscreenStencil);
+        FTK_ENUM(FTK_GL_API, OffscreenStencil);
 
         //! Offscreen buffer multisampling.
         enum class FTK_GL_API_TYPE OffscreenSampling
@@ -65,7 +65,7 @@ namespace ftk
             Count,
             First = None
         };
-        FTK_ENUM(OffscreenSampling);
+        FTK_ENUM(FTK_GL_API, OffscreenSampling);
 
         //! Offscreen buffer options.
         struct FTK_GL_API_TYPE OffscreenBufferOptions

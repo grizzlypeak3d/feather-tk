@@ -22,7 +22,7 @@ namespace ftk
         Count,
         First = U8
     };
-    FTK_ENUM(WindowBufferType);
+    FTK_ENUM(FTK_UI_API, WindowBufferType);
 
     //! Default window buffer type.
 #if defined(FTK_API_GL_4_1)

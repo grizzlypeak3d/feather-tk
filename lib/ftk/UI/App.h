@@ -47,7 +47,7 @@ namespace ftk
         Count,
         First = Dark
     };
-    FTK_ENUM(ColorStyle);
+    FTK_ENUM(FTK_UI_API, ColorStyle);
 
     //! Get custom color roles.
     FTK_UI_API std::map<ColorRole, Color4F> getCustomColorRoles();

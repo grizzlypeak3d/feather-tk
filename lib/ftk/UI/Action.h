@@ -47,7 +47,7 @@ namespace ftk
         Count,
         First = None
     };
-    FTK_ENUM(ActionCheckType);
+    FTK_ENUM(FTK_UI_API, ActionCheckType);
 
     //! Action.
     class FTK_UI_API_TYPE Action : public std::enable_shared_from_this<Action>
