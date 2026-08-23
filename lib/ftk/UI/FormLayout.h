@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Form layout.
-    class FTK_API_TYPE FormLayout : public IContainer
+    class FTK_UI_API_TYPE FormLayout : public IContainer
     {
     protected:
         void _init(
@@ -25,51 +26,51 @@ namespace ftk
         virtual ~FormLayout();
 
         //! Create a new layout.
-        FTK_API static std::shared_ptr<FormLayout> create(
+        FTK_UI_API static std::shared_ptr<FormLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Add a row.
-        FTK_API int addRow(const std::string&, const std::shared_ptr<IWidget>&);
+        FTK_UI_API int addRow(const std::string&, const std::shared_ptr<IWidget>&);
 
         //! Remove a row.
-        FTK_API void removeRow(int);
+        FTK_UI_API void removeRow(int);
 
         //! Remove a row.
-        FTK_API void removeRow(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void removeRow(const std::shared_ptr<IWidget>&);
 
         //! Clear all of the rows.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! Set the text.
-        FTK_API void setText(int, const std::string&);
+        FTK_UI_API void setText(int, const std::string&);
 
         //! Set the text.
-        FTK_API void setText(const std::shared_ptr<IWidget>&, const std::string&);
+        FTK_UI_API void setText(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Set row visibility.
-        FTK_API void setRowVisible(int, bool);
+        FTK_UI_API void setRowVisible(int, bool);
 
         //! Set row visibility.
-        FTK_API void setRowVisible(const std::shared_ptr<IWidget>&, bool);
+        FTK_UI_API void setRowVisible(const std::shared_ptr<IWidget>&, bool);
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
         //! Get the spacing role.
-        FTK_API SizeRole getSpacingRole() const;
+        FTK_UI_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        FTK_API void setSpacingRole(SizeRole);
+        FTK_UI_API void setSpacingRole(SizeRole);
 
         //! Add a spacer.
-        FTK_API int addSpacer();
+        FTK_UI_API int addSpacer();
 
         //! Add a spacer.
-        FTK_API int addSpacer(SizeRole);
+        FTK_UI_API int addSpacer(SizeRole);
 
 
     private:

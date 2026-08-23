@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IButton.h>
 
 namespace ftk
@@ -13,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Tool button.
-    class FTK_API_TYPE ToolButton : public IButton
+    class FTK_UI_API_TYPE ToolButton : public IButton
     {
     protected:
         void _init(
@@ -24,21 +25,21 @@ namespace ftk
         ToolButton();
 
     public:
-        FTK_API virtual ~ToolButton();
+        FTK_UI_API virtual ~ToolButton();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ToolButton> create(
+        FTK_UI_API static std::shared_ptr<ToolButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ToolButton> create(
+        FTK_UI_API static std::shared_ptr<ToolButton> create(
             const std::shared_ptr<Context>&,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ToolButton> create(
+        FTK_UI_API static std::shared_ptr<ToolButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<Action>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -62,24 +63,24 @@ namespace ftk
         void setAccentUnderline(ColorRole);
 
         //! Get whether the button has a popup icon.
-        FTK_API bool hasPopupIcon() const;
+        FTK_UI_API bool hasPopupIcon() const;
 
         //! Set whether the button has a popup icon.
-        FTK_API void setPopupIcon(bool);
+        FTK_UI_API void setPopupIcon(bool);
 
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void setAcceptsKeyFocus(bool) override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void setAcceptsKeyFocus(bool) override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void clipEvent(const Box2I&, bool) override;
+        FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     protected:
-        FTK_API void _sizeDirty() override;
+        FTK_UI_API void _sizeDirty() override;
 
     private:
         FTK_PRIVATE();

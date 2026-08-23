@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/Export.h>
 
 #include <memory>
@@ -13,6 +14,6 @@ namespace ftk
     class Context;
 
     //! Initialize the UI library.
-    void FTK_API uiInit(const std::shared_ptr<Context>&);
+    void FTK_UI_API uiInit(const std::shared_ptr<Context>&);
 }
 

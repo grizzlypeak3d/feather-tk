@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Spacer widget.
-    class FTK_API_TYPE Spacer : public IWidget
+    class FTK_UI_API_TYPE Spacer : public IWidget
     {
     protected:
         void _init(
@@ -22,23 +23,23 @@ namespace ftk
         Spacer();
 
     public:
-        FTK_API virtual ~Spacer();
+        FTK_UI_API virtual ~Spacer();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<Spacer> create(
+        FTK_UI_API static std::shared_ptr<Spacer> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the spacing role.
-        FTK_API SizeRole getSpacingRole() const;
+        FTK_UI_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        FTK_API void setSpacingRole(SizeRole);
+        FTK_UI_API void setSpacingRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

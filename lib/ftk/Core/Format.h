@@ -19,10 +19,10 @@ namespace ftk
     //! std::string result = Format("Testing {2} {1} {0}").arg("one").arg("two").arg("three");
     //!
     //! Results in the string "Testing three two one".
-    class FTK_API_TYPE Format
+    class FTK_CORE_API_TYPE Format
     {
     public:
-        FTK_API Format(const std::string&);
+        FTK_CORE_API Format(const std::string&);
 
         //! \name Arguments
         //! Replace the next argument in the string with the given value.
@@ -31,14 +31,14 @@ namespace ftk
         //! object is returned so that you can chain calls together.
         ///@{
 
-        FTK_API Format& arg(const std::string&, int width = 0);
-        FTK_API Format& arg(int, int width = 0, char pad = ' ');
-        FTK_API Format& arg(int8_t, int width = 0, char pad = ' ');
-        FTK_API Format& arg(uint8_t, int width = 0, char pad = ' ');
-        FTK_API Format& arg(int16_t, int width = 0, char pad = ' ');
-        FTK_API Format& arg(uint16_t, int width = 0, char pad = ' ');
-        FTK_API Format& arg(float, int precision = -1, int width = 0, char pad = ' ');
-        FTK_API Format& arg(double, int precision = -1, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(const std::string&, int width = 0);
+        FTK_CORE_API Format& arg(int, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(int8_t, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(uint8_t, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(int16_t, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(uint16_t, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(float, int precision = -1, int width = 0, char pad = ' ');
+        FTK_CORE_API Format& arg(double, int precision = -1, int width = 0, char pad = ' ');
         template<typename T>
         Format& arg(T);
 
@@ -60,7 +60,7 @@ namespace ftk
         std::string _error;
     };
         
-    FTK_API std::ostream& operator << (std::ostream&, const Format&);
+    FTK_CORE_API std::ostream& operator << (std::ostream&, const Format&);
         
     ///@}
 }

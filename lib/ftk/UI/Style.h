@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FontSystem.h>
@@ -14,7 +15,7 @@ namespace ftk
     ///@{
 
     //! Size roles.
-    enum class FTK_API_TYPE SizeRole
+    enum class FTK_UI_API_TYPE SizeRole
     {
         None,
         Margin,
@@ -47,10 +48,10 @@ namespace ftk
     FTK_ENUM(SizeRole);
 
     //! Get the default size roles.
-    FTK_API std::map<SizeRole, int> getDefaultSizeRoles();
+    FTK_UI_API std::map<SizeRole, int> getDefaultSizeRoles();
 
     //! Color roles.
-    enum class FTK_API_TYPE ColorRole
+    enum class FTK_UI_API_TYPE ColorRole
     {
         None,
 
@@ -83,13 +84,13 @@ namespace ftk
     FTK_ENUM(ColorRole);
 
     //! Get default color roles.
-    FTK_API std::map<ColorRole, Color4F> getDefaultColorRoles();
+    FTK_UI_API std::map<ColorRole, Color4F> getDefaultColorRoles();
 
     //! Get light color roles.
-    FTK_API std::map<ColorRole, Color4F> getLightColorRoles();
+    FTK_UI_API std::map<ColorRole, Color4F> getLightColorRoles();
 
     //! Color controls.
-    struct FTK_API_TYPE ColorControls
+    struct FTK_UI_API_TYPE ColorControls
     {
         float brightness = 1.F;
         float contrast = 1.F;
@@ -99,19 +100,19 @@ namespace ftk
         //! this dims toward the underlying surface.
         float disabledAlpha = .5F;
 
-        FTK_API bool operator == (const ColorControls&) const;
-        FTK_API bool operator != (const ColorControls&) const;
+        FTK_UI_API bool operator == (const ColorControls&) const;
+        FTK_UI_API bool operator != (const ColorControls&) const;
     };
 
     //! Get the default color controls.
-    FTK_API ColorControls getDefaultColorControls();
+    FTK_UI_API ColorControls getDefaultColorControls();
 
     //! Get color controls for the light style.
-    FTK_API ColorControls getLightColorControls();
+    FTK_UI_API ColorControls getLightColorControls();
 
 
     //! Style.
-    class FTK_API_TYPE Style : public std::enable_shared_from_this<Style>
+    class FTK_UI_API_TYPE Style : public std::enable_shared_from_this<Style>
     {
         FTK_NON_COPYABLE(Style);
 
@@ -121,57 +122,57 @@ namespace ftk
         Style();
 
     public:
-        FTK_API ~Style();
+        FTK_UI_API ~Style();
 
         //! Create a new style.
-        FTK_API static std::shared_ptr<Style> create(
+        FTK_UI_API static std::shared_ptr<Style> create(
             const std::shared_ptr<Context>&);
 
         //! \name Size Roles
         ///@{
 
-        FTK_API const std::map<SizeRole, int>& getSizeRoles() const;
-        FTK_API std::shared_ptr<IObservableMap<SizeRole, int> > observeSizeRoles() const;
-        FTK_API void setSizeRoles(const std::map<SizeRole, int>&);
+        FTK_UI_API const std::map<SizeRole, int>& getSizeRoles() const;
+        FTK_UI_API std::shared_ptr<IObservableMap<SizeRole, int> > observeSizeRoles() const;
+        FTK_UI_API void setSizeRoles(const std::map<SizeRole, int>&);
 
-        FTK_API int getSizeRole(SizeRole, float scale) const;
+        FTK_UI_API int getSizeRole(SizeRole, float scale) const;
 
         ///@}
 
         //! \name Color Roles
         ///@{
 
-        FTK_API const std::map<ColorRole, Color4F>& getColorRoles() const;
-        FTK_API std::shared_ptr<IObservableMap<ColorRole, Color4F> > observeColorRoles() const;
-        FTK_API void setColorRoles(const std::map<ColorRole, Color4F>&);
+        FTK_UI_API const std::map<ColorRole, Color4F>& getColorRoles() const;
+        FTK_UI_API std::shared_ptr<IObservableMap<ColorRole, Color4F> > observeColorRoles() const;
+        FTK_UI_API void setColorRoles(const std::map<ColorRole, Color4F>&);
 
-        FTK_API Color4F getColorRole(ColorRole) const;
+        FTK_UI_API Color4F getColorRole(ColorRole) const;
 
         //! Get a color role for a widget state. When enabled is false the
         //! color's alpha is multiplied by ColorControls::disabledAlpha,
         //! dimming it toward the surface it is drawn over.
-        FTK_API Color4F getColorRole(ColorRole, bool enabled) const;
+        FTK_UI_API Color4F getColorRole(ColorRole, bool enabled) const;
 
         ///@}
 
         //! \name Color Controls
         ///@{
 
-        FTK_API const ColorControls& getColorControls() const;
-        FTK_API std::shared_ptr<IObservable<ColorControls> > observeColorControls() const;
-        FTK_API void setColorControls(const ColorControls&);
+        FTK_UI_API const ColorControls& getColorControls() const;
+        FTK_UI_API std::shared_ptr<IObservable<ColorControls> > observeColorControls() const;
+        FTK_UI_API void setColorControls(const ColorControls&);
 
         ///@}
 
         //! \name Fonts
         ///@{
 
-        FTK_API const std::map<FontType, std::string>& getFonts() const;
-        FTK_API std::shared_ptr<IObservableMap<FontType, std::string> > observeFonts() const;
-        FTK_API void setFonts(const std::map<FontType, std::string>&);
+        FTK_UI_API const std::map<FontType, std::string>& getFonts() const;
+        FTK_UI_API std::shared_ptr<IObservableMap<FontType, std::string> > observeFonts() const;
+        FTK_UI_API void setFonts(const std::map<FontType, std::string>&);
 
-        FTK_API FontInfo getFont(FontType, float scale) const;
-        FTK_API FontInfo getFont(FontType, int size, float scale) const;
+        FTK_UI_API FontInfo getFont(FontType, float scale) const;
+        FTK_UI_API FontInfo getFont(FontType, int size, float scale) const;
 
         ///@}
 
@@ -181,9 +182,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    FTK_API void to_json(nlohmann::json&, const ColorControls&);
+    FTK_UI_API void to_json(nlohmann::json&, const ColorControls&);
 
-    FTK_API void from_json(const nlohmann::json&, ColorControls&);
+    FTK_UI_API void from_json(const nlohmann::json&, ColorControls&);
 
     ///@}
 }

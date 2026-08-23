@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/ComboBox.h>
 #include <ftk/UI/IButton.h>
 #include <ftk/UI/IMenuPopup.h>
@@ -22,7 +23,7 @@ namespace ftk
     public:
         virtual ~ComboBoxButton();
 
-        FTK_API static std::shared_ptr<ComboBoxButton> create(
+        FTK_UI_API static std::shared_ptr<ComboBoxButton> create(
             const std::shared_ptr<Context>&,
             const ComboBoxItem&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -57,13 +58,13 @@ namespace ftk
     public:
         virtual ~ComboBoxMenu();
 
-        FTK_API static std::shared_ptr<ComboBoxMenu> create(
+        FTK_UI_API static std::shared_ptr<ComboBoxMenu> create(
             const std::shared_ptr<Context>&,
             const std::vector<ComboBoxItem>&,
             int currentIndex,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        FTK_API void setCallback(const std::function<void(int)>&);
+        FTK_UI_API void setCallback(const std::function<void(int)>&);
 
         void setGeometry(const Box2I&) override;
         void keyFocusEvent(bool) override;

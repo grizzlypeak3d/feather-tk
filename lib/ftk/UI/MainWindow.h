@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Window.h>
 
 namespace ftk
@@ -11,39 +12,39 @@ namespace ftk
     class MenuBar;
 
     //! Main window.
-    class FTK_API_TYPE MainWindow : public Window
+    class FTK_UI_API_TYPE MainWindow : public Window
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const Size2I&);
 
-        FTK_API MainWindow();
+        FTK_UI_API MainWindow();
 
     public:
-        FTK_API virtual ~MainWindow();
+        FTK_UI_API virtual ~MainWindow();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<MainWindow> create(
+        FTK_UI_API static std::shared_ptr<MainWindow> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const Size2I& = Size2I(1280, 960));
 
         //! Get the menu bar.
-        FTK_API const std::shared_ptr<MenuBar>& getMenuBar() const;
+        FTK_UI_API const std::shared_ptr<MenuBar>& getMenuBar() const;
 
         //! Set the menu bar.
-        FTK_API void setMenuBar(const std::shared_ptr<MenuBar>&);
+        FTK_UI_API void setMenuBar(const std::shared_ptr<MenuBar>&);
 
         //! Get the central widget.
-        FTK_API const std::shared_ptr<IWidget>& getWidget() const;
+        FTK_UI_API const std::shared_ptr<IWidget>& getWidget() const;
 
         //! Set the central widget.
-        FTK_API void setWidget(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void setWidget(const std::shared_ptr<IWidget>&);
 
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         FTK_PRIVATE();

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/GL/Export.h>
 #include <ftk/Core/IRender.h>
 
 #include <ftk/Core/LRUCache.h>
@@ -18,7 +19,7 @@ namespace ftk
         ///@{
         
         //! OpenGL renderer.
-        class FTK_API_TYPE Render : public IRender
+        class FTK_GL_API_TYPE Render : public IRender
         {
         protected:
             void _init(
@@ -28,82 +29,82 @@ namespace ftk
             Render();
 
         public:
-            FTK_API virtual ~Render();
+            FTK_GL_API virtual ~Render();
 
             //! Create a new renderer.
-            FTK_API static std::shared_ptr<Render> create(
+            FTK_GL_API static std::shared_ptr<Render> create(
                 const std::shared_ptr<LogSystem>&,
                 const std::shared_ptr<FontSystem>&);
 
             //! Get a shader.
-            FTK_API std::shared_ptr<Shader> getShader(const std::string&);
+            FTK_GL_API std::shared_ptr<Shader> getShader(const std::string&);
 
-            FTK_API void begin(
+            FTK_GL_API void begin(
                 const Size2I&,
                 const RenderOptions& = RenderOptions()) override;
-            FTK_API void end() override;
-            FTK_API Size2I getRenderSize() const override;
-            FTK_API void setRenderSize(const Size2I&) override;
-            FTK_API RenderOptions getRenderOptions() const override;
-            FTK_API Box2I getViewport() const override;
-            FTK_API void setViewport(const Box2I&) override;
-            FTK_API void clearViewport(const Color4F&) override;
-            FTK_API bool getClipRectEnabled() const override;
-            FTK_API void setClipRectEnabled(bool) override;
-            FTK_API Box2I getClipRect() const override;
-            FTK_API void setClipRect(const Box2I&) override;
-            FTK_API M44F getTransform() const override;
-            FTK_API void setTransform(const M44F&) override;
-            FTK_API void drawRect(
+            FTK_GL_API void end() override;
+            FTK_GL_API Size2I getRenderSize() const override;
+            FTK_GL_API void setRenderSize(const Size2I&) override;
+            FTK_GL_API RenderOptions getRenderOptions() const override;
+            FTK_GL_API Box2I getViewport() const override;
+            FTK_GL_API void setViewport(const Box2I&) override;
+            FTK_GL_API void clearViewport(const Color4F&) override;
+            FTK_GL_API bool getClipRectEnabled() const override;
+            FTK_GL_API void setClipRectEnabled(bool) override;
+            FTK_GL_API Box2I getClipRect() const override;
+            FTK_GL_API void setClipRect(const Box2I&) override;
+            FTK_GL_API M44F getTransform() const override;
+            FTK_GL_API void setTransform(const M44F&) override;
+            FTK_GL_API void drawRect(
                 const Box2F&,
                 const Color4F&) override;
-            FTK_API void drawRects(
+            FTK_GL_API void drawRects(
                 const std::vector<Box2F>&,
                 const Color4F&) override;
-            FTK_API void drawLine(
+            FTK_GL_API void drawLine(
                 const V2F&,
                 const V2F&,
                 const Color4F&,
                 const LineOptions& = LineOptions()) override;
-            FTK_API void drawLines(
+            FTK_GL_API void drawLines(
                 const std::vector<std::pair<V2F, V2F> >&,
                 const Color4F&,
                 const LineOptions& = LineOptions()) override;
-            FTK_API void drawMesh(
+            FTK_GL_API void drawMesh(
                 const TriMesh2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const V2F& pos = V2F()) override;
-            FTK_API void drawColorMesh(
+            FTK_GL_API void drawColorMesh(
                 const TriMesh2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const V2F& pos = V2F()) override;
-            FTK_API void drawTextureScaled(
+            FTK_GL_API void drawTextureScaled(
                 unsigned int,
                 const Size2I& sourceSize,
                 const Box2I&,
                 bool mirrorV = true) override;
-            FTK_API void drawTexture(
+            FTK_GL_API void drawTexture(
                 unsigned int,
                 const Box2I&,
                 bool mirrorV = false,
                 const Color4F& = Color4F(1.F, 1.F, 1.F),
                 AlphaBlend = AlphaBlend::Straight) override;
-            FTK_API void drawText(
+            FTK_GL_API void drawText(
                 const std::vector<std::shared_ptr<Glyph> >&,
                 const FontMetrics&,
                 const V2F& position,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F)) override;
-            FTK_API void drawImage(
+            FTK_GL_API void drawImage(
                 const std::shared_ptr<Image>&,
                 const TriMesh2F&,
                 const Color4F & = Color4F(1.F, 1.F, 1.F, 1.F),
                 const ImageOptions & = ImageOptions()) override;
-            FTK_API void drawImage(
+            FTK_GL_API void drawImage(
                 const std::shared_ptr<Image>&,
                 const Box2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const ImageOptions& = ImageOptions()) override;
-            FTK_API RenderDiag getDiag() const override;
+            FTK_GL_API RenderDiag getDiag() const override;
 
         private:
             std::vector<std::shared_ptr<Texture> > _getTextures(
@@ -147,10 +148,10 @@ namespace ftk
         };
 
         //! OpenGL render factory.
-        class FTK_API_TYPE RenderFactory : public IRenderFactory
+        class FTK_GL_API_TYPE RenderFactory : public IRenderFactory
         {
         public:
-            FTK_API std::shared_ptr<IRender> createRender(
+            FTK_GL_API std::shared_ptr<IRender> createRender(
                 const std::shared_ptr<LogSystem>&,
                 const std::shared_ptr<FontSystem>&) override;
         };

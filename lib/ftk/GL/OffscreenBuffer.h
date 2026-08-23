@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/GL/Export.h>
 #include <ftk/GL/Texture.h>
 
 #include <sstream>
@@ -22,7 +23,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
         //! Offscreen buffer depth size.
-        enum class FTK_API_TYPE OffscreenDepth
+        enum class FTK_GL_API_TYPE OffscreenDepth
         {
             None,
             _16,
@@ -42,7 +43,7 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
         //! Offscreen buffer stencil size.
-        enum class FTK_API_TYPE OffscreenStencil
+        enum class FTK_GL_API_TYPE OffscreenStencil
         {
             None,
             _8,
@@ -53,7 +54,7 @@ namespace ftk
         FTK_ENUM(OffscreenStencil);
 
         //! Offscreen buffer multisampling.
-        enum class FTK_API_TYPE OffscreenSampling
+        enum class FTK_GL_API_TYPE OffscreenSampling
         {
             None,
             _2,
@@ -67,19 +68,19 @@ namespace ftk
         FTK_ENUM(OffscreenSampling);
 
         //! Offscreen buffer options.
-        struct FTK_API_TYPE OffscreenBufferOptions
+        struct FTK_GL_API_TYPE OffscreenBufferOptions
         {
             ImageFilters colorFilters;
             OffscreenDepth depth = OffscreenDepth::None;
             OffscreenStencil stencil = OffscreenStencil::None;
             OffscreenSampling sampling = OffscreenSampling::None;
 
-            FTK_API bool operator == (const OffscreenBufferOptions&) const;
-            FTK_API bool operator != (const OffscreenBufferOptions&) const;
+            FTK_GL_API bool operator == (const OffscreenBufferOptions&) const;
+            FTK_GL_API bool operator != (const OffscreenBufferOptions&) const;
         };
         
         //! Offscreen buffer.
-        class FTK_API_TYPE OffscreenBuffer : public std::enable_shared_from_this<OffscreenBuffer>
+        class FTK_GL_API_TYPE OffscreenBuffer : public std::enable_shared_from_this<OffscreenBuffer>
         {
             FTK_NON_COPYABLE(OffscreenBuffer);
 
@@ -91,76 +92,76 @@ namespace ftk
             OffscreenBuffer();
 
         public:
-            FTK_API ~OffscreenBuffer();
+            FTK_GL_API ~OffscreenBuffer();
 
             //! Create a new offscreen buffer.
-            FTK_API static std::shared_ptr<OffscreenBuffer> create(
+            FTK_GL_API static std::shared_ptr<OffscreenBuffer> create(
                 const TextureInfo&,
                 const OffscreenBufferOptions& = OffscreenBufferOptions());
 
             //! Create a new offscreen buffer.
-            FTK_API static std::shared_ptr<OffscreenBuffer> create(
+            FTK_GL_API static std::shared_ptr<OffscreenBuffer> create(
                 const Size2I&,
                 TextureType = offscreenColorDefault,
                 const OffscreenBufferOptions& = OffscreenBufferOptions());
 
             //! Get the offscreen buffer information.
-            FTK_API const TextureInfo& getInfo() const;
+            FTK_GL_API const TextureInfo& getInfo() const;
 
             //! Get the offscreen buffer size.
-            FTK_API const Size2I& getSize() const;
+            FTK_GL_API const Size2I& getSize() const;
 
             //! Get the offscreen buffer width.
-            FTK_API int getWidth() const;
+            FTK_GL_API int getWidth() const;
 
             //! Get the offscreen buffer height.
-            FTK_API int getHeight() const;
+            FTK_GL_API int getHeight() const;
 
             //! Get the offscreen color buffer type.
-            FTK_API TextureType getType() const;
+            FTK_GL_API TextureType getType() const;
 
             //! Get the offscreen buffer options.
-            FTK_API const OffscreenBufferOptions& getOptions() const;
+            FTK_GL_API const OffscreenBufferOptions& getOptions() const;
 
             //! Get the offscreen buffer ID.
-            FTK_API unsigned int getID() const;
+            FTK_GL_API unsigned int getID() const;
 
             //! Get the color texture ID.
-            FTK_API unsigned int getColorID() const;
+            FTK_GL_API unsigned int getColorID() const;
 
             //! Bind the offscreen buffer.
-            FTK_API void bind();
+            FTK_GL_API void bind();
 
             //! Get the number of objects currenty instantiated.
-            FTK_API static size_t getObjectCount();
+            FTK_GL_API static size_t getObjectCount();
 
             //! Get the total number of bytes currently used.
-            FTK_API static size_t getTotalByteCount();
+            FTK_GL_API static size_t getTotalByteCount();
 
         private:
             FTK_PRIVATE();
         };
 
         //! Check whether the offscreen buffer should be created or re-created.
-        FTK_API bool doCreate(
+        FTK_GL_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
             const TextureInfo&,
             const OffscreenBufferOptions & = OffscreenBufferOptions());
 
         //! Check whether the offscreen buffer should be created or re-created.
-        FTK_API bool doCreate(
+        FTK_GL_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
             const Size2I&,
             TextureType = offscreenColorDefault,
             const OffscreenBufferOptions & = OffscreenBufferOptions());
 
         //! Offscreen buffer binding.
-        class FTK_API_TYPE OffscreenBufferBinding
+        class FTK_GL_API_TYPE OffscreenBufferBinding
         {
         public:
-            FTK_API explicit OffscreenBufferBinding(const std::shared_ptr<OffscreenBuffer>&);
+            FTK_GL_API explicit OffscreenBufferBinding(const std::shared_ptr<OffscreenBuffer>&);
 
-            FTK_API ~OffscreenBufferBinding();
+            FTK_GL_API ~OffscreenBufferBinding();
 
         private:
             FTK_PRIVATE();

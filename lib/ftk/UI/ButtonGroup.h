@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IButton.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Button group type.
-    enum class FTK_API_TYPE ButtonGroupType
+    enum class FTK_UI_API_TYPE ButtonGroupType
     {
         Click,
         Check,
@@ -24,7 +25,7 @@ namespace ftk
     FTK_ENUM(ButtonGroupType);
 
     //! Button group.
-    class FTK_API_TYPE ButtonGroup : public std::enable_shared_from_this<ButtonGroup>
+    class FTK_UI_API_TYPE ButtonGroup : public std::enable_shared_from_this<ButtonGroup>
     {
     protected:
         void _init(
@@ -34,30 +35,30 @@ namespace ftk
         ButtonGroup();
 
     public:
-        FTK_API ~ButtonGroup();
+        FTK_UI_API ~ButtonGroup();
 
         //! Create a new button group.
-        FTK_API static std::shared_ptr<ButtonGroup> create(
+        FTK_UI_API static std::shared_ptr<ButtonGroup> create(
             const std::shared_ptr<Context>&,
             ButtonGroupType);
 
         //! Get the buttons in the group.
-        FTK_API const std::vector<std::shared_ptr<IButton> >& getButtons() const;
+        FTK_UI_API const std::vector<std::shared_ptr<IButton> >& getButtons() const;
 
         //! Add a button to the group.
-        FTK_API void addButton(const std::shared_ptr<IButton>&);
+        FTK_UI_API void addButton(const std::shared_ptr<IButton>&);
 
         //! Clear the buttons in the group.
-        FTK_API void clearButtons();
+        FTK_UI_API void clearButtons();
 
         //! Set whether the button is checked.
-        FTK_API void setChecked(int, bool = true);
+        FTK_UI_API void setChecked(int, bool = true);
 
         //! Set the clicked callback.
-        FTK_API void setClickedCallback(const std::function<void(int)>&);
+        FTK_UI_API void setClickedCallback(const std::function<void(int)>&);
 
         //! Set the checked callback.
-        FTK_API void setCheckedCallback(const std::function<void(int, bool)>&);
+        FTK_UI_API void setCheckedCallback(const std::function<void(int, bool)>&);
 
     private:
         FTK_PRIVATE();

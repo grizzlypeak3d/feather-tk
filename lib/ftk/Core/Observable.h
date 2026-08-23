@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Util.h>
 
 #include <functional>
@@ -15,7 +16,7 @@ namespace ftk
     ///@{
         
     //! Observer actions.
-    enum class FTK_API_TYPE ObserverAction
+    enum class FTK_CORE_API_TYPE ObserverAction
     {
         Trigger,
         Suppress

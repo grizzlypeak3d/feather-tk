@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IMouseWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Scroll bar.
-    class FTK_API_TYPE ScrollBar : public IMouseWidget
+    class FTK_UI_API_TYPE ScrollBar : public IMouseWidget
     {
     protected:
         void _init(
@@ -22,10 +23,10 @@ namespace ftk
         ScrollBar();
 
     public:
-        FTK_API virtual ~ScrollBar();
+        FTK_UI_API virtual ~ScrollBar();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ScrollBar> create(
+        FTK_UI_API static std::shared_ptr<ScrollBar> create(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -33,29 +34,29 @@ namespace ftk
         //! \name Scroll Size
         ///@{
 
-        FTK_API int getScrollSize() const;
-        FTK_API void setScrollSize(int);
+        FTK_UI_API int getScrollSize() const;
+        FTK_UI_API void setScrollSize(int);
         
         ///@}
 
         //! \name Scroll Position
         ///@{
 
-        FTK_API int getScrollPos() const;
-        FTK_API void setScrollPos(int);
-        FTK_API void setScrollPosCallback(const std::function<void(int)>&);
+        FTK_UI_API int getScrollPos() const;
+        FTK_UI_API void setScrollPos(int);
+        FTK_UI_API void setScrollPosCallback(const std::function<void(int)>&);
         
         ///@}
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
-        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
-        FTK_API void mouseLeaveEvent() override;
-        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
-        FTK_API void mousePressEvent(MouseClickEvent&) override;
-        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_UI_API void mouseLeaveEvent() override;
+        FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_UI_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_UI_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
         Box2I _getHandleGeometry() const;

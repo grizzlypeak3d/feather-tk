@@ -16,12 +16,12 @@ namespace ftk
     //! 
     //! References:
     //! - https://mrl.cs.nyu.edu/~perlin/noise/
-    class FTK_API_TYPE Noise
+    class FTK_CORE_API_TYPE Noise
     {
     public:
-        FTK_API Noise();
+        FTK_CORE_API Noise();
 
-        FTK_API double get(double x, double y, double z);
+        FTK_CORE_API double get(double x, double y, double z);
 
     private:
         std::vector<int> _p;

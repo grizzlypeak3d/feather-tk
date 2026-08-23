@@ -31,7 +31,7 @@ namespace ftk
         public:
             virtual ~ColorWidget();
 
-            FTK_API static std::shared_ptr<ColorWidget> create(
+            FTK_UI_API static std::shared_ptr<ColorWidget> create(
                 const std::shared_ptr<Context>&,
                 ColorRole,
                 const std::shared_ptr<IWidget>& parent = nullptr);
@@ -122,7 +122,7 @@ namespace ftk
         public:
             virtual ~GraphSubWidget();
 
-            FTK_API static std::shared_ptr<GraphSubWidget> create(
+            FTK_UI_API static std::shared_ptr<GraphSubWidget> create(
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 

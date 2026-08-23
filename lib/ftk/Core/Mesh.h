@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Box.h>
 #include <ftk/Core/Color.h>
 
@@ -16,7 +17,7 @@ namespace ftk
     ///@{
 
     //! Two-dimensional vertex.
-    struct FTK_API_TYPE Vertex2
+    struct FTK_CORE_API_TYPE Vertex2
     {
         Vertex2() = default;
         constexpr Vertex2(size_t v, size_t t = 0, size_t c = 0);
@@ -27,7 +28,7 @@ namespace ftk
     };
 
     //! Three-dimensional vertex.
-    struct FTK_API_TYPE Vertex3
+    struct FTK_CORE_API_TYPE Vertex3
     {
         Vertex3() = default;
         constexpr Vertex3(size_t v, size_t t = 0, size_t n = 0, size_t c = 0);
@@ -39,7 +40,7 @@ namespace ftk
     };
 
     //! Two-dimensional triangle.
-    struct FTK_API_TYPE Triangle2
+    struct FTK_CORE_API_TYPE Triangle2
     {
         Triangle2() = default;
         constexpr Triangle2(
@@ -51,7 +52,7 @@ namespace ftk
     };
 
     //! Three-dimensional triangle.
-    struct FTK_API_TYPE Triangle3
+    struct FTK_CORE_API_TYPE Triangle3
     {
         Triangle3() = default;
         constexpr Triangle3(
@@ -91,26 +92,26 @@ namespace ftk
     typedef TriangleMesh3<float> TriMesh3F;
 
     //! Edge function.
-    FTK_API float edge(const V2F& p, const V2F& v0, const V2F& v1);
+    FTK_CORE_API float edge(const V2F& p, const V2F& v0, const V2F& v1);
 
     //! Compute the bounding box of a mesh.
-    FTK_API Box3F bbox(const TriMesh3F&);
+    FTK_CORE_API Box3F bbox(const TriMesh3F&);
 
     //! Create a mesh from a box.
-    FTK_API TriMesh2F mesh(const Box2I&, bool mirrorV = false);
+    FTK_CORE_API TriMesh2F mesh(const Box2I&, bool mirrorV = false);
 
     //! Create a mesh from a box.
-    FTK_API TriMesh2F mesh(const Box2F&, bool mirrorV = false);
+    FTK_CORE_API TriMesh2F mesh(const Box2F&, bool mirrorV = false);
 
     //! Create a mesh for drawing checkers.
-    FTK_API TriMesh2F checkers(
+    FTK_CORE_API TriMesh2F checkers(
         const Box2I&,
         const Color4F& color0,
         const Color4F& color1,
         const Size2I& checkerSize);
 
     //! Create a sphere triangle mesh.
-    FTK_API TriMesh3F sphere(
+    FTK_CORE_API TriMesh3F sphere(
         float radius,
         size_t xResolution,
         size_t yResolution);

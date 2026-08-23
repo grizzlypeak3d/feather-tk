@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IMouseWidget.h>
 
 #include <array>
@@ -15,7 +16,7 @@ namespace ftk
     ///@{
 
     //! MDI resize directions.
-    enum class FTK_API_TYPE MDIResize
+    enum class FTK_UI_API_TYPE MDIResize
     {
         None,
         North,
@@ -45,7 +46,7 @@ namespace ftk
     Size2I mdiRemoveMargins(const Size2I&, const std::array<int, 4>&);
 
     //! MDI widget.
-    class FTK_API_TYPE MDIWidget : public IMouseWidget
+    class FTK_UI_API_TYPE MDIWidget : public IMouseWidget
     {
     protected:
         void _init(
@@ -56,48 +57,48 @@ namespace ftk
         MDIWidget();
 
     public:
-        FTK_API virtual ~MDIWidget();
+        FTK_UI_API virtual ~MDIWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<MDIWidget> create(
+        FTK_UI_API static std::shared_ptr<MDIWidget> create(
             const std::shared_ptr<Context>&,
             const std::string& title,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the title.
-        FTK_API const std::string& getTitle() const;
+        FTK_UI_API const std::string& getTitle() const;
 
         //! Set the title.
-        FTK_API void setTitle(const std::string&);
+        FTK_UI_API void setTitle(const std::string&);
 
         //! Get the widget.
-        FTK_API const std::shared_ptr<IWidget>& getWidget() const;
+        FTK_UI_API const std::shared_ptr<IWidget>& getWidget() const;
 
         //! Set the widget.
-        FTK_API void setWidget(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void setWidget(const std::shared_ptr<IWidget>&);
 
         //! Set the press callback.
-        FTK_API void setPressCallback(const std::function<void(bool)>&);
+        FTK_UI_API void setPressCallback(const std::function<void(bool)>&);
 
         //! Set the move callback.
-        FTK_API void setMoveCallback(const std::function<void(const V2I&)>&);
+        FTK_UI_API void setMoveCallback(const std::function<void(const V2I&)>&);
 
         //! Set the resize callback.
-        FTK_API void setResizeCallback(const std::function<void(MDIResize, const V2I&)>&);
+        FTK_UI_API void setResizeCallback(const std::function<void(MDIResize, const V2I&)>&);
 
         //! Get the margins.
         std::array<int, 4> getMargins() const;
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
-        FTK_API void mouseLeaveEvent() override;
-        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
-        FTK_API void mousePressEvent(MouseClickEvent&) override;
-        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void clipEvent(const Box2I&, bool) override;
+        FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void mouseLeaveEvent() override;
+        FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_UI_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_UI_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     private:
         Box2I _getMarginGeometry() const;

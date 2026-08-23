@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Diagnostics widget.
-    class FTK_API_TYPE DiagWidget : public IContainer
+    class FTK_UI_API_TYPE DiagWidget : public IContainer
     {
     protected:
         void _init(
@@ -22,18 +23,18 @@ namespace ftk
         DiagWidget();
 
     public:
-        FTK_API virtual ~DiagWidget();
+        FTK_UI_API virtual ~DiagWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<DiagWidget> create(
+        FTK_UI_API static std::shared_ptr<DiagWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
 
     private:

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/Observable.h>
 #include <ftk/Core/Range.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
         
     //! Integer value model.
-    class FTK_API_TYPE IntModel : public std::enable_shared_from_this<IntModel>
+    class FTK_UI_API_TYPE IntModel : public std::enable_shared_from_this<IntModel>
     {
         FTK_NON_COPYABLE(IntModel);
 
@@ -20,49 +21,49 @@ namespace ftk
         IntModel();
 
     public:
-        FTK_API ~IntModel();
+        FTK_UI_API ~IntModel();
 
         //! Create a new model.
-        FTK_API static std::shared_ptr<IntModel> create();
+        FTK_UI_API static std::shared_ptr<IntModel> create();
 
         //! \name Value
         ///@{
 
-        FTK_API int getValue() const;
-        FTK_API std::shared_ptr<IObservable<int> > observeValue() const;
-        FTK_API void setValue(int);
+        FTK_UI_API int getValue() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeValue() const;
+        FTK_UI_API void setValue(int);
 
         ///@}
 
         //! \name Range
         ///@{
 
-        FTK_API const RangeI& getRange() const;
-        FTK_API std::shared_ptr<IObservable<RangeI> > observeRange() const;
-        FTK_API void setRange(const RangeI&);
+        FTK_UI_API const RangeI& getRange() const;
+        FTK_UI_API std::shared_ptr<IObservable<RangeI> > observeRange() const;
+        FTK_UI_API void setRange(const RangeI&);
 
         ///@}
 
         //! \name Increment
         ///@{
 
-        FTK_API int getStep() const;
-        FTK_API void setStep(int);
+        FTK_UI_API int getStep() const;
+        FTK_UI_API void setStep(int);
 
-        FTK_API int getLargeStep() const;
-        FTK_API void setLargeStep(int);
+        FTK_UI_API int getLargeStep() const;
+        FTK_UI_API void setLargeStep(int);
 
         //! Increment the value by a step.
-        FTK_API void step();
+        FTK_UI_API void step();
 
         //! Decrement the value by a step.
-        FTK_API void stepDec();
+        FTK_UI_API void stepDec();
 
         //! Increment the value by a large step.
-        FTK_API void largeStep();
+        FTK_UI_API void largeStep();
 
         //! Decrement the value by a large step.
-        FTK_API void largeStepDec();
+        FTK_UI_API void largeStepDec();
 
         ///@}
 
@@ -70,25 +71,25 @@ namespace ftk
         ///@{
 
         //! Get whether there is a default value.
-        FTK_API bool hasDefault() const;
+        FTK_UI_API bool hasDefault() const;
 
         //! Observe whether there is a default value.
-        FTK_API std::shared_ptr<IObservable<bool> > observeHasDefault() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeHasDefault() const;
 
         //! Get the default value.
-        FTK_API int getDefault() const;
+        FTK_UI_API int getDefault() const;
 
         //! Observe the default value.
-        FTK_API std::shared_ptr<IObservable<int> > observeDefault() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeDefault() const;
 
         //! Set the default value.
-        FTK_API void setDefault(int);
+        FTK_UI_API void setDefault(int);
 
         //! Set the value to the default value.
-        FTK_API void setDefault();
+        FTK_UI_API void setDefault();
 
         //! Clear the default value.
-        FTK_API void clearDefault();
+        FTK_UI_API void clearDefault();
 
         ///@}
 

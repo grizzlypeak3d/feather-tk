@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Action.h>
 
 #include <ftk/Core/Observable.h>
@@ -15,7 +16,7 @@ namespace ftk
     ///@{
 
     //! Action group type.
-    enum class FTK_API_TYPE ActionGroupType
+    enum class FTK_UI_API_TYPE ActionGroupType
     {
         Click,
         Check,
@@ -40,7 +41,7 @@ namespace ftk
     //! calling setChecked(this one == the current one), and creates the actions
     //! with a plain callback so that picking one cannot un-pick it. That works
     //! and is not discoverable from anything.
-    class FTK_API_TYPE ActionGroup : public std::enable_shared_from_this<ActionGroup>
+    class FTK_UI_API_TYPE ActionGroup : public std::enable_shared_from_this<ActionGroup>
     {
         FTK_NON_COPYABLE(ActionGroup);
 
@@ -50,19 +51,19 @@ namespace ftk
         ActionGroup();
 
     public:
-        FTK_API ~ActionGroup();
+        FTK_UI_API ~ActionGroup();
 
         //! Create a new group.
-        FTK_API static std::shared_ptr<ActionGroup> create(ActionGroupType);
+        FTK_UI_API static std::shared_ptr<ActionGroup> create(ActionGroupType);
 
         //! Get the actions.
-        FTK_API const std::vector<std::shared_ptr<Action> >& getActions() const;
+        FTK_UI_API const std::vector<std::shared_ptr<Action> >& getActions() const;
 
         //! Add an action. The group sets its check type.
-        FTK_API void addAction(const std::shared_ptr<Action>&);
+        FTK_UI_API void addAction(const std::shared_ptr<Action>&);
 
         //! Remove every action, leaving them as they are.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! \name Checked
         //!
@@ -71,16 +72,16 @@ namespace ftk
         //! actually is -- there is no need to touch the actions themselves.
         ///@{
 
-        FTK_API int getChecked() const;
-        FTK_API std::shared_ptr<IObservable<int> > observeChecked() const;
-        FTK_API void setChecked(int);
+        FTK_UI_API int getChecked() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeChecked() const;
+        FTK_UI_API void setChecked(int);
 
         ///@}
 
         //! Set the callback. The index is which action, the bool its new
         //! state; for a radio group the bool is always true, since picking
         //! one is the only thing that can happen.
-        FTK_API void setCheckedCallback(const std::function<void(int, bool)>&);
+        FTK_UI_API void setCheckedCallback(const std::function<void(int, bool)>&);
 
     private:
         void _checkedChanged(int index, bool);

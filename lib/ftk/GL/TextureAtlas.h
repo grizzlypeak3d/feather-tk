@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/GL/Export.h>
 #include <ftk/GL/Texture.h>
 
 #include <ftk/Core/BoxPack.h>
@@ -17,7 +18,7 @@ namespace ftk
         ///@{
         
         //! Texture atlas item.
-        struct FTK_API_TYPE TextureAtlasItem
+        struct FTK_GL_API_TYPE TextureAtlasItem
         {
             BoxPackID id = boxPackInvalidID;
             Size2I size;
@@ -26,7 +27,7 @@ namespace ftk
         };
 
         //! Texture atlas.
-        class FTK_API_TYPE TextureAtlas : public std::enable_shared_from_this<TextureAtlas>
+        class FTK_GL_API_TYPE TextureAtlas : public std::enable_shared_from_this<TextureAtlas>
         {
             FTK_NON_COPYABLE(TextureAtlas);
 
@@ -40,32 +41,32 @@ namespace ftk
             TextureAtlas();
 
         public:
-            FTK_API ~TextureAtlas();
+            FTK_GL_API ~TextureAtlas();
 
             //! Create a new texture atlas.
-            FTK_API static std::shared_ptr<TextureAtlas> create(
+            FTK_GL_API static std::shared_ptr<TextureAtlas> create(
                 int size,
                 ImageType,
                 ImageFilter = ImageFilter::Linear,
                 int border = 1);
 
             //! Get the texture atlas size.
-            FTK_API int getSize() const;
+            FTK_GL_API int getSize() const;
 
             //! Get the texture atlas type.
-            FTK_API ImageType getType() const;
+            FTK_GL_API ImageType getType() const;
 
             //! Get the texture atlas ID.
-            FTK_API unsigned int getTexture() const;
+            FTK_GL_API unsigned int getTexture() const;
 
             //! Get a texture atlas item.
-            FTK_API bool getItem(BoxPackID, TextureAtlasItem&);
+            FTK_GL_API bool getItem(BoxPackID, TextureAtlasItem&);
 
             //! Add a texture atlas item.
-            FTK_API bool addItem(const std::shared_ptr<Image>&, TextureAtlasItem&);
+            FTK_GL_API bool addItem(const std::shared_ptr<Image>&, TextureAtlasItem&);
 
             //! Get the percentage of the texture atlas that is in use.
-            FTK_API float getPercentageUsed() const;
+            FTK_GL_API float getPercentageUsed() const;
 
         private:
             void _toItem(const std::shared_ptr<BoxPackNode>&, TextureAtlasItem&);

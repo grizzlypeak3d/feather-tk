@@ -350,7 +350,7 @@ namespace ftk
         _p->tooltip->setIfChanged(value);
     }
 
-    FTK_API std::string to_string(const KeyShortcut& value)
+    FTK_UI_API std::string to_string(const KeyShortcut& value)
     {
         std::stringstream ss;
         ss << value.key;
@@ -358,7 +358,7 @@ namespace ftk
         return ss.str();
     }
 
-    FTK_API bool from_string(const std::string& s, KeyShortcut& value)
+    FTK_UI_API bool from_string(const std::string& s, KeyShortcut& value)
     {
         bool out = false;
         const auto pieces = split(s, ' ');

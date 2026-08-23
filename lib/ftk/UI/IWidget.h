@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Event.h>
 #include <ftk/UI/WidgetOptions.h>
 
@@ -15,20 +16,20 @@ namespace ftk
     class Menu;
 
     //! Base class for widgets.
-    class FTK_API_TYPE IWidget : public std::enable_shared_from_this<IWidget>
+    class FTK_UI_API_TYPE IWidget : public std::enable_shared_from_this<IWidget>
     {
         FTK_NON_COPYABLE(IWidget);
 
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
 
-        FTK_API IWidget();
+        FTK_UI_API IWidget();
 
     public:
-        FTK_API virtual ~IWidget() = 0;
+        FTK_UI_API virtual ~IWidget() = 0;
 
         //! Get the context.
         std::shared_ptr<Context> getContext() const;
@@ -37,13 +38,13 @@ namespace ftk
         ///@{
 
         const std::string& getObjectName() const;
-        FTK_API void setObjectName(const std::string&);
+        FTK_UI_API void setObjectName(const std::string&);
 
-        FTK_API std::string getObjectPath() const;
+        FTK_UI_API std::string getObjectPath() const;
 
         bool hasProperty(const std::string& key) const;
         std::string getProperty(const std::string& key) const;
-        FTK_API void setProperty(const std::string& key, const std::string& value);
+        FTK_UI_API void setProperty(const std::string& key, const std::string& value);
 
         ///@}
 
@@ -61,7 +62,7 @@ namespace ftk
         //! and not re-parented is destroyed when the last other reference goes;
         //! one that is only forgotten about stays in the tree, keeps its last
         //! geometry, and goes on drawing.
-        FTK_API void setParent(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void setParent(const std::shared_ptr<IWidget>&);
 
         //! Get the children widgets.
         const std::list<std::shared_ptr<IWidget> >& getChildren() const;
@@ -71,19 +72,19 @@ namespace ftk
         std::shared_ptr<T> getParentT() const;
 
         //! Get the child widget drawing order index.
-        FTK_API int getChildIndex(const std::shared_ptr<IWidget>&) const;
+        FTK_UI_API int getChildIndex(const std::shared_ptr<IWidget>&) const;
 
         //! Move the child widget to the front of the drawing order.
-        FTK_API void moveToFront(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void moveToFront(const std::shared_ptr<IWidget>&);
 
         //! Move the child widget to the back of the drawing order.
-        FTK_API void moveToBack(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void moveToBack(const std::shared_ptr<IWidget>&);
 
         //! Move the child widget to the given index in the drawing order.
-        FTK_API void moveToIndex(const std::shared_ptr<IWidget>&, size_t);
+        FTK_UI_API void moveToIndex(const std::shared_ptr<IWidget>&, size_t);
 
         //! Get the window.
-        FTK_API std::shared_ptr<IWindow> getWindow();
+        FTK_UI_API std::shared_ptr<IWindow> getWindow();
 
         ///@}
 
@@ -98,53 +99,53 @@ namespace ftk
         void setSizeUpdate(bool value = true);
 
         //! Get the size hint.
-        FTK_API virtual Size2I getSizeHint() const;
+        FTK_UI_API virtual Size2I getSizeHint() const;
 
         //! Get the horizontal layout stretch.
         Stretch getHStretch() const;
 
         //! Set the horizontal layout stretch.
-        FTK_API void setHStretch(Stretch);
+        FTK_UI_API void setHStretch(Stretch);
 
         //! Get the vertical layout stretch.
         Stretch getVStretch() const;
 
         //! Set the vertical layout stretch.
-        FTK_API void setVStretch(Stretch);
+        FTK_UI_API void setVStretch(Stretch);
 
         //! Set the horizontal and vertical layout stretch.
-        FTK_API void setStretch(Stretch horizontal, Stretch vertical);
+        FTK_UI_API void setStretch(Stretch horizontal, Stretch vertical);
 
         //! Set the horizontal and vertical layout stretch.
-        FTK_API void setStretch(Stretch);
+        FTK_UI_API void setStretch(Stretch);
 
         //! Get the horizontal layout alignment.
         HAlign getHAlign() const;
 
         //! Set the horizontal layout alignment.
-        FTK_API void setHAlign(HAlign);
+        FTK_UI_API void setHAlign(HAlign);
 
         //! Get the vertical layout alignment.
         VAlign getVAlign() const;
 
         //! Set the vertical layout alignment.
-        FTK_API void setVAlign(VAlign);
+        FTK_UI_API void setVAlign(VAlign);
 
         //! Set the horizontal and vertical layout alignment.
-        FTK_API void setAlign(HAlign, VAlign);
+        FTK_UI_API void setAlign(HAlign, VAlign);
 
         //! Get the geometry.
         const Box2I& getGeometry() const;
 
         //! Set the geometry. If this method is overridden the base method
         //! should be called.
-        FTK_API virtual void setGeometry(const Box2I&);
+        FTK_UI_API virtual void setGeometry(const Box2I&);
             
         //! Set the position.
-        FTK_API void setPos(const V2I&);
+        FTK_UI_API void setPos(const V2I&);
             
         //! Set the size.
-        FTK_API void setSize(const Size2I&);
+        FTK_UI_API void setSize(const Size2I&);
 
         ///@}
 
@@ -156,13 +157,13 @@ namespace ftk
 
         //! Set whether the widget is visible. If this method is overridden
         //! the base method should be called.
-        FTK_API virtual void setVisible(bool);
+        FTK_UI_API virtual void setVisible(bool);
 
         //! Show the widget.
-        FTK_API void show();
+        FTK_UI_API void show();
 
         //! Hide the widget.
-        FTK_API void hide();
+        FTK_UI_API void hide();
 
         //! Is the widget clipped?
         bool isClipped() const;
@@ -171,11 +172,11 @@ namespace ftk
         bool doesClipChildren() const;
 
         //! Set whether the widget clips it's children (e.g., scroll areas).
-        FTK_API void setClipChildren(bool);
+        FTK_UI_API void setClipChildren(bool);
 
         //! Get the clipping rect applied to the child widgets. By
         //! default this is the same as the widget geometry.
-        FTK_API virtual Box2I getChildrenClipRect() const;
+        FTK_UI_API virtual Box2I getChildrenClipRect() const;
 
         ///@}
 
@@ -187,7 +188,7 @@ namespace ftk
 
         //! Set whether the widget is enabled. If this method is overridden
         //! the base method should be called.
-        FTK_API virtual void setEnabled(bool);
+        FTK_UI_API virtual void setEnabled(bool);
 
         ///@}
 
@@ -205,7 +206,7 @@ namespace ftk
         ColorRole getBackgroundRole() const;
 
         //! Set the background role.
-        FTK_API void setBackgroundRole(ColorRole);
+        FTK_UI_API void setBackgroundRole(ColorRole);
 
         ///@}
 
@@ -216,19 +217,19 @@ namespace ftk
         bool acceptsKeyFocus() const;
 
         //! Set whether the widget accepts key focus.
-        FTK_API virtual void setAcceptsKeyFocus(bool);
+        FTK_UI_API virtual void setAcceptsKeyFocus(bool);
 
         //! Does this widget have key focus?
         bool hasKeyFocus() const;
 
         //! Does this widget, or any of its children, have key focus?
-        FTK_API bool containsKeyFocus() const;
+        FTK_UI_API bool containsKeyFocus() const;
 
         //! Take the key focus.
-        FTK_API virtual void takeKeyFocus();
+        FTK_UI_API virtual void takeKeyFocus();
 
         //! Release the key focus.
-        FTK_API void releaseKeyFocus();
+        FTK_UI_API void releaseKeyFocus();
 
         ///@}
 
@@ -239,7 +240,7 @@ namespace ftk
         const std::string& getTooltip() const;
 
         //! Set the tooltip.
-        FTK_API void setTooltip(const std::string&);
+        FTK_UI_API void setTooltip(const std::string&);
 
         ///@}
 
@@ -262,7 +263,7 @@ namespace ftk
         //! only pay for it when it is used, and so that it can reflect the
         //! current state, for example disabling paste when the clipboard is
         //! empty.
-        FTK_API void setContextMenuCallback(
+        FTK_UI_API void setContextMenuCallback(
             const std::function<std::shared_ptr<Menu>(void)>&);
 
         ///@}
@@ -271,84 +272,84 @@ namespace ftk
         ///@{
 
         //! Child add event.
-        FTK_API virtual void childAddEvent(const ChildAddEvent&);
+        FTK_UI_API virtual void childAddEvent(const ChildAddEvent&);
 
         //! Child remove event.
-        FTK_API virtual void childRemoveEvent(const ChildRemoveEvent&);
+        FTK_UI_API virtual void childRemoveEvent(const ChildRemoveEvent&);
 
         //! Tick event. If this method is overridden the base method
         //! should be called.
-        FTK_API virtual void tickEvent(
+        FTK_UI_API virtual void tickEvent(
             bool parentsVisible,
             bool parentsEnabled,
             const TickEvent&);
 
         //! Style event.
-        FTK_API virtual void styleEvent(const StyleEvent&);
+        FTK_UI_API virtual void styleEvent(const StyleEvent&);
 
         //! Size hint event.
-        FTK_API virtual void sizeHintEvent(const SizeHintEvent&);
+        FTK_UI_API virtual void sizeHintEvent(const SizeHintEvent&);
 
         //! Clip event. If this method is overridden the base method
         //! should be called.
-        FTK_API virtual void clipEvent(const Box2I&, bool clipped);
+        FTK_UI_API virtual void clipEvent(const Box2I&, bool clipped);
 
         //! Draw event. This runs before the children are drawn, so anything
         //! drawn here is behind them; use drawOverlayEvent() to draw over them.
-        FTK_API virtual void drawEvent(const Box2I&, const DrawEvent&);
+        FTK_UI_API virtual void drawEvent(const Box2I&, const DrawEvent&);
 
         //! Draw overlay event. This runs after the children are drawn, which
         //! is where a border or a highlight belongs when the children fill the
         //! widget.
-        FTK_API virtual void drawOverlayEvent(const Box2I&, const DrawEvent&);
+        FTK_UI_API virtual void drawOverlayEvent(const Box2I&, const DrawEvent&);
 
         //! Mouse enter event.
-        FTK_API virtual void mouseEnterEvent(MouseEnterEvent&);
+        FTK_UI_API virtual void mouseEnterEvent(MouseEnterEvent&);
 
         //! Mouse leave event.
-        FTK_API virtual void mouseLeaveEvent();
+        FTK_UI_API virtual void mouseLeaveEvent();
 
         //! Mouse move event.
-        FTK_API virtual void mouseMoveEvent(MouseMoveEvent&);
+        FTK_UI_API virtual void mouseMoveEvent(MouseMoveEvent&);
 
         //! Mouse press event.
-        FTK_API virtual void mousePressEvent(MouseClickEvent&);
+        FTK_UI_API virtual void mousePressEvent(MouseClickEvent&);
 
         //! Mouse release event.
-        FTK_API virtual void mouseReleaseEvent(MouseClickEvent&);
+        FTK_UI_API virtual void mouseReleaseEvent(MouseClickEvent&);
 
         //! Scroll event.
-        FTK_API virtual void scrollEvent(ScrollEvent&);
+        FTK_UI_API virtual void scrollEvent(ScrollEvent&);
 
         //! Key focus event. If this method is overridden the base method
         //! should be called.
-        FTK_API virtual void keyFocusEvent(bool);
+        FTK_UI_API virtual void keyFocusEvent(bool);
 
         //! Key press event.
-        FTK_API virtual void keyPressEvent(KeyEvent&);
+        FTK_UI_API virtual void keyPressEvent(KeyEvent&);
 
         //! Key release event.
-        FTK_API virtual void keyReleaseEvent(KeyEvent&);
+        FTK_UI_API virtual void keyReleaseEvent(KeyEvent&);
 
         //! Text event.
-        FTK_API virtual void textEvent(TextEvent&);
+        FTK_UI_API virtual void textEvent(TextEvent&);
 
         //! Drag enter event.
-        FTK_API virtual void dragEnterEvent(DragDropEvent&);
+        FTK_UI_API virtual void dragEnterEvent(DragDropEvent&);
 
         //! Drag leave event.
-        FTK_API virtual void dragLeaveEvent(DragDropEvent&);
+        FTK_UI_API virtual void dragLeaveEvent(DragDropEvent&);
 
         //! Drag move event.
-        FTK_API virtual void dragMoveEvent(DragDropEvent&);
+        FTK_UI_API virtual void dragMoveEvent(DragDropEvent&);
 
         //! Drop event.
-        FTK_API virtual void dropEvent(DragDropEvent&);
+        FTK_UI_API virtual void dropEvent(DragDropEvent&);
 
         ///@}
 
         //! Get the number of objects currenty instantiated.
-        FTK_API static size_t getObjectCount();
+        FTK_UI_API static size_t getObjectCount();
 
     private:
         std::weak_ptr<Context> _context;
@@ -390,7 +391,7 @@ namespace ftk
     //! have already put the old child inside the new one, and detaching it
     //! then would take it back out again. Only a widget that is still a
     //! child of the given parent is released.
-    FTK_API void releaseChild(
+    FTK_UI_API void releaseChild(
         const std::shared_ptr<IWidget>& parent,
         const std::shared_ptr<IWidget>& child);
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Range.h>
 #include <ftk/Core/Util.h>
 
@@ -18,19 +19,19 @@ namespace ftk
     ///@{
 
     //! Does the file name start with a dot?
-    FTK_API bool isDotFile(const std::string&);
+    FTK_CORE_API bool isDotFile(const std::string&);
 
     //! Split a path.
-    FTK_API std::vector<std::string> split(std::filesystem::path);
+    FTK_CORE_API std::vector<std::string> split(std::filesystem::path);
 
     //! Append a path separator.
-    FTK_API std::string appendSeparator(const std::string&);
+    FTK_CORE_API std::string appendSeparator(const std::string&);
 
     //! Get the list of file system drives.
-    FTK_API std::vector<std::filesystem::path> getDrives();
+    FTK_CORE_API std::vector<std::filesystem::path> getDrives();
 
     //! User paths.
-    enum class FTK_API_TYPE UserPath
+    enum class FTK_CORE_API_TYPE UserPath
     {
         Home,
         Desktop,
@@ -43,69 +44,69 @@ namespace ftk
     FTK_ENUM(UserPath);
 
     //! Get a user path.
-    FTK_API std::filesystem::path getUserPath(UserPath);
+    FTK_CORE_API std::filesystem::path getUserPath(UserPath);
     
     //! Create a unique temporary directory.
-    FTK_API std::filesystem::path createTmpDir();
+    FTK_CORE_API std::filesystem::path createTmpDir();
 
     //! Create a temporary directory that will automatically be removed when
     //! finished.
-    class FTK_API_TYPE TmpDir
+    class FTK_CORE_API_TYPE TmpDir
     {
         FTK_NON_COPYABLE(TmpDir);
 
     public:
-        FTK_API TmpDir();
+        FTK_CORE_API TmpDir();
 
-        FTK_API ~TmpDir();
+        FTK_CORE_API ~TmpDir();
         
         //! Get the path to the temporary directory.
-        FTK_API const std::filesystem::path& getPath() const;
+        FTK_CORE_API const std::filesystem::path& getPath() const;
 
         //! Remove the temporary directory (this will also be called
         //! automatically in the destructor).
-        FTK_API void remove();
+        FTK_CORE_API void remove();
 
     private:
         std::filesystem::path _path;
     };
 
     //! Convert a frame number to a string.
-    FTK_API std::string toString(int64_t frame, int pad = 0);
+    FTK_CORE_API std::string toString(int64_t frame, int pad = 0);
 
     //! File path options.
-    struct FTK_API_TYPE PathOptions
+    struct FTK_CORE_API_TYPE PathOptions
     {
         bool   seqNegative  = true;
         size_t seqMaxDigits = 9;
 
-        FTK_API bool operator == (const PathOptions&) const;
-        FTK_API bool operator != (const PathOptions&) const;
+        FTK_CORE_API bool operator == (const PathOptions&) const;
+        FTK_CORE_API bool operator != (const PathOptions&) const;
     };
 
     //! Frame sequence.
-    struct FTK_API_TYPE FrameSeq
+    struct FTK_CORE_API_TYPE FrameSeq
     {
         FrameSeq() = default;
-        FTK_API explicit FrameSeq(const RangeI64&, int inc = 1);
-        FTK_API FrameSeq(int64_t, int64_t, int inc = 1);
-        FTK_API explicit FrameSeq(int64_t);
+        FTK_CORE_API explicit FrameSeq(const RangeI64&, int inc = 1);
+        FTK_CORE_API FrameSeq(int64_t, int64_t, int inc = 1);
+        FTK_CORE_API explicit FrameSeq(int64_t);
 
         RangeI64 range;
         int      inc = 1;
 
-        FTK_API bool operator == (const FrameSeq&) const;
-        FTK_API bool operator != (const FrameSeq&) const;
+        FTK_CORE_API bool operator == (const FrameSeq&) const;
+        FTK_CORE_API bool operator != (const FrameSeq&) const;
     };
 
     //! Convert frames to frame sequences.
-    FTK_API std::vector<FrameSeq> toFrameSeq(const std::vector<int64_t>&);
+    FTK_CORE_API std::vector<FrameSeq> toFrameSeq(const std::vector<int64_t>&);
 
     //! Convert a frame sequence to frames.
-    FTK_API std::vector<int64_t> toFrames(const FrameSeq&);
+    FTK_CORE_API std::vector<int64_t> toFrames(const FrameSeq&);
 
     //! Convert frame sequences to frames.
-    FTK_API std::vector<int64_t> toFrames(const std::vector<FrameSeq>&);
+    FTK_CORE_API std::vector<int64_t> toFrames(const std::vector<FrameSeq>&);
 
     //! Add a frame to a list of frame sequences, which is kept sorted and
     //! merged. Frames already in the list are ignored.
@@ -113,22 +114,22 @@ namespace ftk
     //! Adding frames in order gives the same result as toFrameSeq(); frames
     //! added out of order may be split into a different set of sequences that
     //! covers the same frames.
-    FTK_API void addFrame(std::vector<FrameSeq>&, int64_t);
+    FTK_CORE_API void addFrame(std::vector<FrameSeq>&, int64_t);
 
     //! Get the number of frames in a frame sequence.
-    FTK_API size_t getFrameCount(const FrameSeq&);
+    FTK_CORE_API size_t getFrameCount(const FrameSeq&);
 
     //! Get the number of frames in a list of frame sequences.
-    FTK_API size_t getFrameCount(const std::vector<FrameSeq>&);
+    FTK_CORE_API size_t getFrameCount(const std::vector<FrameSeq>&);
 
     //! Get the range spanned by a list of frame sequences.
-    FTK_API std::optional<RangeI64> getRange(const std::vector<FrameSeq>&);
+    FTK_CORE_API std::optional<RangeI64> getRange(const std::vector<FrameSeq>&);
 
     //! Convert a frame sequence to a label.
-    FTK_API std::string getLabel(const FrameSeq&, int pad = 0);
+    FTK_CORE_API std::string getLabel(const FrameSeq&, int pad = 0);
 
     //! Convert frame sequences to a label.
-    FTK_API std::string getLabel(const std::vector<FrameSeq>&, int pad = 0);
+    FTK_CORE_API std::string getLabel(const std::vector<FrameSeq>&, int pad = 0);
 
     //! File path.
     //! 
@@ -141,14 +142,14 @@ namespace ftk
     //! * extension: .exr
     //! * request: ?user=foo;password=bar
     //! * file name: render.0001.exr
-    class FTK_API_TYPE Path
+    class FTK_CORE_API_TYPE Path
     {
     public:
         Path() = default;
-        FTK_API explicit Path(
+        FTK_CORE_API explicit Path(
             const std::string&,
             const PathOptions& = PathOptions());
-        FTK_API Path(
+        FTK_CORE_API Path(
             const std::string& dir,
             const std::string& fileName,
             const PathOptions& = PathOptions());
@@ -157,7 +158,7 @@ namespace ftk
         ///@{
 
         const PathOptions& getOptions() const;
-        FTK_API void setOptions(const PathOptions&);
+        FTK_CORE_API void setOptions(const PathOptions&);
 
         ///@}
 
@@ -183,14 +184,14 @@ namespace ftk
         std::string getRequest() const;
         std::string getFileName(bool dir = false) const;
 
-        FTK_API void setProtocol(const std::string&);
-        FTK_API void setDir(const std::string&);
-        FTK_API void setBase(const std::string&);
-        FTK_API void setNum(const std::string&);
-        FTK_API void setPad(int);
-        FTK_API void setExt(const std::string&);
-        FTK_API void setRequest(const std::string&);
-        FTK_API void setFileName(const std::string&);
+        FTK_CORE_API void setProtocol(const std::string&);
+        FTK_CORE_API void setDir(const std::string&);
+        FTK_CORE_API void setBase(const std::string&);
+        FTK_CORE_API void setNum(const std::string&);
+        FTK_CORE_API void setPad(int);
+        FTK_CORE_API void setExt(const std::string&);
+        FTK_CORE_API void setRequest(const std::string&);
+        FTK_CORE_API void setFileName(const std::string&);
 
         ///@}
 
@@ -203,14 +204,14 @@ namespace ftk
         const std::optional<RangeI64>& getFrames() const;
 
         //! Set the sequence to a contiguous range of frames.
-        FTK_API void setFrames(const RangeI64&);
+        FTK_CORE_API void setFrames(const RangeI64&);
 
         //! Get the frames in the sequence.
         const std::vector<FrameSeq>& getSeq() const;
 
         //! Set the frames in the sequence. The list should be sorted and
         //! merged, as returned by toFrameSeq().
-        FTK_API void setSeq(const std::vector<FrameSeq>&);
+        FTK_CORE_API void setSeq(const std::vector<FrameSeq>&);
 
         //! Get the number of frames in the sequence.
         size_t getSeqSize() const;
@@ -234,12 +235,12 @@ namespace ftk
         bool seq(const Path&) const;
 
         //! Add a path to this sequence.
-        FTK_API bool addSeq(const Path&);
+        FTK_CORE_API bool addSeq(const Path&);
 
         //! Group the sequence the way toFrameSeq() would. Paths built up with
         //! addSeq() hold the right frames whatever order they arrive in, but
         //! only reach the canonical grouping if they arrive in order.
-        FTK_API void normalizeSeq();
+        FTK_CORE_API void normalizeSeq();
 
         ///@}
 
@@ -247,23 +248,23 @@ namespace ftk
         ///@{
 
         //! Get whether the path is absolute.
-        FTK_API bool isAbs() const;
+        FTK_CORE_API bool isAbs() const;
 
         //! Test whether this extension matches one in the given list.
-        FTK_API bool testExt(const std::vector<std::string>&) const;
+        FTK_CORE_API bool testExt(const std::vector<std::string>&) const;
 
         ///@}
 
         //! \name Constants
         ///@{
 
-        FTK_API static std::string getNumbers();
-        FTK_API static std::string getPathSeparators();
+        FTK_CORE_API static std::string getNumbers();
+        FTK_CORE_API static std::string getPathSeparators();
 
         ///@}
 
-        FTK_API bool operator == (const Path&) const;
-        FTK_API bool operator != (const Path&) const;
+        FTK_CORE_API bool operator == (const Path&) const;
+        FTK_CORE_API bool operator != (const Path&) const;
 
     private:
         void _parse(const PathOptions&);
@@ -272,7 +273,7 @@ namespace ftk
         std::string _path;
         PathOptions _options;
         // constexpr, so it needs no definition of its own and no export.
-        // It is data, and data is where a single FTK_API across several
+        // It is data, and data is where a single FTK_CORE_API across several
         // libraries shows: ftkUI compiles ftkCore's headers with FTK_EXPORTS
         // set for its own API, so it sees this as dllexport where it wants
         // dllimport. A function survives that -- the linker takes it from the
@@ -296,7 +297,7 @@ namespace ftk
     };
 
     //! Directory list sorting.
-    enum class FTK_API_TYPE DirListSort
+    enum class FTK_CORE_API_TYPE DirListSort
     {
         Name,
         Extension,
@@ -309,7 +310,7 @@ namespace ftk
     FTK_ENUM(DirListSort);
 
     //! Directory list options.
-    struct FTK_API_TYPE DirListOptions
+    struct FTK_CORE_API_TYPE DirListOptions
     {
         DirListSort              sort         = DirListSort::Name;
         bool                     sortReverse  = false;
@@ -322,24 +323,24 @@ namespace ftk
         size_t                   seqMaxDigits = 9;
         bool                     hidden       = false;
 
-        FTK_API bool operator == (const DirListOptions&) const;
-        FTK_API bool operator != (const DirListOptions&) const;
+        FTK_CORE_API bool operator == (const DirListOptions&) const;
+        FTK_CORE_API bool operator != (const DirListOptions&) const;
     };
 
     //! Directory list entry.
-    struct FTK_API_TYPE DirEntry
+    struct FTK_CORE_API_TYPE DirEntry
     {
         Path                            path;
         bool                            isDir = false;
         size_t                          size = 0;
         std::filesystem::file_time_type time;
 
-        FTK_API bool operator == (const DirEntry&) const;
-        FTK_API bool operator != (const DirEntry&) const;
+        FTK_CORE_API bool operator == (const DirEntry&) const;
+        FTK_CORE_API bool operator != (const DirEntry&) const;
     };
 
     //! List directory contents.
-    FTK_API std::vector<DirEntry> dirList(
+    FTK_CORE_API std::vector<DirEntry> dirList(
         const std::filesystem::path&,
         const DirListOptions& = DirListOptions());
 
@@ -348,7 +349,7 @@ namespace ftk
     //! The name is UTF-8, which is what the paths ftk hands out hold. Without
     //! this overload the conversion is left to the implementation, and on
     //! Windows that reads a narrow string as the active code page.
-    FTK_API std::vector<DirEntry> dirList(
+    FTK_CORE_API std::vector<DirEntry> dirList(
         const std::string&,
         const DirListOptions& = DirListOptions());
 
@@ -357,13 +358,13 @@ namespace ftk
     //! expandSeq() searches only when the path has no range yet, so it cannot
     //! find the frames of a sequence whose range was stated rather than
     //! discovered. This always searches.
-    FTK_API std::vector<FrameSeq> findSeq(
+    FTK_CORE_API std::vector<FrameSeq> findSeq(
         const Path&,
         const PathOptions& = PathOptions());
 
     //! Expand a file sequence. This function will search the directory for
     //! other frames that match the given file name.
-    FTK_API Path expandSeq(
+    FTK_CORE_API Path expandSeq(
         const Path&,
         const PathOptions& = PathOptions());
 
@@ -378,14 +379,14 @@ namespace ftk
     //! A path whose name already says what it covers -- a single file, or one
     //! frame -- is written as that name, so the ordinary case reads and
     //! writes as it always did.
-    FTK_API void to_json(nlohmann::json&, const Path&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Path&);
 
-    FTK_API void to_json(nlohmann::json&, const PathOptions&);
-    FTK_API void to_json(nlohmann::json&, const DirListOptions&);
+    FTK_CORE_API void to_json(nlohmann::json&, const PathOptions&);
+    FTK_CORE_API void to_json(nlohmann::json&, const DirListOptions&);
 
-    FTK_API void from_json(const nlohmann::json&, Path&);
-    FTK_API void from_json(const nlohmann::json&, PathOptions&);
-    FTK_API void from_json(const nlohmann::json&, DirListOptions&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Path&);
+    FTK_CORE_API void from_json(const nlohmann::json&, PathOptions&);
+    FTK_CORE_API void from_json(const nlohmann::json&, DirListOptions&);
 
     ///@}
 }

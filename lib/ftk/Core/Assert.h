@@ -12,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Assert (for convenience use the FTK_ASSERT macro).
-    FTK_API void ftk_assert(const char* file, int line);
+    FTK_CORE_API void ftk_assert(const char* file, int line);
 
     ///@}
 }

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -28,26 +29,26 @@ namespace ftk
     //! Deriving from this and calling _setWidget() instead says the same thing
     //! once. Widgets that lay their children out themselves derive from IWidget
     //! as before; this is only for the ones that hand everything to one child.
-    class FTK_API_TYPE IContainer : public IWidget
+    class FTK_UI_API_TYPE IContainer : public IWidget
     {
         FTK_NON_COPYABLE(IContainer);
 
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
 
-        FTK_API IContainer();
+        FTK_UI_API IContainer();
 
     public:
-        FTK_API virtual ~IContainer() = 0;
+        FTK_UI_API virtual ~IContainer() = 0;
 
         //! Get the child filling this widget.
-        FTK_API const std::shared_ptr<IWidget>& getWidget() const;
+        FTK_UI_API const std::shared_ptr<IWidget>& getWidget() const;
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
 
     protected:
         //! Set the child filling this widget. Replacing it lets go of the one
@@ -57,7 +58,7 @@ namespace ftk
         //! Letting go, not detaching: a caller rebuilding a tree may have put
         //! the previous child inside the new one, and only what is still a
         //! child of this widget is released.
-        FTK_API void _setWidget(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void _setWidget(const std::shared_ptr<IWidget>&);
 
     private:
         std::shared_ptr<IWidget> _widget;

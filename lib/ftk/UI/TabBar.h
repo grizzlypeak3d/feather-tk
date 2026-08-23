@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -14,7 +15,7 @@ namespace ftk
     //! Tab bar widget.
     //! 
     //! \todo Add scrolling for the tab buttons.
-    class FTK_API_TYPE TabBar : public IContainer
+    class FTK_UI_API_TYPE TabBar : public IContainer
     {
     protected:
         void _init(
@@ -24,65 +25,65 @@ namespace ftk
         TabBar();
 
     public:
-        FTK_API virtual ~TabBar();
+        FTK_UI_API virtual ~TabBar();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<TabBar> create(
+        FTK_UI_API static std::shared_ptr<TabBar> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the tabs.
-        FTK_API const std::vector<std::string>& getTabs() const;
+        FTK_UI_API const std::vector<std::string>& getTabs() const;
 
         //! Set the tabs.
-        FTK_API void setTabs(
+        FTK_UI_API void setTabs(
             const std::vector<std::string>&,
             const std::vector<std::string>& tooltips = std::vector<std::string>());
 
         //! Add a tab.
-        FTK_API void addTab(
+        FTK_UI_API void addTab(
             const std::string&,
             const std::string& tooltip = std::string());
 
         //! Remove a tab.
-        FTK_API void removeTab(int);
+        FTK_UI_API void removeTab(int);
 
         //! Clear the tabs.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! Get the current tab.
-        FTK_API int getCurrent() const;
+        FTK_UI_API int getCurrent() const;
 
         //! Set the current tab.
-        FTK_API void setCurrent(int);
+        FTK_UI_API void setCurrent(int);
 
         //! Set the current tab callback.
-        FTK_API void setCallback(const std::function<void(int)>&);
+        FTK_UI_API void setCallback(const std::function<void(int)>&);
 
         //! Set the tab text.
-        FTK_API void setText(int index, const std::string&);
+        FTK_UI_API void setText(int index, const std::string&);
 
         //! Set the tab tooltip.
-        FTK_API void setTabTooltip(int index, const std::string&);
+        FTK_UI_API void setTabTooltip(int index, const std::string&);
 
         //! Get whether the tabs are closable.
-        FTK_API bool isClosable() const;
+        FTK_UI_API bool isClosable() const;
 
         //! Set whether the tabs are closable.
-        FTK_API void setClosable(bool);
+        FTK_UI_API void setClosable(bool);
 
         //! Set the tab close callback.
-        FTK_API void setCloseCallback(const std::function<void(int)>&);
+        FTK_UI_API void setCloseCallback(const std::function<void(int)>&);
 
         //! Get whether the scroll bar is visible.
-        FTK_API bool isScrollBarVisible() const;
+        FTK_UI_API bool isScrollBarVisible() const;
 
         //! Set whether the scroll bar is visible.
-        FTK_API void setScrollBarVisible(bool);
+        FTK_UI_API void setScrollBarVisible(bool);
 
-        FTK_API void keyFocusEvent(bool) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         void _widgetUpdate();

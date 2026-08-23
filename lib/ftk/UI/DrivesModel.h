@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/ObservableList.h>
 
 #include <filesystem>
@@ -15,7 +16,7 @@ namespace ftk
     ///@{
         
     //! File system drives model.
-    class FTK_API_TYPE DrivesModel : public std::enable_shared_from_this<DrivesModel>
+    class FTK_UI_API_TYPE DrivesModel : public std::enable_shared_from_this<DrivesModel>
     {
         FTK_NON_COPYABLE(DrivesModel);
 
@@ -25,14 +26,14 @@ namespace ftk
         DrivesModel();
 
     public:
-        FTK_API ~DrivesModel();
+        FTK_UI_API ~DrivesModel();
 
         //! Create a new model.
-        FTK_API static std::shared_ptr<DrivesModel> create(
+        FTK_UI_API static std::shared_ptr<DrivesModel> create(
             const std::shared_ptr<Context>&);
 
         //! Observe the list of drives.
-        FTK_API std::shared_ptr<IObservableList<std::filesystem::path> > observeDrives() const;
+        FTK_UI_API std::shared_ptr<IObservableList<std::filesystem::path> > observeDrives() const;
 
     private:
         FTK_PRIVATE();

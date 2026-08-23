@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -14,7 +15,7 @@ namespace ftk
     //! RGB color widget.
     //!
     //! \todo Add support for displaying pixel types like U8, U16, etc.?
-    class FTK_API_TYPE RGBColorWidget : public IContainer
+    class FTK_UI_API_TYPE RGBColorWidget : public IContainer
     {
     protected:
         void _init(
@@ -24,30 +25,30 @@ namespace ftk
         RGBColorWidget();
 
     public:
-        FTK_API virtual ~RGBColorWidget();
+        FTK_UI_API virtual ~RGBColorWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<RGBColorWidget> create(
+        FTK_UI_API static std::shared_ptr<RGBColorWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the color.
-        FTK_API const Color4F& getColor() const;
+        FTK_UI_API const Color4F& getColor() const;
 
         //! Set the color.
-        FTK_API void setColor(const Color4F&);
+        FTK_UI_API void setColor(const Color4F&);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const Color4F&)>&);
 
         //! Set the callback with a flag for whether the widget is pressed.
-        FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
+        FTK_UI_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
 
     private:
@@ -57,7 +58,7 @@ namespace ftk
     };
 
     //! HSV color widget.
-    class FTK_API_TYPE HSVColorWidget : public IContainer
+    class FTK_UI_API_TYPE HSVColorWidget : public IContainer
     {
     protected:
         void _init(
@@ -67,30 +68,30 @@ namespace ftk
         HSVColorWidget();
 
     public:
-        FTK_API virtual ~HSVColorWidget();
+        FTK_UI_API virtual ~HSVColorWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<HSVColorWidget> create(
+        FTK_UI_API static std::shared_ptr<HSVColorWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the color.
-        FTK_API const Color4F& getColor() const;
+        FTK_UI_API const Color4F& getColor() const;
 
         //! Set the color.
-        FTK_API void setColor(const Color4F&);
+        FTK_UI_API void setColor(const Color4F&);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const Color4F&)>&);
 
         //! Set the callback with a flag for whether the widget is pressed.
-        FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
+        FTK_UI_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
 
     private:
@@ -100,7 +101,7 @@ namespace ftk
     };
 
     //! Color widget mode.
-    enum class FTK_API_TYPE ColorWidgetMode
+    enum class FTK_UI_API_TYPE ColorWidgetMode
     {
         RGB,
         HSV,
@@ -113,7 +114,7 @@ namespace ftk
     //! Color widget.
     //!
     //! \todo Add support for displaying pixel types like U8, U16, etc.?
-    class FTK_API_TYPE ColorWidget : public IContainer
+    class FTK_UI_API_TYPE ColorWidget : public IContainer
     {
     protected:
         void _init(
@@ -123,30 +124,30 @@ namespace ftk
         ColorWidget();
 
     public:
-        FTK_API virtual ~ColorWidget();
+        FTK_UI_API virtual ~ColorWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ColorWidget> create(
+        FTK_UI_API static std::shared_ptr<ColorWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the color.
-        FTK_API const Color4F& getColor() const;
+        FTK_UI_API const Color4F& getColor() const;
 
         //! Set the color.
-        FTK_API void setColor(const Color4F&);
+        FTK_UI_API void setColor(const Color4F&);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const Color4F&)>&);
 
         //! Set the callback with a flag for whether the widget is pressed.
-        FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
+        FTK_UI_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
         //! Get the widget mode.
-        FTK_API ColorWidgetMode getMode() const;
+        FTK_UI_API ColorWidgetMode getMode() const;
 
         //! Set the widget mode.
-        FTK_API void setMode(ColorWidgetMode);
+        FTK_UI_API void setMode(ColorWidgetMode);
 
 
     private:

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Util.h>
 
 #include <chrono>
@@ -14,7 +15,7 @@ namespace ftk
     class Context;
 
     //! Base class for systems.
-    class FTK_API_TYPE IBaseSystem : public std::enable_shared_from_this<IBaseSystem>
+    class FTK_CORE_API_TYPE IBaseSystem : public std::enable_shared_from_this<IBaseSystem>
     {
         FTK_NON_COPYABLE(IBaseSystem);
 
@@ -24,7 +25,7 @@ namespace ftk
             const std::string& name);
 
     public:
-        FTK_API virtual ~IBaseSystem() = 0;
+        FTK_CORE_API virtual ~IBaseSystem() = 0;
 
         //! Get the context.
         std::shared_ptr<Context> getContext() const;
@@ -44,13 +45,13 @@ namespace ftk
         //!
         //! Must be safe to call more than once, and safe to call on a system
         //! that has no threads. The default does nothing.
-        FTK_API virtual void shutdown();
+        FTK_CORE_API virtual void shutdown();
 
         //! Tick the system.
-        FTK_API virtual void tick();
+        FTK_CORE_API virtual void tick();
 
         //! Get the system tick time interval.
-        FTK_API virtual std::chrono::milliseconds getTickTime() const;
+        FTK_CORE_API virtual std::chrono::milliseconds getTickTime() const;
 
     protected:
         std::weak_ptr<Context> _context;

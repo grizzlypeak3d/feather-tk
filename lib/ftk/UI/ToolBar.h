@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -15,45 +16,45 @@ namespace ftk
     ///@{
         
     //! Tool bar.
-    class FTK_API_TYPE ToolBar : public IContainer
+    class FTK_UI_API_TYPE ToolBar : public IContainer
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             Orientation,
             const std::shared_ptr<IWidget>& parent);
 
-        FTK_API ToolBar();
+        FTK_UI_API ToolBar();
 
     public:
-        FTK_API virtual ~ToolBar();
+        FTK_UI_API virtual ~ToolBar();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ToolBar> create(
+        FTK_UI_API static std::shared_ptr<ToolBar> create(
             const std::shared_ptr<Context>&,
             Orientation = Orientation::Horizontal,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Add an action.
-        FTK_API std::shared_ptr<ToolButton> addAction(const std::shared_ptr<Action>&);
+        FTK_UI_API std::shared_ptr<ToolButton> addAction(const std::shared_ptr<Action>&);
 
         //! Add a widget.
-        FTK_API void addWidget(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void addWidget(const std::shared_ptr<IWidget>&);
 
         //! Clear the tool bar.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
         //! Get the spacing role.
-        FTK_API SizeRole getSpacingRole() const;
+        FTK_UI_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role.
-        FTK_API void setSpacingRole(SizeRole);
+        FTK_UI_API void setSpacingRole(SizeRole);
 
 
     private:

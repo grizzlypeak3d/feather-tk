@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/Memory.h>
@@ -17,7 +18,7 @@ namespace ftk
     ///@{
 
     //! Render options.
-    struct FTK_API_TYPE RenderOptions
+    struct FTK_CORE_API_TYPE RenderOptions
     {
         //! Clear the canvas before rendering.
         bool clear = true;
@@ -42,21 +43,21 @@ namespace ftk
         //! Enable logging.
         bool log = true;
 
-        FTK_API bool operator == (const RenderOptions&) const;
-        FTK_API bool operator != (const RenderOptions&) const;
+        FTK_CORE_API bool operator == (const RenderOptions&) const;
+        FTK_CORE_API bool operator != (const RenderOptions&) const;
     };
 
     //! Line drawing options.
-    struct FTK_API_TYPE LineOptions
+    struct FTK_CORE_API_TYPE LineOptions
     {
         float width = 1.F;
 
-        FTK_API bool operator == (const LineOptions&) const;
-        FTK_API bool operator != (const LineOptions&) const;
+        FTK_CORE_API bool operator == (const LineOptions&) const;
+        FTK_CORE_API bool operator != (const LineOptions&) const;
     };
 
     //! Channel display.
-    enum class FTK_API_TYPE ChannelDisplay
+    enum class FTK_CORE_API_TYPE ChannelDisplay
     {
         Color,
         Red,
@@ -70,7 +71,7 @@ namespace ftk
     FTK_ENUM(ChannelDisplay);
 
     //! Input video levels.
-    enum class FTK_API_TYPE InputVideoLevels
+    enum class FTK_CORE_API_TYPE InputVideoLevels
     {
         FromFile,
         FullRange,
@@ -85,7 +86,7 @@ namespace ftk
     //!
     //! References:
     //! - https://microsoft.github.io/Win2D/html/PremultipliedAlpha.htm
-    enum class FTK_API_TYPE AlphaBlend
+    enum class FTK_CORE_API_TYPE AlphaBlend
     {
         None,
         Straight,
@@ -97,7 +98,7 @@ namespace ftk
     FTK_ENUM(AlphaBlend);
 
     //! Image filtering.
-    enum class FTK_API_TYPE ImageFilter
+    enum class FTK_CORE_API_TYPE ImageFilter
     {
         Nearest,
         Linear,
@@ -113,17 +114,17 @@ namespace ftk
     FTK_ENUM(ImageFilter);
 
     //! Image filters.
-    struct FTK_API_TYPE ImageFilters
+    struct FTK_CORE_API_TYPE ImageFilters
     {
         ImageFilter minify  = ImageFilter::Linear;
         ImageFilter magnify = ImageFilter::Linear;
 
-        FTK_API bool operator == (const ImageFilters&) const;
-        FTK_API bool operator != (const ImageFilters&) const;
+        FTK_CORE_API bool operator == (const ImageFilters&) const;
+        FTK_CORE_API bool operator != (const ImageFilters&) const;
     };
 
     //! Image options.
-    struct FTK_API_TYPE ImageOptions
+    struct FTK_CORE_API_TYPE ImageOptions
     {
         ChannelDisplay   channelDisplay = ChannelDisplay::Color;
         InputVideoLevels videoLevels    = InputVideoLevels::FromFile;
@@ -131,15 +132,15 @@ namespace ftk
         ImageFilters     imageFilters;
         bool             cache          = true;
 
-        FTK_API bool operator == (const ImageOptions&) const;
-        FTK_API bool operator != (const ImageOptions&) const;
+        FTK_CORE_API bool operator == (const ImageOptions&) const;
+        FTK_CORE_API bool operator != (const ImageOptions&) const;
     };
         
-    FTK_API void to_json(nlohmann::json&, const ImageFilters&);
-    FTK_API void to_json(nlohmann::json&, const ImageOptions&);
+    FTK_CORE_API void to_json(nlohmann::json&, const ImageFilters&);
+    FTK_CORE_API void to_json(nlohmann::json&, const ImageOptions&);
 
-    FTK_API void from_json(const nlohmann::json&, ImageFilters&);
-    FTK_API void from_json(const nlohmann::json&, ImageOptions&);
+    FTK_CORE_API void from_json(const nlohmann::json&, ImageFilters&);
+    FTK_CORE_API void from_json(const nlohmann::json&, ImageOptions&);
 
     ///@}
 }

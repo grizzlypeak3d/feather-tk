@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IDialog.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Confirmation dialog.
-    class FTK_API_TYPE ConfirmDialog : public IDialog
+    class FTK_UI_API_TYPE ConfirmDialog : public IDialog
     {
     protected:
         void _init(
@@ -25,10 +26,10 @@ namespace ftk
         ConfirmDialog();
 
     public:
-        FTK_API virtual ~ConfirmDialog();
+        FTK_UI_API virtual ~ConfirmDialog();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ConfirmDialog> create(
+        FTK_UI_API static std::shared_ptr<ConfirmDialog> create(
             const std::shared_ptr<Context>&,
             const std::string& title,
             const std::string& text,
@@ -37,9 +38,9 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(bool)>&);
+        FTK_UI_API void setCallback(const std::function<void(bool)>&);
 
-        FTK_API std::shared_ptr<IWidget> getKeyFocus() const override;
+        FTK_UI_API std::shared_ptr<IWidget> getKeyFocus() const override;
 
     private:
         FTK_PRIVATE();

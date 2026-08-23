@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <ftk/Core/Export.h>
 
 #include <pybind11/pybind11.h>
 
@@ -33,40 +32,40 @@ namespace ftk
         template<typename T, typename U>
         void observableMap(pybind11::module_&, const std::string& type);
 
-        FTK_API void box(pybind11::module_&);
-        FTK_API void cmdLine(pybind11::module_&);
-        FTK_API void color(pybind11::module_&);
-        FTK_API void command(pybind11::module_&);
-        FTK_API void context(pybind11::module_&);
-        FTK_API void diagSystem(pybind11::module_&);
-        FTK_API void fileLogSystem(pybind11::module_&);
-        FTK_API void fontSystem(pybind11::module_&);
-        FTK_API void iApp(pybind11::module_&);
-        FTK_API void image(pybind11::module_&);
-        FTK_API void iRender(pybind11::module_&);
-        FTK_API void iSystem(pybind11::module_&);
-        FTK_API void logSystem(pybind11::module_&);
-        FTK_API void math(pybind11::module_&);
-        FTK_API void matrix(pybind11::module_&);
-        FTK_API void memory(pybind11::module_&);
-        FTK_API void mesh(pybind11::module_&);
-        FTK_API void noise(pybind11::module_&);
-        FTK_API void observable(pybind11::module_&);
-        FTK_API void observableList(pybind11::module_&);
-        FTK_API void observableMap(pybind11::module_&);
-        FTK_API void os(pybind11::module_&);
-        FTK_API void path(pybind11::module_&);
-        FTK_API void random(pybind11::module_&);
-        FTK_API void range(pybind11::module_&);
-        FTK_API void renderOptions(pybind11::module_&);
-        FTK_API void size(pybind11::module_&);
-        FTK_API void string(pybind11::module_&);
-        FTK_API void time(pybind11::module_&);
-        FTK_API void timer(pybind11::module_&);
-        FTK_API void vector(pybind11::module_&);
-        FTK_API void version(pybind11::module_&);
+        void box(pybind11::module_&);
+        void cmdLine(pybind11::module_&);
+        void color(pybind11::module_&);
+        void command(pybind11::module_&);
+        void context(pybind11::module_&);
+        void diagSystem(pybind11::module_&);
+        void fileLogSystem(pybind11::module_&);
+        void fontSystem(pybind11::module_&);
+        void iApp(pybind11::module_&);
+        void image(pybind11::module_&);
+        void iRender(pybind11::module_&);
+        void iSystem(pybind11::module_&);
+        void logSystem(pybind11::module_&);
+        void math(pybind11::module_&);
+        void matrix(pybind11::module_&);
+        void memory(pybind11::module_&);
+        void mesh(pybind11::module_&);
+        void noise(pybind11::module_&);
+        void observable(pybind11::module_&);
+        void observableList(pybind11::module_&);
+        void observableMap(pybind11::module_&);
+        void os(pybind11::module_&);
+        void path(pybind11::module_&);
+        void random(pybind11::module_&);
+        void range(pybind11::module_&);
+        void renderOptions(pybind11::module_&);
+        void size(pybind11::module_&);
+        void string(pybind11::module_&);
+        void time(pybind11::module_&);
+        void timer(pybind11::module_&);
+        void vector(pybind11::module_&);
+        void version(pybind11::module_&);
 
-        FTK_API void coreBind(pybind11::module_&);
+        void coreBind(pybind11::module_&);
     }
 }
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Util.h>
 
 #include <chrono>
@@ -14,16 +15,16 @@ namespace ftk
     ///@{
 
     //! Sleep for a given time.
-    FTK_API void sleep(const std::chrono::microseconds&);
+    FTK_CORE_API void sleep(const std::chrono::microseconds&);
 
     //! Sleep up to the given time.
-    FTK_API void sleep(
+    FTK_CORE_API void sleep(
         const std::chrono::microseconds&,
         const std::chrono::steady_clock::time_point& t0,
         const std::chrono::steady_clock::time_point& t1);
 
     //! Convert a floating point rate to a rational.
-    FTK_API std::pair<int, int> toRational(double);
+    FTK_CORE_API std::pair<int, int> toRational(double);
         
     ///@}
 }

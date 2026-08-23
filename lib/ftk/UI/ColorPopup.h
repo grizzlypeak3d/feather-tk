@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidgetPopup.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Color popup.
-    class FTK_API_TYPE ColorPopup : public IWidgetPopup
+    class FTK_UI_API_TYPE ColorPopup : public IWidgetPopup
     {
     protected:
         void _init(
@@ -22,19 +23,19 @@ namespace ftk
         ColorPopup();
 
     public:
-        FTK_API virtual ~ColorPopup();
+        FTK_UI_API virtual ~ColorPopup();
 
         //! Create a new popup.
-        FTK_API static std::shared_ptr<ColorPopup> create(
+        FTK_UI_API static std::shared_ptr<ColorPopup> create(
             const std::shared_ptr<Context>&,
             const Color4F&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Color4F&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const Color4F&)>&);
 
         //! Set the callback with a flag for whether the widget is pressed.
-        FTK_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
+        FTK_UI_API void setPressedCallback(const std::function<void(const Color4F&, bool)>&);
 
     private:
         FTK_PRIVATE();

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/ISystem.h>
 #include <ftk/Core/ObservableMap.h>
 
@@ -22,7 +23,7 @@ namespace ftk
     //! reading are not the same. Sample in microseconds, divide by a thousand
     //! and show one decimal, and the graph keeps its detail while the label
     //! says milliseconds.
-    struct FTK_API_TYPE DiagFormat
+    struct FTK_CORE_API_TYPE DiagFormat
     {
         double divisor = 1.0;
 
@@ -31,13 +32,13 @@ namespace ftk
     };
 
     //! Apply a sampler's format to a sample.
-    FTK_API std::string diagText(
+    FTK_CORE_API std::string diagText(
         const std::string& format,
         const DiagFormat&,
         int64_t value);
 
     //! Diagnostics system.
-    class FTK_API_TYPE DiagSystem : public ISystem
+    class FTK_CORE_API_TYPE DiagSystem : public ISystem
     {
         FTK_NON_COPYABLE(DiagSystem);
 
@@ -45,48 +46,48 @@ namespace ftk
         DiagSystem(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API virtual ~DiagSystem();
+        FTK_CORE_API virtual ~DiagSystem();
 
         //! Create a new system.
-        FTK_API static std::shared_ptr<DiagSystem> create(const std::shared_ptr<Context>&);
+        FTK_CORE_API static std::shared_ptr<DiagSystem> create(const std::shared_ptr<Context>&);
 
         //! Add a sampler function.
-        FTK_API void addSampler(
+        FTK_CORE_API void addSampler(
             const std::string&,
             const std::function<int64_t(void)>&,
             const DiagFormat& = DiagFormat());
 
         //! Get how a sampler's value should be formatted.
-        FTK_API DiagFormat getFormat(const std::string& id) const;
+        FTK_CORE_API DiagFormat getFormat(const std::string& id) const;
 
         //! Get the sampler groups.
-        FTK_API const std::vector<std::string>& getGroups() const;
+        FTK_CORE_API const std::vector<std::string>& getGroups() const;
 
         //! Get the sampler names in a group.
-        FTK_API std::vector<std::string> getNames(const std::string& group) const;
+        FTK_CORE_API std::vector<std::string> getNames(const std::string& group) const;
 
         //! Get whether the sampler exists.
-        FTK_API bool hasSampler(const std::string&) const;
+        FTK_CORE_API bool hasSampler(const std::string&) const;
 
         //! Get the maximum number of samples.
-        FTK_API size_t getSamplesMax() const;
+        FTK_CORE_API size_t getSamplesMax() const;
 
         //! Observe the maximum number of samples.
-        FTK_API std::shared_ptr<IObservable<size_t> > observeSamplesMax() const;
+        FTK_CORE_API std::shared_ptr<IObservable<size_t> > observeSamplesMax() const;
 
         //! Set the maximum number of samples.
-        FTK_API void setSamplesMax(size_t);
+        FTK_CORE_API void setSamplesMax(size_t);
 
         //! Get the samples.
-        FTK_API const std::map<std::string, std::vector<int64_t> >& getSamples() const;
+        FTK_CORE_API const std::map<std::string, std::vector<int64_t> >& getSamples() const;
 
         //! Observe the samples.
-        FTK_API std::shared_ptr<IObservableMap<std::string, std::vector<int64_t> > > observeSamples() const;
+        FTK_CORE_API std::shared_ptr<IObservableMap<std::string, std::vector<int64_t> > > observeSamples() const;
 
         //! Observe the samples increments.
-        FTK_API std::shared_ptr<IObservableMap<std::string, int64_t> > observeSamplesInc() const;
+        FTK_CORE_API std::shared_ptr<IObservableMap<std::string, int64_t> > observeSamplesInc() const;
 
-        FTK_API void tick() override;
+        FTK_CORE_API void tick() override;
         //! Set how often the samplers are read.
         //!
         //! The default is a few seconds, which makes the graphs a trend over
@@ -94,9 +95,9 @@ namespace ftk
         //! shorter, and one sampling something expensive may want longer --
         //! sample often enough and the diagnostics become part of what they are
         //! measuring.
-        FTK_API void setTickTime(const std::chrono::milliseconds&);
+        FTK_CORE_API void setTickTime(const std::chrono::milliseconds&);
 
-        FTK_API std::chrono::milliseconds getTickTime() const override;
+        FTK_CORE_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         void _log();

@@ -13,15 +13,15 @@ namespace ftk
     ///@{
         
     //! Parse error.
-    class FTK_API_TYPE ParseError : public std::invalid_argument
+    class FTK_CORE_API_TYPE ParseError : public std::invalid_argument
     {
     public:
-        FTK_API ParseError();
+        FTK_CORE_API ParseError();
     };
         
 #if defined(_WINDOWS)
     //! Get an error string from a Windows system call.
-    FTK_API std::string getLastError();
+    FTK_CORE_API std::string getLastError();
 #endif // _WINDOWS
 
     ///@}

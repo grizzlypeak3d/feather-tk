@@ -15,7 +15,7 @@ namespace ftk
     ///@{
 
     //! Operating system information.
-    struct FTK_API_TYPE SysInfo
+    struct FTK_CORE_API_TYPE SysInfo
     {
         std::string name;
         std::string cpu;
@@ -35,7 +35,7 @@ namespace ftk
     };
 
     //! Get operating system information.
-    FTK_API SysInfo getSysInfo();
+    FTK_CORE_API SysInfo getSysInfo();
 
     //! Environment variable list separators.
     const std::vector<char> envListSeparators = { ':', ';' };
@@ -48,21 +48,21 @@ namespace ftk
 #endif // _WINDOWS
 
     //! Get an environment variable. Throws std::exception on failure.
-    FTK_API bool getEnv(const std::string& name, std::string&);
+    FTK_CORE_API bool getEnv(const std::string& name, std::string&);
 
     //! Get an environment variable and convert it to an integer; an empty
     //! variable gives zero. Throws std::exception on failure.
-    FTK_API bool getEnv(const std::string& name, int& value);
+    FTK_CORE_API bool getEnv(const std::string& name, int& value);
 
     //! Get an environment variable and convert it to a list of strings.
     //! Throws std::exception on failure.
-    FTK_API bool getEnv(const std::string& name, std::vector<std::string>&);
+    FTK_CORE_API bool getEnv(const std::string& name, std::vector<std::string>&);
 
     //! Set an environment variable. Throws std::exception on failure.
-    FTK_API bool setEnv(const std::string& name, const std::string&);
+    FTK_CORE_API bool setEnv(const std::string& name, const std::string&);
 
     //! Delete an environment variable. Throws std::exception on failure.
-    FTK_API bool delEnv(const std::string& name);
+    FTK_CORE_API bool delEnv(const std::string& name);
 
     //! Open the given URL in the default browser. Throws std::exception on
     //! failure.
@@ -71,9 +71,9 @@ namespace ftk
     //! Not argv[0], which is however the program was invoked and need not be
     //! a path at all. This is what an application looks for the things
     //! installed beside it from.
-    FTK_API std::filesystem::path getExePath();
+    FTK_CORE_API std::filesystem::path getExePath();
 
-    FTK_API void openURL(const std::string&);
+    FTK_CORE_API void openURL(const std::string&);
 
     ///@}
 }

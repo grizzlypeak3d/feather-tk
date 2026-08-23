@@ -130,10 +130,13 @@ endif()
 add_library(ftkCore ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 
 target_compile_definitions(ftkCore PUBLIC $<$<CONFIG:Debug>:FTK_ASSERT>)
+# Private when building, so this library's own API is dllexport here and
+# dllimport to everything else. Public when static, which a consumer does
+# have to know: the API then carries no declspec at all.
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(ftkCore PRIVATE FTK_EXPORTS)
+    target_compile_definitions(ftkCore PRIVATE FTK_CORE_EXPORTS)
 else()
-    target_compile_definitions(ftkCore PUBLIC FTK_STATIC)
+    target_compile_definitions(ftkCore PUBLIC FTK_CORE_STATIC)
 endif()
 
 target_include_directories(ftkCore

@@ -34,8 +34,13 @@ elseif ("${ftk_API}" STREQUAL "GLES_2")
 endif()
 
 add_library(ftkGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+# Private when building, so this library's own API is dllexport here and
+# dllimport to everything else. Public when static, which a consumer does
+# have to know: the API then carries no declspec at all.
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(ftkGL PRIVATE FTK_EXPORTS)
+    target_compile_definitions(ftkGL PRIVATE FTK_GL_EXPORTS)
+else()
+    target_compile_definitions(ftkGL PUBLIC FTK_GL_STATIC)
 endif()
 
 if(${ftk_API} STREQUAL "GL_4_1_Debug")

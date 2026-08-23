@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Scroll type.
-    enum class FTK_API_TYPE ScrollType
+    enum class FTK_UI_API_TYPE ScrollType
     {
         Both,
         Horizontal,
@@ -24,7 +25,7 @@ namespace ftk
     FTK_ENUM(ScrollType);
 
     //! Scroll area.
-    class FTK_API_TYPE ScrollArea : public IWidget
+    class FTK_UI_API_TYPE ScrollArea : public IWidget
     {
     protected:
         void _init(
@@ -35,10 +36,10 @@ namespace ftk
         ScrollArea();
 
     public:
-        FTK_API virtual ~ScrollArea();
+        FTK_UI_API virtual ~ScrollArea();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ScrollArea> create(
+        FTK_UI_API static std::shared_ptr<ScrollArea> create(
             const std::shared_ptr<Context>&,
             ScrollType = ScrollType::Both,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -46,28 +47,28 @@ namespace ftk
         //! \name Scroll Type
         ///@{
 
-        FTK_API ScrollType getScrollType() const;
-        FTK_API void setScrollType(ScrollType);
+        FTK_UI_API ScrollType getScrollType() const;
+        FTK_UI_API void setScrollType(ScrollType);
         
         ///@}
 
         //! \name Scroll Size
         ///@{
 
-        FTK_API const Size2I& getScrollSize() const;
-        FTK_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
+        FTK_UI_API const Size2I& getScrollSize() const;
+        FTK_UI_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
 
         ///@}
 
         //! \name Scroll Position
         ///@{
 
-        FTK_API const V2I& getScrollPos() const;
-        FTK_API void setScrollPos(const V2I&, bool clamp = true);
-        FTK_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
+        FTK_UI_API const V2I& getScrollPos() const;
+        FTK_UI_API void setScrollPos(const V2I&, bool clamp = true);
+        FTK_UI_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
 
         //! Scroll to make the given box visible.
-        FTK_API void scrollTo(const Box2I&);
+        FTK_UI_API void scrollTo(const Box2I&);
         
         ///@}
 
@@ -75,23 +76,23 @@ namespace ftk
         ///@{
 
         //! Get whether the scrolled area is resizable.
-        FTK_API bool isAreaResizable() const;
+        FTK_UI_API bool isAreaResizable() const;
 
         //! Set whether the scrolled area is resizable.
-        FTK_API void setAreaResizable(bool);
+        FTK_UI_API void setAreaResizable(bool);
 
         //! Get the size hint role.
-        FTK_API SizeRole getSizeHintRole() const;
+        FTK_UI_API SizeRole getSizeHintRole() const;
 
         //! Set the size hint role.
-        FTK_API void setSizeHintRole(SizeRole);
+        FTK_UI_API void setSizeHintRole(SizeRole);
         
         ///@}
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         FTK_PRIVATE();

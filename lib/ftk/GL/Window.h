@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/GL/Export.h>
 #include <ftk/Core/Image.h>
 
 namespace ftk
@@ -15,7 +16,7 @@ namespace ftk
         ///@{
         
         //! OpenGL information.
-        struct FTK_API_TYPE GLInfo
+        struct FTK_GL_API_TYPE GLInfo
         {
             std::string vendor;
             std::string renderer;
@@ -23,7 +24,7 @@ namespace ftk
         };
 
         //! OpenGL window options.
-        enum class FTK_API_TYPE WindowOptions
+        enum class FTK_GL_API_TYPE WindowOptions
         {
             None         = 0,
             Visible      = 1,
@@ -32,12 +33,12 @@ namespace ftk
         };
 
         //! OpenGL window.
-        class FTK_API_TYPE Window : public std::enable_shared_from_this<Window>
+        class FTK_GL_API_TYPE Window : public std::enable_shared_from_this<Window>
         {
             FTK_NON_COPYABLE(Window);
 
         protected:
-            FTK_API Window(
+            FTK_GL_API Window(
                 const std::shared_ptr<Context>&,
                 const std::string& title,
                 const Size2I&,
@@ -45,10 +46,10 @@ namespace ftk
                 const std::shared_ptr<Window>& share);
 
         public:
-            FTK_API virtual ~Window();
+            FTK_GL_API virtual ~Window();
 
             //! Create a new window.
-            FTK_API static std::shared_ptr<Window> create(
+            FTK_GL_API static std::shared_ptr<Window> create(
                 const std::shared_ptr<Context>&,
                 const std::string& title,
                 const Size2I&,
@@ -59,28 +60,28 @@ namespace ftk
                 const std::shared_ptr<Window>& share = nullptr);
         
             //! Get the window ID.
-            FTK_API uint32_t getID() const;
+            FTK_GL_API uint32_t getID() const;
 
             //! Get the window title.
-            FTK_API std::string getTitle() const;
+            FTK_GL_API std::string getTitle() const;
 
             //! Set the window title.
-            FTK_API void setTitle(const std::string&);
+            FTK_GL_API void setTitle(const std::string&);
 
             //! Set the window size.
-            FTK_API void setSize(const Size2I&);
+            FTK_GL_API void setSize(const Size2I&);
 
             //! Get the window minimum size.
-            FTK_API Size2I getMinSize() const;
+            FTK_GL_API Size2I getMinSize() const;
 
             //! Set the window minimum size.
-            FTK_API void setMinSize(const Size2I&);
+            FTK_GL_API void setMinSize(const Size2I&);
 
             //! Show the window.
-            FTK_API void show();
+            FTK_GL_API void show();
 
             //! Hide the window.
-            FTK_API void hide();
+            FTK_GL_API void hide();
 
             //! Set the window icons
             //! 
@@ -88,44 +89,44 @@ namespace ftk
             //! mirroring, memory alignment of one, and LSB memory endian.
             //!
             //! Window icons are not supported on macOS.
-            FTK_API void setIcon(const std::shared_ptr<Image>&);
+            FTK_GL_API void setIcon(const std::shared_ptr<Image>&);
 
             //! Make this the current OpenGL context.
-            FTK_API void makeCurrent();
+            FTK_GL_API void makeCurrent();
 
             //! Clear the current OpenGL context.
-            FTK_API void clearCurrent();
+            FTK_GL_API void clearCurrent();
 
             //! Get which screen the window is on.
-            FTK_API int getScreen() const;
+            FTK_GL_API int getScreen() const;
 
             //! Get whether the window is in full screen mode.
-            FTK_API bool isFullScreen() const;
+            FTK_GL_API bool isFullScreen() const;
 
             //! Set whether the window is in full screen mode.
-            FTK_API void setFullScreen(bool);
+            FTK_GL_API void setFullScreen(bool);
 
             //! Get whether the window is floating on top.
-            FTK_API bool isFloatOnTop() const;
+            FTK_GL_API bool isFloatOnTop() const;
 
             //! Set whether the window is floating on top.
-            FTK_API void setFloatOnTop(bool);
+            FTK_GL_API void setFloatOnTop(bool);
 
             //! Get whether the window has text input.
-            FTK_API bool hasTextInput() const;
+            FTK_GL_API bool hasTextInput() const;
 
             //! Set whether the window has text input.
-            FTK_API void setTextInput(bool);
+            FTK_GL_API void setTextInput(bool);
 
             //! Raise the window above the others and give it the input
             //! focus.
-            FTK_API void raise();
+            FTK_GL_API void raise();
 
             //! Swap the buffers.
-            FTK_API void swap();
+            FTK_GL_API void swap();
 
             //! Get the OpenGL information.
-            FTK_API const GLInfo& getGLInfo() const;
+            FTK_GL_API const GLInfo& getGLInfo() const;
 
         private:
             FTK_PRIVATE();

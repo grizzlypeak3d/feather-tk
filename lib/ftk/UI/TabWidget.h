@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -14,7 +15,7 @@ namespace ftk
     ///@{
 
     //! Tab widget.
-    class FTK_API_TYPE TabWidget : public IContainer
+    class FTK_UI_API_TYPE TabWidget : public IContainer
     {
     protected:
         void _init(
@@ -24,72 +25,72 @@ namespace ftk
         TabWidget();
 
     public:
-        FTK_API virtual ~TabWidget();
+        FTK_UI_API virtual ~TabWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<TabWidget> create(
+        FTK_UI_API static std::shared_ptr<TabWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the tabs.
-        FTK_API const std::vector<std::string>& getTabs() const;
+        FTK_UI_API const std::vector<std::string>& getTabs() const;
 
         //! Get the tab bar.
-        FTK_API const std::shared_ptr<TabBar>& getTabBar() const;
+        FTK_UI_API const std::shared_ptr<TabBar>& getTabBar() const;
 
         //! Add a tab.
-        FTK_API void addTab(
+        FTK_UI_API void addTab(
             const std::string& name,
             const std::shared_ptr<IWidget>& widget,
             const std::string& tooltip = std::string());
 
         //! Remove a tab.
-        FTK_API void removeTab(int);
+        FTK_UI_API void removeTab(int);
 
         //! Remove a tab.
-        FTK_API void removeTab(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void removeTab(const std::shared_ptr<IWidget>&);
 
         //! Clear the tabs.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! Get the current tab.
-        FTK_API int getCurrent() const;
+        FTK_UI_API int getCurrent() const;
 
         //! Set the current tab.
-        FTK_API void setCurrent(int);
+        FTK_UI_API void setCurrent(int);
 
         //! Set the current tab callback.
-        FTK_API void setCallback(const std::function<void(int)>&);
+        FTK_UI_API void setCallback(const std::function<void(int)>&);
 
         //! Get the current widget.
-        FTK_API std::shared_ptr<IWidget> getCurrentWidget() const;
+        FTK_UI_API std::shared_ptr<IWidget> getCurrentWidget() const;
 
         //! Set the current widget.
-        FTK_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
+        FTK_UI_API void setCurrentWidget(const std::shared_ptr<IWidget>&);
 
         //! Set the current widget callback.
-        FTK_API void setWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>&);
+        FTK_UI_API void setWidgetCallback(const std::function<void(const std::shared_ptr<IWidget>&)>&);
 
         //! Set the tab text.
-        FTK_API void setText(int index, const std::string&);
+        FTK_UI_API void setText(int index, const std::string&);
 
         //! Set the tab text.
-        FTK_API void setText(const std::shared_ptr<IWidget>&, const std::string&);
+        FTK_UI_API void setText(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Set the tab tooltip.
-        FTK_API void setTabTooltip(int index, const std::string&);
+        FTK_UI_API void setTabTooltip(int index, const std::string&);
 
         //! Set the tab tooltip.
-        FTK_API void setTabTooltip(const std::shared_ptr<IWidget>&, const std::string&);
+        FTK_UI_API void setTabTooltip(const std::shared_ptr<IWidget>&, const std::string&);
 
         //! Get whether the tabs are closable.
-        FTK_API bool isClosable() const;
+        FTK_UI_API bool isClosable() const;
 
         //! Set whether the tabs are closable.
-        FTK_API void setClosable(bool);
+        FTK_UI_API void setClosable(bool);
 
         //! Set the tab close callback.
-        FTK_API void setCloseCallback(const std::function<void(int)>&);
+        FTK_UI_API void setCloseCallback(const std::function<void(int)>&);
 
 
     private:

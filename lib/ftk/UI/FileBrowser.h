@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IDialog.h>
 
 #include <ftk/Core/ISystem.h>
@@ -22,7 +23,7 @@ namespace ftk
     ///@{
 
     //! File browser mode.
-    enum class FTK_API_TYPE FileBrowserMode
+    enum class FTK_UI_API_TYPE FileBrowserMode
     {
         Open,
         Save,
@@ -38,7 +39,7 @@ namespace ftk
     //! How large the thumbnails are, and whether to ask for them at all:
     //! reading them is work, and a directory on the other end of a network
     //! is somewhere that work is felt.
-    enum class FTK_API_TYPE FileBrowserThumbnails
+    enum class FTK_UI_API_TYPE FileBrowserThumbnails
     {
         Off,
         Small,
@@ -51,10 +52,10 @@ namespace ftk
     FTK_ENUM(FileBrowserThumbnails);
 
     //! Get the height of a thumbnail, from the style's size for one.
-    FTK_API int getThumbnailHeight(FileBrowserThumbnails, int sizeRole);
+    FTK_UI_API int getThumbnailHeight(FileBrowserThumbnails, int sizeRole);
 
     //! File browser options.
-    struct FTK_API_TYPE FileBrowserOptions
+    struct FTK_UI_API_TYPE FileBrowserOptions
     {
         DirListOptions              dirList;
         FileBrowserThumbnails       thumbnails   = FileBrowserThumbnails::Medium;
@@ -68,12 +69,12 @@ namespace ftk
             { "Settings",  false }
         };
 
-        FTK_API bool operator == (const FileBrowserOptions&) const;
-        FTK_API bool operator != (const FileBrowserOptions&) const;
+        FTK_UI_API bool operator == (const FileBrowserOptions&) const;
+        FTK_UI_API bool operator != (const FileBrowserOptions&) const;
     };
 
     //! File browser thumbnail request.
-    struct FTK_API_TYPE FileBrowserThumbnailRequest
+    struct FTK_UI_API_TYPE FileBrowserThumbnailRequest
     {
         uint64_t id = 0;
         std::future<std::shared_ptr<Image> > future;
@@ -84,10 +85,10 @@ namespace ftk
     //! Reading the images is not something ftk can do; an application that
     //! can registers an implementation of this with FileBrowserSystem, and
     //! the browser shows thumbnails in place of the file icons.
-    class FTK_API_TYPE IFileBrowserThumbnails
+    class FTK_UI_API_TYPE IFileBrowserThumbnails
     {
     public:
-        FTK_API virtual ~IFileBrowserThumbnails() = 0;
+        FTK_UI_API virtual ~IFileBrowserThumbnails() = 0;
 
         //! Get whether a thumbnail can be made for the given path. Asked of
         //! every entry in a directory, so this is meant to be as cheap as
@@ -104,26 +105,26 @@ namespace ftk
     };
 
     //! File browser model.
-    class FTK_API_TYPE FileBrowserModel : public std::enable_shared_from_this<FileBrowserModel>
+    class FTK_UI_API_TYPE FileBrowserModel : public std::enable_shared_from_this<FileBrowserModel>
     {
     public:
         FileBrowserModel(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API ~FileBrowserModel();
+        FTK_UI_API ~FileBrowserModel();
 
         //! Create a new model.
-        FTK_API static std::shared_ptr<FileBrowserModel> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserModel> create(
             const std::shared_ptr<Context>&);
 
         //! Get the current path.
-        FTK_API const std::filesystem::path& getPath() const;
+        FTK_UI_API const std::filesystem::path& getPath() const;
 
         //! Observe the current path.
-        FTK_API std::shared_ptr<IObservable<std::filesystem::path> > observePath() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::filesystem::path> > observePath() const;
 
         //! Set the current path.
-        FTK_API void setPath(const std::filesystem::path&);
+        FTK_UI_API void setPath(const std::filesystem::path&);
 
         //! Set the current path.
         //!
@@ -131,58 +132,58 @@ namespace ftk
         //! settings holds. Without this overload the conversion is left to
         //! the implementation, and on Windows that reads a narrow string as
         //! the active code page.
-        FTK_API void setPath(const std::string&);
+        FTK_UI_API void setPath(const std::string&);
 
         //! Go forward to the next path.
-        FTK_API void forward();
+        FTK_UI_API void forward();
 
         //! Observe whether there is a next path.
-        FTK_API std::shared_ptr<IObservable<bool> > observeHasForward() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeHasForward() const;
 
         //! Go back to the previous path.
-        FTK_API void back();
+        FTK_UI_API void back();
 
         //! Observe whether there is a previous path.
-        FTK_API std::shared_ptr<IObservable<bool> > observeHasBack() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeHasBack() const;
 
         //! Get the options.
-        FTK_API const FileBrowserOptions& getOptions() const;
+        FTK_UI_API const FileBrowserOptions& getOptions() const;
 
         //! Observe the options.
-        FTK_API std::shared_ptr<IObservable<FileBrowserOptions> > observeOptions() const;
+        FTK_UI_API std::shared_ptr<IObservable<FileBrowserOptions> > observeOptions() const;
 
         //! Set the options.
-        FTK_API void setOptions(const FileBrowserOptions&);
+        FTK_UI_API void setOptions(const FileBrowserOptions&);
 
         //! Get the extensions.
-        FTK_API const std::vector<std::string>& getExts() const;
+        FTK_UI_API const std::vector<std::string>& getExts() const;
 
         //! Observe the extensions.
-        FTK_API std::shared_ptr<IObservableList<std::string> > observeExts() const;
+        FTK_UI_API std::shared_ptr<IObservableList<std::string> > observeExts() const;
 
         //! Set the extensions.
-        FTK_API void setExts(const std::vector<std::string>&);
+        FTK_UI_API void setExts(const std::vector<std::string>&);
 
         //! Get the current extension.
-        FTK_API const std::string& getExt() const;
+        FTK_UI_API const std::string& getExt() const;
 
         //! Observe the current extension.
-        FTK_API std::shared_ptr<IObservable<std::string> > observeExt() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeExt() const;
 
         //! Set the current extension.
-        FTK_API void setExt(const std::string&);
+        FTK_UI_API void setExt(const std::string&);
 
         //! Get the extension filter.
-        FTK_API const std::vector<std::string>& getExtsFilter() const;
+        FTK_UI_API const std::vector<std::string>& getExtsFilter() const;
 
         //! Get the label for the extension filter.
-        FTK_API const std::string& getExtsFilterLabel() const;
+        FTK_UI_API const std::string& getExtsFilterLabel() const;
 
         //! Set an extension filter, e.g. { ".djvr" }. Unlike setExts(), which
         //! only fills the extensions combo box and leaves "*.*" showing every
         //! file, a filter restricts the listing: the combo box narrows within
         //! it. The label names the filter in place of "*.*".
-        FTK_API void setExtsFilter(
+        FTK_UI_API void setExtsFilter(
             const std::vector<std::string>&,
             const std::string& label = std::string());
 
@@ -191,10 +192,10 @@ namespace ftk
     };
 
     //! File browser widget.
-    class FTK_API_TYPE FileBrowserWidget : public IMouseWidget
+    class FTK_UI_API_TYPE FileBrowserWidget : public IMouseWidget
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::filesystem::path&,
             FileBrowserMode,
@@ -204,10 +205,10 @@ namespace ftk
         FileBrowserWidget();
 
     public:
-        FTK_API virtual ~FileBrowserWidget();
+        FTK_UI_API virtual ~FileBrowserWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserWidget> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserWidget> create(
             const std::shared_ptr<Context>&,
             const std::filesystem::path& = std::filesystem::path(),
             FileBrowserMode = FileBrowserMode::Open,
@@ -215,52 +216,52 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
         //! Set the cancel callback.
-        FTK_API void setCancelCallback(const std::function<void(void)>&);
+        FTK_UI_API void setCancelCallback(const std::function<void(void)>&);
 
         //! Get whether more than one file can be selected.
-        FTK_API bool isMultiple() const;
+        FTK_UI_API bool isMultiple() const;
 
         //! Set whether more than one file can be selected.
-        FTK_API void setMultiple(bool);
+        FTK_UI_API void setMultiple(bool);
 
         //! Get the file browser model.
-        FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
+        FTK_UI_API const std::shared_ptr<FileBrowserModel>& getModel() const;
 
         //! Get the recent files model.
-        FTK_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
+        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
 
         //! Set the recent files model.
-        FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+        FTK_UI_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
         //! Get the file browser view.
-        FTK_API std::shared_ptr<FileBrowserView> getView() const;
+        FTK_UI_API std::shared_ptr<FileBrowserView> getView() const;
 
         //! Get whether the pin is shown.
-        FTK_API bool isPinVisible() const;
+        FTK_UI_API bool isPinVisible() const;
 
         //! Set whether the pin is shown.
         //!
         //! Pinning only means anything to a browser in a window of its own:
         //! a dialog that would not close covers what it was opened from
         //! for good.
-        FTK_API void setPinVisible(bool);
+        FTK_UI_API void setPinVisible(bool);
 
         //! Get whether the browser is pinned.
-        FTK_API bool isPinned() const;
+        FTK_UI_API bool isPinned() const;
 
         //! Set whether the browser is pinned.
-        FTK_API void setPinned(bool);
+        FTK_UI_API void setPinned(bool);
 
         //! Set the pinned callback.
-        FTK_API void setPinnedCallback(const std::function<void(bool)>&);
+        FTK_UI_API void setPinnedCallback(const std::function<void(bool)>&);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void clipEvent(const Box2I&, bool clipped) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void clipEvent(const Box2I&, bool clipped) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
 
     private:
         void _accept(const std::vector<Path>&);
@@ -272,10 +273,10 @@ namespace ftk
     };
 
     //! File browser dialog.
-    class FTK_API_TYPE FileBrowser : public IDialog
+    class FTK_UI_API_TYPE FileBrowser : public IDialog
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& title,
             const std::filesystem::path&,
@@ -286,10 +287,10 @@ namespace ftk
         FileBrowser();
 
     public:
-        FTK_API virtual ~FileBrowser();
+        FTK_UI_API virtual ~FileBrowser();
 
         //! Create a new dialog.
-        FTK_API static std::shared_ptr<FileBrowser> create(
+        FTK_UI_API static std::shared_ptr<FileBrowser> create(
             const std::shared_ptr<Context>&,
             const std::string& title = "Open",
             const std::filesystem::path& = std::filesystem::path(),
@@ -298,31 +299,31 @@ namespace ftk
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
         //! Get whether more than one file can be selected.
-        FTK_API bool isMultiple() const;
+        FTK_UI_API bool isMultiple() const;
 
         //! Set whether more than one file can be selected.
-        FTK_API void setMultiple(bool);
+        FTK_UI_API void setMultiple(bool);
 
         //! Get the file browser model.
-        FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
+        FTK_UI_API const std::shared_ptr<FileBrowserModel>& getModel() const;
 
         //! Get the recent files model.
-        FTK_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
+        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
 
         //! Set the recent files model.
-        FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+        FTK_UI_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
-        FTK_API virtual std::shared_ptr<IWidget> getKeyFocus() const override;
+        FTK_UI_API virtual std::shared_ptr<IWidget> getKeyFocus() const override;
 
     private:
         FTK_PRIVATE();
     };
 
     //! File browser open options.
-    struct FTK_API_TYPE FileBrowserOpenOptions
+    struct FTK_UI_API_TYPE FileBrowserOpenOptions
     {
         std::string           title = "Open";
 
@@ -346,20 +347,20 @@ namespace ftk
     };
 
     //! File browser system.
-    class FTK_API_TYPE FileBrowserSystem : public ISystem
+    class FTK_UI_API_TYPE FileBrowserSystem : public ISystem
     {
     protected:
         FileBrowserSystem(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API virtual ~FileBrowserSystem();
+        FTK_UI_API virtual ~FileBrowserSystem();
 
         //! Create a new system.
-        FTK_API static std::shared_ptr<FileBrowserSystem> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserSystem> create(
             const std::shared_ptr<Context>&);
 
         //! Open the file browser.
-        FTK_API void open(
+        FTK_UI_API void open(
             const std::shared_ptr<IWindow>&,
             const std::function<void(const Path&)>&,
             const FileBrowserOpenOptions& = FileBrowserOpenOptions());
@@ -367,7 +368,7 @@ namespace ftk
         //! Open the file browser for more than one file. Set
         //! FileBrowserOpenOptions::multiple for the choosing to allow it;
         //! without that this reports the one file chosen.
-        FTK_API void open(
+        FTK_UI_API void open(
             const std::shared_ptr<IWindow>&,
             const std::function<void(const std::vector<Path>&)>&,
             const FileBrowserOpenOptions& = FileBrowserOpenOptions());
@@ -377,26 +378,26 @@ namespace ftk
         //! It is not built everywhere: it means linking to the desktop's own
         //! file dialog, which is not wanted on every platform. Where it is
         //! not built, setNativeFileDialog() is remembered but has no effect.
-        FTK_API bool isNativeFileDialogAvailable() const;
+        FTK_UI_API bool isNativeFileDialogAvailable() const;
 
         //! Get whether the native file dialog is used.
-        FTK_API bool isNativeFileDialog() const;
+        FTK_UI_API bool isNativeFileDialog() const;
 
         //! Set whether the native file dialog is used.
-        FTK_API void setNativeFileDialog(bool);
+        FTK_UI_API void setNativeFileDialog(bool);
 
         //! Get whether the file browser is shown in a window of its own.
-        FTK_API bool isFloating() const;
+        FTK_UI_API bool isFloating() const;
 
         //! Get whether the browser stays open once a file is chosen.
-        FTK_API bool isPinned() const;
+        FTK_UI_API bool isPinned() const;
 
         //! Set whether the browser stays open once a file is chosen.
         //!
         //! Only a floating browser can be pinned. Choosing reports the file
         //! and leaves the browser up, so that a run of files can be opened
         //! one after another without asking for the browser each time.
-        FTK_API void setPinned(bool);
+        FTK_UI_API void setPinned(bool);
 
         //! Set whether the file browser is shown in a window of its own.
         //!
@@ -405,38 +406,38 @@ namespace ftk
         //! leaves it visible and usable. Takes effect the next time the
         //! browser is opened, and has no bearing on the native dialog,
         //! which is a window of its own either way.
-        FTK_API void setFloating(bool);
+        FTK_UI_API void setFloating(bool);
 
         //! Get the size a floating file browser opens at.
         //!
         //! While one is open this is the size it has been resized to, so
         //! that an application saving this gets the size the browser was
         //! left at rather than the one it was given.
-        FTK_API Size2I getWindowSize() const;
+        FTK_UI_API Size2I getWindowSize() const;
 
         //! Set the size a floating file browser opens at.
-        FTK_API void setWindowSize(const Size2I&);
+        FTK_UI_API void setWindowSize(const Size2I&);
 
         //! Close the file browser if it is floating.
         //!
         //! A window of its own is not a child of anything, so it outlives
         //! the window it was opened from unless something closes it.
-        FTK_API void close();
+        FTK_UI_API void close();
 
         //! Get the file browser model.
-        FTK_API const std::shared_ptr<FileBrowserModel>& getModel() const;
+        FTK_UI_API const std::shared_ptr<FileBrowserModel>& getModel() const;
 
         //! Get the recent files model.
-        FTK_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
+        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
 
         //! Set the recent files model.
-        FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+        FTK_UI_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
         //! Get the thumbnails.
-        FTK_API const std::shared_ptr<IFileBrowserThumbnails>& getThumbnails() const;
+        FTK_UI_API const std::shared_ptr<IFileBrowserThumbnails>& getThumbnails() const;
 
         //! Set the thumbnails. Without one the browser shows file icons.
-        FTK_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
+        FTK_UI_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
 
     private:
         void _openDialog(
@@ -455,9 +456,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    FTK_API void to_json(nlohmann::json&, const FileBrowserOptions&);
+    FTK_UI_API void to_json(nlohmann::json&, const FileBrowserOptions&);
 
-    FTK_API void from_json(const nlohmann::json&, FileBrowserOptions&);
+    FTK_UI_API void from_json(const nlohmann::json&, FileBrowserOptions&);
 
     ///@}
 }

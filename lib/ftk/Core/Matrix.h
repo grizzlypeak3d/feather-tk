@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Vector.h>
 
 namespace ftk
@@ -148,11 +149,11 @@ namespace ftk
     template<typename T>
     bool invert(const Matrix<4, 4, T>&, Matrix<4, 4, T>&);
 
-    FTK_API void to_json(nlohmann::json&, const M33F&);
-    FTK_API void to_json(nlohmann::json&, const M44F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const M33F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const M44F&);
 
-    FTK_API void from_json(const nlohmann::json&, M33F&);
-    FTK_API void from_json(const nlohmann::json&, M44F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, M33F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, M44F&);
 
     template<typename T>
     Matrix<3, 3, T> operator * (const Matrix<3, 3, T>&, const Matrix<3, 3, T>&);

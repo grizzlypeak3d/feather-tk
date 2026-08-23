@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/FileBrowser.h>
 #include <ftk/UI/LineEdit.h>
@@ -15,7 +16,7 @@ namespace ftk
     ///@{
 
     //! File edit widget.
-    class FTK_API_TYPE FileEdit : public IContainer
+    class FTK_UI_API_TYPE FileEdit : public IContainer
     {
     protected:
         void _init(
@@ -26,33 +27,33 @@ namespace ftk
         FileEdit();
 
     public:
-        FTK_API virtual ~FileEdit();
+        FTK_UI_API virtual ~FileEdit();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileEdit> create(
+        FTK_UI_API static std::shared_ptr<FileEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileEdit> create(
+        FTK_UI_API static std::shared_ptr<FileEdit> create(
             const std::shared_ptr<Context>&,
             FileBrowserMode,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the path.
-        FTK_API const Path& getPath() const;
+        FTK_UI_API const Path& getPath() const;
 
         //! Set the path.
-        FTK_API void setPath(const Path&);
+        FTK_UI_API void setPath(const Path&);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const Path&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const Path&)>&);
 
         //! Get the text entry, for a dialog that wants the key focus to
         //! start in the path rather than on one of its buttons.
-        FTK_API const std::shared_ptr<LineEdit>& getLineEdit() const;
+        FTK_UI_API const std::shared_ptr<LineEdit>& getLineEdit() const;
 
-        FTK_API void dropEvent(DragDropEvent&) override;
+        FTK_UI_API void dropEvent(DragDropEvent&) override;
 
     private:
         void _openDialog();

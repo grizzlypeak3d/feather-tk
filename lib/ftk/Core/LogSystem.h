@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/IBaseSystem.h>
 #include <ftk/Core/ObservableList.h>
 
@@ -14,7 +15,7 @@ namespace ftk
     ///@{
         
     //! Log types.
-    enum class FTK_API_TYPE LogType
+    enum class FTK_CORE_API_TYPE LogType
     {
         Message,
         Warning,
@@ -26,7 +27,7 @@ namespace ftk
     FTK_ENUM(LogType);
 
     //! Log item.
-    struct FTK_API_TYPE LogItem
+    struct FTK_CORE_API_TYPE LogItem
     {
         //! When the item was logged. Wall clock rather than time since the
         //! application started: a log is read after the fact, and lining an
@@ -37,13 +38,13 @@ namespace ftk
         std::string message;
         LogType     type    = LogType::Message;
 
-        FTK_API bool operator == (const LogItem&) const;
-        FTK_API bool operator != (const LogItem&) const;
+        FTK_CORE_API bool operator == (const LogItem&) const;
+        FTK_CORE_API bool operator != (const LogItem&) const;
     };
 
     //! Get a log item label.
     //! What to include when a log item is formatted.
-    enum class FTK_API_TYPE LogLabel
+    enum class FTK_CORE_API_TYPE LogLabel
     {
         //! Time, prefix and message: the log file.
         Full,
@@ -57,31 +58,31 @@ namespace ftk
         Message
     };
 
-    FTK_API std::string getLabel(const LogItem&, LogLabel = LogLabel::Full);
+    FTK_CORE_API std::string getLabel(const LogItem&, LogLabel = LogLabel::Full);
         
     //! Log system.
-    class FTK_API_TYPE LogSystem : public IBaseSystem
+    class FTK_CORE_API_TYPE LogSystem : public IBaseSystem
     {
     protected:
         LogSystem(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API virtual ~LogSystem();
+        FTK_CORE_API virtual ~LogSystem();
 
         //! Create a new system.
-        FTK_API static std::shared_ptr<LogSystem> create(const std::shared_ptr<Context>&);
+        FTK_CORE_API static std::shared_ptr<LogSystem> create(const std::shared_ptr<Context>&);
 
         //! Print to the log.
-        FTK_API void print(
+        FTK_CORE_API void print(
             const std::string& prefix,
             const std::string&,
             LogType = LogType::Message);
             
         //! Observe the log items.
-        FTK_API std::shared_ptr<IObservableList<LogItem> > observeLogItems() const;
+        FTK_CORE_API std::shared_ptr<IObservableList<LogItem> > observeLogItems() const;
 
-        FTK_API void tick() override;
-        FTK_API std::chrono::milliseconds getTickTime() const override;
+        FTK_CORE_API void tick() override;
+        FTK_CORE_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         FTK_PRIVATE();

@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/Export.h>
 
 namespace ftk
 {
     //! Get the base DPI.
-    FTK_API float getBaseDPI();
+    FTK_UI_API float getBaseDPI();
 }

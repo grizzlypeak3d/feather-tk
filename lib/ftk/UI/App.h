@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Style.h>
 
 #include <ftk/Core/CmdLine.h>
@@ -24,7 +25,7 @@ namespace ftk
     struct TickEvent;
 
     //! Monitor information.
-    struct FTK_API_TYPE MonitorInfo
+    struct FTK_UI_API_TYPE MonitorInfo
     {
         std::string name;
         Size2I      size;
@@ -32,12 +33,12 @@ namespace ftk
         V2F         dpi;
         Box2I       bounds;
 
-        FTK_API bool operator == (const MonitorInfo&) const;
-        FTK_API bool operator != (const MonitorInfo&) const;
+        FTK_UI_API bool operator == (const MonitorInfo&) const;
+        FTK_UI_API bool operator != (const MonitorInfo&) const;
     };
 
     //! Color style.
-    enum class FTK_API_TYPE ColorStyle
+    enum class FTK_UI_API_TYPE ColorStyle
     {
         Dark,
         Light,
@@ -49,10 +50,10 @@ namespace ftk
     FTK_ENUM(ColorStyle);
 
     //! Get custom color roles.
-    FTK_API std::map<ColorRole, Color4F> getCustomColorRoles();
+    FTK_UI_API std::map<ColorRole, Color4F> getCustomColorRoles();
 
     //! Get display scales.
-    FTK_API std::vector<float> getDisplayScales();
+    FTK_UI_API std::vector<float> getDisplayScales();
 
     //! Where an application keeps its per-user files: the settings and the
     //! log. Left empty, no files are kept and the application is responsible
@@ -61,7 +62,7 @@ namespace ftk
     //! A suite of applications gives them all the same directory and tells
     //! them apart by the base name, so that one directory holds the settings
     //! and logs of all of them rather than one directory apiece.
-    struct FTK_API_TYPE AppFiles
+    struct FTK_UI_API_TYPE AppFiles
     {
         //! Directory under the user's documents. Empty keeps no files.
         std::string dirName;
@@ -77,10 +78,10 @@ namespace ftk
     };
 
     //! Base class for user interface applications.
-    class FTK_API_TYPE App : public IApp
+    class FTK_UI_API_TYPE App : public IApp
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::vector<std::string>&,
             const std::string& name,
@@ -89,13 +90,13 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {},
             const AppFiles& = AppFiles());
 
-        FTK_API App();
+        FTK_UI_API App();
 
     public:
-        FTK_API virtual ~App();
+        FTK_UI_API virtual ~App();
 
         //! Create a new application.
-        FTK_API static std::shared_ptr<App> create(
+        FTK_UI_API static std::shared_ptr<App> create(
             const std::shared_ptr<Context>&,
             int argc, char** argv,
             const std::string& name,
@@ -104,7 +105,7 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
         //! Create a new application.
-        FTK_API static std::shared_ptr<App> create(
+        FTK_UI_API static std::shared_ptr<App> create(
             const std::shared_ptr<Context>&,
             int argc, wchar_t* argv[],
             const std::string& name,
@@ -113,7 +114,7 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
         //! Create a new application.
-        FTK_API static std::shared_ptr<App> create(
+        FTK_UI_API static std::shared_ptr<App> create(
             const std::shared_ptr<Context>&,
             const std::vector<std::string>&,
             const std::string& name,
@@ -122,25 +123,25 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
         //! Get the font system.
-        FTK_API const std::shared_ptr<FontSystem>& getFontSystem() const;
+        FTK_UI_API const std::shared_ptr<FontSystem>& getFontSystem() const;
 
         //! Get the icon system.
-        FTK_API const std::shared_ptr<IconSystem>& getIconSystem() const;
+        FTK_UI_API const std::shared_ptr<IconSystem>& getIconSystem() const;
 
         //! Get the style.
-        FTK_API const std::shared_ptr<Style>& getStyle() const;
+        FTK_UI_API const std::shared_ptr<Style>& getStyle() const;
 
         //! \name Files
         ///@{
 
         //! Get the settings. Null when no AppFiles was given.
-        FTK_API const std::shared_ptr<Settings>& getSettings() const;
+        FTK_UI_API const std::shared_ptr<Settings>& getSettings() const;
 
         //! Get the settings file path. Empty when no AppFiles was given.
-        FTK_API const std::filesystem::path& getSettingsPath() const;
+        FTK_UI_API const std::filesystem::path& getSettingsPath() const;
 
         //! Get the log file path. Empty when no AppFiles was given.
-        FTK_API const std::filesystem::path& getLogFilePath() const;
+        FTK_UI_API const std::filesystem::path& getLogFilePath() const;
 
         //! Write a screenshot of the first window. Returns false when there
         //! is no window, when the offscreen buffer is not ready, or when the
@@ -148,43 +149,43 @@ namespace ftk
         //!
         //! Only useful once the event loop has run: that is what realizes and
         //! sizes the window and leaves a buffer behind to read.
-        FTK_API bool writeScreenshot(const std::filesystem::path&);
+        FTK_UI_API bool writeScreenshot(const std::filesystem::path&);
 
         ///@}
 
         //! \name Color Style
         ///@{
 
-        FTK_API ColorStyle getColorStyle() const;
-        FTK_API std::shared_ptr<IObservable<ColorStyle> > observeColorStyle() const;
-        FTK_API void setColorStyle(ColorStyle);
+        FTK_UI_API ColorStyle getColorStyle() const;
+        FTK_UI_API std::shared_ptr<IObservable<ColorStyle> > observeColorStyle() const;
+        FTK_UI_API void setColorStyle(ColorStyle);
 
-        FTK_API const std::map<ColorRole, Color4F>& getCustomColorRoles() const;
-        FTK_API std::shared_ptr<IObservableMap<ColorRole, Color4F> > observeCustomColorRoles() const;
-        FTK_API void setCustomColorRoles(const std::map<ColorRole, Color4F>&);
+        FTK_UI_API const std::map<ColorRole, Color4F>& getCustomColorRoles() const;
+        FTK_UI_API std::shared_ptr<IObservableMap<ColorRole, Color4F> > observeCustomColorRoles() const;
+        FTK_UI_API void setCustomColorRoles(const std::map<ColorRole, Color4F>&);
 
-        FTK_API const std::shared_ptr<CmdLineOption<ColorStyle> >& getColorStyleCmdLineOption() const;
+        FTK_UI_API const std::shared_ptr<CmdLineOption<ColorStyle> >& getColorStyleCmdLineOption() const;
 
         ///@}
 
         //! \name Display Scale
         ///@{
 
-        FTK_API float getDefaultDisplayScale() const;
-        FTK_API float getDisplayScale() const;
-        FTK_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
-        FTK_API void setDisplayScale(float);
+        FTK_UI_API float getDefaultDisplayScale() const;
+        FTK_UI_API float getDisplayScale() const;
+        FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
+        FTK_UI_API void setDisplayScale(float);
 
-        FTK_API const std::shared_ptr<CmdLineOption<float> >& getDisplayScaleCmdLineOption() const;
+        FTK_UI_API const std::shared_ptr<CmdLineOption<float> >& getDisplayScaleCmdLineOption() const;
 
         ///@}
 
         //! \name Tooltips
         ///@{
 
-        FTK_API bool areTooltipsEnabled() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeTooltipsEnabled() const;
-        FTK_API void setTooltipsEnabled(bool);
+        FTK_UI_API bool areTooltipsEnabled() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeTooltipsEnabled() const;
+        FTK_UI_API void setTooltipsEnabled(bool);
 
         ///@}
 
@@ -192,14 +193,14 @@ namespace ftk
         ///@{
 
         //! Get whether windows are drawn without being shown.
-        FTK_API bool isOffscreen() const;
+        FTK_UI_API bool isOffscreen() const;
 
         //! Set whether windows are drawn without being shown, applying it to
         //! the windows already added as well as later ones.
         //!
         //! Set by the -screenshot option; an application that takes its own
         //! screenshots sets it for those runs. See IWindow::setOffscreen().
-        FTK_API void setOffscreen(bool);
+        FTK_UI_API void setOffscreen(bool);
 
         //! Set whether applications start offscreen, before any of them
         //! exist.
@@ -213,25 +214,25 @@ namespace ftk
         //! Static because the decision belongs to whoever started the process
         //! rather than to any one application in it, and a test suite makes
         //! dozens.
-        FTK_API static void setOffscreenDefault(bool);
+        FTK_UI_API static void setOffscreenDefault(bool);
 
         ///@}
 
         //! Observe the monitors.
-        FTK_API std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
+        FTK_UI_API std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
 
         //! Get the windows.
-        FTK_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
+        FTK_UI_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
         //! Exit the application.
-        FTK_API virtual void exit();
+        FTK_UI_API virtual void exit();
 
         //! Run the application.
-        FTK_API virtual void run();
+        FTK_UI_API virtual void run();
 
         //! Tick the event loop. If this method is overridden the base method
         //! should be called.
-        FTK_API virtual void tick();
+        FTK_UI_API virtual void tick();
 
     protected:
         void _addWindow(const std::shared_ptr<IWindow>&);

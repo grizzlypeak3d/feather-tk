@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/GL/Export.h>
 #include <ftk/Core/RenderOptions.h>
 
 #include <memory>
@@ -16,25 +17,25 @@ namespace ftk
         ///@{
 
         //! Get the major version number from an OpenGL version string.
-        FTK_API int getMajorVersion(const std::string&);
+        FTK_GL_API int getMajorVersion(const std::string&);
 
         //! Get the glReadPixels format.
-        FTK_API unsigned int getReadPixelsFormat(ImageType);
+        FTK_GL_API unsigned int getReadPixelsFormat(ImageType);
 
         //! Get the glReadPixels type.
-        FTK_API unsigned int getReadPixelsType(ImageType);
+        FTK_GL_API unsigned int getReadPixelsType(ImageType);
 
         //! Set the alpha blending.
-        FTK_API void setAlphaBlend(AlphaBlend);
+        FTK_GL_API void setAlphaBlend(AlphaBlend);
 
         //! Set whether an OpenGL capability is enabled and restore it to the
         //! previous value when finished.
-        class FTK_API_TYPE SetAndRestore
+        class FTK_GL_API_TYPE SetAndRestore
         {
         public:
-            FTK_API SetAndRestore(unsigned int, bool);
+            FTK_GL_API SetAndRestore(unsigned int, bool);
 
-            FTK_API ~SetAndRestore();
+            FTK_GL_API ~SetAndRestore();
 
         private:
             FTK_PRIVATE();
@@ -55,19 +56,19 @@ namespace ftk
         //! state back is not free, so this is one call at the top of a draw
         //! rather than something to sprinkle about; SetAndRestore is the finer
         //! tool when only one capability is in question.
-        class FTK_API_TYPE StateSave
+        class FTK_GL_API_TYPE StateSave
         {
         public:
-            FTK_API StateSave();
+            FTK_GL_API StateSave();
 
-            FTK_API ~StateSave();
+            FTK_GL_API ~StateSave();
 
         private:
             FTK_PRIVATE();
         };
 
         //! Get an OpenGL error label.
-        FTK_API std::string getErrorLabel(unsigned int);
+        FTK_GL_API std::string getErrorLabel(unsigned int);
         
         ///@}
     }

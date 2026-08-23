@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IButton.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Check box.
-    class FTK_API_TYPE CheckBox : public IButton
+    class FTK_UI_API_TYPE CheckBox : public IButton
     {
     protected:
         void _init(
@@ -21,31 +22,31 @@ namespace ftk
         CheckBox();
 
     public:
-        FTK_API virtual ~CheckBox();
+        FTK_UI_API virtual ~CheckBox();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<CheckBox> create(
+        FTK_UI_API static std::shared_ptr<CheckBox> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<CheckBox> create(
+        FTK_UI_API static std::shared_ptr<CheckBox> create(
             const std::shared_ptr<Context>&,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void clipEvent(const Box2I&, bool) override;
+        FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     protected:
-        FTK_API void _sizeDirty() override;
+        FTK_UI_API void _sizeDirty() override;
 
     private:
         FTK_PRIVATE();

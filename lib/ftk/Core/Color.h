@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Matrix.h>
 
 #include <array>
@@ -119,51 +120,51 @@ namespace ftk
     Color<C, float> darker(const Color<C, float>&, float);
 
     //! Convert to greyscale.
-    FTK_API Color3F greyscale(const Color3F&);
+    FTK_CORE_API Color3F greyscale(const Color3F&);
 
     //! Convert to greyscale.
-    FTK_API Color4F greyscale(const Color4F&);
+    FTK_CORE_API Color4F greyscale(const Color4F&);
 
     //! Get a brightness color matrix.
-    FTK_API M44F brightness(const V3F&);
+    FTK_CORE_API M44F brightness(const V3F&);
 
     //! Get a contrast color matrix.
-    FTK_API M44F contrast(const V3F&);
+    FTK_CORE_API M44F contrast(const V3F&);
 
     //! Get a saturation color matrix.
-    FTK_API M44F saturation(const V3F&);
+    FTK_CORE_API M44F saturation(const V3F&);
 
     //! Get a color matrix for changing the hue.
-    FTK_API M44F hue(float);
+    FTK_CORE_API M44F hue(float);
 
     //! Convert RGB to HSV.
-    FTK_API void rgbToHSV(const float in[3], float out[3]);
+    FTK_CORE_API void rgbToHSV(const float in[3], float out[3]);
 
     //! Convert HSV to RGB.
-    FTK_API void hsvToRGB(const float in[3], float out[3]);
+    FTK_CORE_API void hsvToRGB(const float in[3], float out[3]);
 
     //! Convert sRGB to linear.
-    FTK_API float srgbToLinear(float);
+    FTK_CORE_API float srgbToLinear(float);
 
-    FTK_API std::string to_string(const Color1F&);
-    FTK_API std::string to_string(const Color2F&);
-    FTK_API std::string to_string(const Color3F&);
-    FTK_API std::string to_string(const Color4F&);
+    FTK_CORE_API std::string to_string(const Color1F&);
+    FTK_CORE_API std::string to_string(const Color2F&);
+    FTK_CORE_API std::string to_string(const Color3F&);
+    FTK_CORE_API std::string to_string(const Color4F&);
 
-    FTK_API bool from_string(const std::string&, Color1F&);
-    FTK_API bool from_string(const std::string&, Color2F&);
-    FTK_API bool from_string(const std::string&, Color3F&);
-    FTK_API bool from_string(const std::string&, Color4F&);
+    FTK_CORE_API bool from_string(const std::string&, Color1F&);
+    FTK_CORE_API bool from_string(const std::string&, Color2F&);
+    FTK_CORE_API bool from_string(const std::string&, Color3F&);
+    FTK_CORE_API bool from_string(const std::string&, Color4F&);
 
-    FTK_API void to_json(nlohmann::json&, const Color1F&);
-    FTK_API void to_json(nlohmann::json&, const Color2F&);
-    FTK_API void to_json(nlohmann::json&, const Color3F&);
-    FTK_API void to_json(nlohmann::json&, const Color4F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Color1F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Color2F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Color3F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Color4F&);
 
-    FTK_API void from_json(const nlohmann::json&, Color1F&);
-    FTK_API void from_json(const nlohmann::json&, Color2F&);
-    FTK_API void from_json(const nlohmann::json&, Color3F&);
-    FTK_API void from_json(const nlohmann::json&, Color4F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Color1F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Color2F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Color3F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Color4F&);
         
     template<int C, typename T>
     constexpr bool operator == (const Color<C, T>&, const Color<C, T>&);

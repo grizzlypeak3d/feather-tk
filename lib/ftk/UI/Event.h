@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Style.h>
 
@@ -17,45 +18,45 @@ namespace ftk
     ///@{
         
     //! Child added event.
-    struct FTK_API_TYPE ChildAddEvent
+    struct FTK_UI_API_TYPE ChildAddEvent
     {
-        FTK_API ChildAddEvent(const std::shared_ptr<IWidget>&);
+        FTK_UI_API ChildAddEvent(const std::shared_ptr<IWidget>&);
 
         std::shared_ptr<IWidget> child;
     };
 
     //! Child removed event.
-    struct FTK_API_TYPE ChildRemoveEvent
+    struct FTK_UI_API_TYPE ChildRemoveEvent
     {
-        FTK_API ChildRemoveEvent(const std::shared_ptr<IWidget>&, int index);
+        FTK_UI_API ChildRemoveEvent(const std::shared_ptr<IWidget>&, int index);
 
         std::shared_ptr<IWidget> child;
         int index = 0;
     };
 
     //! Tick event.
-    struct FTK_API_TYPE TickEvent
+    struct FTK_UI_API_TYPE TickEvent
     {
     };
 
     //! Style event.
-    struct FTK_API_TYPE StyleEvent
+    struct FTK_UI_API_TYPE StyleEvent
     {
         //! @param changes Set all of the fields to this value.
-        FTK_API StyleEvent(bool changes = false);
+        FTK_UI_API StyleEvent(bool changes = false);
 
         bool displayScaleChange = false;
         bool sizeRoleChange     = false;
         bool colorRoleChange    = false;
         bool fontChange         = false;
 
-        FTK_API bool hasChanges() const;
+        FTK_UI_API bool hasChanges() const;
     };
 
     //! Size hint event.
-    struct FTK_API_TYPE SizeHintEvent
+    struct FTK_UI_API_TYPE SizeHintEvent
     {
-        FTK_API SizeHintEvent(
+        FTK_UI_API SizeHintEvent(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             float displayScale,
@@ -68,9 +69,9 @@ namespace ftk
     };
 
     //! Draw event.
-    struct FTK_API_TYPE DrawEvent
+    struct FTK_UI_API_TYPE DrawEvent
     {
-        FTK_API DrawEvent(
+        FTK_UI_API DrawEvent(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             float displayScale,
@@ -85,23 +86,23 @@ namespace ftk
     };
 
     //! Base class for drag and drop data.
-    class FTK_API_TYPE IDragDropData : public std::enable_shared_from_this<IDragDropData>
+    class FTK_UI_API_TYPE IDragDropData : public std::enable_shared_from_this<IDragDropData>
     {
     public:
-        FTK_API virtual ~IDragDropData() = 0;
+        FTK_UI_API virtual ~IDragDropData() = 0;
     };
 
     //! Mouse enter event.
-    struct FTK_API_TYPE MouseEnterEvent
+    struct FTK_UI_API_TYPE MouseEnterEvent
     {
-        FTK_API MouseEnterEvent(const V2I& pos);
+        FTK_UI_API MouseEnterEvent(const V2I& pos);
 
         bool accept = false;
         V2I  pos;
     };
 
     //! Mouse buttons.
-    enum class FTK_API_TYPE MouseButton
+    enum class FTK_UI_API_TYPE MouseButton
     {
         None,
         Left,
@@ -116,9 +117,9 @@ namespace ftk
     FTK_ENUM(MouseButton);
 
     //! Mouse move event.
-    struct FTK_API_TYPE MouseMoveEvent
+    struct FTK_UI_API_TYPE MouseMoveEvent
     {
-        FTK_API MouseMoveEvent(
+        FTK_UI_API MouseMoveEvent(
             const V2I&  pos,
             const V2I&  prev,
             MouseButton button = MouseButton::None,
@@ -147,7 +148,7 @@ namespace ftk
     //! Note: This is a bitfield enum and is not compatible with FTK_ENUM,
     //! which requires a contiguous Count member. See to_string/from_string
     //! below for serialization support.
-    enum class FTK_API_TYPE KeyModifier
+    enum class FTK_UI_API_TYPE KeyModifier
     {
         None    = 0,
         Shift   = 1,
@@ -157,13 +158,13 @@ namespace ftk
     };
 
     //! Convert to a string.
-    FTK_API std::string to_string(KeyModifier);
+    FTK_UI_API std::string to_string(KeyModifier);
 
     //! Convert from a string.
-    FTK_API bool from_string(const std::string&, KeyModifier&);
+    FTK_UI_API bool from_string(const std::string&, KeyModifier&);
 
     //! Check for the given key modifier.
-    FTK_API bool checkKeyModifier(KeyModifier, int modifiers);
+    FTK_UI_API bool checkKeyModifier(KeyModifier, int modifiers);
 
     //! OS specific command key modifier.
 #if defined(__APPLE__)
@@ -173,13 +174,13 @@ namespace ftk
 #endif // __APPLE__
 
     //! Get a keyboard modifiers label.
-    FTK_API std::string getKeyModifierLabel(int);
+    FTK_UI_API std::string getKeyModifierLabel(int);
 
     //! Mouse click event.
-    struct FTK_API_TYPE MouseClickEvent
+    struct FTK_UI_API_TYPE MouseClickEvent
     {
-        FTK_API MouseClickEvent() = default;
-        FTK_API MouseClickEvent(
+        FTK_UI_API MouseClickEvent() = default;
+        FTK_UI_API MouseClickEvent(
             MouseButton button,
             int         modifiers,
             const V2I&  pos);
@@ -191,9 +192,9 @@ namespace ftk
     };
 
     //! Scroll event (mouse wheel or touch pad).
-    struct FTK_API_TYPE ScrollEvent
+    struct FTK_UI_API_TYPE ScrollEvent
     {
-        FTK_API ScrollEvent(
+        FTK_UI_API ScrollEvent(
             const V2F& value,
             int        modifiers,
             const V2I& pos);
@@ -205,7 +206,7 @@ namespace ftk
     };
 
     //! Keys.
-    enum class FTK_API_TYPE Key
+    enum class FTK_UI_API_TYPE Key
     {
         Unknown,
 
@@ -344,13 +345,13 @@ namespace ftk
     bool isControlKey(Key);
 
     //! Get a keyboard shortcut label.
-    FTK_API std::string getShortcutLabel(Key, int modifiers = 0);
+    FTK_UI_API std::string getShortcutLabel(Key, int modifiers = 0);
 
     //! Key event.
-    struct FTK_API_TYPE KeyEvent
+    struct FTK_UI_API_TYPE KeyEvent
     {
-        FTK_API KeyEvent() = default;
-        FTK_API KeyEvent(
+        FTK_UI_API KeyEvent() = default;
+        FTK_UI_API KeyEvent(
             Key        key,
             int        modifiers,
             const V2I& pos);
@@ -362,32 +363,32 @@ namespace ftk
     };
 
     //! Text event.
-    struct FTK_API_TYPE TextEvent
+    struct FTK_UI_API_TYPE TextEvent
     {
-        FTK_API TextEvent(const std::string& text);
+        FTK_UI_API TextEvent(const std::string& text);
 
         std::string text;
         bool        accept = false;
     };
 
     //! Drag and drop text data.
-    class FTK_API_TYPE DragDropTextData : public IDragDropData
+    class FTK_UI_API_TYPE DragDropTextData : public IDragDropData
     {
     public:
-        FTK_API DragDropTextData(const std::vector<std::string>&);
+        FTK_UI_API DragDropTextData(const std::vector<std::string>&);
 
-        FTK_API virtual ~DragDropTextData();
+        FTK_UI_API virtual ~DragDropTextData();
 
-        FTK_API const std::vector<std::string>& getText() const;
+        FTK_UI_API const std::vector<std::string>& getText() const;
 
     private:
         std::vector<std::string> _text;
     };
 
     //! Drag and drop event.
-    struct FTK_API_TYPE DragDropEvent
+    struct FTK_UI_API_TYPE DragDropEvent
     {
-        FTK_API DragDropEvent(
+        FTK_UI_API DragDropEvent(
             const V2I&                            pos,
             const V2I&                            prev,
             const std::shared_ptr<IDragDropData>& data);

@@ -225,7 +225,7 @@ namespace ftk
         return _p->sizeRoles->get();
     }
 
-    FTK_API std::shared_ptr<IObservableMap<SizeRole, int> > Style::observeSizeRoles() const
+    FTK_UI_API std::shared_ptr<IObservableMap<SizeRole, int> > Style::observeSizeRoles() const
     {
         return _p->sizeRoles;
     }

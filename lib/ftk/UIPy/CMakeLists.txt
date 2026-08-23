@@ -102,10 +102,10 @@ set(SOURCE
     WidgetOptions.cpp
     Window.cpp)
 
-add_library(ftkUIPy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
-if(BUILD_SHARED_LIBS)
-    target_compile_definitions(ftkUIPy PRIVATE FTK_EXPORTS)
-endif()
+# Static. The bindings are linked by ftkPy and nothing else, so there is no
+# API here for anything to import -- the module absorbs them.
+add_library(ftkUIPy STATIC ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+set_target_properties(ftkUIPy PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(ftkUIPy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

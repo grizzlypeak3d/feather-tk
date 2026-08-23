@@ -40,10 +40,10 @@ set(SOURCE
     Vector.cpp
     Version.cpp)
 
-add_library(ftkCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
-if(BUILD_SHARED_LIBS)
-    target_compile_definitions(ftkCorePy PRIVATE FTK_EXPORTS)
-endif()
+# Static. The bindings are linked by ftkPy and nothing else, so there is no
+# API here for anything to import -- the module absorbs them.
+add_library(ftkCorePy STATIC ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+set_target_properties(ftkCorePy PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(ftkCorePy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

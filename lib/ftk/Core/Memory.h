@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Util.h>
 
 #include <cstdint>
@@ -21,10 +22,10 @@ namespace ftk
     constexpr size_t terabyte = gigabyte * 1024; //!< The number of bytes in a terabyte
 
     //! Get the aligned byte count.
-    FTK_API size_t getAlignedByteCount(size_t, size_t alignment);
+    FTK_CORE_API size_t getAlignedByteCount(size_t, size_t alignment);
         
     //! Endian type.
-    enum class FTK_API_TYPE Endian
+    enum class FTK_CORE_API_TYPE Endian
     {
         MSB, //!< Most siginificant byte first
         LSB, //!< Least significant byte first
@@ -35,41 +36,41 @@ namespace ftk
     FTK_ENUM(Endian);
 
     //! Get the current endian.
-    FTK_API Endian getEndian();
+    FTK_CORE_API Endian getEndian();
 
     //! Get the opposite of the given endian.
     constexpr Endian opposite(Endian);
 
     //! Convert the endianness of a block of memory in place.
-    FTK_API void swapEndian(
+    FTK_CORE_API void swapEndian(
         void*  in,
         size_t wordCount,
         size_t wordSize);
 
     //! Convert the endianness of a block of memory.
-    FTK_API void swapEndian(
+    FTK_CORE_API void swapEndian(
         const void* in,
         void*       out,
         size_t      wordCount,
         size_t      wordSize);
 
     //! Get the given bit.
-    FTK_API bool getBit(unsigned int, int bit);
+    FTK_CORE_API bool getBit(unsigned int, int bit);
 
     //! Set the given bit.
-    FTK_API unsigned int setBit(unsigned int, int bit);
+    FTK_CORE_API unsigned int setBit(unsigned int, int bit);
 
     //! Clear the given bit.
-    FTK_API unsigned int clearBit(unsigned int, int bit);
+    FTK_CORE_API unsigned int clearBit(unsigned int, int bit);
 
     //! Toggle the given bit.
-    FTK_API unsigned int toggleBit(unsigned int, int bit);
+    FTK_CORE_API unsigned int toggleBit(unsigned int, int bit);
 
     //! Convert bits to a string for debugging.
-    FTK_API std::string toBitString(uint8_t);
+    FTK_CORE_API std::string toBitString(uint8_t);
 
     //! Convert bits to a string for debugging.
-    FTK_API std::string toBitString(uint16_t);
+    FTK_CORE_API std::string toBitString(uint16_t);
 
     ///@}
 }

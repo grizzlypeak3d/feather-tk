@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Box.h>
 #include <ftk/Core/ISystem.h>
 #include <ftk/Core/Image.h>
@@ -17,7 +18,7 @@ namespace ftk
     ///@{
 
     //! Font types.
-    enum class FTK_API_TYPE FontType
+    enum class FTK_CORE_API_TYPE FontType
     {
         Regular,
         Bold,
@@ -30,10 +31,10 @@ namespace ftk
     FTK_ENUM(FontType);
 
     //! Get a built-in font.
-    FTK_API std::string getDefaultFont(FontType);
+    FTK_CORE_API std::string getDefaultFont(FontType);
 
     //! Font information.
-    struct FTK_API_TYPE FontInfo
+    struct FTK_CORE_API_TYPE FontInfo
     {
         FontInfo() = default;
         FontInfo(const std::string&, int size);
@@ -41,13 +42,13 @@ namespace ftk
         std::string name = getDefaultFont(FontType::Regular);
         int         size = 12;
 
-        FTK_API bool operator == (const FontInfo&) const;
-        FTK_API bool operator != (const FontInfo&) const;
-        FTK_API bool operator < (const FontInfo&) const;
+        FTK_CORE_API bool operator == (const FontInfo&) const;
+        FTK_CORE_API bool operator != (const FontInfo&) const;
+        FTK_CORE_API bool operator < (const FontInfo&) const;
     };
 
     //! Font metrics.
-    struct FTK_API_TYPE FontMetrics
+    struct FTK_CORE_API_TYPE FontMetrics
     {
         int ascender   = 0;
         int descender  = 0;
@@ -55,7 +56,7 @@ namespace ftk
     };
 
     //! Font glyph information.
-    struct FTK_API_TYPE GlyphInfo
+    struct FTK_CORE_API_TYPE GlyphInfo
     {
         GlyphInfo() = default;
         GlyphInfo(uint32_t code, const FontInfo&);
@@ -63,13 +64,13 @@ namespace ftk
         uint32_t code     = 0;
         FontInfo fontInfo;
 
-        FTK_API bool operator == (const GlyphInfo&) const;
-        FTK_API bool operator != (const GlyphInfo&) const;
-        FTK_API bool operator < (const GlyphInfo&) const;
+        FTK_CORE_API bool operator == (const GlyphInfo&) const;
+        FTK_CORE_API bool operator != (const GlyphInfo&) const;
+        FTK_CORE_API bool operator < (const GlyphInfo&) const;
     };
 
     //! Font glyph.
-    struct FTK_API_TYPE Glyph
+    struct FTK_CORE_API_TYPE Glyph
     {
         GlyphInfo              info;
         std::shared_ptr<Image> image;
@@ -85,7 +86,7 @@ namespace ftk
     //! \todo Add support for gamma correction?
     //! - https://www.freetype.org/freetype2/docs/text-rendering-general.html
     //! \todo Use a text-shaping library.
-    class FTK_API_TYPE FontSystem : public ISystem
+    class FTK_CORE_API_TYPE FontSystem : public ISystem
     {
         FTK_NON_COPYABLE(FontSystem);
 
@@ -93,36 +94,36 @@ namespace ftk
         FontSystem(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API virtual ~FontSystem();
+        FTK_CORE_API virtual ~FontSystem();
 
         //! Create a new system.
-        FTK_API static std::shared_ptr<FontSystem> create(
+        FTK_CORE_API static std::shared_ptr<FontSystem> create(
             const std::shared_ptr<Context>&);
 
         //! \name Fonts
         ///@{
 
-        FTK_API std::vector<std::string> getFonts() const;
-        FTK_API std::shared_ptr<IObservableList<std::string> > observeFonts() const;
-        FTK_API bool addFont(const std::string& name, const std::string& fileName);
-        FTK_API bool addFont(const std::string& name, const uint8_t*, size_t);
-        FTK_API void removeFont(const std::string&);
+        FTK_CORE_API std::vector<std::string> getFonts() const;
+        FTK_CORE_API std::shared_ptr<IObservableList<std::string> > observeFonts() const;
+        FTK_CORE_API bool addFont(const std::string& name, const std::string& fileName);
+        FTK_CORE_API bool addFont(const std::string& name, const uint8_t*, size_t);
+        FTK_CORE_API void removeFont(const std::string&);
 
         //! Register an already-added font (see addFont) as a fallback for
         //! glyphs missing from the requested font. Fallbacks are consulted in
         //! registration order. Useful for scripts the bundled fonts do not
         //! cover.
-        FTK_API void addFallbackFont(const std::string& name);
+        FTK_CORE_API void addFallbackFont(const std::string& name);
 
         ///@}
 
         //! \name Information
         ///@{
 
-        FTK_API size_t getGlyphCacheSize() const;
-        FTK_API float getGlyphCachePercentage() const;
-        FTK_API std::shared_ptr<IObservable<size_t> > observeGlyphCacheSize() const;
-        FTK_API std::shared_ptr<IObservable<float> > observeGlyphCachePercentage() const;
+        FTK_CORE_API size_t getGlyphCacheSize() const;
+        FTK_CORE_API float getGlyphCachePercentage() const;
+        FTK_CORE_API std::shared_ptr<IObservable<size_t> > observeGlyphCacheSize() const;
+        FTK_CORE_API std::shared_ptr<IObservable<float> > observeGlyphCachePercentage() const;
 
         ///@}
 
@@ -130,16 +131,16 @@ namespace ftk
         ///@{
 
         //! Get font metrics.
-        FTK_API FontMetrics getMetrics(const FontInfo&);
+        FTK_CORE_API FontMetrics getMetrics(const FontInfo&);
 
         //! Get the size of the given string.
-        FTK_API Size2I getSize(
+        FTK_CORE_API Size2I getSize(
             const std::string&,
             const FontInfo&,
             int maxLineWidth = 0);
 
         //! Get the character boxes for the given string.
-        FTK_API std::vector<Box2I> getBoxes(
+        FTK_CORE_API std::vector<Box2I> getBoxes(
             const std::string&,
             const FontInfo&,
             int maxLineWidth = 0);
@@ -150,24 +151,24 @@ namespace ftk
         ///@{
 
         //! Get the glyphs for the given string.
-        FTK_API std::vector<std::shared_ptr<Glyph> > getGlyphs(
+        FTK_CORE_API std::vector<std::shared_ptr<Glyph> > getGlyphs(
             const std::string&,
             const FontInfo&);
 
         ///@}
 
-        FTK_API void tick() override;
-        FTK_API std::chrono::milliseconds getTickTime() const override;
+        FTK_CORE_API void tick() override;
+        FTK_CORE_API std::chrono::milliseconds getTickTime() const override;
 
     private:
         FTK_PRIVATE();
     };
 
-    FTK_API void to_json(nlohmann::json&, const FontInfo&);
+    FTK_CORE_API void to_json(nlohmann::json&, const FontInfo&);
 
-    FTK_API void from_json(const nlohmann::json&, FontInfo&);
+    FTK_CORE_API void from_json(const nlohmann::json&, FontInfo&);
 
-    FTK_API std::ostream& operator << (std::ostream&, const FontInfo&);
+    FTK_CORE_API std::ostream& operator << (std::ostream&, const FontInfo&);
 
     ///@}
 }

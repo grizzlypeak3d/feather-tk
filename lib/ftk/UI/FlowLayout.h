@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -21,7 +22,7 @@ namespace ftk
     //! about, so the layout reports the tallest single child until it has been
     //! given a geometry, then reports what that width actually needed. Laying
     //! one out therefore settles over two passes rather than one.
-    class FTK_API_TYPE FlowLayout : public IWidget
+    class FTK_UI_API_TYPE FlowLayout : public IWidget
     {
     protected:
         void _init(
@@ -31,30 +32,30 @@ namespace ftk
         FlowLayout();
 
     public:
-        FTK_API virtual ~FlowLayout();
+        FTK_UI_API virtual ~FlowLayout();
 
         //! Create a new layout.
-        FTK_API static std::shared_ptr<FlowLayout> create(
+        FTK_UI_API static std::shared_ptr<FlowLayout> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
         //! Get the spacing role.
-        FTK_API SizeRole getSpacingRole() const;
+        FTK_UI_API SizeRole getSpacingRole() const;
 
         //! Set the spacing role, used both between children on a line and
         //! between the lines.
-        FTK_API void setSpacingRole(SizeRole);
+        FTK_UI_API void setSpacingRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
 
     private:
         //! Place the children within the given width, returning the height

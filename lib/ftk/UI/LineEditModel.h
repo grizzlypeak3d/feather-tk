@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Event.h>
 
 #include <ftk/Core/Observable.h>
@@ -13,32 +14,32 @@ namespace ftk
     ///@{
 
     //! Line edit selection.
-    struct FTK_API_TYPE LineEditSelection
+    struct FTK_UI_API_TYPE LineEditSelection
     {
         LineEditSelection() = default;
-        FTK_API LineEditSelection(int);
-        FTK_API LineEditSelection(int, int);
+        FTK_UI_API LineEditSelection(int);
+        FTK_UI_API LineEditSelection(int, int);
 
         int first = -1;
         int second = -1;
 
         //! Get whether the selection is valid.
-        FTK_API bool isValid() const;
+        FTK_UI_API bool isValid() const;
 
         //! Get the minimum.
-        FTK_API int min() const;
+        FTK_UI_API int min() const;
 
         //! Get the maximum.
-        FTK_API int max() const;
+        FTK_UI_API int max() const;
 
-        FTK_API bool operator == (const LineEditSelection&) const;
-        FTK_API bool operator != (const LineEditSelection&) const;
+        FTK_UI_API bool operator == (const LineEditSelection&) const;
+        FTK_UI_API bool operator != (const LineEditSelection&) const;
     };
         
     //! Line edit model.
     //! 
     //! \todo Implement undo/redo.
-    class FTK_API_TYPE LineEditModel : public std::enable_shared_from_this<LineEditModel>
+    class FTK_UI_API_TYPE LineEditModel : public std::enable_shared_from_this<LineEditModel>
     {
     protected:
         void _init(
@@ -48,73 +49,73 @@ namespace ftk
         LineEditModel();
 
     public:
-        FTK_API virtual ~LineEditModel();
+        FTK_UI_API virtual ~LineEditModel();
 
         //! Create a new model
-        FTK_API static std::shared_ptr<LineEditModel> create(
+        FTK_UI_API static std::shared_ptr<LineEditModel> create(
             const std::shared_ptr<Context>&,
             const std::string& = "");
 
         //! \name Text
         ///@{
 
-        FTK_API const std::string& getText() const;
-        FTK_API std::shared_ptr<IObservable<std::string> > observeText() const;
+        FTK_UI_API const std::string& getText() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeText() const;
 
         //! Set the text. Setting the text will also set the cursor to the
         //! beginning and clear the selection.
-        FTK_API void setText(const std::string&);
+        FTK_UI_API void setText(const std::string&);
 
-        FTK_API void clearText();
+        FTK_UI_API void clearText();
 
-        FTK_API bool isReadOnly() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeReadOnly() const;
-        FTK_API void setReadOnly(bool);
+        FTK_UI_API bool isReadOnly() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeReadOnly() const;
+        FTK_UI_API void setReadOnly(bool);
 
         ///@}
 
         //! \name Cursor
         ///@{
 
-        FTK_API int getCursor() const;
-        FTK_API std::shared_ptr<IObservable<int> > observeCursor() const;
+        FTK_UI_API int getCursor() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeCursor() const;
 
         //! Set the cursor. Setting the cursor clears the selection.
-        FTK_API void setCursor(int);
+        FTK_UI_API void setCursor(int);
 
         ///@}
 
         //! \name Selection
         ///@{
 
-        FTK_API const LineEditSelection& getSelection() const;
-        FTK_API std::shared_ptr<IObservable<LineEditSelection> > observeSelection() const;
-        FTK_API void setSelection(const LineEditSelection&);
-        FTK_API void selectAll();
-        FTK_API void clearSelection();
+        FTK_UI_API const LineEditSelection& getSelection() const;
+        FTK_UI_API std::shared_ptr<IObservable<LineEditSelection> > observeSelection() const;
+        FTK_UI_API void setSelection(const LineEditSelection&);
+        FTK_UI_API void selectAll();
+        FTK_UI_API void clearSelection();
 
         ///@}
 
         //! \name Undo
         ///@{
 
-        FTK_API void undo();
-        FTK_API void redo();
+        FTK_UI_API void undo();
+        FTK_UI_API void redo();
 
         //! Observe whether there is a command to undo.
-        FTK_API std::shared_ptr<IObservable<bool> > observeHasUndo() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeHasUndo() const;
 
         //! Observe whether there is a command to redo.
-        FTK_API std::shared_ptr<IObservable<bool> > observeHasRedo() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeHasRedo() const;
 
         ///@}
 
         //! \name Clipboard
         ///@{
 
-        FTK_API void cut();
-        FTK_API void copy();
-        FTK_API void paste();
+        FTK_UI_API void cut();
+        FTK_UI_API void copy();
+        FTK_UI_API void paste();
 
         ///@}
 
@@ -122,16 +123,16 @@ namespace ftk
         ///@{
 
         //! Handle text input.
-        FTK_API void input(const std::string&);
+        FTK_UI_API void input(const std::string&);
 
         //! Handle key input.
-        FTK_API bool key(Key, int modifiers = 0);
+        FTK_UI_API bool key(Key, int modifiers = 0);
 
         //! Get the regular epression for allowable input.
-        FTK_API const std::string& getRegex() const;
+        FTK_UI_API const std::string& getRegex() const;
 
         //! Set the regular epression for allowable input.
-        FTK_API void setRegex(const std::string&);
+        FTK_UI_API void setRegex(const std::string&);
 
         ///@}
 

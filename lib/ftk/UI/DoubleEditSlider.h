@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/DoubleModel.h>
 #include <ftk/UI/IWidget.h>
@@ -13,7 +14,7 @@ namespace ftk
     ///@{
         
     //! Double precision floating point value editor and slider.
-    class FTK_API_TYPE DoubleEditSlider : public IContainer
+    class FTK_UI_API_TYPE DoubleEditSlider : public IContainer
     {
     protected:
         void _init(
@@ -24,15 +25,15 @@ namespace ftk
         DoubleEditSlider();
 
     public:
-        FTK_API virtual ~DoubleEditSlider();
+        FTK_UI_API virtual ~DoubleEditSlider();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<DoubleEditSlider> create(
+        FTK_UI_API static std::shared_ptr<DoubleEditSlider> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<DoubleEditSlider> create(
+        FTK_UI_API static std::shared_ptr<DoubleEditSlider> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -40,57 +41,57 @@ namespace ftk
         //! \name Value
         ///@{
 
-        FTK_API double getValue() const;
-        FTK_API void setValue(double);
-        FTK_API void setCallback(const std::function<void(double)>&);
+        FTK_UI_API double getValue() const;
+        FTK_UI_API void setValue(double);
+        FTK_UI_API void setCallback(const std::function<void(double)>&);
 
         //! Set the value callback with a flag for whether the slider is pressed.
-        FTK_API void setPressedCallback(const std::function<void(double, bool)>&);
+        FTK_UI_API void setPressedCallback(const std::function<void(double, bool)>&);
         
         ///@}
 
         //! \name Range
         ///@{
 
-        FTK_API const RangeD& getRange() const;
-        FTK_API void setRange(const RangeD&);
-        FTK_API void setRange(double, double);
+        FTK_UI_API const RangeD& getRange() const;
+        FTK_UI_API void setRange(const RangeD&);
+        FTK_UI_API void setRange(double, double);
         
         ///@}
 
         //! \name Increment
         ///@{
 
-        FTK_API double getStep() const;
-        FTK_API void setStep(double);
+        FTK_UI_API double getStep() const;
+        FTK_UI_API void setStep(double);
 
-        FTK_API double getLargeStep() const;
-        FTK_API void setLargeStep(double);
+        FTK_UI_API double getLargeStep() const;
+        FTK_UI_API void setLargeStep(double);
         
         ///@}
 
         //! \name Default Value
         ///@{
 
-        FTK_API double getDefault() const;
-        FTK_API void setDefault(double);
+        FTK_UI_API double getDefault() const;
+        FTK_UI_API void setDefault(double);
         
         ///@}
 
         //! Get the model.
-        FTK_API const std::shared_ptr<DoubleModel>& getModel() const;
+        FTK_UI_API const std::shared_ptr<DoubleModel>& getModel() const;
 
         //! Get the display precision.
-        FTK_API int getPrecision() const;
+        FTK_UI_API int getPrecision() const;
 
         //! Set the display precision.
-        FTK_API void setPrecision(int);
+        FTK_UI_API void setPrecision(int);
 
         //! Get the font.
-        FTK_API FontType getFont() const;
+        FTK_UI_API FontType getFont() const;
 
         //! Set the font.
-        FTK_API void setFont(FontType);
+        FTK_UI_API void setFont(FontType);
 
 
     private:

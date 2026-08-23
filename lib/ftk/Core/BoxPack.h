@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Box.h>
 #include <ftk/Core/Util.h>
 
@@ -29,19 +30,19 @@ namespace ftk
     //!
     //! References:
     //! - http://blackpawn.com/texts/lightmaps/
-    struct FTK_API_TYPE BoxPackNode
+    struct FTK_CORE_API_TYPE BoxPackNode
     {
         Box2I box;
         BoxPackID id = boxPackInvalidID;
         BoxPackTimestamp timestamp = 0;
         std::array<std::shared_ptr<BoxPackNode>, 2> children;
 
-        FTK_API bool isBranch() const;
-        FTK_API bool isOccupied() const;
+        FTK_CORE_API bool isBranch() const;
+        FTK_CORE_API bool isOccupied() const;
     };
 
     //! Pack boxes together.
-    class FTK_API_TYPE BoxPack : public std::enable_shared_from_this<BoxPack>
+    class FTK_CORE_API_TYPE BoxPack : public std::enable_shared_from_this<BoxPack>
     {
         FTK_NON_COPYABLE(BoxPack);
 
@@ -50,19 +51,19 @@ namespace ftk
 
     public:
         //! Create a new object.
-        FTK_API static std::shared_ptr<BoxPack> create(const Size2I&, int border = 0);
+        FTK_CORE_API static std::shared_ptr<BoxPack> create(const Size2I&, int border = 0);
 
         //! Get the root node.
-        FTK_API const std::shared_ptr<BoxPackNode>& getRoot() const;
+        FTK_CORE_API const std::shared_ptr<BoxPackNode>& getRoot() const;
 
         //! Get the list of nodes.
-        FTK_API std::vector<std::shared_ptr<BoxPackNode> > getNodes() const;
+        FTK_CORE_API std::vector<std::shared_ptr<BoxPackNode> > getNodes() const;
 
         //! Get the node with the given ID.
-        FTK_API std::shared_ptr<BoxPackNode> getNode(BoxPackID);
+        FTK_CORE_API std::shared_ptr<BoxPackNode> getNode(BoxPackID);
 
         //! Insert a node.
-        FTK_API std::shared_ptr<BoxPackNode> insert(const Size2I&);
+        FTK_CORE_API std::shared_ptr<BoxPackNode> insert(const Size2I&);
 
     private:
         void _getNodes(

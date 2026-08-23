@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IMouseWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Base class for popups.
-    class FTK_API_TYPE IPopup : public IMouseWidget
+    class FTK_UI_API_TYPE IPopup : public IMouseWidget
     {
     protected:
         void _init(
@@ -22,10 +23,10 @@ namespace ftk
         IPopup();
 
     public:
-        FTK_API virtual ~IPopup() = 0;
+        FTK_UI_API virtual ~IPopup() = 0;
 
         //! Close the popup.
-        FTK_API virtual void close() = 0;
+        FTK_UI_API virtual void close() = 0;
     };
         
     ///@}

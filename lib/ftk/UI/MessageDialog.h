@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IDialog.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
 
     //! Message dialog.
-    class FTK_API_TYPE MessageDialog : public IDialog
+    class FTK_UI_API_TYPE MessageDialog : public IDialog
     {
     protected:
         void _init(
@@ -23,19 +24,19 @@ namespace ftk
         MessageDialog();
 
     public:
-        FTK_API virtual ~MessageDialog();
+        FTK_UI_API virtual ~MessageDialog();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<MessageDialog> create(
+        FTK_UI_API static std::shared_ptr<MessageDialog> create(
             const std::shared_ptr<Context>& context,
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(void)>&);
+        FTK_UI_API void setCallback(const std::function<void(void)>&);
 
-        FTK_API std::shared_ptr<IWidget> getKeyFocus() const override;
+        FTK_UI_API std::shared_ptr<IWidget> getKeyFocus() const override;
 
     private:
         FTK_PRIVATE();

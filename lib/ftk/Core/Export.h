@@ -42,27 +42,28 @@
 #define FEATHER_TK_IMPORT_TEMPLATE(type, ...)                              \
     extern template type FEATHER_TK_IMPORT __VA_ARGS__
 
-#if defined(FTK_STATIC)
-#    define FTK_API
-#    define FTK_API_TYPE
-#    define FTK_API_TEMPLATE_CLASS(...)
-#    define FTK_API_TEMPLATE_STRUCT(...)
-#    define FTK_LOCAL
+// The macros for the core library. Each library in this project has its own set: one
+// shared between them would be defined for whichever library is being built,
+// so a library compiling a sibling's headers would read the sibling's API as
+// dllexport where it wants dllimport. Functions survive that -- the linker
+// takes them from the import library -- and data does not.
+#if defined(FTK_CORE_STATIC)
+#    define FTK_CORE_API
+#    define FTK_CORE_API_TYPE
+#    define FTK_CORE_API_TEMPLATE_CLASS(...)
+#    define FTK_CORE_API_TEMPLATE_STRUCT(...)
+#    define FTK_CORE_LOCAL
 #else
-#    if defined(FTK_EXPORTS)
-#        define FTK_API FEATHER_TK_EXPORT
-#        define FTK_API_TYPE FEATHER_TK_EXPORT_TYPE
-#        define FTK_API_TEMPLATE_CLASS(...)                               \
-            FEATHER_TK_EXPORT_TEMPLATE(class, __VA_ARGS__)
-#        define FTK_API_TEMPLATE_STRUCT(...)                              \
-            FEATHER_TK_EXPORT_TEMPLATE(struct, __VA_ARGS__)
+#    if defined(FTK_CORE_EXPORTS)
+#        define FTK_CORE_API FEATHER_TK_EXPORT
+#        define FTK_CORE_API_TYPE FEATHER_TK_EXPORT_TYPE
+#        define FTK_CORE_API_TEMPLATE_CLASS(...)                                             FEATHER_TK_EXPORT_TEMPLATE(class, __VA_ARGS__)
+#        define FTK_CORE_API_TEMPLATE_STRUCT(...)                                            FEATHER_TK_EXPORT_TEMPLATE(struct, __VA_ARGS__)
 #    else
-#        define FTK_API FEATHER_TK_IMPORT
-#        define FTK_API_TYPE FEATHER_TK_IMPORT_TYPE
-#        define FTK_API_TEMPLATE_CLASS(...)                               \
-            FEATHER_TK_IMPORT_TEMPLATE(class, __VA_ARGS__)
-#        define FTK_API_TEMPLATE_STRUCT(...)                              \
-            FEATHER_TK_IMPORT_TEMPLATE(struct, __VA_ARGS__)
+#        define FTK_CORE_API FEATHER_TK_IMPORT
+#        define FTK_CORE_API_TYPE FEATHER_TK_IMPORT_TYPE
+#        define FTK_CORE_API_TEMPLATE_CLASS(...)                                             FEATHER_TK_IMPORT_TEMPLATE(class, __VA_ARGS__)
+#        define FTK_CORE_API_TEMPLATE_STRUCT(...)                                            FEATHER_TK_IMPORT_TEMPLATE(struct, __VA_ARGS__)
 #    endif
-#    define FTK_LOCAL FEATHER_TK_HIDDEN
+#    define FTK_CORE_LOCAL FEATHER_TK_HIDDEN
 #endif

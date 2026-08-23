@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/Menu.h>
 
@@ -15,43 +16,43 @@ namespace ftk
     ///@{
 
     //! Menu bar.
-    class FTK_API_TYPE MenuBar : public IContainer
+    class FTK_UI_API_TYPE MenuBar : public IContainer
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent);
 
-        FTK_API MenuBar();
+        FTK_UI_API MenuBar();
 
     public:
-        FTK_API virtual ~MenuBar();
+        FTK_UI_API virtual ~MenuBar();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<MenuBar> create(
+        FTK_UI_API static std::shared_ptr<MenuBar> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Add a menu.
-        FTK_API void addMenu(
+        FTK_UI_API void addMenu(
             const std::string& text,
             const std::shared_ptr<Menu>&);
 
         //! Add a menu.
-        FTK_API std::shared_ptr<Menu> addMenu(const std::string& text);
+        FTK_UI_API std::shared_ptr<Menu> addMenu(const std::string& text);
 
         //! Insert a menu at the given position, clamped to the end.
         //!
         //! For replacing one of the menus a framework put there: remove it and
         //! insert the application's own where it was, rather than appending it
         //! after everything else and leaving File on the right hand side.
-        FTK_API void insertMenu(
+        FTK_UI_API void insertMenu(
             size_t index,
             const std::string& text,
             const std::shared_ptr<Menu>&);
 
         //! Get a menu.
-        FTK_API std::shared_ptr<Menu> getMenu(const std::string&) const;
+        FTK_UI_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 
         //! Set a menu's title.
         //!
@@ -60,7 +61,7 @@ namespace ftk
         //! selected reads at a glance, where one with a fixed name has to be
         //! opened to find out. Note that getMenu() and removeMenu() then follow
         //! the current title.
-        FTK_API void setMenuText(
+        FTK_UI_API void setMenuText(
             const std::shared_ptr<Menu>&,
             const std::string&);
 
@@ -69,17 +70,17 @@ namespace ftk
         //! Without this a bar whose menus come and go has to be cleared and
         //! rebuilt, which throws away the menus that were not changing and
         //! destroys the button that may be dispatching the click asking for it.
-        FTK_API void removeMenu(const std::string&);
+        FTK_UI_API void removeMenu(const std::string&);
 
         //! Clear the menus.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! Handle keyboard shortcuts.
-        FTK_API bool shortcut(Key, int);
+        FTK_UI_API bool shortcut(Key, int);
 
-        FTK_API void keyFocusEvent(bool) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         int _getIndex(const std::shared_ptr<MenuBarButton>&) const;

@@ -3,17 +3,18 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
 {
     //! Base class for widgets with simple mouse interactions.
-    class FTK_API_TYPE IMouseWidget : public IWidget
+    class FTK_UI_API_TYPE IMouseWidget : public IWidget
     {
         FTK_NON_COPYABLE(IMouseWidget);
 
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent);
@@ -21,25 +22,25 @@ namespace ftk
         IMouseWidget() = default;
 
     public:
-        FTK_API virtual ~IMouseWidget() = 0;
+        FTK_UI_API virtual ~IMouseWidget() = 0;
 
-        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
-        FTK_API void mouseLeaveEvent() override;
-        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
-        FTK_API void mousePressEvent(MouseClickEvent&) override;
-        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_UI_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_UI_API void mouseLeaveEvent() override;
+        FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_UI_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_UI_API void mouseReleaseEvent(MouseClickEvent&) override;
 
     protected:
-        FTK_API void _setMouseHoverEnabled(bool);
-        FTK_API void _setMousePressEnabled(
+        FTK_UI_API void _setMouseHoverEnabled(bool);
+        FTK_UI_API void _setMousePressEnabled(
             bool,
             MouseButton = MouseButton::Left,
             int modifiers = -1);
 
-        FTK_API bool _isMouseInside() const;
-        FTK_API const V2I& _getMousePos() const;
-        FTK_API bool _isMousePressed() const;
-        FTK_API const V2I& _getMousePressPos() const;
+        FTK_UI_API bool _isMouseInside() const;
+        FTK_UI_API const V2I& _getMousePos() const;
+        FTK_UI_API bool _isMousePressed() const;
+        FTK_UI_API const V2I& _getMousePressPos() const;
 
         //! Get the button holding the press, and the modifiers it came with.
         //! None and zero when nothing is pressed.

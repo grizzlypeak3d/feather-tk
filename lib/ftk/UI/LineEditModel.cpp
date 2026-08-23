@@ -473,7 +473,7 @@ namespace ftk
         return _p->regex;
     }
 
-    FTK_API void LineEditModel::setRegex(const std::string& value)
+    FTK_UI_API void LineEditModel::setRegex(const std::string& value)
     {
         FTK_P();
         p.regex = value;

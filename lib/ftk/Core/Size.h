@@ -98,21 +98,21 @@ namespace ftk
     template<typename T>
     constexpr Size<2, T> margin(const Size<2, T>&, T x, T y);
 
-    FTK_API std::string to_string(const Size2I&);
-    FTK_API std::string to_string(const Size2F&);
-    FTK_API std::string to_string(const Size3F&);
+    FTK_CORE_API std::string to_string(const Size2I&);
+    FTK_CORE_API std::string to_string(const Size2F&);
+    FTK_CORE_API std::string to_string(const Size3F&);
 
-    FTK_API bool from_string(const std::string&, Size2I&);
-    FTK_API bool from_string(const std::string&, Size2F&);
-    FTK_API bool from_string(const std::string&, Size3F&);
+    FTK_CORE_API bool from_string(const std::string&, Size2I&);
+    FTK_CORE_API bool from_string(const std::string&, Size2F&);
+    FTK_CORE_API bool from_string(const std::string&, Size3F&);
 
-    FTK_API void to_json(nlohmann::json&, const Size2I&);
-    FTK_API void to_json(nlohmann::json&, const Size2F&);
-    FTK_API void to_json(nlohmann::json&, const Size3F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Size2I&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Size2F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Size3F&);
 
-    FTK_API void from_json(const nlohmann::json&, Size2I&);
-    FTK_API void from_json(const nlohmann::json&, Size2F&);
-    FTK_API void from_json(const nlohmann::json&, Size3F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Size2I&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Size2F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Size3F&);
 
     template<int C, typename T>
     constexpr Size<C, T> operator + (const Size<C, T>&, T);

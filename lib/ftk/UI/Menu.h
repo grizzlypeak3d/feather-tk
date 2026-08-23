@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Action.h>
 #include <ftk/UI/IMenuPopup.h>
 
@@ -14,33 +15,33 @@ namespace ftk
     ///@{
 
     //! Menu.
-    class FTK_API_TYPE Menu : public IMenuPopup
+    class FTK_UI_API_TYPE Menu : public IMenuPopup
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent);
 
-        FTK_API Menu();
+        FTK_UI_API Menu();
 
     public:
-        FTK_API virtual ~Menu();
+        FTK_UI_API virtual ~Menu();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<Menu> create(
+        FTK_UI_API static std::shared_ptr<Menu> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the actions.
-        FTK_API const std::vector<std::shared_ptr<Action> >& getActions() const;
+        FTK_UI_API const std::vector<std::shared_ptr<Action> >& getActions() const;
 
         //! Add an action to the menu.
-        FTK_API void addAction(const std::shared_ptr<Action>&);
+        FTK_UI_API void addAction(const std::shared_ptr<Action>&);
 
         //! Set whether a menu item is checked.
         //! 
         //! \todo Remove this function and replace it with an observer.
-        FTK_API void setChecked(const std::shared_ptr<Action>&, bool);
+        FTK_UI_API void setChecked(const std::shared_ptr<Action>&, bool);
 
         //! Bring the base widget's setEnabled(bool) into scope; the
         //! item-oriented overload below would otherwise hide it.
@@ -49,34 +50,34 @@ namespace ftk
         //! Set whether a menu item is enabled.
         //! 
         //! \todo Remove this function and replace it with an observer.
-        FTK_API void setEnabled(const std::shared_ptr<Action>&, bool);
+        FTK_UI_API void setEnabled(const std::shared_ptr<Action>&, bool);
 
         //! Get the sub menus.
-        FTK_API const std::vector<std::shared_ptr<Menu> >& getSubMenus() const;
+        FTK_UI_API const std::vector<std::shared_ptr<Menu> >& getSubMenus() const;
 
         //! Add a sub menu.
-        FTK_API std::shared_ptr<Menu> addSubMenu(const std::string&);
+        FTK_UI_API std::shared_ptr<Menu> addSubMenu(const std::string&);
 
         //! Set whether a sub menu is enabled.
-        FTK_API void setSubMenuEnabled(const std::shared_ptr<Menu>&, bool);
+        FTK_UI_API void setSubMenuEnabled(const std::shared_ptr<Menu>&, bool);
 
         //! Add a divider.
-        FTK_API void addDivider();
+        FTK_UI_API void addDivider();
 
         //! Clear the menu.
-        FTK_API void clear();
+        FTK_UI_API void clear();
 
         //! Get whether the menu is empty.
-        FTK_API bool isEmpty() const;
+        FTK_UI_API bool isEmpty() const;
 
         //! Handle keyboard shortcuts.
-        FTK_API bool shortcut(Key, int);
+        FTK_UI_API bool shortcut(Key, int);
 
-        FTK_API void close() override;
+        FTK_UI_API void close() override;
 
-        FTK_API void keyFocusEvent(bool) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         void _setCurrent(const std::shared_ptr<MenuButton>&);

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 namespace ftk
@@ -11,7 +12,7 @@ namespace ftk
     ///@{
         
     //! Icon widget.
-    class FTK_API_TYPE Icon : public IWidget
+    class FTK_UI_API_TYPE Icon : public IWidget
     {
     protected:
         void _init(
@@ -21,35 +22,35 @@ namespace ftk
         Icon();
 
     public:
-        FTK_API virtual ~Icon();
+        FTK_UI_API virtual ~Icon();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<Icon> create(
+        FTK_UI_API static std::shared_ptr<Icon> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<Icon> create(
+        FTK_UI_API static std::shared_ptr<Icon> create(
             const std::shared_ptr<Context>&,
             const std::string& icon,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the icon.
-        FTK_API const std::string& getIcon() const;
+        FTK_UI_API const std::string& getIcon() const;
 
         //! Set the icon.
-        FTK_API void setIcon(const std::string&);
+        FTK_UI_API void setIcon(const std::string&);
 
         //! Get the margin role.
-        FTK_API SizeRole getMarginRole() const;
+        FTK_UI_API SizeRole getMarginRole() const;
 
         //! Set the margin role.
-        FTK_API void setMarginRole(SizeRole);
+        FTK_UI_API void setMarginRole(SizeRole);
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
     private:
         FTK_PRIVATE();

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Size.h>
 #include <ftk/Core/Vector.h>
 
@@ -151,21 +152,21 @@ namespace ftk
     //! Convert box types.
     constexpr Box<2, float> convert(const Box<2, int>&);
 
-    FTK_API std::string to_string(const Box2I&);
-    FTK_API std::string to_string(const Box2F&);
-    FTK_API std::string to_string(const Box3F&);
+    FTK_CORE_API std::string to_string(const Box2I&);
+    FTK_CORE_API std::string to_string(const Box2F&);
+    FTK_CORE_API std::string to_string(const Box3F&);
 
-    FTK_API bool from_string(const std::string&, Box2I&);
-    FTK_API bool from_string(const std::string&, Box2F&);
-    FTK_API bool from_string(const std::string&, Box3F&);
+    FTK_CORE_API bool from_string(const std::string&, Box2I&);
+    FTK_CORE_API bool from_string(const std::string&, Box2F&);
+    FTK_CORE_API bool from_string(const std::string&, Box3F&);
 
-    FTK_API void to_json(nlohmann::json&, const Box2I&);
-    FTK_API void to_json(nlohmann::json&, const Box2F&);
-    FTK_API void to_json(nlohmann::json&, const Box3F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Box2I&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Box2F&);
+    FTK_CORE_API void to_json(nlohmann::json&, const Box3F&);
 
-    FTK_API void from_json(const nlohmann::json&, Box2I&);
-    FTK_API void from_json(const nlohmann::json&, Box2F&);
-    FTK_API void from_json(const nlohmann::json&, Box3F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Box2I&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Box2F&);
+    FTK_CORE_API void from_json(const nlohmann::json&, Box3F&);
 
     template<int C, typename T>
     constexpr Box<C, T> operator + (const Box<C, T>&, const Vector<C, T>&);

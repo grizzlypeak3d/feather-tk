@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/LogSystem.h>
 
 #include <chrono>
@@ -16,7 +17,7 @@ namespace ftk
 
     //! The context provides centralized access to systems and other
     //! resources.
-    class FTK_API_TYPE Context : public std::enable_shared_from_this<Context>
+    class FTK_CORE_API_TYPE Context : public std::enable_shared_from_this<Context>
     {
         FTK_NON_COPYABLE(Context);
 
@@ -26,35 +27,35 @@ namespace ftk
         Context() = default;
 
     public:
-        FTK_API ~Context();
+        FTK_CORE_API ~Context();
 
         //! Create a new context.
-        FTK_API static std::shared_ptr<Context> create();
+        FTK_CORE_API static std::shared_ptr<Context> create();
 
         //! Add a system.
-        FTK_API void addSystem(const std::shared_ptr<IBaseSystem>&);
+        FTK_CORE_API void addSystem(const std::shared_ptr<IBaseSystem>&);
 
         //! Get the systems.
-        FTK_API const std::list<std::shared_ptr<IBaseSystem> >& getSystems() const;
+        FTK_CORE_API const std::list<std::shared_ptr<IBaseSystem> >& getSystems() const;
 
         //! Get a system by type.
         template<typename T>
         std::shared_ptr<T> getSystem() const;
 
         //! Get a system by name.
-        FTK_API std::shared_ptr<IBaseSystem> getSystemByName(const std::string&) const;
+        FTK_CORE_API std::shared_ptr<IBaseSystem> getSystemByName(const std::string&) const;
 
         //! Get the log system.
         const std::shared_ptr<LogSystem>& getLogSystem() const;
 
         //! Print to the log.
-        FTK_API void log(
+        FTK_CORE_API void log(
             const std::string& prefix,
             const std::string&,
             LogType = LogType::Message);
 
         //! Tick the context.
-        FTK_API void tick();
+        FTK_CORE_API void tick();
 
         //! Stop the systems' threads.
         //!
@@ -68,7 +69,7 @@ namespace ftk
         //! Safe to call more than once. The destructor calls it, which covers
         //! a context that is only ever used from one thread, but not one
         //! whose systems are still working when it is let go.
-        FTK_API void shutdown();
+        FTK_CORE_API void shutdown();
 
     private:
         std::shared_ptr<LogSystem> _logSystem;

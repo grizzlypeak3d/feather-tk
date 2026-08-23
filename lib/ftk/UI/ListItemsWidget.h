@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/ButtonGroup.h>
 #include <ftk/UI/IWidget.h>
@@ -13,22 +14,22 @@ namespace ftk
     ///@{
 
     //! List item.
-    struct FTK_API_TYPE ListItem
+    struct FTK_UI_API_TYPE ListItem
     {
         ListItem() = default;
-        FTK_API explicit ListItem(
+        FTK_UI_API explicit ListItem(
             const std::string& text,
             const std::string& tooltip = std::string());
 
         std::string text;
         std::string tooltip;
 
-        FTK_API bool operator == (const ListItem&) const;
-        FTK_API bool operator != (const ListItem&) const;
+        FTK_UI_API bool operator == (const ListItem&) const;
+        FTK_UI_API bool operator != (const ListItem&) const;
     };
 
     //! List items widget.
-    class FTK_API_TYPE ListItemsWidget : public IContainer
+    class FTK_UI_API_TYPE ListItemsWidget : public IContainer
     {
     protected:
         void _init(
@@ -39,59 +40,59 @@ namespace ftk
         ListItemsWidget();
 
     public:
-        FTK_API virtual ~ListItemsWidget();
+        FTK_UI_API virtual ~ListItemsWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ListItemsWidget> create(
+        FTK_UI_API static std::shared_ptr<ListItemsWidget> create(
             const std::shared_ptr<Context>&,
             ButtonGroupType,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the items.
-        FTK_API const std::vector<ListItem>& getItems() const;
+        FTK_UI_API const std::vector<ListItem>& getItems() const;
 
         //! Set the items.
-        FTK_API void setItems(const std::vector<ListItem>&);
+        FTK_UI_API void setItems(const std::vector<ListItem>&);
 
         //! Set the items.
-        FTK_API void setItems(const std::vector<std::string>&);
+        FTK_UI_API void setItems(const std::vector<std::string>&);
 
         //! Get whether an item is checked.
-        FTK_API bool getChecked(int) const;
+        FTK_UI_API bool getChecked(int) const;
 
         //! Set whether an item is checked.
-        FTK_API void setChecked(int, bool);
+        FTK_UI_API void setChecked(int, bool);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(int, bool)>&);
+        FTK_UI_API void setCallback(const std::function<void(int, bool)>&);
 
         //! Get the current item.
-        FTK_API int getCurrent() const;
+        FTK_UI_API int getCurrent() const;
 
         //! Observe the current item.
-        FTK_API std::shared_ptr<IObservable<int> > observeCurrent() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeCurrent() const;
 
         //! Set the current item.
-        FTK_API void setCurrent(int);
+        FTK_UI_API void setCurrent(int);
 
         //! Observe the item to scroll to.
-        FTK_API std::shared_ptr<IObservable<int> > observeScrollTo() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeScrollTo() const;
 
         //! Get the search.
-        FTK_API const std::string& getSearch() const;
+        FTK_UI_API const std::string& getSearch() const;
 
         //! Set the search.
-        FTK_API void setSearch(const std::string&);
+        FTK_UI_API void setSearch(const std::string&);
 
         //! Clear the search.
-        FTK_API void clearSearch();
+        FTK_UI_API void clearSearch();
 
         //! Get an item rectangle.
-        FTK_API Box2I getRect(int) const;
+        FTK_UI_API Box2I getRect(int) const;
 
-        FTK_API void keyFocusEvent(bool) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         void _itemsUpdate();

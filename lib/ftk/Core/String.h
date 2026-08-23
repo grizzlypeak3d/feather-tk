@@ -17,50 +17,50 @@ namespace ftk
     constexpr size_t cStringSize = 4096;
 
     //! String split options.
-    enum class FTK_API_TYPE SplitOptions
+    enum class FTK_CORE_API_TYPE SplitOptions
     {
         DiscardEmpty,
         KeepEmpty
     };
 
     //! Split a string.
-    FTK_API std::vector<std::string> split(
+    FTK_CORE_API std::vector<std::string> split(
         const std::string&,
         char delimiter,
         SplitOptions = SplitOptions::DiscardEmpty);
 
     //! Split a string.
-    FTK_API std::vector<std::string> split(
+    FTK_CORE_API std::vector<std::string> split(
         const std::string&,
         const std::vector<char>& delimiters,
         SplitOptions = SplitOptions::DiscardEmpty);
 
     //! Split a string on new-lines.
-    FTK_API std::vector<std::string> splitLines(const std::string&);
+    FTK_CORE_API std::vector<std::string> splitLines(const std::string&);
 
     //! Join a list of strings.
-    FTK_API std::string join(const std::vector<std::string>&, char delimiter);
+    FTK_CORE_API std::string join(const std::vector<std::string>&, char delimiter);
 
     //! Join a list of strings.
-    FTK_API std::string join(const std::vector<std::string>&, const std::string& delimiter);
+    FTK_CORE_API std::string join(const std::vector<std::string>&, const std::string& delimiter);
 
     //! Join a list of strings with quotes.
-    FTK_API std::string quotes(const std::vector<std::string>&);
+    FTK_CORE_API std::string quotes(const std::vector<std::string>&);
 
     //! Convert to upper case.
-    FTK_API std::string toUpper(const std::string&);
+    FTK_CORE_API std::string toUpper(const std::string&);
 
     //! Convert to lower case.
-    FTK_API std::string toLower(const std::string&);
+    FTK_CORE_API std::string toLower(const std::string&);
 
     //! Convert to sentence case (first word capitalized).
-    FTK_API std::string toSentenceCase(const std::string&);
+    FTK_CORE_API std::string toSentenceCase(const std::string&);
 
     //! Remove trailing newlines.
-    FTK_API void removeTrailingNewlines(std::string&);
+    FTK_CORE_API void removeTrailingNewlines(std::string&);
 
     //! Which end of an elided string to keep.
-    enum class FTK_API_TYPE ElideMode
+    enum class FTK_CORE_API_TYPE ElideMode
     {
         //! Keep the beginning: "ViewLayer.Combi..."
         Right,
@@ -75,47 +75,47 @@ namespace ftk
 
     //! Elide a string to at most the given number of characters, not counting
     //! the ellipsis.
-    FTK_API std::string elide(
+    FTK_CORE_API std::string elide(
         const std::string&,
         size_t = 32,
         ElideMode = ElideMode::Right);
 
     //! Case compare.
-    enum class FTK_API_TYPE CaseCompare
+    enum class FTK_CORE_API_TYPE CaseCompare
     {
         Sensitive,
         Insensitive
     };
 
     //! Compare strings.
-    FTK_API bool compare(
+    FTK_CORE_API bool compare(
         const std::string&,
         const std::string&,
         CaseCompare = CaseCompare::Sensitive);
 
     //! Does a string contain the sub string?
-    FTK_API bool contains(
+    FTK_CORE_API bool contains(
         const std::string&,
         const std::string& substr,
         CaseCompare = CaseCompare::Sensitive);
 
     //! Convert a regular string to a wide string.
-    FTK_API std::wstring toWide(const std::string&);
+    FTK_CORE_API std::wstring toWide(const std::string&);
 
     //! Convert a wide string to a regular string.
-    FTK_API std::string fromWide(const std::wstring&);
+    FTK_CORE_API std::string fromWide(const std::wstring&);
 
     //! Get a boolean label.
-    FTK_API std::string boolLabel(bool);
+    FTK_CORE_API std::string boolLabel(bool);
 
     //! Convert a boolean label.
-    FTK_API bool toBool(const std::string&);
+    FTK_CORE_API bool toBool(const std::string&);
 
     //! Get filler text.
-    FTK_API std::vector<std::string> getLoremIpsum();
+    FTK_CORE_API std::vector<std::string> getLoremIpsum();
 
     //! Get filler text.
-    FTK_API std::string getLoremIpsum(size_t lineCount);
+    FTK_CORE_API std::string getLoremIpsum(size_t lineCount);
 
     ///@}
 }

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
 
     //! Search box widget.
-    class FTK_API_TYPE SearchBox : public IContainer
+    class FTK_UI_API_TYPE SearchBox : public IContainer
     {
     protected:
         void _init(
@@ -22,21 +23,21 @@ namespace ftk
         SearchBox();
 
     public:
-        FTK_API virtual ~SearchBox();
+        FTK_UI_API virtual ~SearchBox();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<SearchBox> create(
+        FTK_UI_API static std::shared_ptr<SearchBox> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the text.
-        FTK_API const std::string& getText() const;
+        FTK_UI_API const std::string& getText() const;
 
         //! Set the text.
-        FTK_API void setText(const std::string&);
+        FTK_UI_API void setText(const std::string&);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const std::string&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const std::string&)>&);
 
 
     private:

@@ -3,32 +3,33 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/ISystem.h>
 #include <ftk/Core/Observable.h>
 
 namespace ftk
 {
     //! Clipboard system.
-    class FTK_API_TYPE ClipboardSystem : public ISystem
+    class FTK_UI_API_TYPE ClipboardSystem : public ISystem
     {
     protected:
         ClipboardSystem(const std::shared_ptr<Context>&);
 
     public:
-        FTK_API virtual ~ClipboardSystem();
+        FTK_UI_API virtual ~ClipboardSystem();
 
         //! Create a new system.
-        FTK_API static std::shared_ptr<ClipboardSystem> create(
+        FTK_UI_API static std::shared_ptr<ClipboardSystem> create(
             const std::shared_ptr<Context>&);
 
         //! Get the clipboard text.
-        FTK_API const std::string& getText() const;
+        FTK_UI_API const std::string& getText() const;
 
         //! Observe the clipboard text.
-        FTK_API std::shared_ptr<ftk::IObservable<std::string> > observeText() const;
+        FTK_UI_API std::shared_ptr<ftk::IObservable<std::string> > observeText() const;
 
         //! Set the clipboard text.
-        FTK_API void setText(const std::string&);
+        FTK_UI_API void setText(const std::string&);
 
     private:
         FTK_PRIVATE();

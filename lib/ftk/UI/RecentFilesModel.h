@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/ObservableList.h>
 #include <ftk/Core/Observable.h>
 #include <ftk/Core/Path.h>
@@ -15,48 +16,48 @@ namespace ftk
     ///@{
 
     //! Recent files model.
-    class FTK_API_TYPE RecentFilesModel : public std::enable_shared_from_this<RecentFilesModel>
+    class FTK_UI_API_TYPE RecentFilesModel : public std::enable_shared_from_this<RecentFilesModel>
     {
         FTK_NON_COPYABLE(RecentFilesModel);
 
     protected:
-        FTK_API void _init(const std::shared_ptr<Context>&);
+        FTK_UI_API void _init(const std::shared_ptr<Context>&);
 
-        FTK_API RecentFilesModel();
+        FTK_UI_API RecentFilesModel();
 
     public:
         // Virtual so the Python bindings can downcast subclasses, which
         // shared_ptr's deleter never needed.
-        FTK_API virtual ~RecentFilesModel();
+        FTK_UI_API virtual ~RecentFilesModel();
 
         //! Create a new model.
-        FTK_API static std::shared_ptr<RecentFilesModel> create(
+        FTK_UI_API static std::shared_ptr<RecentFilesModel> create(
             const std::shared_ptr<Context>&);
 
         //! Get the maximum number of recent files.
-        FTK_API size_t getRecentMax() const;
+        FTK_UI_API size_t getRecentMax() const;
 
         //! Observe the maximum number of recent files.
-        FTK_API std::shared_ptr<IObservable<size_t> > observeRecentMax() const;
+        FTK_UI_API std::shared_ptr<IObservable<size_t> > observeRecentMax() const;
 
         //! Set the maximum number of recent files.
-        FTK_API void setRecentMax(size_t);
+        FTK_UI_API void setRecentMax(size_t);
 
         //! Get the list of recent files.
         //!
         //! Paths rather than file names: a sequence's range is the path's own
         //! and is what says whether the entry was one frame or the sequence
         //! it sits in, so opening it again opens what it opened before.
-        FTK_API const std::vector<Path>& getRecent() const;
+        FTK_UI_API const std::vector<Path>& getRecent() const;
 
         //! Observe the list of recent files.
-        FTK_API std::shared_ptr<IObservableList<Path> > observeRecent() const;
+        FTK_UI_API std::shared_ptr<IObservableList<Path> > observeRecent() const;
 
         //! Set the recent files.
-        FTK_API void setRecent(const std::vector<Path>&);
+        FTK_UI_API void setRecent(const std::vector<Path>&);
 
         //! Add a recent file.
-        FTK_API void addRecent(const Path&);
+        FTK_UI_API void addRecent(const Path&);
 
     private:
         FTK_PRIVATE();

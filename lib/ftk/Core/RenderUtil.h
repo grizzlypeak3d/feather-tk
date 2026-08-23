@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Box.h>
 #include <ftk/Core/Util.h>
 
@@ -16,62 +17,62 @@ namespace ftk
     ///@{
         
     //! Set and restore the render size.
-    class FTK_API_TYPE RenderSizeState
+    class FTK_CORE_API_TYPE RenderSizeState
     {
     public:
-        FTK_API RenderSizeState(const std::shared_ptr<IRender>&);
+        FTK_CORE_API RenderSizeState(const std::shared_ptr<IRender>&);
 
-        FTK_API ~RenderSizeState();
+        FTK_CORE_API ~RenderSizeState();
 
     private:
         FTK_PRIVATE();
     };
 
     //! Set and restore the viewport.
-    class FTK_API_TYPE ViewportState
+    class FTK_CORE_API_TYPE ViewportState
     {
     public:
-        FTK_API ViewportState(const std::shared_ptr<IRender>&);
+        FTK_CORE_API ViewportState(const std::shared_ptr<IRender>&);
 
-        FTK_API ~ViewportState();
+        FTK_CORE_API ~ViewportState();
 
     private:
         FTK_PRIVATE();
     };
 
     //! Set and restore whether the clipping rectangle is enabled.
-    class FTK_API_TYPE ClipRectEnabledState
+    class FTK_CORE_API_TYPE ClipRectEnabledState
     {
     public:
-        FTK_API ClipRectEnabledState(const std::shared_ptr<IRender>&);
+        FTK_CORE_API ClipRectEnabledState(const std::shared_ptr<IRender>&);
 
-        FTK_API ~ClipRectEnabledState();
+        FTK_CORE_API ~ClipRectEnabledState();
 
     private:
         FTK_PRIVATE();
     };
 
     //! Set and restore the clipping rectangle.
-    class FTK_API_TYPE ClipRectState
+    class FTK_CORE_API_TYPE ClipRectState
     {
     public:
-        FTK_API ClipRectState(const std::shared_ptr<IRender>&);
+        FTK_CORE_API ClipRectState(const std::shared_ptr<IRender>&);
 
-        FTK_API ~ClipRectState();
+        FTK_CORE_API ~ClipRectState();
 
-        FTK_API const Box2I& getClipRect() const;
+        FTK_CORE_API const Box2I& getClipRect() const;
 
     private:
         FTK_PRIVATE();
     };
 
     //! Set and restore the transform.
-    class FTK_API_TYPE TransformState
+    class FTK_CORE_API_TYPE TransformState
     {
     public:
-        FTK_API TransformState(const std::shared_ptr<IRender>&);
+        FTK_CORE_API TransformState(const std::shared_ptr<IRender>&);
 
-        FTK_API ~TransformState();
+        FTK_CORE_API ~TransformState();
 
     private:
         FTK_PRIVATE();

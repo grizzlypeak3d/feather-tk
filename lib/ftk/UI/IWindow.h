@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
 #include <ftk/Core/Util.h>
@@ -12,7 +13,7 @@ namespace ftk
     class App;
 
     //! Window offscreen buffer types.
-    enum class FTK_API_TYPE WindowBufferType
+    enum class FTK_UI_API_TYPE WindowBufferType
     {
         U8,
         F16,
@@ -31,10 +32,10 @@ namespace ftk
 #endif // FTK_API_GL_4_1
 
     //! Base class for windows.
-    class FTK_API_TYPE IWindow : public IWidget
+    class FTK_UI_API_TYPE IWindow : public IWidget
     {
     protected:
-        FTK_API void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const std::string& title);
@@ -42,98 +43,98 @@ namespace ftk
         IWindow();
 
     public:
-        FTK_API virtual ~IWindow() = 0;
+        FTK_UI_API virtual ~IWindow() = 0;
 
         //! Get the application.
-        FTK_API std::shared_ptr<App> getApp() const;
+        FTK_UI_API std::shared_ptr<App> getApp() const;
 
         //! Get the window ID.
-        FTK_API virtual uint32_t getID() const = 0;
+        FTK_UI_API virtual uint32_t getID() const = 0;
 
         //! Get which screen the window is on.
-        FTK_API virtual int getScreen() const = 0;
+        FTK_UI_API virtual int getScreen() const = 0;
 
         //! Window Title
         ///@{
 
-        FTK_API const std::string& getTitle() const;
-        FTK_API virtual void setTitle(const std::string&);
+        FTK_UI_API const std::string& getTitle() const;
+        FTK_UI_API virtual void setTitle(const std::string&);
 
         ///@}
 
         //! Window Size
         ///@{
 
-        FTK_API const Size2I& getSize() const;
-        FTK_API virtual void setSize(const Size2I&);
+        FTK_UI_API const Size2I& getSize() const;
+        FTK_UI_API virtual void setSize(const Size2I&);
 
-        FTK_API Size2I getMinSize() const;
-        FTK_API virtual void setMinSize(const Size2I&);
+        FTK_UI_API Size2I getMinSize() const;
+        FTK_UI_API virtual void setMinSize(const Size2I&);
 
         ///@}
 
         //! Fullscreen
         ///@{
 
-        FTK_API bool isFullScreen() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeFullScreen() const;
-        FTK_API virtual void setFullScreen(bool);
+        FTK_UI_API bool isFullScreen() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeFullScreen() const;
+        FTK_UI_API virtual void setFullScreen(bool);
 
         ///@}
 
         //! Float On Top
         ///@{
 
-        FTK_API bool isFloatOnTop() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
-        FTK_API virtual void setFloatOnTop(bool);
+        FTK_UI_API bool isFloatOnTop() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
+        FTK_UI_API virtual void setFloatOnTop(bool);
 
         //! Raise the window above the others and give it the input focus.
         //! Does nothing where there is no window manager to ask.
-        FTK_API virtual void raise();
+        FTK_UI_API virtual void raise();
 
         ///@}
 
         //! Buffer
         ///@{
 
-        FTK_API const Size2I& getBufferSize() const;
+        FTK_UI_API const Size2I& getBufferSize() const;
 
-        FTK_API WindowBufferType getBufferType() const;
-        FTK_API std::shared_ptr<IObservable<WindowBufferType> > observeBufferType() const;
-        FTK_API void setBufferType(WindowBufferType);
+        FTK_UI_API WindowBufferType getBufferType() const;
+        FTK_UI_API std::shared_ptr<IObservable<WindowBufferType> > observeBufferType() const;
+        FTK_UI_API void setBufferType(WindowBufferType);
 
         ///@}
 
         //! Display Scale
         ///@{
 
-        FTK_API float getDisplayScale() const;
-        FTK_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
-        FTK_API void setDisplayScale(float);
+        FTK_UI_API float getDisplayScale() const;
+        FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
+        FTK_UI_API void setDisplayScale(float);
 
-        FTK_API float getContentScale() const;
+        FTK_UI_API float getContentScale() const;
 
         ///@}
 
         //! Key Focus and Text Input
         ///@{
 
-        FTK_API std::shared_ptr<IWidget> getKeyFocus() const;
-        FTK_API void setKeyFocus(const std::shared_ptr<IWidget>&);
-        FTK_API std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
-        FTK_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
+        FTK_UI_API std::shared_ptr<IWidget> getKeyFocus() const;
+        FTK_UI_API void setKeyFocus(const std::shared_ptr<IWidget>&);
+        FTK_UI_API std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
+        FTK_UI_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
 
-        FTK_API bool hasTextInput() const;
-        FTK_API virtual void setTextInput(bool);
+        FTK_UI_API bool hasTextInput() const;
+        FTK_UI_API virtual void setTextInput(bool);
 
         ///@}
 
         //! Tooltips
         ///@{
 
-        FTK_API bool getTooltipsEnabled() const;
-        FTK_API void setTooltipsEnabled(bool);
+        FTK_UI_API bool getTooltipsEnabled() const;
+        FTK_UI_API void setTooltipsEnabled(bool);
 
         ///@}
 
@@ -153,10 +154,10 @@ namespace ftk
         //! geometry, and nothing is under the cursor -- so a test that reads a
         //! geometry, or aims at one, is reading and aiming at nothing. It does
         //! not fail; it passes, having checked nothing.
-        FTK_API void layout(const Size2I&);
+        FTK_UI_API void layout(const Size2I&);
 
         //! Move the cursor there, press, release.
-        FTK_API void click(
+        FTK_UI_API void click(
             const V2I&,
             MouseButton = MouseButton::Left,
             int modifiers = 0);
@@ -169,13 +170,13 @@ namespace ftk
         //! and the difference between them is the whole question for undo.
         //! Points beyond the second are how a drag that goes somewhere and
         //! comes back is written.
-        FTK_API void drag(
+        FTK_UI_API void drag(
             const std::vector<V2I>&,
             int modifiers = 0,
             bool release = true);
 
         //! Press a key and release it.
-        FTK_API void keyPress(Key, int modifiers = 0);
+        FTK_UI_API void keyPress(Key, int modifiers = 0);
 
         ///@}
 
@@ -185,10 +186,10 @@ namespace ftk
         //! mirroring, memory alignment of one, and LSB memory endian.
         //!
         //! Window icons are not supported on macOS.
-        FTK_API virtual void setIcon(const std::shared_ptr<Image>&);
+        FTK_UI_API virtual void setIcon(const std::shared_ptr<Image>&);
 
         //! Get whether the window is drawn without being shown.
-        FTK_API bool isOffscreen() const;
+        FTK_UI_API bool isOffscreen() const;
 
         //! Set whether the window is drawn without being shown.
         //!
@@ -197,31 +198,31 @@ namespace ftk
         //! screen. What changes is that there is no window to be clicked,
         //! hovered or raised over, which would otherwise put a highlight or a
         //! tooltip into an automated capture.
-        FTK_API void setOffscreen(bool);
+        FTK_UI_API void setOffscreen(bool);
 
         //! Capture a screenshot.
-        FTK_API virtual std::shared_ptr<Image> screenshot(const Box2I & = Box2I(0, 0, -1, -1));
+        FTK_UI_API virtual std::shared_ptr<Image> screenshot(const Box2I & = Box2I(0, 0, -1, -1));
 
         //! Close the window.
-        FTK_API virtual void close();
+        FTK_UI_API virtual void close();
 
         //! Set the window close callback.
-        FTK_API void setCloseCallback(const std::function<void(void)>&);
+        FTK_UI_API void setCloseCallback(const std::function<void(void)>&);
 
         //! Get the window information.
-        FTK_API virtual std::vector<std::pair<std::string, std::string> > getWindowInfo() const;
+        FTK_UI_API virtual std::vector<std::pair<std::string, std::string> > getWindowInfo() const;
 
-        FTK_API void setVisible(bool) override;
-        FTK_API void childAddEvent(const ChildAddEvent&) override;
-        FTK_API void tickEvent(
+        FTK_UI_API void setVisible(bool) override;
+        FTK_UI_API void childAddEvent(const ChildAddEvent&) override;
+        FTK_UI_API void tickEvent(
             bool parentsVisible,
             bool parentsEnabled,
             const TickEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
 
     protected:
-        FTK_API virtual void _setSize(
+        FTK_UI_API virtual void _setSize(
             const Size2I& windowSize, 
             const Size2I& bufferSize);
 
@@ -235,9 +236,9 @@ namespace ftk
 
         bool _key(Key, bool press, int modifiers);
         void _text(const std::string&);
-        FTK_API void _cursorEnter(bool enter);
-        FTK_API void _cursorPos(const V2I&);
-        FTK_API void _mouseButton(MouseButton, bool press, int modifiers);
+        FTK_UI_API void _cursorEnter(bool enter);
+        FTK_UI_API void _cursorPos(const V2I&);
+        FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);
         void _scroll(const V2F&, int modifiers);
         void _drop(const V2I& pos, const std::shared_ptr<IDragDropData>&);
 

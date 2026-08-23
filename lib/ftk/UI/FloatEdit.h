@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/FloatModel.h>
 #include <ftk/UI/IWidget.h>
@@ -13,7 +14,7 @@ namespace ftk
     ///@{
         
     //! Floating point value editor.
-    class FTK_API_TYPE FloatEdit : public IContainer
+    class FTK_UI_API_TYPE FloatEdit : public IContainer
     {
     protected:
         void _init(
@@ -24,56 +25,56 @@ namespace ftk
         FloatEdit();
 
     public:
-        FTK_API virtual ~FloatEdit();
+        FTK_UI_API virtual ~FloatEdit();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FloatEdit> create(
+        FTK_UI_API static std::shared_ptr<FloatEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FloatEdit> create(
+        FTK_UI_API static std::shared_ptr<FloatEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the model.
-        FTK_API const std::shared_ptr<FloatModel>& getModel() const;
+        FTK_UI_API const std::shared_ptr<FloatModel>& getModel() const;
 
         //! \name Value
         ///@{
 
-        FTK_API float getValue() const;
-        FTK_API void setValue(float);
-        FTK_API void setCallback(const std::function<void(float)>&);
+        FTK_UI_API float getValue() const;
+        FTK_UI_API void setValue(float);
+        FTK_UI_API void setCallback(const std::function<void(float)>&);
         
         ///@}
 
         //! \name Range
         ///@{
 
-        FTK_API const RangeF& getRange() const;
-        FTK_API void setRange(const RangeF&);
-        FTK_API void setRange(float, float);
+        FTK_UI_API const RangeF& getRange() const;
+        FTK_UI_API void setRange(const RangeF&);
+        FTK_UI_API void setRange(float, float);
         
         ///@}
 
         //! \name Increment
         ///@{
 
-        FTK_API float getStep() const;
-        FTK_API void setStep(float);
+        FTK_UI_API float getStep() const;
+        FTK_UI_API void setStep(float);
 
-        FTK_API float getLargeStep() const;
-        FTK_API void setLargeStep(float);
+        FTK_UI_API float getLargeStep() const;
+        FTK_UI_API void setLargeStep(float);
         
         ///@}
 
         //! \name Default Value
         ///@{
 
-        FTK_API float getDefault() const;
-        FTK_API void setDefault(float);
+        FTK_UI_API float getDefault() const;
+        FTK_UI_API void setDefault(float);
         
         ///@}
 
@@ -81,23 +82,23 @@ namespace ftk
         ///@{
 
         //! Get the display precision.
-        FTK_API int getPrecision() const;
+        FTK_UI_API int getPrecision() const;
 
         //! Set the display precision.
-        FTK_API void setPrecision(int);
+        FTK_UI_API void setPrecision(int);
 
         //! Get the formatting text.
-        FTK_API const std::string& getFormat() const;
+        FTK_UI_API const std::string& getFormat() const;
 
         //! Set the formatting text.
-        FTK_API void setFormat(const std::string&);
+        FTK_UI_API void setFormat(const std::string&);
 
-        FTK_API FontType getFont() const;
-        FTK_API void setFont(FontType);
+        FTK_UI_API FontType getFont() const;
+        FTK_UI_API void setFont(FontType);
 
         ///@}
 
-        FTK_API void takeKeyFocus() override;
+        FTK_UI_API void takeKeyFocus() override;
         void scrollEvent(ScrollEvent&) override;
         void keyPressEvent(KeyEvent&) override;
         void keyReleaseEvent(KeyEvent&) override;
@@ -109,7 +110,7 @@ namespace ftk
     };
 
     //! Floating point reset button.
-    class FTK_API_TYPE FloatResetButton : public IContainer
+    class FTK_UI_API_TYPE FloatResetButton : public IContainer
     {
     protected:
         void _init(
@@ -120,10 +121,10 @@ namespace ftk
         FloatResetButton();
 
     public:
-        FTK_API virtual ~FloatResetButton();
+        FTK_UI_API virtual ~FloatResetButton();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FloatResetButton> create(
+        FTK_UI_API static std::shared_ptr<FloatResetButton> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);

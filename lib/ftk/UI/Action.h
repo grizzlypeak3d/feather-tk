@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/Event.h>
 
 namespace ftk
@@ -11,23 +12,23 @@ namespace ftk
     ///@{
 
     //! Keyboard shortcut.
-    struct FTK_API_TYPE KeyShortcut
+    struct FTK_UI_API_TYPE KeyShortcut
     {
         KeyShortcut() = default;
-        FTK_API KeyShortcut(Key, KeyModifier);
-        FTK_API KeyShortcut(Key, KeyModifier, KeyModifier);
-        FTK_API KeyShortcut(Key, KeyModifier, KeyModifier, KeyModifier);
-        FTK_API KeyShortcut(Key, int modifiers = 0);
+        FTK_UI_API KeyShortcut(Key, KeyModifier);
+        FTK_UI_API KeyShortcut(Key, KeyModifier, KeyModifier);
+        FTK_UI_API KeyShortcut(Key, KeyModifier, KeyModifier, KeyModifier);
+        FTK_UI_API KeyShortcut(Key, int modifiers = 0);
 
         Key key       = Key::Unknown;
         int modifiers = 0;
 
-        FTK_API bool operator == (const KeyShortcut&) const;
-        FTK_API bool operator != (const KeyShortcut&) const;
+        FTK_UI_API bool operator == (const KeyShortcut&) const;
+        FTK_UI_API bool operator != (const KeyShortcut&) const;
     };
 
     //! How an action carries a checked state.
-    enum class FTK_API_TYPE ActionCheckType
+    enum class FTK_UI_API_TYPE ActionCheckType
     {
         //! A command. Picking it does something and nothing is remembered.
         None,
@@ -49,7 +50,7 @@ namespace ftk
     FTK_ENUM(ActionCheckType);
 
     //! Action.
-    class FTK_API_TYPE Action : public std::enable_shared_from_this<Action>
+    class FTK_UI_API_TYPE Action : public std::enable_shared_from_this<Action>
     {
         FTK_NON_COPYABLE(Action);
 
@@ -64,46 +65,46 @@ namespace ftk
         Action();
 
     public:
-        FTK_API ~Action();
+        FTK_UI_API ~Action();
 
         //! \name Create
         ///@{
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::function<void(void)>& callback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::string&               icon,
             const std::function<void(void)>& callback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const KeyShortcut&               shortcut,
             const std::function<void(void)>& callback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::string&               icon,
             const KeyShortcut&               shortcut,
             const std::function<void(void)>& callback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::function<void(bool)>& checkedCallback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::string&               icon,
             const std::function<void(bool)>& checkedCallback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const KeyShortcut&               shortcut,
             const std::function<void(bool)>& checkedCallback);
 
-        FTK_API static std::shared_ptr<Action> create(
+        FTK_UI_API static std::shared_ptr<Action> create(
             const std::string&               text,
             const std::string&               icon,
             const KeyShortcut&               shortcut,
@@ -114,72 +115,72 @@ namespace ftk
         //! \name Text
         ///@{
 
-        FTK_API const std::string& getText() const;
-        FTK_API std::shared_ptr<IObservable<std::string> > observeText() const;
-        FTK_API void setText(const std::string&);
+        FTK_UI_API const std::string& getText() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeText() const;
+        FTK_UI_API void setText(const std::string&);
 
         ///@}
 
         //! \name Icon
         ///@{
 
-        FTK_API const std::string& getIcon() const;
-        FTK_API const std::string& getCheckedIcon() const;
-        FTK_API std::shared_ptr<IObservable<std::string> > observeIcon() const;
-        FTK_API std::shared_ptr<IObservable<std::string> > observeCheckedIcon() const;
-        FTK_API void setIcon(const std::string&);
-        FTK_API void setCheckedIcon(const std::string&);
+        FTK_UI_API const std::string& getIcon() const;
+        FTK_UI_API const std::string& getCheckedIcon() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeIcon() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeCheckedIcon() const;
+        FTK_UI_API void setIcon(const std::string&);
+        FTK_UI_API void setCheckedIcon(const std::string&);
 
         ///@}
 
         //! \name Shortcut
         ///@{
 
-        FTK_API const std::vector<KeyShortcut>& getShortcuts() const;
-        FTK_API std::shared_ptr<IObservableList<KeyShortcut> > observeShortcuts() const;
-        FTK_API void setShortcuts(const std::vector<KeyShortcut>&);
+        FTK_UI_API const std::vector<KeyShortcut>& getShortcuts() const;
+        FTK_UI_API std::shared_ptr<IObservableList<KeyShortcut> > observeShortcuts() const;
+        FTK_UI_API void setShortcuts(const std::vector<KeyShortcut>&);
 
         ///@}
 
         //! \name Callback
         ///@{
 
-        FTK_API void doCallback();
+        FTK_UI_API void doCallback();
 
         ///@}
 
         //! \name Checkable
         ///@{
 
-        FTK_API ActionCheckType getCheckType() const;
-        FTK_API std::shared_ptr<IObservable<ActionCheckType> > observeCheckType() const;
-        FTK_API void setCheckType(ActionCheckType);
+        FTK_UI_API ActionCheckType getCheckType() const;
+        FTK_UI_API std::shared_ptr<IObservable<ActionCheckType> > observeCheckType() const;
+        FTK_UI_API void setCheckType(ActionCheckType);
 
         //! Whether the action carries a checked state at all.
-        FTK_API bool isCheckable() const;
+        FTK_UI_API bool isCheckable() const;
 
-        FTK_API bool isChecked() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeChecked() const;
-        FTK_API void setChecked(bool);
-        FTK_API void doCheckedCallback(bool);
+        FTK_UI_API bool isChecked() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeChecked() const;
+        FTK_UI_API void setChecked(bool);
+        FTK_UI_API void doCheckedCallback(bool);
 
         ///@}
 
         //! \name Enabled
         ///@{
 
-        FTK_API bool isEnabled() const;
-        FTK_API std::shared_ptr<IObservable<bool> > observeEnabled() const;
-        FTK_API void setEnabled(bool);
+        FTK_UI_API bool isEnabled() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeEnabled() const;
+        FTK_UI_API void setEnabled(bool);
 
         ///@}
 
         //! \name Tooltip
         ///@{
 
-        FTK_API const std::string& getTooltip() const;
-        FTK_API std::shared_ptr<IObservable<std::string> > observeTooltip() const;
-        FTK_API void setTooltip(const std::string&);
+        FTK_UI_API const std::string& getTooltip() const;
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeTooltip() const;
+        FTK_UI_API void setTooltip(const std::string&);
 
         ///@}
 
@@ -187,13 +188,13 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    FTK_API std::string to_string(const KeyShortcut&);
+    FTK_UI_API std::string to_string(const KeyShortcut&);
 
-    FTK_API bool from_string(const std::string&, KeyShortcut&);
+    FTK_UI_API bool from_string(const std::string&, KeyShortcut&);
 
-    FTK_API void to_json(nlohmann::json&, const KeyShortcut&);
+    FTK_UI_API void to_json(nlohmann::json&, const KeyShortcut&);
 
-    FTK_API void from_json(const nlohmann::json&, KeyShortcut&);
+    FTK_UI_API void from_json(const nlohmann::json&, KeyShortcut&);
 
     ///@}
 }

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/ListItemsWidget.h>
 
@@ -12,7 +13,7 @@ namespace ftk
     ///@{
 
     //! List widget.
-    class FTK_API_TYPE ListWidget : public IContainer
+    class FTK_UI_API_TYPE ListWidget : public IContainer
     {
     protected:
         void _init(
@@ -23,46 +24,46 @@ namespace ftk
         ListWidget();
 
     public:
-        FTK_API virtual ~ListWidget();
+        FTK_UI_API virtual ~ListWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ListWidget> create(
+        FTK_UI_API static std::shared_ptr<ListWidget> create(
             const std::shared_ptr<Context>&,
             ButtonGroupType,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the items.
-        FTK_API const std::vector<ListItem>& getItems() const;
+        FTK_UI_API const std::vector<ListItem>& getItems() const;
 
         //! Set the items.
-        FTK_API void setItems(const std::vector<ListItem>&);
+        FTK_UI_API void setItems(const std::vector<ListItem>&);
 
         //! Set the items.
-        FTK_API void setItems(const std::vector<std::string>&);
+        FTK_UI_API void setItems(const std::vector<std::string>&);
 
         //! Get whether an item is checked.
-        FTK_API bool getChecked(int) const;
+        FTK_UI_API bool getChecked(int) const;
 
         //! Set the checked item.
-        FTK_API void setChecked(int, bool = true);
+        FTK_UI_API void setChecked(int, bool = true);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(int, bool)>&);
+        FTK_UI_API void setCallback(const std::function<void(int, bool)>&);
 
         //! Get the current item.
-        FTK_API int getCurrent() const;
+        FTK_UI_API int getCurrent() const;
 
         //! Set the current item.
-        FTK_API void setCurrent(int);
+        FTK_UI_API void setCurrent(int);
 
         //! Get the search.
-        FTK_API const std::string& getSearch() const;
+        FTK_UI_API const std::string& getSearch() const;
 
         //! Set the search.
-        FTK_API void setSearch(const std::string&);
+        FTK_UI_API void setSearch(const std::string&);
 
         //! Clear the search.
-        FTK_API void clearSearch();
+        FTK_UI_API void clearSearch();
 
 
     private:

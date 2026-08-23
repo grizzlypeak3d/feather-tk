@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/IWidget.h>
 
@@ -15,7 +16,7 @@ namespace ftk
 
     //! One line on a graph: its colour, the format string for its readout,
     //! and how the sample is turned into the number that format expects.
-    struct FTK_API_TYPE GraphLabel
+    struct FTK_UI_API_TYPE GraphLabel
     {
         ColorRole colorRole = ColorRole::None;
         std::string text;
@@ -23,7 +24,7 @@ namespace ftk
     };
 
     //! Graph widget.
-    class FTK_API_TYPE GraphWidget : public IContainer
+    class FTK_UI_API_TYPE GraphWidget : public IContainer
     {
     protected:
         void _init(
@@ -35,20 +36,20 @@ namespace ftk
         GraphWidget();
 
     public:
-        FTK_API virtual ~GraphWidget();
+        FTK_UI_API virtual ~GraphWidget();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<GraphWidget> create(
+        FTK_UI_API static std::shared_ptr<GraphWidget> create(
             const std::shared_ptr<Context>&,
             const std::string& title,
             const std::vector<GraphLabel>& labels,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Set the samples.
-        FTK_API void setSamples(ColorRole, const std::vector<int64_t>&);
+        FTK_UI_API void setSamples(ColorRole, const std::vector<int64_t>&);
 
         //! Add a sample.
-        FTK_API void addSample(ColorRole, int64_t);
+        FTK_UI_API void addSample(ColorRole, int64_t);
 
 
     private:

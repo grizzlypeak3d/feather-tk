@@ -31,12 +31,12 @@
 //! * string
 //! * vector
 #define FTK_ENUM(ENUM) \
-    FTK_API std::vector<ENUM> get##ENUM##Enums(); \
-    FTK_API std::vector<std::string> get##ENUM##Labels(); \
-    FTK_API std::string getLabel(ENUM); \
-    FTK_API std::string to_string(ENUM); \
-    FTK_API bool from_string(const std::string&, ENUM&); \
-    FTK_API std::ostream& operator << (std::ostream&, ENUM)
+    FTK_CORE_API std::vector<ENUM> get##ENUM##Enums(); \
+    FTK_CORE_API std::vector<std::string> get##ENUM##Labels(); \
+    FTK_CORE_API std::string getLabel(ENUM); \
+    FTK_CORE_API std::string to_string(ENUM); \
+    FTK_CORE_API bool from_string(const std::string&, ENUM&); \
+    FTK_CORE_API std::ostream& operator << (std::ostream&, ENUM)
 
 //! Implementation macro for enum utilities.
 //! 

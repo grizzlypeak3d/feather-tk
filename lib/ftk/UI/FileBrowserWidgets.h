@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IContainer.h>
 #include <ftk/UI/FileBrowser.h>
 
@@ -13,7 +14,7 @@
 namespace ftk
 {
     //! File browser path widget.
-    class FTK_API_TYPE FileBrowserPath : public IContainer
+    class FTK_UI_API_TYPE FileBrowserPath : public IContainer
     {
     protected:
         void _init(
@@ -23,30 +24,30 @@ namespace ftk
         FileBrowserPath();
 
     public:
-        FTK_API virtual ~FileBrowserPath();
+        FTK_UI_API virtual ~FileBrowserPath();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserPath> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserPath> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the path.
-        FTK_API const std::filesystem::path& getPath() const;
+        FTK_UI_API const std::filesystem::path& getPath() const;
 
         //! Set the path.
-        FTK_API void setPath(const std::filesystem::path&);
+        FTK_UI_API void setPath(const std::filesystem::path&);
 
         //! Set the callback.
-        FTK_API void setCallback(const std::function<void(const std::filesystem::path&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const std::filesystem::path&)>&);
 
         //! Get whether the path is ediable.
-        FTK_API bool isEditable() const;
+        FTK_UI_API bool isEditable() const;
 
         //! Set whether the path is editable.
-        FTK_API void setEditable(bool);
+        FTK_UI_API void setEditable(bool);
 
         //! Set the editable callback.
-        FTK_API void setEditableCallback(const std::function<void(bool)>&);
+        FTK_UI_API void setEditableCallback(const std::function<void(bool)>&);
 
 
     private:
@@ -56,7 +57,7 @@ namespace ftk
     };
 
     //! File browser drives widget.
-    class FTK_API_TYPE FileBrowserDrives : public IContainer
+    class FTK_UI_API_TYPE FileBrowserDrives : public IContainer
     {
     protected:
         void _init(
@@ -67,10 +68,10 @@ namespace ftk
         FileBrowserDrives();
 
     public:
-        FTK_API virtual ~FileBrowserDrives();
+        FTK_UI_API virtual ~FileBrowserDrives();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserDrives> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserDrives> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -83,7 +84,7 @@ namespace ftk
     };
 
     //! File browser shortcuts widget.
-    class FTK_API_TYPE FileBrowserShortcuts : public IContainer
+    class FTK_UI_API_TYPE FileBrowserShortcuts : public IContainer
     {
     protected:
         void _init(
@@ -94,10 +95,10 @@ namespace ftk
         FileBrowserShortcuts();
 
     public:
-        FTK_API virtual ~FileBrowserShortcuts();
+        FTK_UI_API virtual ~FileBrowserShortcuts();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserShortcuts> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserShortcuts> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -110,7 +111,7 @@ namespace ftk
     };
 
     //! File browser recent paths widget.
-    class FTK_API_TYPE FileBrowserRecent : public IContainer
+    class FTK_UI_API_TYPE FileBrowserRecent : public IContainer
     {
     protected:
         void _init(
@@ -121,19 +122,19 @@ namespace ftk
         FileBrowserRecent();
 
     public:
-        FTK_API virtual ~FileBrowserRecent();
+        FTK_UI_API virtual ~FileBrowserRecent();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserRecent> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserRecent> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the recent files model.
-        FTK_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
+        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
 
         //! Set the recent files model.
-        FTK_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+        FTK_UI_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
 
 
     private:
@@ -143,7 +144,7 @@ namespace ftk
     };
 
     //! File browser settings widget.
-    class FTK_API_TYPE FileBrowserSettings : public IContainer
+    class FTK_UI_API_TYPE FileBrowserSettings : public IContainer
     {
     protected:
         void _init(
@@ -154,10 +155,10 @@ namespace ftk
         FileBrowserSettings();
 
     public:
-        FTK_API virtual ~FileBrowserSettings();
+        FTK_UI_API virtual ~FileBrowserSettings();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserSettings> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserSettings> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -170,7 +171,7 @@ namespace ftk
     };
 
     //! File browser view widget.
-    class FTK_API_TYPE FileBrowserView : public IMouseWidget
+    class FTK_UI_API_TYPE FileBrowserView : public IMouseWidget
     {
     protected:
         void _init(
@@ -182,63 +183,63 @@ namespace ftk
         FileBrowserView();
 
     public:
-        FTK_API virtual ~FileBrowserView();
+        FTK_UI_API virtual ~FileBrowserView();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<FileBrowserView> create(
+        FTK_UI_API static std::shared_ptr<FileBrowserView> create(
             const std::shared_ptr<Context>&,
             FileBrowserMode,
             const std::shared_ptr<FileBrowserModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Reload the directory.
-        FTK_API void reload();
+        FTK_UI_API void reload();
 
         //! Set the callback. Carries everything selected, so that opening
         //! one of several chosen files opens the ones chosen.
-        FTK_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
         //! Set the selection callback. More than one path only when
         //! selecting more than one is allowed; empty when nothing is
         //! selected.
-        FTK_API void setSelectCallback(const std::function<void(const std::vector<Path>&)>&);
+        FTK_UI_API void setSelectCallback(const std::function<void(const std::vector<Path>&)>&);
 
         //! Get whether more than one file can be selected.
-        FTK_API bool isMultiple() const;
+        FTK_UI_API bool isMultiple() const;
 
         //! Set whether more than one file can be selected. Shift extends the
         //! selection from the current item and the command key adds to it;
         //! without this a click replaces whatever was selected.
-        FTK_API void setMultiple(bool);
+        FTK_UI_API void setMultiple(bool);
 
         //! Get the selection.
-        FTK_API std::vector<Path> getSelection() const;
+        FTK_UI_API std::vector<Path> getSelection() const;
 
         //! Get the search filter.
-        FTK_API const std::string& getSearch() const;
+        FTK_UI_API const std::string& getSearch() const;
 
         //! Set the search filter.
-        FTK_API void setSearch(const std::string&);
+        FTK_UI_API void setSearch(const std::string&);
 
         //! Observe the current item.
-        FTK_API std::shared_ptr<IObservable<int> > observeCurrent() const;
+        FTK_UI_API std::shared_ptr<IObservable<int> > observeCurrent() const;
 
         //! Get the rectangle of an item.
-        FTK_API Box2I getRect(int) const;
+        FTK_UI_API Box2I getRect(int) const;
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void tickEvent(bool, bool, const TickEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void drawEvent(const Box2I& drawRect, const DrawEvent&) override;
-        FTK_API void mouseEnterEvent(MouseEnterEvent&) override;
-        FTK_API void mouseLeaveEvent() override;
-        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
-        FTK_API void mousePressEvent(MouseClickEvent&) override;
-        FTK_API void mouseReleaseEvent(MouseClickEvent&) override;
-        FTK_API void keyFocusEvent(bool) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void tickEvent(bool, bool, const TickEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void drawEvent(const Box2I& drawRect, const DrawEvent&) override;
+        FTK_UI_API void mouseEnterEvent(MouseEnterEvent&) override;
+        FTK_UI_API void mouseLeaveEvent() override;
+        FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_UI_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_UI_API void mouseReleaseEvent(MouseClickEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         int _getItem(const V2I&) const;

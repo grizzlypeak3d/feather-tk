@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Util.h>
 
 #include <memory>
@@ -14,18 +15,18 @@
 namespace ftk
 {
     //! Base class for command line options.
-    class FTK_API_TYPE ICmdLineOption : public std::enable_shared_from_this<ICmdLineOption>
+    class FTK_CORE_API_TYPE ICmdLineOption : public std::enable_shared_from_this<ICmdLineOption>
     {
         FTK_NON_COPYABLE(ICmdLineOption);
 
     protected:
-        FTK_API ICmdLineOption(
+        FTK_CORE_API ICmdLineOption(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group = std::string());
 
     public:
-        FTK_API virtual ~ICmdLineOption() = 0;
+        FTK_CORE_API virtual ~ICmdLineOption() = 0;
             
         //! Get the help.
         const std::string& getHelp() const;
@@ -34,10 +35,10 @@ namespace ftk
         const std::string& getGroup() const;
 
         //! Parse the option.
-        FTK_API virtual void parse(std::vector<std::string>& args) = 0;
+        FTK_CORE_API virtual void parse(std::vector<std::string>& args) = 0;
 
         //! Get whether the option was found.
-        FTK_API virtual bool found() const;
+        FTK_CORE_API virtual bool found() const;
 
         //! Get the option name that was matched.
         const std::string& getMatchedName() const;
@@ -50,7 +51,7 @@ namespace ftk
     };
 
     //! Command line flag.
-    class FTK_API_TYPE CmdLineFlag : public ICmdLineOption
+    class FTK_CORE_API_TYPE CmdLineFlag : public ICmdLineOption
     {
     protected:
         CmdLineFlag(
@@ -60,12 +61,12 @@ namespace ftk
 
     public:
         //! Create a new command line flag.
-        FTK_API static std::shared_ptr<CmdLineFlag> create(
+        FTK_CORE_API static std::shared_ptr<CmdLineFlag> create(
             const std::vector<std::string>& names,
             const std::string& help,
             const std::string& group = std::string());
 
-        FTK_API void parse(std::vector<std::string>& args) override;
+        FTK_CORE_API void parse(std::vector<std::string>& args) override;
     };
 
     //! Command line option.
@@ -134,7 +135,7 @@ namespace ftk
     };
 
     //! Base class for command line arguments.
-    class FTK_API_TYPE ICmdLineArg : public std::enable_shared_from_this<ICmdLineArg>
+    class FTK_CORE_API_TYPE ICmdLineArg : public std::enable_shared_from_this<ICmdLineArg>
     {
     protected:
         ICmdLineArg(
@@ -143,10 +144,10 @@ namespace ftk
             bool optional);
 
     public:
-        FTK_API virtual ~ICmdLineArg() = 0;
+        FTK_CORE_API virtual ~ICmdLineArg() = 0;
 
         //! Parse the argument.
-        FTK_API virtual void parse(std::vector<std::string>& args) = 0;
+        FTK_CORE_API virtual void parse(std::vector<std::string>& args) = 0;
 
         //! Get the argument name.
         const std::string& getName() const;
@@ -219,11 +220,11 @@ namespace ftk
         std::vector<T> _list;
     };
 
-    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, std::string&);
-    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, bool&);
-    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, int&);
-    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, float&);
-    FTK_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, double&);
+    FTK_CORE_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, std::string&);
+    FTK_CORE_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, bool&);
+    FTK_CORE_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, int&);
+    FTK_CORE_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, float&);
+    FTK_CORE_API bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, double&);
     template<typename T>
     bool cmdLineParse(std::vector<std::string>&, std::vector<std::string>::iterator&, T&);
 }

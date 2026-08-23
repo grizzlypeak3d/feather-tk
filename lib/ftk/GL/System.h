@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/GL/Export.h>
 #include <ftk/Core/ISystem.h>
 
 namespace ftk
@@ -12,22 +13,22 @@ namespace ftk
     namespace gl
     {
         //! OpenGL system.
-        class FTK_API_TYPE System : public ISystem
+        class FTK_GL_API_TYPE System : public ISystem
         {
         protected:
             System(const std::shared_ptr<Context>&);
 
         public:
-            FTK_API virtual ~System();
+            FTK_GL_API virtual ~System();
 
             //! Create a new system.
-            FTK_API static std::shared_ptr<System> create(const std::shared_ptr<Context>&);
+            FTK_GL_API static std::shared_ptr<System> create(const std::shared_ptr<Context>&);
         
             //! Get the render factory.
-            FTK_API const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
+            FTK_GL_API const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
 
             //! Set the render factory.
-            FTK_API void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
+            FTK_GL_API void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
 
         private:
             FTK_PRIVATE();

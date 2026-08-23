@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/Memory.h>
 #include <ftk/Core/Range.h>
 #include <ftk/Core/Util.h>
@@ -20,7 +21,7 @@ namespace ftk
     ///@{
 
     //! Image types.
-    enum class FTK_API_TYPE ImageType
+    enum class FTK_CORE_API_TYPE ImageType
     {
         None,
 
@@ -66,13 +67,13 @@ namespace ftk
     FTK_ENUM(ImageType);
 
     //! Get the number of channels for the given image type.
-    FTK_API int getChannelCount(ImageType);
+    FTK_CORE_API int getChannelCount(ImageType);
 
     //! Get the bit-depth for the given image type.
-    FTK_API int getBitDepth(ImageType);
+    FTK_CORE_API int getBitDepth(ImageType);
 
     //! Video levels.
-    enum class FTK_API_TYPE VideoLevels
+    enum class FTK_CORE_API_TYPE VideoLevels
     {
         FullRange,
         LegalRange,
@@ -83,7 +84,7 @@ namespace ftk
     FTK_ENUM(VideoLevels);
 
     //! YUV coefficients.
-    enum class FTK_API_TYPE YUVCoefficients
+    enum class FTK_CORE_API_TYPE YUVCoefficients
     {
         REC709,
         BT2020,
@@ -94,10 +95,10 @@ namespace ftk
     FTK_ENUM(YUVCoefficients);
 
     //! Get YUV coefficients.
-    FTK_API V4F getYUVCoefficients(YUVCoefficients);
+    FTK_CORE_API V4F getYUVCoefficients(YUVCoefficients);
 
     //! Image mirroring.
-    struct FTK_API_TYPE ImageMirror
+    struct FTK_CORE_API_TYPE ImageMirror
     {
         ImageMirror() = default;
         constexpr ImageMirror(bool x, bool y);
@@ -110,7 +111,7 @@ namespace ftk
     };
 
     //! Image data layout.
-    struct FTK_API_TYPE ImageLayout
+    struct FTK_CORE_API_TYPE ImageLayout
     {
         ImageLayout() = default;
         ImageLayout(
@@ -127,7 +128,7 @@ namespace ftk
     };
 
     //! Image information.
-    struct FTK_API_TYPE ImageInfo
+    struct FTK_CORE_API_TYPE ImageInfo
     {
         ImageInfo() = default;
         ImageInfo(const Size2I&, ImageType);
@@ -148,20 +149,20 @@ namespace ftk
         float getAspect() const;
 
         //! Get the number of bytes used to store an image.
-        FTK_API size_t getByteCount() const;
+        FTK_CORE_API size_t getByteCount() const;
 
-        FTK_API bool operator == (const ImageInfo&) const;
-        FTK_API bool operator != (const ImageInfo&) const;
+        FTK_CORE_API bool operator == (const ImageInfo&) const;
+        FTK_CORE_API bool operator != (const ImageInfo&) const;
     };
 
     //! Get an image information label.
-    FTK_API std::string getLabel(const ImageInfo&);
+    FTK_CORE_API std::string getLabel(const ImageInfo&);
 
     //! Image tags.
     typedef std::map<std::string, std::string> ImageTags;
 
     //! Image.
-    class FTK_API_TYPE Image : public std::enable_shared_from_this<Image>
+    class FTK_CORE_API_TYPE Image : public std::enable_shared_from_this<Image>
     {
         FTK_NON_COPYABLE(Image);
 
@@ -169,19 +170,19 @@ namespace ftk
         Image(const ImageInfo&, uint8_t* externalData = nullptr);
 
     public:
-        FTK_API ~Image();
+        FTK_CORE_API ~Image();
 
         //! Create a new image.
-        FTK_API static std::shared_ptr<Image> create(const ImageInfo&);
+        FTK_CORE_API static std::shared_ptr<Image> create(const ImageInfo&);
 
         //! Create a new image.
-        FTK_API static std::shared_ptr<Image> create(const ImageInfo&, uint8_t* externalData);
+        FTK_CORE_API static std::shared_ptr<Image> create(const ImageInfo&, uint8_t* externalData);
 
         //! Create a new image.
-        FTK_API static std::shared_ptr<Image> create(const Size2I&, ImageType);
+        FTK_CORE_API static std::shared_ptr<Image> create(const Size2I&, ImageType);
 
         //! Create a new image.
-        FTK_API static std::shared_ptr<Image> create(int w, int h, ImageType);
+        FTK_CORE_API static std::shared_ptr<Image> create(int w, int h, ImageType);
 
         //! Get the image information.
         const ImageInfo& getInfo() const;
@@ -208,10 +209,10 @@ namespace ftk
         const ImageTags& getTags() const;
 
         //! Set the image tags.
-        FTK_API void setTags(const ImageTags&);
+        FTK_CORE_API void setTags(const ImageTags&);
 
         //! Get the number of bytes used to store the image data.
-        FTK_API size_t getByteCount() const;
+        FTK_CORE_API size_t getByteCount() const;
 
         //! Get the image data.
         const uint8_t* getData() const;
@@ -220,13 +221,13 @@ namespace ftk
         uint8_t* getData();
 
         //! Zero the image data.
-        FTK_API void zero();
+        FTK_CORE_API void zero();
 
         //! Get the number of objects currenty instantiated.
-        FTK_API static size_t getObjectCount();
+        FTK_CORE_API static size_t getObjectCount();
 
         //! Get the total number of bytes currently used.
-        FTK_API static size_t getTotalByteCount();
+        FTK_CORE_API static size_t getTotalByteCount();
 
     private:
         ImageInfo _info;
@@ -236,9 +237,9 @@ namespace ftk
         bool      _externalData = false;
     };
 
-    FTK_API void to_json(nlohmann::json&, const ImageMirror&);
+    FTK_CORE_API void to_json(nlohmann::json&, const ImageMirror&);
 
-    FTK_API void from_json(const nlohmann::json&, ImageMirror&);
+    FTK_CORE_API void from_json(const nlohmann::json&, ImageMirror&);
 
     ///@}
 }

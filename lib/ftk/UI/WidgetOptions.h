@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/Core/Util.h>
 
 #include <iostream>
@@ -12,7 +13,7 @@
 namespace ftk
 {
     //! Orientation.
-    enum class FTK_API_TYPE Orientation
+    enum class FTK_UI_API_TYPE Orientation
     {
         Horizontal,
         Vertical,
@@ -23,7 +24,7 @@ namespace ftk
     FTK_ENUM(Orientation);
 
     //! Layout stretch.
-    enum class FTK_API_TYPE Stretch
+    enum class FTK_UI_API_TYPE Stretch
     {
         Fixed,
         Expanding,
@@ -34,7 +35,7 @@ namespace ftk
     FTK_ENUM(Stretch);
 
     //! Horizontal alignment.
-    enum class FTK_API_TYPE HAlign
+    enum class FTK_UI_API_TYPE HAlign
     {
         Fill,
         Left,
@@ -47,7 +48,7 @@ namespace ftk
     FTK_ENUM(HAlign);
 
     //! Vertical alignment.
-    enum class FTK_API_TYPE VAlign
+    enum class FTK_UI_API_TYPE VAlign
     {
         Fill,
         Top,

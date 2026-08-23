@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IMouseWidget.h>
 
 namespace ftk
@@ -16,7 +17,7 @@ namespace ftk
     //! Text line edit.
     //! 
     //! \todo Double click to select text.
-    class FTK_API_TYPE LineEdit : public IMouseWidget
+    class FTK_UI_API_TYPE LineEdit : public IMouseWidget
     {
     protected:
         void _init(
@@ -27,99 +28,99 @@ namespace ftk
         LineEdit();
 
     public:
-        FTK_API virtual ~LineEdit();
+        FTK_UI_API virtual ~LineEdit();
 
         //! Create a new widget
-        FTK_API static std::shared_ptr<LineEdit> create(
+        FTK_UI_API static std::shared_ptr<LineEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Create a new widget
-        FTK_API static std::shared_ptr<LineEdit> create(
+        FTK_UI_API static std::shared_ptr<LineEdit> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<LineEditModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the model.
-        FTK_API const std::shared_ptr<LineEditModel>& getModel() const;
+        FTK_UI_API const std::shared_ptr<LineEditModel>& getModel() const;
 
         //! \name Text
         ///@{
 
-        FTK_API const std::string& getText() const;
-        FTK_API void setText(const std::string&);
-        FTK_API void clearText();
+        FTK_UI_API const std::string& getText() const;
+        FTK_UI_API void setText(const std::string&);
+        FTK_UI_API void clearText();
 
         //! Set the callback. The callback is triggered when the enter
         //! key is clicked and optionally when key focus is lost.
-        FTK_API void setCallback(const std::function<void(const std::string&)>&);
+        FTK_UI_API void setCallback(const std::function<void(const std::string&)>&);
 
         //! Get whether the callback is triggered when focus is lost.
-        FTK_API bool hasCallbackOnFocusLost() const;
+        FTK_UI_API bool hasCallbackOnFocusLost() const;
 
         //! Set whether the callback is triggered when focus is lost.
-        FTK_API void setCallbackOnFocusLost(bool);
+        FTK_UI_API void setCallbackOnFocusLost(bool);
 
         //! Set the text changed callback. This callback is triggered
         //! whenever the text is changed.
-        FTK_API void setTextChangedCallback(const std::function<void(const std::string&)>&);
+        FTK_UI_API void setTextChangedCallback(const std::function<void(const std::string&)>&);
 
         //! Get the formatting text.
-        FTK_API const std::string& getFormat() const;
+        FTK_UI_API const std::string& getFormat() const;
 
         //! Set the formatting text.
-        FTK_API void setFormat(const std::string&);
+        FTK_UI_API void setFormat(const std::string&);
 
         //! Set the focus callback.
-        FTK_API void setFocusCallback(const std::function<void(bool)>&);
+        FTK_UI_API void setFocusCallback(const std::function<void(bool)>&);
 
-        FTK_API bool isReadOnly() const;
-        FTK_API void setReadOnly(bool);
+        FTK_UI_API bool isReadOnly() const;
+        FTK_UI_API void setReadOnly(bool);
 
         ///@}
 
         //! \name Selection
         ///@{
 
-        FTK_API void selectAll();
-        FTK_API void clearSelection();
+        FTK_UI_API void selectAll();
+        FTK_UI_API void clearSelection();
 
         ///@}
 
         //! \name Font
         ///@{
 
-        FTK_API FontType getFont() const;
-        FTK_API void setFont(FontType);
+        FTK_UI_API FontType getFont() const;
+        FTK_UI_API void setFont(FontType);
 
         ///@}
 
         //! \name Border
         ///@{
 
-        FTK_API ColorRole getBorderRole() const;
-        FTK_API void setBorderRole(ColorRole);
+        FTK_UI_API ColorRole getBorderRole() const;
+        FTK_UI_API void setBorderRole(ColorRole);
 
         ///@}
 
-        FTK_API Size2I getSizeHint() const override;
-        FTK_API void setGeometry(const Box2I&) override;
-        FTK_API void setVisible(bool) override;
-        FTK_API void setEnabled(bool) override;
-        FTK_API void tickEvent(
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void setVisible(bool) override;
+        FTK_UI_API void setEnabled(bool) override;
+        FTK_UI_API void tickEvent(
             bool,
             bool,
             const TickEvent&) override;
-        FTK_API void clipEvent(const Box2I&, bool) override;
-        FTK_API void styleEvent(const StyleEvent&) override;
-        FTK_API void sizeHintEvent(const SizeHintEvent&) override;
-        FTK_API void drawEvent(const Box2I&, const DrawEvent&) override;
-        FTK_API void mouseMoveEvent(MouseMoveEvent&) override;
-        FTK_API void mousePressEvent(MouseClickEvent&) override;
-        FTK_API void keyFocusEvent(bool) override;
-        FTK_API void keyPressEvent(KeyEvent&) override;
-        FTK_API void keyReleaseEvent(KeyEvent&) override;
-        FTK_API void textEvent(TextEvent&) override;
+        FTK_UI_API void clipEvent(const Box2I&, bool) override;
+        FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+        FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;
+        FTK_UI_API void mousePressEvent(MouseClickEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
+        FTK_UI_API void textEvent(TextEvent&) override;
 
     private:
         std::shared_ptr<Menu> _createContextMenu();

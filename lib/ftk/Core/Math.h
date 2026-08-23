@@ -39,13 +39,13 @@ namespace ftk
     constexpr double smoothStep(double value, double min, double max);
 
     //! Count the number of digits.
-    FTK_API int digits(int);
+    FTK_CORE_API int digits(int);
 
     //! Fuzzy double comparison.
-    FTK_API bool fuzzyCompare(double a, double b, double e = .1e-9);
+    FTK_CORE_API bool fuzzyCompare(double a, double b, double e = .1e-9);
 
     //! Fuzzy float comparison.
-    FTK_API bool fuzzyCompare(float a, float b, float e = .1e-6F);
+    FTK_CORE_API bool fuzzyCompare(float a, float b, float e = .1e-6F);
         
     ///@}
 }

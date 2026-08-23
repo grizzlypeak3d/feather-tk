@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Export.h>
 #include <ftk/Core/LogSystem.h>
 
 #include <memory>
@@ -24,18 +25,18 @@ namespace ftk
     class ICmdLineOption;
         
     //! Convert command line arguments.
-    FTK_API std::vector<std::string> convert(int argc, char** argv);
+    FTK_CORE_API std::vector<std::string> convert(int argc, char** argv);
 
     //! Convert command line arguments.
-    FTK_API std::vector<std::string> convert(int argc, wchar_t* argv[]);
+    FTK_CORE_API std::vector<std::string> convert(int argc, wchar_t* argv[]);
 
     //! Base class for applications.
-    class FTK_API_TYPE IApp : public std::enable_shared_from_this<IApp>
+    class FTK_CORE_API_TYPE IApp : public std::enable_shared_from_this<IApp>
     {
         FTK_NON_COPYABLE(IApp);
 
     protected:
-        FTK_API void _init(
+        FTK_CORE_API void _init(
             const std::shared_ptr<Context>&,
             const std::vector<std::string>& argv,
             const std::string& name,
@@ -43,30 +44,30 @@ namespace ftk
             const std::vector<std::shared_ptr<ICmdLineArg> >& = {},
             const std::vector<std::shared_ptr<ICmdLineOption> >& = {});
 
-        FTK_API IApp();
+        FTK_CORE_API IApp();
 
     public:
-        FTK_API virtual ~IApp() = 0;
+        FTK_CORE_API virtual ~IApp() = 0;
 
         //! Get the executable file name.
-        FTK_API const std::string& getExeName() const;
+        FTK_CORE_API const std::string& getExeName() const;
 
         //! Get the context.
-        FTK_API const std::shared_ptr<Context>& getContext() const;
+        FTK_CORE_API const std::shared_ptr<Context>& getContext() const;
 
         //! Get the application name.
-        FTK_API const std::string& getName() const;
+        FTK_CORE_API const std::string& getName() const;
 
         //! Get the application summary.
-        FTK_API const std::string& getSummary() const;
+        FTK_CORE_API const std::string& getSummary() const;
 
         //! Get whether the command line help is shown.
-        FTK_API bool hasCmdLineHelp() const;
+        FTK_CORE_API bool hasCmdLineHelp() const;
 
     protected:
         void _parseCmdLine();
 
-        FTK_API void _print(const std::string&);
+        FTK_CORE_API void _print(const std::string&);
         void _printError(const std::string&);
 
         std::shared_ptr<Context> _context;

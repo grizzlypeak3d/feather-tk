@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/UI/Export.h>
 #include <ftk/UI/IDialog.h>
 
 #include <ftk/Core/Range.h>
@@ -13,7 +14,7 @@ namespace ftk
     ///@{
 
     //! Progress dialog.
-    class FTK_API_TYPE ProgressDialog : public IDialog
+    class FTK_UI_API_TYPE ProgressDialog : public IDialog
     {
     protected:
         void _init(
@@ -25,43 +26,43 @@ namespace ftk
         ProgressDialog();
 
     public:
-        FTK_API virtual ~ProgressDialog();
+        FTK_UI_API virtual ~ProgressDialog();
 
         //! Create a new widget.
-        FTK_API static std::shared_ptr<ProgressDialog> create(
+        FTK_UI_API static std::shared_ptr<ProgressDialog> create(
             const std::shared_ptr<Context>& context,
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
         //! Get the text.
-        FTK_API const std::string& getText() const;
+        FTK_UI_API const std::string& getText() const;
 
         //! Set the text.
-        FTK_API void setText(const std::string&);
+        FTK_UI_API void setText(const std::string&);
 
         //! Get the progress message.
-        FTK_API const std::string& getMessage() const;
+        FTK_UI_API const std::string& getMessage() const;
 
         //! Set the progress message.
-        FTK_API void setMessage(const std::string&);
+        FTK_UI_API void setMessage(const std::string&);
 
         //! Get the range.
-        FTK_API const RangeD& getRange() const;
+        FTK_UI_API const RangeD& getRange() const;
 
         //! Set the range.
-        FTK_API void setRange(const RangeD&);
+        FTK_UI_API void setRange(const RangeD&);
 
         //! Set the range.
-        FTK_API void setRange(double, double);
+        FTK_UI_API void setRange(double, double);
 
         //! Get the value.
-        FTK_API double getValue() const;
+        FTK_UI_API double getValue() const;
 
         //! Set the value.
-        FTK_API void setValue(double);
+        FTK_UI_API void setValue(double);
 
-        FTK_API std::shared_ptr<IWidget> getKeyFocus() const override;
+        FTK_UI_API std::shared_ptr<IWidget> getKeyFocus() const override;
 
     private:
         FTK_PRIVATE();
