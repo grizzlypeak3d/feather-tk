@@ -28,7 +28,9 @@ namespace objview
         Count,
         First = Shaded
     };
-    FTK_ENUM(RenderMode);
+    // The empty first argument to FTK_ENUM is the export macro, and an
+    // example is a program with nothing to export.
+    FTK_ENUM(, RenderMode);
 
     //! Render settigns.
     struct RenderSettings
