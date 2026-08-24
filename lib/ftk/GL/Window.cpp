@@ -300,6 +300,15 @@ namespace ftk
             SDL_SetWindowMinimumSize(_p->sdlWindow, value.w, value.h);
         }
 
+        bool Window::isVisible() const
+        {
+#if defined(FTK_SDL2)
+            return SDL_GetWindowFlags(_p->sdlWindow) & SDL_WINDOW_SHOWN;
+#elif defined(FTK_SDL3)
+            return !(SDL_GetWindowFlags(_p->sdlWindow) & SDL_WINDOW_HIDDEN);
+#endif // FTK_SDL2
+        }
+
         void Window::show()
         {
             SDL_ShowWindow(_p->sdlWindow);
