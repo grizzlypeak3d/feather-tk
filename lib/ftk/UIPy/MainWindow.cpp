@@ -106,6 +106,24 @@ namespace ftk
                     dropEvent,
                     event);
             }
+
+            void keyPressEvent(KeyEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    keyPressEvent,
+                    event);
+            }
+
+            void keyReleaseEvent(KeyEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    MainWindow,
+                    keyReleaseEvent,
+                    event);
+            }
         };
 
         void mainWindow(py::module_& m)
