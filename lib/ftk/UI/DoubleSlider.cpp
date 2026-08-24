@@ -378,9 +378,14 @@ namespace ftk
         const Box2I g2 = _getInsideGeometry();
         const int h = p.size.border * 2;
         const int y = g2.y() + g2.h() / 2 - h / 2;
-        const Color4F troughColor = event.style->getColorRole(ColorRole::Border, enabled);
-        Color4F remainderColor = troughColor;
-        remainderColor.a *= .4F;
+        // The filled part in the checked color, the way a toggled tool button
+        // is. Both halves were the border color, told apart by alpha, which on
+        // the dark palette is a near black against a near black; and the dimmed
+        // half then vanished into the light one, the border there being a near
+        // white. With the fill carrying a color of its own the remainder can be
+        // the border at its own weight, which reads on both.
+        const Color4F troughColor = event.style->getColorRole(ColorRole::Checked, enabled);
+        const Color4F remainderColor = event.style->getColorRole(ColorRole::Border, enabled);
         event.render->drawRect(
             Box2I(g2.x(), y, g2.w(), h),
             remainderColor);
