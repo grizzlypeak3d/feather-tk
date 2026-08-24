@@ -243,6 +243,9 @@ namespace ftk
             p.menuBar->setParent(p.layout);
             p.layout->moveToBack(p.menuBar);
         }
+        // The divider belongs to the menu bar; without one it would be a
+        // stray line across the top of the window.
+        p.menuBarDivider->setVisible(p.menuBar.get() != nullptr);
     }
 
     const std::shared_ptr<IWidget>& MainWindow::getWidget() const
