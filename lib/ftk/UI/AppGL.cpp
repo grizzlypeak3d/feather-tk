@@ -1039,6 +1039,22 @@ namespace ftk
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->setVisible(true);
+                            // Unhiding the application arrives as only this
+                            // event -- no expose, and no enter unless the
+                            // pointer re-crosses the window -- so this also
+                            // does what an expose does: without it the window
+                            // comes back stale and no longer the active one,
+                            // and input goes nowhere.
+                            if (SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID))
+                            {
+                                Size2I windowSize;
+                                Size2I frameBufferSize;
+                                SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
+                                SDL_GL_GetDrawableSize(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+                                window->_setSize(windowSize, frameBufferSize);
+                            }
+                            window->_cursorEnter(true);
+                            p.activeWindow = window;
                         }
                         break;
                     case SDL_WINDOWEVENT_HIDDEN:
@@ -1110,6 +1126,22 @@ namespace ftk
                     if (auto window = _getWindow(event.window.windowID))
                     {
                         window->setVisible(true);
+                        // Unhiding the application arrives as only this
+                        // event -- no expose, and no enter unless the
+                        // pointer re-crosses the window -- so this also
+                        // does what an expose does: without it the window
+                        // comes back stale and no longer the active one,
+                        // and input goes nowhere.
+                        if (SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID))
+                        {
+                            Size2I windowSize;
+                            Size2I frameBufferSize;
+                            SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
+                            SDL_GetWindowSizeInPixels(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+                            window->_setSize(windowSize, frameBufferSize);
+                        }
+                        window->_cursorEnter(true);
+                        p.activeWindow = window;
                     }
                     break;
                 case SDL_EVENT_WINDOW_HIDDEN:
