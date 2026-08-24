@@ -77,9 +77,6 @@ namespace ftk
             //! Set the window minimum size.
             FTK_GL_API void setMinSize(const Size2I&);
 
-            //! Get whether the window is shown.
-            FTK_GL_API bool isVisible() const;
-
             //! Show the window.
             FTK_GL_API void show();
 

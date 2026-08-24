@@ -263,22 +263,13 @@ namespace ftk
         {
             return;
         }
-        // The platform window is only driven when its state differs. The
-        // platform's own visibility events come through here too, and
-        // hiding a window the platform just hid turns an application-level
-        // hide -- Command+H on macOS -- into a window-level one, which
-        // unhiding the application does not undo: the window never comes
-        // back and no shown event arrives to wake the widgets.
-        if (value != p.window->isVisible())
+        if (value)
         {
-            if (value)
-            {
-                p.window->show();
-            }
-            else
-            {
-                p.window->hide();
-            }
+            p.window->show();
+        }
+        else
+        {
+            p.window->hide();
         }
     }
     

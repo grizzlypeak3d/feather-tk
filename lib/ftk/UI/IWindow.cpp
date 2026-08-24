@@ -420,6 +420,11 @@ namespace ftk
         }
     }
 
+    void IWindow::_setVisibleFromEvent(bool value)
+    {
+        IWindow::setVisible(value);
+    }
+
     void IWindow::childAddEvent(const ChildAddEvent& event)
     {
         _styleEventRecursive(event.child, StyleEvent(true));

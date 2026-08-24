@@ -223,8 +223,15 @@ namespace ftk
 
     protected:
         FTK_UI_API virtual void _setSize(
-            const Size2I& windowSize, 
+            const Size2I& windowSize,
             const Size2I& bufferSize);
+
+        //! The platform reported the window shown or hidden: update the
+        //! widgets without commanding the platform window. The window
+        //! flags trail the event queue, so answering these events with
+        //! show or hide acts on stale state and feeds back -- hiding the
+        //! application on macOS turned into an endless shown/hidden loop.
+        FTK_UI_API void _setVisibleFromEvent(bool);
 
         virtual void _update(
             const std::shared_ptr<FontSystem>&,

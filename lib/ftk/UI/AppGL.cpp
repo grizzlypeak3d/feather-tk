@@ -1038,7 +1038,7 @@ namespace ftk
                         //std::cout << "Window event shown" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
-                            window->setVisible(true);
+                            window->_setVisibleFromEvent(true);
                             // Unhiding the application arrives as only this
                             // event -- no expose, and no enter unless the
                             // pointer re-crosses the window -- so this also
@@ -1061,7 +1061,7 @@ namespace ftk
                         //std::cout << "Window event hidden" << std::endl;
                         if (auto window = _getWindow(event.window.windowID))
                         {
-                            window->setVisible(false);
+                            window->_setVisibleFromEvent(false);
                         }
                         break;
                     case SDL_WINDOWEVENT_EXPOSED:
@@ -1125,7 +1125,7 @@ namespace ftk
                 case SDL_EVENT_WINDOW_SHOWN:
                     if (auto window = _getWindow(event.window.windowID))
                     {
-                        window->setVisible(true);
+                        window->_setVisibleFromEvent(true);
                         // Unhiding the application arrives as only this
                         // event -- no expose, and no enter unless the
                         // pointer re-crosses the window -- so this also
@@ -1147,7 +1147,7 @@ namespace ftk
                 case SDL_EVENT_WINDOW_HIDDEN:
                     if (auto window = _getWindow(event.window.windowID))
                     {
-                        window->setVisible(false);
+                        window->_setVisibleFromEvent(false);
                     }
                     break;
                 case SDL_EVENT_WINDOW_EXPOSED:
