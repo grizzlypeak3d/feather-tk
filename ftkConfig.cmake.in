@@ -38,7 +38,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/ftkCoreTargets.cmake")
 if(@ftk_API@ STREQUAL "GL_4_1" OR
     @ftk_API@ STREQUAL "GL_4_1_Debug" OR
     @ftk_API@ STREQUAL "GLES_2")
-    include("${CMAKE_CURRENT_LIST_DIR}/ftkgladTargets.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/ftkGLTargets.cmake")
 endif()
 include("${CMAKE_CURRENT_LIST_DIR}/ftkUITargets.cmake")

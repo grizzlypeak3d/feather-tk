@@ -60,7 +60,24 @@ target_include_directories(ftkGL
         $<BUILD_INTERFACE:${ftk_GLAD_DIR}>
         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(ftkGL PUBLIC ftkCore ftkglad)
+# glad's source, compiled here rather than into a library of its own: it is a
+# table of function pointers filled in at run time, and a second copy is a
+# second table that nobody fills.
+target_sources(ftkGL PRIVATE ${ftk_GLAD_SOURCE})
+
+# glad's own export macros, the same shape as FTK_UI_API and the rest: the
+# EXPORT pair is public so a consumer's headers declare the pointers dllimport,
+# and the BUILD half is private so this library declares them dllexport. Two
+# spellings because the GLES loader is an older generation of the generator.
+# Nothing to say for a static build, where they are ordinary symbols.
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(ftkGL
+        PUBLIC GLAD_API_CALL_EXPORT GLAD_GLAPI_EXPORT
+        PRIVATE GLAD_API_CALL_EXPORT_BUILD GLAD_GLAPI_EXPORT_BUILD)
+endif()
+
+target_link_libraries(ftkGL PUBLIC ftkCore)
+target_link_libraries(ftkGL PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
 # Public because this is not the only library that calls SDL: the UI does,
 # for the window and the clipboard, and so does tlRender for the audio. A
 # private link reaches them anyway while everything is static -- the symbols

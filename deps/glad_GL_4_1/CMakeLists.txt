@@ -5,36 +5,17 @@ set(HEADERS
 set(SOURCE
     src/gl.c)
 
-# Static, whatever the rest of the build is. glad is a generated OpenGL loader
-# in C with no export macros on it, so a shared build on Windows produces a
-# library that exports nothing and no import library beside it:
+# glad is compiled into ftkGL rather than being a library of its own. It is a
+# table of function pointers filled in at run time by initGLAD, so a second
+# copy of it in a process is a second table that nobody fills: the calls
+# through it go to a null pointer. Built as a static library and linked by two
+# libraries, that is exactly what happened -- ftkGL initialised its copy and
+# tlGL crashed on its own.
 #
-#     LINK : fatal error LNK1104: cannot open file 'ftkglad.lib'
-#
-# It is an implementation detail of ftkGL rather than API, and its symbols are
-# resolved at load time from the system's OpenGL anyway, so there is nothing
-# to gain by giving it a library of its own.
-add_library(ftkglad STATIC ${HEADERS} ${SOURCE})
-set_target_properties(ftkglad PROPERTIES POSITION_INDEPENDENT_CODE ON)
+# One target compiles it, and its symbols are exported from there, so there is
+# one table and no way to acquire another.
+set(ftk_GLAD_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/gl.c PARENT_SCOPE)
 
-target_include_directories(ftkglad PRIVATE ${PROJECT_SOURCE_DIR}/deps/glad_GL_4_1)
-
-target_link_libraries(ftkglad OpenGL::GL ${CMAKE_DL_LIBS})
-
-set_target_properties(ftkglad PROPERTIES FOLDER deps)
-
-install(
-    TARGETS ftkglad
-    EXPORT ftkgladTargets
-    ARCHIVE DESTINATION lib COMPONENT dev
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin)
-install(
-    EXPORT ftkgladTargets
-    FILE ftkgladTargets.cmake
-    DESTINATION "lib/cmake/ftk"
-    NAMESPACE ftk::
-    COMPONENT dev)
 install(
     DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}/ftk/glad"
