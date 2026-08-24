@@ -95,6 +95,7 @@ namespace ftk
             m.attr("commandKeyModifier") = commandKeyModifier;
 
             m.def("getKeyModifierLabel", &getKeyModifierLabel);
+            m.def("to_string", pybind11::overload_cast<KeyModifier>(&to_string));
 
             py::class_<MouseClickEvent>(m, "MouseClickEvent")
                 .def(py::init<>())

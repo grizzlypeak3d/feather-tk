@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Observable.h>
 #include <ftk/Core/Range.h>
+#include <ftk/Core/Vector.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
@@ -31,6 +32,7 @@ namespace ftk
             observable<RangeI>(m, "RangeI");
             observable<RangeF>(m, "RangeF");
             observable<RangeD>(m, "RangeD");
+            observable<V2I>(m, "V2I");
         }
     }
 }

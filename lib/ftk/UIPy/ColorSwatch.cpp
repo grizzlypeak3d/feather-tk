@@ -23,6 +23,7 @@ namespace ftk
                     py::arg("context"),
                     py::arg("parent") = nullptr)
                 .def_property("color", &ColorSwatch::getColor, &ColorSwatch::setColor, py::return_value_policy::copy)
+                .def_property("border", &ColorSwatch::hasBorder, &ColorSwatch::setBorder)
                 .def_property("editable", &ColorSwatch::isEditable, &ColorSwatch::setEditable)
                 .def("setCallback", &ColorSwatch::setCallback)
                 .def("setPressedCallback", &ColorSwatch::setPressedCallback)
