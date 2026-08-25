@@ -35,7 +35,8 @@ namespace ftk
                 .def_property("text", &Bellows::getText, &Bellows::setText)
                 .def_property("widget", &Bellows::getWidget, &Bellows::setWidget)
                 .def_property("open", &Bellows::isOpen, &Bellows::setOpen)
-                .def_property("toolWidget", &Bellows::getToolWidget, &Bellows::setToolWidget);
+                .def_property("toolWidget", &Bellows::getToolWidget, &Bellows::setToolWidget)
+                .def("setOpenCallback", &Bellows::setOpenCallback);
         }
     }
 }
