@@ -5,7 +5,10 @@
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/Settings.h>
+#include <ftk/UI/Style.h>
 #include <ftk/UI/Window.h>
+
+#include <ftk/CorePy/Bindings.h>
 
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Context.h>
@@ -52,6 +55,32 @@ namespace ftk
 
         void app(py::module_& m)
         {
+            py::enum_<ColorStyle>(m, "ColorStyle")
+                .value("Dark", ColorStyle::Dark)
+                .value("Light", ColorStyle::Light)
+                .value("Custom", ColorStyle::Custom);
+            FTK_ENUM_BIND(m, ColorStyle);
+
+            py::class_<ColorControls>(m, "ColorControls")
+                .def(py::init())
+                .def_readwrite("brightness", &ColorControls::brightness)
+                .def_readwrite("contrast", &ColorControls::contrast)
+                .def_readwrite("disabledAlpha", &ColorControls::disabledAlpha)
+                .def(pybind11::self == pybind11::self)
+                .def(pybind11::self != pybind11::self);
+
+            py::class_<Style, std::shared_ptr<Style> >(m, "Style")
+                .def_property(
+                    "colorControls",
+                    &Style::getColorControls,
+                    &Style::setColorControls,
+                    py::return_value_policy::copy)
+                .def_property(
+                    "fonts",
+                    &Style::getFonts,
+                    &Style::setFonts,
+                    py::return_value_policy::copy);
+
             py::class_<MonitorInfo>(m, "MonitorInfo")
                 .def_readwrite("name", &MonitorInfo::name)
                 .def_readwrite("size", &MonitorInfo::size)

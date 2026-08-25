@@ -61,6 +61,11 @@ namespace ftk
                     py::init(&FontSystem::create),
                     py::arg("context"))
                 .def_property_readonly("fonts", &FontSystem::getFonts)
+                .def(
+                    "addFont",
+                    py::overload_cast<const std::string&, const std::string&>(&FontSystem::addFont),
+                    py::arg("name"),
+                    py::arg("fileName"))
                 .def_property_readonly("glyphCacheSize", &FontSystem::getGlyphCacheSize)
                 .def("observeGlyphCacheSize", &FontSystem::observeGlyphCacheSize)
                 .def_property_readonly("glyphCachePercentage", &FontSystem::getGlyphCachePercentage)
