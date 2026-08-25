@@ -19,6 +19,7 @@ namespace ftk
             py::class_<FloatModel, std::shared_ptr<FloatModel> >(m, "FloatModel")
                 .def(py::init(&FloatModel::create))
                 .def_property("value", &FloatModel::getValue, &FloatModel::setValue)
+                .def("setValueSoft", &FloatModel::setValueSoft)
                 .def("observeValue", &FloatModel::observeValue)
                 .def_property("range", &FloatModel::getRange, &FloatModel::setRange, py::return_value_policy::copy)
                 .def("observeRange", &FloatModel::observeRange)

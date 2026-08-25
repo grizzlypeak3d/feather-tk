@@ -19,6 +19,7 @@ namespace ftk
             py::class_<DoubleModel, std::shared_ptr<DoubleModel> >(m, "DoubleModel")
                 .def(py::init(&DoubleModel::create))
                 .def_property("value", &DoubleModel::getValue, &DoubleModel::setValue)
+                .def("setValueSoft", &DoubleModel::setValueSoft)
                 .def("observeValue", &DoubleModel::observeValue)
                 .def_property("range", &DoubleModel::getRange, &DoubleModel::setRange, py::return_value_policy::copy)
                 .def("observeRange", &DoubleModel::observeRange)

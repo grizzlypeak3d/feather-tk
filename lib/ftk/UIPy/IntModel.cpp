@@ -19,6 +19,7 @@ namespace ftk
             py::class_<IntModel, std::shared_ptr<IntModel> >(m, "IntModel")
                 .def(py::init(&IntModel::create))
                 .def_property("value", &IntModel::getValue, &IntModel::setValue)
+                .def("setValueSoft", &IntModel::setValueSoft)
                 .def("observeValue", &IntModel::observeValue)
                 .def_property("range", &IntModel::getRange, &IntModel::setRange, py::return_value_policy::copy)
                 .def("observeRange", &IntModel::observeRange)

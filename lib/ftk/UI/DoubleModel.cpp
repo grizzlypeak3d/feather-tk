@@ -5,6 +5,8 @@
 
 #include <ftk/Core/Math.h>
 
+#include <cmath>
+
 namespace ftk
 {
     struct DoubleModel::Private
@@ -49,16 +51,22 @@ namespace ftk
     void DoubleModel::setValue(double value)
     {
         FTK_P();
-        if (p.rangeSoft)
+        const RangeD& range = p.range->get();
+        const double tmp = clamp(value, range.min(), range.max());
+        _p->value->setIfChanged(tmp);
+    }
+
+    void DoubleModel::setValueSoft(double value)
+    {
+        FTK_P();
+        if (p.rangeSoft && std::isfinite(value))
         {
             const RangeD& prev = p.range->get();
             p.range->setIfChanged(RangeD(
                 std::min(value, prev.min()),
                 std::max(value, prev.max())));
         }
-        const RangeD& range = p.range->get();
-        const double tmp = clamp(value, range.min(), range.max());
-        _p->value->setIfChanged(tmp);
+        setValue(value);
     }
 
     const RangeD& DoubleModel::getRange() const

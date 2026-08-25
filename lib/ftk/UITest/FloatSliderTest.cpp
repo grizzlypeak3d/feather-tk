@@ -202,6 +202,20 @@ namespace ftk
                 FTK_CHECK(popup);
                 popup->close();
                 app->tick();
+
+                // Dragging a soft ranged slider past its ends clamps at
+                // the range instead of extending it; extending on drag fed
+                // back into the position mapping and ran the range away.
+                slider->getModel()->clearDefault();
+                slider->getModel()->setRangeSoft(true);
+                window->drag({ center, V2I(windowSize.w + 200, center.y) });
+                app->tick();
+                FTK_CHECK(RangeF(0.F, 1.F) == slider->getRange());
+                FTK_CHECK(1.F == slider->getValue());
+                window->drag({ center, V2I(-200, center.y) });
+                app->tick();
+                FTK_CHECK(RangeF(0.F, 1.F) == slider->getRange());
+                FTK_CHECK(0.F == slider->getValue());
             }
         }
     }

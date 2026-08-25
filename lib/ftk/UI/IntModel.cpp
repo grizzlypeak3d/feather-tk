@@ -49,6 +49,14 @@ namespace ftk
     void IntModel::setValue(int value)
     {
         FTK_P();
+        const RangeI& range = p.range->get();
+        const int tmp = clamp(value, range.min(), range.max());
+        _p->value->setIfChanged(tmp);
+    }
+
+    void IntModel::setValueSoft(int value)
+    {
+        FTK_P();
         if (p.rangeSoft)
         {
             const RangeI& prev = p.range->get();
@@ -56,9 +64,7 @@ namespace ftk
                 std::min(value, prev.min()),
                 std::max(value, prev.max())));
         }
-        const RangeI& range = p.range->get();
-        const int tmp = clamp(value, range.min(), range.max());
-        _p->value->setIfChanged(tmp);
+        setValue(value);
     }
 
     const RangeI& IntModel::getRange() const

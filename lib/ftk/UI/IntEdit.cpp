@@ -54,7 +54,7 @@ namespace ftk
         p.lineEdit->setCallback(
             [this](const std::string& value)
             {
-                _p->model->setValue(std::atoi(value.c_str()));
+                _p->model->setValueSoft(std::atoi(value.c_str()));
                 _textUpdate();
             });
         p.lineEdit->setFocusCallback(

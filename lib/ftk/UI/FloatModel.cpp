@@ -5,6 +5,8 @@
 
 #include <ftk/Core/Math.h>
 
+#include <cmath>
+
 namespace ftk
 {
     struct FloatModel::Private
@@ -49,16 +51,22 @@ namespace ftk
     void FloatModel::setValue(float value)
     {
         FTK_P();
-        if (p.rangeSoft)
+        const RangeF& range = p.range->get();
+        const float tmp = clamp(value, range.min(), range.max());
+        _p->value->setIfChanged(tmp);
+    }
+
+    void FloatModel::setValueSoft(float value)
+    {
+        FTK_P();
+        if (p.rangeSoft && std::isfinite(value))
         {
             const RangeF& prev = p.range->get();
             p.range->setIfChanged(RangeF(
                 std::min(value, prev.min()),
                 std::max(value, prev.max())));
         }
-        const RangeF& range = p.range->get();
-        const float tmp = clamp(value, range.min(), range.max());
-        _p->value->setIfChanged(tmp);
+        setValue(value);
     }
 
     const RangeF& FloatModel::getRange() const

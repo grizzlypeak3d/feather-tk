@@ -33,6 +33,12 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IObservable<float> > observeValue() const;
         FTK_UI_API void setValue(float);
 
+        //! Set the value, extending a soft range to admit it. This is
+        //! for values the user typed; interactive changes such as
+        //! dragging use setValue(), which always clamps, so they cannot
+        //! run the range away.
+        FTK_UI_API void setValueSoft(float);
+
         ///@}
 
         //! \name Range
@@ -42,9 +48,9 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IObservable<RangeF> > observeRange() const;
         FTK_UI_API void setRange(const RangeF&);
 
-        //! Get whether the range is soft. With a soft range, setting a
-        //! value beyond the range extends the range instead of being
-        //! clamped.
+        //! Get whether the range is soft. A value given to
+        //! setValueSoft() beyond a soft range extends the range instead
+        //! of being clamped.
         FTK_UI_API bool isRangeSoft() const;
 
         //! Set whether the range is soft.
