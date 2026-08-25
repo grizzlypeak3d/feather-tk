@@ -5,9 +5,11 @@
 
 #include <ftk/UI/Init.h>
 #include <ftk/UI/WidgetDump.h>
+#include <ftk/UI/WidgetJson.h>
 
 #include <ftk/Core/Context.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -33,6 +35,31 @@ namespace ftk
                 },
                 py::arg("widget"),
                 "Serialize a widget tree as JSON for inspection.");
+
+            m.def(
+                "widgetLoad",
+                [](const std::shared_ptr<Context>& context,
+                    const std::string& json,
+                    const std::shared_ptr<IWidget>& parent)
+                {
+                    auto result = widgetLoad(
+                        context,
+                        nlohmann::json::parse(json),
+                        parent);
+                    return std::make_pair(result.widget, result.errors);
+                },
+                py::arg("context"),
+                py::arg("json"),
+                py::arg("parent") = nullptr,
+                "Create a widget tree from JSON; returns the widget and "
+                "a list of errors.");
+
+            m.def(
+                "findWidget",
+                &findWidget,
+                py::arg("widget"),
+                py::arg("id"),
+                "Find a widget by the id it was given in the JSON.");
 
             style(m);
             event(m);

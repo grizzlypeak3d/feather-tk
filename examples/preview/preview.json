@@ -1,0 +1,43 @@
+{
+    "type": "VerticalLayout",
+    "marginRole": "Margin",
+    "spacingRole": "SpacingSmall",
+    "children": [
+        { "type": "Label", "text": "A tool panel from JSON. Edit the file and watch it change." },
+        { "type": "Divider" },
+        { "type": "GroupBox", "text": "Transform", "children": [
+            { "type": "FormLayout", "spacingRole": "SpacingSmall", "rows": [
+                { "label": "Position:", "widget": {
+                    "type": "FloatEditSlider", "id": "position",
+                    "range": [ -100, 100 ], "default": 0 } },
+                { "label": "Rotation:", "widget": {
+                    "type": "FloatEditSlider", "id": "rotation",
+                    "range": [ 0, 360 ], "default": 0 } },
+                { "label": "Scale:", "widget": {
+                    "type": "FloatEditSlider", "id": "scale",
+                    "range": [ 0, 4 ], "value": 1, "default": 1, "rangeSoft": true } }
+            ] }
+        ] },
+        { "type": "Bellows", "text": "Options", "open": true, "widget": {
+            "type": "FormLayout", "marginRole": "Margin", "spacingRole": "SpacingSmall", "rows": [
+                { "label": "Quality:", "widget": {
+                    "type": "ComboBox", "id": "quality",
+                    "items": [ "Draft", "Preview", "Final" ], "currentIndex": 1 } },
+                { "label": "Samples:", "widget": {
+                    "type": "IntEditSlider", "id": "samples",
+                    "range": [ 1, 256 ], "value": 16, "default": 16 } },
+                { "label": "Motion blur:", "widget": {
+                    "type": "CheckBox", "id": "motionBlur", "checked": true } },
+                { "label": "Output:", "widget": {
+                    "type": "LineEdit", "id": "output", "text": "render.####.exr" } }
+            ] }
+        },
+        { "type": "Spacer", "orientation": "Vertical", "vStretch": "Expanding" },
+        { "type": "HorizontalLayout", "spacingRole": "SpacingSmall", "children": [
+            { "type": "Spacer", "orientation": "Horizontal", "hStretch": "Expanding" },
+            { "type": "PushButton", "id": "reset", "text": "Reset" },
+            { "type": "PushButton", "id": "render", "text": "Render", "icon": "PlaybackForward",
+              "tooltip": "Behavior stays in code: find this by id and attach a callback." }
+        ] }
+    ]
+}

@@ -103,6 +103,7 @@ set(HEADERS
     Tooltip.h
     Util.h
     WidgetDump.h
+    WidgetJson.h
     WidgetOptions.h
     Window.h)
 set(PRIVATE_HEADERS
@@ -229,6 +230,7 @@ set(SOURCE
     Tooltip.cpp
     Util.cpp
     WidgetDump.cpp
+    WidgetJson.cpp
     WidgetOptions.cpp)
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR

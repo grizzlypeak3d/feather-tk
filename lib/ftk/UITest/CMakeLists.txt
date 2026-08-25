@@ -53,6 +53,7 @@ set(HEADERS
     StyleTest.h
     TabWidgetTest.h
     TextEditModelTest.h
+    WidgetJsonTest.h
     WidgetOptionsTest.h)
 set(PRIVATE_HEADERS)
 
@@ -111,6 +112,7 @@ set(SOURCE
     StyleTest.cpp
     TabWidgetTest.cpp
     TextEditModelTest.cpp
+    WidgetJsonTest.cpp
     WidgetOptionsTest.cpp)
 
 # Static, for the reason in ftk's TestLib.

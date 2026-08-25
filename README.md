@@ -173,6 +173,7 @@ The examples in the [examples/](examples/) directory:
 | [textedit](examples/textedit/) | Application architecture: documents, actions shared between the menus and tool bars, and persistent settings |
 | [imageview](examples/imageview/) | A custom image display widget |
 | [objview](examples/objview/) | Custom OpenGL rendering inside a widget |
+| [preview](examples/preview/) | Live preview of a widget layout from JSON, reloading as the file is edited |
 | [gfx](examples/gfx/) | Procedural drawing |
 | [windows](examples/windows/) | Multiple windows |
 | [python](examples/python/) | Python counterparts: per-topic scripts, [textedit.py](examples/python/textedit.py) mirroring the C++ textedit for a side by side reading, and [testing.py](examples/python/testing.py), an application that drives and checks itself |

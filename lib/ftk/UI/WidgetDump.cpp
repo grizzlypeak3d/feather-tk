@@ -17,6 +17,10 @@ namespace ftk
             return out;
 
         out["type"] = widget->getObjectName();
+        if (widget->hasProperty("Id"))
+        {
+            out["id"] = widget->getProperty("Id");
+        }
         const std::string tag = getScreenshotTag(widget);
         if (!tag.empty())
         {
