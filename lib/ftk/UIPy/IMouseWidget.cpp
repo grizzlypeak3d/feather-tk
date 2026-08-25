@@ -4,6 +4,7 @@
 #include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/IMouseWidget.h>
+#include <ftk/UI/IWidget.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -16,7 +17,7 @@ namespace ftk
     {
         void iMouseWidget(py::module_& m)
         {
-            py::class_<IMouseWidget, std::shared_ptr<IMouseWidget>>(m, "IMouseWidget");
+            py::class_<IMouseWidget, IWidget, std::shared_ptr<IMouseWidget> >(m, "IMouseWidget");
         }
     }
 }
