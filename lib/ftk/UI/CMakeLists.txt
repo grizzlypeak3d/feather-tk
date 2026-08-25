@@ -76,6 +76,7 @@ set(HEADERS
     ProgressDialog.h
     PushButton.h
     RadioButton.h
+    RangePopup.h
     RecentFilesModel.h
     RowLayout.h
     SVGWidget.h
@@ -200,6 +201,7 @@ set(SOURCE
     ProgressDialog.cpp
     PushButton.cpp
     RadioButton.cpp
+    RangePopup.cpp
     RecentFilesModel.cpp
     RowLayout.cpp
     SVGWidget.cpp

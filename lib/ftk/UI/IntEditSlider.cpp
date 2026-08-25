@@ -15,7 +15,6 @@ namespace ftk
 
         std::shared_ptr<IntEdit> edit;
         std::shared_ptr<IntSlider> slider;
-        std::shared_ptr<IntResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(int)> callback;
@@ -40,14 +39,11 @@ namespace ftk
         p.slider = IntSlider::create(context, p.model);
         p.slider->setHStretch(Stretch::Expanding);
 
-        p.resetButton = IntResetButton::create(context, p.model);
-
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
-        p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](int value)

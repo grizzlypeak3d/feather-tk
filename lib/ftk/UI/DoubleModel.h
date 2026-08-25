@@ -42,6 +42,14 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IObservable<RangeD> > observeRange() const;
         FTK_UI_API void setRange(const RangeD&);
 
+        //! Get whether the range is soft. With a soft range, setting a
+        //! value beyond the range extends the range instead of being
+        //! clamped.
+        FTK_UI_API bool isRangeSoft() const;
+
+        //! Set whether the range is soft.
+        FTK_UI_API void setRangeSoft(bool);
+
         ///@}
 
         //! \name Increment

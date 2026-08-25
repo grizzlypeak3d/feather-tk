@@ -11,6 +11,7 @@ namespace ftk
     {
         std::shared_ptr<Observable<float> > value;
         std::shared_ptr<Observable<RangeF> > range;
+        bool rangeSoft = false;
         float step = .1F;
         float largeStep = 1.F;
         std::shared_ptr<Observable<bool> > hasDefault;
@@ -48,6 +49,13 @@ namespace ftk
     void FloatModel::setValue(float value)
     {
         FTK_P();
+        if (p.rangeSoft)
+        {
+            const RangeF& prev = p.range->get();
+            p.range->setIfChanged(RangeF(
+                std::min(value, prev.min()),
+                std::max(value, prev.max())));
+        }
         const RangeF& range = p.range->get();
         const float tmp = clamp(value, range.min(), range.max());
         _p->value->setIfChanged(tmp);
@@ -70,6 +78,16 @@ namespace ftk
         {
             setValue(p.value->get());
         }
+    }
+
+    bool FloatModel::isRangeSoft() const
+    {
+        return _p->rangeSoft;
+    }
+
+    void FloatModel::setRangeSoft(bool value)
+    {
+        _p->rangeSoft = value;
     }
 
     float FloatModel::getStep() const

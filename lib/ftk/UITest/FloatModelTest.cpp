@@ -82,6 +82,21 @@ namespace ftk
             FTK_CHECK(0.F == value);
             model->clearDefault();
             FTK_CHECK(!hasDefault);
+
+            // A soft range extends to admit an out of range value instead
+            // of clamping it.
+            model->setRange(RangeF(0.F, .5F));
+            model->setRangeSoft(true);
+            FTK_CHECK(model->isRangeSoft());
+            model->setValue(2.F);
+            FTK_CHECK(2.F == value);
+            FTK_CHECK(RangeF(0.F, 2.F) == range);
+            model->setValue(-1.F);
+            FTK_CHECK(-1.F == value);
+            FTK_CHECK(RangeF(-1.F, 2.F) == range);
+            model->setRangeSoft(false);
+            model->setValue(3.F);
+            FTK_CHECK(2.F == value);
         }
     }
 }

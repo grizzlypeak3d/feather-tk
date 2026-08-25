@@ -4,19 +4,31 @@
 #include <ftk/UI/IntSlider.h>
 
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/Menu.h>
+#include <ftk/UI/RangePopup.h>
 
+#include <chrono>
 #include <optional>
 
 namespace ftk
 {
+    namespace
+    {
+        const float doubleClickTime = .5F;
+    }
+
     struct IIntSlider::Private
     {
         std::shared_ptr<IntModel> model;
         std::function<void(int)> callback;
         std::function<void(int, bool)> pressedCallback;
         int blockCallbacks = 0;
+        std::shared_ptr<IntRangePopup> rangePopup;
+        std::chrono::steady_clock::time_point pressTime;
+        bool resetPress = false;
         std::shared_ptr<Observer<int> > valueObserver;
         std::shared_ptr<Observer<RangeI> > rangeObserver;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
     };
 
     void IIntSlider::_init(
@@ -31,6 +43,7 @@ namespace ftk
         setHStretch(Stretch::Expanding);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
+        setContextMenuCallback([this] { return _createContextMenu(); });
 
         p.model = model;
 
@@ -56,6 +69,13 @@ namespace ftk
             [this](const RangeI&)
             {
                 setSizeUpdate();
+                setDrawUpdate();
+            });
+
+        p.hasDefaultObserver = Observer<bool>::create(
+            p.model->observeHasDefault(),
+            [this](bool)
+            {
                 setDrawUpdate();
             });
     }
@@ -159,7 +179,7 @@ namespace ftk
     {
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
-        if (_isMousePressed())
+        if (_isMousePressed() && !p.resetPress)
         {
             p.model->setValue(_posToValue(_getMousePos().x));
         }
@@ -169,16 +189,44 @@ namespace ftk
     {
         IMouseWidget::mousePressEvent(event);
         FTK_P();
+        if (!_isMousePressed())
+        {
+            // An unclaimed button; a right click opens the context menu.
+            return;
+        }
         takeKeyFocus();
-        p.model->setValue(_posToValue(_getMousePos().x));
+        const auto now = std::chrono::steady_clock::now();
+        const std::chrono::duration<float> diff = now - p.pressTime;
+        p.pressTime = now;
+        // A double click resets to the default value. The press is
+        // remembered so that the drag and release do not set the value
+        // back to the click position.
+        p.resetPress = diff.count() < doubleClickTime && p.model->hasDefault();
+        if (p.resetPress)
+        {
+            p.model->setDefault();
+        }
+        else
+        {
+            p.model->setValue(_posToValue(_getMousePos().x));
+        }
         setDrawUpdate();
     }
 
     void IIntSlider::mouseReleaseEvent(MouseClickEvent& event)
     {
+        const bool wasPressed = _isMousePressed();
         IMouseWidget::mouseReleaseEvent(event);
         FTK_P();
-        p.model->setValue(_posToValue(_getMousePos().x));
+        if (!wasPressed)
+        {
+            return;
+        }
+        if (!p.resetPress)
+        {
+            p.model->setValue(_posToValue(_getMousePos().x));
+        }
+        p.resetPress = false;
         if (p.pressedCallback && !p.blockCallbacks)
         {
             p.pressedCallback(p.model->getValue(), false);
@@ -252,6 +300,67 @@ namespace ftk
     {
         IMouseWidget::keyReleaseEvent(event);
         event.accept = true;
+    }
+
+    std::shared_ptr<Menu> IIntSlider::_createContextMenu()
+    {
+        FTK_P();
+        auto context = getContext();
+        if (!context)
+            return nullptr;
+
+        // The menu takes the key focus while it is open and returns it
+        // here when it closes.
+        takeKeyFocus();
+
+        auto out = Menu::create(context);
+
+        // Hold the model rather than the widget so the actions stay valid
+        // if the slider is destroyed while the menu is open.
+        auto model = p.model;
+        auto reset = Action::create(
+            "Reset",
+            [model] { model->setDefault(); });
+        out->addAction(reset);
+        out->setEnabled(reset, model->hasDefault());
+
+        out->addDivider();
+
+        std::weak_ptr<IIntSlider> weak(
+            std::static_pointer_cast<IIntSlider>(shared_from_this()));
+        auto setRange = Action::create(
+            "Set Range...",
+            [weak]
+            {
+                if (auto widget = weak.lock())
+                {
+                    widget->_showRangePopup();
+                }
+            });
+        out->addAction(setRange);
+
+        return out;
+    }
+
+    void IIntSlider::_showRangePopup()
+    {
+        FTK_P();
+        auto context = getContext();
+        if (context && !p.rangePopup)
+        {
+            p.rangePopup = IntRangePopup::create(context, p.model);
+            std::weak_ptr<IIntSlider> weak(
+                std::static_pointer_cast<IIntSlider>(shared_from_this()));
+            p.rangePopup->setCloseCallback(
+                [weak]
+                {
+                    if (auto widget = weak.lock())
+                    {
+                        widget->_p->rangePopup.reset();
+                    }
+                });
+            p.rangePopup->open(getWindow(), getGeometry());
+        }
     }
 
     int IIntSlider::_posToValue(int pos) const
@@ -389,6 +498,26 @@ namespace ftk
         event.render->drawRect(
             Box2I(g2.x(), y, pos - g2.x(), h),
             troughColor);
+
+        // Mark the default value with a tick. The handle covers the tick
+        // when the value is at the default, so seeing it means the value
+        // has been changed.
+        const auto& model = getModel();
+        if (model->hasDefault())
+        {
+            const int defaultValue = model->getDefault();
+            const RangeI& range = model->getRange();
+            if (defaultValue >= range.min() && defaultValue <= range.max())
+            {
+                event.render->drawRect(
+                    Box2I(
+                        _valueToPos(defaultValue) - p.size.border,
+                        g2.y() + g2.h() / 4,
+                        p.size.border * 2,
+                        g2.h() / 2),
+                    remainderColor);
+            }
+        }
 
         // Draw the handle.
         const Box2I gh = _getHandleGeometry();

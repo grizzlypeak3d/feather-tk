@@ -11,6 +11,7 @@ namespace ftk
     {
         std::shared_ptr<Observable<double> > value;
         std::shared_ptr<Observable<RangeD> > range;
+        bool rangeSoft = false;
         double step = 0.1;
         double largeStep = 1.0;
         std::shared_ptr<Observable<bool> > hasDefault;
@@ -48,6 +49,13 @@ namespace ftk
     void DoubleModel::setValue(double value)
     {
         FTK_P();
+        if (p.rangeSoft)
+        {
+            const RangeD& prev = p.range->get();
+            p.range->setIfChanged(RangeD(
+                std::min(value, prev.min()),
+                std::max(value, prev.max())));
+        }
         const RangeD& range = p.range->get();
         const double tmp = clamp(value, range.min(), range.max());
         _p->value->setIfChanged(tmp);
@@ -70,6 +78,16 @@ namespace ftk
         {
             setValue(p.value->get());
         }
+    }
+
+    bool DoubleModel::isRangeSoft() const
+    {
+        return _p->rangeSoft;
+    }
+
+    void DoubleModel::setRangeSoft(bool value)
+    {
+        _p->rangeSoft = value;
     }
 
     double DoubleModel::getStep() const

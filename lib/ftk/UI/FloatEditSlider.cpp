@@ -15,7 +15,6 @@ namespace ftk
 
         std::shared_ptr<FloatEdit> edit;
         std::shared_ptr<FloatSlider> slider;
-        std::shared_ptr<FloatResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(float)> callback;
@@ -40,14 +39,11 @@ namespace ftk
         p.slider = FloatSlider::create(context, p.model);
         p.slider->setHStretch(Stretch::Expanding);
 
-        p.resetButton = FloatResetButton::create(context, p.model);
-
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
-        p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](float value)

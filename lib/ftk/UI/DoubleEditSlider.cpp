@@ -16,7 +16,6 @@ namespace ftk
 
         std::shared_ptr<DoubleEdit> edit;
         std::shared_ptr<DoubleSlider> slider;
-        std::shared_ptr<DoubleResetButton> resetButton;
         std::shared_ptr<HorizontalLayout> layout;
 
         std::function<void(double)> callback;
@@ -41,14 +40,11 @@ namespace ftk
         p.slider = DoubleSlider::create(context, p.model);
         p.slider->setHStretch(Stretch::Expanding);
 
-        p.resetButton = DoubleResetButton::create(context, p.model);
-
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
-        p.resetButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](double value)

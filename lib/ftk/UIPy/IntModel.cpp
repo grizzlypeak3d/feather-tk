@@ -22,6 +22,7 @@ namespace ftk
                 .def("observeValue", &IntModel::observeValue)
                 .def_property("range", &IntModel::getRange, &IntModel::setRange, py::return_value_policy::copy)
                 .def("observeRange", &IntModel::observeRange)
+                .def_property("rangeSoft", &IntModel::isRangeSoft, &IntModel::setRangeSoft)
                 .def_property("step", &IntModel::getStep, &IntModel::setStep)
                 .def_property("largeStep", &IntModel::getLargeStep, &IntModel::setLargeStep)
                 .def("stepInc", py::overload_cast<>(&IntModel::step))
