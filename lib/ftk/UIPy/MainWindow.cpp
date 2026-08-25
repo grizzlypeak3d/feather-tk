@@ -73,56 +73,104 @@ namespace ftk
     
             void dragEnterEvent(DragDropEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    dragEnterEvent,
-                    event);
+                // The event is passed by pointer: passed by reference,
+                // pybind hands Python a copy, and anything Python writes
+                // to it -- the accept flag -- is written to the copy.
+                pybind11::gil_scoped_acquire gil;
+                if (pybind11::function override = pybind11::get_override(
+                    static_cast<const MainWindow*>(this), "dragEnterEvent"))
+                {
+                    override(&event);
+                }
+                else
+                {
+                    MainWindow::dragEnterEvent(event);
+                }
             }
 
             void dragLeaveEvent(DragDropEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    dragLeaveEvent,
-                    event);
+                // The event is passed by pointer: passed by reference,
+                // pybind hands Python a copy, and anything Python writes
+                // to it -- the accept flag -- is written to the copy.
+                pybind11::gil_scoped_acquire gil;
+                if (pybind11::function override = pybind11::get_override(
+                    static_cast<const MainWindow*>(this), "dragLeaveEvent"))
+                {
+                    override(&event);
+                }
+                else
+                {
+                    MainWindow::dragLeaveEvent(event);
+                }
             }
 
             void dragMoveEvent(DragDropEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    dragMoveEvent,
-                    event);
+                // The event is passed by pointer: passed by reference,
+                // pybind hands Python a copy, and anything Python writes
+                // to it -- the accept flag -- is written to the copy.
+                pybind11::gil_scoped_acquire gil;
+                if (pybind11::function override = pybind11::get_override(
+                    static_cast<const MainWindow*>(this), "dragMoveEvent"))
+                {
+                    override(&event);
+                }
+                else
+                {
+                    MainWindow::dragMoveEvent(event);
+                }
             }
 
             void dropEvent(DragDropEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    dropEvent,
-                    event);
+                // The event is passed by pointer: passed by reference,
+                // pybind hands Python a copy, and anything Python writes
+                // to it -- the accept flag -- is written to the copy.
+                pybind11::gil_scoped_acquire gil;
+                if (pybind11::function override = pybind11::get_override(
+                    static_cast<const MainWindow*>(this), "dropEvent"))
+                {
+                    override(&event);
+                }
+                else
+                {
+                    MainWindow::dropEvent(event);
+                }
             }
 
             void keyPressEvent(KeyEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    keyPressEvent,
-                    event);
+                // The event is passed by pointer: passed by reference,
+                // pybind hands Python a copy, and anything Python writes
+                // to it -- the accept flag -- is written to the copy.
+                pybind11::gil_scoped_acquire gil;
+                if (pybind11::function override = pybind11::get_override(
+                    static_cast<const MainWindow*>(this), "keyPressEvent"))
+                {
+                    override(&event);
+                }
+                else
+                {
+                    MainWindow::keyPressEvent(event);
+                }
             }
 
             void keyReleaseEvent(KeyEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    keyReleaseEvent,
-                    event);
+                // The event is passed by pointer: passed by reference,
+                // pybind hands Python a copy, and anything Python writes
+                // to it -- the accept flag -- is written to the copy.
+                pybind11::gil_scoped_acquire gil;
+                if (pybind11::function override = pybind11::get_override(
+                    static_cast<const MainWindow*>(this), "keyReleaseEvent"))
+                {
+                    override(&event);
+                }
+                else
+                {
+                    MainWindow::keyReleaseEvent(event);
+                }
             }
         };
 
