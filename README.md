@@ -50,7 +50,28 @@ writing custom widgets straightforward.
 - **HiDPI** — display scale awareness throughout; all size roles scale correctly on
   high-density displays and multi-monitor setups.
 - **Python bindings** — pybind11-based Python API (work in progress).
+- **Testable by design** — applications run headless, write screenshots, and drive
+  their own UI from scripts; the same machinery tests feather-tk itself.
 - **Cross-platform** — works on Linux, macOS, and Windows.
+
+---
+
+## Scope
+
+feather-tk is a toolkit for media applications -- players, viewers, review
+tools -- not a general application framework. Some things are deliberately
+out of scope, and knowing them up front saves an evaluation:
+
+- The menu bar is drawn in the window on every platform; there is no native
+  macOS menu bar.
+- The file browser is feather-tk's own, for consistency across platforms;
+  native file dialogs are available through the optional NFD dependency.
+- There is no accessibility tree for screen readers.
+- Text is aimed at production UI -- file names, timecode, labels. Complex
+  scripts and input methods are untested.
+
+What that buys: a stack small enough to read in a sitting, the same pixels
+on every platform, and rendering the application controls end to end.
 
 ---
 
@@ -162,6 +183,11 @@ state, style changes, window focus — is all expressed as `Observable<T>` value
 widgets subscribe to. Observers unregister automatically on destruction, so there are
 no manual disconnect calls and no dangling callbacks.
 
+Widget callbacks are single-slot: setting a callback replaces the previous one.
+When more than one party cares about a change, the state belongs in an observable
+— any number of observers can subscribe — and the callback's job is only to write
+the change into it.
+
 ---
 
 ## Building
@@ -170,14 +196,14 @@ no manual disconnect calls and no dangling callbacks.
 
 Required:
 - [Freetype](https://freetype.org/)
-- [GLFW](https://www.glfw.org/)
 - [LunaSVG](https://github.com/sammycage/lunasvg)
-- [Native File Dialog Extended](https://github.com/btzy/nativefiledialog-extended)
 - [nlohmann JSON](https://github.com/nlohmann/json)
 - [PNG](http://www.libpng.org/pub/png/libpng.html)
+- [SDL2](https://libsdl.org/) or [SDL3](https://libsdl.org/)
 - [ZLIB](https://zlib.net/)
 
 Optional:
+- [Native File Dialog Extended](https://github.com/btzy/nativefiledialog-extended) — for native file dialogs
 - [pybind11](https://github.com/pybind/pybind11) — for Python bindings
 
 A CMake superbuild script builds all dependencies from source automatically.
