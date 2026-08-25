@@ -160,8 +160,27 @@ Text editor with multiple documents:
 
 ![Text editor example](etc/Images/textedit.png)
 
-More examples are in the [examples/](examples/) directory, covering widgets,
-layouts, graphics, and Python bindings.
+Gallery of the widgets, layouts, and dialogs:
+
+![Widget gallery example](etc/Images/widgets.png)
+
+The examples in the [examples/](examples/) directory:
+
+| Example | Demonstrates |
+| --- | --- |
+| [simple](examples/simple/) | The minimal application: a window and a label |
+| [widgets](examples/widgets/) | Gallery of the widgets, layouts, dialogs, and drag and drop; `-tab <name> -screenshot <file>` captures any page |
+| [textedit](examples/textedit/) | Application architecture: documents, actions shared between the menus and tool bars, and persistent settings |
+| [imageview](examples/imageview/) | A custom image display widget |
+| [objview](examples/objview/) | Custom OpenGL rendering inside a widget |
+| [gfx](examples/gfx/) | Procedural drawing |
+| [windows](examples/windows/) | Multiple windows |
+| [python](examples/python/) | Python counterparts: per-topic scripts, [textedit.py](examples/python/textedit.py) mirroring the C++ textedit for a side by side reading, and [testing.py](examples/python/testing.py), an application that drives and checks itself |
+
+The Python examples mirror the C++ topics. The objview example has no Python
+counterpart because the OpenGL layer is deliberately not wrapped; the largest
+Python application built on feather-tk is the
+[DJV Python example](https://github.com/grizzlypeak3d/DJV/tree/main/examples/python).
 
 ---
 

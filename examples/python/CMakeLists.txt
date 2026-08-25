@@ -30,3 +30,13 @@ add_test(
     NAME "Python tabs"
     COMMAND ${Python3_EXECUTABLE} tabs.py -exit -log
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+add_test(
+    NAME "Python testing"
+    COMMAND ${Python3_EXECUTABLE} testing.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+add_test(
+    NAME "Python textedit"
+    COMMAND ${Python3_EXECUTABLE} textedit.py -exit -log
+        -settingsFile ${CMAKE_CURRENT_BINARY_DIR}/textedit-test.json
+        -logFile ${CMAKE_CURRENT_BINARY_DIR}/textedit-test.log
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

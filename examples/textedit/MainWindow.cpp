@@ -71,6 +71,9 @@ namespace textedit
 
     MainWindow::~MainWindow()
     {
+        // Widget state that only this window knows -- the splitter
+        // position -- is pushed into the settings model on the way out;
+        // the model is what persists it.
         auto window = _settingsModel->getWindow();
         window.split = _splitter->getSplit();
         _settingsModel->setWindow(window);
@@ -91,6 +94,8 @@ namespace textedit
 
     void MainWindow::dropEvent(DragDropEvent& event)
     {
+        // Files dragged in from elsewhere arrive as text, one path per
+        // entry.
         event.accept = true;
         if (auto textData = std::dynamic_pointer_cast<DragDropTextData>(event.data))
         {

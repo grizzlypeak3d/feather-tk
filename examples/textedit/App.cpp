@@ -57,6 +57,9 @@ namespace textedit
 
     App::~App()
     {
+        // The recent files list lives in the file browser's model while
+        // running; it is copied into the settings here so the settings
+        // model's destructor writes it to disk with everything else.
         if (_settingsModel && _recentFilesModel)
         {
             _settingsModel->setRecentFiles(toFilePaths(_recentFilesModel->getRecent()));
@@ -111,6 +114,8 @@ namespace textedit
 
     void App::open(const std::vector<std::filesystem::path>& paths)
     {
+        // Errors are collected and shown once: opening a directory of
+        // files should not stack a dialog per failure.
         std::vector<std::string> errors;
         for (const auto& path : paths)
         {
@@ -270,6 +275,8 @@ namespace textedit
 
     void App::exit()
     {
+        // Exit is intercepted to ask about unsaved changes; the base
+        // class exit is what actually stops the event loop.
         bool changed = false;
         for (const auto& idoc : _documentModel->getList())
         {
@@ -280,6 +287,8 @@ namespace textedit
         }
         if (changed)
         {
+            // The weak pointer keeps a second exit -- Cmd+Q pressed
+            // twice -- from stacking a second dialog.
             if (!_confirmDialog.lock())
             {
                 _confirmDialog = _context->getSystem<DialogSystem>()->confirm(
@@ -305,7 +314,8 @@ namespace textedit
 
     void App::run()
     {
-        // Create models.
+        // The models come first: the window's widgets observe them at
+        // construction, so they have to exist before the window does.
         _settingsModel = SettingsModel::create(_context, getDefaultDisplayScale());
         _documentModel = DocumentModel::create(_context);
         _recentFilesModel = RecentFilesModel::create(_context);

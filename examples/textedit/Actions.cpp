@@ -17,13 +17,18 @@ namespace textedit
         const std::shared_ptr<App>& app,
         const std::shared_ptr<MainWindow>& mainWindow)
     {
-        // Create the actions.
+        // One action object serves the menus and the tool bar both, so
+        // enabling or checking it in one place is enabling or checking
+        // it everywhere.
         _createFileActions(context, app);
         _createEditActions(context, app);
         _createWindowActions(context, app, mainWindow);
         _actionsUpdate();
 
-        // Observe the current document to update the state of the actions.
+        // The enabled state of an action depends on the current
+        // document and its selection, undo, and changed state.
+        // Observing the current document re-observes those, so any of
+        // them changing funnels into the one update.
         _currentObserver = Observer<std::shared_ptr<IDocument> >::create(
             app->getDocumentModel()->observeCurrent(),
             [this](const std::shared_ptr<IDocument>& idoc)

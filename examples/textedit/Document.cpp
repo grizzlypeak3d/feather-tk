@@ -28,7 +28,9 @@ namespace textedit
 
         _nameUpdate();
 
-        // Observe changes to the text and update the name.
+        // Any edit marks the document changed. The initial
+        // notification is suppressed so that merely loading the file
+        // does not count as a change.
         _textObserver = ListObserver<std::string>::create(
             _model->observeText(),
             [this](const std::vector<std::string>&)

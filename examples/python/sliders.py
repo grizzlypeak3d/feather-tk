@@ -7,7 +7,7 @@ import sys
 
 # Create the context and application.
 context = ftk.Context()
-app = ftk.App(context, sys.argv, "buttons", "Buttons example")
+app = ftk.App(context, sys.argv, "sliders", "Sliders example")
 if app.hasCmdLineHelp:
     sys.exit(0)
 

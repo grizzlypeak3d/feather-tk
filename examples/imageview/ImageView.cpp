@@ -54,6 +54,9 @@ namespace imageview
     {
         if (_zoom->setIfChanged(value))
         {
+            // A state change a widget draws or sizes from must set the
+            // update flags itself; a missed flag fails silently as a
+            // stale picture.
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -107,6 +110,9 @@ namespace imageview
         }
     }
 
+    // A custom widget is a size hint plus a draw: the size hint is the
+    // zoomed image, so the scroll area around this widget provides the
+    // panning, and the draw paints whatever the current state says.
     Size2I ImageView::getSizeHint() const
     {
         Size2I out;
@@ -120,6 +126,9 @@ namespace imageview
     void ImageView::setGeometry(const Box2I& value)
     {
         IWidget::setGeometry(value);
+        // Framing needs the scroll area's laid out size, so the first
+        // frame waits for the first geometry instead of running at
+        // construction.
         if (_frameInit)
         {
             _frameInit = false;

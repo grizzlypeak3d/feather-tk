@@ -25,7 +25,8 @@ namespace textedit
         _createEditMenu(context, actions);
         _createWindowMenu(context, actions);
 
-        // Observe the recent files and update the menu.
+        // The recent files menu is rebuilt from the model whenever it
+        // changes, newest first.
         std::weak_ptr<App> appWeak(app);
         _recentFilesObserver = ListObserver<Path>::create(
             app->getRecentFilesModel()->observeRecent(),

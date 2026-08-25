@@ -290,6 +290,10 @@ namespace objview
             "}\n";
     }
 
+    // The pattern for custom OpenGL inside a widget: render the scene
+    // into an offscreen buffer, then draw that buffer into the UI like
+    // any image. The UI renderer owns the frame; the 3D work happens
+    // off to the side and composites in.
     void ObjView::drawEvent(const Box2I& drawRect, const DrawEvent& event)
     {
         const Box2I& g = getGeometry();
@@ -437,7 +441,9 @@ namespace objview
                     offscreenBufferOptions);
             }
 
-            // Render the scene.
+            // The scene renders only when something about it changed;
+            // a redraw for any other reason -- an overlay, a hover --
+            // recomposites the buffer that already exists.
             if (_doRender && _buffer)
             {
                 _doRender = false;
