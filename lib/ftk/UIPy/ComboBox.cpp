@@ -61,6 +61,11 @@ namespace ftk
                 .def_property("currentIndex",
                     &ComboBox::getCurrentIndex,
                     &ComboBox::setCurrentIndex)
+                .def(
+                    "setElide",
+                    &ComboBox::setElide,
+                    py::arg("max"),
+                    py::arg("mode") = ElideMode::Right)
                 .def("setIndexCallback", &ComboBox::setIndexCallback)
                 .def("setItemCallback", &ComboBox::setItemCallback)
                 .def_property("font", &ComboBox::getFont, &ComboBox::setFont);

@@ -19,6 +19,18 @@ namespace ftk
     {
         void string(py::module_& m)
         {
+            py::enum_<ElideMode>(m, "ElideMode")
+                .value("Right", ElideMode::Right)
+                .value("Left", ElideMode::Left)
+                .value("Middle", ElideMode::Middle);
+
+            m.def(
+                "elide",
+                &elide,
+                py::arg("value"),
+                py::arg("max") = 32,
+                py::arg("mode") = ElideMode::Right);
+
             m.def(
                 "getLoremIpsum",
                 py::overload_cast<>(&getLoremIpsum));
