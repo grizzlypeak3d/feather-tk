@@ -143,7 +143,19 @@ namespace ftk
                 .def_property("clipChildren", &IWidget::doesClipChildren, &IWidget::setClipChildren)
                 .def_property_readonly("childrenClipRect", &IWidget::getChildrenClipRect)
 
-                .def_property("enabled", &IWidget::isEnabled, &IWidget::setEnabled)
+                .def_property(
+                    "enabled",
+                    // The getter has a defaulted argument, which a bound
+                    // property cannot fill in.
+                    [](const IWidget& widget)
+                    {
+                        return widget.isEnabled();
+                    },
+                    &IWidget::setEnabled)
+                .def(
+                    "isEnabled",
+                    &IWidget::isEnabled,
+                    py::arg("andParentsEnabled") = true)
 
                 .def_property("acceptsKeyFocus", &IWidget::acceptsKeyFocus, &IWidget::setAcceptsKeyFocus)
                 .def_property_readonly("keyFocus", &IWidget::hasKeyFocus)
