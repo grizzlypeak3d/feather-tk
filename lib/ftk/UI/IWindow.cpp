@@ -834,6 +834,11 @@ namespace ftk
         _key(key, false, modifiers);
     }
 
+    void IWindow::text(const std::string& value)
+    {
+        _text(value);
+    }
+
     void IWindow::_cursorPos(const V2I& pos)
     {
         FTK_P();

@@ -27,6 +27,10 @@ namespace widgets
             const std::shared_ptr<ftk::Context>&,
             const std::shared_ptr<App>&);
 
+        //! Select a tab by name, e.g. for taking screenshots of a
+        //! particular page with the -tab and -screenshot options.
+        void setTab(const std::string&);
+
 
     private:
         void _tabUpdate(int);

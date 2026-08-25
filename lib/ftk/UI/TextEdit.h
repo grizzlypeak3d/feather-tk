@@ -66,6 +66,10 @@ namespace ftk
         FTK_UI_API void clearText();
         FTK_UI_API void setCallback(const std::function<void(const std::vector<std::string>&)>&);
 
+        //! Key focus goes to the editing widget inside, the same as
+        //! clicking into the text.
+        FTK_UI_API void takeKeyFocus() override;
+
         FTK_UI_API bool isReadOnly() const;
         FTK_UI_API void setReadOnly(bool);
 

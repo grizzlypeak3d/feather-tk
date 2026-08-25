@@ -6,6 +6,8 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/SysLogModel.h>
 
+#include <ftk/Core/CmdLine.h>
+
 namespace widgets
 {
     class MainWindow;
@@ -31,6 +33,7 @@ namespace widgets
         void run() override;
 
     private:
+        std::shared_ptr<ftk::CmdLineOption<std::string> > _tabOption;
         std::shared_ptr<ftk::SysLogModel> _sysLogModel;
         std::shared_ptr<MainWindow> _mainWindow;
     };

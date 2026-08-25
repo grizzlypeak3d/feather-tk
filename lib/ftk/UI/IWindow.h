@@ -178,6 +178,10 @@ namespace ftk
         //! Press a key and release it.
         FTK_UI_API void keyPress(Key, int modifiers = 0);
 
+        //! Enter text, the way typing does after the key events: letters
+        //! reach a widget as text input, not as key presses.
+        FTK_UI_API void text(const std::string&);
+
         ///@}
 
         //! Set the window icon.

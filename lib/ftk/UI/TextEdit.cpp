@@ -109,6 +109,11 @@ namespace ftk
         return out;
     }
 
+    void TextEdit::takeKeyFocus()
+    {
+        _p->widget->takeKeyFocus();
+    }
+
     const std::shared_ptr<TextEditModel>& TextEdit::getModel() const
     {
         return _p->model;

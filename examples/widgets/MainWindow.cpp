@@ -159,6 +159,21 @@ namespace widgets
     MainWindow::~MainWindow()
     {}
 
+    void MainWindow::setTab(const std::string& name)
+    {
+        int index = 0;
+        for (const auto& i : _widgets)
+        {
+            if (i.first == name)
+            {
+                _tabBar->setCurrent(index);
+                _tabUpdate(index);
+                break;
+            }
+            ++index;
+        }
+    }
+
     std::shared_ptr<MainWindow> MainWindow::create(
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<App>& app)

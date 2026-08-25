@@ -13,11 +13,18 @@ namespace widgets
         const std::shared_ptr<Context>& context,
         const std::vector<std::string>& args)
     {
+        _tabOption = CmdLineOption<std::string>::create(
+            { "-tab" },
+            "Select a tab at startup, e.g. for screenshots of a "
+            "particular page.",
+            "Testing");
         ftk::App::_init(
             context,
             args,
             "widgets",
-            "Widgets example");
+            "Widgets example",
+            {},
+            { _tabOption });
     }
 
     App::~App()
@@ -44,6 +51,10 @@ namespace widgets
         _mainWindow = MainWindow::create(
             _context,
             std::dynamic_pointer_cast<App>(shared_from_this()));
+        if (_tabOption->found())
+        {
+            _mainWindow->setTab(_tabOption->getValue());
+        }
 
         ftk::App::run();
     }
