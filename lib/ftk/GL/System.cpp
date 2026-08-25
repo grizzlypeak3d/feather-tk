@@ -16,6 +16,10 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
 
+#if defined(__APPLE__)
+#include <unistd.h>
+#endif // __APPLE__
+
 #if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
 #elif defined(FTK_SDL3)
@@ -59,13 +63,21 @@ namespace ftk
             auto logSystem = context->getLogSystem();
             logSystem->print("ftk::gl::System", "Init SDL video and events...");
             p.logSystem = logSystem;
+#if defined(__APPLE__)
             // On macOS 14 and later SDL no longer activates the application
-            // at launch, and a plain binary -- no application bundle --
-            // starts without keyboard focus: the launching application
-            // keeps it, and typing goes there until the window is clicked.
-            // This asks for the old behavior. The environment variable
+            // at launch, so an application launched from a terminal starts
+            // without keyboard focus: the terminal keeps it, and typing
+            // goes there until the window is clicked. This asks for the old
+            // behavior, but only when a terminal is attached: anything
+            // launched through Launch Services -- the Finder, the dock,
+            // open -- is activated by it, and SDL's activation path costs
+            // a delay at startup. The environment variable
             // SDL_MAC_BACKGROUND_APP still overrides it.
-            SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
+            if (isatty(STDIN_FILENO) || isatty(STDERR_FILENO))
+            {
+                SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
+            }
+#endif // __APPLE__
 #if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
             if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
