@@ -17,19 +17,17 @@
 
 #include <algorithm>
 #include <limits>
+#include <ftkResource/NotoMono-Regular.h>
+#include <ftkResource/NotoSans-Bold.h>
+#include <ftkResource/NotoSans-Regular.h>
+#include <ftkResource/NotoSansSymbols2-Regular.h>
+#if defined(FTK_CJK)
+#include <ftkResource/NotoSansCJK-Regular.h>
+#endif // FTK_CJK
+
 #include <map>
 #include <mutex>
 
-namespace ftk_resource
-{
-    extern std::vector<uint8_t> NotoSans_Bold;
-    extern std::vector<uint8_t> NotoMono_Regular;
-    extern std::vector<uint8_t> NotoSans_Regular;
-    extern std::vector<uint8_t> NotoSansSymbols2_Regular;
-#if defined(FTK_CJK)
-    extern std::vector<uint8_t> NotoSansCJK_Regular;
-#endif // FTK_CJK
-}
 
 namespace ftk
 {

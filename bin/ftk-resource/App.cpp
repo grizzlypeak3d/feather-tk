@@ -212,6 +212,28 @@ void App::run()
         file.write((const uint8_t*)tmp.c_str(), tmp.size());
     }
 
+    // A header with the declaration, so consumers include it instead of
+    // writing the extern themselves.
+    {
+        std::filesystem::path headerOutput = _output;
+        headerOutput.replace_extension(".h");
+        std::cout << "Header output: " << headerOutput.string() << std::endl;
+
+        std::string tmp;
+        tmp.append("#pragma once\n");
+        tmp.append("\n");
+        tmp.append("#include <cstdint>\n");
+        tmp.append("#include <vector>\n");
+        tmp.append("\n");
+        tmp.append("namespace " + _namespace + "\n");
+        tmp.append("{\n");
+        tmp.append("    extern std::vector<uint8_t> " + var + ";\n");
+        tmp.append("}\n");
+
+        File file(headerOutput.string(), "wb");
+        file.write((const uint8_t*)tmp.c_str(), tmp.size());
+    }
+
     const auto now = std::chrono::steady_clock::now();
     const std::chrono::duration<float> diff = now - _startTime;
     std::cout << "Seconds elapsed: " << std::setprecision(2) << diff.count() << std::endl;

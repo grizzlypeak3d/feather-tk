@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the feather-tk project.
+
+// Generated from the files in etc/Icons.
+
+#include "IconResources.h"
+
+namespace ftk_resource
+{
+@ICON_EXTERNS@
+    const std::map<std::string, std::vector<uint8_t>*>& getIconResources()
+    {
+        static const std::map<std::string, std::vector<uint8_t>*> map =
+        {
+@ICON_ENTRIES@
+        };
+        return map;
+    }
+}

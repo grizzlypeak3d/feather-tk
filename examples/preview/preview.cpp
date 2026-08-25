@@ -25,6 +25,8 @@
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Timer.h>
 
+#include <PreviewJson.h>
+
 #include <filesystem>
 #include <fstream>
 
@@ -90,7 +92,9 @@ FTK_MAIN()
         auto args = convert(argc, argv);
         auto fileArg = CmdLineArg<std::string>::create(
             "input",
-            "The JSON file to preview.");
+            "The JSON file to preview. Without one, a built in sample "
+            "is shown.",
+            true);
         auto app = App::create(
             context,
             args,
@@ -106,29 +110,45 @@ FTK_MAIN()
         scrollWidget->setBorder(false);
         window->setWidget(scrollWidget);
 
-        const std::filesystem::path path =
-            std::filesystem::u8path(fileArg->getValue());
-        scrollWidget->setWidget(load(context, path));
+        std::shared_ptr<Timer> timer;
+        if (fileArg->hasValue())
+        {
+            const std::filesystem::path path =
+                std::filesystem::u8path(fileArg->getValue());
+            scrollWidget->setWidget(load(context, path));
 
-        // Watch the file by polling its write time; when it changes the
-        // contents are rebuilt from scratch, which is what makes the
-        // edit and look loop instant.
-        std::error_code ec;
-        auto writeTime = std::filesystem::last_write_time(path, ec);
-        auto timer = Timer::create(context);
-        timer->setRepeating(true);
-        timer->start(
-            std::chrono::milliseconds(250),
-            [context, scrollWidget, path, &writeTime]
-            {
-                std::error_code ec;
-                const auto time = std::filesystem::last_write_time(path, ec);
-                if (!ec && time != writeTime)
+            // Watch the file by polling its write time; when it changes
+            // the contents are rebuilt from scratch, which is what makes
+            // the edit and look loop instant.
+            std::error_code ec;
+            auto writeTime = std::filesystem::last_write_time(path, ec);
+            timer = Timer::create(context);
+            timer->setRepeating(true);
+            timer->start(
+                std::chrono::milliseconds(250),
+                [context, scrollWidget, path, writeTime]() mutable
                 {
-                    writeTime = time;
-                    scrollWidget->setWidget(load(context, path));
-                }
-            });
+                    std::error_code ec;
+                    const auto time = std::filesystem::last_write_time(path, ec);
+                    if (!ec && time != writeTime)
+                    {
+                        writeTime = time;
+                        scrollWidget->setWidget(load(context, path));
+                    }
+                });
+        }
+        else
+        {
+            // The sample panel is embedded at build time from
+            // preview.json with ftk_embed_text(): the same file is the
+            // live document during development and part of the binary
+            // when it ships, which is the pattern for applications that
+            // bundle their panels.
+            auto result = widgetLoad(
+                context,
+                nlohmann::json::parse(previewJson));
+            scrollWidget->setWidget(result.widget);
+        }
 
         app->run();
     }

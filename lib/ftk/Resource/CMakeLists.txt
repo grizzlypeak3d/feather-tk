@@ -1,92 +1,48 @@
 set(HEADERS)
 set(SOURCE)
+
+# The fonts and images are named, since code refers to them one by one.
 set(RESOURCES
     etc/Fonts/NotoMono-Regular.ttf
     etc/Fonts/NotoSans-Bold.ttf
     etc/Fonts/NotoSans-Regular.ttf
     etc/Fonts/NotoSansSymbols2-Regular.ttf
     etc/Fonts/NotoSansCJK-Regular.otf
-    etc/Icons/ArrowDown.svg
-    etc/Icons/ArrowLeft.svg
-    etc/Icons/ArrowRight.svg
-    etc/Icons/ArrowUp.svg
-    etc/Icons/Audio.svg
-    etc/Icons/BellowsClosed.svg
-    etc/Icons/BellowsOpen.svg
-    etc/Icons/Clear.svg
-    etc/Icons/ClearSmall.svg
-    etc/Icons/Close.svg
-    etc/Icons/CloseSmall.svg
-    etc/Icons/Copy.svg
-    etc/Icons/Cut.svg
-    etc/Icons/Decrement.svg
-    etc/Icons/Directory.svg
-    etc/Icons/DirectoryBack.svg
-    etc/Icons/DirectoryForward.svg
-    etc/Icons/DirectoryUp.svg
-    etc/Icons/Edit.svg
-    etc/Icons/Empty.svg
-    etc/Icons/File.svg
-    etc/Icons/FileBrowser.svg
-    etc/Icons/FileClose.svg
-    etc/Icons/FileCloseAll.svg
-    etc/Icons/FileNew.svg
-    etc/Icons/FileOpen.svg
-    etc/Icons/FileReload.svg
-    etc/Icons/FileSave.svg
-    etc/Icons/FrameEnd.svg
-    etc/Icons/FrameInOut.svg
-    etc/Icons/FrameNext.svg
-    etc/Icons/FramePrev.svg
-    etc/Icons/FrameStart.svg
-    etc/Icons/Increment.svg
-    etc/Icons/Info.svg
-    etc/Icons/MenuArrow.svg
-    etc/Icons/MenuChecked.svg
-    etc/Icons/Mute.svg
-    etc/Icons/Next.svg
-    etc/Icons/PanelBottom.svg
-    etc/Icons/PanelLeft.svg
-    etc/Icons/PanelRight.svg
-    etc/Icons/PanelTop.svg
-    etc/Icons/Paste.svg
-    etc/Icons/PlaybackForward.svg
-    etc/Icons/PlaybackReverse.svg
-    etc/Icons/PlaybackStop.svg
-    etc/Icons/Prev.svg
-    etc/Icons/Redo.svg
-    etc/Icons/Reload.svg
-    etc/Icons/Reset.svg
-    etc/Icons/ReverseSort.svg
-    etc/Icons/Search.svg
-    etc/Icons/Settings.svg
-    etc/Icons/Shuttle0.svg
-    etc/Icons/Shuttle1.svg
-    etc/Icons/Shuttle2.svg
-    etc/Icons/Shuttle3.svg
-    etc/Icons/Shuttle4.svg
-    etc/Icons/Shuttle5.svg
-    etc/Icons/Shuttle6.svg
-    etc/Icons/Shuttle7.svg
-    etc/Icons/SubMenuArrow.svg
-    etc/Icons/Time.svg
-    etc/Icons/Undo.svg
-    etc/Icons/ViewFrame.svg
-    etc/Icons/ViewZoomIn.svg
-    etc/Icons/ViewZoomOut.svg
-    etc/Icons/ViewZoomReset.svg
-    etc/Icons/Volume.svg
-    etc/Icons/WindowFullScreen.svg
-    etc/Icons/feather_tk_512.svg
     etc/Images/Charlie.png
     etc/Images/TestDrawing.svg)
+list(TRANSFORM RESOURCES PREPEND ${PROJECT_SOURCE_DIR}/)
+
+# The icons are globbed and registered by a generated map, so adding an
+# icon is adding a file to etc/Icons; the icon system picks up whatever
+# is there. CONFIGURE_DEPENDS makes a new file re-run CMake.
+file(GLOB ICON_RESOURCES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/etc/Icons/*.svg)
+set(ICON_EXTERNS)
+set(ICON_ENTRIES)
+foreach(ICON ${ICON_RESOURCES})
+    get_filename_component(ICON_BASE ${ICON} NAME_WE)
+    string(MAKE_C_IDENTIFIER ${ICON_BASE} ICON_VAR)
+    string(APPEND ICON_EXTERNS "    extern std::vector<uint8_t> ${ICON_VAR};\n")
+    string(APPEND ICON_ENTRIES "            { \"${ICON_BASE}\", &${ICON_VAR} },\n")
+endforeach()
+# The generated files live in a subdirectory and are included as
+# <ftkResource/Name.h>: a header named for a resource -- Time.svg --
+# in the include path root would shadow a system header -- <time.h> --
+# on a case insensitive file system.
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ftkResource)
+configure_file(IconResources.h.in ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/IconResources.h @ONLY)
+configure_file(IconResources.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/IconResources.cpp @ONLY)
+list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/IconResources.cpp)
+
+list(APPEND RESOURCES ${ICON_RESOURCES})
 foreach(RESOURCE ${RESOURCES})
     get_filename_component(RESOURCE_BASE ${RESOURCE} NAME_WE)
     add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BASE}.cpp
-        COMMAND ftk-resource ${PROJECT_SOURCE_DIR}/${RESOURCE} ${RESOURCE_BASE} ftk_resource
-        DEPENDS ${PROJECT_SOURCE_DIR}/${RESOURCE})
-    list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE_BASE}.cpp)
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/${RESOURCE_BASE}.cpp
+            ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/${RESOURCE_BASE}.h
+        COMMAND ftk-resource ${RESOURCE} ftkResource/${RESOURCE_BASE} ftk_resource
+        DEPENDS ${RESOURCE})
+    list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/${RESOURCE_BASE}.cpp)
 endforeach()
 
 # Static, whatever the rest of the build is. The resources are data at
@@ -104,6 +60,12 @@ endforeach()
 # and each resource is its own object file, so a consumer links only the ones
 # it names -- FontSystem and IconSystem take the ones they use and nothing more.
 add_library(ftkResource STATIC ${HEADERS} ${SOURCE})
+
+# The generated headers -- the per resource declarations and the icon
+# map -- are found here; the build interface only, since the resources
+# are an implementation detail rather than installed API.
+target_include_directories(ftkResource PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 set_target_properties(ftkResource PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_compile_definitions(ftkResource PUBLIC FTK_CJK)

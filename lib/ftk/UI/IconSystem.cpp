@@ -9,6 +9,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LRUCache.h>
 
+#include <ftkResource/IconResources.h>
+
 #include <lunasvg/lunasvg.h>
 
 #include <atomic>
@@ -30,81 +32,6 @@ namespace std
     };
 }
 
-namespace ftk_resource
-{
-    extern std::vector<uint8_t> ArrowDown;
-    extern std::vector<uint8_t> ArrowLeft;
-    extern std::vector<uint8_t> ArrowRight;
-    extern std::vector<uint8_t> ArrowUp;
-    extern std::vector<uint8_t> Audio;
-    extern std::vector<uint8_t> BellowsClosed;
-    extern std::vector<uint8_t> BellowsOpen;
-    extern std::vector<uint8_t> Clear;
-    extern std::vector<uint8_t> ClearSmall;
-    extern std::vector<uint8_t> Close;
-    extern std::vector<uint8_t> CloseSmall;
-    extern std::vector<uint8_t> Copy;
-    extern std::vector<uint8_t> Cut;
-    extern std::vector<uint8_t> Decrement;
-    extern std::vector<uint8_t> Directory;
-    extern std::vector<uint8_t> DirectoryBack;
-    extern std::vector<uint8_t> DirectoryForward;
-    extern std::vector<uint8_t> DirectoryUp;
-    extern std::vector<uint8_t> Edit;
-    extern std::vector<uint8_t> Empty;
-    extern std::vector<uint8_t> File;
-    extern std::vector<uint8_t> FileBrowser;
-    extern std::vector<uint8_t> FileClose;
-    extern std::vector<uint8_t> FileCloseAll;
-    extern std::vector<uint8_t> FileNew;
-    extern std::vector<uint8_t> FileOpen;
-    extern std::vector<uint8_t> FileReload;
-    extern std::vector<uint8_t> FileSave;
-    extern std::vector<uint8_t> FrameEnd;
-    extern std::vector<uint8_t> FrameInOut;
-    extern std::vector<uint8_t> FrameNext;
-    extern std::vector<uint8_t> FramePrev;
-    extern std::vector<uint8_t> FrameStart;
-    extern std::vector<uint8_t> Increment;
-    extern std::vector<uint8_t> Info;
-    extern std::vector<uint8_t> MenuArrow;
-    extern std::vector<uint8_t> MenuChecked;
-    extern std::vector<uint8_t> Mute;
-    extern std::vector<uint8_t> Next;
-    extern std::vector<uint8_t> PanelBottom;
-    extern std::vector<uint8_t> PanelLeft;
-    extern std::vector<uint8_t> PanelRight;
-    extern std::vector<uint8_t> PanelTop;
-    extern std::vector<uint8_t> Paste;
-    extern std::vector<uint8_t> PlaybackForward;
-    extern std::vector<uint8_t> PlaybackReverse;
-    extern std::vector<uint8_t> PlaybackStop;
-    extern std::vector<uint8_t> Prev;
-    extern std::vector<uint8_t> Redo;
-    extern std::vector<uint8_t> Reload;
-    extern std::vector<uint8_t> Reset;
-    extern std::vector<uint8_t> ReverseSort;
-    extern std::vector<uint8_t> Search;
-    extern std::vector<uint8_t> Settings;
-    extern std::vector<uint8_t> Shuttle0;
-    extern std::vector<uint8_t> Shuttle1;
-    extern std::vector<uint8_t> Shuttle2;
-    extern std::vector<uint8_t> Shuttle3;
-    extern std::vector<uint8_t> Shuttle4;
-    extern std::vector<uint8_t> Shuttle5;
-    extern std::vector<uint8_t> Shuttle6;
-    extern std::vector<uint8_t> Shuttle7;
-    extern std::vector<uint8_t> SubMenuArrow;
-    extern std::vector<uint8_t> Time;
-    extern std::vector<uint8_t> Undo;
-    extern std::vector<uint8_t> ViewFrame;
-    extern std::vector<uint8_t> ViewZoomIn;
-    extern std::vector<uint8_t> ViewZoomOut;
-    extern std::vector<uint8_t> ViewZoomReset;
-    extern std::vector<uint8_t> Volume;
-    extern std::vector<uint8_t> WindowFullScreen;
-    extern std::vector<uint8_t> feather_tk_512;
-}
 
 namespace ftk
 {
@@ -159,78 +86,12 @@ namespace ftk
         FTK_P();
         p.context = context;
 
-        p.iconData["ArrowDown"] = ftk_resource::ArrowDown;
-        p.iconData["ArrowLeft"] = ftk_resource::ArrowLeft;
-        p.iconData["ArrowRight"] = ftk_resource::ArrowRight;
-        p.iconData["ArrowUp"] = ftk_resource::ArrowUp;
-        p.iconData["Audio"] = ftk_resource::Audio;
-        p.iconData["BellowsClosed"] = ftk_resource::BellowsClosed;
-        p.iconData["BellowsOpen"] = ftk_resource::BellowsOpen;
-        p.iconData["Clear"] = ftk_resource::Clear;
-        p.iconData["ClearSmall"] = ftk_resource::ClearSmall;
-        p.iconData["Close"] = ftk_resource::Close;
-        p.iconData["CloseSmall"] = ftk_resource::CloseSmall;
-        p.iconData["Copy"] = ftk_resource::Copy;
-        p.iconData["Cut"] = ftk_resource::Cut;
-        p.iconData["Decrement"] = ftk_resource::Decrement;
-        p.iconData["Directory"] = ftk_resource::Directory;
-        p.iconData["DirectoryBack"] = ftk_resource::DirectoryBack;
-        p.iconData["DirectoryForward"] = ftk_resource::DirectoryForward;
-        p.iconData["DirectoryUp"] = ftk_resource::DirectoryUp;
-        p.iconData["Edit"] = ftk_resource::Edit;
-        p.iconData["Empty"] = ftk_resource::Empty;
-        p.iconData["File"] = ftk_resource::File;
-        p.iconData["FileBrowser"] = ftk_resource::FileBrowser;
-        p.iconData["FileClose"] = ftk_resource::FileClose;
-        p.iconData["FileCloseAll"] = ftk_resource::FileCloseAll;
-        p.iconData["FileNew"] = ftk_resource::FileNew;
-        p.iconData["FileOpen"] = ftk_resource::FileOpen;
-        p.iconData["FileReload"] = ftk_resource::FileReload;
-        p.iconData["FileSave"] = ftk_resource::FileSave;
-        p.iconData["FrameEnd"] = ftk_resource::FrameEnd;
-        p.iconData["FrameInOut"] = ftk_resource::FrameInOut;
-        p.iconData["FrameNext"] = ftk_resource::FrameNext;
-        p.iconData["FramePrev"] = ftk_resource::FramePrev;
-        p.iconData["FrameStart"] = ftk_resource::FrameStart;
-        p.iconData["Increment"] = ftk_resource::Increment;
-        p.iconData["Info"] = ftk_resource::Info;
-        p.iconData["MenuArrow"] = ftk_resource::MenuArrow;
-        p.iconData["MenuChecked"] = ftk_resource::MenuChecked;
-        p.iconData["Mute"] = ftk_resource::Mute;
-        p.iconData["Next"] = ftk_resource::Next;
-        p.iconData["PanelBottom"] = ftk_resource::PanelBottom;
-        p.iconData["PanelLeft"] = ftk_resource::PanelLeft;
-        p.iconData["PanelRight"] = ftk_resource::PanelRight;
-        p.iconData["PanelTop"] = ftk_resource::PanelTop;
-        p.iconData["Paste"] = ftk_resource::Paste;
-        p.iconData["PlaybackForward"] = ftk_resource::PlaybackForward;
-        p.iconData["PlaybackReverse"] = ftk_resource::PlaybackReverse;
-        p.iconData["PlaybackStop"] = ftk_resource::PlaybackStop;
-        p.iconData["Prev"] = ftk_resource::Prev;
-        p.iconData["Redo"] = ftk_resource::Redo;
-        p.iconData["Reload"] = ftk_resource::Reload;
-        p.iconData["Reset"] = ftk_resource::Reset;
-        p.iconData["ReverseSort"] = ftk_resource::ReverseSort;
-        p.iconData["Search"] = ftk_resource::Search;
-        p.iconData["Settings"] = ftk_resource::Settings;
-        p.iconData["Shuttle0"] = ftk_resource::Shuttle0;
-        p.iconData["Shuttle1"] = ftk_resource::Shuttle1;
-        p.iconData["Shuttle2"] = ftk_resource::Shuttle2;
-        p.iconData["Shuttle3"] = ftk_resource::Shuttle3;
-        p.iconData["Shuttle4"] = ftk_resource::Shuttle4;
-        p.iconData["Shuttle5"] = ftk_resource::Shuttle5;
-        p.iconData["Shuttle6"] = ftk_resource::Shuttle6;
-        p.iconData["Shuttle7"] = ftk_resource::Shuttle7;
-        p.iconData["SubMenuArrow"] = ftk_resource::SubMenuArrow;
-        p.iconData["Time"] = ftk_resource::Time;
-        p.iconData["Undo"] = ftk_resource::Undo;
-        p.iconData["ViewFrame"] = ftk_resource::ViewFrame;
-        p.iconData["ViewZoomIn"] = ftk_resource::ViewZoomIn;
-        p.iconData["ViewZoomOut"] = ftk_resource::ViewZoomOut;
-        p.iconData["ViewZoomReset"] = ftk_resource::ViewZoomReset;
-        p.iconData["Volume"] = ftk_resource::Volume;
-        p.iconData["WindowFullScreen"] = ftk_resource::WindowFullScreen;
-        p.iconData["feather_tk_512"] = ftk_resource::feather_tk_512;
+        // Every icon compiled into the library; the map is generated
+        // from the files in etc/Icons.
+        for (const auto& i : ftk_resource::getIconResources())
+        {
+            p.iconData[i.first] = *i.second;
+        }
 
         p.mutex.cache.setMax(1000);
         p.thread.running = true;
