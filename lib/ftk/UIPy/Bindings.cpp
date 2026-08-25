@@ -4,6 +4,7 @@
 #include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/Init.h>
+#include <ftk/UI/WidgetDump.h>
 
 #include <ftk/Core/Context.h>
 
@@ -23,6 +24,15 @@ namespace ftk
                 &uiInit,
                 py::arg("context"),
                 "Initialize the library.");
+
+            m.def(
+                "widgetDump",
+                [](const std::shared_ptr<IWidget>& widget)
+                {
+                    return widgetDump(widget).dump(2);
+                },
+                py::arg("widget"),
+                "Serialize a widget tree as JSON for inspection.");
 
             style(m);
             event(m);

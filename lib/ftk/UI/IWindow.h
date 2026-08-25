@@ -287,6 +287,7 @@ namespace ftk
             const std::shared_ptr<IWidget>&,
             std::list<std::shared_ptr<IWidget> >&);
 
+        void _trace(const std::string&);
         void _closeTooltip();
 
         friend class App;

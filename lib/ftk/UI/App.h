@@ -151,6 +151,12 @@ namespace ftk
         //! sizes the window and leaves a buffer behind to read.
         FTK_UI_API bool writeScreenshot(const std::filesystem::path&);
 
+        //! Write the first window's widget tree as JSON; see widgetDump().
+        //! Returns false when there is no window or the file cannot be
+        //! written; the reason is logged. Only useful once the event loop
+        //! has run and laid the window out.
+        FTK_UI_API bool writeWidgetDump(const std::filesystem::path&);
+
         ///@}
 
         //! \name Color Style
@@ -240,6 +246,7 @@ namespace ftk
 
     private:
         void _screenshotInit(const std::string& fileName);
+        void _widgetDumpInit(const std::string& fileName);
 
         std::shared_ptr<IWindow> _getWindow(uint32_t id) const;
 

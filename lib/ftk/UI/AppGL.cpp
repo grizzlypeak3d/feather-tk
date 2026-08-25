@@ -8,6 +8,7 @@
 #include <ftk/UI/Init.h>
 #include <ftk/UI/Settings.h>
 #include <ftk/UI/Util.h>
+#include <ftk/UI/WidgetDump.h>
 #include <ftk/UI/Window.h>
 
 #include <ftk/GL/Init.h>
@@ -33,6 +34,7 @@
 #endif // FTK_SDL2
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 
 namespace ftk
@@ -106,6 +108,7 @@ namespace ftk
             std::shared_ptr<CmdLineOption<std::string> > logFile;
             std::shared_ptr<CmdLineFlag> resetSettings;
             std::shared_ptr<CmdLineOption<std::string> > screenshot;
+            std::shared_ptr<CmdLineOption<std::string> > widgetDump;
         };
         CmdLine cmdLine;
 
@@ -116,6 +119,8 @@ namespace ftk
 
         std::shared_ptr<Timer> screenshotTimer;
         int screenshotTicks = 0;
+        std::shared_ptr<Timer> widgetDumpTimer;
+        int widgetDumpTicks = 0;
         bool offscreen = false;
 
         std::shared_ptr<FontSystem> fontSystem;
@@ -188,6 +193,11 @@ namespace ftk
             "Write a screenshot of the window to this file and then exit.",
             "Testing");
         cmdLineOptionsTmp.push_back(p.cmdLine.screenshot);
+        p.cmdLine.widgetDump = CmdLineOption<std::string>::create(
+            { "-widgetDump" },
+            "Write the window's widget tree as JSON to this file and then exit.",
+            "Testing");
+        cmdLineOptionsTmp.push_back(p.cmdLine.widgetDump);
         if (!p.settingsPath.empty())
         {
             p.cmdLine.settingsFile = CmdLineOption<std::string>::create(
@@ -224,6 +234,7 @@ namespace ftk
         // whether or not this particular application was asked.
         p.offscreen =
             p.cmdLine.screenshot->found() ||
+            p.cmdLine.widgetDump->found() ||
             p.cmdLine.exit->found() ||
             offscreenDefault;
 
@@ -1004,6 +1015,10 @@ namespace ftk
         {
             _screenshotInit(p.cmdLine.screenshot->getValue());
         }
+        if (p.cmdLine.widgetDump->found())
+        {
+            _widgetDumpInit(p.cmdLine.widgetDump->getValue());
+        }
 
         while (p.running && !p.windows.empty())
         {
@@ -1546,6 +1561,62 @@ namespace ftk
                 app->writeScreenshot(std::filesystem::u8path(fileName));
                 app->exit();
             });
+    }
+
+    void App::_widgetDumpInit(const std::string& fileName)
+    {
+        FTK_P();
+
+        // Driven from a timer inside the event loop like the screenshot,
+        // which is what realizes and lays out the window; the first ticks
+        // are let go by so the layout has settled.
+        p.widgetDumpTimer = Timer::create(_context);
+        p.widgetDumpTimer->setRepeating(true);
+        auto weak = std::weak_ptr<App>(std::dynamic_pointer_cast<App>(shared_from_this()));
+        p.widgetDumpTimer->start(
+            std::chrono::milliseconds(100),
+            [weak, fileName]
+            {
+                auto app = weak.lock();
+                if (!app)
+                    return;
+                auto& p2 = *app->_p;
+                ++p2.widgetDumpTicks;
+                if (p2.widgetDumpTicks < 5)
+                    return;
+                app->writeWidgetDump(std::filesystem::u8path(fileName));
+                // A screenshot asked for in the same run gets to finish
+                // before the exit.
+                if (!p2.cmdLine.screenshot->found())
+                {
+                    app->exit();
+                }
+            });
+    }
+
+    bool App::writeWidgetDump(const std::filesystem::path& path)
+    {
+        FTK_P();
+        auto logSystem = _context->getSystem<LogSystem>();
+        if (p.windows.empty())
+        {
+            logSystem->print("ftk::App", "No window to dump.", LogType::Error);
+            return false;
+        }
+        std::ofstream file(path);
+        if (!file)
+        {
+            logSystem->print(
+                "ftk::App",
+                Format("Cannot write widget dump to \"{0}\"").arg(path.u8string()),
+                LogType::Error);
+            return false;
+        }
+        file << widgetDump(p.windows.front()).dump(2) << std::endl;
+        logSystem->print(
+            "ftk::App",
+            Format("Wrote widget dump to \"{0}\"").arg(path.u8string()));
+        return true;
     }
 
     bool App::writeScreenshot(const std::filesystem::path& path)

@@ -10,9 +10,31 @@
 #include <ftk/UI/Tooltip.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Format.h>
+#include <ftk/Core/LogSystem.h>
+#include <ftk/Core/OS.h>
 
 namespace ftk
 {
+    namespace
+    {
+        // Set FTK_TRACE_EVENTS to log key and mouse button dispatch: each
+        // widget the event is offered to, in order, and which one accepted
+        // it. The dispatch rules are subtle enough that when input goes to
+        // the wrong place, seeing the walk beats reasoning it out.
+        bool traceEvents()
+        {
+            static const bool out = []
+            {
+                std::string value;
+                return getEnv("FTK_TRACE_EVENTS", value) &&
+                    !value.empty() &&
+                    "0" != value;
+            }();
+            return out;
+        }
+    }
+
     FTK_ENUM_IMPL(
         WindowBufferType,
         "U8",
@@ -632,17 +654,37 @@ namespace ftk
     {
         FTK_P();
         if (p.mousePress.lock())
+        {
+            if (traceEvents() && press)
+            {
+                _trace(Format("Key {0} ignored, a mouse press holds the grab").
+                    arg(to_string(key)));
+            }
             return false;
+        }
         _closeTooltip();
         p.keyEvent = KeyEvent(key, modifiers, p.cursorPos);
         if (press)
         {
+            if (traceEvents())
+            {
+                _trace(Format("Key {0} modifiers \"{1}\"").
+                    arg(to_string(key)).
+                    arg(getKeyModifierLabel(modifiers)));
+            }
+
             // Send event to the focused widget or parent.
             if (auto widget = p.keyFocus.lock())
             {
                 while (widget)
                 {
                     widget->keyPressEvent(p.keyEvent);
+                    if (traceEvents())
+                    {
+                        _trace(Format("    focus chain: {0}{1}").
+                            arg(widget->getObjectName()).
+                            arg(p.keyEvent.accept ? " (accepted)" : ""));
+                    }
                     if (p.keyEvent.accept)
                     {
                         p.keyPress = widget;
@@ -663,12 +705,23 @@ namespace ftk
                 for (auto i = widgets.begin(); i != widgets.end(); ++i)
                 {
                     (*i)->keyPressEvent(p.keyEvent);
+                    if (traceEvents())
+                    {
+                        _trace(Format("    hover chain: {0}{1}").
+                            arg((*i)->getObjectName()).
+                            arg(p.keyEvent.accept ? " (accepted)" : ""));
+                    }
                     if (p.keyEvent.accept)
                     {
                         p.keyPress = *i;
                         break;
                     }
                 }
+            }
+
+            if (traceEvents() && !p.keyEvent.accept)
+            {
+                _trace("    unaccepted");
             }
 
             // Handle tab key navigation.
@@ -883,11 +936,24 @@ namespace ftk
         p.mouseClickEvent = MouseClickEvent(button, modifiers, p.cursorPos);
         if (press)
         {
+            if (traceEvents())
+            {
+                _trace(Format("Mouse button {0} press at {1},{2}").
+                    arg(static_cast<int>(button)).
+                    arg(p.cursorPos.x).
+                    arg(p.cursorPos.y));
+            }
             auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
             auto i = widgets.begin();
             for (; i != widgets.end(); ++i)
             {
                 (*i)->mousePressEvent(p.mouseClickEvent);
+                if (traceEvents())
+                {
+                    _trace(Format("    under cursor: {0}{1}").
+                        arg((*i)->getObjectName()).
+                        arg(p.mouseClickEvent.accept ? " (accepted)" : ""));
+                }
                 if (p.mouseClickEvent.accept)
                 {
                     p.mousePress = *i;
@@ -901,7 +967,15 @@ namespace ftk
                 // itself keeps it simply by accepting the press.
                 if (!(MouseButton::Right == button && _contextMenu(widgets)))
                 {
+                    if (traceEvents())
+                    {
+                        _trace("    unaccepted, key focus cleared");
+                    }
                     setKeyFocus(nullptr);
+                }
+                else if (traceEvents())
+                {
+                    _trace("    unaccepted, context menu opened");
                 }
             }
         }
@@ -909,6 +983,12 @@ namespace ftk
         {
             if (auto widget = p.mousePress.lock())
             {
+                if (traceEvents())
+                {
+                    _trace(Format("Mouse button {0} release to {1}").
+                        arg(static_cast<int>(button)).
+                        arg(widget->getObjectName()));
+                }
                 p.mousePress.reset();
                 if (auto hover = p.dragDropHover.lock())
                 {
@@ -1188,6 +1268,14 @@ namespace ftk
             break;
         }
         return out;
+    }
+
+    void IWindow::_trace(const std::string& message)
+    {
+        if (auto context = getContext())
+        {
+            context->getLogSystem()->print("ftk::IWindow", message);
+        }
     }
 
     void IWindow::_closeTooltip()
