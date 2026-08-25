@@ -131,6 +131,25 @@ namespace ftk
                     }
                 }
                 FTK_CHECK(menu);
+
+                // A hard range is a fixed bound, so the menu only offers
+                // the reset; a soft range adds Set Range.
+                FTK_CHECK(1 == menu->getActions().size());
+                FTK_CHECK("Reset" == menu->getActions()[0]->getText());
+                menu->close();
+                app->tick();
+                slider->getModel()->setRangeSoft(true);
+                window->click(center, MouseButton::Right);
+                app->tick();
+                menu.reset();
+                for (const auto& child : window->getChildren())
+                {
+                    if (auto tmp = std::dynamic_pointer_cast<Menu>(child))
+                    {
+                        menu = tmp;
+                    }
+                }
+                FTK_CHECK(menu);
                 FTK_CHECK(2 == menu->getActions().size());
                 FTK_CHECK("Reset" == menu->getActions()[0]->getText());
                 FTK_CHECK("Set Range..." == menu->getActions()[1]->getText());

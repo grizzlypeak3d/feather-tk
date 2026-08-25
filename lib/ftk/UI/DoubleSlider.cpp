@@ -324,20 +324,25 @@ namespace ftk
         out->addAction(reset);
         out->setEnabled(reset, model->hasDefault());
 
-        out->addDivider();
+        // A soft range is a starting point the user may adjust, so it
+        // is offered here; a hard range is a fixed bound.
+        if (model->isRangeSoft())
+        {
+            out->addDivider();
 
-        std::weak_ptr<IDoubleSlider> weak(
-            std::static_pointer_cast<IDoubleSlider>(shared_from_this()));
-        auto setRange = Action::create(
-            "Set Range...",
-            [weak]
-            {
-                if (auto widget = weak.lock())
+            std::weak_ptr<IDoubleSlider> weak(
+                std::static_pointer_cast<IDoubleSlider>(shared_from_this()));
+            auto setRange = Action::create(
+                "Set Range...",
+                [weak]
                 {
-                    widget->_showRangePopup();
-                }
-            });
-        out->addAction(setRange);
+                    if (auto widget = weak.lock())
+                    {
+                        widget->_showRangePopup();
+                    }
+                });
+            out->addAction(setRange);
+        }
 
         return out;
     }
