@@ -1,6 +1,7 @@
 add_subdirectory(gfx)
 add_subdirectory(imageview)
 add_subdirectory(objview)
+add_subdirectory(panel)
 add_subdirectory(preview)
 add_subdirectory(simple)
 add_subdirectory(textedit)

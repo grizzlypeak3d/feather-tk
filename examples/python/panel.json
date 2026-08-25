@@ -1,0 +1,26 @@
+{
+    "type": "VerticalLayout",
+    "marginRole": "Margin",
+    "spacingRole": "SpacingSmall",
+    "children": [
+        { "type": "GroupBox", "text": "Render", "children": [
+            { "type": "FormLayout", "spacingRole": "SpacingSmall", "rows": [
+                { "label": "Width:", "widget": {
+                    "type": "IntEditSlider", "id": "width",
+                    "range": [ 1, 4096 ], "value": 1920 } },
+                { "label": "Samples:", "widget": {
+                    "type": "IntEditSlider", "id": "samples",
+                    "range": [ 1, 256 ], "value": 16 } },
+                { "label": "Output:", "widget": {
+                    "type": "LineEdit", "id": "output", "text": "render.####.exr" } }
+            ] }
+        ] },
+        { "type": "Spacer", "orientation": "Vertical", "vStretch": "Expanding" },
+        { "type": "HorizontalLayout", "spacingRole": "SpacingSmall", "children": [
+            { "type": "Label", "id": "status", "text": "Ready" },
+            { "type": "Spacer", "orientation": "Horizontal", "hStretch": "Expanding" },
+            { "type": "PushButton", "id": "render", "text": "Render",
+              "icon": "PlaybackForward" }
+        ] }
+    ]
+}

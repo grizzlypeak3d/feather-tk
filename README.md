@@ -217,6 +217,7 @@ The examples in the [examples/](examples/) directory:
 | [textedit](examples/textedit/) | Application architecture: documents, actions shared between the menus and tool bars, and persistent settings |
 | [imageview](examples/imageview/) | A custom image display widget |
 | [objview](examples/objview/) | Custom OpenGL rendering inside a widget |
+| [panel](examples/panel/) | A tool panel loaded from JSON with the behavior wired up by id |
 | [preview](examples/preview/) | Live preview of a widget layout from JSON, reloading as the file is edited |
 | [gfx](examples/gfx/) | Procedural drawing |
 | [windows](examples/windows/) | Multiple windows |
