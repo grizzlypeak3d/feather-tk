@@ -43,6 +43,7 @@ namespace ftk
                 .def_property("format", &LineEdit::getFormat, &LineEdit::setFormat)
                 .def("setFocusCallback", &LineEdit::setFocusCallback)
                 .def_property("readOnly", &LineEdit::isReadOnly, &LineEdit::setReadOnly)
+                .def_property("selectAllOnFocus", &LineEdit::hasSelectAllOnFocus, &LineEdit::setSelectAllOnFocus)
                 .def("selectAll", &LineEdit::selectAll)
                 .def("clearSelection", &LineEdit::clearSelection)
                 .def_property("font", &LineEdit::getFont, &LineEdit::setFont)

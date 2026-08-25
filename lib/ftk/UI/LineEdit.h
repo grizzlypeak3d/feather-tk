@@ -85,6 +85,16 @@ namespace ftk
         FTK_UI_API void selectAll();
         FTK_UI_API void clearSelection();
 
+        //! Get whether all of the text is selected when key focus is
+        //! gained.
+        FTK_UI_API bool hasSelectAllOnFocus() const;
+
+        //! Set whether all of the text is selected when key focus is
+        //! gained. Numeric edits use this so that typing replaces the
+        //! value; a click can still place the cursor once the widget
+        //! has focus.
+        FTK_UI_API void setSelectAllOnFocus(bool);
+
         ///@}
 
         //! \name Font

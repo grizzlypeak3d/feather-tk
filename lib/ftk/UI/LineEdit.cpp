@@ -23,6 +23,7 @@ namespace ftk
         std::shared_ptr<FontSystem> fontSystem;
         std::function<void(const std::string&)> callback;
         bool callbackOnFocusLost = true;
+        bool selectAllOnFocus = false;
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = std::string(20, '#');
         std::function<void(bool)> focusCallback;
@@ -222,6 +223,16 @@ namespace ftk
     void LineEdit::selectAll()
     {
         _p->model->selectAll();
+    }
+
+    bool LineEdit::hasSelectAllOnFocus() const
+    {
+        return _p->selectAllOnFocus;
+    }
+
+    void LineEdit::setSelectAllOnFocus(bool value)
+    {
+        _p->selectAllOnFocus = value;
     }
 
     void LineEdit::clearSelection()
@@ -493,6 +504,10 @@ namespace ftk
         FTK_P();
         if (value)
         {
+            if (p.selectAllOnFocus)
+            {
+                p.model->selectAll();
+            }
             p.cursorVisible = true;
             p.cursorTimer = std::chrono::steady_clock::now();
             setDrawUpdate();

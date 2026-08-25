@@ -40,6 +40,7 @@ namespace ftk
         p.model = model;
 
         p.lineEdit = LineEdit::create(context);
+        p.lineEdit->setSelectAllOnFocus(true);
         p.lineEdit->getModel()->setRegex("[0-9\\-\\.]+");
         p.lineEdit->setFont(FontType::Mono);
         p.lineEdit->setFormat("00000.00");

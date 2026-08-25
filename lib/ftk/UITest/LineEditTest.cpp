@@ -88,6 +88,20 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(!edit->hasKeyFocus());
 
+                // Selecting all on focus, the way the numeric edits do.
+                edit->setText("Test");
+                edit->setSelectAllOnFocus(true);
+                FTK_CHECK(edit->hasSelectAllOnFocus());
+                edit->takeKeyFocus();
+                app->tick();
+                const LineEditSelection& selection =
+                    edit->getModel()->getSelection();
+                FTK_CHECK(selection.isValid());
+                FTK_CHECK(0 == selection.min());
+                FTK_CHECK(4 == selection.max());
+                edit->releaseKeyFocus();
+                edit->setSelectAllOnFocus(false);
+
                 // Undo/redo.
                 {
                     auto undoEdit = LineEdit::create(_context, layout);

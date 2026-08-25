@@ -513,10 +513,10 @@ namespace ftk
                 event.render->drawRect(
                     Box2I(
                         _valueToPos(defaultValue) - p.size.border,
-                        g2.y() + g2.h() / 4,
+                        g2.y() + g2.h() / 6,
                         p.size.border * 2,
-                        g2.h() / 2),
-                    remainderColor);
+                        g2.h() * 2 / 3),
+                    event.style->getColorRole(ColorRole::TextDisabled, enabled));
             }
         }
 
