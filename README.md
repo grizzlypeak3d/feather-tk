@@ -46,6 +46,8 @@ writing custom widgets straightforward.
   role-based so themes apply globally without touching widget code.
 - **Settings persistence** — JSON-backed settings with typed get/set and automatic save
   on exit.
+- **Widgets from JSON** — layouts loaded from data, with behavior attached in code by
+  id; a live preview example reloads a layout as the file is edited.
 - **OpenGL rendering** — OpenGL 4.1 and OpenGL ES 2 backends.
 - **HiDPI** — display scale awareness throughout; all size roles scale correctly on
   high-density displays and multi-monitor setups.
@@ -143,6 +145,48 @@ window = None
 app = None
 
 ```
+
+---
+
+## Widgets from JSON
+
+A widget tree can be created from data: the structure and the properties live in
+the JSON, and behavior stays in code.
+
+```json
+{
+    "type": "VerticalLayout",
+    "marginRole": "Margin",
+    "children": [
+        { "type": "Label", "text": "Hello from JSON" },
+        { "type": "FormLayout", "rows": [
+            { "label": "Size:", "widget": {
+                "type": "IntEditSlider", "id": "size",
+                "range": [ 1, 100 ], "value": 25 } }
+        ] },
+        { "type": "PushButton", "id": "apply", "text": "Apply" }
+    ]
+}
+```
+
+Widgets are given an `"id"` and found in code to attach callbacks, the way markup
+and script divide a web page:
+
+```cpp
+auto result = ftk::widgetLoad(context, json);
+auto button = ftk::findWidget(result.widget, "apply");
+```
+
+```python
+widget, errors = ftk.widgetLoad(context, jsonString)
+ftk.findWidget(widget, "apply").setClickedCallback(callback)
+```
+
+The [preview](examples/preview/) example renders a layout file and reloads it as
+the file is edited in any editor, with problems shown in the window; the
+`ftk_embed_text()` CMake function embeds the same file in the binary for
+shipping. Applications register their own widget types with
+`ftk::widgetLoadRegister()`.
 
 ---
 
