@@ -25,6 +25,7 @@ namespace ftk
                     py::arg("context"),
                     py::arg("orientation") = Orientation::Horizontal,
                     py::arg("parent") = nullptr)
+                .def_property("marginRole", &ToolBar::getMarginRole, &ToolBar::setMarginRole)
                 .def("addAction", &ToolBar::addAction)
                 .def("addWidget", &ToolBar::addWidget)
                 .def("clear", &ToolBar::clear);
