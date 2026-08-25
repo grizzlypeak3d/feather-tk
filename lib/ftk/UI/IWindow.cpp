@@ -539,6 +539,18 @@ namespace ftk
             p.style.sizeRoles = sizeRoles;
             p.style.colorRoles = colorRoles;
             p.style.fonts = fonts;
+            // The event only resets the widgets' caches; without these
+            // nothing is marked dirty and a change to the colors alone --
+            // switching between the dark and light styles -- never reaches
+            // the screen. The display scale changes only worked because
+            // setDisplayScale() sets the flags itself.
+            if (styleEvent.displayScaleChange ||
+                styleEvent.sizeRoleChange ||
+                styleEvent.fontChange)
+            {
+                setSizeUpdate();
+            }
+            setDrawUpdate();
         }
 
         const bool sizeUpdate = _hasSizeUpdate(shared_from_this());
