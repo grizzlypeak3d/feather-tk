@@ -24,6 +24,19 @@ namespace ftk
         }
 
         template<typename T>
+        inline void cmdLineListOption(pybind11::module_& m, const std::string& type)
+        {
+            std::string name = "CmdLineListOption" + type;
+            pybind11::class_<CmdLineListOption<T>, ICmdLineOption, std::shared_ptr<CmdLineListOption<T> > >(m, name.c_str())
+                .def(
+                    pybind11::init(&CmdLineListOption<T>::create),
+                    pybind11::arg("names"),
+                    pybind11::arg("help"),
+                    pybind11::arg("group") = std::string())
+                .def_property_readonly("list", &CmdLineListOption<T>::getList);
+        }
+
+        template<typename T>
         inline void cmdLineArg(pybind11::module_& m, const std::string& type)
         {
             std::string name = "CmdLineArg" + type;

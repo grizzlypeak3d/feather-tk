@@ -35,6 +35,8 @@ namespace ftk
             cmdLineOption<bool>(m, "Bool");
             cmdLineOption<std::string>(m, "String");
 
+            cmdLineListOption<std::string>(m, "String");
+
             py::class_<ICmdLineArg, std::shared_ptr<ICmdLineArg> >(m, "ICmdLineArg");
 
             cmdLineArg<int>(m, "I");
