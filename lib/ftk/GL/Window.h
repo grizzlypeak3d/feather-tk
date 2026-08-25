@@ -4,6 +4,7 @@
 #pragma once
 
 #include <ftk/GL/Export.h>
+#include <ftk/Core/Box.h>
 #include <ftk/Core/Image.h>
 
 namespace ftk
@@ -117,6 +118,10 @@ namespace ftk
 
             //! Set whether the window has text input.
             FTK_GL_API void setTextInput(bool);
+
+            //! Set the text input area: where an input method places
+            //! its candidate window, in framebuffer coordinates.
+            FTK_GL_API void setTextInputArea(const Box2I&);
 
             //! Raise the window above the others and give it the input
             //! focus.

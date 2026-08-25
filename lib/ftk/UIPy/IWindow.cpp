@@ -111,6 +111,11 @@ namespace ftk
                     "text",
                     &IWindow::text,
                     py::arg("text"))
+                .def(
+                    "textEditing",
+                    &IWindow::textEditing,
+                    py::arg("text"),
+                    py::arg("cursor") = 0)
                 .def("setIcon", &IWindow::setIcon)
                 .def("screenshot", &IWindow::screenshot)
                 .def("close", &IWindow::close)

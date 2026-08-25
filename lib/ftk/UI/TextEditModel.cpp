@@ -566,7 +566,7 @@ namespace ftk
         {
             if (out.chr < static_cast<int>(text[out.line].size()))
             {
-                ++out.chr;
+                out.chr = static_cast<int>(utf8Next(text[out.line], out.chr));
             }
             else if (out.line < static_cast<int>(text.size()) - 1)
             {
@@ -587,7 +587,7 @@ namespace ftk
         {
             if (out.chr > 0)
             {
-                --out.chr;
+                out.chr = static_cast<int>(utf8Prev(text[out.line], out.chr));
             }
             else if (out.line > 0)
             {
@@ -673,7 +673,11 @@ namespace ftk
             if (cursor.line > 0)
             {
                 --cursor.line;
-                cursor.chr = std::min(cursor.chr, static_cast<int>(text[cursor.line].size()));
+                // Snapped so a move between lines cannot land in the
+                // middle of a character.
+                cursor.chr = static_cast<int>(utf8Align(
+                    text[cursor.line],
+                    std::min(cursor.chr, static_cast<int>(text[cursor.line].size()))));
             }
             break;
         case Key::Down:
@@ -681,7 +685,9 @@ namespace ftk
             {
                 ++cursor.line;
                 cursor.chr = cursor.line < static_cast<int>(text.size()) ?
-                    std::min(cursor.chr, static_cast<int>(text[cursor.line].size())) :
+                    static_cast<int>(utf8Align(
+                        text[cursor.line],
+                        std::min(cursor.chr, static_cast<int>(text[cursor.line].size())))) :
                     0;
             }
             break;

@@ -767,6 +767,29 @@ namespace ftk
         }
     }
 
+    void IWindow::setTextInputArea(const Box2I&)
+    {}
+
+    void IWindow::_textEditing(const std::string& value, int cursor)
+    {
+        FTK_P();
+        if (p.mousePress.lock())
+            return;
+        TextEditingEvent event(value, cursor);
+        if (auto widget = p.keyFocus.lock())
+        {
+            while (widget)
+            {
+                widget->textEditingEvent(event);
+                if (event.accept)
+                {
+                    break;
+                }
+                widget = widget->getParent();
+            }
+        }
+    }
+
     void IWindow::_cursorEnter(bool enter)
     {
         FTK_P();
@@ -837,6 +860,11 @@ namespace ftk
     void IWindow::text(const std::string& value)
     {
         _text(value);
+    }
+
+    void IWindow::textEditing(const std::string& value, int cursor)
+    {
+        _textEditing(value, cursor);
     }
 
     void IWindow::_cursorPos(const V2I& pos)

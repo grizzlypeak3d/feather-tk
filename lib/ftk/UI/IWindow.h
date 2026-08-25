@@ -128,6 +128,10 @@ namespace ftk
         FTK_UI_API bool hasTextInput() const;
         FTK_UI_API virtual void setTextInput(bool);
 
+        //! Set the text input area: where an input method places its
+        //! candidate window, in framebuffer coordinates.
+        FTK_UI_API virtual void setTextInputArea(const Box2I&);
+
         ///@}
 
         //! Tooltips
@@ -181,6 +185,10 @@ namespace ftk
         //! Enter text, the way typing does after the key events: letters
         //! reach a widget as text input, not as key presses.
         FTK_UI_API void text(const std::string&);
+
+        //! Send an input method composition, the way an IME does while
+        //! text is being composed; committing is text().
+        FTK_UI_API void textEditing(const std::string&, int cursor = 0);
 
         ///@}
 
@@ -247,6 +255,7 @@ namespace ftk
 
         bool _key(Key, bool press, int modifiers);
         void _text(const std::string&);
+        void _textEditing(const std::string&, int cursor);
         FTK_UI_API void _cursorEnter(bool enter);
         FTK_UI_API void _cursorPos(const V2I&);
         FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);

@@ -3,6 +3,8 @@
 
 #include <ftk/UI/LineEditModel.h>
 
+#include <ftk/Core/String.h>
+
 #include <ftk/UI/ClipboardSystem.h>
 
 #include <ftk/Core/Command.h>
@@ -514,10 +516,10 @@ namespace ftk
         switch (key)
         {
         case Key::Left:
-            cursor = std::max(cursor - 1, 0);
+            cursor = static_cast<int>(utf8Prev(text, cursor));
             break;
         case Key::Right:
-            cursor = std::min(cursor + 1, static_cast<int>(text.size()));
+            cursor = static_cast<int>(utf8Next(text, cursor));
             break;
 
         case Key::Home:
@@ -555,7 +557,7 @@ namespace ftk
         }
         else
         {
-            const int prev = std::max(cursor - 1, 0);
+            const int prev = static_cast<int>(utf8Prev(p.text->get(), cursor));
             if (cursor != prev)
             {
                 _edit(prev, cursor - prev, std::string(), prev, LineEditSelection());
@@ -580,7 +582,7 @@ namespace ftk
         }
         else
         {
-            const int next = std::min(cursor + 1, static_cast<int>(p.text->get().size()));
+            const int next = static_cast<int>(utf8Next(p.text->get(), cursor));
             if (cursor != next)
             {
                 _edit(cursor, next - cursor, std::string(), cursor, LineEditSelection());

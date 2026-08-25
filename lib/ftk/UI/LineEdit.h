@@ -127,12 +127,18 @@ namespace ftk
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;
         FTK_UI_API void mousePressEvent(MouseClickEvent&) override;
+        //! Get the in-progress input method composition. Empty except
+        //! while text is being composed.
+        FTK_UI_API const std::string& getPreedit() const;
+
         FTK_UI_API void keyFocusEvent(bool) override;
         FTK_UI_API void keyPressEvent(KeyEvent&) override;
         FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
         FTK_UI_API void textEvent(TextEvent&) override;
+        FTK_UI_API void textEditingEvent(TextEditingEvent&) override;
 
     private:
+        void _textInputAreaUpdate();
         std::shared_ptr<Menu> _createContextMenu();
 
         Box2I _getAlignGeometry() const;

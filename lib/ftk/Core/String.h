@@ -118,4 +118,25 @@ namespace ftk
     FTK_CORE_API std::string getLoremIpsum(size_t lineCount);
 
     ///@}
+
+    //! \name UTF-8
+    //! Steps land on code point boundaries, so a cursor that moves by
+    //! them cannot split a character.
+    ///@{
+
+    //! Get the next code point boundary after the byte index.
+    FTK_CORE_API size_t utf8Next(const std::string&, size_t byteIndex);
+
+    //! Get the previous code point boundary before the byte index.
+    FTK_CORE_API size_t utf8Prev(const std::string&, size_t byteIndex);
+
+    //! Get the number of code points in the first byteCount bytes.
+    FTK_CORE_API size_t utf8Count(
+        const std::string&,
+        size_t byteCount = std::string::npos);
+
+    //! Snap a byte index down to a code point boundary.
+    FTK_CORE_API size_t utf8Align(const std::string&, size_t byteIndex);
+
+    ///@}
 }

@@ -333,6 +333,7 @@ namespace ftk
 
         //! Text event.
         FTK_UI_API virtual void textEvent(TextEvent&);
+        FTK_UI_API virtual void textEditingEvent(TextEditingEvent&);
 
         //! Drag enter event.
         FTK_UI_API virtual void dragEnterEvent(DragDropEvent&);

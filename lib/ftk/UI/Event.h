@@ -371,6 +371,17 @@ namespace ftk
         bool        accept = false;
     };
 
+    //! Text editing event: the in-progress composition an input method
+    //! is building, shown inline before it is committed as text input.
+    struct FTK_UI_API_TYPE TextEditingEvent
+    {
+        FTK_UI_API TextEditingEvent(const std::string& text, int cursor);
+
+        std::string text;
+        int         cursor = 0;   //!< Cursor position within the text, in code points.
+        bool        accept = false;
+    };
+
     //! Drag and drop text data.
     class FTK_UI_API_TYPE DragDropTextData : public IDragDropData
     {

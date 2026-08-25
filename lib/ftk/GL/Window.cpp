@@ -475,6 +475,39 @@ namespace ftk
 #endif // FTK_SDL3
         }
 
+        void Window::setTextInputArea(const Box2I& value)
+        {
+            FTK_P();
+            // The box arrives in framebuffer coordinates and SDL wants
+            // window coordinates, which differ on a high DPI display.
+            int windowW = 0;
+            int windowH = 0;
+            int bufferW = 0;
+            int bufferH = 0;
+            SDL_GetWindowSize(p.sdlWindow, &windowW, &windowH);
+#if defined(FTK_SDL2)
+            SDL_GL_GetDrawableSize(p.sdlWindow, &bufferW, &bufferH);
+#elif defined(FTK_SDL3)
+            SDL_GetWindowSizeInPixels(p.sdlWindow, &bufferW, &bufferH);
+#endif // FTK_SDL2
+            const float scale =
+                bufferW > 0 && windowW > 0 ?
+                windowW / static_cast<float>(bufferW) :
+                1.F;
+            const SDL_Rect rect =
+            {
+                static_cast<int>(value.x() * scale),
+                static_cast<int>(value.y() * scale),
+                static_cast<int>(value.w() * scale),
+                static_cast<int>(value.h() * scale)
+            };
+#if defined(FTK_SDL2)
+            SDL_SetTextInputRect(&rect);
+#elif defined(FTK_SDL3)
+            SDL_SetTextInputArea(p.sdlWindow, &rect, 0);
+#endif // FTK_SDL2
+        }
+
         void Window::swap()
         {
             SDL_GL_SwapWindow(_p->sdlWindow);

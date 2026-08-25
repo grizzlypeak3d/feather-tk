@@ -146,6 +146,11 @@ namespace ftk
 #endif // __APPLE__
 #if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
+#if defined(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT)
+            // Without this, input method compositions longer than the
+            // event's fixed buffer are truncated.
+            SDL_SetHint(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT, "1");
+#endif // SDL_HINT_IME_SUPPORT_EXTENDED_TEXT
             if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
 #elif defined(FTK_SDL3)
             if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))

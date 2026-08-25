@@ -1329,11 +1329,38 @@ namespace ftk
                         window->_text(event.text.text);
                     }
                     break;
+                case SDL_TEXTEDITING:
+                    if (auto window = _getWindow(event.edit.windowID))
+                    {
+                        window->_textEditing(event.edit.text, event.edit.start);
+                    }
+                    break;
+#if defined(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT)
+                case SDL_TEXTEDITING_EXT:
+                    // Long compositions arrive here instead, with the
+                    // text allocated by SDL.
+                    if (auto window = _getWindow(event.editExt.windowID))
+                    {
+                        window->_textEditing(
+                            event.editExt.text ? event.editExt.text : "",
+                            event.editExt.start);
+                    }
+                    SDL_free(event.editExt.text);
+                    break;
+#endif // SDL_HINT_IME_SUPPORT_EXTENDED_TEXT
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_TEXT_INPUT:
                     if (auto window = _getWindow(event.text.windowID))
                     {
                         window->_text(event.text.text);
+                    }
+                    break;
+                case SDL_EVENT_TEXT_EDITING:
+                    if (auto window = _getWindow(event.edit.windowID))
+                    {
+                        window->_textEditing(
+                            event.edit.text ? event.edit.text : "",
+                            event.edit.start);
                     }
                     break;
 #endif // FTK_SDL2

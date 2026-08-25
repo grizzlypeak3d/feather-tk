@@ -39,6 +39,7 @@ namespace ftk
         FTK_UI_API void setFloatOnTop(bool) override;
         FTK_UI_API void raise() override;
         FTK_UI_API void setTextInput(bool) override;
+        FTK_UI_API void setTextInputArea(const Box2I&) override;
         FTK_UI_API void setIcon(const std::shared_ptr<Image>&) override;
         FTK_UI_API std::shared_ptr<Image> screenshot(const Box2I& = Box2I(0, 0, -1, -1)) override;
         FTK_UI_API std::vector<std::pair<std::string, std::string> > getWindowInfo() const override;

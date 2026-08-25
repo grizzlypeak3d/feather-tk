@@ -102,6 +102,47 @@ namespace ftk
                 edit->releaseKeyFocus();
                 edit->setSelectAllOnFocus(false);
 
+                // UTF-8: the cursor moves and deletes whole code
+                // points, never splitting a character. "a", then a two
+                // byte e-acute, then a three byte kanji.
+                edit->setText("a\xC3\xA9\xE6\x84\x9F");
+                auto model = edit->getModel();
+                model->key(Key::End, 0);
+                FTK_CHECK(6 == model->getCursor());
+                model->key(Key::Left, 0);
+                FTK_CHECK(3 == model->getCursor());
+                model->key(Key::Left, 0);
+                FTK_CHECK(1 == model->getCursor());
+                model->key(Key::Left, 0);
+                FTK_CHECK(0 == model->getCursor());
+                model->key(Key::End, 0);
+                model->key(Key::Backspace, 0);
+                FTK_CHECK("a\xC3\xA9" == edit->getText());
+                model->key(Key::Home, 0);
+                model->key(Key::Right, 0);
+                model->key(Key::Delete, 0);
+                FTK_CHECK("a" == edit->getText());
+
+                // An input method composition shows as the preedit until
+                // it is committed as text input or canceled.
+                edit->clearText();
+                edit->takeKeyFocus();
+                app->tick();
+                window->textEditing("\xE3\x81\x8B\xE3\x82\x93", 2);
+                app->tick();
+                FTK_CHECK("\xE3\x81\x8B\xE3\x82\x93" == edit->getPreedit());
+                FTK_CHECK(edit->getText().empty());
+                window->text("\xE6\x84\x9F");
+                app->tick();
+                FTK_CHECK(edit->getPreedit().empty());
+                FTK_CHECK("\xE6\x84\x9F" == edit->getText());
+                window->textEditing("x", 1);
+                FTK_CHECK("x" == edit->getPreedit());
+                window->textEditing("", 0);
+                FTK_CHECK(edit->getPreedit().empty());
+                edit->releaseKeyFocus();
+                app->tick();
+
                 // Undo/redo.
                 {
                     auto undoEdit = LineEdit::create(_context, layout);

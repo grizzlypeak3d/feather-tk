@@ -431,3 +431,63 @@ namespace ftk
         return out;
     }
 }
+
+namespace ftk
+{
+    namespace
+    {
+        inline bool utf8Continuation(char value)
+        {
+            return (static_cast<unsigned char>(value) & 0xC0) == 0x80;
+        }
+    }
+
+    size_t utf8Next(const std::string& value, size_t byteIndex)
+    {
+        size_t out = byteIndex;
+        if (out < value.size())
+        {
+            ++out;
+            while (out < value.size() && utf8Continuation(value[out]))
+            {
+                ++out;
+            }
+        }
+        return out;
+    }
+
+    size_t utf8Prev(const std::string& value, size_t byteIndex)
+    {
+        size_t out = std::min(byteIndex, value.size());
+        if (out > 0)
+        {
+            --out;
+            while (out > 0 && utf8Continuation(value[out]))
+            {
+                --out;
+            }
+        }
+        return out;
+    }
+
+    size_t utf8Align(const std::string& value, size_t byteIndex)
+    {
+        size_t out = std::min(byteIndex, value.size());
+        while (out > 0 && out < value.size() && utf8Continuation(value[out]))
+        {
+            --out;
+        }
+        return out;
+    }
+
+    size_t utf8Count(const std::string& value, size_t byteCount)
+    {
+        size_t out = 0;
+        const size_t max = std::min(byteCount, value.size());
+        for (size_t i = 0; i < max; i = utf8Next(value, i))
+        {
+            ++out;
+        }
+        return out;
+    }
+}

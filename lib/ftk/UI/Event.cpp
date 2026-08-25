@@ -373,6 +373,11 @@ namespace ftk
         pos(pos)
     {}
 
+    TextEditingEvent::TextEditingEvent(const std::string& text, int cursor) :
+        text(text),
+        cursor(cursor)
+    {}
+
     TextEvent::TextEvent(const std::string& text) :
         text(text)
     {}

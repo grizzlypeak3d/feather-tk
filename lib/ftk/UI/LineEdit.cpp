@@ -12,6 +12,7 @@
 #include <ftk/UI/Menu.h>
 
 #include <ftk/Core/RenderUtil.h>
+#include <ftk/Core/String.h>
 
 #include <optional>
 
@@ -32,6 +33,8 @@ namespace ftk
 
         int cursorStart = -1;
         bool cursorVisible = false;
+        std::string preedit;
+        int preeditCursorBytes = 0;
         std::chrono::steady_clock::time_point cursorTimer;
         int scroll = 0;
         Box2I textBox;
@@ -111,6 +114,7 @@ namespace ftk
                     p.cursorVisible = true;
                     p.cursorTimer = std::chrono::steady_clock::now();
                     setDrawUpdate();
+                    _textInputAreaUpdate();
                 }
                 _scrollUpdate(index);
             });
@@ -430,10 +434,20 @@ namespace ftk
         event.render->setClipRectEnabled(true);
         event.render->setClipRect(intersect(p.draw->g2, drawRect));
 
+        // Splice in the input method composition: it is drawn as part
+        // of the text with an underline, and the cursor inside it,
+        // until it is committed or canceled.
+        const std::string& modelText = p.model->getText();
+        const int modelCursor = p.model->getCursor();
+        std::string text = modelText;
+        if (!p.preedit.empty())
+        {
+            text.insert(modelCursor, p.preedit);
+        }
+
         // Draw the selection.
-        const std::string& text = p.model->getText();
         const LineEditSelection& selection = p.model->getSelection();
-        if (selection.isValid())
+        if (p.preedit.empty() && selection.isValid())
         {
             const std::string text0 = text.substr(0, selection.min());
             const int x0 = event.fontSystem->getSize(text0, p.size.fontInfo).w;
@@ -461,12 +475,39 @@ namespace ftk
             pos,
             event.style->getColorRole(ColorRole::Text, enabled));
 
+        // Underline the composition.
+        if (!p.preedit.empty())
+        {
+            const int x0 = event.fontSystem->getSize(
+                text.substr(0, modelCursor), p.size.fontInfo).w;
+            const int x1 = event.fontSystem->getSize(
+                text.substr(0, modelCursor + p.preedit.size()),
+                p.size.fontInfo).w;
+            // Directly under the glyphs, kept inside the text geometry
+            // in case a fallback font's line is taller than it.
+            const int underlineY = std::min(
+                pos.y + p.size.fontMetrics.lineHeight,
+                p.draw->g3.y() + p.draw->g3.h() - p.size.border);
+            event.render->drawRect(
+                Box2I(
+                    p.draw->g3.x() - p.scroll + x0,
+                    underlineY,
+                    x1 - x0,
+                    p.size.border),
+                event.style->getColorRole(ColorRole::Text, enabled));
+        }
+
         // Draw the cursor.
         if (p.cursorVisible)
         {
+            const int cursorPos = p.preedit.empty() ?
+                _toPos(modelCursor) :
+                event.fontSystem->getSize(
+                    text.substr(0, modelCursor + p.preeditCursorBytes),
+                    p.size.fontInfo).w;
             event.render->drawRect(
                 Box2I(
-                    p.draw->g3.x() - p.scroll + _toPos(p.model->getCursor()),
+                    p.draw->g3.x() - p.scroll + cursorPos,
                     p.draw->g3.y(),
                     p.size.border,
                     p.draw->g3.h()),
@@ -511,11 +552,18 @@ namespace ftk
             p.cursorVisible = true;
             p.cursorTimer = std::chrono::steady_clock::now();
             setDrawUpdate();
+            _textInputAreaUpdate();
         }
         else
         {
             p.model->clearSelection();
             p.cursorVisible = false;
+            if (!p.preedit.empty())
+            {
+                p.preedit.clear();
+                p.preeditCursorBytes = 0;
+                p.draw.reset();
+            }
             setDrawUpdate();
             if (p.callback && p.callbackOnFocusLost)
             {
@@ -576,8 +624,40 @@ namespace ftk
         if (!p.model->isReadOnly())
         {
             event.accept = true;
+            // Committing replaces the composition.
+            if (!p.preedit.empty())
+            {
+                p.preedit.clear();
+                p.preeditCursorBytes = 0;
+                p.draw.reset();
+            }
             p.model->input(event.text);
         }
+    }
+
+    void LineEdit::textEditingEvent(TextEditingEvent& event)
+    {
+        FTK_P();
+        if (!p.model->isReadOnly())
+        {
+            event.accept = true;
+            p.preedit = event.text;
+            // The cursor arrives in code points; the drawing measures
+            // in bytes.
+            size_t bytes = 0;
+            for (int i = 0; i < event.cursor && bytes < p.preedit.size(); ++i)
+            {
+                bytes = utf8Next(p.preedit, bytes);
+            }
+            p.preeditCursorBytes = static_cast<int>(bytes);
+            p.draw.reset();
+            setDrawUpdate();
+        }
+    }
+
+    const std::string& LineEdit::getPreedit() const
+    {
+        return _p->preedit;
     }
 
     std::shared_ptr<Menu> LineEdit::_createContextMenu()
@@ -685,29 +765,57 @@ namespace ftk
     int LineEdit::_toCursor(int value) const
     {
         FTK_P();
-        int out = 0;
+        // The glyph boxes are per code point and the model cursor is a
+        // byte index, so the found glyph converts back to bytes; the
+        // two only agree for ASCII.
+        int glyph = 0;
         for (;
-            out < static_cast<int>(p.size.glyphBoxes.size()) &&
-                p.size.glyphBoxes[out].max.x < value;
-            ++out)
+            glyph < static_cast<int>(p.size.glyphBoxes.size()) &&
+                p.size.glyphBoxes[glyph].max.x < value;
+            ++glyph)
             ;
-        return out;
+        const std::string& text = p.model->getText();
+        size_t out = 0;
+        for (int i = 0; i < glyph && out < text.size(); ++i)
+        {
+            out = utf8Next(text, out);
+        }
+        return static_cast<int>(out);
     }
 
     int LineEdit::_toPos(int value) const
     {
         FTK_P();
+        const int glyph = static_cast<int>(
+            utf8Count(p.model->getText(), value));
         int out = 0;
-        if (value >= 0 && value < static_cast<int>(p.size.glyphBoxes.size()))
+        if (glyph >= 0 && glyph < static_cast<int>(p.size.glyphBoxes.size()))
         {
-            out = p.size.glyphBoxes[value].min.x;
+            out = p.size.glyphBoxes[glyph].min.x;
         }
-        else if (value >= static_cast<int>(p.size.glyphBoxes.size()) &&
+        else if (glyph >= static_cast<int>(p.size.glyphBoxes.size()) &&
             !p.size.glyphBoxes.empty())
         {
             out = p.size.glyphBoxes.back().max.x;
         }
         return out;
+    }
+
+    void LineEdit::_textInputAreaUpdate()
+    {
+        FTK_P();
+        if (hasKeyFocus())
+        {
+            if (auto window = getWindow())
+            {
+                const Box2I g = _getTextGeometry();
+                window->setTextInputArea(Box2I(
+                    g.min.x - p.scroll + _toPos(p.model->getCursor()),
+                    g.min.y,
+                    p.size.border,
+                    g.h()));
+            }
+        }
     }
 
     void LineEdit::_scrollUpdate(int value)

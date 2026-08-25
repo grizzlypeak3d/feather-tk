@@ -462,6 +462,9 @@ namespace ftk
     void IWidget::keyReleaseEvent(KeyEvent&)
     {}
 
+    void IWidget::textEditingEvent(TextEditingEvent&)
+    {}
+
     void IWidget::textEvent(TextEvent&)
     {}
 

@@ -182,6 +182,11 @@ namespace ftk
         _p->window->setTextInput(value);
     }
 
+    void Window::setTextInputArea(const Box2I& value)
+    {
+        _p->window->setTextInputArea(value);
+    }
+
     void Window::setIcon(const std::shared_ptr<Image>& icon)
     {
         _p->window->setIcon(icon);
