@@ -86,6 +86,27 @@ namespace ftk
                 .def("getNextKeyFocus", &IWindow::getNextKeyFocus)
                 .def("getPrevKeyFocus", &IWindow::getPrevKeyFocus)
                 .def_property("tooltipsEnabled", &IWindow::getTooltipsEnabled, &IWindow::setTooltipsEnabled)
+                .def(
+                    "layout",
+                    &IWindow::layout,
+                    py::arg("size"))
+                .def(
+                    "click",
+                    &IWindow::click,
+                    py::arg("pos"),
+                    py::arg("button") = MouseButton::Left,
+                    py::arg("modifiers") = 0)
+                .def(
+                    "drag",
+                    &IWindow::drag,
+                    py::arg("path"),
+                    py::arg("modifiers") = 0,
+                    py::arg("release") = true)
+                .def(
+                    "keyPress",
+                    &IWindow::keyPress,
+                    py::arg("key"),
+                    py::arg("modifiers") = 0)
                 .def("setIcon", &IWindow::setIcon)
                 .def("screenshot", &IWindow::screenshot)
                 .def("close", &IWindow::close)

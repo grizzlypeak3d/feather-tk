@@ -5,7 +5,9 @@
 
 #include <ftk/UI/IWidget.h>
 #include <ftk/UI/IWindow.h>
+#include <ftk/UI/Menu.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -163,6 +165,9 @@ namespace ftk
                 .def("releaseKeyFocus", &IWidget::releaseKeyFocus)
 
                 .def_property("tooltip", &IWidget::getTooltip, &IWidget::setTooltip)
+                .def(
+                    "setContextMenuCallback",
+                    &IWidget::setContextMenuCallback)
 
                 .def("childAddEvent", &IWidget::childAddEvent, py::arg("event"))
                 .def("childRemoveEvent", &IWidget::childRemoveEvent, py::arg("event"))
