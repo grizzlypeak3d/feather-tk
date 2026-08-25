@@ -68,6 +68,10 @@ namespace ftk
         //! Set whether the button has a popup icon.
         FTK_UI_API void setPopupIcon(bool);
 
+        //! A string literal converts to bool, so a caller asking for an icon
+        //! by name would silently ask for true instead.
+        void setPopupIcon(const char*) = delete;
+
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;

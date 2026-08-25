@@ -40,7 +40,7 @@ namespace ftk
                     py::arg("context"),
                     py::arg("action"),
                     py::arg("parent") = nullptr)
-            .def_property("popupIcon", &ToolButton::hasPopupIcon, &ToolButton::setPopupIcon);
+            .def_property("popupIcon", &ToolButton::hasPopupIcon, py::overload_cast<bool>(&ToolButton::setPopupIcon));
         }
     }
 }
