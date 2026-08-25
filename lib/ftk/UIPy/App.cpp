@@ -141,6 +141,7 @@ namespace ftk
                 .def_property_readonly("observeDisplayScale", &App::observeDisplayScale)
                 .def_property("tooltipsEnabled", &App::areTooltipsEnabled, &App::setTooltipsEnabled)
                 .def_property_readonly("observeTooltipsEnabled", &App::observeTooltipsEnabled)
+                .def_static("setOffscreenDefault", &App::setOffscreenDefault, py::arg("value"))
                 .def("writeScreenshot", &App::writeScreenshot, py::arg("path"))
                 .def("writeWidgetDump", &App::writeWidgetDump, py::arg("path"))
                 .def("exit", &App::exit)

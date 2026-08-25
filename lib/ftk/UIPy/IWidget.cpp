@@ -103,7 +103,7 @@ namespace ftk
 
                 .def_property("objectName", &IWidget::getObjectName, &IWidget::setObjectName)
                 .def_property_readonly("objectPath", &IWidget::getObjectPath)
-                .def_property("backgroundColor", &IWidget::getBackgroundRole, &IWidget::setBackgroundRole)
+                .def_property("backgroundRole", &IWidget::getBackgroundRole, &IWidget::setBackgroundRole)
 
                 .def_property("parent", &IWidget::getParent, &IWidget::setParent)
                 .def("getChildren", &IWidget::getChildren)

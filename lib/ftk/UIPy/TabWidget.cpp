@@ -29,6 +29,14 @@ namespace ftk
                     py::arg("name"),
                     py::arg("widget"),
                     py::arg("tooltip") = std::string())
+                .def(
+                    "removeTab",
+                    py::overload_cast<int>(&TabWidget::removeTab),
+                    py::arg("index"))
+                .def(
+                    "removeTab",
+                    py::overload_cast<const std::shared_ptr<IWidget>&>(&TabWidget::removeTab),
+                    py::arg("widget"))
                 .def("clear", &TabWidget::clear)
                 .def_property("current", &TabWidget::getCurrent, &TabWidget::setCurrent)
                 .def("setCallback", &TabWidget::setCallback)

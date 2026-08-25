@@ -5,6 +5,9 @@
 
 #include <ftk/UI/TextEditModel.h>
 
+#include <ftk/CorePy/Bindings.h>
+
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -46,6 +49,9 @@ namespace ftk
                 .def("__eq__", &TextEditModelOptions::operator==)
                 .def("__ne__", &TextEditModelOptions::operator!=);
 
+            ftk::python::observable<TextEditPos>(m, "TextEditPos");
+            ftk::python::observable<TextEditSelection>(m, "TextEditSelection");
+
             py::class_<TextEditModel, std::shared_ptr<TextEditModel> >(m, "TextEditModel")
                 .def(
                     py::init(py::overload_cast<
@@ -65,6 +71,8 @@ namespace ftk
                 .def("selectAll", &TextEditModel::selectAll)
                 .def("clearSelection", &TextEditModel::clearSelection)
                 .def("undo", &TextEditModel::undo)
+                .def("observeHasUndo", &TextEditModel::observeHasUndo)
+                .def("observeHasRedo", &TextEditModel::observeHasRedo)
                 .def("redo", &TextEditModel::redo)
                 .def("cut", &TextEditModel::cut)
                 .def("copy", &TextEditModel::copy)

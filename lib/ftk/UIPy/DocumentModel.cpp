@@ -5,8 +5,10 @@
 
 #include <ftk/UI/DocumentModel.h>
 
+#include <ftk/CorePy/Bindings.h>
 #include <ftk/Core/Context.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -16,9 +18,29 @@ namespace ftk
 {
     namespace python
     {
+        namespace
+        {
+            // Lets Python classes derive their own document types; the
+            // interface is only an identity, so there is nothing to
+            // forward.
+            class PyIDocument : public IDocument
+            {
+            public:
+                virtual ~PyIDocument()
+                {}
+            };
+        }
+
         void documentModel(py::module_& m)
         {
-            py::class_<IDocument, std::shared_ptr<IDocument> >(m, "IDocument");
+            py::class_<IDocument, PyIDocument, std::shared_ptr<IDocument> >(m, "IDocument")
+                .def(py::init<>());
+
+            // The add and close observables carry weak pointers, which
+            // do not cross into Python; observing the list covers the
+            // same ground.
+            ftk::python::observable<std::shared_ptr<IDocument> >(m, "IDocument");
+            ftk::python::observableList<std::shared_ptr<IDocument> >(m, "IDocument");
 
             py::class_<DocumentModel, std::shared_ptr<DocumentModel> >(m, "DocumentModel")
                 .def(

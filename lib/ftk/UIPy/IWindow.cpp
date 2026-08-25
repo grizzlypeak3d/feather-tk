@@ -107,6 +107,10 @@ namespace ftk
                     &IWindow::keyPress,
                     py::arg("key"),
                     py::arg("modifiers") = 0)
+                .def(
+                    "text",
+                    &IWindow::text,
+                    py::arg("text"))
                 .def("setIcon", &IWindow::setIcon)
                 .def("screenshot", &IWindow::screenshot)
                 .def("close", &IWindow::close)
