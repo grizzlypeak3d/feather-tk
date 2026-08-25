@@ -9,7 +9,7 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LRUCache.h>
 
-#include <ftkResource/IconResources.h>
+#include <ftk_resource/IconResources.h>
 
 #include <lunasvg/lunasvg.h>
 

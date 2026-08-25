@@ -12,37 +12,18 @@ set(RESOURCES
     etc/Images/TestDrawing.svg)
 list(TRANSFORM RESOURCES PREPEND ${PROJECT_SOURCE_DIR}/)
 
-# The icons are globbed and registered by a generated map, so adding an
-# icon is adding a file to etc/Icons; the icon system picks up whatever
-# is there. CONFIGURE_DEPENDS makes a new file re-run CMake.
-file(GLOB ICON_RESOURCES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/etc/Icons/*.svg)
-set(ICON_EXTERNS)
-set(ICON_ENTRIES)
-foreach(ICON ${ICON_RESOURCES})
-    get_filename_component(ICON_BASE ${ICON} NAME_WE)
-    string(MAKE_C_IDENTIFIER ${ICON_BASE} ICON_VAR)
-    string(APPEND ICON_EXTERNS "    extern std::vector<uint8_t> ${ICON_VAR};\n")
-    string(APPEND ICON_ENTRIES "            { \"${ICON_BASE}\", &${ICON_VAR} },\n")
-endforeach()
-# The generated files live in a subdirectory and are included as
-# <ftkResource/Name.h>: a header named for a resource -- Time.svg --
-# in the include path root would shadow a system header -- <time.h> --
-# on a case insensitive file system.
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ftkResource)
-configure_file(IconResources.h.in ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/IconResources.h @ONLY)
-configure_file(IconResources.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/IconResources.cpp @ONLY)
-list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/IconResources.cpp)
-
-list(APPEND RESOURCES ${ICON_RESOURCES})
+# The icons go through ftk_icon_resources(): adding an icon is adding a
+# file to etc/Icons, and the icon system registers the generated map.
+ftk_icon_resources(SOURCE ${PROJECT_SOURCE_DIR}/etc/Icons ftk_resource)
 foreach(RESOURCE ${RESOURCES})
     get_filename_component(RESOURCE_BASE ${RESOURCE} NAME_WE)
     add_custom_command(
         OUTPUT
-            ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/${RESOURCE_BASE}.cpp
-            ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/${RESOURCE_BASE}.h
-        COMMAND ftk-resource ${RESOURCE} ftkResource/${RESOURCE_BASE} ftk_resource
+            ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.cpp
+            ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.h
+        COMMAND ftk-resource ${RESOURCE} ftk_resource/${RESOURCE_BASE} ftk_resource
         DEPENDS ${RESOURCE})
-    list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftkResource/${RESOURCE_BASE}.cpp)
+    list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.cpp)
 endforeach()
 
 # Static, whatever the rest of the build is. The resources are data at

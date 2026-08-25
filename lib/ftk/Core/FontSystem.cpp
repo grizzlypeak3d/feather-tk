@@ -17,12 +17,12 @@
 
 #include <algorithm>
 #include <limits>
-#include <ftkResource/NotoMono-Regular.h>
-#include <ftkResource/NotoSans-Bold.h>
-#include <ftkResource/NotoSans-Regular.h>
-#include <ftkResource/NotoSansSymbols2-Regular.h>
+#include <ftk_resource/NotoMono-Regular.h>
+#include <ftk_resource/NotoSans-Bold.h>
+#include <ftk_resource/NotoSans-Regular.h>
+#include <ftk_resource/NotoSansSymbols2-Regular.h>
 #if defined(FTK_CJK)
-#include <ftkResource/NotoSansCJK-Regular.h>
+#include <ftk_resource/NotoSansCJK-Regular.h>
 #endif // FTK_CJK
 
 #include <map>

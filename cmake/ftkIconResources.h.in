@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-namespace ftk_resource
+namespace @ICON_NAMESPACE@
 {
     //! The icons compiled into the library, keyed by name. Generated
-    //! from the files in etc/Icons, so adding an icon is adding a file
-    //! there; the icon system registers everything this returns.
+    //! by ftk_icon_resources() from a directory of files, so adding an
+    //! icon is adding a file there.
     const std::map<std::string, std::vector<uint8_t>*>& getIconResources();
 }

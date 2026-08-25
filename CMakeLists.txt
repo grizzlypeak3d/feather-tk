@@ -144,6 +144,7 @@ endif()
 # Subdirectories
 
 include(cmake/ftkEmbedText.cmake)
+include(cmake/ftkIconResources.cmake)
 
 add_subdirectory(bin/ftk-resource)
 add_subdirectory(lib/ftk)
@@ -166,5 +167,8 @@ install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/ftkConfig.cmake
         cmake/ftkEmbedText.cmake
+        cmake/ftkIconResources.cmake
+        cmake/ftkIconResources.h.in
+        cmake/ftkIconResources.cpp.in
     DESTINATION lib/cmake/ftk
     COMPONENT dev)
