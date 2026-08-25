@@ -23,7 +23,6 @@ namespace ftk
         std::shared_ptr<IncButtons> incButtons;
         std::shared_ptr<HorizontalLayout> layout;
         std::function<void(float)> callback;
-        int blockCallbacks = 0;
 
         std::shared_ptr<Observer<float> > valueObserver;
         std::shared_ptr<Observer<RangeF> > rangeObserver;
@@ -85,7 +84,7 @@ namespace ftk
             {
                 FTK_P();
                 _textUpdate();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
@@ -142,9 +141,7 @@ namespace ftk
     void FloatEdit::setValue(float value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void FloatEdit::setCallback(const std::function<void(float)>& value)
@@ -160,9 +157,7 @@ namespace ftk
     void FloatEdit::setRange(const RangeF& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void FloatEdit::setRange(float min, float max)

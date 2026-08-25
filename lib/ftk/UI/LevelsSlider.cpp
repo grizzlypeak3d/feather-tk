@@ -138,7 +138,6 @@ namespace ftk
         std::shared_ptr<LevelsModel> model;
         std::function<void(const RangeF&)> callback;
         std::function<void(const RangeF&, bool)> pressedCallback;
-        int blockCallbacks = 0;
         std::shared_ptr<Observer<RangeF> > valueObserver;
         std::shared_ptr<Observer<RangeF> > rangeObserver;
 
@@ -188,11 +187,11 @@ namespace ftk
                 FTK_P();
                 setSizeUpdate();
                 setDrawUpdate();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, _isMousePressed());
                 }
@@ -241,9 +240,7 @@ namespace ftk
     void LevelsSlider::setValue(const RangeF& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void LevelsSlider::setCallback(const std::function<void(const RangeF&)>& value)
@@ -264,9 +261,7 @@ namespace ftk
     void LevelsSlider::setRange(const RangeF& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void LevelsSlider::setRange(float min, float max)
@@ -474,7 +469,7 @@ namespace ftk
         IMouseWidget::mouseReleaseEvent(event);
         FTK_P();
         p.mouse.handle = -1;
-        if (p.pressedCallback && !p.blockCallbacks)
+        if (p.pressedCallback)
         {
             p.pressedCallback(p.model->getValue(), false);
         }
@@ -553,7 +548,6 @@ namespace ftk
 
         std::function<void(const RangeF&)> callback;
         std::function<void(const RangeF&, bool)> pressedCallback;
-        int blockCallbacks = 0;
 
         std::shared_ptr<Observer<RangeF> > valueObserver;
         std::shared_ptr<Observer<RangeF> > rangeObserver;
@@ -597,7 +591,7 @@ namespace ftk
             [this](const RangeF& value)
             {
                 FTK_P();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
@@ -607,7 +601,7 @@ namespace ftk
             [this](const RangeF& value, bool pressed)
             {
                 FTK_P();
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, pressed);
                 }
@@ -640,10 +634,8 @@ namespace ftk
             [this](const RangeF& value)
             {
                 FTK_P();
-                ++(p.blockCallbacks);
                 p.minEdit->setValue(value.min());
                 p.maxEdit->setValue(value.max());
-                --(p.blockCallbacks);
                 _widgetUpdate();
             });
 
@@ -652,10 +644,8 @@ namespace ftk
             [this](const RangeF& value)
             {
                 FTK_P();
-                ++(p.blockCallbacks);
                 p.minEdit->setRange(value);
                 p.maxEdit->setRange(value);
-                --(p.blockCallbacks);
             });
 
         p.hasDefaultObserver = Observer<bool>::create(
@@ -697,9 +687,7 @@ namespace ftk
     void LevelsEditSlider::setValue(const RangeF& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void LevelsEditSlider::setCallback(const std::function<void(const RangeF&)>& value)
@@ -720,9 +708,7 @@ namespace ftk
     void LevelsEditSlider::setRange(const RangeF& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void LevelsEditSlider::setRange(float min, float max)

@@ -22,7 +22,6 @@ namespace ftk
 
         std::function<void(double)> callback;
         std::function<void(double, bool)> pressedCallback;
-        int blockCallbacks = 0;
     };
 
     void DoubleEditShuttle::_init(
@@ -53,11 +52,11 @@ namespace ftk
             [this](double value)
             {
                 FTK_P();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, p.pressed);
                 }
@@ -86,7 +85,7 @@ namespace ftk
             {
                 FTK_P();
                 p.pressed = pressed;
-                if (!pressed && p.pressedCallback && !p.blockCallbacks)
+                if (!pressed && p.pressedCallback)
                 {
                     p.pressedCallback(p.model->getValue(), p.pressed);
                 }
@@ -127,9 +126,7 @@ namespace ftk
     void DoubleEditShuttle::setValue(double value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void DoubleEditShuttle::setCallback(const std::function<void(double)>& value)
@@ -150,9 +147,7 @@ namespace ftk
     void DoubleEditShuttle::setRange(const RangeD& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void DoubleEditShuttle::setRange(double min, double max)

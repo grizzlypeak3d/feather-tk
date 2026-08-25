@@ -22,7 +22,6 @@ namespace ftk
         std::shared_ptr<IntModel> model;
         std::function<void(int)> callback;
         std::function<void(int, bool)> pressedCallback;
-        int blockCallbacks = 0;
         std::shared_ptr<IntRangePopup> rangePopup;
         std::chrono::steady_clock::time_point pressTime;
         bool resetPress = false;
@@ -54,11 +53,11 @@ namespace ftk
                 FTK_P();
                 setSizeUpdate();
                 setDrawUpdate();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, _isMousePressed());
                 }
@@ -95,9 +94,7 @@ namespace ftk
     void IIntSlider::setValue(int value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void IIntSlider::setCallback(const std::function<void(int)>& value)
@@ -118,9 +115,7 @@ namespace ftk
     void IIntSlider::setRange(const RangeI& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void IIntSlider::setRange(int min, int max)
@@ -227,7 +222,7 @@ namespace ftk
             p.model->setValue(_posToValue(_getMousePos().x));
         }
         p.resetPress = false;
-        if (p.pressedCallback && !p.blockCallbacks)
+        if (p.pressedCallback)
         {
             p.pressedCallback(p.model->getValue(), false);
         }

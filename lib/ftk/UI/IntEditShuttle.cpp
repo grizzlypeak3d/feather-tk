@@ -21,7 +21,6 @@ namespace ftk
 
         std::function<void(int)> callback;
         std::function<void(int, bool)> pressedCallback;
-        int blockCallbacks = 0;
     };
 
     void IntEditShuttle::_init(
@@ -52,11 +51,11 @@ namespace ftk
             [this](int value)
             {
                 FTK_P();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, p.pressed);
                 }
@@ -86,7 +85,7 @@ namespace ftk
             {
                 FTK_P();
                 p.pressed = pressed;
-                if (!pressed && p.pressedCallback && !p.blockCallbacks)
+                if (!pressed && p.pressedCallback)
                 {
                     p.pressedCallback(p.model->getValue(), p.pressed);
                 }
@@ -127,9 +126,7 @@ namespace ftk
     void IntEditShuttle::setValue(int value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void IntEditShuttle::setCallback(const std::function<void(int)>& value)
@@ -150,9 +147,7 @@ namespace ftk
     void IntEditShuttle::setRange(const RangeI& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void IntEditShuttle::setRange(int min, int max)

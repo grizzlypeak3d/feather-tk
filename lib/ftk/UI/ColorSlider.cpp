@@ -202,7 +202,6 @@ namespace ftk
 
         std::function<void(int)> callback;
         std::function<void(int, bool)> pressedCallback;
-        int blockCallbacks = 0;
     };
 
     void ColorIntEditSlider::_init(
@@ -234,7 +233,7 @@ namespace ftk
             [this](int value)
             {
                 FTK_P();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
@@ -244,7 +243,7 @@ namespace ftk
             [this](int value, bool pressed)
             {
                 FTK_P();
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, pressed);
                 }
@@ -295,9 +294,7 @@ namespace ftk
     void ColorIntEditSlider::setValue(int value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void ColorIntEditSlider::setCallback(const std::function<void(int)>& value)
@@ -318,9 +315,7 @@ namespace ftk
     void ColorIntEditSlider::setRange(const RangeI& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void ColorIntEditSlider::setRange(int min, int max)
@@ -524,7 +519,6 @@ namespace ftk
 
         std::function<void(float)> callback;
         std::function<void(float, bool)> pressedCallback;
-        int blockCallbacks = 0;
     };
 
     void ColorFloatEditSlider::_init(
@@ -556,7 +550,7 @@ namespace ftk
             [this](float value)
             {
                 FTK_P();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
@@ -566,7 +560,7 @@ namespace ftk
             [this](float value, bool pressed)
             {
                 FTK_P();
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, pressed);
                 }
@@ -617,9 +611,7 @@ namespace ftk
     void ColorFloatEditSlider::setValue(float value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void ColorFloatEditSlider::setCallback(const std::function<void(float)>& value)
@@ -640,9 +632,7 @@ namespace ftk
     void ColorFloatEditSlider::setRange(const RangeF& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void ColorFloatEditSlider::setRange(float min, float max)

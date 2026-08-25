@@ -20,7 +20,6 @@ namespace ftk
 
         std::function<void(double)> callback;
         std::function<void(double, bool)> pressedCallback;
-        int blockCallbacks = 0;
     };
 
     void DoubleEditSlider::_init(
@@ -50,7 +49,7 @@ namespace ftk
             [this](double value)
             {
                 FTK_P();
-                if (p.callback && !p.blockCallbacks)
+                if (p.callback)
                 {
                     p.callback(value);
                 }
@@ -60,7 +59,7 @@ namespace ftk
             [this](double value, bool pressed)
             {
                 FTK_P();
-                if (p.pressedCallback && !p.blockCallbacks)
+                if (p.pressedCallback)
                 {
                     p.pressedCallback(value, pressed);
                 }
@@ -101,9 +100,7 @@ namespace ftk
     void DoubleEditSlider::setValue(double value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setValue(value);
-        --(p.blockCallbacks);
     }
 
     void DoubleEditSlider::setCallback(const std::function<void(double)>& value)
@@ -124,9 +121,7 @@ namespace ftk
     void DoubleEditSlider::setRange(const RangeD& value)
     {
         FTK_P();
-        ++(p.blockCallbacks);
         p.model->setRange(value);
-        --(p.blockCallbacks);
     }
 
     void DoubleEditSlider::setRange(double min, double max)

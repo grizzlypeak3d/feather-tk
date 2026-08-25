@@ -18,6 +18,8 @@
 
 #include <sstream>
 
+#include <cmath>
+
 namespace ftk
 {
     struct RGBColorWidget::Private
@@ -432,7 +434,9 @@ namespace ftk
 
         p.swatch->setColor(p.color);
 
-        p.hueSlider->setValue(p.hsv[0] * 360);
+        // Round so the value survives its own round trip through the
+        // model; truncation can land one lower and walk the hue down.
+        p.hueSlider->setValue(std::round(p.hsv[0] * 360.F));
         float hsv[3] = { p.hsv[0], 1.F, 1.F };
         float rgb[3] = { 0.F, 0.F, 0.F };
         hsvToRGB(hsv, rgb);
