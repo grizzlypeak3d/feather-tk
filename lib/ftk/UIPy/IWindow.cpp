@@ -75,6 +75,7 @@ namespace ftk
                 .def_property_readonly("observeFullScreen", &IWindow::observeFullScreen)
                 .def_property("floatOnTop", &IWindow::isFloatOnTop, &IWindow::setFloatOnTop)
                 .def_property_readonly("observeFloatOnTop", &IWindow::observeFloatOnTop)
+                .def("getWindowInfo", &IWindow::getWindowInfo)
                 .def_property_readonly("bufferSize", &IWindow::getBufferSize, py::return_value_policy::copy)
                 .def_property("bufferType", &IWindow::getBufferType, &IWindow::setBufferType)
                 .def_property_readonly("observeBufferType", &IWindow::observeBufferType)
