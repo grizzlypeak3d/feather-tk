@@ -517,6 +517,11 @@ namespace ftk
         setDrawUpdate();
     }
 
+    //! Nothing here is drawn unless something set an update flag: events
+    //! that change what a widget shows must call setSizeUpdate() and/or
+    //! setDrawUpdate(), and a missed flag fails silently -- the screen
+    //! just stays as it was. The style comparison below sets the flags
+    //! itself because the style event only resets the widgets' caches.
     void IWindow::_update(
         const std::shared_ptr<FontSystem>& fontSystem,
         const std::shared_ptr<IconSystem>& iconSystem,
@@ -613,6 +618,13 @@ namespace ftk
         return out;
     }
 
+    //! Key dispatch order: nothing while a mouse press holds the grab;
+    //! then the key focus widget and its ancestors, stopping at a dialog;
+    //! then the widgets under the cursor, deepest first, ending at the
+    //! window itself; then tab navigation. The first widget to set the
+    //! event's accept flag ends the search and receives the release --
+    //! an unaccepted key falls through to the next widget in the order,
+    //! so a handler that acts without accepting acts twice.
     bool IWindow::_key(
         Key key,
         bool press,
