@@ -3,6 +3,7 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/UI/Action.h>
 #include <ftk/UI/ToolButton.h>
 
 #include <pybind11/pybind11.h>
@@ -30,6 +31,14 @@ namespace ftk
                         const std::shared_ptr<IWidget>&>(&ToolButton::create)),
                     py::arg("context"),
                     py::arg("text"),
+                    py::arg("parent") = nullptr)
+                .def(
+                    py::init(py::overload_cast<
+                        const std::shared_ptr<Context>&,
+                        const std::shared_ptr<Action>&,
+                        const std::shared_ptr<IWidget>&>(&ToolButton::create)),
+                    py::arg("context"),
+                    py::arg("action"),
                     py::arg("parent") = nullptr)
             .def_property("popupIcon", &ToolButton::hasPopupIcon, &ToolButton::setPopupIcon);
         }

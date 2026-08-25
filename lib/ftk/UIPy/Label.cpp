@@ -36,6 +36,8 @@ namespace ftk
                 .def_property("marginRole", &Label::getMarginRole, py::overload_cast<SizeRole>(&Label::setMarginRole))
                 .def_property("hMarginRole", &Label::getHMarginRole, &Label::setHMarginRole)
                 .def_property("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
+                .def_property("hMarginRole", &Label::getHMarginRole, &Label::setHMarginRole)
+                .def_property("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
                 .def("setMarginRole", py::overload_cast<SizeRole, SizeRole>(&Label::setMarginRole))
                 .def_property("font", &Label::getFont, &Label::setFont)
                 .def_property("fontSize", &Label::getFontSize, &Label::setFontSize);

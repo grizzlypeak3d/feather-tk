@@ -19,7 +19,12 @@ namespace ftk
         void iWidgetPopup(py::module_& m)
         {
             py::class_<IWidgetPopup, IPopup, std::shared_ptr<IWidgetPopup> >(m, "IWidgetPopup")
-                .def("open", &IWidgetPopup::open)
+                .def(
+                    "open",
+                    &IWidgetPopup::open,
+                    py::arg("window"),
+                    py::arg("buttonGeometry"),
+                    py::arg("widgetGeometry") = std::optional<Box2I>())
                 .def_property_readonly("isOpen", &IWidgetPopup::isOpen)
                 .def("setCloseCallback", &IWidgetPopup::setCloseCallback)
                 .def_property("widget", &IWidgetPopup::getWidget, &IWidgetPopup::setWidget)
