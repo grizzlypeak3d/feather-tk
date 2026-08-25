@@ -59,6 +59,13 @@ namespace ftk
             auto logSystem = context->getLogSystem();
             logSystem->print("ftk::gl::System", "Init SDL video and events...");
             p.logSystem = logSystem;
+            // On macOS 14 and later SDL no longer activates the application
+            // at launch, and a plain binary -- no application bundle --
+            // starts without keyboard focus: the launching application
+            // keeps it, and typing goes there until the window is clicked.
+            // This asks for the old behavior. The environment variable
+            // SDL_MAC_BACKGROUND_APP still overrides it.
+            SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
 #if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
             if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
