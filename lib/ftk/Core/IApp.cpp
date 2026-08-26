@@ -142,6 +142,18 @@ namespace ftk
                     arg(e.what()));
             }
         }
+        // Anything still here that starts with a dash was meant as an
+        // option and matched none. Left alone it falls through to the
+        // arguments, where a mistyped option quietly becomes a file name to
+        // open; a lone "-" is left alone, being the usual name for stdin.
+        for (const auto& arg : p.argv)
+        {
+            if (arg.size() > 1 && '-' == arg[0])
+            {
+                throw std::runtime_error(
+                    Format("Unknown option: \"{0}\"").arg(arg));
+            }
+        }
         size_t requiredArgs = 0;
         for (const auto& i : p.cmdLineArgs)
         {
