@@ -18,6 +18,7 @@ namespace ftk
     {
         struct Shader::Private
         {
+            std::map<std::string, int> attribLocations;
             std::string vertexSource;
             std::string fragmentSource;
             GLuint vertex = 0;
@@ -92,15 +93,18 @@ namespace ftk
             p.program = glCreateProgram();
             glAttachShader(p.program, p.vertex);
             glAttachShader(p.program, p.fragment);
-            // The vertex arrays hard-code these locations, and OpenGL ES
-            // shaders have no way to say them in the source. Left to the
-            // linker they are whatever it likes: desktop drivers happen to
-            // assign declaration order, ANGLE -- WebGL -- does not, and the
-            // mismatch draws nothing. Binding a name a shader does not use
-            // is not an error.
-            glBindAttribLocation(p.program, 0, "vPos");
-            glBindAttribLocation(p.program, 1, "vTexture");
-            glBindAttribLocation(p.program, 2, "vColor");
+            // The vertex arrays hard-code the locations, and an OpenGL ES
+            // source cannot say them itself. Left to the linker they are
+            // whatever it likes: desktop drivers happen to assign
+            // declaration order, ANGLE -- WebGL -- does not, and the
+            // mismatch draws nothing, or reads a disabled attribute as
+            // opaque black. Binding a name the shader does not use is
+            // not an error.
+            for (const auto& i : p.attribLocations)
+            {
+                glBindAttribLocation(
+                    p.program, i.second, i.first.c_str());
+            }
             glLinkProgram(p.program);
             glGetProgramiv(p.program, GL_LINK_STATUS, &success);
             if (!success)
@@ -139,11 +143,13 @@ namespace ftk
 
         std::shared_ptr<Shader> Shader::create(
             const std::string& vertexSource,
-            const std::string& fragmentSource)
+            const std::string& fragmentSource,
+            const std::map<std::string, int>& attribLocations)
         {
             auto out = std::shared_ptr<Shader>(new Shader);
             out->_p->vertexSource = vertexSource;
             out->_p->fragmentSource = fragmentSource;
+            out->_p->attribLocations = attribLocations;
             out->_init();
             return out;
         }

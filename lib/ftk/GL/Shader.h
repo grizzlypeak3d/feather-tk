@@ -9,6 +9,7 @@
 #include <ftk/Core/Util.h>
 #include <ftk/Core/Vector.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -34,9 +35,18 @@ namespace ftk
             FTK_GL_API ~Shader();
 
             //! Create a new shader.
+            //!
+            //! The attribute locations tie the shader to the vertex array
+            //! layouts, which hard-code them, and an OpenGL ES source
+            //! cannot say them itself. The defaults are the library's
+            //! convention -- the position at zero, and the texture
+            //! coordinate or the color at one -- and a shader that uses
+            //! more than that names its own.
             FTK_GL_API static std::shared_ptr<Shader> create(
                 const std::string& vertexSource,
-                const std::string& fragmentSource);
+                const std::string& fragmentSource,
+                const std::map<std::string, int>& attribLocations =
+                    { { "vPos", 0 }, { "vTexture", 1 }, { "vColor", 1 } });
 
             //! Get the vertex shader source.
             FTK_GL_API const std::string& getVertexSource() const;
