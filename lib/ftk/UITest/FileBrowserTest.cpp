@@ -7,6 +7,7 @@
 #include <ftk/UI/FileBrowserPrivate.h>
 #include <ftk/UI/RecentFilesModel.h>
 #include <ftk/UI/PushButton.h>
+#include <ftk/UI/LineEdit.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
 
@@ -256,6 +257,21 @@ namespace ftk
                     FTK_CHECK(1 == accepted.size());
                     FTK_CHECK(
                         appendSeparator(path.u8string()) + "playlist.otio" ==
+                        accepted.front().getFileName(true));
+
+                    // Return in the name accepts as well, so a name can be
+                    // typed and taken without a trip to the "Ok" button.
+                    accepted.clear();
+                    widget->setFileName("typed.otio");
+                    auto edit = _findLineEdit(widget);
+                    FTK_CHECK(edit.get());
+                    edit->takeKeyFocus();
+                    app->tick();
+                    KeyEvent k(Key::Return, 0, V2I());
+                    edit->keyPressEvent(k);
+                    FTK_CHECK(1 == accepted.size());
+                    FTK_CHECK(
+                        appendSeparator(path.u8string()) + "typed.otio" ==
                         accepted.front().getFileName(true));
                 }
 
@@ -570,6 +586,26 @@ namespace ftk
             system->setFloating(floating);
             system->setNativeFileDialog(native);
             std::filesystem::remove_all(path);
+        }
+
+        std::shared_ptr<LineEdit> FileBrowserTest::_findLineEdit(
+            const std::shared_ptr<IWidget>& widget)
+        {
+            if (auto edit = std::dynamic_pointer_cast<LineEdit>(widget))
+            {
+                if (edit->isVisible(false))
+                {
+                    return edit;
+                }
+            }
+            for (const auto& child : widget->getChildren())
+            {
+                if (auto edit = _findLineEdit(child))
+                {
+                    return edit;
+                }
+            }
+            return nullptr;
         }
 
         void FileBrowserTest::_click(

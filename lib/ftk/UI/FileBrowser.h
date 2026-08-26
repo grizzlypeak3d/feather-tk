@@ -266,10 +266,13 @@ namespace ftk
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_UI_API void clipEvent(const Box2I&, bool clipped) override;
+        FTK_UI_API void drawOverlayEvent(const Box2I&, const DrawEvent&) override;
         FTK_UI_API void keyPressEvent(KeyEvent&) override;
 
     private:
+        void _acceptSave(const std::string& fileName);
         void _accept(const std::vector<Path>&);
 
         void _optionsUpdate();
@@ -307,6 +310,12 @@ namespace ftk
         //! Set the callback.
         FTK_UI_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
+        //! Get the file name, which saving types.
+        FTK_UI_API std::string getFileName() const;
+
+        //! Set the file name: a suggested name for saving.
+        FTK_UI_API void setFileName(const std::string&);
+
         //! Get whether more than one file can be selected.
         FTK_UI_API bool isMultiple() const;
 
@@ -338,6 +347,9 @@ namespace ftk
         std::filesystem::path path;
 
         FileBrowserMode       mode = FileBrowserMode::Open;
+
+        //! A suggested file name for saving.
+        std::string           fileName;
 
         //! Restrict the listing to these extensions, e.g. { ".djvr" }. Empty
         //! shows every file.

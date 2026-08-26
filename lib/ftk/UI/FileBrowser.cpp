@@ -117,6 +117,16 @@ namespace ftk
         _p->widget->setCallback(value);
     }
 
+    std::string FileBrowser::getFileName() const
+    {
+        return _p->widget->getFileName();
+    }
+
+    void FileBrowser::setFileName(const std::string& value)
+    {
+        _p->widget->setFileName(value);
+    }
+
     bool FileBrowser::isMultiple() const
     {
         return _p->widget->isMultiple();

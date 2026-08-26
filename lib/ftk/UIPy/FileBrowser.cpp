@@ -36,6 +36,7 @@ namespace ftk
                 .def_readwrite("title", &FileBrowserOpenOptions::title)
                 .def_readwrite("path", &FileBrowserOpenOptions::path)
                 .def_readwrite("mode", &FileBrowserOpenOptions::mode)
+                .def_readwrite("fileName", &FileBrowserOpenOptions::fileName)
                 .def_readwrite("extensions", &FileBrowserOpenOptions::extensions)
                 .def_readwrite("extensionsLabel", &FileBrowserOpenOptions::extensionsLabel)
                 .def_readwrite("multiple", &FileBrowserOpenOptions::multiple);

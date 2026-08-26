@@ -204,6 +204,12 @@ namespace ftk
         //! selected.
         FTK_UI_API void setSelectCallback(const std::function<void(const std::vector<Path>&)>&);
 
+        //! Set the key focus callback. The view draws its current item;
+        //! the ring that says the list itself has the keyboard is drawn
+        //! around its scroll area by whoever owns it, and this is how the
+        //! owner hears.
+        FTK_UI_API void setKeyFocusCallback(const std::function<void(bool)>&);
+
         //! Get whether more than one file can be selected.
         FTK_UI_API bool isMultiple() const;
 

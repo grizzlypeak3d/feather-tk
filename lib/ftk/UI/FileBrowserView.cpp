@@ -100,6 +100,7 @@ namespace ftk
         std::vector<FileBrowserItem> items;
         std::function<void(const std::vector<Path>&)> callback;
         std::function<void(const std::vector<Path>&)> selectCallback;
+        std::function<void(bool)> keyFocusCallback;
 
         std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
         std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
@@ -706,8 +707,19 @@ namespace ftk
 
     void FileBrowserView::keyFocusEvent(bool value)
     {
+        FTK_P();
         IMouseWidget::keyFocusEvent(value);
         setDrawUpdate();
+        if (p.keyFocusCallback)
+        {
+            p.keyFocusCallback(value);
+        }
+    }
+
+    void FileBrowserView::setKeyFocusCallback(
+        const std::function<void(bool)>& value)
+    {
+        _p->keyFocusCallback = value;
     }
 
     void FileBrowserView::keyPressEvent(KeyEvent& event)

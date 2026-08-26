@@ -16,6 +16,8 @@
 #include <ftk/UI/Splitter.h>
 #include <ftk/UI/ToolButton.h>
 
+#include <ftk/UI/DrawUtil.h>
+
 #include <ftk/Core/Format.h>
 
 #include <filesystem>
@@ -50,6 +52,7 @@ namespace ftk
         std::shared_ptr<PushButton> cancelButton;
         std::function<void(bool)> pinnedCallback;
         bool focusTaken = false;
+        int keyFocus = 0;
         std::shared_ptr<Splitter> splitter;
         std::shared_ptr<VerticalLayout> layout;
 
@@ -119,12 +122,30 @@ namespace ftk
         p.panelScrollWidget->setVStretch(Stretch::Expanding);
 
         p.view = FileBrowserView::create(context, mode, model);
+        p.view->setKeyFocusCallback(
+            [this](bool)
+            {
+                setDrawUpdate();
+            });
         p.viewScrollWidget = ScrollWidget::create(context);
         p.viewScrollWidget->setWidget(p.view);
         p.viewScrollWidget->setVStretch(Stretch::Expanding);
 
         p.fileEdit = ftk::LineEdit::create(context);
         p.fileEdit->setVisible(FileBrowserMode::Save == mode);
+        // Return in the name accepts the dialog, so a name can be typed
+        // and taken without a trip to the "Ok" button. Only Return: the
+        // commit that firing on focus loss would add is accepting the
+        // dialog because the focus moved -- to the Cancel button, say.
+        p.fileEdit->setCallbackOnFocusLost(false);
+        p.fileEdit->setCallback(
+            [this](const std::string& value)
+            {
+                if (!value.empty())
+                {
+                    _acceptSave(value);
+                }
+            });
 
         p.searchBox = SearchBox::create(context);
         p.searchBox->setTooltip("Filter");
@@ -352,16 +373,8 @@ namespace ftk
                     }
                     break;
                 case FileBrowserMode::Save:
-                {
-                    // With the separator, so the whole of it parses as the
-                    // directory: without it the last component reads as a
-                    // file name, and setFileName() replaces it -- saving to
-                    // the parent of the directory that was chosen.
-                    Path path(appendSeparator(p.model->getPath().u8string()));
-                    path.setFileName(p.fileEdit->getText());
-                    _accept({ path });
+                    _acceptSave(p.fileEdit->getText());
                     break;
-                }
                 case FileBrowserMode::Dir:
                     _accept(
                         !p.selection.empty() ?
@@ -454,6 +467,31 @@ namespace ftk
         const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->callback = value;
+    }
+
+    void FileBrowserWidget::sizeHintEvent(const SizeHintEvent& event)
+    {
+        IMouseWidget::sizeHintEvent(event);
+        _p->keyFocus = event.style->getSizeRole(
+            SizeRole::KeyFocus, event.displayScale);
+    }
+
+    void FileBrowserWidget::drawOverlayEvent(
+        const Box2I& drawRect,
+        const DrawEvent& event)
+    {
+        IMouseWidget::drawOverlayEvent(drawRect, event);
+        FTK_P();
+        // The ring that says the list has the keyboard, drawn where the
+        // text edit draws its own: around the scrolling area. The view
+        // outlines its current item, which cannot say whose the keyboard
+        // is before there is one.
+        if (p.view->hasKeyFocus())
+        {
+            event.render->drawMesh(
+                border(p.viewScrollWidget->getGeometry(), p.keyFocus),
+                event.style->getColorRole(ColorRole::KeyFocus));
+        }
     }
 
     std::string FileBrowserWidget::getFileName() const
@@ -575,6 +613,18 @@ namespace ftk
     {
         IMouseWidget::setGeometry(value);
         _p->layout->setGeometry(value);
+    }
+
+    void FileBrowserWidget::_acceptSave(const std::string& fileName)
+    {
+        FTK_P();
+        // With the separator, so the whole of it parses as the directory:
+        // without it the last component reads as a file name, and
+        // setFileName() replaces it -- saving to the parent of the
+        // directory that was chosen.
+        Path path(appendSeparator(p.model->getPath().u8string()));
+        path.setFileName(fileName);
+        _accept({ path });
     }
 
     void FileBrowserWidget::_accept(const std::vector<Path>& paths)

@@ -172,7 +172,14 @@ namespace ftk
                     NFD::OpenDialog(outPath, filterList, filterCount, defaultPath);
                     break;
                 case FileBrowserMode::Save:
-                    NFD::SaveDialog(outPath, filterList, filterCount, defaultPath);
+                    NFD::SaveDialog(
+                        outPath,
+                        filterList,
+                        filterCount,
+                        defaultPath,
+                        options.fileName.empty() ?
+                            nullptr :
+                            options.fileName.c_str());
                     break;
                 case FileBrowserMode::Dir:
                     NFD::PickFolder(outPath, defaultPath);
@@ -246,6 +253,7 @@ namespace ftk
         p.fileBrowser->setMultiple(
             FileBrowserMode::Open == options.mode && options.multiple);
         p.fileBrowser->setRecentFilesModel(p.recentFilesModel);
+        p.fileBrowser->setFileName(options.fileName);
         p.fileBrowser->open(window);
         p.fileBrowser->setCallback(
             [this, callback](const std::vector<Path>& value)
@@ -284,6 +292,7 @@ namespace ftk
         p.widget->setMultiple(
             FileBrowserMode::Open == options.mode && options.multiple);
         p.widget->setRecentFilesModel(p.recentFilesModel);
+        p.widget->setFileName(options.fileName);
 
         // A browser underneath an always on top window is one that cannot
         // be seen, which is the opposite of what a window of its own is

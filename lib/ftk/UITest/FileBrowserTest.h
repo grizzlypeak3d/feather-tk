@@ -9,6 +9,8 @@
 
 namespace ftk
 {
+    class LineEdit;
+
     namespace ui_test
     {
         class FileBrowserTest : public test::ITest
@@ -28,6 +30,7 @@ namespace ftk
             void _shortcuts();
             void _view();
             void _selection();
+            std::shared_ptr<LineEdit> _findLineEdit(const std::shared_ptr<IWidget>&);
             void _click(const std::shared_ptr<IWidget>&, const std::string& text);
 
             //! Find the first widget of the given type below this one.
