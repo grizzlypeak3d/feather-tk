@@ -409,6 +409,10 @@ namespace ftk
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 glDisable(GL_BLEND);
                 glDisable(GL_SCISSOR_TEST);
+                // A present pass has no back faces worth keeping: the
+                // winding that survives culling on the desktop is the one
+                // ANGLE culls.
+                glDisable(GL_CULL_FACE);
 
                 p.shader->bind();
                 p.shader->setUniform(
