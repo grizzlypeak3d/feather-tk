@@ -135,6 +135,11 @@ namespace ftk
     {
         FTK_P();
         p.buttons.clear();
+        // Forget which index was checked: the indexes named a list that is
+        // gone. Keeping it made a radio group swallow the first click after
+        // its buttons were re-added in a different order, whenever the click
+        // landed on whatever index happened to be checked before.
+        p.radio = -1;
     }
 
     void ButtonGroup::setChecked(int index, bool value)

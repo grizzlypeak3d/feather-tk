@@ -101,6 +101,29 @@ namespace ftk
                         clicked = index;
                         checked = value;
                     });
+
+                // Clearing a radio group forgets which index was checked.
+                // Re-adding the buttons in a different order re-uses the
+                // indexes for a different list, so a click that lands on the
+                // remembered index is still a change and still reports.
+                group = ButtonGroup::create(_context, ButtonGroupType::Radio);
+                group->addButton(button0);
+                group->addButton(button1);
+                clicked = -1;
+                group->setCheckedCallback(
+                    [&clicked, &checked](int index, bool value)
+                    {
+                        clicked = index;
+                        checked = value;
+                    });
+                button1->click();
+                FTK_CHECK(1 == clicked);
+                group->clearButtons();
+                group->addButton(button1);
+                group->addButton(button0);
+                clicked = -1;
+                button0->click();
+                FTK_CHECK(1 == clicked);
             }
         }
     }
