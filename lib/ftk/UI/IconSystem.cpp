@@ -81,6 +81,45 @@ namespace ftk
         void _cancelRequests();
     };
 
+    namespace
+    {
+        std::shared_ptr<Image> renderIcon(
+            const std::map<std::string, std::vector<uint8_t> >& iconData,
+            const std::string& name,
+            float displayScale)
+        {
+            std::shared_ptr<Image> image;
+            const auto i = iconData.find(name);
+            if (i != iconData.end() && !i->second.empty())
+            {
+                const std::string s(i->second.begin(), i->second.end());
+                if (auto doc = lunasvg::Document::loadFromData(s))
+                {
+                    const int w = doc->width() * displayScale;
+                    const int h = doc->height() * displayScale;
+                    auto bitmap = doc->renderToBitmap(w, h, 0x00000000);
+                    if (!bitmap.isNull())
+                    {
+                        image = Image::create(w, h, ImageType::RGBA_U8);
+                        for (int y = 0; y < h; ++y)
+                        {
+                            uint8_t* imageP = image->getData() + y * w * 4;
+                            const uint8_t* bitmapP = bitmap.data() + (h - 1 - y) * w * 4;
+                            for (int x = 0; x < w; ++x, imageP += 4, bitmapP += 4)
+                            {
+                                imageP[0] = bitmapP[2];
+                                imageP[1] = bitmapP[1];
+                                imageP[2] = bitmapP[0];
+                                imageP[3] = bitmapP[3];
+                            }
+                        }
+                    }
+                }
+            }
+            return image;
+        }
+    }
+
     void IconSystem::_init(const std::shared_ptr<Context>& context)
     {
         FTK_P();
@@ -94,6 +133,12 @@ namespace ftk
         }
 
         p.mutex.cache.setMax(1000);
+#if defined(__EMSCRIPTEN__)
+        // The browser build has no threads: the icons are rendered as they
+        // are asked for, in request(). An icon is a small SVG, so at
+        // interface scale that costs nothing worth a thread.
+        return;
+#endif // __EMSCRIPTEN__
         p.thread.running = true;
         p.thread.thread = std::thread(
             [this]
@@ -136,43 +181,12 @@ namespace ftk
                         }
                         if (!cached)
                         {
-                            std::vector<uint8_t> resource;
-                            if (resource.empty())
+                            if (auto context = p.context.lock())
                             {
-                                if (const auto i = p.iconData.find(request->name);
-                                    i != p.iconData.end())
-                                {
-                                    resource = i->second;
-                                }
-                            }
-                            if (!resource.empty())
-                            {
-                                if (auto context = p.context.lock())
-                                {
-                                    const std::string s(resource.begin(), resource.end());
-                                    if (auto doc = lunasvg::Document::loadFromData(s))
-                                    {
-                                        const int w = doc->width() * request->displayScale;
-                                        const int h = doc->height() * request->displayScale;
-                                        auto bitmap = doc->renderToBitmap(w, h, 0x00000000);
-                                        if (!bitmap.isNull())
-                                        {
-                                            image = Image::create(w, h, ImageType::RGBA_U8);
-                                            for (int y = 0; y < h; ++y)
-                                            {
-                                                uint8_t* imageP = image->getData() + y * w * 4;
-                                                const uint8_t* bitmapP = bitmap.data() + (h - 1 - y) * w * 4;
-                                                for (int x = 0; x < w; ++x, imageP += 4, bitmapP += 4)
-                                                {
-                                                    imageP[0] = bitmapP[2];
-                                                    imageP[1] = bitmapP[1];
-                                                    imageP[2] = bitmapP[0];
-                                                    imageP[3] = bitmapP[3];
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                image = renderIcon(
+                                    p.iconData,
+                                    request->name,
+                                    request->displayScale);
                             }
                         }
                         request->promise.set_value(image);
@@ -267,6 +281,19 @@ namespace ftk
         {
             request->promise.set_value(image);
         }
+#if defined(__EMSCRIPTEN__)
+        else
+        {
+            image = renderIcon(p.iconData, name, displayScale);
+            request->promise.set_value(image);
+            std::unique_lock<std::mutex> lock(p.mutex.mutex);
+            p.mutex.cache.add(
+                std::make_pair(
+                    name,
+                    static_cast<int>(displayScale * p.displayScaleConvert)),
+                image);
+        }
+#else // __EMSCRIPTEN__
         else
         {
             bool valid = false;
@@ -287,6 +314,7 @@ namespace ftk
                 request->promise.set_value(nullptr);
             }
         }
+#endif // __EMSCRIPTEN__
         return out;
     }
 

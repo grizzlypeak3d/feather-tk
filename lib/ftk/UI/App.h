@@ -245,6 +245,7 @@ namespace ftk
         void _removeWindow(const std::shared_ptr<IWindow>&);
 
     private:
+        void _runIteration();
         void _screenshotInit(const std::string& fileName);
         void _widgetDumpInit(const std::string& fileName);
 

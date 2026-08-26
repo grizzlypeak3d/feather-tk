@@ -37,6 +37,10 @@
 #include <fstream>
 #include <iostream>
 
+#if defined(__EMSCRIPTEN__)
+#include <emscripten.h>
+#endif // __EMSCRIPTEN__
+
 namespace ftk
 {
     namespace
@@ -1020,7 +1024,50 @@ namespace ftk
             _widgetDumpInit(p.cmdLine.widgetDump->getValue());
         }
 
+#if defined(__EMSCRIPTEN__)
+        // The browser owns the loop: it calls back once a frame, and a
+        // blocking loop here would hang the tab. The pacing is the
+        // browser's as well, so there is no sleep to take. This returns
+        // right away, which unwinds main() and its locals, so the
+        // application keeps itself alive for the page: there is no
+        // quitting a web page from the inside.
+        static std::shared_ptr<App> alive;
+        alive = std::static_pointer_cast<App>(shared_from_this());
+        emscripten_set_main_loop_arg(
+            [](void* app)
+            {
+                static_cast<App*>(app)->_runIteration();
+            },
+            this,
+            0,
+            EM_FALSE);
+#else // __EMSCRIPTEN__
         while (p.running && !p.windows.empty())
+        {
+            _runIteration();
+
+            auto t1 = std::chrono::steady_clock::now();
+            sleep(timeout, t0, t1);
+            t1 = std::chrono::steady_clock::now();
+            const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+            p.tickTimes.push_back(diff.count());
+            while (p.tickTimes.size() > 10)
+            {
+                p.tickTimes.pop_front();
+            }
+            t0 = t1;
+
+            if (p.cmdLine.exit->found())
+            {
+                break;
+            }
+        }
+#endif // __EMSCRIPTEN__
+    }
+
+    void App::_runIteration()
+    {
+        FTK_P();
         {
             auto logSystem = _context->getSystem<LogSystem>();
             SDL_Event event;
@@ -1462,22 +1509,6 @@ namespace ftk
             }
 
             tick();
-
-            auto t1 = std::chrono::steady_clock::now();
-            sleep(timeout, t0, t1);
-            t1 = std::chrono::steady_clock::now();
-            const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
-            p.tickTimes.push_back(diff.count());
-            while (p.tickTimes.size() > 10)
-            {
-                p.tickTimes.pop_front();
-            }
-            t0 = t1;
-
-            if (p.cmdLine.exit->found())
-            {
-                break;
-            }
         }
     }
 

@@ -29,6 +29,15 @@ project(
 # Options
 
 set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
+# The build runs ftk-resource to embed the resources, so a cross build --
+# Emscripten, say -- cannot use the one it is compiling. Point this at a
+# native build's executable instead.
+set(ftk_RESOURCE "" CACHE FILEPATH "A native ftk-resource executable, for cross-compiling")
+if(ftk_RESOURCE)
+    set(ftk_RESOURCE_COMMAND ${ftk_RESOURCE})
+else()
+    set(ftk_RESOURCE_COMMAND ftk-resource)
+endif()
 set(ftk_SDL2 ON CACHE BOOL "Enable support for SDL2")
 set(ftk_SDL3 OFF CACHE BOOL "Enable support for SDL3")
 set(ftk_nfd_DEFAULT OFF)
@@ -124,13 +133,30 @@ find_package(lunasvg REQUIRED)
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
     "${ftk_API}" STREQUAL "GLES_2")
-    find_package(OpenGL REQUIRED)
     set(ftk_GLAD_DIR ${PROJECT_SOURCE_DIR}/deps/glad_${ftk_API})
     add_subdirectory(deps/glad_${ftk_API})
-    if(ftk_SDL2)
-        find_package(SDL2 REQUIRED)
-    elseif(ftk_SDL3)
-        find_package(SDL3 REQUIRED)
+    if(EMSCRIPTEN)
+        # SDL and GL come from Emscripten itself: the SDL port supplies the
+        # headers and the implementation, and the GL calls land on WebGL.
+        # The compile option is what adds the port's include path, so it is
+        # global rather than a link detail.
+        # Exceptions are part of how this code base reports errors, and
+        # Emscripten turns them off unless asked: without this the first
+        # throw aborts the program.
+        add_compile_options("-sUSE_SDL=2" "-fwasm-exceptions")
+        add_link_options(
+            "-sUSE_SDL=2"
+            "-fwasm-exceptions"
+            "-sSUPPORT_LONGJMP=wasm"
+            "-sFULL_ES2=1"
+            "-sALLOW_MEMORY_GROWTH=1")
+    else()
+        find_package(OpenGL REQUIRED)
+        if(ftk_SDL2)
+            find_package(SDL2 REQUIRED)
+        elseif(ftk_SDL3)
+            find_package(SDL3 REQUIRED)
+        endif()
     endif()
 endif()
 

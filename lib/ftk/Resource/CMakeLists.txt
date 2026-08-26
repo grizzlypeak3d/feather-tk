@@ -21,7 +21,7 @@ foreach(RESOURCE ${RESOURCES})
         OUTPUT
             ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.h
-        COMMAND ftk-resource ${RESOURCE} ftk_resource/${RESOURCE_BASE} ftk_resource
+        COMMAND ${ftk_RESOURCE_COMMAND} ${RESOURCE} ftk_resource/${RESOURCE_BASE} ftk_resource
         DEPENDS ${RESOURCE})
     list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.cpp)
 endforeach()
@@ -56,7 +56,9 @@ target_link_libraries(ftkResource ZLIB::ZLIB)
 set_target_properties(ftkResource PROPERTIES FOLDER lib)
 set_target_properties(ftkResource PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
-add_dependencies(ftkResource ftk-resource)
+if(NOT ftk_RESOURCE)
+    add_dependencies(ftkResource ftk-resource)
+endif()
 
 install(
     TARGETS ftkResource

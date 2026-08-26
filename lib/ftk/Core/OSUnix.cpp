@@ -27,6 +27,7 @@
 #include <sys/sysctl.h>
 #elif defined(__FreeBSD__)
 #include <sys/sysctl.h>
+#elif defined(__EMSCRIPTEN__)
 #else // __APPLE__
 #include <sys/sysinfo.h>
 #endif // __APPLE__
@@ -106,6 +107,10 @@ namespace ftk
             {
                 out = static_cast<size_t>(size);
             }
+#elif defined(__EMSCRIPTEN__)
+            // The browser does not say. Report what WebAssembly can
+            // address rather than nothing.
+            out = 4ULL * 1024 * 1024 * 1024;
 #else // __APPLE__
             struct sysinfo info;
             if (0 == sysinfo(&info))

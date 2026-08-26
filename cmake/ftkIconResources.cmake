@@ -33,7 +33,7 @@ function(ftk_icon_resources VARIABLE DIRECTORY NAMESPACE)
             OUTPUT
                 ${CMAKE_CURRENT_BINARY_DIR}/${NAMESPACE}/${ICON_BASE}.cpp
                 ${CMAKE_CURRENT_BINARY_DIR}/${NAMESPACE}/${ICON_BASE}.h
-            COMMAND ftk-resource ${ICON} ${NAMESPACE}/${ICON_BASE} ${NAMESPACE}
+            COMMAND ${ftk_RESOURCE_COMMAND} ${ICON} ${NAMESPACE}/${ICON_BASE} ${NAMESPACE}
             DEPENDS ${ICON})
         list(APPEND ICON_SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${NAMESPACE}/${ICON_BASE}.cpp)
     endforeach()
