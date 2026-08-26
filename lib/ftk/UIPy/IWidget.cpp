@@ -88,6 +88,92 @@ namespace ftk
                     drawRect,
                     event);
             }
+
+            void drawOverlayEvent(const Box2I& drawRect, const DrawEvent& event) override
+            {
+                PYBIND11_OVERRIDE(
+                    void,
+                    IWidget,
+                    drawOverlayEvent,
+                    drawRect,
+                    event);
+            }
+
+            void dragEnterEvent(DragDropEvent& event) override
+            {
+                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
+                // reference argument, so Python would accept a copy of the
+                // event and the window would never hear.
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function override =
+                    pybind11::get_override(this, "dragEnterEvent");
+                if (override)
+                {
+                    override(pybind11::cast(
+                        &event, pybind11::return_value_policy::reference));
+                }
+                else
+                {
+                    IWidget::dragEnterEvent(event);
+                }
+            }
+
+            void dragLeaveEvent(DragDropEvent& event) override
+            {
+                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
+                // reference argument, so Python would accept a copy of the
+                // event and the window would never hear.
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function override =
+                    pybind11::get_override(this, "dragLeaveEvent");
+                if (override)
+                {
+                    override(pybind11::cast(
+                        &event, pybind11::return_value_policy::reference));
+                }
+                else
+                {
+                    IWidget::dragLeaveEvent(event);
+                }
+            }
+
+            void dragMoveEvent(DragDropEvent& event) override
+            {
+                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
+                // reference argument, so Python would accept a copy of the
+                // event and the window would never hear.
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function override =
+                    pybind11::get_override(this, "dragMoveEvent");
+                if (override)
+                {
+                    override(pybind11::cast(
+                        &event, pybind11::return_value_policy::reference));
+                }
+                else
+                {
+                    IWidget::dragMoveEvent(event);
+                }
+            }
+
+            void dropEvent(DragDropEvent& event) override
+            {
+                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
+                // reference argument, so Python would accept a copy of the
+                // event and the window would never hear.
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function override =
+                    pybind11::get_override(this, "dropEvent");
+                if (override)
+                {
+                    override(pybind11::cast(
+                        &event, pybind11::return_value_policy::reference));
+                }
+                else
+                {
+                    IWidget::dropEvent(event);
+                }
+            }
         };
 
         void iWidget(py::module_& m)
@@ -204,6 +290,14 @@ namespace ftk
                 .def("keyPressEvent", &IWidget::keyPressEvent, py::arg("event"))
                 .def("keyReleaseEvent", &IWidget::keyReleaseEvent, py::arg("event"))
                 .def("textEvent", &IWidget::textEvent, py::arg("event"))
+                .def(
+                    "setSizeUpdate",
+                    &IWidget::setSizeUpdate,
+                    py::arg("value") = true)
+                .def(
+                    "setDrawUpdate",
+                    &IWidget::setDrawUpdate,
+                    py::arg("value") = true)
                 .def("dragEnterEvent", &IWidget::dragEnterEvent, py::arg("event"))
                 .def("dragLeaveEvent", &IWidget::dragLeaveEvent, py::arg("event"))
                 .def("dragMoveEvent", &IWidget::dragMoveEvent, py::arg("event"))

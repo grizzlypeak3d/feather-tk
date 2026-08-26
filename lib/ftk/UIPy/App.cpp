@@ -79,7 +79,16 @@ namespace ftk
                     "fonts",
                     &Style::getFonts,
                     &Style::setFonts,
-                    py::return_value_policy::copy);
+                    py::return_value_policy::copy)
+                .def(
+                    "getSizeRole",
+                    &Style::getSizeRole,
+                    py::arg("role"),
+                    py::arg("scale"))
+                .def(
+                    "getColorRole",
+                    py::overload_cast<ColorRole>(&Style::getColorRole, py::const_),
+                    py::arg("role"));
 
             py::class_<MonitorInfo>(m, "MonitorInfo")
                 .def_readwrite("name", &MonitorInfo::name)
