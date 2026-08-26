@@ -236,6 +236,29 @@ namespace ftk
                     FTK_CHECK(fileCount == accepted.size());
                 }
 
+                // Saving composes the chosen directory and the typed name.
+                // The directory arrives without a trailing separator, which
+                // once read as a file name that setFileName() replaced --
+                // saving to the parent of the directory that was chosen.
+                {
+                    auto widget = FileBrowserWidget::create(
+                        _context, path, FileBrowserMode::Save, model, window);
+                    std::vector<Path> accepted;
+                    widget->setCallback(
+                        [&accepted](const std::vector<Path>& value)
+                        {
+                            accepted = value;
+                        });
+                    app->tick();
+                    widget->setFileName("playlist.otio");
+                    FTK_CHECK("playlist.otio" == widget->getFileName());
+                    _click(widget, "Ok");
+                    FTK_CHECK(1 == accepted.size());
+                    FTK_CHECK(
+                        appendSeparator(path.u8string()) + "playlist.otio" ==
+                        accepted.front().getFileName(true));
+                }
+
                 // Chosen with the mouse rather than the keyboard, which is
                 // how it is actually done: shift extends from the last click.
                 {

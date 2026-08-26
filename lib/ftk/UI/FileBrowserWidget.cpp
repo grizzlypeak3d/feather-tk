@@ -353,7 +353,11 @@ namespace ftk
                     break;
                 case FileBrowserMode::Save:
                 {
-                    Path path(p.model->getPath().u8string());
+                    // With the separator, so the whole of it parses as the
+                    // directory: without it the last component reads as a
+                    // file name, and setFileName() replaces it -- saving to
+                    // the parent of the directory that was chosen.
+                    Path path(appendSeparator(p.model->getPath().u8string()));
                     path.setFileName(p.fileEdit->getText());
                     _accept({ path });
                     break;
@@ -450,6 +454,16 @@ namespace ftk
         const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->callback = value;
+    }
+
+    std::string FileBrowserWidget::getFileName() const
+    {
+        return _p->fileEdit->getText();
+    }
+
+    void FileBrowserWidget::setFileName(const std::string& value)
+    {
+        _p->fileEdit->setText(value);
     }
 
     bool FileBrowserWidget::isMultiple() const

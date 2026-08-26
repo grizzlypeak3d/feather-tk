@@ -221,6 +221,12 @@ namespace ftk
         //! Set the cancel callback.
         FTK_UI_API void setCancelCallback(const std::function<void(void)>&);
 
+        //! Get the file name, which saving types.
+        FTK_UI_API std::string getFileName() const;
+
+        //! Set the file name: a suggested name for saving.
+        FTK_UI_API void setFileName(const std::string&);
+
         //! Get whether more than one file can be selected.
         FTK_UI_API bool isMultiple() const;
 
