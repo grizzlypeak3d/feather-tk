@@ -595,22 +595,33 @@ namespace ftk
 
         std::vector<std::string> extsLabels;
         const std::string& filterLabel = p.model->getExtsFilterLabel();
+        const bool labeled =
+            !p.model->getExtsFilter().empty() && !filterLabel.empty();
+        // A group of one extension is that extension, so it is shown as
+        // itself rather than under the group label and again beneath it --
+        // this is the extensions combo box, and what the dialog is for is
+        // its title's job.
+        const bool collapsed = labeled && 1 == exts.size();
         extsLabels.push_back(
-            !p.model->getExtsFilter().empty() && !filterLabel.empty() ?
-            filterLabel :
-            "*.*");
-        for (const auto& ext : exts)
+            collapsed ? "*" + exts.front() : (labeled ? filterLabel : "*.*"));
+        if (!collapsed)
         {
-            extsLabels.push_back("*" + ext);
+            for (const auto& ext : exts)
+            {
+                extsLabels.push_back("*" + ext);
+            }
         }
         p.extsComboBox->setItems(extsLabels);
-        const auto i = std::find(
-            exts.begin(),
-            exts.end(),
-            ext);
-        if (i != exts.end())
+        if (!collapsed)
         {
-            p.extsComboBox->setCurrentIndex(static_cast<int>(i - exts.begin()) + 1);
+            const auto i = std::find(
+                exts.begin(),
+                exts.end(),
+                ext);
+            if (i != exts.end())
+            {
+                p.extsComboBox->setCurrentIndex(static_cast<int>(i - exts.begin()) + 1);
+            }
         }
     }
 }
