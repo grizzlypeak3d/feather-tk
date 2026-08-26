@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/UIPy/WidgetTrampoline.h>
+
 #include <ftk/UI/IWidget.h>
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/Menu.h>
@@ -17,7 +19,7 @@ namespace ftk
 {
     namespace python
     {
-        class PyIWidget : public IWidget
+        class PyIWidget : public PyWidget<IWidget>
         {
         public:
             static std::shared_ptr<PyIWidget> create(
@@ -28,151 +30,6 @@ namespace ftk
                 auto out = std::shared_ptr<PyIWidget>(new PyIWidget);
                 out->_init(context, objectName, parent);
                 return out;
-            }
-            
-            Size2I getSizeHint() const override
-            {
-                PYBIND11_OVERRIDE(
-                    Size2I,
-                    IWidget,
-                    getSizeHint);
-            }
-
-            void setGeometry(const Box2I& value) override
-            {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWidget,
-                    setGeometry,
-                    value);
-            }
-            
-            void tickEvent(
-                bool parentsVisible,
-                bool parentsEnabled,
-                const TickEvent& event) override
-            {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWidget,
-                    tickEvent,
-                    parentsVisible,
-                    parentsEnabled,
-                    event);
-            }
-
-            void styleEvent(const StyleEvent& event) override
-            {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWidget,
-                    styleEvent,
-                    event);
-            }
-
-            void sizeHintEvent(const SizeHintEvent& event) override
-            {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWidget,
-                    sizeHintEvent,
-                    event);
-            }
-            
-            void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
-            {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWidget,
-                    drawEvent,
-                    drawRect,
-                    event);
-            }
-
-            void drawOverlayEvent(const Box2I& drawRect, const DrawEvent& event) override
-            {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWidget,
-                    drawOverlayEvent,
-                    drawRect,
-                    event);
-            }
-
-            void dragEnterEvent(DragDropEvent& event) override
-            {
-                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
-                // reference argument, so Python would accept a copy of the
-                // event and the window would never hear.
-                pybind11::gil_scoped_acquire gil;
-                pybind11::function override =
-                    pybind11::get_override(this, "dragEnterEvent");
-                if (override)
-                {
-                    override(pybind11::cast(
-                        &event, pybind11::return_value_policy::reference));
-                }
-                else
-                {
-                    IWidget::dragEnterEvent(event);
-                }
-            }
-
-            void dragLeaveEvent(DragDropEvent& event) override
-            {
-                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
-                // reference argument, so Python would accept a copy of the
-                // event and the window would never hear.
-                pybind11::gil_scoped_acquire gil;
-                pybind11::function override =
-                    pybind11::get_override(this, "dragLeaveEvent");
-                if (override)
-                {
-                    override(pybind11::cast(
-                        &event, pybind11::return_value_policy::reference));
-                }
-                else
-                {
-                    IWidget::dragLeaveEvent(event);
-                }
-            }
-
-            void dragMoveEvent(DragDropEvent& event) override
-            {
-                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
-                // reference argument, so Python would accept a copy of the
-                // event and the window would never hear.
-                pybind11::gil_scoped_acquire gil;
-                pybind11::function override =
-                    pybind11::get_override(this, "dragMoveEvent");
-                if (override)
-                {
-                    override(pybind11::cast(
-                        &event, pybind11::return_value_policy::reference));
-                }
-                else
-                {
-                    IWidget::dragMoveEvent(event);
-                }
-            }
-
-            void dropEvent(DragDropEvent& event) override
-            {
-                // By hand rather than PYBIND11_OVERRIDE: the macro copies a
-                // reference argument, so Python would accept a copy of the
-                // event and the window would never hear.
-                pybind11::gil_scoped_acquire gil;
-                pybind11::function override =
-                    pybind11::get_override(this, "dropEvent");
-                if (override)
-                {
-                    override(pybind11::cast(
-                        &event, pybind11::return_value_policy::reference));
-                }
-                else
-                {
-                    IWidget::dropEvent(event);
-                }
             }
         };
 

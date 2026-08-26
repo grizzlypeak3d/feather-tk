@@ -1,5 +1,6 @@
 set(HEADERS
-    Bindings.h)
+    Bindings.h
+    WidgetTrampoline.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Action.cpp
