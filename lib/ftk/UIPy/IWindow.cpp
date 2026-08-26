@@ -86,6 +86,8 @@ namespace ftk
                 .def("getNextKeyFocus", &IWindow::getNextKeyFocus)
                 .def("getPrevKeyFocus", &IWindow::getPrevKeyFocus)
                 .def_property("tooltipsEnabled", &IWindow::getTooltipsEnabled, &IWindow::setTooltipsEnabled)
+                .def_property_readonly("cursorPos", &IWindow::getCursorPos)
+                .def_property_readonly("dragDropActive", &IWindow::isDragDropActive)
                 .def(
                     "layout",
                     &IWindow::layout,

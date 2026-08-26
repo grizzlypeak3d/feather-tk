@@ -124,6 +124,16 @@ namespace ftk
         //! Set whether scroll events are enabled.
         FTK_UI_API void setScrollEventsEnabled(bool);
 
+        //! Get whether the widget scrolls when a drag and drop hovers
+        //! near its edges.
+        FTK_UI_API bool hasDragScroll() const;
+
+        //! Set whether the widget scrolls when a drag and drop hovers
+        //! near its edges. The scrolling carries on while the drag is just
+        //! outside the widget, so a drop target that is off the screen can
+        //! be reached by holding the drag past the edge of the list.
+        FTK_UI_API void setDragScroll(bool);
+
         //! Get the line step.
         FTK_UI_API int getLineStep() const;
 
@@ -166,6 +176,7 @@ namespace ftk
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
+        FTK_UI_API void tickEvent(bool, bool, const TickEvent&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;

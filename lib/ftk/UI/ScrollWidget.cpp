@@ -5,10 +5,12 @@
 
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/GridLayout.h>
+#include <ftk/UI/IWindow.h>
 #include <ftk/UI/OverlayLayout.h>
 #include <ftk/UI/ScrollArea.h>
 #include <ftk/UI/ScrollBar.h>
 
+#include <algorithm>
 #include <optional>
 
 namespace ftk
@@ -31,6 +33,7 @@ namespace ftk
         bool scrollBarsVisible = true;
         bool scrollBarsAutoHide = true;
         bool scrollEventsEnabled = true;
+        bool dragScroll = false;
         int lineStep = 20;
         bool border = true;
         SizeRole marginRole = SizeRole::None;
@@ -53,6 +56,7 @@ namespace ftk
             float displayScale = 1.F;
             int margin = 0;
             int border = 0;
+            int handle = 0;
         };
         SizeData size;
     };
@@ -281,6 +285,16 @@ namespace ftk
         _p->scrollEventsEnabled = value;
     }
 
+    bool ScrollWidget::hasDragScroll() const
+    {
+        return _p->dragScroll;
+    }
+
+    void ScrollWidget::setDragScroll(bool value)
+    {
+        _p->dragScroll = value;
+    }
+
     int ScrollWidget::getLineStep() const
     {
         return _p->lineStep;
@@ -402,6 +416,60 @@ namespace ftk
             p.size.displayScale = event.displayScale;
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+            p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
+        }
+    }
+
+    void ScrollWidget::tickEvent(
+        bool parentsVisible,
+        bool parentsEnabled,
+        const TickEvent& event)
+    {
+        IWidget::tickEvent(parentsVisible, parentsEnabled, event);
+        FTK_P();
+        if (p.dragScroll && parentsVisible)
+        {
+            auto window = getWindow();
+            if (window && window->isDragDropActive())
+            {
+                // Scroll when the drag hovers close to an edge, on either
+                // side of it: the reach outside is what lets a drag that has
+                // left the list keep moving it. Driven from the tick rather
+                // than the drag events for two reasons: the drag events only
+                // go to the widget under the cursor, and a drag holding
+                // still at the edge has no events at all.
+                const Box2I& g = p.scrollArea->getGeometry();
+                const V2I& cursor = window->getCursorPos();
+                const int m = p.size.handle;
+                V2I d;
+                if (cursor.x >= g.min.x - m && cursor.x <= g.max.x + m &&
+                    cursor.y >= g.min.y - m && cursor.y <= g.max.y + m)
+                {
+                    const int step = std::max(1, p.size.handle / 2);
+                    if (cursor.y < g.min.y + m)
+                    {
+                        d.y = -step;
+                    }
+                    else if (cursor.y > g.max.y - m)
+                    {
+                        d.y = step;
+                    }
+                    if (cursor.x < g.min.x + m)
+                    {
+                        d.x = -step;
+                    }
+                    else if (cursor.x > g.max.x - m)
+                    {
+                        d.x = step;
+                    }
+                }
+                if (d.x != 0 || d.y != 0)
+                {
+                    // setScrollPos clamps, and an axis that does not scroll
+                    // has no room to move in.
+                    setScrollPos(getScrollPos() + d);
+                }
+            }
         }
     }
 

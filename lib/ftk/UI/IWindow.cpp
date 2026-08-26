@@ -343,6 +343,16 @@ namespace ftk
         return _p->tooltipsEnabled;
     }
 
+    const V2I& IWindow::getCursorPos() const
+    {
+        return _p->cursorPos;
+    }
+
+    bool IWindow::isDragDropActive() const
+    {
+        return _p->dragDropData.get() != nullptr;
+    }
+
     void IWindow::setTooltipsEnabled(bool value)
     {
         FTK_P();

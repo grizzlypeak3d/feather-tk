@@ -46,6 +46,7 @@ namespace ftk
                 .def_property("scrollBarsVisible", &ScrollWidget::areScrollBarsVisible, &ScrollWidget::setScrollBarsVisible)
                 .def_property("scrollBarsAutoHide", &ScrollWidget::getScrollBarsAutoHide, &ScrollWidget::setScrollBarsAutoHide)
                 .def_property("scrollEventsEnabled", &ScrollWidget::areScrollEventsEnabled, &ScrollWidget::setScrollEventsEnabled)
+                .def_property("dragScroll", &ScrollWidget::hasDragScroll, &ScrollWidget::setDragScroll)
                 .def_property("border", &ScrollWidget::hasBorder, &ScrollWidget::setBorder)
                 .def_property("sizeHintRole", &ScrollWidget::getSizeHintRole, &ScrollWidget::setSizeHintRole)
                 .def_property("marginRole", &ScrollWidget::getMarginRole, &ScrollWidget::setMarginRole)

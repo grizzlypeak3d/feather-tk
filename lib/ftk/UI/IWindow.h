@@ -142,6 +142,20 @@ namespace ftk
 
         ///@}
 
+        //! Cursor and Drag and Drop
+        ///@{
+
+        //! Get the cursor position.
+        FTK_UI_API const V2I& getCursorPos() const;
+
+        //! Get whether a drag and drop is in progress. Drag events only
+        //! reach the widget under the cursor, so a widget that reacts to a
+        //! drag being anywhere near it -- a scroll area moving a drop target
+        //! into reach -- asks here.
+        FTK_UI_API bool isDragDropActive() const;
+
+        ///@}
+
         //! Automation
         //!
         //! Working the window without a person at it: tests, screenshot

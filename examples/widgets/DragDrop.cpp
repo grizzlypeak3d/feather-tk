@@ -285,9 +285,13 @@ namespace widgets
         auto scrollWidget0 = ScrollWidget::create(context, ScrollType::Vertical, _layout);
         scrollWidget0->setBorder(false);
         scrollWidget0->setStretch(Stretch::Expanding);
+        // Scroll when a drag hovers near or just past the edge of the
+        // list, so a drop target that is off the screen can be reached.
+        scrollWidget0->setDragScroll(true);
         auto scrollWidget1 = ScrollWidget::create(context, ScrollType::Vertical, _layout);
         scrollWidget1->setBorder(false);
         scrollWidget1->setStretch(Stretch::Expanding);
+        scrollWidget1->setDragScroll(true);
 
         // Create the drag and drop widgets.
         auto dragDropContainer0 = ContainerWidget::create(context);
