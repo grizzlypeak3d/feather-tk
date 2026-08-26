@@ -114,7 +114,8 @@ namespace ftk
                     &Path::setFileName)
                 .def(
                     "getFileName",
-                    [](const Path& path, bool dir) { return path.getFileName(dir); })
+                    [](const Path& path, bool dir) { return path.getFileName(dir); },
+                    py::arg("dir") = false)
                 .def_property("frames", &Path::getFrames, &Path::setFrames, py::return_value_policy::copy)
                 // Not "seq", which is already the predicate below.
                 .def_property("frameSeq", &Path::getSeq, &Path::setSeq, py::return_value_policy::copy)
