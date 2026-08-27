@@ -79,7 +79,7 @@ jobs:
     - name: Collect site
       run: |
         mkdir site
-        for example in widgets simple textedit; do
+        for example in widgets gfx simple textedit; do
             mkdir site/$example
             cp build/examples/$example/index.html \
                build/examples/$example/$example.js \
