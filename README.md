@@ -1,5 +1,6 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Build Status](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml)
+[![Web](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/web-workflow.yml/badge.svg)](https://grizzlypeak3d.github.io/feather-tk/)
 
 # ![feather-tk Icon](etc/Icons/feather_tk_32.png)&nbsp;feather-tk
 
@@ -8,6 +9,9 @@ A lightweight C++ toolkit for building professional tools for film, VFX, and ani
 feather-tk is purpose-built for media production software, with features like
 high-bit-depth color and multi-monitor HiDPI support. It powers [DJV](https://github.com/grizzlypeak3d/DJV),
 a production-proven image sequence viewer used in professional VFX and animation workflows.
+
+**[Try it in your browser](https://grizzlypeak3d.github.io/feather-tk/)** --
+the examples run in WebAssembly.
 
 ---
 
@@ -54,7 +58,8 @@ writing custom widgets straightforward.
 - **Python bindings** — pybind11-based Python API (work in progress).
 - **Testable by design** — applications run headless, write screenshots, and drive
   their own UI from scripts; the same machinery tests feather-tk itself.
-- **Cross-platform** — works on Linux, macOS, and Windows.
+- **Cross-platform** — works on Linux, macOS, and Windows, and runs in the
+  browser with Emscripten.
 
 ---
 
@@ -204,9 +209,10 @@ Text editor with multiple documents:
 
 ![Text editor example](etc/Images/textedit.png)
 
-Gallery of the widgets, layouts, and dialogs:
+Gallery of the widgets, layouts, and dialogs --
+[run it in your browser](https://grizzlypeak3d.github.io/feather-tk/widgets/index.html):
 
-![Widget gallery example](etc/Images/widgets.png)
+[![Widget gallery example](etc/Images/widgets.png)](https://grizzlypeak3d.github.io/feather-tk/widgets/index.html)
 
 The examples in the [examples/](examples/) directory:
 
