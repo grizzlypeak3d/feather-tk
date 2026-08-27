@@ -80,6 +80,10 @@ namespace ftk
                 setFullScreen(value);
             }));
 
+        // The browser owns the window size, and the GLES 2 backend has no
+        // floating point buffers, so on the web neither menu has anything
+        // to offer.
+#if !defined(__EMSCRIPTEN__)
         p.menus["WindowSize"] = p.menus["Window"]->addSubMenu("Window Size");
         for (auto windowSize : windowSizes)
         {
@@ -92,6 +96,7 @@ namespace ftk
             p.windowSizeActions.push_back(action);
             p.menus["WindowSize"]->addAction(action);
         }
+#endif // __EMSCRIPTEN__
 
         p.menus["DisplayScale"] = p.menus["Window"]->addSubMenu("Display Scale");
         for (size_t i = 0; i < displayScales.size(); ++i)
@@ -126,6 +131,7 @@ namespace ftk
             p.menus["ColorStyle"]->addAction(action);
         }
 
+#if !defined(__EMSCRIPTEN__)
         p.menus["BufferType"] = p.menus["Window"]->addSubMenu("Buffer Type");
         for (auto bufferType : getWindowBufferTypeEnums())
         {
@@ -138,6 +144,7 @@ namespace ftk
             p.bufferActions[bufferType] = action;
             p.menus["BufferType"]->addAction(action);
         }
+#endif // __EMSCRIPTEN__
 
         p.tooltipsAction = Action::create(
             "Tooltips",
@@ -185,6 +192,7 @@ namespace ftk
                 }
             });
 
+#if !defined(__EMSCRIPTEN__)
         p.bufferObserver = Observer<WindowBufferType>::create(
             observeBufferType(),
             [this](WindowBufferType value)
@@ -197,6 +205,7 @@ namespace ftk
                         bufferType == value);
                 }
             });
+#endif // __EMSCRIPTEN__
 
         p.tooltipsObserver = Observer<bool>::create(
             app->observeTooltipsEnabled(),

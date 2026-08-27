@@ -7,9 +7,11 @@ set(RESOURCES
     etc/Fonts/NotoSans-Bold.ttf
     etc/Fonts/NotoSans-Regular.ttf
     etc/Fonts/NotoSansSymbols2-Regular.ttf
-    etc/Fonts/NotoSansCJK-Regular.otf
     etc/Images/Charlie.png
     etc/Images/TestDrawing.svg)
+if(ftk_CJK)
+    list(APPEND RESOURCES etc/Fonts/NotoSansCJK-Regular.otf)
+endif()
 list(TRANSFORM RESOURCES PREPEND ${PROJECT_SOURCE_DIR}/)
 
 # The icons go through ftk_icon_resources(): adding an icon is adding a
@@ -21,7 +23,7 @@ foreach(RESOURCE ${RESOURCES})
         OUTPUT
             ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.h
-        COMMAND ftk-resource ${RESOURCE} ftk_resource/${RESOURCE_BASE} ftk_resource
+        COMMAND ${ftk_RESOURCE_COMMAND} ${RESOURCE} ftk_resource/${RESOURCE_BASE} ftk_resource
         DEPENDS ${RESOURCE})
     list(APPEND SOURCE ${CMAKE_CURRENT_BINARY_DIR}/ftk_resource/${RESOURCE_BASE}.cpp)
 endforeach()
@@ -49,14 +51,18 @@ target_include_directories(ftkResource PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 set_target_properties(ftkResource PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_compile_definitions(ftkResource PUBLIC FTK_CJK)
+if(ftk_CJK)
+    target_compile_definitions(ftkResource PUBLIC FTK_CJK)
+endif()
 
 target_link_libraries(ftkResource ZLIB::ZLIB)
 
 set_target_properties(ftkResource PROPERTIES FOLDER lib)
 set_target_properties(ftkResource PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
-add_dependencies(ftkResource ftk-resource)
+if(NOT ftk_RESOURCE)
+    add_dependencies(ftkResource ftk-resource)
+endif()
 
 install(
     TARGETS ftkResource

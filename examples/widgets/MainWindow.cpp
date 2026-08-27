@@ -4,9 +4,7 @@
 #include "MainWindow.h"
 
 #include "App.h"
-#include "Bellows.h"
 #include "Buttons.h"
-#include "Charts.h"
 #include "Dialogs.h"
 #include "DragDrop.h"
 #include "Fonts.h"
@@ -20,7 +18,6 @@
 #include "Popups.h"
 #include "Sliders.h"
 #include "Splitters.h"
-#include "Stack.h"
 #include "SysLog.h"
 
 #include <ftk/UI/Divider.h>
@@ -38,9 +35,7 @@ namespace widgets
 
         _app = app;
 
-        _widgets["Bellows"] = &Bellows::create;
         _widgets["Buttons"] = &Buttons::create;
-        _widgets["Charts"] = &Charts::create;
         _widgets["Dialogs"] = &Dialogs::create;
         _widgets["DragDrop"] = &DragDrop::create;
         _widgets["Fonts"] = &Fonts::create;
@@ -54,7 +49,6 @@ namespace widgets
         _widgets["Popups"] = &Popups::create;
         _widgets["Sliders"] = &Sliders::create;
         _widgets["Splitters"] = &Splitters::create;
-        _widgets["Stack"] = &Stack::create;
         _widgets["SysLog"] = &SysLog::create;
 
         // Create test menus.

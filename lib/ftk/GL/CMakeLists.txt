@@ -77,13 +77,17 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_link_libraries(ftkGL PUBLIC ftkCore)
-target_link_libraries(ftkGL PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
+if(NOT EMSCRIPTEN)
+    target_link_libraries(ftkGL PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
+endif()
 # Public because this is not the only library that calls SDL: the UI does,
 # for the window and the clipboard, and so does tlRender for the audio. A
 # private link reaches them anyway while everything is static -- the symbols
 # wait for the program, or a static SDL is folded into this library and
 # re-exported -- and stops reaching them the moment either becomes shared.
-if(ftk_SDL2)
+if(EMSCRIPTEN)
+    # The port flags on the compile and link lines carry SDL.
+elseif(ftk_SDL2)
     target_link_libraries(ftkGL PUBLIC SDL2::SDL2)
 elseif(ftk_SDL3)
     target_link_libraries(ftkGL PUBLIC SDL3::SDL3)

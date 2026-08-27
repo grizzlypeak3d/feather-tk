@@ -332,7 +332,9 @@ namespace ftk
     {
         Path                            path;
         bool                            isDir = false;
-        size_t                          size = 0;
+        // What std::filesystem::file_size() returns: size_t would narrow
+        // it on a 32-bit target, WebAssembly included.
+        std::uintmax_t                  size = 0;
         std::filesystem::file_time_type time;
 
         FTK_CORE_API bool operator == (const DirEntry&) const;

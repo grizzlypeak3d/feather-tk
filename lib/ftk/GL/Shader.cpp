@@ -18,6 +18,7 @@ namespace ftk
     {
         struct Shader::Private
         {
+            std::map<std::string, int> attribLocations;
             std::string vertexSource;
             std::string fragmentSource;
             GLuint vertex = 0;
@@ -92,6 +93,18 @@ namespace ftk
             p.program = glCreateProgram();
             glAttachShader(p.program, p.vertex);
             glAttachShader(p.program, p.fragment);
+            // The vertex arrays hard-code the locations, and an OpenGL ES
+            // source cannot say them itself. Left to the linker they are
+            // whatever it likes: desktop drivers happen to assign
+            // declaration order, ANGLE -- WebGL -- does not, and the
+            // mismatch draws nothing, or reads a disabled attribute as
+            // opaque black. Binding a name the shader does not use is
+            // not an error.
+            for (const auto& i : p.attribLocations)
+            {
+                glBindAttribLocation(
+                    p.program, i.second, i.first.c_str());
+            }
             glLinkProgram(p.program);
             glGetProgramiv(p.program, GL_LINK_STATUS, &success);
             if (!success)
@@ -130,11 +143,13 @@ namespace ftk
 
         std::shared_ptr<Shader> Shader::create(
             const std::string& vertexSource,
-            const std::string& fragmentSource)
+            const std::string& fragmentSource,
+            const std::map<std::string, int>& attribLocations)
         {
             auto out = std::shared_ptr<Shader>(new Shader);
             out->_p->vertexSource = vertexSource;
             out->_p->fragmentSource = fragmentSource;
+            out->_p->attribLocations = attribLocations;
             out->_init();
             return out;
         }
@@ -186,14 +201,32 @@ namespace ftk
 
         void Shader::setUniform(int location, const M33F& value)
         {
-            // Transpose the matrix for OpenGL (column-major).
-            glUniformMatrix3fv(location, 1, GL_TRUE, value.data());
+            // Transposed by hand for OpenGL's column-major order: GL_TRUE
+            // asks the driver to do it, and OpenGL ES -- WebGL with it --
+            // requires GL_FALSE.
+            M33F t;
+            for (int r = 0; r < 3; ++r)
+            {
+                for (int c = 0; c < 3; ++c)
+                {
+                    t.set(c, r, value.get(r, c));
+                }
+            }
+            glUniformMatrix3fv(location, 1, GL_FALSE, t.data());
         }
 
         void Shader::setUniform(int location, const M44F& value)
         {
-            // Transpose the matrix for OpenGL (column-major).
-            glUniformMatrix4fv(location, 1, GL_TRUE, value.data());
+            // Transposed by hand, as above.
+            M44F t;
+            for (int r = 0; r < 4; ++r)
+            {
+                for (int c = 0; c < 4; ++c)
+                {
+                    t.set(c, r, value.get(r, c));
+                }
+            }
+            glUniformMatrix4fv(location, 1, GL_FALSE, t.data());
         }
 
         void Shader::setUniform(int location, const Color4F& value)

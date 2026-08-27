@@ -1,0 +1,95 @@
+name: Web
+
+# Build the examples with Emscripten and publish them to GitHub Pages.
+# Pages must be enabled in the repository settings with "GitHub Actions"
+# as the source.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  web-build:
+    runs-on: ubuntu-latest
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+      EMSCRIPTEN_VERSION: 6.0.8
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        path: ftk
+
+    - uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: ${{ env.EMSCRIPTEN_VERSION }}
+        actions-cache-folder: emsdk-cache
+
+    # The resource compiler runs on the build machine, not in the
+    # browser, so it is compiled natively; it is two files and zlib.
+    - name: Build ftk-resource
+      run: |
+        c++ -O2 -std=c++17 \
+            ftk/bin/ftk-resource/main.cpp \
+            ftk/bin/ftk-resource/App.cpp \
+            -lz -o $RUNNER_TEMP/ftk-resource
+
+    - name: Cache dependencies
+      id: deps-cache
+      uses: actions/cache@v4
+      with:
+        path: install
+        key: web-deps-${{ env.EMSCRIPTEN_VERSION }}-${{ hashFiles('ftk/etc/SuperBuild/**') }}
+
+    - name: Build dependencies
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      run: |
+        emcmake cmake -S ftk/etc/SuperBuild -B superbuild \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/install \
+            -DCMAKE_C_FLAGS=-sSUPPORT_LONGJMP=wasm \
+            -DCMAKE_CXX_FLAGS=-fwasm-exceptions \
+            -Dftk_SDL2=OFF \
+            -Dftk_nfd=OFF
+        cmake --build superbuild
+
+    - name: Build
+      run: |
+        emcmake cmake -S ftk -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/install \
+            -DCMAKE_PREFIX_PATH=$PWD/install \
+            -DCMAKE_FIND_ROOT_PATH=$PWD/install \
+            -Dftk_API=GLES_2 \
+            -Dftk_RESOURCE=$RUNNER_TEMP/ftk-resource \
+            -Dftk_TESTS=OFF
+        cmake --build build
+
+    - name: Collect site
+      run: |
+        mkdir site
+        for example in widgets gfx simple textedit; do
+            mkdir site/$example
+            cp build/examples/$example/index.html \
+               build/examples/$example/$example.js \
+               build/examples/$example/$example.wasm \
+               site/$example/
+        done
+        cp ftk/etc/Web/gallery.html site/index.html
+
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: site
+
+    - uses: actions/deploy-pages@v4

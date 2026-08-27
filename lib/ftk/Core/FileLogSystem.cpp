@@ -52,6 +52,27 @@ namespace ftk
 
         p.path = path;
 
+#if defined(__EMSCRIPTEN__)
+        // The browser build has no threads, and the log does not need one:
+        // items are written through as they arrive.
+        p.logObserver = ListObserver<LogItem>::create(
+            context->getLogSystem()->observeLogItems(),
+            [this](const std::vector<LogItem>& value)
+            {
+                try
+                {
+                    auto io = FileIO::create(_p->path, FileMode::Append);
+                    for (const auto& item : value)
+                    {
+                        io->write(getLabel(item) + "\n");
+                    }
+                }
+                catch (const std::exception&)
+                {}
+            });
+        return;
+#endif // __EMSCRIPTEN__
+
         p.logObserver = ListObserver<LogItem>::create(
             context->getLogSystem()->observeLogItems(),
             [this](const std::vector<LogItem>& value)

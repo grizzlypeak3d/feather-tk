@@ -31,6 +31,9 @@ namespace ftk
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
 
+        std::weak_ptr<Menu> contextMenu;
+        bool contextMenuFocus = false;
+
         int cursorStart = -1;
         bool cursorVisible = false;
         std::string preedit;
@@ -543,6 +546,24 @@ namespace ftk
     {
         IMouseWidget::keyFocusEvent(value);
         FTK_P();
+        // The context menu acts on the editing session, so focus moving
+        // into it and back is not the user leaving the field: nothing is
+        // committed, the selection stays, and clients hear nothing.
+        if (!value)
+        {
+            const auto contextMenu = p.contextMenu.lock();
+            if (contextMenu && contextMenu->isOpen())
+            {
+                p.contextMenuFocus = true;
+                return;
+            }
+        }
+        else if (p.contextMenuFocus)
+        {
+            p.contextMenuFocus = false;
+            return;
+        }
+        p.contextMenuFocus = false;
         if (value)
         {
             if (p.selectAllOnFocus)
@@ -742,6 +763,7 @@ namespace ftk
         out->addAction(selectAll);
         out->setEnabled(selectAll, !model->getText().empty());
 
+        p.contextMenu = out;
         return out;
     }
 

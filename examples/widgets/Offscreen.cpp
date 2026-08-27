@@ -49,11 +49,19 @@ namespace widgets
     std::string vertexSource()
     {
         return
+#if defined(FTK_API_GL_4_1)
             "#version 410\n"
             "\n"
             "layout(location = 0) in vec3 vPos;\n"
             "layout(location = 1) in vec4 vColor;\n"
             "out vec4 fColor;\n"
+#elif defined(FTK_API_GLES_2)
+            "precision mediump float;\n"
+            "\n"
+            "attribute vec3 vPos;\n"
+            "attribute vec4 vColor;\n"
+            "varying vec4 fColor;\n"
+#endif // FTK_API_GL_4_1
             "\n"
             "struct Transform\n"
             "{\n"
@@ -72,6 +80,7 @@ namespace widgets
     std::string meshFragmentSource()
     {
         return
+#if defined(FTK_API_GL_4_1)
             "#version 410\n"
             "\n"
             "in vec4 fColor;\n"
@@ -84,6 +93,19 @@ namespace widgets
             "\n"
             "    outColor = fColor * color;\n"
             "}\n";
+#elif defined(FTK_API_GLES_2)
+            "precision mediump float;\n"
+            "\n"
+            "varying vec4 fColor;\n"
+            "\n"
+            "uniform vec4 color;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            "\n"
+            "    gl_FragColor = fColor * color;\n"
+            "}\n";
+#endif // FTK_API_GL_4_1
     }
 
     void Offscreen::drawEvent(const Box2I& drawRect, const DrawEvent& event)

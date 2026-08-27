@@ -3,18 +3,42 @@
 
 #include "Layouts.h"
 
+#include <ftk/UI/ColorSwatch.h>
 #include <ftk/UI/FormLayout.h>
 #include <ftk/UI/GridLayout.h>
 #include <ftk/UI/GroupBox.h>
 #include <ftk/UI/IntEdit.h>
 #include <ftk/UI/IntEditSlider.h>
-#include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
 
 using namespace ftk;
 
 namespace widgets
 {
+    namespace
+    {
+        // Colored blocks instead of labels, so the structure the layout
+        // creates -- the cells, the spacing, the spacers -- can be seen.
+        std::shared_ptr<ColorSwatch> createBlock(
+            const std::shared_ptr<Context>& context,
+            size_t index,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            const std::vector<Color4F> colors =
+            {
+                Color4F(.9F, .4F, .3F),
+                Color4F(.9F, .7F, .2F),
+                Color4F(.4F, .7F, .3F),
+                Color4F(.3F, .6F, .8F)
+            };
+            auto out = ColorSwatch::create(context, parent);
+            out->setColor(colors[index % colors.size()]);
+            out->setSizeRole(SizeRole::SwatchLarge);
+            out->setVAlign(VAlign::Center);
+            return out;
+        }
+    }
+
     void Layouts::_init(
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<App>& app,
@@ -33,28 +57,28 @@ namespace widgets
         auto groupBox = GroupBox::create(context, "Row Layouts", layout);
         auto groupLayout = HorizontalLayout::create(context, groupBox);
         auto hLayout = HorizontalLayout::create(context, groupLayout);
-        auto label = Label::create(context, "One", hLayout);
-        label = Label::create(context, "Two", hLayout);
+        createBlock(context, 0, hLayout);
+        createBlock(context, 1, hLayout);
         hLayout->addSpacer();
-        label = Label::create(context, "Three", hLayout);
+        createBlock(context, 2, hLayout);
         auto vLayout = VerticalLayout::create(context, groupLayout);
-        label = Label::create(context, "One", vLayout);
-        label = Label::create(context, "Two", vLayout);
+        createBlock(context, 0, vLayout);
+        createBlock(context, 1, vLayout);
         vLayout->addSpacer();
-        label = Label::create(context, "Three", vLayout);
+        createBlock(context, 2, vLayout);
 
         // Create grid layouts.
         groupBox = GroupBox::create(context, "Grid Layouts", layout);
         groupLayout = HorizontalLayout::create(context, groupBox);
         auto gridLayout = GridLayout::create(context, groupLayout);
-        label = Label::create(context, "One", gridLayout);
-        gridLayout->setGridPos(label, 0, 0);
-        label = Label::create(context, "Two", gridLayout);
-        gridLayout->setGridPos(label, 0, 1);
-        label = Label::create(context, "Three", gridLayout);
-        gridLayout->setGridPos(label, 1, 0);
-        label = Label::create(context, "Four", gridLayout);
-        gridLayout->setGridPos(label, 1, 1);
+        auto block = createBlock(context, 0, gridLayout);
+        gridLayout->setGridPos(block, 0, 0);
+        block = createBlock(context, 1, gridLayout);
+        gridLayout->setGridPos(block, 0, 1);
+        block = createBlock(context, 2, gridLayout);
+        gridLayout->setGridPos(block, 1, 0);
+        block = createBlock(context, 3, gridLayout);
+        gridLayout->setGridPos(block, 1, 1);
 
         // Create form layouts.
         groupBox = GroupBox::create(context, "Form Layouts", layout);
