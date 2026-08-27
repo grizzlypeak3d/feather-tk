@@ -19,6 +19,13 @@
 # named for a resource -- Time.svg -- cannot shadow a system header --
 # <time.h> -- on a case insensitive file system.
 function(ftk_icon_resources VARIABLE DIRECTORY NAMESPACE)
+    # The command was made a variable for cross-compiling, where a native
+    # ftk-resource is named instead of the target. Consumers of this
+    # function do not set the variable, and an empty command turns into
+    # the shell "executing" the first resource file.
+    if(NOT ftk_RESOURCE_COMMAND)
+        set(ftk_RESOURCE_COMMAND ftk-resource)
+    endif()
     file(GLOB ICON_RESOURCES CONFIGURE_DEPENDS ${DIRECTORY}/*.svg)
     set(ICON_EXTERNS)
     set(ICON_ENTRIES)
