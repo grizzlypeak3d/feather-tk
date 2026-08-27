@@ -78,9 +78,10 @@ namespace ftk
                 "}\n";
 #elif defined(FTK_API_GLES_3)
             std::string vertexSource =
+                "#version 300 es\n"
                 "precision mediump float;\n"
                 "\n"
-                "attribute vec3 vPos;\n"
+                "in vec3 vPos;\n"
                 "\n"
                 "uniform int i;\n"
                 "uniform float f;\n"
@@ -100,12 +101,14 @@ namespace ftk
                 "    gl_Position = vec4(vPos, 1.0);\n"
                 "}\n";
             std::string fragmentSource =
+                "#version 300 es\n"
                 "precision mediump float;\n"
+                "out vec4 outColor;\n"
                 "\n"
                 "void main()\n"
                 "{\n"
                 "\n"
-                "    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+                "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
                 "}\n";
 #endif // FTK_API_GL_4_1
         }

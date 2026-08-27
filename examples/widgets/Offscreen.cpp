@@ -56,11 +56,12 @@ namespace widgets
             "layout(location = 1) in vec4 vColor;\n"
             "out vec4 fColor;\n"
 #elif defined(FTK_API_GLES_3)
+            "#version 300 es\n"
             "precision mediump float;\n"
             "\n"
-            "attribute vec3 vPos;\n"
-            "attribute vec4 vColor;\n"
-            "varying vec4 fColor;\n"
+            "in vec3 vPos;\n"
+            "in vec4 vColor;\n"
+            "out vec4 fColor;\n"
 #endif // FTK_API_GL_4_1
             "\n"
             "struct Transform\n"
@@ -94,16 +95,18 @@ namespace widgets
             "    outColor = fColor * color;\n"
             "}\n";
 #elif defined(FTK_API_GLES_3)
+            "#version 300 es\n"
             "precision mediump float;\n"
+            "out vec4 outColor;\n"
             "\n"
-            "varying vec4 fColor;\n"
+            "in vec4 fColor;\n"
             "\n"
             "uniform vec4 color;\n"
             "\n"
             "void main()\n"
             "{\n"
             "\n"
-            "    gl_FragColor = fColor * color;\n"
+            "    outColor = fColor * color;\n"
             "}\n";
 #endif // FTK_API_GL_4_1
     }

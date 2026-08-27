@@ -362,11 +362,12 @@ namespace ftk
                 try
                 {
                     const std::string vertexSource =
+                        "#version 300 es\n"
                         "precision mediump float;\n"
                         "\n"
-                        "attribute vec3 vPos;\n"
-                        "attribute vec2 vTexture;\n"
-                        "varying vec2 fTexture;\n"
+                        "in vec3 vPos;\n"
+                        "in vec2 vTexture;\n"
+                        "out vec2 fTexture;\n"
                         "\n"
                         "struct Transform\n"
                         "{\n"
@@ -381,15 +382,17 @@ namespace ftk
                         "    fTexture = vTexture;\n"
                         "}\n";
                     const std::string fragmentSource =
+                        "#version 300 es\n"
                         "precision mediump float;\n"
+                        "out vec4 outColor;\n"
                         "\n"
-                        "varying vec2 fTexture;\n"
+                        "in vec2 fTexture;\n"
                         "\n"
                         "uniform sampler2D textureSampler;\n"
                         "\n"
                         "void main()\n"
                         "{\n"
-                        "    gl_FragColor = texture2D(textureSampler, fTexture);\n"
+                        "    outColor = texture(textureSampler, fTexture);\n"
                         "}\n";
                     p.shader = gl::Shader::create(vertexSource, fragmentSource);
                 }
