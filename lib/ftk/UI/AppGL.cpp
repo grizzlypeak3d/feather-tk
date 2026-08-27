@@ -39,6 +39,36 @@
 
 #if defined(__EMSCRIPTEN__)
 #include <emscripten.h>
+
+// A mouse button released outside the browser window is never seen:
+// SDL hears about mouse events from the document, and the release
+// happened beyond it, so the button stays down when the mouse comes
+// back. Capturing the pointer on press makes the browser deliver the
+// release wherever it happens, and a synthetic mouse event passes it
+// on to SDL -- which ignores it as a duplicate whenever the real one
+// arrived too.
+EM_JS(void, ftk_mouseCaptureInit, (), {
+    var canvas = Module['canvas'];
+    canvas.addEventListener('pointerdown', function(e)
+    {
+        if (e.pointerType === 'mouse')
+        {
+            canvas.setPointerCapture(e.pointerId);
+        }
+    });
+    canvas.addEventListener('pointerup', function(e)
+    {
+        if (e.pointerType === 'mouse')
+        {
+            canvas.dispatchEvent(new MouseEvent('mouseup', {
+                button: e.button,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                bubbles: true
+            }));
+        }
+    });
+});
 #endif // __EMSCRIPTEN__
 
 namespace ftk
@@ -1033,6 +1063,7 @@ namespace ftk
         // quitting a web page from the inside.
         static std::shared_ptr<App> alive;
         alive = std::static_pointer_cast<App>(shared_from_this());
+        ftk_mouseCaptureInit();
         emscripten_set_main_loop_arg(
             [](void* app)
             {
