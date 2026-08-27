@@ -6,6 +6,7 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/IPopup.h>
 #include <ftk/UI/LineEdit.h>
+#include <ftk/UI/LineEditModel.h>
 #include <ftk/UI/Menu.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Spacer.h>
@@ -225,6 +226,56 @@ namespace ftk
             menu->close();
             app->tick();
             FTK_CHECK(window->getPopups().empty());
+
+            // The context menu acts on the editing session, so opening it
+            // does not end the session: nothing is committed, no focus
+            // change is reported, and the selection stays. Without this a
+            // client that rewrites the text from its own state on focus
+            // changes, the way FileEdit does, reverts a menu Undo as the
+            // menu closes.
+            {
+                int commitCount = 0;
+                lineEdit->setCallback(
+                    [&commitCount](const std::string&) { ++commitCount; });
+                int focusCount = 0;
+                lineEdit->setFocusCallback(
+                    [&focusCount](bool) { ++focusCount; });
+
+                auto model = lineEdit->getModel();
+                model->setText("start");
+                lineEdit->takeKeyFocus();
+                app->tick();
+                focusCount = 0;
+                model->input("x");
+                model->selectAll();
+                FTK_CHECK(model->observeHasUndo()->get());
+
+                window->click(center(lineEdit), MouseButton::Right);
+                app->tick();
+                FTK_CHECK(1 == window->getPopups().size());
+                FTK_CHECK(0 == commitCount);
+                FTK_CHECK(0 == focusCount);
+                FTK_CHECK(model->getSelection().isValid());
+
+                auto textMenu = std::dynamic_pointer_cast<Menu>(
+                    window->getPopups().front());
+                FTK_CHECK(textMenu);
+                textMenu->getActions()[0]->doCallback();
+                textMenu->close();
+                app->tick();
+                FTK_CHECK("start" == model->getText());
+                FTK_CHECK(lineEdit->hasKeyFocus());
+                FTK_CHECK(0 == commitCount);
+                FTK_CHECK(0 == focusCount);
+
+                // Leaving the field for real still commits.
+                auto otherEdit = LineEdit::create(_context, layout);
+                app->tick();
+                otherEdit->takeKeyFocus();
+                app->tick();
+                FTK_CHECK(1 == commitCount);
+                FTK_CHECK(1 == focusCount);
+            }
         }
     }
 }
