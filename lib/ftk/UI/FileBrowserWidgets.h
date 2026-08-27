@@ -230,6 +230,9 @@ namespace ftk
         //! Observe the current item.
         FTK_UI_API std::shared_ptr<IObservable<int> > observeCurrent() const;
 
+        //! Observe the number of items shown.
+        FTK_UI_API std::shared_ptr<IObservable<size_t> > observeItemCount() const;
+
         //! Get the rectangle of an item.
         FTK_UI_API Box2I getRect(int) const;
 

@@ -46,6 +46,7 @@ namespace ftk
         std::shared_ptr<SearchBox> searchBox;
         std::shared_ptr<ComboBox> extsComboBox;
         std::shared_ptr<ComboBox> sortComboBox;
+        std::shared_ptr<Label> itemCountLabel;
         std::shared_ptr<ToolButton> reverseSortButton;
         std::shared_ptr<CheckBox> pinCheckBox;
         std::shared_ptr<PushButton> okButton;
@@ -60,6 +61,7 @@ namespace ftk
         std::function<void(void)> cancelCallback;
 
         std::shared_ptr<Observer<int> > currentObserver;
+        std::shared_ptr<Observer<size_t> > itemCountObserver;
         std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
         std::shared_ptr<Observer<bool> > forwardObserver;
         std::shared_ptr<Observer<bool> > backObserver;
@@ -157,6 +159,10 @@ namespace ftk
         p.sortComboBox = ComboBox::create(context, getDirListSortLabels());
         p.sortComboBox->setTooltip("Sorting");
 
+        p.itemCountLabel = Label::create(context);
+        p.itemCountLabel->setTooltip("The number of items shown");
+        p.itemCountLabel->setVAlign(VAlign::Center);
+
         p.reverseSortButton = ToolButton::create(context);
         p.reverseSortButton->setCheckable(true);
         p.reverseSortButton->setIcon("ReverseSort");
@@ -202,6 +208,7 @@ namespace ftk
         p.extsComboBox->setParent(hLayout);
         p.sortComboBox->setParent(hLayout);
         p.reverseSortButton->setParent(hLayout);
+        p.itemCountLabel->setParent(hLayout);
         hLayout->addSpacer(SizeRole::None, Stretch::Expanding);
         p.pinCheckBox->setParent(hLayout);
         p.okButton->setParent(hLayout);
@@ -393,6 +400,13 @@ namespace ftk
                 {
                     p.cancelCallback();
                 }
+            });
+
+        p.itemCountObserver = Observer<size_t>::create(
+            p.view->observeItemCount(),
+            [this](size_t value)
+            {
+                _p->itemCountLabel->setText(Format("Items: {0}").arg(value));
             });
 
         p.currentObserver = Observer<int>::create(

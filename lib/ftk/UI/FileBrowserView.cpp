@@ -89,6 +89,7 @@ namespace ftk
         std::string search;
         std::vector<DirEntry> dirEntries;
         std::shared_ptr<Observable<int> > current;
+        std::shared_ptr<Observable<size_t> > itemCount;
 
         // Which items are selected, and where a range is measured from. The
         // current item is where the keyboard is rather than what is chosen:
@@ -157,6 +158,7 @@ namespace ftk
         p.mode = mode;
         p.model = model;
         p.current = Observable<int>::create(-1);
+        p.itemCount = Observable<size_t>::create(0);
 
         p.pathObserver = Observer<std::filesystem::path>::create(
             model->observePath(),
@@ -277,6 +279,11 @@ namespace ftk
     std::shared_ptr<IObservable<int> > FileBrowserView::observeCurrent() const
     {
         return _p->current;
+    }
+
+    std::shared_ptr<IObservable<size_t> > FileBrowserView::observeItemCount() const
+    {
+        return _p->itemCount;
     }
 
     Box2I FileBrowserView::getRect(int index) const
@@ -877,6 +884,7 @@ namespace ftk
             dirListOptions.filterExt = p.model->getExtsFilter();
         }
         p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+        p.itemCount->setIfChanged(p.dirEntries.size());
 
         // The frame range, with the number of frames when the sequence is
         // missing some of them.
