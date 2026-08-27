@@ -40,69 +40,6 @@
 #if defined(__EMSCRIPTEN__)
 #include <emscripten.h>
 
-// A mouse button released outside the browser window is never seen:
-// SDL hears about mouse events from the document, and the release
-// happened beyond it, so the button stayed down when the mouse came
-// back. There is no event to wait for -- some browsers deliver nothing
-// at all for a release out there -- but every mouse move carries the
-// true button state, so the lost release is noticed on the way back
-// and delivered as a synthetic event, which SDL treats like any other.
-EM_JS(void, ftk_mouseCaptureInit, (), {
-    var canvas = Module['canvas'];
-    // Where the browser honors it, capture keeps a drag delivering
-    // while the mouse is outside the window.
-    canvas.addEventListener('pointerdown', function(e)
-    {
-        if (e.pointerType === 'mouse')
-        {
-            canvas.setPointerCapture(e.pointerId);
-        }
-    });
-    // event.button numbers the buttons, event.buttons is a bit mask.
-    // The check runs in the capture phase, ahead of SDL's own handler,
-    // so the release lands before the returning move is processed; it
-    // is delivered at the last position seen while the button was held,
-    // where the user let go of whatever they were dragging.
-    var bits = [1, 4, 2];
-    var buttons = 0;
-    var lastX = 0;
-    var lastY = 0;
-    canvas.addEventListener('mousedown', function(e)
-    {
-        buttons |= bits[e.button] || 0;
-        lastX = e.clientX;
-        lastY = e.clientY;
-    });
-    document.addEventListener('mouseup', function(e)
-    {
-        buttons &= ~(bits[e.button] || 0);
-    });
-    document.addEventListener('mousemove', function(e)
-    {
-        var lost = buttons & ~e.buttons;
-        if (lost)
-        {
-            buttons &= e.buttons;
-            for (var b = 0; b < 3; ++b)
-            {
-                if (lost & bits[b])
-                {
-                    canvas.dispatchEvent(new MouseEvent('mouseup', {
-                        button: b,
-                        clientX: lastX,
-                        clientY: lastY,
-                        bubbles: true
-                    }));
-                }
-            }
-        }
-        else if (buttons)
-        {
-            lastX = e.clientX;
-            lastY = e.clientY;
-        }
-    }, true);
-});
 #endif // __EMSCRIPTEN__
 
 namespace ftk
@@ -203,6 +140,7 @@ namespace ftk
         std::shared_ptr<ObservableList<MonitorInfo> > monitors;
         std::list<std::shared_ptr<IWindow> > windows;
         std::weak_ptr<IWindow> activeWindow;
+        std::weak_ptr<IWindow> mouseButtonWindow;
         std::map<std::shared_ptr<IWindow>, V2I> mousePos;
         std::vector<std::string> dropFiles;
 
@@ -1097,7 +1035,6 @@ namespace ftk
         // quitting a web page from the inside.
         static std::shared_ptr<App> alive;
         alive = std::static_pointer_cast<App>(shared_from_this());
-        ftk_mouseCaptureInit();
         emscripten_set_main_loop_arg(
             [](void* app)
             {
@@ -1351,6 +1288,7 @@ namespace ftk
 #endif // FTK_SDL2
                     if (auto window = p.activeWindow.lock())
                     {
+                        p.mouseButtonWindow = window;
                         window->_mouseButton(
                             fromSDLMouseButton(event.button.button),
                             true,
@@ -1363,12 +1301,25 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_BUTTON_UP:
 #endif // FTK_SDL2
-                    if (auto window = p.activeWindow.lock())
                     {
-                        window->_mouseButton(
-                            fromSDLMouseButton(event.button.button),
-                            false,
-                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
+                        // The release goes to the window that saw the press.
+                        // The cursor may be somewhere else by now -- on the
+                        // web it can be outside the window entirely, which
+                        // cleared the active window, and dropping the release
+                        // left the button stuck down.
+                        auto window = p.mouseButtonWindow.lock();
+                        if (!window)
+                        {
+                            window = p.activeWindow.lock();
+                        }
+                        p.mouseButtonWindow.reset();
+                        if (window)
+                        {
+                            window->_mouseButton(
+                                fromSDLMouseButton(event.button.button),
+                                false,
+                                fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
+                        }
                     }
                     break;
 
