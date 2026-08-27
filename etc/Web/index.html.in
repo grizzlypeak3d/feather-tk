@@ -67,6 +67,12 @@ var Module = {
     onAbort: function(what) {
         ftkError('Aborted: ' + what);
     },
+    /* The build id keeps the page and its binary together: a cached
+       page fetches the .js and .wasm it was built with, not whatever a
+       newer deployment left behind. */
+    locateFile: function(path) {
+        return path + '?v=@ftk_WEB_ID@';
+    },
     /* The query string is the command line: "?page=Dialogs" becomes
        "-page Dialogs". */
     arguments: (function() {
@@ -82,6 +88,6 @@ var Module = {
     })()
 };
 </script>
-<script src="@ftk_WEB_APP@.js"></script>
+<script src="@ftk_WEB_APP@.js?v=@ftk_WEB_ID@"></script>
 </body>
 </html>

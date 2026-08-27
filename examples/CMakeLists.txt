@@ -9,6 +9,21 @@ set(ftk_EXAMPLES
     widgets
     windows)
 
+if(EMSCRIPTEN)
+    # The page asks for its .js and .wasm with the build id, so a cached
+    # page always gets the pair it was built with -- a page and a binary
+    # from different deployments abort on load.
+    execute_process(
+        COMMAND git rev-parse --short HEAD
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        OUTPUT_VARIABLE ftk_WEB_ID
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    if(NOT ftk_WEB_ID)
+        set(ftk_WEB_ID ${CMAKE_PROJECT_VERSION})
+    endif()
+endif()
+
 foreach(ftk_WEB_APP ${ftk_EXAMPLES})
     add_subdirectory(${ftk_WEB_APP})
     if(EMSCRIPTEN)
