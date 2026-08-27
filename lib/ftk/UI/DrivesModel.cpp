@@ -40,6 +40,14 @@ namespace ftk
 
         p.drives = ObservableList<std::filesystem::path>::create();
 
+#if defined(__EMSCRIPTEN__)
+        // The browser has one file system and it does not change: there
+        // is nothing to poll, and the browser build has no threads to
+        // poll with.
+        p.drives->setIfChanged({ std::filesystem::path("/") });
+        return;
+#endif // __EMSCRIPTEN__
+
         p.running = true;
         p.thread = std::thread(
             [this]
