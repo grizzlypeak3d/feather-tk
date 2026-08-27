@@ -42,13 +42,15 @@
 
 // A mouse button released outside the browser window is never seen:
 // SDL hears about mouse events from the document, and the release
-// happened beyond it, so the button stays down when the mouse comes
-// back. Capturing the pointer on press makes the browser deliver the
-// release wherever it happens, and a synthetic mouse event passes it
-// on to SDL -- which ignores it as a duplicate whenever the real one
-// arrived too.
+// happened beyond it, so the button stayed down when the mouse came
+// back. There is no event to wait for -- some browsers deliver nothing
+// at all for a release out there -- but every mouse move carries the
+// true button state, so the lost release is noticed on the way back
+// and delivered as a synthetic event, which SDL treats like any other.
 EM_JS(void, ftk_mouseCaptureInit, (), {
     var canvas = Module['canvas'];
+    // Where the browser honors it, capture keeps a drag delivering
+    // while the mouse is outside the window.
     canvas.addEventListener('pointerdown', function(e)
     {
         if (e.pointerType === 'mouse')
@@ -56,18 +58,50 @@ EM_JS(void, ftk_mouseCaptureInit, (), {
             canvas.setPointerCapture(e.pointerId);
         }
     });
-    canvas.addEventListener('pointerup', function(e)
+    // event.button numbers the buttons, event.buttons is a bit mask.
+    // The check runs in the capture phase, ahead of SDL's own handler,
+    // so the release lands before the returning move is processed; it
+    // is delivered at the last position seen while the button was held,
+    // where the user let go of whatever they were dragging.
+    var bits = [1, 4, 2];
+    var buttons = 0;
+    var lastX = 0;
+    var lastY = 0;
+    canvas.addEventListener('mousedown', function(e)
     {
-        if (e.pointerType === 'mouse')
-        {
-            canvas.dispatchEvent(new MouseEvent('mouseup', {
-                button: e.button,
-                clientX: e.clientX,
-                clientY: e.clientY,
-                bubbles: true
-            }));
-        }
+        buttons |= bits[e.button] || 0;
+        lastX = e.clientX;
+        lastY = e.clientY;
     });
+    document.addEventListener('mouseup', function(e)
+    {
+        buttons &= ~(bits[e.button] || 0);
+    });
+    document.addEventListener('mousemove', function(e)
+    {
+        var lost = buttons & ~e.buttons;
+        if (lost)
+        {
+            buttons &= e.buttons;
+            for (var b = 0; b < 3; ++b)
+            {
+                if (lost & bits[b])
+                {
+                    canvas.dispatchEvent(new MouseEvent('mouseup', {
+                        button: b,
+                        clientX: lastX,
+                        clientY: lastY,
+                        bubbles: true
+                    }));
+                }
+            }
+        }
+        else if (buttons)
+        {
+            lastX = e.clientX;
+            lastY = e.clientY;
+        }
+    }, true);
 });
 #endif // __EMSCRIPTEN__
 
