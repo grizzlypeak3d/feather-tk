@@ -322,7 +322,6 @@ namespace ftk
         KeypadMultiply,
         KeypadMinus,
         KeypadPlus,
-        KeypadEnter,
         Keypad_1,
         Keypad_2,
         Keypad_3,

@@ -457,7 +457,6 @@ namespace ftk
             break;
 
         case Key::Return:
-        case Key::KeypadEnter:
             if (!readOnly)
             {
                 _return();

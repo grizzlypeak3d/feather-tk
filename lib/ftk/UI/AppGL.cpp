@@ -805,7 +805,10 @@ namespace ftk
             case SDLK_KP_MULTIPLY: out = Key::KeypadMultiply; break;
             case SDLK_KP_MINUS: out = Key::KeypadMinus; break;
             case SDLK_KP_PLUS: out = Key::KeypadPlus; break;
-            case SDLK_KP_ENTER: out = Key::KeypadEnter; break;
+            // The keypad's Enter is the Return key: every dialog,
+            // text field, and shortcut that answers to one answers
+            // to the other.
+            case SDLK_KP_ENTER: out = Key::Return; break;
             case SDLK_KP_1: out = Key::Keypad_1; break;
             case SDLK_KP_2: out = Key::Keypad_2; break;
             case SDLK_KP_3: out = Key::Keypad_3; break;
@@ -940,7 +943,10 @@ namespace ftk
             case SDLK_KP_MULTIPLY: out = Key::KeypadMultiply; break;
             case SDLK_KP_MINUS: out = Key::KeypadMinus; break;
             case SDLK_KP_PLUS: out = Key::KeypadPlus; break;
-            case SDLK_KP_ENTER: out = Key::KeypadEnter; break;
+            // The keypad's Enter is the Return key: every dialog,
+            // text field, and shortcut that answers to one answers
+            // to the other.
+            case SDLK_KP_ENTER: out = Key::Return; break;
             case SDLK_KP_1: out = Key::Keypad_1; break;
             case SDLK_KP_2: out = Key::Keypad_2; break;
             case SDLK_KP_3: out = Key::Keypad_3; break;

@@ -214,7 +214,6 @@ namespace ftk
                 .value("KeypadMulitply", Key::KeypadMultiply)
                 .value("KeypadMinus", Key::KeypadMinus)
                 .value("KeypadPlus", Key::KeypadPlus)
-                .value("KeypadEnter", Key::KeypadEnter)
                 .value("Keypad_1", Key::Keypad_1)
                 .value("Keypad_2", Key::Keypad_2)
                 .value("Keypad_3", Key::Keypad_3)

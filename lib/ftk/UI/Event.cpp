@@ -280,7 +280,6 @@ namespace ftk
         "Keypad Multiply",
         "Keypad Minus",
         "Keypad Plus",
-        "Keypad Enter",
         "Keypad 1",
         "Keypad 2",
         "Keypad 3",
@@ -341,7 +340,6 @@ namespace ftk
         case Key::Down:
         case Key::Up:
         case Key::NumLock:
-        case Key::KeypadEnter:
             out = true;
             break;
         default: break;
