@@ -3,7 +3,7 @@
 
 #include "Lists.h"
 
-#include <ftk/UI/Label.h>
+#include <ftk/UI/GroupBox.h>
 #include <ftk/UI/ListWidget.h>
 #include <ftk/UI/RowLayout.h>
 
@@ -34,9 +34,8 @@ namespace widgets
         }
 
         // Create a clickable list widget.
-        auto column = VerticalLayout::create(context, layout);
-        auto label = Label::create(context, "Click", column);
-        auto listWidget = ListWidget::create(context, ButtonGroupType::Click, column);
+        auto groupBox = GroupBox::create(context, "Click", layout);
+        auto listWidget = ListWidget::create(context, ButtonGroupType::Click, groupBox);
         listWidget->setItems(items);
         listWidget->setCallback(
             [](int index, bool)
@@ -45,9 +44,8 @@ namespace widgets
             });
 
         // Create a checkable list widget.
-        column = VerticalLayout::create(context, layout);
-        label = Label::create(context, "Check", column);
-        listWidget = ListWidget::create(context, ButtonGroupType::Check, column);
+        groupBox = GroupBox::create(context, "Check", layout);
+        listWidget = ListWidget::create(context, ButtonGroupType::Check, groupBox);
         listWidget->setItems(items);
         listWidget->setChecked(0);
         listWidget->setChecked(1);
@@ -60,9 +58,8 @@ namespace widgets
             });
 
         // Create a radio button list widget.
-        column = VerticalLayout::create(context, layout);
-        label = Label::create(context, "Radio", column);
-        listWidget = ListWidget::create(context, ButtonGroupType::Radio, column);
+        groupBox = GroupBox::create(context, "Radio", layout);
+        listWidget = ListWidget::create(context, ButtonGroupType::Radio, groupBox);
         listWidget->setItems(items);
         listWidget->setChecked(0);
         listWidget->setCallback(
@@ -72,9 +69,8 @@ namespace widgets
             });
 
         // Create a toggle button list widget.
-        column = VerticalLayout::create(context, layout);
-        label = Label::create(context, "Toggle", column);
-        listWidget = ListWidget::create(context, ButtonGroupType::Toggle, column);
+        groupBox = GroupBox::create(context, "Toggle", layout);
+        listWidget = ListWidget::create(context, ButtonGroupType::Toggle, groupBox);
         listWidget->setItems(items);
         listWidget->setChecked(0);
         listWidget->setCallback(

@@ -293,7 +293,8 @@ namespace widgets
         _layout->setSpacingRole(SizeRole::None);
         _layout->setStretch(Stretch::Expanding);
         auto label = Label::create(context, "Drag items to reorder them, or to move them to the other list.", _layout);
-        label->setMarginRole(SizeRole::MarginSmall);
+        label->setMarginRole(SizeRole::Margin);
+        label->setHAlign(HAlign::Center);
         auto hLayout = HorizontalLayout::create(context, _layout);
         hLayout->setSpacingRole(SizeRole::None);
         hLayout->setStretch(Stretch::Expanding);

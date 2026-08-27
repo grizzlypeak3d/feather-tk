@@ -7,6 +7,7 @@
 
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/Splitter.h>
 
 using namespace ftk;
@@ -28,8 +29,17 @@ namespace widgets
             app->getSysLogModel()->observeLog(),
             [this](const std::vector<std::string>& value)
             {
+                // Keep the reading position: setting the text resets the
+                // cursor, and the view follows the cursor, so the cursor,
+                // the selection, and the scroll are all put back.
+                auto model = _textEdit->getModel();
+                const TextEditPos cursor = model->getCursor();
+                const TextEditSelection selection = model->getSelection();
+                const V2I scrollPos = _textEdit->getScrollWidget()->getScrollPos();
                 _textEdit->setText(value);
-                _textEdit->getModel()->setCursor(TextEditPos(value.size(), 0));
+                model->setCursor(cursor);
+                model->setSelection(selection);
+                _textEdit->getScrollWidget()->setScrollPos(scrollPos);
             });
     }
 
