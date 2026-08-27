@@ -19,6 +19,10 @@
 #include <SDL3/SDL.h>
 #endif // FTK_SDL2
 
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/html5.h>
+#endif // __EMSCRIPTEN__
+
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -89,14 +93,27 @@ namespace ftk
             {
                 sdlWindowFlags |= SDL_WINDOW_HIDDEN;
             }
+            Size2I windowSize = size;
+#if defined(__EMSCRIPTEN__)
+            // The canvas fills the page, and the page belongs to the
+            // browser: its size wins over the size the caller asked for.
+            double cssW = 0.0;
+            double cssH = 0.0;
+            emscripten_get_element_css_size("#canvas", &cssW, &cssH);
+            if (cssW > 0.0 && cssH > 0.0)
+            {
+                windowSize.w = cssW;
+                windowSize.h = cssH;
+            }
+#endif // __EMSCRIPTEN__
             p.sdlWindow = SDL_CreateWindow(
                 title.c_str(),
 #if defined(FTK_SDL2)
                 SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED,
 #endif // FTK_SDL2
-                size.w,
-                size.h,
+                windowSize.w,
+                windowSize.h,
                 sdlWindowFlags);
             if (!p.sdlWindow)
             {
@@ -104,6 +121,30 @@ namespace ftk
                     arg(SDL_GetError()));
             }
             SDL_SetWindowMinimumSize(p.sdlWindow, 320, 240);
+
+#if defined(__EMSCRIPTEN__)
+            // The browser does not tell SDL when the page changes size,
+            // so follow it by hand; the new size then arrives through
+            // the normal SDL resize events.
+            emscripten_set_resize_callback(
+                EMSCRIPTEN_EVENT_TARGET_WINDOW,
+                p.sdlWindow,
+                EM_FALSE,
+                [](int, const EmscriptenUiEvent*, void* userData) -> EM_BOOL
+                {
+                    double cssW = 0.0;
+                    double cssH = 0.0;
+                    emscripten_get_element_css_size("#canvas", &cssW, &cssH);
+                    if (cssW > 0.0 && cssH > 0.0)
+                    {
+                        SDL_SetWindowSize(
+                            static_cast<SDL_Window*>(userData),
+                            cssW,
+                            cssH);
+                    }
+                    return EM_TRUE;
+                });
+#endif // __EMSCRIPTEN__
 
             p.sdlGLContext = SDL_GL_CreateContext(p.sdlWindow);
             if (!p.sdlGLContext)
@@ -243,6 +284,13 @@ namespace ftk
                     "ftk::gl::Window",
                     Format("Destroy window {0}...").arg(this));
             }
+#if defined(__EMSCRIPTEN__)
+            emscripten_set_resize_callback(
+                EMSCRIPTEN_EVENT_TARGET_WINDOW,
+                nullptr,
+                EM_FALSE,
+                nullptr);
+#endif // __EMSCRIPTEN__
             if (p.sdlGLContext)
             {
 #if defined(FTK_SDL2)
