@@ -52,13 +52,7 @@ namespace ftk
 
     namespace
     {
-        const ImageType imageType =
-#if defined(FTK_API_GLES_3)
-        //! \bug Some GLES 2 implementations (Pi Zero W) only support RGBA?
-            ImageType::RGBA_U8;
-#else  // FTK_API_GLES_3
-            ImageType::L_U8;
-#endif // FTK_API_GLES_3
+        const ImageType imageType = ImageType::L_U8;
 
 #if defined(_WINDOWS)
         //! \bug https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral

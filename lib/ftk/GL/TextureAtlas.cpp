@@ -105,30 +105,8 @@ namespace ftk
                     node->box.min.x,
                     node->box.min.y);
 
-                // The glyphs are L_U8, and some GLES 2 targets want an
-                // RGBA atlas. The driver used to convert on upload, which
-                // WebGL refuses: an upload must match the texture. The text
-                // shader reads the red channel, so the value goes in every
-                // channel.
-                auto upload = image;
-                if (ImageType::L_U8 == image->getInfo().type &&
-                    ImageType::RGBA_U8 == p.type)
-                {
-                    upload = Image::create(image->getSize(), p.type);
-                    const uint8_t* inP = image->getData();
-                    uint8_t* outP = upload->getData();
-                    const size_t count =
-                        image->getSize().w * image->getSize().h;
-                    for (size_t i = 0; i < count; ++i, ++inP, outP += 4)
-                    {
-                        outP[0] = *inP;
-                        outP[1] = *inP;
-                        outP[2] = *inP;
-                        outP[3] = *inP;
-                    }
-                }
                 p.texture->copy(
-                    upload,
+                    image,
                     node->box.min.x + p.border,
                     node->box.min.y + p.border);
 

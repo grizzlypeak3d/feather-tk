@@ -151,30 +151,30 @@ namespace ftk
                 GL_RGBA,
                 GL_RGBA
 #elif defined(FTK_API_GLES_3)
-                GL_LUMINANCE,
+                GL_RED,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
+                GL_RED,
+                GL_RED,
 
-                GL_LUMINANCE_ALPHA,
+                GL_RG,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
+                GL_RG,
+                GL_RG,
 
                 GL_RGB,
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
+                GL_RGB,
+                GL_RGB,
 
                 GL_RGBA,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE
+                GL_RGBA,
+                GL_RGBA
 #endif // FTK_API_GL_4_1
             };
             return data[static_cast<size_t>(value)];
@@ -212,30 +212,33 @@ namespace ftk
                 GL_RGBA16F,
                 GL_RGBA32F
 #elif defined(FTK_API_GLES_3)
-                GL_LUMINANCE,
+                // ES 3.0 has no 16 bit normalized formats, so the U16
+                // types stay unsupported; the integer formats exist but
+                // nothing here samples them, so they wait for a use.
+                GL_R8,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
+                GL_R16F,
+                GL_R32F,
 
-                GL_LUMINANCE_ALPHA,
+                GL_RG8,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
+                GL_RG16F,
+                GL_RG32F,
 
-                GL_RGB,
+                GL_RGB8,
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
+                GL_RGB16F,
+                GL_RGB32F,
 
-                GL_RGBA,
+                GL_RGBA8,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE
+                GL_RGBA16F,
+                GL_RGBA32F
 #endif // FTK_API_GL_4_1
             };
             return data[static_cast<size_t>(type)];
@@ -276,27 +279,27 @@ namespace ftk
                 GL_UNSIGNED_BYTE,
                 GL_NONE,
                 GL_NONE,
+                GL_HALF_FLOAT,
+                GL_FLOAT,
+
+                GL_UNSIGNED_BYTE,
                 GL_NONE,
                 GL_NONE,
+                GL_HALF_FLOAT,
+                GL_FLOAT,
 
                 GL_UNSIGNED_BYTE,
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
+                GL_HALF_FLOAT,
+                GL_FLOAT,
 
                 GL_UNSIGNED_BYTE,
                 GL_NONE,
                 GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_UNSIGNED_BYTE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE
+                GL_HALF_FLOAT,
+                GL_FLOAT
 #endif // FTK_API_GL_4_1
             };
             return data[static_cast<size_t>(value)];

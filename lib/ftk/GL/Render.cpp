@@ -63,11 +63,7 @@ namespace ftk
             if (!p.glyphAtlas ||
                 (p.glyphAtlas && options.glyphAtlasSize != p.glyphAtlas->getSize()))
             {
-                ImageType imageType = ImageType::L_U8;
-#if defined(FTK_API_GLES_3)
-                //! \bug Some GLES 2 implementations (Pi Zero W) only support RGBA?
-                imageType = ImageType::RGBA_U8;
-#endif // FTK_API_GLES_3
+                const ImageType imageType = ImageType::L_U8;
                 p.glyphAtlas = TextureAtlas::create(
                     options.glyphAtlasSize,
                     imageType,
