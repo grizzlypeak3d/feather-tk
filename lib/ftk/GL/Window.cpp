@@ -152,10 +152,15 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot create OpenGL context: {0}").
                     arg(SDL_GetError()));
             }
+#if !defined(__EMSCRIPTEN__)
+            // The browser paces frames itself, and asking SDL to set a
+            // swap interval before the main loop exists only produces a
+            // warning.
             if (options & static_cast<int>(WindowOptions::DoubleBuffer))
             {
                 SDL_GL_SetSwapInterval(1);
             }
+#endif // __EMSCRIPTEN__
 
             initGLAD();
 #if defined(FTK_API_GL_4_1_Debug)
