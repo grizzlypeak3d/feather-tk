@@ -28,7 +28,7 @@ project(
 #-------------------------------------------------------------------------------
 # Options
 
-set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
+set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_3)")
 # The build runs ftk-resource to embed the resources, so a cross build --
 # Emscripten, say -- cannot use the one it is compiling. Point this at a
 # native build's executable instead.
@@ -139,7 +139,7 @@ find_package(lunasvg REQUIRED)
 
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-    "${ftk_API}" STREQUAL "GLES_2")
+    "${ftk_API}" STREQUAL "GLES_3")
     set(ftk_GLAD_DIR ${PROJECT_SOURCE_DIR}/deps/glad_${ftk_API})
     add_subdirectory(deps/glad_${ftk_API})
     if(EMSCRIPTEN)
@@ -155,7 +155,9 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
             "-sUSE_SDL=2"
             "-fwasm-exceptions"
             "-sSUPPORT_LONGJMP=wasm"
-            "-sFULL_ES2=1"
+            "-sFULL_ES3=1"
+            "-sMIN_WEBGL_VERSION=2"
+            "-sMAX_WEBGL_VERSION=2"
             "-sALLOW_MEMORY_GROWTH=1")
     else()
         find_package(OpenGL REQUIRED)

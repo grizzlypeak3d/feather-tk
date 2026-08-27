@@ -430,7 +430,7 @@ namespace objview
 #if defined(FTK_API_GL_4_1)
             offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
 #endif // FTK_API_GL_4_1
             if (gl::doCreate(_buffer, size, gl::offscreenColorDefault, offscreenBufferOptions))

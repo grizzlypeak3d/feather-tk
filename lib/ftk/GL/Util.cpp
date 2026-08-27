@@ -68,7 +68,7 @@ namespace ftk
                 GL_RGBA,
                 GL_RGBA,
                 GL_RGBA,
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
@@ -112,7 +112,7 @@ namespace ftk
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT,
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
@@ -132,7 +132,7 @@ namespace ftk
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT,
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
@@ -146,7 +146,7 @@ namespace ftk
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT,
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_NONE,
                 GL_NONE,
                 GL_NONE,
@@ -165,21 +165,21 @@ namespace ftk
             case AlphaBlend::None:
 #if defined(FTK_API_GL_4_1)
                 glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ZERO);
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 glBlendFunc(GL_ONE, GL_ZERO);
 #endif // FTK_API_GL_4_1
                 break;
             case AlphaBlend::Straight:
 #if defined(FTK_API_GL_4_1)
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif // FTK_API_GL_4_1
                 break;
             case AlphaBlend::Premultiplied:
 #if defined(FTK_API_GL_4_1)
                 glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 #endif // FTK_API_GL_4_1
                 break;

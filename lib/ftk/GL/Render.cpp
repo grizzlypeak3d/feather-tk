@@ -64,10 +64,10 @@ namespace ftk
                 (p.glyphAtlas && options.glyphAtlasSize != p.glyphAtlas->getSize()))
             {
                 ImageType imageType = ImageType::L_U8;
-#if defined(FTK_API_GLES_2)
+#if defined(FTK_API_GLES_3)
                 //! \bug Some GLES 2 implementations (Pi Zero W) only support RGBA?
                 imageType = ImageType::RGBA_U8;
-#endif // FTK_API_GLES_2
+#endif // FTK_API_GLES_3
                 p.glyphAtlas = TextureAtlas::create(
                     options.glyphAtlasSize,
                     imageType,
@@ -265,7 +265,7 @@ namespace ftk
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
             options.filters = imageFilters;
-#if !defined(FTK_API_GLES_2)
+#if !defined(FTK_API_GLES_3)
             // The two pass path weighs the texels itself, so it wants them as
             // they are rather than blended in pairs first. Where that path is
             // not served, High Quality is Linear and wants Linear's texels.
@@ -277,7 +277,7 @@ namespace ftk
             {
                 options.filters.magnify = ImageFilter::Nearest;
             }
-#endif // FTK_API_GLES_2
+#endif // FTK_API_GLES_3
             options.pbo = info.size.w >= pboSizeMin || info.size.h >= pboSizeMin;
             switch (info.type)
             {

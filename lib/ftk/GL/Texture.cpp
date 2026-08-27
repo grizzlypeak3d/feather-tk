@@ -150,7 +150,7 @@ namespace ftk
                 GL_RGBA,
                 GL_RGBA,
                 GL_RGBA
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_LUMINANCE,
                 GL_NONE,
                 GL_NONE,
@@ -211,7 +211,7 @@ namespace ftk
                 GL_RGBA32I,
                 GL_RGBA16F,
                 GL_RGBA32F
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_LUMINANCE,
                 GL_NONE,
                 GL_NONE,
@@ -272,7 +272,7 @@ namespace ftk
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 GL_UNSIGNED_BYTE,
                 GL_NONE,
                 GL_NONE,

@@ -55,7 +55,7 @@ namespace widgets
             "layout(location = 0) in vec3 vPos;\n"
             "layout(location = 1) in vec4 vColor;\n"
             "out vec4 fColor;\n"
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             "precision mediump float;\n"
             "\n"
             "attribute vec3 vPos;\n"
@@ -93,7 +93,7 @@ namespace widgets
             "\n"
             "    outColor = fColor * color;\n"
             "}\n";
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             "precision mediump float;\n"
             "\n"
             "varying vec4 fColor;\n"
@@ -126,7 +126,7 @@ namespace widgets
 #if defined(FTK_API_GL_4_1)
             offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
 #endif // FTK_API_GL_4_1
             if (gl::doCreate(_buffer, size, gl::offscreenColorDefault, offscreenBufferOptions))

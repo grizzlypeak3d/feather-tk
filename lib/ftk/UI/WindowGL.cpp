@@ -11,10 +11,10 @@
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/System.h>
 #include <ftk/GL/Window.h>
-#if defined(FTK_API_GLES_2)
+#if defined(FTK_API_GLES_3)
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/Shader.h>
-#endif // FTK_API_GLES_2
+#endif // FTK_API_GLES_3
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
@@ -32,13 +32,13 @@ namespace ftk
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
-#if defined(FTK_API_GLES_2)
+#if defined(FTK_API_GLES_3)
         std::shared_ptr<gl::Shader> shader;
         std::shared_ptr<gl::VBO> vbo;
         std::shared_ptr<gl::VAO> vao;
         Size2I vboSize;
         size_t vboTriangles = 0;
-#endif // FTK_API_GLES_2
+#endif // FTK_API_GLES_3
     };
 
     void Window::_init(
@@ -356,7 +356,7 @@ namespace ftk
                     GL_COLOR_BUFFER_BIT,
                     GL_LINEAR);
             }
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             if (p.buffer && !p.shader)
             {
                 try

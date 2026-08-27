@@ -34,11 +34,11 @@ namespace ftk
 
         //! Glyph texture atlas size.
         int glyphAtlasSize =
-#if defined(FTK_API_GLES_2)
+#if defined(FTK_API_GLES_3)
             2048;
-#else // FTK_API_GLES_2
+#else // FTK_API_GLES_3
             4096;
-#endif // FTK_API_GLES_2
+#endif // FTK_API_GLES_3
 
         //! Enable logging.
         bool log = true;

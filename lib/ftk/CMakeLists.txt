@@ -1,7 +1,7 @@
 add_subdirectory(Core)
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-    "${ftk_API}" STREQUAL "GLES_2")
+    "${ftk_API}" STREQUAL "GLES_3")
     add_subdirectory(GL)
 endif()
 add_subdirectory(Resource)
@@ -18,7 +18,7 @@ if(ftk_TESTS)
     add_subdirectory(CoreTest)
     if ("${ftk_API}" STREQUAL "GL_4_1" OR
         "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-        "${ftk_API}" STREQUAL "GLES_2")
+        "${ftk_API}" STREQUAL "GLES_3")
         add_subdirectory(GLTest)
     endif()
     add_subdirectory(UITest)

@@ -34,7 +34,7 @@ namespace ftk
             int r = 0;
 #if defined(FTK_API_GL_4_1)
             r = gladLoaderLoadGL();
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             r = gladLoadGLES2Loader((GLADloadproc)SDL_GL_GetProcAddress);
 #endif // FTK_API_GL_4_1
             if (0 == r)

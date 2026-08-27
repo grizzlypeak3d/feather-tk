@@ -234,7 +234,7 @@ set(SOURCE
     WidgetOptions.cpp)
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-    "${ftk_API}" STREQUAL "GLES_2")
+    "${ftk_API}" STREQUAL "GLES_3")
     list(APPEND SOURCE
         AppGL.cpp
         WindowGL.cpp)
@@ -261,7 +261,7 @@ target_include_directories(ftkUI
 
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
-    "${ftk_API}" STREQUAL "GLES_2")
+    "${ftk_API}" STREQUAL "GLES_3")
     target_link_libraries(ftkUI PUBLIC ftkGL)
 endif()
 target_link_libraries(ftkUI PUBLIC ftkCore PRIVATE lunasvg::lunasvg)

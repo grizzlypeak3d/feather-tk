@@ -254,7 +254,7 @@ namespace ftk
                     getBufferInternalFormat(p.options.depth, p.options.stencil),
                     p.info.size.w,
                     p.info.size.h);
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                 glRenderbufferStorage(
                     GL_RENDERBUFFER,
                     getBufferInternalFormat(p.options.depth, p.options.stencil),
@@ -291,7 +291,7 @@ namespace ftk
                     p.options.stencil != OffscreenStencil::None ?
 #if defined(FTK_API_GL_4_1)
                     GL_DEPTH_STENCIL_ATTACHMENT :
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
                     GL_STENCIL_ATTACHMENT :
 #endif // FTK_API_GL_4_1
                     GL_DEPTH_ATTACHMENT;

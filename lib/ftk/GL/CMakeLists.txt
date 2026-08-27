@@ -29,8 +29,8 @@ set(SOURCE
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug")
     list(APPEND SOURCE RenderShaders_GL_4_1.cpp)
-elseif ("${ftk_API}" STREQUAL "GLES_2")
-    list(APPEND SOURCE RenderShaders_GLES_2.cpp)
+elseif ("${ftk_API}" STREQUAL "GLES_3")
+    list(APPEND SOURCE RenderShaders_GLES_3.cpp)
 endif()
 
 add_library(ftkGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})

@@ -71,7 +71,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=$PWD/install \
             -DCMAKE_PREFIX_PATH=$PWD/install \
             -DCMAKE_FIND_ROOT_PATH=$PWD/install \
-            -Dftk_API=GLES_2 \
+            -Dftk_API=GLES_3 \
             -Dftk_RESOURCE=$RUNNER_TEMP/ftk-resource \
             -Dftk_TESTS=OFF
         cmake --build build

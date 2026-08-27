@@ -18,7 +18,7 @@ namespace ftk
         //! Default offscreen color buffer.
 #if defined(FTK_API_GL_4_1)
         const TextureType offscreenColorDefault = TextureType::RGBA_F32;
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
         const TextureType offscreenColorDefault = TextureType::RGBA_U8;
 #endif // FTK_API_GL_4_1
 
@@ -38,7 +38,7 @@ namespace ftk
         //! Default offscreen depth buffer.
 #if defined(FTK_API_GL_4_1)
         const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_24;
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
         const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_16;
 #endif // FTK_API_GL_4_1
 

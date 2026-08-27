@@ -76,7 +76,7 @@ namespace ftk
                 "\n"
                 "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
                 "}\n";
-#elif defined(FTK_API_GLES_2)
+#elif defined(FTK_API_GLES_3)
             std::string vertexSource =
                 "precision mediump float;\n"
                 "\n"

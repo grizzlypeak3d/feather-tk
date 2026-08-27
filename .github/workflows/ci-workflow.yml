@@ -111,7 +111,7 @@ jobs:
         cd build-Debug
         sh ../ftk/etc/Linux/lcov.sh
 
-  linux-gles2-build:
+  linux-gles3-build:
     runs-on: ubuntu-latest
 
     env:
@@ -135,7 +135,7 @@ jobs:
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-gles2
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-gles3
 
     - name: Run tests
       run: |
