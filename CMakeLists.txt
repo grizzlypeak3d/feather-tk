@@ -38,6 +38,13 @@ if(ftk_RESOURCE)
 else()
     set(ftk_RESOURCE_COMMAND ftk-resource)
 endif()
+# The pan-CJK font is 16MB, most of the size of a web build, and the
+# web build cannot compose CJK input anyway.
+set(ftk_CJK_DEFAULT ON)
+if(EMSCRIPTEN)
+    set(ftk_CJK_DEFAULT OFF)
+endif()
+set(ftk_CJK ${ftk_CJK_DEFAULT} CACHE BOOL "Bundle the pan-CJK fallback font")
 set(ftk_SDL2 ON CACHE BOOL "Enable support for SDL2")
 set(ftk_SDL3 OFF CACHE BOOL "Enable support for SDL3")
 set(ftk_nfd_DEFAULT OFF)

@@ -22,7 +22,9 @@
 #include <ftk_resource/NotoSans-Regular.h>
 #include <ftk_resource/NotoSansSymbols2-Regular.h>
 #if defined(FTK_CJK)
+#if defined(FTK_CJK)
 #include <ftk_resource/NotoSansCJK-Regular.h>
+#endif // FTK_CJK
 #endif // FTK_CJK
 
 #include <map>
