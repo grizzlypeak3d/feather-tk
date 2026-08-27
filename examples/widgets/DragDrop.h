@@ -53,7 +53,7 @@ namespace widgets
         void mouseMoveEvent(ftk::MouseMoveEvent&) override;
 
     private:
-        std::shared_ptr<ftk::Label> _label;
+        std::shared_ptr<ftk::HorizontalLayout> _layout;
         int _number = 0;
         int _dragLength = 0;
     };
@@ -116,6 +116,6 @@ namespace widgets
         void setGeometry(const ftk::Box2I&) override;
 
     private:
-        std::shared_ptr<ftk::HorizontalLayout> _layout;
+        std::shared_ptr<ftk::VerticalLayout> _layout;
     };
 }

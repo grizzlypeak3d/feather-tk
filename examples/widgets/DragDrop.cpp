@@ -4,6 +4,7 @@
 #include "DragDrop.h"
 
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/Icon.h>
 #include <ftk/UI/RowLayout.h>
 
 #include <ftk/Core/Format.h>
@@ -36,9 +37,18 @@ namespace widgets
 
         _number = number;
 
-        _label = Label::create(context, Format("{0}").arg(number, 4, '0'), shared_from_this());
-        _label->setMarginRole(SizeRole::MarginSmall);
-        _label->setHAlign(HAlign::Center);
+        // Each item gets an icon so there is something to look at besides
+        // a number.
+        const std::vector<std::string> icons =
+        {
+            "Audio", "Directory", "Edit", "File", "Search", "Settings"
+        };
+        _layout = HorizontalLayout::create(context, shared_from_this());
+        _layout->setMarginRole(SizeRole::MarginSmall);
+        _layout->setSpacingRole(SizeRole::SpacingSmall);
+        auto icon = Icon::create(context, icons[number % icons.size()], _layout);
+        auto label = Label::create(context, Format("Item {0}").arg(number), _layout);
+        label->setVAlign(VAlign::Center);
     }
 
     DragWidget::~DragWidget()
@@ -56,13 +66,13 @@ namespace widgets
 
     Size2I DragWidget::getSizeHint() const
     {
-        return _label->getSizeHint();
+        return _layout->getSizeHint();
     }
 
     void DragWidget::setGeometry(const Box2I& value)
     {
         IMouseWidget::setGeometry(value);
-        _label->setGeometry(getGeometry());
+        _layout->setGeometry(getGeometry());
     }
 
     void DragWidget::sizeHintEvent(const SizeHintEvent& event)
@@ -279,16 +289,21 @@ namespace widgets
         ftk::IWidget::_init(context, "DragDrop", parent);
 
         // Create a layout.
-        _layout = HorizontalLayout::create(context, shared_from_this());
+        _layout = VerticalLayout::create(context, shared_from_this());
         _layout->setSpacingRole(SizeRole::None);
         _layout->setStretch(Stretch::Expanding);
-        auto scrollWidget0 = ScrollWidget::create(context, ScrollType::Vertical, _layout);
+        auto label = Label::create(context, "Drag items to reorder them, or to move them to the other list.", _layout);
+        label->setMarginRole(SizeRole::MarginSmall);
+        auto hLayout = HorizontalLayout::create(context, _layout);
+        hLayout->setSpacingRole(SizeRole::None);
+        hLayout->setStretch(Stretch::Expanding);
+        auto scrollWidget0 = ScrollWidget::create(context, ScrollType::Vertical, hLayout);
         scrollWidget0->setBorder(false);
         scrollWidget0->setStretch(Stretch::Expanding);
         // Scroll when a drag hovers near or just past the edge of the
         // list, so a drop target that is off the screen can be reached.
         scrollWidget0->setDragScroll(true);
-        auto scrollWidget1 = ScrollWidget::create(context, ScrollType::Vertical, _layout);
+        auto scrollWidget1 = ScrollWidget::create(context, ScrollType::Vertical, hLayout);
         scrollWidget1->setBorder(false);
         scrollWidget1->setStretch(Stretch::Expanding);
         scrollWidget1->setDragScroll(true);
@@ -298,7 +313,7 @@ namespace widgets
         scrollWidget0->setWidget(dragDropContainer0);
         auto dragDropContainer1 = ContainerWidget::create(context);
         scrollWidget1->setWidget(dragDropContainer1);
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < 20; ++i)
         {
             dragDropContainer0->addWidget(DragWidget::create(context, i));
             dragDropContainer1->addWidget(DragWidget::create(context, i));

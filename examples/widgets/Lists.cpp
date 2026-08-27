@@ -3,6 +3,7 @@
 
 #include "Lists.h"
 
+#include <ftk/UI/Label.h>
 #include <ftk/UI/ListWidget.h>
 #include <ftk/UI/RowLayout.h>
 
@@ -19,20 +20,23 @@ namespace widgets
     {
         ftk::IWidget::_init(context, "Lists", parent);
 
-        // Create a layout.
-        auto layout = VerticalLayout::create(context);
+        // Create a layout: a captioned column per list type, side by side.
+        auto layout = HorizontalLayout::create(context);
         layout->setMarginRole(SizeRole::Margin);
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
         _scrollWidget->setBorder(false);
         _scrollWidget->setWidget(layout);
 
-        // Create a clickable list widget.
-        auto listWidget = ListWidget::create(context, ButtonGroupType::Click, layout);
         std::vector<std::string> items;
-        for (size_t i = 0; i < 100; ++i)
+        for (size_t i = 0; i < 40; ++i)
         {
-            items.push_back(Format("Click {0}").arg(i));
+            items.push_back(Format("Item {0}").arg(i));
         }
+
+        // Create a clickable list widget.
+        auto column = VerticalLayout::create(context, layout);
+        auto label = Label::create(context, "Click", column);
+        auto listWidget = ListWidget::create(context, ButtonGroupType::Click, column);
         listWidget->setItems(items);
         listWidget->setCallback(
             [](int index, bool)
@@ -41,12 +45,9 @@ namespace widgets
             });
 
         // Create a checkable list widget.
-        listWidget = ListWidget::create(context, ButtonGroupType::Check, layout);
-        items.clear();
-        for (size_t i = 0; i < 100; ++i)
-        {
-            items.push_back(Format("Check {0}").arg(i));
-        }
+        column = VerticalLayout::create(context, layout);
+        label = Label::create(context, "Check", column);
+        listWidget = ListWidget::create(context, ButtonGroupType::Check, column);
         listWidget->setItems(items);
         listWidget->setChecked(0);
         listWidget->setChecked(1);
@@ -57,15 +58,11 @@ namespace widgets
             {
                 std::cout << "Check: " << index << std::endl;
             });
-        listWidget->setCurrent(static_cast<int>(items.size()) - 1);
 
         // Create a radio button list widget.
-        listWidget = ListWidget::create(context, ButtonGroupType::Radio, layout);
-        items.clear();
-        for (size_t i = 0; i < 100; ++i)
-        {
-            items.push_back(Format("Radio {0}").arg(i));
-        }
+        column = VerticalLayout::create(context, layout);
+        label = Label::create(context, "Radio", column);
+        listWidget = ListWidget::create(context, ButtonGroupType::Radio, column);
         listWidget->setItems(items);
         listWidget->setChecked(0);
         listWidget->setCallback(
@@ -75,12 +72,9 @@ namespace widgets
             });
 
         // Create a toggle button list widget.
-        listWidget = ListWidget::create(context, ButtonGroupType::Toggle, layout);
-        items.clear();
-        for (size_t i = 0; i < 100; ++i)
-        {
-            items.push_back(Format("Toggle {0}").arg(i));
-        }
+        column = VerticalLayout::create(context, layout);
+        label = Label::create(context, "Toggle", column);
+        listWidget = ListWidget::create(context, ButtonGroupType::Toggle, column);
         listWidget->setItems(items);
         listWidget->setChecked(0);
         listWidget->setCallback(

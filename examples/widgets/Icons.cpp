@@ -3,10 +3,10 @@
 
 #include "Icons.h"
 
-#include <ftk/UI/GridLayout.h>
 #include <ftk/UI/Icon.h>
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Label.h>
+#include <ftk/UI/RowLayout.h>
 
 using namespace ftk;
 
@@ -20,24 +20,26 @@ namespace widgets
         ftk::IWidget::_init(context, "Icons", parent);
 
         // Create a layout.
-        auto layout = GridLayout::create(context);
+        auto layout = VerticalLayout::create(context);
         layout->setMarginRole(SizeRole::Margin);
         layout->setSpacingRole(SizeRole::None);
         _scrollWidget = ScrollWidget::create(context, ScrollType::Both, shared_from_this());
         _scrollWidget->setBorder(false);
         _scrollWidget->setWidget(layout);
 
-        // Create icons.
+        // Create icons. Each name gets its own row, so an over-sized icon
+        // -- the application icon, say -- widens only itself, rather than
+        // a shared column.
         auto iconSystem = context->getSystem<IconSystem>();
-        int row = 0;
         for (const auto& name : iconSystem->getNames())
         {
-            auto icon = Icon::create(context, name, layout);
-            layout->setGridPos(icon, row, 0);
-            auto label = Label::create(context, name, layout);
+            auto hLayout = HorizontalLayout::create(context, layout);
+            hLayout->setSpacingRole(SizeRole::SpacingSmall);
+            auto icon = Icon::create(context, name, hLayout);
+            icon->setVAlign(VAlign::Center);
+            auto label = Label::create(context, name, hLayout);
             label->setMarginRole(SizeRole::MarginSmall);
-            layout->setGridPos(label, row, 1);
-            ++row;
+            label->setVAlign(VAlign::Center);
         }
     }
 

@@ -5,6 +5,7 @@
 
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/UI/Spacer.h>
 #include <ftk/UI/Splitter.h>
 
 using namespace ftk;
@@ -18,15 +19,26 @@ namespace widgets
     {
         ftk::IWidget::_init(context, "Splitters", parent);
 
-        // Create splitters.
+        // Create splitters. The splitter gives each pane's geometry to its
+        // child directly, so each label is centered by a layout in between:
+        // the layout centers it across, and the spacers center it along.
         _splitter = Splitter::create(context, Orientation::Vertical, shared_from_this());
         auto splitter2 = Splitter::create(context, Orientation::Horizontal, _splitter);
-        auto label = Label::create(context, "Label 1", splitter2);
-        label->setAlign(HAlign::Center, VAlign::Center);
-        label = Label::create(context, "Label 2", splitter2);
-        label->setAlign(HAlign::Center, VAlign::Center);
-        label = Label::create(context, "Label 3", _splitter);
-        label->setAlign(HAlign::Center, VAlign::Center);
+        for (const auto& text : { "One", "Two", "Three" })
+        {
+            auto layout = VerticalLayout::create(
+                context,
+                "Three" == text ?
+                    std::static_pointer_cast<IWidget>(_splitter) :
+                    std::static_pointer_cast<IWidget>(splitter2));
+            auto spacer = Spacer::create(context, Orientation::Vertical, layout);
+            spacer->setStretch(Stretch::Expanding);
+            auto label = Label::create(context, text, layout);
+            label->setFontSize(32);
+            label->setHAlign(HAlign::Center);
+            spacer = Spacer::create(context, Orientation::Vertical, layout);
+            spacer->setStretch(Stretch::Expanding);
+        }
     }
 
     Splitters::~Splitters()
