@@ -4,14 +4,38 @@
 <meta charset="utf-8">
 <title>@ftk_WEB_APP@</title>
 <style>
-html, body { margin: 0; height: 100%; overflow: hidden; background: #181818; }
-canvas { display: block; width: 100%; height: 100%; }
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #181818;
+    /* Dragging in the canvas is the application's own selection, not
+       the page's. */
+    user-select: none;
+    -webkit-user-select: none;
+}
+canvas { display: block; width: 100%; height: 100%; -webkit-user-drag: none; }
 </style>
 </head>
 <body>
 <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 <script>
-var Module = { canvas: document.getElementById('canvas') };
+var Module = {
+    canvas: document.getElementById('canvas'),
+    /* The query string is the command line: "?page=Dialogs" becomes
+       "-page Dialogs". */
+    arguments: (function() {
+        var out = [];
+        new URLSearchParams(location.search).forEach(function(value, key) {
+            out.push('-' + key);
+            if (value)
+            {
+                out.push(value);
+            }
+        });
+        return out;
+    })()
+};
 </script>
 <script src="@ftk_WEB_APP@.js"></script>
 </body>
