@@ -1036,7 +1036,22 @@ namespace ftk
         emscripten_set_main_loop_arg(
             [](void* app)
             {
-                static_cast<App*>(app)->_runIteration();
+                // On the desktop an exception out of the loop lands in
+                // main(), which reports it. Here there is no main() any
+                // more, and an exception out of this callback kills the
+                // loop and the page with it -- so it is caught and said.
+                try
+                {
+                    static_cast<App*>(app)->_runIteration();
+                }
+                catch (const std::exception& e)
+                {
+                    printf("Unhandled exception: %s\n", e.what());
+                }
+                catch (...)
+                {
+                    printf("Unhandled exception (unknown)\n");
+                }
             },
             this,
             0,
