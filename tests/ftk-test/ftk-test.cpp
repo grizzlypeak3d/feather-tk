@@ -62,7 +62,7 @@
 #include <ftk/UITest/TextEditModelTest.h>
 #include <ftk/UITest/WidgetOptionsTest.h>
 
-#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
+#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_3)
 #include <ftk/GLTest/MeshTest.h>
 #include <ftk/GLTest/OffscreenBufferTest.h>
 #include <ftk/GLTest/TextureAtlasTest.h>
@@ -192,7 +192,7 @@ namespace ftk
             p.tests.push_back(core_test::TimerTest::create(context));
             p.tests.push_back(core_test::VectorTest::create(context));
 
-#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_2)
+#if defined(FTK_API_GL_4_1) || defined(FTK_API_GLES_3)
             if (gl)
             {
                 p.tests.push_back(gl_test::MeshTest::create(context));
