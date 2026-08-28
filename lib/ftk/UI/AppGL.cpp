@@ -1192,7 +1192,15 @@ namespace ftk
                         if (auto window = _getWindow(event.window.windowID))
                         {
                             window->_cursorEnter(false);
+#if !defined(__EMSCRIPTEN__)
+                            // On the web every window shares the one canvas,
+                            // and SDL's mouse focus flips to whichever window
+                            // an app created last -- a hidden offscreen GL
+                            // window makes every mouse move a leave/enter
+                            // pair. A leave cannot mean the cursor left the
+                            // page's only canvas, so the active window stays.
                             p.activeWindow.reset();
+#endif // __EMSCRIPTEN__
                         }
                         break;
                     case SDL_WINDOWEVENT_CLOSE:
