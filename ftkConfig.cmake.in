@@ -38,7 +38,10 @@ endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/ftkEmbedText.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ftkIconResources.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/ftk-resourceTargets.cmake")
+# The ftk-resource tool is only installed when feather-tk is the top
+# level project; a cross-compiling consumer names a native one with
+# ftk_RESOURCE instead.
+include("${CMAKE_CURRENT_LIST_DIR}/ftk-resourceTargets.cmake" OPTIONAL)
 include("${CMAKE_CURRENT_LIST_DIR}/ftkResourceTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ftkCoreTargets.cmake")
 if(@ftk_API@ STREQUAL "GL_4_1" OR
