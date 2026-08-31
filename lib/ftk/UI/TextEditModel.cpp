@@ -457,7 +457,11 @@ namespace ftk
             break;
 
         case Key::Return:
-            if (!readOnly)
+            // A Return carrying the command modifier belongs to the
+            // application -- a note editor's "add", a form's "submit" --
+            // so it is left to bubble.
+            if (!readOnly &&
+                !(modifiers & static_cast<int>(commandKeyModifier)))
             {
                 _return();
                 out = true;
