@@ -447,7 +447,8 @@ namespace ftk
         const bool keyFocus = hasKeyFocus();
         event.render->drawMesh(
             keyFocus ? p.draw->keyFocus : p.draw->border,
-            event.style->getColorRole(keyFocus ? ColorRole::KeyFocus : ColorRole::Border));
+            event.style->getColorRole(
+                keyFocus ? ColorRole::KeyFocus : p.borderRole));
 
         // Enable clipping.
         const ClipRectEnabledState clipRectEnabledState(event.render);
