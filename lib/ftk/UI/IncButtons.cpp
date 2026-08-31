@@ -92,13 +92,16 @@ namespace ftk
         if (_iconImage)
         {
             const Size2I iconSize = _iconImage->getSize();
+            // Tinted like every other icon, so the theme decides the
+            // color rather than the file.
             event.render->drawImage(
                 _iconImage,
                 Box2I(
                     g.x() + p.size.margin,
                     g.y() + g.h() / 2 - iconSize.h / 2,
                     iconSize.w,
-                    iconSize.h));
+                    iconSize.h),
+                event.style->getColorRole(ColorRole::Text, isEnabled()));
         }
     }
 
