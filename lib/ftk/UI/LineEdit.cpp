@@ -30,6 +30,7 @@ namespace ftk
         std::function<void(bool)> focusCallback;
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
+        ColorRole wellRole = ColorRole::Well;
 
         std::weak_ptr<Menu> contextMenu;
         bool contextMenuFocus = false;
@@ -276,6 +277,20 @@ namespace ftk
         setDrawUpdate();
     }
 
+    ColorRole LineEdit::getWellRole() const
+    {
+        return _p->wellRole;
+    }
+
+    void LineEdit::setWellRole(ColorRole value)
+    {
+        FTK_P();
+        if (value == p.wellRole)
+            return;
+        p.wellRole = value;
+        setDrawUpdate();
+    }
+
     Size2I LineEdit::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -421,9 +436,12 @@ namespace ftk
         const bool enabled = isEnabled();
 
         // Draw the background.
-        event.render->drawMesh(
-            p.draw->bgMesh,
-            event.style->getColorRole(ColorRole::Well));
+        if (p.wellRole != ColorRole::None)
+        {
+            event.render->drawMesh(
+                p.draw->bgMesh,
+                event.style->getColorRole(p.wellRole));
+        }
 
         // Draw the focus and border.
         const bool keyFocus = hasKeyFocus();

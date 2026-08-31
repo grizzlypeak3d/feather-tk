@@ -113,6 +113,14 @@ namespace ftk
 
         ///@}
 
+        //! \name Well
+        ///@{
+
+        FTK_UI_API ColorRole getWellRole() const;
+        FTK_UI_API void setWellRole(ColorRole);
+
+        ///@}
+
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void setVisible(bool) override;
