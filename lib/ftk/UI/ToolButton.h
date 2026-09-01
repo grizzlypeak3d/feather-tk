@@ -72,6 +72,15 @@ namespace ftk
         //! by name would silently ask for true instead.
         void setPopupIcon(const char*) = delete;
 
+        //! Get the secondary text.
+        FTK_UI_API const std::string& getSecondaryText() const;
+
+        //! Set the secondary text: drawn right aligned and dimmed, the way
+        //! a menu draws its shortcuts, for the part of a label that is data
+        //! beside a name. Not for use together with the popup icon, which
+        //! shares the right edge.
+        FTK_UI_API void setSecondaryText(const std::string&);
+
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;

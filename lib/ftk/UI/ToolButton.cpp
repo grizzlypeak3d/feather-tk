@@ -19,6 +19,7 @@ namespace ftk
         bool popupIcon = false;
         float popupIconScale = 1.F;
         std::shared_ptr<Image> popupImage;
+        std::string secondaryText;
 
         std::shared_ptr<Observer<std::string> > iconObserver;
         std::shared_ptr<Observer<std::string> > checkedIconObserver;
@@ -37,6 +38,7 @@ namespace ftk
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
+            Size2I secondaryTextSize;
             Size2I sizeHint;
         };
         SizeData size;
@@ -48,6 +50,7 @@ namespace ftk
             TriMesh2F bgMesh;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
+            std::vector<std::shared_ptr<Glyph> > secondaryGlyphs;
         };
         std::optional<DrawData> draw;
     };
@@ -226,6 +229,22 @@ namespace ftk
         setDrawUpdate();
     }
 
+    const std::string& ToolButton::getSecondaryText() const
+    {
+        return _p->secondaryText;
+    }
+
+    void ToolButton::setSecondaryText(const std::string& value)
+    {
+        FTK_P();
+        if (value == p.secondaryText)
+            return;
+        p.secondaryText = value;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     void ToolButton::setAcceptsKeyFocus(bool value)
     {
         const bool changed = value != acceptsKeyFocus();
@@ -283,6 +302,8 @@ namespace ftk
             p.size.fontInfo = event.style->getFont(_font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(_text, p.size.fontInfo);
+            p.size.secondaryTextSize = event.fontSystem->getSize(
+                p.secondaryText, p.size.fontInfo);
 
             if (event.displayScale != p.popupIconScale)
             {
@@ -319,6 +340,13 @@ namespace ftk
             {
                 p.size.sizeHint.w += p.popupImage->getWidth();
                 p.size.sizeHint.h = std::max(p.size.sizeHint.h, p.popupImage->getHeight());
+            }
+            if (!p.secondaryText.empty())
+            {
+                p.size.sizeHint.w += p.size.secondaryTextSize.w + p.size.pad * 2;
+                p.size.sizeHint.h = std::max(
+                    p.size.sizeHint.h,
+                    p.size.fontMetrics.lineHeight);
             }
             p.size.sizeHint = margin(p.size.sizeHint, p.size.margin);
             if (acceptsKeyFocus())
@@ -432,6 +460,25 @@ namespace ftk
                     p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(_textRole, isEnabled()));
             x += p.size.pad * 2 + p.size.textSize.w;
+        }
+
+        // Draw the secondary text, against the right edge.
+        if (!p.secondaryText.empty())
+        {
+            if (p.draw->secondaryGlyphs.empty())
+            {
+                p.draw->secondaryGlyphs = event.fontSystem->getGlyphs(
+                    p.secondaryText, p.size.fontInfo);
+            }
+            event.render->drawText(
+                p.draw->secondaryGlyphs,
+                p.size.fontMetrics,
+                V2I(
+                    p.draw->inside.x() + p.draw->inside.w() -
+                        p.size.pad - p.size.secondaryTextSize.w,
+                    p.draw->inside.y() + p.draw->inside.h() / 2 -
+                        p.size.secondaryTextSize.h / 2),
+                event.style->getColorRole(ColorRole::TextDisabled, isEnabled()));
         }
 
         // Draw the popup icon.
