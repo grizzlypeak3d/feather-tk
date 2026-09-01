@@ -39,6 +39,9 @@ namespace ftk
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+        FTK_UI_API void keyFocusEvent(bool) override;
+        FTK_UI_API void keyPressEvent(KeyEvent&) override;
+        FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
         FTK_PRIVATE();

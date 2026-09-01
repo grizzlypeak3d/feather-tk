@@ -3,12 +3,15 @@
 
 #include <ftk/UI/ItemButton.h>
 
+#include <ftk/UI/DrawUtil.h>
+
 namespace ftk
 {
     struct ItemButton::Private
     {
         std::shared_ptr<IWidget> widget;
         Size2I sizeHint;
+        int keyFocus = 0;
     };
 
     void ItemButton::_init(
@@ -18,6 +21,7 @@ namespace ftk
         IButton::_init(context, "ftk::ItemButton", parent);
         // Like the list items: quiet until checked, hovered, or pressed.
         setButtonRole(ColorRole::None);
+        setAcceptsKeyFocus(true);
     }
 
     ItemButton::ItemButton() :
@@ -78,6 +82,7 @@ namespace ftk
     {
         IButton::sizeHintEvent(event);
         FTK_P();
+        p.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
         p.sizeHint = p.widget ? p.widget->getSizeHint() : Size2I();
     }
 
@@ -108,5 +113,53 @@ namespace ftk
                 g,
                 event.style->getColorRole(ColorRole::Hover));
         }
+
+        // Draw the key focus. Inside the geometry rather than around it:
+        // the content's own margin leaves the edges clear, and the item
+        // does not grow when it is focused.
+        if (hasKeyFocus())
+        {
+            event.render->drawMesh(
+                border(g, _p->keyFocus),
+                event.style->getColorRole(ColorRole::KeyFocus));
+        }
+    }
+
+    void ItemButton::keyFocusEvent(bool value)
+    {
+        IButton::keyFocusEvent(value);
+        setDrawUpdate();
+    }
+
+    void ItemButton::keyPressEvent(KeyEvent& event)
+    {
+        if (0 == event.modifiers)
+        {
+            switch (event.key)
+            {
+            case Key::Return:
+                event.accept = true;
+                click();
+                break;
+            case Key::Escape:
+                if (hasKeyFocus())
+                {
+                    event.accept = true;
+                    releaseKeyFocus();
+                }
+                break;
+            default: break;
+            }
+        }
+        if (!event.accept)
+        {
+            IButton::keyPressEvent(event);
+        }
+    }
+
+    void ItemButton::keyReleaseEvent(KeyEvent& event)
+    {
+        IButton::keyReleaseEvent(event);
+        event.accept = true;
     }
 }
