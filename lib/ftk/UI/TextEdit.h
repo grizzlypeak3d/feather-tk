@@ -66,6 +66,10 @@ namespace ftk
         FTK_UI_API void clearText();
         FTK_UI_API void setCallback(const std::function<void(const std::vector<std::string>&)>&);
 
+        //! Set a callback for when the editing widget inside gains or
+        //! loses the key focus.
+        FTK_UI_API void setFocusCallback(const std::function<void(bool)>&);
+
         //! Key focus goes to the editing widget inside, the same as
         //! clicking into the text.
         FTK_UI_API void takeKeyFocus() override;

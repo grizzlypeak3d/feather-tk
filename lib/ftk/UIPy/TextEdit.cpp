@@ -47,6 +47,7 @@ namespace ftk
                 .def_property("text", &TextEdit::getText, &TextEdit::setText)
                 .def("clearText", &TextEdit::clearText)
                 .def("setCallback", &TextEdit::setCallback)
+                .def("setFocusCallback", &TextEdit::setFocusCallback)
                 .def_property("readOnly", &TextEdit::isReadOnly, &TextEdit::setReadOnly)
                 .def("selectAll", &TextEdit::selectAll)
                 .def("clearSelection", &TextEdit::clearSelection)

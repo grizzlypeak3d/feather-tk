@@ -30,6 +30,7 @@ namespace ftk
         std::shared_ptr<TextEditWidget> widget;
         std::shared_ptr<ScrollWidget> scrollWidget;
         SizeRole marginRole = SizeRole::None;
+        std::function<void(bool)> focusCallback;
 
         std::shared_ptr<Observer<TextEditPos> > cursorObserver;
 
@@ -73,6 +74,10 @@ namespace ftk
             [this](bool value)
             {
                 setDrawUpdate();
+                if (_p->focusCallback)
+                {
+                    _p->focusCallback(value);
+                }
             });
 
         p.cursorObserver = Observer<TextEditPos>::create(
@@ -142,6 +147,11 @@ namespace ftk
     void TextEdit::setCallback(const std::function<void(const std::vector<std::string>&)>& value)
     {
         _p->widget->setCallback(value);
+    }
+
+    void TextEdit::setFocusCallback(const std::function<void(bool)>& value)
+    {
+        _p->focusCallback = value;
     }
 
     bool TextEdit::isReadOnly() const
