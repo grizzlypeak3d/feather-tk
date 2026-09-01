@@ -35,6 +35,9 @@ namespace ftk
         //! Set the widget.
         FTK_UI_API void setWidget(const std::shared_ptr<IWidget>&);
 
+        //! Set a callback for when the item gains or loses the key focus.
+        FTK_UI_API void setFocusCallback(const std::function<void(bool)>&);
+
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;

@@ -12,6 +12,7 @@ namespace ftk
         std::shared_ptr<IWidget> widget;
         Size2I sizeHint;
         int keyFocus = 0;
+        std::function<void(bool)> focusCallback;
     };
 
     void ItemButton::_init(
@@ -125,10 +126,20 @@ namespace ftk
         }
     }
 
+    void ItemButton::setFocusCallback(const std::function<void(bool)>& value)
+    {
+        _p->focusCallback = value;
+    }
+
     void ItemButton::keyFocusEvent(bool value)
     {
         IButton::keyFocusEvent(value);
         setDrawUpdate();
+        FTK_P();
+        if (p.focusCallback)
+        {
+            p.focusCallback(value);
+        }
     }
 
     void ItemButton::keyPressEvent(KeyEvent& event)

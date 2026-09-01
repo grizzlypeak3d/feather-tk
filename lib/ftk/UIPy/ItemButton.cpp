@@ -22,7 +22,8 @@ namespace ftk
                     py::init(&ItemButton::create),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
-                .def_property("widget", &ItemButton::getWidget, &ItemButton::setWidget);
+                .def_property("widget", &ItemButton::getWidget, &ItemButton::setWidget)
+                .def("setFocusCallback", &ItemButton::setFocusCallback);
         }
     }
 }
