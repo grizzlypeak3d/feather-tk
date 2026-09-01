@@ -6,6 +6,7 @@ set(HEADERS
     Bellows.h
     ButtonGroup.h
     CheckBox.h
+    ChoiceDialog.h
     ClipboardSystem.h
     ColorPopup.h
     ColorSlider.h
@@ -126,6 +127,7 @@ set(SOURCE
     BellowsButton.cpp
     ButtonGroup.cpp
     CheckBox.cpp
+    ChoiceDialog.cpp
     ClipboardSystem.cpp
     ColorPopup.cpp
     ColorSlider.cpp

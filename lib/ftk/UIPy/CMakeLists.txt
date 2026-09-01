@@ -44,6 +44,7 @@ set(SOURCE
     IButton.cpp
     IContainer.cpp
     IDialog.cpp
+    ChoiceDialog.cpp
     InputDialog.cpp
     ItemButton.cpp
     IMenuPopup.cpp

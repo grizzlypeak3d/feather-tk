@@ -10,6 +10,7 @@
 
 namespace ftk
 {
+    class ChoiceDialog;
     class ConfirmDialog;
     class InputDialog;
     class MessageDialog;
@@ -44,6 +45,15 @@ namespace ftk
             const std::string& value,
             const std::shared_ptr<IWindow>& window,
             const std::function<void(const std::string&)>& callback);
+
+        //! Open a choice dialog. The callback is given the index of the
+        //! chosen button; dismissing the dialog chooses nothing.
+        FTK_UI_API std::shared_ptr<ChoiceDialog> choice(
+            const std::string& title,
+            const std::string& text,
+            const std::vector<std::string>& choices,
+            const std::shared_ptr<IWindow>& window,
+            const std::function<void(int)>& callback);
 
         //! Open a confirmation dialog.
         FTK_UI_API std::shared_ptr<ConfirmDialog> confirm(

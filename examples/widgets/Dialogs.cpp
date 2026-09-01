@@ -61,6 +61,25 @@ namespace widgets
                 }
             });
 
+        // Choice dialog.
+        button = PushButton::create(context, "Choice Dialog", layout);
+        button->setClickedCallback(
+            [this]
+            {
+                if (auto context = getContext())
+                {
+                    context->getSystem<DialogSystem>()->choice(
+                        "Choice",
+                        "Save changes to the document before closing?",
+                        { "Save", "Don't Save", "Cancel" },
+                        getWindow(),
+                        [](int value)
+                        {
+                            std::cout << "Choice: " << value << std::endl;
+                        });
+                }
+            });
+
         // Input dialog.
         button = PushButton::create(context, "Input Dialog", layout);
         button->setClickedCallback(

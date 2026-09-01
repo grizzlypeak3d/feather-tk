@@ -23,6 +23,7 @@ namespace ftk
         void colorWidget(pybind11::module_&);
         void comboBox(pybind11::module_&);
         void confirmDialog(pybind11::module_&);
+        void choiceDialog(pybind11::module_&);
         void inputDialog(pybind11::module_&);
         void itemButton(pybind11::module_&);
         void diagWidget(pybind11::module_&);

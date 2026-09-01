@@ -26,6 +26,13 @@ class DialogsWindow(ftk.MainWindow):
         button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").
             confirm("Confirm", "Hello world?", windowWeak(), lambda ok: print("Hello world:", ok)))
 
+        # Choice dialog.
+        button = ftk.PushButton(context, "Choice Dialog", layout)
+        button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").
+            choice("Choice", "Save changes to the document before closing?",
+                ["Save", "Don't Save", "Cancel"], windowWeak(),
+                lambda value: print("Choice:", value)))
+
         # Input dialog.
         button = ftk.PushButton(context, "Input Dialog", layout)
         button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").

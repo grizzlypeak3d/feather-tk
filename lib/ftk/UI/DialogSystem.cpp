@@ -3,6 +3,8 @@
 
 #include <ftk/UI/DialogSystem.h>
 
+#include <ftk/UI/ChoiceDialog.h>
+
 #include <ftk/UI/ConfirmDialog.h>
 #include <ftk/UI/InputDialog.h>
 #include <ftk/UI/MessageDialog.h>
@@ -14,6 +16,7 @@ namespace ftk
         std::shared_ptr<MessageDialog> messageDialog;
         std::shared_ptr<ConfirmDialog> confirmDialog;
         std::shared_ptr<InputDialog> inputDialog;
+        std::shared_ptr<ChoiceDialog> choiceDialog;
     };
 
     DialogSystem::DialogSystem(const std::shared_ptr<Context>& context) :
@@ -84,6 +87,36 @@ namespace ftk
                 _p->inputDialog.reset();
             });
         return p.inputDialog;
+    }
+
+    std::shared_ptr<ChoiceDialog> DialogSystem::choice(
+        const std::string& title,
+        const std::string& text,
+        const std::vector<std::string>& choices,
+        const std::shared_ptr<IWindow>& window,
+        const std::function<void(int)>& callback)
+    {
+        FTK_P();
+        if (p.choiceDialog)
+        {
+            p.choiceDialog->close();
+            p.choiceDialog.reset();
+        }
+        auto context = _context.lock();
+        p.choiceDialog = ChoiceDialog::create(context, title, text, choices);
+        p.choiceDialog->open(window);
+        p.choiceDialog->setCallback(
+            [this, callback](int value)
+            {
+                callback(value);
+                _p->choiceDialog->close();
+            });
+        p.choiceDialog->setCloseCallback(
+            [this]
+            {
+                _p->choiceDialog.reset();
+            });
+        return p.choiceDialog;
     }
 
     std::shared_ptr<ConfirmDialog> DialogSystem::confirm(
