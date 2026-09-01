@@ -97,6 +97,7 @@ namespace ftk
                 .def("get", &Path::get)
                 .def_property_readonly("isEmpty", &Path::isEmpty)
                 .def_property_readonly("hasProtocol", &Path::hasProtocol)
+                .def_property_readonly("hasSeqWildcard", &Path::hasSeqWildcard)
                 .def_property_readonly("hasDir", &Path::hasDir)
                 .def_property_readonly("hasBase", &Path::hasBase)
                 .def_property_readonly("hasNum", &Path::hasNum)
