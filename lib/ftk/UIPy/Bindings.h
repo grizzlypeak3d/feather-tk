@@ -24,6 +24,7 @@ namespace ftk
         void comboBox(pybind11::module_&);
         void confirmDialog(pybind11::module_&);
         void inputDialog(pybind11::module_&);
+        void itemButton(pybind11::module_&);
         void diagWidget(pybind11::module_&);
         void dialogSystem(pybind11::module_&);
         void divider(pybind11::module_&);

@@ -45,6 +45,7 @@ set(SOURCE
     IContainer.cpp
     IDialog.cpp
     InputDialog.cpp
+    ItemButton.cpp
     IMenuPopup.cpp
     IMouseWidget.cpp
     IncButtons.cpp

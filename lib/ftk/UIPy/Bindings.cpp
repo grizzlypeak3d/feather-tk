@@ -89,6 +89,7 @@ namespace ftk
             comboBox(m);
             confirmDialog(m);
             inputDialog(m);
+            itemButton(m);
             diagWidget(m);
             dialogSystem(m);
             divider(m);
