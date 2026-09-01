@@ -26,6 +26,12 @@ class DialogsWindow(ftk.MainWindow):
         button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").
             confirm("Confirm", "Hello world?", windowWeak(), lambda ok: print("Hello world:", ok)))
 
+        # Input dialog.
+        button = ftk.PushButton(context, "Input Dialog", layout)
+        button.setClickedCallback(lambda: context.getSystemByName("ftk::DialogSystem").
+            input("Input", "What is your name?", "World", windowWeak(),
+                lambda value: print("Hello {}!".format(value))))
+
         # Progress dialog.
         self.progressTimer = ftk.Timer(context)
         self.progressTimer.repeating = True

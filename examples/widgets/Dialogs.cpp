@@ -61,6 +61,25 @@ namespace widgets
                 }
             });
 
+        // Input dialog.
+        button = PushButton::create(context, "Input Dialog", layout);
+        button->setClickedCallback(
+            [this]
+            {
+                if (auto context = getContext())
+                {
+                    context->getSystem<DialogSystem>()->input(
+                        "Input",
+                        "What is your name?",
+                        "World",
+                        getWindow(),
+                        [](const std::string& value)
+                        {
+                            std::cout << "Hello " << value << "!" << std::endl;
+                        });
+                }
+            });
+
         // Progress dialog.
         _progressTimer = Timer::create(context);
         _progressTimer->setRepeating(true);
