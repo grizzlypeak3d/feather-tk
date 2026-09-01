@@ -88,6 +88,7 @@ namespace ftk
             colorWidget(m);
             comboBox(m);
             confirmDialog(m);
+            inputDialog(m);
             diagWidget(m);
             dialogSystem(m);
             divider(m);

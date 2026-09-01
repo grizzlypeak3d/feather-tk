@@ -5,6 +5,7 @@
 
 #include <ftk/UI/ConfirmDialog.h>
 #include <ftk/UI/DialogSystem.h>
+#include <ftk/UI/InputDialog.h>
 #include <ftk/UI/MessageDialog.h>
 #include <ftk/UI/Window.h>
 
@@ -29,6 +30,13 @@ namespace ftk
                     py::arg("title"),
                     py::arg("text"),
                     py::arg("window"))
+                .def("input",
+                    &DialogSystem::input,
+                    py::arg("title"),
+                    py::arg("text"),
+                    py::arg("value"),
+                    py::arg("window"),
+                    py::arg("callback"))
                 .def("confirm",
                     &DialogSystem::confirm,
                     py::arg("title"),

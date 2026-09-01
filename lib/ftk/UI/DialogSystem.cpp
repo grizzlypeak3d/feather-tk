@@ -4,6 +4,7 @@
 #include <ftk/UI/DialogSystem.h>
 
 #include <ftk/UI/ConfirmDialog.h>
+#include <ftk/UI/InputDialog.h>
 #include <ftk/UI/MessageDialog.h>
 
 namespace ftk
@@ -12,6 +13,7 @@ namespace ftk
     {
         std::shared_ptr<MessageDialog> messageDialog;
         std::shared_ptr<ConfirmDialog> confirmDialog;
+        std::shared_ptr<InputDialog> inputDialog;
     };
 
     DialogSystem::DialogSystem(const std::shared_ptr<Context>& context) :
@@ -52,6 +54,36 @@ namespace ftk
                 _p->messageDialog.reset();
             });
         return p.messageDialog;
+    }
+
+    std::shared_ptr<InputDialog> DialogSystem::input(
+        const std::string& title,
+        const std::string& text,
+        const std::string& value,
+        const std::shared_ptr<IWindow>& window,
+        const std::function<void(const std::string&)>& callback)
+    {
+        FTK_P();
+        if (p.inputDialog)
+        {
+            p.inputDialog->close();
+            p.inputDialog.reset();
+        }
+        auto context = _context.lock();
+        p.inputDialog = InputDialog::create(context, title, text, value);
+        p.inputDialog->open(window);
+        p.inputDialog->setCallback(
+            [this, callback](const std::string& value)
+            {
+                callback(value);
+                _p->inputDialog->close();
+            });
+        p.inputDialog->setCloseCallback(
+            [this]
+            {
+                _p->inputDialog.reset();
+            });
+        return p.inputDialog;
     }
 
     std::shared_ptr<ConfirmDialog> DialogSystem::confirm(

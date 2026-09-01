@@ -11,6 +11,7 @@
 namespace ftk
 {
     class ConfirmDialog;
+    class InputDialog;
     class MessageDialog;
 
     //! \name Dialogs
@@ -34,6 +35,15 @@ namespace ftk
             const std::string& title,
             const std::string& text,
             const std::shared_ptr<IWindow>& window);
+
+        //! Open a text input dialog. The callback is called when the
+        //! input is accepted; cancelling closes the dialog without it.
+        FTK_UI_API std::shared_ptr<InputDialog> input(
+            const std::string& title,
+            const std::string& text,
+            const std::string& value,
+            const std::shared_ptr<IWindow>& window,
+            const std::function<void(const std::string&)>& callback);
 
         //! Open a confirmation dialog.
         FTK_UI_API std::shared_ptr<ConfirmDialog> confirm(
