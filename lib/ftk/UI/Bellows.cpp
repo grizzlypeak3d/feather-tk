@@ -32,6 +32,9 @@ namespace ftk
 
         p.buttonLayout = HorizontalLayout::create(context);
         p.buttonLayout->setSpacingRole(SizeRole::None);
+        // The title button only paints its own geometry, so without this a
+        // tool widget sits on a hole in the header.
+        p.buttonLayout->setBackgroundRole(ColorRole::Header);
         p.button->setParent(p.buttonLayout);
 
         p.layout = VerticalLayout::create(context);
