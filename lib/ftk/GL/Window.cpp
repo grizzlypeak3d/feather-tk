@@ -121,6 +121,14 @@ namespace ftk
                     arg(SDL_GetError()));
             }
             SDL_SetWindowMinimumSize(p.sdlWindow, 320, 240);
+#if defined(FTK_SDL2)
+            // SDL2 starts with text input on, which routes every keystroke
+            // through the input method even when nothing is being edited: a
+            // shortcut on a dead key (Option+N on macOS) leaves a composition
+            // pending, and it commits into whatever is focused later. Text
+            // input runs only while an editor asks for it.
+            SDL_StopTextInput();
+#endif // FTK_SDL2
 
 #if defined(__EMSCRIPTEN__)
             // The browser does not tell SDL when the page changes size,
@@ -516,7 +524,17 @@ namespace ftk
             if (value == p.textInput)
                 return;
             p.textInput = value;
-#if defined(FTK_SDL3)
+#if defined(FTK_SDL2)
+            // Global in SDL2; there is only one text focus anyway.
+            if (value)
+            {
+                SDL_StartTextInput();
+            }
+            else
+            {
+                SDL_StopTextInput();
+            }
+#elif defined(FTK_SDL3)
             if (value)
             {
                 SDL_StartTextInput(p.sdlWindow);
@@ -525,7 +543,7 @@ namespace ftk
             {
                 SDL_StopTextInput(p.sdlWindow);
             }
-#endif // FTK_SDL3
+#endif // FTK_SDL2
         }
 
         void Window::setTextInputArea(const Box2I& value)
