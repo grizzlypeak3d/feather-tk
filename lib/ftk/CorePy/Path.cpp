@@ -93,6 +93,7 @@ namespace ftk
                 .def(py::init<>())
                 .def(py::init<std::string>())
                 .def(py::init<std::string, std::string>())
+                .def(py::init<std::string, const PathOptions&>())
                 .def("get", &Path::get)
                 .def_property_readonly("isEmpty", &Path::isEmpty)
                 .def_property_readonly("hasProtocol", &Path::hasProtocol)
