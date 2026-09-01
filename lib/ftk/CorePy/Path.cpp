@@ -152,6 +152,7 @@ namespace ftk
                 .def_readwrite("seqNegative", &DirListOptions::seqNegative)
                 .def_readwrite("seqMaxDigits", &DirListOptions::seqMaxDigits)
                 .def_readwrite("hidden", &DirListOptions::hidden)
+                .def_readwrite("depth", &DirListOptions::depth)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 

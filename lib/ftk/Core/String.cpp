@@ -357,6 +357,55 @@ namespace ftk
         return false;
     }
 
+    bool matchWildcard(
+        const std::string& input,
+        const std::string& pattern,
+        CaseCompare compare)
+    {
+        const auto eq = [compare](unsigned char a, unsigned char b)
+            {
+                return CaseCompare::Insensitive == compare ?
+                    std::tolower(a) == std::tolower(b) :
+                    a == b;
+            };
+        // Greedy backtracking: a "*" first matches nothing, and when the
+        // remainder fails, the most recent "*" takes one more character and
+        // the match resumes after it. Only the last "*" ever needs to be
+        // revisited, so the state is a single pair of positions.
+        size_t i = 0;
+        size_t p = 0;
+        size_t star = std::string::npos;
+        size_t mark = 0;
+        while (i < input.size())
+        {
+            if (p < pattern.size() &&
+                ('?' == pattern[p] || eq(pattern[p], input[i])))
+            {
+                ++i;
+                ++p;
+            }
+            else if (p < pattern.size() && '*' == pattern[p])
+            {
+                star = p++;
+                mark = i;
+            }
+            else if (star != std::string::npos)
+            {
+                p = star + 1;
+                i = ++mark;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        while (p < pattern.size() && '*' == pattern[p])
+        {
+            ++p;
+        }
+        return p == pattern.size();
+    }
+
     std::wstring toWide(const std::string& value)
     {
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;

@@ -154,6 +154,23 @@ namespace ftk
                 FTK_CHECK(!contains("abc", "AB", CaseCompare::Sensitive));
                 FTK_CHECK(contains("abc", "AB", CaseCompare::Insensitive));
             }
+            {
+                FTK_CHECK(matchWildcard("render.mov", "*.mov"));
+                FTK_CHECK(!matchWildcard("render.mov.bak", "*.mov"));
+                FTK_CHECK(matchWildcard("render.mov", "render.???"));
+                FTK_CHECK(!matchWildcard("render.exr", "render.????"));
+                FTK_CHECK(matchWildcard("last-version.mov", "*last-version*"));
+                FTK_CHECK(matchWildcard("a.b.c.mov", "a*c*mov"));
+                FTK_CHECK(!matchWildcard("abc", "abcd"));
+                FTK_CHECK(matchWildcard("abc", "abc*"));
+                FTK_CHECK(matchWildcard("", "*"));
+                FTK_CHECK(!matchWildcard("", "?"));
+                FTK_CHECK(matchWildcard("", ""));
+                FTK_CHECK(!matchWildcard("abc", ""));
+                FTK_CHECK(!matchWildcard("Render.MOV", "*.mov"));
+                FTK_CHECK(matchWildcard(
+                    "Render.MOV", "*.mov", CaseCompare::Insensitive));
+            }
         }
         
         void StringTest::_convert()

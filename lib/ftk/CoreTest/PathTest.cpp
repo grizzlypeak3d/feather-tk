@@ -723,6 +723,78 @@ namespace ftk
                     std::vector<int64_t>(frames.begin(), frames.end()) ==
                     toFrames(path.getSeq()));
             }
+            {
+                // Filters and depth.
+                std::filesystem::path dir = _getTempDir() / "PathTest5";
+                std::filesystem::create_directory(dir);
+                std::filesystem::create_directory(dir / "a");
+                std::filesystem::create_directory(dir / "a" / "deep");
+                std::filesystem::create_directory(dir / "b");
+                FileIO::create(dir / "top.mov", FileMode::Write);
+                FileIO::create(dir / "notes.txt", FileMode::Write);
+                FileIO::create(dir / "a" / "one.mov", FileMode::Write);
+                FileIO::create(dir / "a" / "one.exr", FileMode::Write);
+                FileIO::create(dir / "a" / "deep" / "two.mov", FileMode::Write);
+                FileIO::create(dir / "b" / "three.mov", FileMode::Write);
+
+                DirListOptions options;
+                options.filter = "top";
+                auto dirEntries = dirList(dir, options);
+                FTK_CHECK(1 == dirEntries.size());
+                FTK_CHECK("top.mov" == dirEntries[0].path.getFileName());
+
+                options.filter = "*.mov";
+                dirEntries = dirList(dir, options);
+                FTK_CHECK(1 == dirEntries.size());
+                FTK_CHECK("top.mov" == dirEntries[0].path.getFileName());
+
+                // A directory that is entered is exempt from the filter --
+                // it is the route to the files -- and one at the last level
+                // is not, being a dead end. So "a" and "b" are listed and
+                // "deep", one level too far down to be entered, is not.
+                options.depth = 2;
+                dirEntries = dirList(dir, options);
+                FTK_CHECK(5 == dirEntries.size());
+                FTK_CHECK("a" == dirEntries[0].path.getFileName());
+                FTK_CHECK("one.mov" == dirEntries[1].path.getFileName());
+                FTK_CHECK("b" == dirEntries[2].path.getFileName());
+                FTK_CHECK("three.mov" == dirEntries[3].path.getFileName());
+                FTK_CHECK("top.mov" == dirEntries[4].path.getFileName());
+
+                options.depth = 3;
+                dirEntries = dirList(dir, options);
+                FTK_CHECK(7 == dirEntries.size());
+                FTK_CHECK("a" == dirEntries[0].path.getFileName());
+                FTK_CHECK("deep" == dirEntries[1].path.getFileName());
+                FTK_CHECK("two.mov" == dirEntries[2].path.getFileName());
+                FTK_CHECK("one.mov" == dirEntries[3].path.getFileName());
+                FTK_CHECK("b" == dirEntries[4].path.getFileName());
+                FTK_CHECK("three.mov" == dirEntries[5].path.getFileName());
+                FTK_CHECK("top.mov" == dirEntries[6].path.getFileName());
+
+                // A directory link is listed but not entered. Creating one
+                // can fail (Windows needs a privilege for it), and that is
+                // the platform's answer rather than a test failure.
+                std::error_code ec;
+                std::filesystem::create_directory_symlink(
+                    dir / "a", dir / "link", ec);
+                if (!ec)
+                {
+                    options.depth = 2;
+                    dirEntries = dirList(dir, options);
+                    FTK_CHECK(6 == dirEntries.size());
+                    size_t links = 0;
+                    for (const auto& entry : dirEntries)
+                    {
+                        if ("link" == entry.path.getFileName())
+                        {
+                            ++links;
+                            FTK_CHECK(entry.isDir);
+                        }
+                    }
+                    FTK_CHECK(1 == links);
+                }
+            }
         }
 
         void PathTest::_expandSeq()

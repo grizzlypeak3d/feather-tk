@@ -314,7 +314,14 @@ namespace ftk
     {
         DirListSort              sort         = DirListSort::Name;
         bool                     sortReverse  = false;
+
+        //! Case-insensitive match against the file name: a substring, or a
+        //! wildcard pattern when it contains "*" or "?". A directory that
+        //! is entered is exempt from the filter -- it is the route to the
+        //! files, not what is being looked for -- while one at the last
+        //! level is subject to it like anything else.
         std::string              filter;
+
         bool                     filterFiles  = false;
         std::vector<std::string> filterExt;
         bool                     seq          = true;
@@ -322,6 +329,13 @@ namespace ftk
         bool                     seqNegative  = true;
         size_t                   seqMaxDigits = 9;
         bool                     hidden       = false;
+
+        //! How many directory levels to list: 1 is the directory alone.
+        //! Deeper levels follow their directory's entry, each listed with
+        //! these same options, so the order is deterministic. Directory
+        //! links are listed but never entered, which also keeps a cycle of
+        //! links from listing forever.
+        int                      depth        = 1;
 
         FTK_CORE_API bool operator == (const DirListOptions&) const;
         FTK_CORE_API bool operator != (const DirListOptions&) const;

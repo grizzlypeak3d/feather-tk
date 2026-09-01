@@ -99,6 +99,14 @@ namespace ftk
         const std::string& substr,
         CaseCompare = CaseCompare::Sensitive);
 
+    //! Does a string match the wildcard pattern? "*" matches any run of
+    //! characters including an empty one, and "?" matches any single
+    //! character; the pattern has to cover the whole string.
+    FTK_CORE_API bool matchWildcard(
+        const std::string&,
+        const std::string& pattern,
+        CaseCompare = CaseCompare::Sensitive);
+
     //! Convert a regular string to a wide string.
     FTK_CORE_API std::wstring toWide(const std::string&);
 

@@ -758,7 +758,8 @@ namespace ftk
             seqExts == other.seqExts &&
             seqNegative == other.seqNegative &&
             seqMaxDigits == other.seqMaxDigits &&
-            hidden == other.hidden;
+            hidden == other.hidden &&
+            depth == other.depth;
     }
 
     bool DirListOptions::operator != (const DirListOptions& other) const
@@ -810,12 +811,20 @@ namespace ftk
                         toLower(path.getExt())) !=
                         options.filterExt.end();
                 }
-                if (keep && !options.filter.empty())
+                if (keep && !options.filter.empty() &&
+                    !(isDir && options.depth > 1))
                 {
-                    keep = contains(
-                        fileName,
-                        options.filter,
-                        CaseCompare::Insensitive);
+                    keep =
+                        options.filter.find_first_of("*?") !=
+                            std::string::npos ?
+                        matchWildcard(
+                            fileName,
+                            options.filter,
+                            CaseCompare::Insensitive) :
+                        contains(
+                            fileName,
+                            options.filter,
+                            CaseCompare::Insensitive);
                 }
                 if (keep && options.filterFiles && !isDir)
                 {
@@ -914,6 +923,35 @@ namespace ftk
             {
                 return a.isDir > b.isDir;
             });
+
+        // List the deeper levels, each directory's entries following its
+        // own. This happens after the sorting so the traversal order is
+        // the sorted order, the same every time.
+        if (options.depth > 1)
+        {
+            DirListOptions childOptions = options;
+            childOptions.depth = options.depth - 1;
+            std::vector<DirEntry> merged;
+            for (const auto& entry : out)
+            {
+                merged.push_back(entry);
+                std::error_code ec;
+                if (entry.isDir &&
+                    !std::filesystem::is_symlink(
+                        std::filesystem::u8path(entry.path.get()), ec) &&
+                    !ec)
+                {
+                    const auto children = dirList(
+                        entry.path.get(),
+                        childOptions);
+                    merged.insert(
+                        merged.end(),
+                        children.begin(),
+                        children.end());
+                }
+            }
+            out = std::move(merged);
+        }
 
         return out;
     }
@@ -1054,6 +1092,7 @@ namespace ftk
         json["SeqNegative"] = value.seqNegative;
         json["SeqMaxDigits"] = value.seqMaxDigits;
         json["Hidden"] = value.hidden;
+        json["Depth"] = value.depth;
     }
 
     void from_json(const nlohmann::json& json, PathOptions& value)
@@ -1074,5 +1113,10 @@ namespace ftk
         json.at("SeqNegative").get_to(value.seqNegative);
         json.at("SeqMaxDigits").get_to(value.seqMaxDigits);
         json.at("Hidden").get_to(value.hidden);
+        // Not required: the key postdates documents already written.
+        if (json.contains("Depth"))
+        {
+            json.at("Depth").get_to(value.depth);
+        }
     }
 }
