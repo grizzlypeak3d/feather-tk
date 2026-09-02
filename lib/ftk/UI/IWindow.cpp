@@ -41,6 +41,11 @@ namespace ftk
         "F16",
         "F32");
 
+    FTK_ENUM_IMPL(
+        CursorShape,
+        "Arrow",
+        "Crosshair");
+
     struct IWindow::Private
     {
         std::weak_ptr<App> app;
@@ -362,6 +367,9 @@ namespace ftk
     {
         return _p->cursorPos;
     }
+
+    void IWindow::setCursor(CursorShape)
+    {}
 
     bool IWindow::isDragDropActive() const
     {

@@ -33,6 +33,17 @@ namespace ftk
     const WindowBufferType windowBufferTypeDefault = WindowBufferType::U8;
 #endif // FTK_API_GL_4_1
 
+    //! Mouse cursor shapes.
+    enum class FTK_UI_API_TYPE CursorShape
+    {
+        Arrow,
+        Crosshair,
+
+        Count,
+        First = Arrow
+    };
+    FTK_ENUM(FTK_UI_API, CursorShape);
+
     //! Base class for windows.
     class FTK_UI_API_TYPE IWindow : public IWidget
     {
@@ -156,6 +167,10 @@ namespace ftk
 
         //! Get the cursor position.
         FTK_UI_API const V2I& getCursorPos() const;
+
+        //! Set the shape of the mouse cursor. The default implementation
+        //! does nothing, for windows with no cursor to show.
+        FTK_UI_API virtual void setCursor(CursorShape);
 
         //! Get whether a drag and drop is in progress. Drag events only
         //! reach the widget under the cursor, so a widget that reacts to a

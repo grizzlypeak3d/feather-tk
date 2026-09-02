@@ -18,6 +18,14 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
+
+#if defined(FTK_SDL2)
+#include <SDL2/SDL.h>
+#elif defined(FTK_SDL3)
+#include <SDL3/SDL.h>
+#endif // FTK_SDL2
+
+#include <map>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/FontSystem.h>
@@ -29,6 +37,9 @@ namespace ftk
         std::weak_ptr<Context> context;
 
         std::shared_ptr<gl::Window> window;
+
+        CursorShape cursor = CursorShape::Arrow;
+        std::map<CursorShape, SDL_Cursor*> sdlCursors;
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
@@ -115,6 +126,14 @@ namespace ftk
     Window::~Window()
     {
         FTK_P();
+        for (const auto& i : p.sdlCursors)
+        {
+#if defined(FTK_SDL2)
+            SDL_FreeCursor(i.second);
+#elif defined(FTK_SDL3)
+            SDL_DestroyCursor(i.second);
+#endif // FTK_SDL2
+        }
         p.window->makeCurrent();
         p.render.reset();
         p.buffer.reset();
@@ -174,6 +193,44 @@ namespace ftk
     void Window::raise()
     {
         _p->window->raise();
+    }
+
+    void Window::setCursor(CursorShape value)
+    {
+        FTK_P();
+        if (value == p.cursor)
+            return;
+        p.cursor = value;
+        // The SDL cursor is process wide, not per window: the shape set
+        // last wins wherever the pointer is. Callers set it from the
+        // widget the pointer is over, which keeps that honest.
+        const auto i = p.sdlCursors.find(value);
+        SDL_Cursor* cursor = nullptr;
+        if (i != p.sdlCursors.end())
+        {
+            cursor = i->second;
+        }
+        else
+        {
+#if defined(FTK_SDL2)
+            SDL_SystemCursor id = SDL_SYSTEM_CURSOR_ARROW;
+#elif defined(FTK_SDL3)
+            SDL_SystemCursor id = SDL_SYSTEM_CURSOR_DEFAULT;
+#endif // FTK_SDL2
+            switch (value)
+            {
+            case CursorShape::Crosshair:
+                id = SDL_SYSTEM_CURSOR_CROSSHAIR;
+                break;
+            default: break;
+            }
+            cursor = SDL_CreateSystemCursor(id);
+            p.sdlCursors[value] = cursor;
+        }
+        if (cursor)
+        {
+            SDL_SetCursor(cursor);
+        }
     }
 
     void Window::setTextInput(bool value)
