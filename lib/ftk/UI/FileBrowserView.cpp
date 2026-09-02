@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <map>
 #include <optional>
 
 namespace ftk
@@ -177,6 +178,15 @@ namespace ftk
                 {
                     _clearCurrent();
                 }
+                if (value.thumbnails != p.options.thumbnails)
+                {
+                    // The thumbnails were made for the old size, so they
+                    // do not carry over to the new one.
+                    for (auto& item : p.items)
+                    {
+                        item.thumbnailImage.reset();
+                    }
+                }
                 p.options = value;
                 _directoryUpdate();
             });
@@ -212,6 +222,13 @@ namespace ftk
 
     void FileBrowserView::reload()
     {
+        FTK_P();
+        // Reload is the refresh gesture, so the thumbnails are re-read
+        // along with the directory.
+        for (auto& item : p.items)
+        {
+            item.thumbnailImage.reset();
+        }
         _directoryUpdate();
     }
 
@@ -853,6 +870,20 @@ namespace ftk
     {
         FTK_P();
 
+        // The thumbnails that have already arrived move to the new rows,
+        // matched by path -- typing in the search box rebuilds the list on
+        // every key, and the rows that survive the filter should not flash
+        // empty and load again.
+        std::map<std::string, std::shared_ptr<Image> > thumbnailCarry;
+        for (size_t i = 0; i < p.items.size() && i < p.dirEntries.size(); ++i)
+        {
+            if (p.items[i].thumbnailImage)
+            {
+                thumbnailCarry[p.dirEntries[i].path.get()] =
+                    p.items[i].thumbnailImage;
+            }
+        }
+
         _cancelThumbnails();
         p.dirEntries.clear();
         p.items.clear();
@@ -924,6 +955,14 @@ namespace ftk
                     FileBrowserThumbnails::Off != p.options.thumbnails &&
                     !dirEntry.isDir &&
                     p.thumbnails->isSupported(dirEntry.path);
+                if (item.thumbnail)
+                {
+                    const auto j = thumbnailCarry.find(dirEntry.path.get());
+                    if (j != thumbnailCarry.end())
+                    {
+                        item.thumbnailImage = j->second;
+                    }
+                }
 
                 // File name.
                 item.text.push_back(dirEntry.path.getFileName());
