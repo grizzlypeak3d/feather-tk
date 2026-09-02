@@ -235,25 +235,36 @@ namespace ftk
             auto context = getContext();
             p.popup = ColorPopup::create(context, p.color);
             p.popup->open(getWindow(), getGeometry());
+            // The popup can outlive the swatch that opened it: the popup is
+            // owned by the window overlay, and the pick callback can rebuild
+            // the widgets around the swatch. The captures must not assume
+            // the swatch is still there.
+            auto weak = std::weak_ptr<ColorSwatch>(
+                std::dynamic_pointer_cast<ColorSwatch>(shared_from_this()));
             p.popup->setPressedCallback(
-                [this](const Color4F& value, bool pressed)
+                [weak](const Color4F& value, bool pressed)
                 {
-                    FTK_P();
-                    p.color = value;
-                    setDrawUpdate();
-                    if (p.callback)
+                    if (auto widget = weak.lock())
                     {
-                        p.callback(value);
-                    }
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(value, pressed);
+                        widget->_p->color = value;
+                        widget->setDrawUpdate();
+                        if (widget->_p->callback)
+                        {
+                            widget->_p->callback(value);
+                        }
+                        if (widget->_p->pressedCallback)
+                        {
+                            widget->_p->pressedCallback(value, pressed);
+                        }
                     }
                 });
             p.popup->setCloseCallback(
-                [this]
+                [weak]
                 {
-                    _p->popup.reset();
+                    if (auto widget = weak.lock())
+                    {
+                        widget->_p->popup.reset();
+                    }
                 });
         }
         else

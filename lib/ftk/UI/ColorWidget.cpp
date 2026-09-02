@@ -12,6 +12,7 @@
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ColorWidgetSystem.h>
+#include <ftk/UI/StackLayout.h>
 #include <ftk/UI/TabBar.h>
 
 #include <ftk/Core/Error.h>
@@ -623,6 +624,7 @@ namespace ftk
         std::shared_ptr<HSVColorWidget> hsvWidget;
         std::shared_ptr<PaletteColorWidget> paletteWidget;
         std::shared_ptr<TabBar> tabBar;
+        std::shared_ptr<StackLayout> stackLayout;
         std::shared_ptr<VerticalLayout> layout;
 
         std::function<void(const Color4F&)> callback;
@@ -653,6 +655,52 @@ namespace ftk
         p.layout->setSpacingRole(SizeRole::None);
         p.tabBar->setParent(p.layout);
         Divider::create(context, Orientation::Vertical, p.layout);
+
+        // All of the modes are created up front in a stack that sizes to
+        // the largest of them, so switching tabs does not resize the
+        // widget under the pointer.
+        p.stackLayout = StackLayout::create(context, p.layout);
+        p.rgbWidget = RGBColorWidget::create(context, p.stackLayout);
+        p.rgbWidget->setMarginRole(SizeRole::MarginInside);
+        p.hsvWidget = HSVColorWidget::create(context, p.stackLayout);
+        p.hsvWidget->setMarginRole(SizeRole::MarginInside);
+        p.paletteWidget = PaletteColorWidget::create(context, p.stackLayout);
+        if (auto system = context->getSystem<ColorWidgetSystem>())
+        {
+            p.paletteWidget->setColors(system->getPalette());
+        }
+
+        auto colorCallback = [this](const Color4F& value)
+        {
+            FTK_P();
+            p.color = value;
+            _colorUpdate();
+            if (p.callback)
+            {
+                p.callback(value);
+            }
+        };
+        auto colorPressedCallback = [this](const Color4F& value, bool pressed)
+        {
+            FTK_P();
+            p.color = value;
+            _colorUpdate();
+            if (p.pressedCallback)
+            {
+                p.pressedCallback(value, pressed);
+            }
+        };
+        p.rgbWidget->setCallback(colorCallback);
+        p.rgbWidget->setPressedCallback(colorPressedCallback);
+        p.hsvWidget->setCallback(colorCallback);
+        p.hsvWidget->setPressedCallback(colorPressedCallback);
+        p.paletteWidget->setCallback(
+            [colorCallback, colorPressedCallback](const Color4F& value)
+            {
+                colorCallback(value);
+                // No press to track: a palette pick is one event.
+                colorPressedCallback(value, false);
+            });
 
         _modeUpdate();
         _colorUpdate();
@@ -736,99 +784,7 @@ namespace ftk
     {
         FTK_P();
         p.tabBar->setCurrent(static_cast<int>(p.mode));
-        if (p.rgbWidget)
-        {
-            p.rgbWidget->setParent(nullptr);
-            p.rgbWidget.reset();
-        }
-        if (p.hsvWidget)
-        {
-            p.hsvWidget->setParent(nullptr);
-            p.hsvWidget.reset();
-        }
-        if (p.paletteWidget)
-        {
-            p.paletteWidget->setParent(nullptr);
-            p.paletteWidget.reset();
-        }
-        auto context = getContext();
-        switch (p.mode)
-        {
-        case ColorWidgetMode::RGB:
-            p.rgbWidget = RGBColorWidget::create(context, p.layout);
-            p.rgbWidget->setColor(p.color);
-            p.rgbWidget->setCallback(
-                [this](const Color4F& value)
-                {
-                    FTK_P();
-                    p.color = value;
-                    if (p.callback)
-                    {
-                        p.callback(value);
-                    }
-                });
-            p.rgbWidget->setPressedCallback(
-                [this](const Color4F& value, bool pressed)
-                {
-                    FTK_P();
-                    p.color = value;
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(value, pressed);
-                    }
-                });
-            p.rgbWidget->setMarginRole(SizeRole::MarginInside);
-            break;
-        case ColorWidgetMode::HSV:
-            p.hsvWidget = HSVColorWidget::create(context, p.layout);
-            p.hsvWidget->setColor(p.color);
-            p.hsvWidget->setCallback(
-                [this](const Color4F& value)
-                {
-                    FTK_P();
-                    p.color = value;
-                    if (p.callback)
-                    {
-                        p.callback(value);
-                    }
-                });
-            p.hsvWidget->setPressedCallback(
-                [this](const Color4F& value, bool pressed)
-                {
-                    FTK_P();
-                    p.color = value;
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(value, pressed);
-                    }
-                });
-            p.hsvWidget->setMarginRole(SizeRole::MarginInside);
-            break;
-        case ColorWidgetMode::Palette:
-            p.paletteWidget = PaletteColorWidget::create(context, p.layout);
-            if (auto system = context->getSystem<ColorWidgetSystem>())
-            {
-                p.paletteWidget->setColors(system->getPalette());
-            }
-            p.paletteWidget->setColor(p.color);
-            p.paletteWidget->setCallback(
-                [this](const Color4F& value)
-                {
-                    FTK_P();
-                    p.color = value;
-                    if (p.callback)
-                    {
-                        p.callback(value);
-                    }
-                    // No press to track: a palette pick is one event.
-                    if (p.pressedCallback)
-                    {
-                        p.pressedCallback(value, false);
-                    }
-                });
-            break;
-        default: break;
-        }
+        p.stackLayout->setCurrentIndex(static_cast<int>(p.mode));
     }
 
     void ColorWidget::_colorUpdate()
