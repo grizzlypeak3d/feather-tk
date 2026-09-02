@@ -118,6 +118,13 @@ namespace ftk
         // what scrolling out of view cancels.
         std::set<int> thumbnailRequests;
 
+        // The files that claimed a format but had no image in them. Learned
+        // per request, and remembered across the list rebuilding -- asking
+        // again on every search key holds a thumbnail's width open for a
+        // row that is never getting one, and the icons shuffle sideways
+        // while the answer comes back.
+        std::set<std::string> noThumbnail;
+
         struct SizeData
         {
             bool init = true;
@@ -165,7 +172,12 @@ namespace ftk
             model->observePath(),
             [this](const std::filesystem::path&)
             {
+                FTK_P();
                 _clearCurrent();
+                // The files without images belonged to the old directory;
+                // clearing here also keeps the set from growing without
+                // bound as directories are visited.
+                p.noThumbnail.clear();
                 _directoryUpdate();
             });
 
@@ -229,6 +241,7 @@ namespace ftk
         {
             item.thumbnailImage.reset();
         }
+        p.noThumbnail.clear();
         _directoryUpdate();
     }
 
@@ -369,6 +382,10 @@ namespace ftk
                     // the row back to its icon rather than leaving the room
                     // for a thumbnail that is not coming, and stop asking.
                     item.thumbnail = false;
+                    if (*i < static_cast<int>(p.dirEntries.size()))
+                    {
+                        p.noThumbnail.insert(p.dirEntries[*i].path.get());
+                    }
                 }
                 item.imageSize = itemImageSize(item, p.size.thumbnail);
                 i = p.thumbnailRequests.erase(i);
@@ -954,7 +971,9 @@ namespace ftk
                     p.thumbnails &&
                     FileBrowserThumbnails::Off != p.options.thumbnails &&
                     !dirEntry.isDir &&
-                    p.thumbnails->isSupported(dirEntry.path);
+                    p.thumbnails->isSupported(dirEntry.path) &&
+                    p.noThumbnail.find(dirEntry.path.get()) ==
+                        p.noThumbnail.end();
                 if (item.thumbnail)
                 {
                     const auto j = thumbnailCarry.find(dirEntry.path.get());
