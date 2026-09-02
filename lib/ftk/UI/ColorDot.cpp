@@ -19,6 +19,7 @@ namespace ftk
         {
             bool init = true;
             int diameter = 0;
+            int hit = 0;
             int border = 0;
         };
         SizeData size;
@@ -83,7 +84,9 @@ namespace ftk
     Size2I ColorDot::getSizeHint() const
     {
         FTK_P();
-        return Size2I(p.size.diameter, p.size.diameter);
+        // The hit box is bigger than the dot: the subtlety is visual, and
+        // must not shrink the click target with it.
+        return Size2I(p.size.hit, p.size.hit);
     }
 
     void ColorDot::sizeHintEvent(const SizeHintEvent& event)
@@ -97,8 +100,10 @@ namespace ftk
             // row without setting its height.
             const FontInfo fontInfo = event.style->getFont(
                 FontType::Regular, event.displayScale);
-            p.size.diameter =
-                event.fontSystem->getMetrics(fontInfo).lineHeight * .8F;
+            const int lineHeight =
+                event.fontSystem->getMetrics(fontInfo).lineHeight;
+            p.size.diameter = lineHeight * .8F;
+            p.size.hit = lineHeight;
             p.size.border = event.style->getSizeRole(
                 SizeRole::Border, event.displayScale);
         }
