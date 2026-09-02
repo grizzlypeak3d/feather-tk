@@ -12,6 +12,7 @@ set(HEADERS
     ColorSlider.h
     ColorSwatch.h
     ColorWidget.h
+    ColorWidgetSystem.h
     ComboBox.h
     ConfirmDialog.h
     DiagWidget.h
@@ -133,6 +134,7 @@ set(SOURCE
     ColorSlider.cpp
     ColorSwatch.cpp
     ColorWidget.cpp
+    ColorWidgetSystem.cpp
     ComboBox.cpp
     ComboBoxButton.cpp
     ComboBoxMenu.cpp

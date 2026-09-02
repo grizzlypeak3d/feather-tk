@@ -4,6 +4,7 @@
 #include <ftk/UI/Init.h>
 
 #include <ftk/UI/ClipboardSystem.h>
+#include <ftk/UI/ColorWidgetSystem.h>
 #include <ftk/UI/DialogSystem.h>
 #include <ftk/UI/FileBrowser.h>
 #include <ftk/UI/IconSystem.h>
@@ -31,6 +32,10 @@ namespace ftk
         if (!context->getSystem<ClipboardSystem>())
         {
             context->addSystem(ClipboardSystem::create(context));
+        }
+        if (!context->getSystem<ColorWidgetSystem>())
+        {
+            context->addSystem(ColorWidgetSystem::create(context));
         }
         if (!context->getSystem<DialogSystem>())
         {

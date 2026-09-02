@@ -11,6 +11,7 @@
 #include <ftk/UI/IntEdit.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/UI/ColorWidgetSystem.h>
 #include <ftk/UI/TabBar.h>
 
 #include <ftk/Core/Error.h>
@@ -446,10 +447,172 @@ namespace ftk
         p.sliders["A"]->setValue(p.color.a);
     }
 
+    struct PaletteColorWidget::Private
+    {
+        std::vector<Color4F> colors;
+        Color4F color;
+        std::function<void(const Color4F&)> callback;
+
+        struct SizeData
+        {
+            bool init = true;
+            int cell = 0;
+            int spacing = 0;
+            int margin = 0;
+            int border = 0;
+            Size2I sizeHint;
+        };
+        SizeData size;
+    };
+
+    namespace
+    {
+        //! The palette reads as two rows however many colors it holds.
+        const size_t paletteColumns = 5;
+    }
+
+    void PaletteColorWidget::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IMouseWidget::_init(context, "ftk::PaletteColorWidget", parent);
+        _setMousePressEnabled(true);
+    }
+
+    PaletteColorWidget::PaletteColorWidget() :
+        _p(new Private)
+    {}
+
+    PaletteColorWidget::~PaletteColorWidget()
+    {}
+
+    std::shared_ptr<PaletteColorWidget> PaletteColorWidget::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<PaletteColorWidget>(new PaletteColorWidget);
+        out->_init(context, parent);
+        return out;
+    }
+
+    const Color4F& PaletteColorWidget::getColor() const
+    {
+        return _p->color;
+    }
+
+    void PaletteColorWidget::setColor(const Color4F& value)
+    {
+        FTK_P();
+        if (value == p.color)
+            return;
+        p.color = value;
+        setDrawUpdate();
+    }
+
+    void PaletteColorWidget::setColors(const std::vector<Color4F>& value)
+    {
+        FTK_P();
+        if (value == p.colors)
+            return;
+        p.colors = value;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
+    void PaletteColorWidget::setCallback(
+        const std::function<void(const Color4F&)>& value)
+    {
+        _p->callback = value;
+    }
+
+    Box2I PaletteColorWidget::_cellRect(size_t index) const
+    {
+        FTK_P();
+        const Box2I& g = getGeometry();
+        const size_t column = index % paletteColumns;
+        const size_t row = index / paletteColumns;
+        return Box2I(
+            g.min.x + p.size.margin + column * (p.size.cell + p.size.spacing),
+            g.min.y + p.size.margin + row * (p.size.cell + p.size.spacing),
+            p.size.cell,
+            p.size.cell);
+    }
+
+    void PaletteColorWidget::sizeHintEvent(const SizeHintEvent& event)
+    {
+        IMouseWidget::sizeHintEvent(event);
+        FTK_P();
+        if (p.size.init)
+        {
+            p.size.init = false;
+            p.size.cell = event.style->getSizeRole(SizeRole::Swatch, event.displayScale);
+            p.size.spacing = event.style->getSizeRole(SizeRole::SpacingSmall, event.displayScale);
+            p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+        }
+        const size_t columns = std::min(p.colors.size(), paletteColumns);
+        const size_t rows = p.colors.empty() ?
+            0 : (p.colors.size() + paletteColumns - 1) / paletteColumns;
+        p.size.sizeHint = Size2I(
+            p.size.margin * 2 +
+            static_cast<int>(columns) * p.size.cell +
+            static_cast<int>(columns > 0 ? columns - 1 : 0) * p.size.spacing,
+            p.size.margin * 2 +
+            static_cast<int>(rows) * p.size.cell +
+            static_cast<int>(rows > 0 ? rows - 1 : 0) * p.size.spacing);
+    }
+
+    Size2I PaletteColorWidget::getSizeHint() const
+    {
+        return _p->size.sizeHint;
+    }
+
+    void PaletteColorWidget::drawEvent(
+        const Box2I& drawRect,
+        const DrawEvent& event)
+    {
+        IMouseWidget::drawEvent(drawRect, event);
+        FTK_P();
+        for (size_t i = 0; i < p.colors.size(); ++i)
+        {
+            const Box2I cell = _cellRect(i);
+            // The chosen color wears a border, so the palette says what is
+            // set as well as what can be.
+            if (p.colors[i] == p.color)
+            {
+                event.render->drawRect(
+                    margin(cell, p.size.border * 2),
+                    event.style->getColorRole(ColorRole::Text));
+            }
+            event.render->drawRect(cell, p.colors[i]);
+        }
+    }
+
+    void PaletteColorWidget::mousePressEvent(MouseClickEvent& event)
+    {
+        IMouseWidget::mousePressEvent(event);
+        FTK_P();
+        for (size_t i = 0; i < p.colors.size(); ++i)
+        {
+            if (contains(_cellRect(i), event.pos))
+            {
+                event.accept = true;
+                p.color = p.colors[i];
+                setDrawUpdate();
+                if (p.callback)
+                {
+                    p.callback(p.color);
+                }
+                break;
+            }
+        }
+    }
+
     FTK_ENUM_IMPL(
         ColorWidgetMode,
         "RGB",
-        "HSV");
+        "HSV",
+        "Palette");
 
     struct ColorWidget::Private
     {
@@ -458,6 +621,7 @@ namespace ftk
 
         std::shared_ptr<RGBColorWidget> rgbWidget;
         std::shared_ptr<HSVColorWidget> hsvWidget;
+        std::shared_ptr<PaletteColorWidget> paletteWidget;
         std::shared_ptr<TabBar> tabBar;
         std::shared_ptr<VerticalLayout> layout;
 
@@ -471,6 +635,12 @@ namespace ftk
     {
         IContainer::_init(context, "ftk::ColorWidget", parent);
         FTK_P();
+
+        // Open on the tab the user last chose, anywhere in the application.
+        if (auto system = context->getSystem<ColorWidgetSystem>())
+        {
+            p.mode = system->getMode();
+        }
 
         p.tabBar = TabBar::create(context);
         for (const auto& mode : getColorWidgetModeLabels())
@@ -490,7 +660,15 @@ namespace ftk
         p.tabBar->setCallback(
             [this](int value)
             {
-                _p->mode = static_cast<ColorWidgetMode>(value);
+                FTK_P();
+                p.mode = static_cast<ColorWidgetMode>(value);
+                if (auto context = getContext())
+                {
+                    if (auto system = context->getSystem<ColorWidgetSystem>())
+                    {
+                        system->setMode(p.mode);
+                    }
+                }
                 _modeUpdate();
             });
     }
@@ -568,6 +746,11 @@ namespace ftk
             p.hsvWidget->setParent(nullptr);
             p.hsvWidget.reset();
         }
+        if (p.paletteWidget)
+        {
+            p.paletteWidget->setParent(nullptr);
+            p.paletteWidget.reset();
+        }
         auto context = getContext();
         switch (p.mode)
         {
@@ -621,6 +804,29 @@ namespace ftk
                 });
             p.hsvWidget->setMarginRole(SizeRole::MarginInside);
             break;
+        case ColorWidgetMode::Palette:
+            p.paletteWidget = PaletteColorWidget::create(context, p.layout);
+            if (auto system = context->getSystem<ColorWidgetSystem>())
+            {
+                p.paletteWidget->setColors(system->getPalette());
+            }
+            p.paletteWidget->setColor(p.color);
+            p.paletteWidget->setCallback(
+                [this](const Color4F& value)
+                {
+                    FTK_P();
+                    p.color = value;
+                    if (p.callback)
+                    {
+                        p.callback(value);
+                    }
+                    // No press to track: a palette pick is one event.
+                    if (p.pressedCallback)
+                    {
+                        p.pressedCallback(value, false);
+                    }
+                });
+            break;
         default: break;
         }
     }
@@ -635,6 +841,10 @@ namespace ftk
         if (p.hsvWidget)
         {
             p.hsvWidget->setColor(p.color);
+        }
+        if (p.paletteWidget)
+        {
+            p.paletteWidget->setColor(p.color);
         }
     }
 }
