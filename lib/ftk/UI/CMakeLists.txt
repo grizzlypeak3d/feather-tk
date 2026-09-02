@@ -46,6 +46,7 @@ set(HEADERS
     IDialog.h
     InputDialog.h
     ItemButton.h
+    ItemButtonList.h
     IMenuPopup.h
     IMouseWidget.h
     IPopup.h
@@ -176,6 +177,7 @@ set(SOURCE
     IDialog.cpp
     InputDialog.cpp
     ItemButton.cpp
+    ItemButtonList.cpp
     IMenuPopup.cpp
     IMouseWidget.cpp
     IPopup.cpp

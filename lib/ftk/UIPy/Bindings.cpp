@@ -147,6 +147,7 @@ namespace ftk
             radioButton(m);
             recentFilesModel(m);
             rowLayout(m);
+            itemButtonList(m);
             screenshotTag(m);
             scrollArea(m);
             scrollBar(m);

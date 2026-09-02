@@ -4,6 +4,7 @@
 #include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/ItemButton.h>
+#include <ftk/UI/ItemButtonList.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
@@ -24,6 +25,19 @@ namespace ftk
                     py::arg("parent") = nullptr)
                 .def_property("widget", &ItemButton::getWidget, &ItemButton::setWidget)
                 .def("setFocusCallback", &ItemButton::setFocusCallback);
+        }
+
+        void itemButtonList(py::module_& m)
+        {
+            py::class_<ItemButtonList, VerticalLayout, std::shared_ptr<ItemButtonList> >(m, "ItemButtonList")
+                .def(
+                    py::init(&ItemButtonList::create),
+                    py::arg("context"),
+                    py::arg("parent") = nullptr)
+                .def_property("current", &ItemButtonList::getCurrent, &ItemButtonList::setCurrent)
+                .def("setCurrentCallback", &ItemButtonList::setCurrentCallback)
+                .def("setActivateCallback", &ItemButtonList::setActivateCallback)
+                .def("setDeleteCallback", &ItemButtonList::setDeleteCallback);
         }
     }
 }
