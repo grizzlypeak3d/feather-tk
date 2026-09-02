@@ -176,7 +176,7 @@ namespace ftk
             Vertex2(2) });
         event.render->drawMesh(
             mesh,
-            event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::Text));
+            event.style->getColorRole(showKeyFocus() ? ColorRole::KeyFocus : ColorRole::Text));
     }
 
     Box2I ColorIntSlider::_getSliderGeometry() const
@@ -493,7 +493,7 @@ namespace ftk
             Vertex2(2) });
         event.render->drawMesh(
             mesh,
-            event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::Text));
+            event.style->getColorRole(showKeyFocus() ? ColorRole::KeyFocus : ColorRole::Text));
     }
 
     Box2I ColorFloatSlider::_getSliderGeometry() const

@@ -528,7 +528,7 @@ namespace ftk
         event.render->drawMesh(
             border(gh, p.size.border),
             event.style->getColorRole(ColorRole::Border, enabled));
-        if (hasKeyFocus())
+        if (showKeyFocus())
         {
             event.render->drawRect(
                 gh,

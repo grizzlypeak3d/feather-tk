@@ -118,7 +118,7 @@ namespace ftk
         // Draw the key focus. Inside the geometry rather than around it:
         // the content's own margin leaves the edges clear, and the item
         // does not grow when it is focused.
-        if (hasKeyFocus())
+        if (showKeyFocus())
         {
             event.render->drawMesh(
                 border(g, _p->keyFocus),

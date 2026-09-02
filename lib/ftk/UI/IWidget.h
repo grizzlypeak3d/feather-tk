@@ -222,6 +222,12 @@ namespace ftk
         //! Does this widget have key focus?
         bool hasKeyFocus() const;
 
+        //! Get whether the key focus should be drawn: the widget has it,
+        //! and the window is showing it -- the focus follows the mouse
+        //! silently and is only drawn once the keyboard is used. Draw code
+        //! asks this; behavior asks hasKeyFocus().
+        FTK_UI_API bool showKeyFocus() const;
+
         //! Does this widget, or any of its children, have key focus?
         FTK_UI_API bool containsKeyFocus() const;
 

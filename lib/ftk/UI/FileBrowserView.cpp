@@ -522,7 +522,7 @@ namespace ftk
             const Box2I g2 = move(getRect(p.current->get()), g.min);
             event.render->drawMesh(
                 border(g2, p.size.keyFocus),
-                event.style->getColorRole(hasKeyFocus() ? ColorRole::KeyFocus : ColorRole::TextDisabled));
+                event.style->getColorRole(showKeyFocus() ? ColorRole::KeyFocus : ColorRole::TextDisabled));
         }
 
         // Draw the mouse hover.

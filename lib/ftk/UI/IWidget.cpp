@@ -343,6 +343,26 @@ namespace ftk
         }
     }
 
+    bool IWidget::showKeyFocus() const
+    {
+        bool out = _keyFocus;
+        if (out)
+        {
+            auto widget = _parent.lock();
+            std::shared_ptr<IWidget> top;
+            while (widget)
+            {
+                top = widget;
+                widget = widget->_parent.lock();
+            }
+            if (auto window = std::dynamic_pointer_cast<IWindow>(top))
+            {
+                out = window->isKeyFocusVisible();
+            }
+        }
+        return out;
+    }
+
     void IWidget::releaseKeyFocus()
     {
         if (_keyFocus)

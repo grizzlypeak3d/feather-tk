@@ -218,7 +218,7 @@ namespace ftk
         }
         event.render->drawRect(p.draw->g2, Color4F(0.F, 0.F, 0.F));
         event.render->drawRect(p.draw->g2, p.color);
-        if (hasKeyFocus())
+        if (showKeyFocus())
         {
             event.render->drawMesh(
                 border(p.draw->g, p.size.border * 2),

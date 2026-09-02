@@ -362,7 +362,7 @@ namespace ftk
         }
 
         // Draw the focus and border.
-        if (hasKeyFocus())
+        if (showKeyFocus())
         {
             event.render->drawMesh(
                 p.draw->keyFocus,

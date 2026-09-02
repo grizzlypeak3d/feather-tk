@@ -133,7 +133,7 @@ namespace ftk
         event.render->drawMesh(
             circle(center(g), p.size.diameter / 2 - p.size.border),
             p.color);
-        if (hasKeyFocus())
+        if (showKeyFocus())
         {
             event.render->drawMesh(
                 border(g, p.size.border * 2),

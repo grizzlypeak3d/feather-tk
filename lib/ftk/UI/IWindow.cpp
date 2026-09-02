@@ -77,6 +77,7 @@ namespace ftk
         std::shared_ptr<Menu> contextMenu;
 
         bool tooltipsEnabled = true;
+        bool keyFocusVisible = false;
         std::shared_ptr<Tooltip> tooltip;
         V2I tooltipPos;
         std::chrono::steady_clock::time_point tooltipTimer;
@@ -284,62 +285,62 @@ namespace ftk
         }
     }
 
-    std::shared_ptr<IWidget> IWindow::getNextKeyFocus(const std::shared_ptr<IWidget>& value)
+    std::vector<std::shared_ptr<IWidget> > IWindow::_getKeyFocusOrder()
     {
-        FTK_P();
-        std::shared_ptr<IWidget> out;
+        std::vector<std::shared_ptr<IWidget> > out;
         const auto& children = getChildren();
         if (!children.empty())
         {
-            std::list<std::shared_ptr<IWidget> > widgets;
-            _getKeyFocus(children.back(), widgets);
-            if (!widgets.empty())
-            {
-                auto i = std::find(widgets.begin(), widgets.end(), value);
-                if (i != widgets.end())
-                {
-                    ++i;
-                    if (i != widgets.end())
-                    {
-                        out = *i;
-                    }
-                }
-                if (!out)
-                {
-                    out = widgets.front();
-                }
-            }
+            std::list<std::shared_ptr<IWidget> > list;
+            _getKeyFocus(children.back(), list);
+            out.insert(out.end(), list.begin(), list.end());
         }
         return out;
     }
 
-    std::shared_ptr<IWidget> IWindow::getPrevKeyFocus(const std::shared_ptr<IWidget>& value)
+    std::shared_ptr<IWidget> IWindow::_stepKeyFocus(
+        const std::vector<std::shared_ptr<IWidget> >& widgets,
+        const std::shared_ptr<IWidget>& value,
+        bool prev,
+        size_t steps)
     {
-        FTK_P();
         std::shared_ptr<IWidget> out;
-        const auto& children = getChildren();
-        if (!children.empty())
+        const int size = static_cast<int>(widgets.size());
+        if (size > 0)
         {
-            std::list<std::shared_ptr<IWidget> > widgets;
-            _getKeyFocus(children.back(), widgets);
-            if (!widgets.empty())
+            int start = -1;
+            for (int i = 0; i < size; ++i)
             {
-                auto i = std::find(widgets.rbegin(), widgets.rend(), value);
-                if (i != widgets.rend())
+                if (widgets[i] == value)
                 {
-                    ++i;
-                    if (i != widgets.rend())
-                    {
-                        out = *i;
-                    }
-                }
-                if (!out)
-                {
-                    out = widgets.back();
+                    start = i;
+                    break;
                 }
             }
+            const int step = prev ? -1 : 1;
+            const int n = static_cast<int>(steps);
+            int j = start >= 0 ?
+                (start + step * n + size * n) % size :
+                (prev ? size - n : n - 1);
+            j = ((j % size) + size) % size;
+            out = widgets[j];
         }
         return out;
+    }
+
+    std::shared_ptr<IWidget> IWindow::getNextKeyFocus(const std::shared_ptr<IWidget>& value)
+    {
+        return _stepKeyFocus(_getKeyFocusOrder(), value, false, 1);
+    }
+
+    std::shared_ptr<IWidget> IWindow::getPrevKeyFocus(const std::shared_ptr<IWidget>& value)
+    {
+        return _stepKeyFocus(_getKeyFocusOrder(), value, true, 1);
+    }
+
+    bool IWindow::isKeyFocusVisible() const
+    {
+        return _p->keyFocusVisible;
     }
 
     bool IWindow::hasTextInput() const
@@ -677,6 +678,15 @@ namespace ftk
         int modifiers)
     {
         FTK_P();
+        // Using the keyboard shows the key focus; see isKeyFocusVisible().
+        if (press && !p.keyFocusVisible)
+        {
+            p.keyFocusVisible = true;
+            if (auto focus = p.keyFocus.lock())
+            {
+                focus->setDrawUpdate();
+            }
+        }
         if (p.mousePress.lock())
         {
             if (traceEvents() && press)
@@ -759,35 +769,15 @@ namespace ftk
                 // when the focus leaves its target -- and setKeyFocus()
                 // refuses such a widget. The walk continues past it in the
                 // same direction rather than dropping the focus.
-                std::vector<std::shared_ptr<IWidget> > widgets;
-                {
-                    std::list<std::shared_ptr<IWidget> > list;
-                    const auto& children = getChildren();
-                    if (!children.empty())
-                    {
-                        _getKeyFocus(children.back(), list);
-                    }
-                    widgets.insert(widgets.end(), list.begin(), list.end());
-                }
+                const auto widgets = _getKeyFocusOrder();
                 const auto keyFocus = p.keyFocus.lock();
-                const int size = static_cast<int>(widgets.size());
-                int start = -1;
-                for (int i = 0; i < size; ++i)
+                for (size_t i = 0; i < widgets.size(); ++i)
                 {
-                    if (widgets[i] == keyFocus)
-                    {
-                        start = i;
-                        break;
-                    }
-                }
-                const int step = prev ? -1 : 1;
-                for (int i = 0; i < size; ++i)
-                {
-                    int j = start >= 0 ?
-                        (start + step * (i + 1) + size * (i + 1)) % size :
-                        (prev ? (size - 1 - i) : i);
-                    const auto& candidate = widgets[j];
-                    if (candidate == keyFocus || !candidate->isEnabled())
+                    const auto candidate =
+                        _stepKeyFocus(widgets, keyFocus, prev, i + 1);
+                    if (!candidate ||
+                        candidate == keyFocus ||
+                        !candidate->isEnabled())
                     {
                         continue;
                     }
@@ -1025,6 +1015,15 @@ namespace ftk
     void IWindow::_mouseButton(MouseButton button, bool press, int modifiers)
     {
         FTK_P();
+        // A mouse press hides the key focus again; see isKeyFocusVisible().
+        if (press && p.keyFocusVisible)
+        {
+            p.keyFocusVisible = false;
+            if (auto focus = p.keyFocus.lock())
+            {
+                focus->setDrawUpdate();
+            }
+        }
         _closeTooltip();
         p.mouseClickEvent = MouseClickEvent(button, modifiers, p.cursorPos);
         if (press)

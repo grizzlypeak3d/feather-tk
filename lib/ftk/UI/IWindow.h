@@ -6,6 +6,8 @@
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
+#include <vector>
+
 #include <ftk/Core/Util.h>
 
 namespace ftk
@@ -124,6 +126,13 @@ namespace ftk
         FTK_UI_API void setKeyFocus(const std::shared_ptr<IWidget>&);
         FTK_UI_API std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
         FTK_UI_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
+
+        //! Get whether the key focus is shown. The focus follows every
+        //! interaction, but it is only drawn once the keyboard is used --
+        //! a mouse user is not shown focus rings they never asked for.
+        //! Using the keyboard shows the focus, and pressing a mouse
+        //! button hides it again.
+        FTK_UI_API bool isKeyFocusVisible() const;
 
         FTK_UI_API bool hasTextInput() const;
         FTK_UI_API virtual void setTextInput(bool);
@@ -310,6 +319,12 @@ namespace ftk
 
         bool _contextMenu(const std::list<std::shared_ptr<IWidget> >&);
 
+        std::vector<std::shared_ptr<IWidget> > _getKeyFocusOrder();
+        static std::shared_ptr<IWidget> _stepKeyFocus(
+            const std::vector<std::shared_ptr<IWidget> >&,
+            const std::shared_ptr<IWidget>&,
+            bool prev,
+            size_t steps);
         void _getKeyFocus(
             const std::shared_ptr<IWidget>&,
             std::list<std::shared_ptr<IWidget> >&);
