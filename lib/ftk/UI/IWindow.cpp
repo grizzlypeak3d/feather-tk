@@ -263,9 +263,23 @@ namespace ftk
             prev->keyFocusEvent(false);
             setDrawUpdate();
         }
-        if (value)
+        // Losing the focus can disable the widget about to receive it: a
+        // button that acts on the focused widget goes dim the moment the
+        // focus leaves its target. Re-check after the loss callback, so
+        // the focus does not land on what just became unfocusable -- and
+        // only finish the handoff this call started, in case the callback
+        // moved the focus itself.
+        auto next = p.keyFocus.lock();
+        if (next == value &&
+            next &&
+            (!next->isEnabled() || !next->acceptsKeyFocus()))
         {
-            value->keyFocusEvent(true);
+            p.keyFocus.reset();
+            next.reset();
+        }
+        if (next && next == value)
+        {
+            next->keyFocusEvent(true);
             setDrawUpdate();
         }
     }
