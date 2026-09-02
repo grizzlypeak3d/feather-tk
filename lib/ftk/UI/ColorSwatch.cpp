@@ -88,6 +88,9 @@ namespace ftk
         p.editable = value;
         _setMouseHoverEnabled(p.editable);
         _setMousePressEnabled(p.editable);
+        // An editable swatch is a button that opens the picker, so it
+        // takes the key focus the way a button does.
+        setAcceptsKeyFocus(p.editable);
     }
 
     void ColorSwatch::setCallback(const std::function<void(const Color4F&)>& value)
@@ -215,6 +218,12 @@ namespace ftk
         }
         event.render->drawRect(p.draw->g2, Color4F(0.F, 0.F, 0.F));
         event.render->drawRect(p.draw->g2, p.color);
+        if (hasKeyFocus())
+        {
+            event.render->drawMesh(
+                border(p.draw->g, p.size.border * 2),
+                event.style->getColorRole(ColorRole::KeyFocus));
+        }
     }
 
     void ColorSwatch::mousePressEvent(MouseClickEvent& event)
@@ -223,8 +232,39 @@ namespace ftk
         FTK_P();
         if (p.editable)
         {
+            takeKeyFocus();
             _showPopup();
         }
+    }
+
+    void ColorSwatch::keyPressEvent(KeyEvent& event)
+    {
+        IMouseWidget::keyPressEvent(event);
+        FTK_P();
+        if (!event.accept && p.editable && 0 == event.modifiers)
+        {
+            switch (event.key)
+            {
+            case Key::Return:
+                event.accept = true;
+                _showPopup();
+                break;
+            case Key::Escape:
+                if (hasKeyFocus())
+                {
+                    event.accept = true;
+                    releaseKeyFocus();
+                }
+                break;
+            default: break;
+            }
+        }
+    }
+
+    void ColorSwatch::keyReleaseEvent(KeyEvent& event)
+    {
+        IMouseWidget::keyReleaseEvent(event);
+        event.accept = true;
     }
 
     void ColorSwatch::_showPopup()

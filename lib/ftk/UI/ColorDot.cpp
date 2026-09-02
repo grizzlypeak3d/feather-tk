@@ -75,6 +75,10 @@ namespace ftk
             return;
         p.editable = value;
         _setMousePressEnabled(value);
+        // An editable dot is a button that opens the picker, so it takes
+        // the key focus the way a button does. A caller whose focus unit
+        // is a containing row opts out with setAcceptsKeyFocus(false).
+        setAcceptsKeyFocus(value);
     }
 
     void ColorDot::setCallback(const std::function<void(const Color4F&)>& value)
@@ -129,6 +133,12 @@ namespace ftk
         event.render->drawMesh(
             circle(center(g), p.size.diameter / 2 - p.size.border),
             p.color);
+        if (hasKeyFocus())
+        {
+            event.render->drawMesh(
+                border(g, p.size.border * 2),
+                event.style->getColorRole(ColorRole::KeyFocus));
+        }
     }
 
     void ColorDot::mousePressEvent(MouseClickEvent& event)
@@ -137,8 +147,39 @@ namespace ftk
         FTK_P();
         if (p.editable)
         {
+            takeKeyFocus();
             _showPopup();
         }
+    }
+
+    void ColorDot::keyPressEvent(KeyEvent& event)
+    {
+        IMouseWidget::keyPressEvent(event);
+        FTK_P();
+        if (!event.accept && p.editable && 0 == event.modifiers)
+        {
+            switch (event.key)
+            {
+            case Key::Return:
+                event.accept = true;
+                _showPopup();
+                break;
+            case Key::Escape:
+                if (hasKeyFocus())
+                {
+                    event.accept = true;
+                    releaseKeyFocus();
+                }
+                break;
+            default: break;
+            }
+        }
+    }
+
+    void ColorDot::keyReleaseEvent(KeyEvent& event)
+    {
+        IMouseWidget::keyReleaseEvent(event);
+        event.accept = true;
     }
 
     void ColorDot::_showPopup()
