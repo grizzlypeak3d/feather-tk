@@ -751,16 +751,52 @@ namespace ftk
             // Handle tab key navigation.
             if (!p.keyEvent.accept && Key::Tab == key)
             {
-                auto keyFocus = p.keyFocus.lock();
-                if (modifiers == static_cast<int>(KeyModifier::Shift))
+                const bool prev =
+                    modifiers == static_cast<int>(KeyModifier::Shift);
+                // The order is collected once and walked until a handoff is
+                // accepted: moving the focus can disable a widget on the
+                // way -- a button that acts on the focused widget goes dim
+                // when the focus leaves its target -- and setKeyFocus()
+                // refuses such a widget. The walk continues past it in the
+                // same direction rather than dropping the focus.
+                std::vector<std::shared_ptr<IWidget> > widgets;
                 {
-                    keyFocus = getPrevKeyFocus(keyFocus);
+                    std::list<std::shared_ptr<IWidget> > list;
+                    const auto& children = getChildren();
+                    if (!children.empty())
+                    {
+                        _getKeyFocus(children.back(), list);
+                    }
+                    widgets.insert(widgets.end(), list.begin(), list.end());
                 }
-                else
+                const auto keyFocus = p.keyFocus.lock();
+                const int size = static_cast<int>(widgets.size());
+                int start = -1;
+                for (int i = 0; i < size; ++i)
                 {
-                    keyFocus = getNextKeyFocus(keyFocus);
+                    if (widgets[i] == keyFocus)
+                    {
+                        start = i;
+                        break;
+                    }
                 }
-                setKeyFocus(keyFocus);
+                const int step = prev ? -1 : 1;
+                for (int i = 0; i < size; ++i)
+                {
+                    int j = start >= 0 ?
+                        (start + step * (i + 1) + size * (i + 1)) % size :
+                        (prev ? (size - 1 - i) : i);
+                    const auto& candidate = widgets[j];
+                    if (candidate == keyFocus || !candidate->isEnabled())
+                    {
+                        continue;
+                    }
+                    setKeyFocus(candidate);
+                    if (p.keyFocus.lock() == candidate)
+                    {
+                        break;
+                    }
+                }
             }
         }
         else if (auto widget = p.keyPress.lock())
