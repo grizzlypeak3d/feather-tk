@@ -13,6 +13,7 @@ set(SOURCE
     ClipboardSystem.cpp
     ColorPopup.cpp
     ColorSlider.cpp
+    ColorDot.cpp
     ColorSwatch.cpp
     ColorWidget.cpp
     ComboBox.cpp

@@ -8,6 +8,7 @@ set(HEADERS
     CheckBox.h
     ChoiceDialog.h
     ClipboardSystem.h
+    ColorDot.h
     ColorPopup.h
     ColorSlider.h
     ColorSwatch.h
@@ -130,6 +131,7 @@ set(SOURCE
     CheckBox.cpp
     ChoiceDialog.cpp
     ClipboardSystem.cpp
+    ColorDot.cpp
     ColorPopup.cpp
     ColorSlider.cpp
     ColorSwatch.cpp

@@ -84,6 +84,7 @@ namespace ftk
             checkBox(m);
             clipboardSystem(m);
             colorPopup(m);
+            colorDot(m);
             colorSwatch(m);
             colorWidget(m);
             comboBox(m);

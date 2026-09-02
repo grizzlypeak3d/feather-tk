@@ -19,6 +19,7 @@ namespace ftk
         void clipboardSystem(pybind11::module_&);
         void colorPopup(pybind11::module_&);
         void colorSlider(pybind11::module_&);
+        void colorDot(pybind11::module_&);
         void colorSwatch(pybind11::module_&);
         void colorWidget(pybind11::module_&);
         void comboBox(pybind11::module_&);
