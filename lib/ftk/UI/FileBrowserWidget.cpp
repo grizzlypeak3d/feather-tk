@@ -4,6 +4,7 @@
 #include <ftk/UI/FileBrowserPrivate.h>
 
 #include <ftk/UI/CheckBox.h>
+#include <ftk/UI/DialogSystem.h>
 #include <ftk/UI/ComboBox.h>
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/Label.h>
@@ -638,6 +639,43 @@ namespace ftk
         // directory that was chosen.
         Path path(appendSeparator(p.model->getPath().u8string()));
         path.setFileName(fileName);
+        // A name typed without an extension takes the one being filtered
+        // for, before the existence check below: completing it after the
+        // dialog would dodge the check.
+        const std::string& ext = p.model->getExt();
+        if (path.getExt().empty() && !ext.empty())
+        {
+            path.setExt(ext);
+        }
+        // Saving over a file that exists asks first. Cancel is the last
+        // button, so it is the safe default.
+        std::error_code ec;
+        if (std::filesystem::exists(std::filesystem::u8path(path.get()), ec))
+        {
+            if (auto context = getContext())
+            {
+                std::weak_ptr<FileBrowserWidget> weak(
+                    std::dynamic_pointer_cast<FileBrowserWidget>(
+                        shared_from_this()));
+                context->getSystem<DialogSystem>()->choice(
+                    "Replace File",
+                    Format("\"{0}\" already exists. Replace it?").
+                        arg(path.getFileName()),
+                    { "Replace", "Cancel" },
+                    getWindow(),
+                    [weak, path](int value)
+                    {
+                        if (0 == value)
+                        {
+                            if (auto widget = weak.lock())
+                            {
+                                widget->_accept({ path });
+                            }
+                        }
+                    });
+                return;
+            }
+        }
         _accept({ path });
     }
 
