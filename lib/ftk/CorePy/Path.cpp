@@ -125,7 +125,8 @@ namespace ftk
                 .def_property_readonly("isSeq", &Path::isSeq)
                 .def_property_readonly("isPartialSeq", &Path::isPartialSeq)
                 .def("getFrame", &Path::getFrame, py::arg("frame"), py::arg("dir") = false)
-                .def("getFrameRange", &Path::getFrameRange)
+                .def("getFrameRange", &Path::getFrameRange,
+                    py::arg("count") = false)
                 .def("seq", &Path::seq, py::arg("path"))
                 .def("addSeq", &Path::addSeq, py::arg("path"))
                 .def_property_readonly("isAbs", &Path::isAbs)

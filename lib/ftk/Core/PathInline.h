@@ -146,13 +146,18 @@ namespace ftk
             ((dir ? getDir() : std::string()) + getBase() + getExt());
     }
 
-    inline std::string Path::getFrameRange() const
+    inline std::string Path::getFrameRange(bool count) const
     {
-        return _frames.has_value() ?
+        std::string out = _frames.has_value() ?
             !_frames.value().equal() ?
                 toString(_frames.value().min(), _pad) + "-" + toString(_frames.value().max(), _pad) :
                 toString(_frames.value().min(), _pad) :
             std::string();
+        if (count && isPartialSeq())
+        {
+            out += " (" + std::to_string(getSeqSize()) + ")";
+        }
+        return out;
     }
 
     inline bool Path::seq(const Path& other) const

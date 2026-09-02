@@ -228,8 +228,9 @@ namespace ftk
         //! Get a file name with the given frame number.
         std::string getFrame(int64_t frame, bool dir = false) const;
 
-        //! Get the frame range string.
-        std::string getFrameRange() const;
+        //! Get the frame range string. When count is true a partial
+        //! sequence appends the number of frames, e.g. "0001-0020 (12)".
+        std::string getFrameRange(bool count = false) const;
 
         //! Get whether a path is part of this sequence.
         bool seq(const Path&) const;
