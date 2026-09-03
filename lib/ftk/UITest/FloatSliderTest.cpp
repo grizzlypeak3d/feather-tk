@@ -169,11 +169,9 @@ namespace ftk
                     MouseButton::Left);
                 app->tick();
                 FTK_CHECK(.25F == editSlider->getValue());
-                // At the default there is nothing to reset: the button
-                // disabling is the feedback that the reset worked.
-                FTK_CHECK(!resetButton->isEnabled(false));
-                popup->close();
-                app->tick();
+                // Reset is an action, so it dismisses the popup: the
+                // default is two clicks, open and reset.
+                FTK_CHECK(!popup->isOpen());
 
                 // The popup can be opened again after closing.
                 window->click(buttonCenter, MouseButton::Left);
@@ -187,6 +185,10 @@ namespace ftk
                     }
                 }
                 FTK_CHECK(popup);
+                // At the default there is nothing to reset.
+                resetButton = findButton(popup, "Reset");
+                FTK_CHECK(resetButton);
+                FTK_CHECK(!resetButton->isEnabled(false));
                 // The button toggles: clicking it while its popup is open
                 // closes the popup, the way a combo box does.
                 window->click(buttonCenter, MouseButton::Left);

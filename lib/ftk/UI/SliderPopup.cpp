@@ -80,12 +80,21 @@ namespace ftk
         setWidget(p.layout);
 
         std::weak_ptr<FloatModel> modelResetWeak(model);
+        std::weak_ptr<FloatSliderPopup> weak(
+            std::dynamic_pointer_cast<FloatSliderPopup>(shared_from_this()));
         p.resetButton->setClickedCallback(
-            [modelResetWeak]
+            [modelResetWeak, weak]
             {
                 if (auto model = modelResetWeak.lock())
                 {
                     model->setDefault();
+                }
+                // Reset is an action, so it dismisses the popup the way
+                // choosing from a menu does; the slider snapping to its
+                // tick is the feedback.
+                if (auto popup = weak.lock())
+                {
+                    popup->close();
                 }
             });
 
@@ -202,12 +211,21 @@ namespace ftk
         setWidget(p.layout);
 
         std::weak_ptr<DoubleModel> modelResetWeak(model);
+        std::weak_ptr<DoubleSliderPopup> weak(
+            std::dynamic_pointer_cast<DoubleSliderPopup>(shared_from_this()));
         p.resetButton->setClickedCallback(
-            [modelResetWeak]
+            [modelResetWeak, weak]
             {
                 if (auto model = modelResetWeak.lock())
                 {
                     model->setDefault();
+                }
+                // Reset is an action, so it dismisses the popup the way
+                // choosing from a menu does; the slider snapping to its
+                // tick is the feedback.
+                if (auto popup = weak.lock())
+                {
+                    popup->close();
                 }
             });
 
@@ -328,12 +346,21 @@ namespace ftk
         setWidget(p.layout);
 
         std::weak_ptr<IntModel> modelResetWeak(model);
+        std::weak_ptr<IntSliderPopup> weak(
+            std::dynamic_pointer_cast<IntSliderPopup>(shared_from_this()));
         p.resetButton->setClickedCallback(
-            [modelResetWeak]
+            [modelResetWeak, weak]
             {
                 if (auto model = modelResetWeak.lock())
                 {
                     model->setDefault();
+                }
+                // Reset is an action, so it dismisses the popup the way
+                // choosing from a menu does; the slider snapping to its
+                // tick is the feedback.
+                if (auto popup = weak.lock())
+                {
+                    popup->close();
                 }
             });
 
