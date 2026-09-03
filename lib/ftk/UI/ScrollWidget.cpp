@@ -499,17 +499,16 @@ namespace ftk
         FTK_P();
         if (p.scrollEventsEnabled)
         {
-            event.accept = true;
-            int lineStep = p.lineStep * p.size.displayScale;
-            V2I scrollPos = getScrollPos();
             // Shift turns the wheel sideways, the usual convention -- the
             // horizontal scroll bar can be a long way from the content.
             const bool shift =
                 event.modifiers & static_cast<int>(KeyModifier::Shift);
+            float dx = 0.F;
+            float dy = 0.F;
             switch (p.scrollArea->getScrollType())
             {
             case ScrollType::Horizontal:
-                scrollPos.x -= event.value.y * lineStep;
+                dx = event.value.y;
                 break;
             default:
                 if (shift)
@@ -517,20 +516,39 @@ namespace ftk
                     // macOS turns the wheel sideways itself, delivering the
                     // delta on x with y zero; other platforms leave it on y.
                     // Either way it means horizontal.
-                    const float d = event.value.x != 0.F ?
-                        event.value.x :
-                        event.value.y;
-                    scrollPos.x -= d * lineStep;
+                    dx = event.value.x != 0.F ? event.value.x : event.value.y;
                 }
                 else
                 {
                     // A trackpad scrolls both axes at once.
-                    scrollPos.x -= event.value.x * lineStep;
-                    scrollPos.y -= event.value.y * lineStep;
+                    dx = event.value.x;
+                    dy = event.value.y;
                 }
                 break;
             }
-            setScrollPos(scrollPos);
+
+            // The wheel is only claimed for an axis that can scroll: a
+            // widget whose content fits passes the event to the scroll
+            // widget above it, so the text sections of a tool do not eat
+            // the panel's own scrolling.
+            const ScrollInfo info = getScrollInfo();
+            const bool canX = info.scrollSize.w > info.viewport.w();
+            const bool canY = info.scrollSize.h > info.viewport.h();
+            if ((canX && dx != 0.F) || (canY && dy != 0.F))
+            {
+                event.accept = true;
+                const int lineStep = p.lineStep * p.size.displayScale;
+                V2I scrollPos = getScrollPos();
+                if (canX)
+                {
+                    scrollPos.x -= dx * lineStep;
+                }
+                if (canY)
+                {
+                    scrollPos.y -= dy * lineStep;
+                }
+                setScrollPos(scrollPos);
+            }
         }
     }
 
