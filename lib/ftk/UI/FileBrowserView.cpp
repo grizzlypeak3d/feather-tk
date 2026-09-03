@@ -516,13 +516,16 @@ namespace ftk
         }
 
         // Draw the current state. Over the selection: with several selected
-        // this is the one the keyboard is on, which the fill cannot say.
-        if (p.current->get() != -1)
+        // this is the one the keyboard is on, which the fill cannot say --
+        // and only while the keyboard is in use, like the other lists. A
+        // clicked item is the selection, which the fill already says; a
+        // dimmed ring beside it read as a stale outline.
+        if (p.current->get() != -1 && showKeyFocus())
         {
             const Box2I g2 = move(getRect(p.current->get()), g.min);
             event.render->drawMesh(
                 border(g2, p.size.keyFocus),
-                event.style->getColorRole(showKeyFocus() ? ColorRole::KeyFocus : ColorRole::TextDisabled));
+                event.style->getColorRole(ColorRole::KeyFocus));
         }
 
         // Draw the mouse hover.
