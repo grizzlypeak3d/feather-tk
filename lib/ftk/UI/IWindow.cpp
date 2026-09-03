@@ -348,12 +348,12 @@ namespace ftk
         return _p->keyFocusVisible;
     }
 
-    void IWindow::hideKeyFocus()
+    void IWindow::setKeyFocusVisible(bool value)
     {
         FTK_P();
-        if (p.keyFocusVisible)
+        if (value != p.keyFocusVisible)
         {
-            p.keyFocusVisible = false;
+            p.keyFocusVisible = value;
             if (auto focus = p.keyFocus.lock())
             {
                 focus->setDrawUpdate();

@@ -3,6 +3,8 @@
 
 #include <ftk/UI/IDialog.h>
 
+#include <ftk/UI/IButton.h>
+
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/IWindow.h>
@@ -100,10 +102,14 @@ namespace ftk
         p.open = true;
         p.restoreFocus = window->getKeyFocus();
         window->setKeyFocus(nullptr);
-        // Each open starts as the mouse left it: the shortcut that opened
-        // the dialog is a command, not a navigation, and a ring inherited
-        // from the previous visit reads as an inconsistency.
-        window->hideKeyFocus();
+        // The ring on a default action is the promise that Return presses
+        // it, so a dialog whose named focus is a button opens showing the
+        // focus. Anything else -- a list, a view -- opens as the mouse
+        // left it, whatever the keyboard was doing in the previous visit:
+        // a ring there says keyboard navigation nobody asked for, and Tab
+        // brings it back.
+        window->setKeyFocusVisible(
+            std::dynamic_pointer_cast<IButton>(getKeyFocus()) != nullptr);
         setParent(window);
         _takeKeyFocus();
     }
