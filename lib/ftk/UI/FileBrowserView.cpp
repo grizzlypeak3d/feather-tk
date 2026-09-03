@@ -842,7 +842,7 @@ namespace ftk
                 // only closes the browser once the list is no longer holding
                 // it. Closing on the first press would leave no way to put
                 // the focus down.
-                if (hasKeyFocus())
+                if (hasKeyFocus() && showKeyFocus())
                 {
                     event.accept = true;
                     releaseKeyFocus();

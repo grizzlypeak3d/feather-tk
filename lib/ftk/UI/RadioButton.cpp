@@ -224,7 +224,7 @@ namespace ftk
                 click();
                 break;
             case Key::Escape:
-                if (hasKeyFocus())
+                if (hasKeyFocus() && showKeyFocus())
                 {
                     event.accept = true;
                     releaseKeyFocus();

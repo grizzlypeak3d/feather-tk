@@ -277,8 +277,11 @@ namespace ftk
                 setCurrent(static_cast<int>(p.items.size()) - 1);
                 break;
             case Key::Escape:
-                event.accept = true;
-                releaseKeyFocus();
+                if (hasKeyFocus() && showKeyFocus())
+                {
+                    event.accept = true;
+                    releaseKeyFocus();
+                }
                 break;
             default: break;
             }

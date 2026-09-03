@@ -225,7 +225,10 @@ namespace ftk
         //! Get whether the key focus should be drawn: the widget has it,
         //! and the window is showing it -- the focus follows the mouse
         //! silently and is only drawn once the keyboard is used. Draw code
-        //! asks this; behavior asks hasKeyFocus().
+        //! asks this; behavior asks hasKeyFocus(). The exception is the
+        //! Escape that releases the focus, which asks this too: releasing
+        //! a focus nobody can see reads as the key doing nothing, and eats
+        //! the press that was meant to close a popup.
         FTK_UI_API bool showKeyFocus() const;
 
         //! Does this widget, or any of its children, have key focus?

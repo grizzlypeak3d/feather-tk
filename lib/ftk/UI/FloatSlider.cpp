@@ -272,7 +272,7 @@ namespace ftk
                 p.model->setValue(p.model->getRange().max());
                 break;
             case Key::Escape:
-                if (hasKeyFocus())
+                if (hasKeyFocus() && showKeyFocus())
                 {
                     event.accept = true;
                     releaseKeyFocus();

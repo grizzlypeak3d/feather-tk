@@ -165,7 +165,7 @@ namespace ftk
                 _showPopup();
                 break;
             case Key::Escape:
-                if (hasKeyFocus())
+                if (hasKeyFocus() && showKeyFocus())
                 {
                     event.accept = true;
                     releaseKeyFocus();
