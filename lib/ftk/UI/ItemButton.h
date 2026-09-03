@@ -64,5 +64,39 @@ namespace ftk
         FTK_PRIVATE();
     };
 
+    //! A group of controls inside an item row: the mouse stops here, so
+    //! the gaps between the controls go quiet instead of hovering the
+    //! item underneath, and a click that misses a control does nothing
+    //! rather than acting as a click on the item.
+    class FTK_UI_API_TYPE ItemControls : public IMouseWidget
+    {
+    protected:
+        void _init(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent);
+
+        ItemControls();
+
+    public:
+        FTK_UI_API virtual ~ItemControls();
+
+        //! Create a new widget.
+        FTK_UI_API static std::shared_ptr<ItemControls> create(
+            const std::shared_ptr<Context>&,
+            const std::shared_ptr<IWidget>& parent = nullptr);
+
+        //! Get the widget.
+        FTK_UI_API const std::shared_ptr<IWidget>& getWidget() const;
+
+        //! Set the widget.
+        FTK_UI_API void setWidget(const std::shared_ptr<IWidget>&);
+
+        FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
+
+    private:
+        FTK_PRIVATE();
+    };
+
     ///@}
 }

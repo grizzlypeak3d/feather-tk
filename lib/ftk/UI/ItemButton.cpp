@@ -238,4 +238,71 @@ namespace ftk
         IButton::keyReleaseEvent(event);
         event.accept = true;
     }
+
+    struct ItemControls::Private
+    {
+        std::shared_ptr<IWidget> widget;
+    };
+
+    void ItemControls::_init(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        IMouseWidget::_init(context, "ftk::ItemControls", parent);
+        // The children take their own events first; what reaches this
+        // widget is the gaps, which stop here.
+        _setMouseHoverEnabled(true);
+        _setMousePressEnabled(true);
+    }
+
+    ItemControls::ItemControls() :
+        _p(new Private)
+    {}
+
+    ItemControls::~ItemControls()
+    {}
+
+    std::shared_ptr<ItemControls> ItemControls::create(
+        const std::shared_ptr<Context>& context,
+        const std::shared_ptr<IWidget>& parent)
+    {
+        auto out = std::shared_ptr<ItemControls>(new ItemControls);
+        out->_init(context, parent);
+        return out;
+    }
+
+    const std::shared_ptr<IWidget>& ItemControls::getWidget() const
+    {
+        return _p->widget;
+    }
+
+    void ItemControls::setWidget(const std::shared_ptr<IWidget>& value)
+    {
+        FTK_P();
+        if (p.widget)
+        {
+            p.widget->setParent(nullptr);
+        }
+        p.widget = value;
+        if (p.widget)
+        {
+            p.widget->setParent(shared_from_this());
+        }
+    }
+
+    Size2I ItemControls::getSizeHint() const
+    {
+        FTK_P();
+        return p.widget ? p.widget->getSizeHint() : Size2I();
+    }
+
+    void ItemControls::setGeometry(const Box2I& value)
+    {
+        IMouseWidget::setGeometry(value);
+        FTK_P();
+        if (p.widget)
+        {
+            p.widget->setGeometry(value);
+        }
+    }
 }

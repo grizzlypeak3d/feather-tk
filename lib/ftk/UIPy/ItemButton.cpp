@@ -3,6 +3,7 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/UI/IMouseWidget.h>
 #include <ftk/UI/ItemButton.h>
 #include <ftk/UI/ItemButtonList.h>
 
@@ -27,6 +28,13 @@ namespace ftk
                 .def("setFocusCallback", &ItemButton::setFocusCallback)
                 .def("setDragDropDataCallback", &ItemButton::setDragDropDataCallback)
                 .def("setDragDropCursorCallback", &ItemButton::setDragDropCursorCallback);
+
+            py::class_<ItemControls, IMouseWidget, std::shared_ptr<ItemControls> >(m, "ItemControls")
+                .def(
+                    py::init(&ItemControls::create),
+                    py::arg("context"),
+                    py::arg("parent") = nullptr)
+                .def_property("widget", &ItemControls::getWidget, &ItemControls::setWidget);
         }
 
         void itemButtonList(py::module_& m)
