@@ -169,6 +169,9 @@ namespace ftk
                     MouseButton::Left);
                 app->tick();
                 FTK_CHECK(.25F == editSlider->getValue());
+                // At the default there is nothing to reset: the button
+                // disabling is the feedback that the reset worked.
+                FTK_CHECK(!resetButton->isEnabled(false));
                 popup->close();
                 app->tick();
 
@@ -184,8 +187,13 @@ namespace ftk
                     }
                 }
                 FTK_CHECK(popup);
-                popup->close();
+                // The mouse put the focus down invisibly on the button that
+                // opened the popup; Escape must close the popup on the first
+                // press rather than silently releasing a focus nobody can
+                // see.
+                window->keyPress(Key::Escape);
                 app->tick();
+                FTK_CHECK(!popup->isOpen());
 
                 // Dragging a soft ranged slider past its ends clamps at
                 // the range instead of extending it; extending on drag fed

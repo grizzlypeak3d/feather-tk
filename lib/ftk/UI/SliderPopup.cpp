@@ -21,6 +21,7 @@ namespace ftk
         std::shared_ptr<FloatEdit> maxEdit;
         std::shared_ptr<VerticalLayout> layout;
         std::shared_ptr<Observer<RangeF> > rangeObserver;
+        std::shared_ptr<Observer<float> > valueObserver;
     };
 
     void FloatSliderPopup::_init(
@@ -36,7 +37,21 @@ namespace ftk
             "Reset to the default value.\n"
             "\n"
             "Double clicking the slider also resets it.");
-        p.resetButton->setEnabled(model->hasDefault());
+        // Reset earns its click: at the default there is nothing to
+        // reset, and the button disabling right after a reset is the
+        // feedback that it worked.
+        std::weak_ptr<FloatModel> modelValueWeak(model);
+        p.valueObserver = Observer<float>::create(
+            model->observeValue(),
+            [this, modelValueWeak](float value)
+            {
+                if (auto model = modelValueWeak.lock())
+                {
+                    _p->resetButton->setEnabled(
+                        model->hasDefault() &&
+                        value != model->getDefault());
+                }
+            });
 
         // The edits get their own models so the range being edited does
         // not constrain what can be typed into them.
@@ -128,6 +143,7 @@ namespace ftk
         std::shared_ptr<DoubleEdit> maxEdit;
         std::shared_ptr<VerticalLayout> layout;
         std::shared_ptr<Observer<RangeD> > rangeObserver;
+        std::shared_ptr<Observer<double> > valueObserver;
     };
 
     void DoubleSliderPopup::_init(
@@ -143,7 +159,21 @@ namespace ftk
             "Reset to the default value.\n"
             "\n"
             "Double clicking the slider also resets it.");
-        p.resetButton->setEnabled(model->hasDefault());
+        // Reset earns its click: at the default there is nothing to
+        // reset, and the button disabling right after a reset is the
+        // feedback that it worked.
+        std::weak_ptr<DoubleModel> modelValueWeak(model);
+        p.valueObserver = Observer<double>::create(
+            model->observeValue(),
+            [this, modelValueWeak](double value)
+            {
+                if (auto model = modelValueWeak.lock())
+                {
+                    _p->resetButton->setEnabled(
+                        model->hasDefault() &&
+                        value != model->getDefault());
+                }
+            });
 
         // The edits get their own models so the range being edited does
         // not constrain what can be typed into them.
@@ -235,6 +265,7 @@ namespace ftk
         std::shared_ptr<IntEdit> maxEdit;
         std::shared_ptr<VerticalLayout> layout;
         std::shared_ptr<Observer<RangeI> > rangeObserver;
+        std::shared_ptr<Observer<int> > valueObserver;
     };
 
     void IntSliderPopup::_init(
@@ -250,7 +281,21 @@ namespace ftk
             "Reset to the default value.\n"
             "\n"
             "Double clicking the slider also resets it.");
-        p.resetButton->setEnabled(model->hasDefault());
+        // Reset earns its click: at the default there is nothing to
+        // reset, and the button disabling right after a reset is the
+        // feedback that it worked.
+        std::weak_ptr<IntModel> modelValueWeak(model);
+        p.valueObserver = Observer<int>::create(
+            model->observeValue(),
+            [this, modelValueWeak](int value)
+            {
+                if (auto model = modelValueWeak.lock())
+                {
+                    _p->resetButton->setEnabled(
+                        model->hasDefault() &&
+                        value != model->getDefault());
+                }
+            });
 
         // The edits get their own models so the range being edited does
         // not constrain what can be typed into them.
