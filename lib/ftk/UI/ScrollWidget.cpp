@@ -514,7 +514,13 @@ namespace ftk
             default:
                 if (shift)
                 {
-                    scrollPos.x -= event.value.y * lineStep;
+                    // macOS turns the wheel sideways itself, delivering the
+                    // delta on x with y zero; other platforms leave it on y.
+                    // Either way it means horizontal.
+                    const float d = event.value.x != 0.F ?
+                        event.value.x :
+                        event.value.y;
+                    scrollPos.x -= d * lineStep;
                 }
                 else
                 {
