@@ -187,6 +187,22 @@ namespace ftk
                     }
                 }
                 FTK_CHECK(popup);
+                // The button toggles: clicking it while its popup is open
+                // closes the popup, the way a combo box does.
+                window->click(buttonCenter, MouseButton::Left);
+                app->tick();
+                FTK_CHECK(!popup->isOpen());
+                window->click(buttonCenter, MouseButton::Left);
+                app->tick();
+                popup.reset();
+                for (const auto& child : window->getChildren())
+                {
+                    if (auto tmp = std::dynamic_pointer_cast<FloatSliderPopup>(child))
+                    {
+                        popup = tmp;
+                    }
+                }
+                FTK_CHECK(popup);
                 // The mouse put the focus down invisibly on the button that
                 // opened the popup; Escape must close the popup on the first
                 // press rather than silently releasing a focus nobody can

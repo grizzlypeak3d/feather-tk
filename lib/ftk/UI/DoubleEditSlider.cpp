@@ -107,8 +107,16 @@ namespace ftk
     void DoubleEditSlider::_showPopup()
     {
         FTK_P();
+        // The button toggles, the way a combo box does: the press falls
+        // through the open popup to the button, and the click closes it.
+        if (p.popup)
+        {
+            p.popup->close();
+            p.popup.reset();
+            return;
+        }
         auto context = getContext();
-        if (context && !p.popup)
+        if (context)
         {
             p.popup = DoubleSliderPopup::create(context, p.model);
             std::weak_ptr<DoubleEditSlider> weak(
