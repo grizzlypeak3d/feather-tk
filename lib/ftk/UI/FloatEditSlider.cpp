@@ -120,7 +120,8 @@ namespace ftk
                         widget->_p->popup.reset();
                     }
                 });
-            p.popup->open(getWindow(), getGeometry());
+            // Under the button that opened it, not the whole slider.
+            p.popup->open(getWindow(), p.popupButton->getGeometry());
         }
     }
 
