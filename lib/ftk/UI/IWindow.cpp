@@ -1062,6 +1062,7 @@ namespace ftk
                     arg(p.cursorPos.x).
                     arg(p.cursorPos.y));
             }
+            const auto focusBefore = p.keyFocus.lock();
             auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
             auto i = widgets.begin();
             for (; i != widgets.end(); ++i)
@@ -1076,6 +1077,38 @@ namespace ftk
                 if (p.mouseClickEvent.accept)
                 {
                     p.mousePress = *i;
+                    // The press moves the key focus with it: a press handler
+                    // that wants the focus somewhere has put it there by now
+                    // -- on itself, or on the menu it opened -- and pressing
+                    // anything else sends the focus away. The focus is not
+                    // drawn for the mouse, so leaving it where it was parks
+                    // it invisibly on the last value widget clicked, which
+                    // then answers every arrow key however long ago that
+                    // click was. Pressing inside the focused widget keeps
+                    // it: clicking a row of a focused list is using the
+                    // list.
+                    if (auto focus = p.keyFocus.lock();
+                        focus && focus == focusBefore)
+                    {
+                        bool inside = false;
+                        for (auto widget = *i; widget;
+                            widget = widget->getParent())
+                        {
+                            if (widget == focus)
+                            {
+                                inside = true;
+                                break;
+                            }
+                        }
+                        if (!inside)
+                        {
+                            if (traceEvents())
+                            {
+                                _trace("    key focus moved away by the press");
+                            }
+                            setKeyFocus(nullptr);
+                        }
+                    }
                     break;
                 }
             }

@@ -5,6 +5,9 @@
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/ComboBox.h>
+#include <ftk/UI/ItemButton.h>
+#include <ftk/UI/ItemButtonList.h>
+#include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
 
@@ -80,6 +83,73 @@ namespace ftk
                 app->tick();
                 app->setDisplayScale(1.F);
                 app->tick();
+            }
+
+            // A clicked combo box takes the key focus, and the focus used to
+            // stay parked there -- invisibly, since the focus only draws for
+            // the keyboard -- answering every arrow key meant for whatever
+            // the cursor was over. A press now moves the focus with it, so
+            // clicking anything else sends the focus away and the arrows
+            // fall through to the list under the cursor.
+            {
+                std::vector<std::string> argv;
+                argv.push_back("ComboBoxTest");
+                auto app = App::create(
+                    _context,
+                    argv,
+                    "ComboBoxTest",
+                    "Combo box test.");
+                auto window = Window::create(_context, app, "ComboBoxTest");
+                auto layout = VerticalLayout::create(_context, window);
+                layout->setMarginRole(SizeRole::MarginLarge);
+                std::vector<ComboBoxItem> items =
+                {
+                    ComboBoxItem("One"),
+                    ComboBoxItem("Two"),
+                    ComboBoxItem("Three")
+                };
+                auto combo = ComboBox::create(_context, items, layout);
+                auto list = ItemButtonList::create(_context, layout);
+                for (int i = 0; i < 3; ++i)
+                {
+                    auto item = ItemButton::create(_context, list);
+                    item->setAcceptsKeyFocus(false);
+                    item->setWidget(Label::create(_context, "Row"));
+                }
+                window->show();
+                window->layout(Size2I(1280, 960));
+                app->tick();
+
+                // Click the combo box, which opens its menu and takes the
+                // key focus; click again to close the menu.
+                const Box2I& comboG = combo->getGeometry();
+                const V2I comboCenter(
+                    comboG.min.x + comboG.w() / 2,
+                    comboG.min.y + comboG.h() / 2);
+                window->click(comboCenter);
+                app->tick();
+                window->click(comboCenter);
+                app->tick();
+                FTK_CHECK(combo->hasKeyFocus());
+
+                // Click a row: the row accepts the press without wanting
+                // the focus, and the focus goes away rather than staying
+                // on the combo box.
+                const auto rows = list->getItems();
+                const Box2I& rowG = rows[0]->getGeometry();
+                window->click(V2I(
+                    rowG.min.x + rowG.w() / 2,
+                    rowG.min.y + rowG.h() / 2));
+                app->tick();
+                FTK_CHECK(!combo->hasKeyFocus());
+
+                // The arrows over the list now reach the list, not the
+                // combo box.
+                const int comboIndex = combo->getCurrentIndex();
+                window->keyPress(Key::Down);
+                app->tick();
+                FTK_CHECK(comboIndex == combo->getCurrentIndex());
+                FTK_CHECK(0 == list->getCurrent());
             }
         }
     }
