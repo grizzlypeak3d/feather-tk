@@ -500,8 +500,11 @@ namespace ftk
         // The ring that says the list has the keyboard, drawn where the
         // text edit draws its own: around the scrolling area. The view
         // outlines its current item, which cannot say whose the keyboard
-        // is before there is one.
-        if (p.view->hasKeyFocus())
+        // is before there is one. Only while the focus shows: the list
+        // takes the focus when the browser opens, and a ring the mouse
+        // user never asked for contradicts the one Escape it takes to
+        // close.
+        if (p.view->showKeyFocus())
         {
             event.render->drawMesh(
                 border(p.viewScrollWidget->getGeometry(), p.keyFocus),
