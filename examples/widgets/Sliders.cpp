@@ -54,6 +54,7 @@ namespace widgets
         intEditSlider = IntEditSlider::create(context, vLayout);
         intEditSlider->setRange(-100, 100);
         intEditSlider->setDefault(-100);
+        intEditSlider->getModel()->setRangeSoft(true);
         intEditSlider->setPressedCallback(
             [](int value, bool pressed)
             {
@@ -88,6 +89,7 @@ namespace widgets
         floatEditSlider = FloatEditSlider::create(context, vLayout);
         floatEditSlider->setRange(-100.F, 100.F);
         floatEditSlider->setDefault(-100.F);
+        floatEditSlider->getModel()->setRangeSoft(true);
         floatEditSlider->setStep(1.F);
         floatEditSlider->setLargeStep(10.F);
         floatEditSlider->setPressedCallback(
@@ -124,6 +126,7 @@ namespace widgets
         doubleEditSlider = DoubleEditSlider::create(context, vLayout);
         doubleEditSlider->setRange(-100.0, 100.0);
         doubleEditSlider->setDefault(-100.0);
+        doubleEditSlider->getModel()->setRangeSoft(true);
         doubleEditSlider->setStep(1.F);
         doubleEditSlider->setLargeStep(10.F);
         doubleEditSlider->setPressedCallback(
