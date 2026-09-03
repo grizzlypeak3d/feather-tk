@@ -44,6 +44,10 @@ namespace ftk
         {
             out["keyFocus"] = true;
         }
+        if (!widget->getTooltip().empty())
+        {
+            out["tooltip"] = widget->getTooltip();
+        }
 
         if (auto button = std::dynamic_pointer_cast<IButton>(widget))
         {
