@@ -58,7 +58,9 @@ namespace ftk
         p.scrollWidget->setWidget(p.buttonLayout);
 
         p.menuButton = ToolButton::create(context);
-        p.menuButton->setIcon("MenuArrow");
+        // The popup icon rather than a plain icon: this is a popup button,
+        // and the arrow takes the arrow color.
+        p.menuButton->setPopupIcon(true);
 
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);

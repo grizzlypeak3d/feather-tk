@@ -419,7 +419,7 @@ namespace ftk
                     p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                event.style->getColorRole(ColorRole::Text, isEnabled()));
+                event.style->getColorRole(ColorRole::Arrow, isEnabled()));
         }
     }
 

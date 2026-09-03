@@ -70,6 +70,7 @@ namespace ftk
         Overlay,
         TooltipWindow,
         TooltipText,
+        Arrow,
 
         Red,
         Green,
