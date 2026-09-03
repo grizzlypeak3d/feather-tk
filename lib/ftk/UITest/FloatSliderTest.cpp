@@ -6,6 +6,7 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/FloatSlider.h>
 #include <ftk/UI/IButton.h>
+#include <ftk/UI/LineEdit.h>
 #include <ftk/UI/Menu.h>
 #include <ftk/UI/FloatEditSlider.h>
 #include <ftk/UI/SliderPopup.h>
@@ -205,6 +206,60 @@ namespace ftk
                     }
                 }
                 FTK_CHECK(popup);
+                // Editing the range by keyboard, the way a person does:
+                // click the minimum, type a value, press Return (#829).
+                // The popup is rebuilt on open, so the soft range is set
+                // while it is closed.
+                popup->close();
+                app->tick();
+                editSlider->setRange(-1.F, 1.F);
+                editSlider->getModel()->setRangeSoft(true);
+                editSlider->setValue(0.F);
+                app->tick();
+                window->click(buttonCenter, MouseButton::Left);
+                app->tick();
+                popup.reset();
+                for (const auto& child : window->getChildren())
+                {
+                    if (auto tmp = std::dynamic_pointer_cast<FloatSliderPopup>(child))
+                    {
+                        popup = tmp;
+                    }
+                }
+                FTK_CHECK(popup);
+                std::function<std::shared_ptr<LineEdit>(
+                    const std::shared_ptr<IWidget>&)> findLineEdit =
+                    [&findLineEdit](const std::shared_ptr<IWidget>& widget)
+                        -> std::shared_ptr<LineEdit>
+                    {
+                        if (auto edit = std::dynamic_pointer_cast<LineEdit>(widget))
+                            return edit;
+                        for (const auto& child : widget->getChildren())
+                        {
+                            if (auto edit = findLineEdit(child))
+                                return edit;
+                        }
+                        return nullptr;
+                    };
+                auto minEdit = findLineEdit(popup);
+                FTK_CHECK(minEdit);
+                const Box2I& minGeometry = minEdit->getGeometry();
+                window->click(
+                    V2I(
+                        minGeometry.min.x + minGeometry.w() / 2,
+                        minGeometry.min.y + minGeometry.h() / 2),
+                    MouseButton::Left);
+                app->tick();
+                window->keyPress(Key::A, static_cast<int>(commandKeyModifier));
+                window->text("-0.50");
+                window->keyPress(Key::Return);
+                app->tick();
+                FTK_CHECK(RangeF(-.5F, 1.F) == editSlider->getRange());
+                popup->close();
+                app->tick();
+                window->click(buttonCenter, MouseButton::Left);
+                app->tick();
+
                 // The mouse put the focus down invisibly on the button that
                 // opened the popup; Escape must close the popup on the first
                 // press rather than silently releasing a focus nobody can
