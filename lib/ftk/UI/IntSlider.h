@@ -9,7 +9,6 @@
 
 namespace ftk
 {
-    class Menu;
 
     //! \name Numeric Widgets
     ///@{
@@ -86,10 +85,7 @@ namespace ftk
         FTK_UI_API int _posToValue(int) const;
         FTK_UI_API int _valueToPos(int) const;
 
-        FTK_UI_API virtual std::shared_ptr<Menu> _createContextMenu();
-
     private:
-        void _showRangePopup();
 
         FTK_PRIVATE();
     };

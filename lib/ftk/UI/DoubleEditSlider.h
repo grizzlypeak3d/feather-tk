@@ -95,6 +95,8 @@ namespace ftk
 
 
     private:
+        void _showPopup();
+
         FTK_PRIVATE();
     };
         

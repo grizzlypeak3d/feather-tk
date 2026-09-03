@@ -14,8 +14,9 @@ namespace ftk
     //! \name Numeric Widgets
     ///@{
 
-    //! Popup for editing the range of a floating point model.
-    class FTK_UI_API_TYPE FloatRangePopup : public IWidgetPopup
+    //! Popup with a slider's options: reset, and the range when
+    //! it is soft.
+    class FTK_UI_API_TYPE FloatSliderPopup : public IWidgetPopup
     {
     protected:
         void _init(
@@ -23,13 +24,13 @@ namespace ftk
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent);
 
-        FloatRangePopup();
+        FloatSliderPopup();
 
     public:
-        FTK_UI_API virtual ~FloatRangePopup();
+        FTK_UI_API virtual ~FloatSliderPopup();
 
         //! Create a new popup.
-        FTK_UI_API static std::shared_ptr<FloatRangePopup> create(
+        FTK_UI_API static std::shared_ptr<FloatSliderPopup> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<FloatModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -38,9 +39,9 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    //! Popup for editing the range of a double precision floating point
-    //! model.
-    class FTK_UI_API_TYPE DoubleRangePopup : public IWidgetPopup
+    //! Popup with a slider's options, for a double precision floating
+    //! point model.
+    class FTK_UI_API_TYPE DoubleSliderPopup : public IWidgetPopup
     {
     protected:
         void _init(
@@ -48,13 +49,13 @@ namespace ftk
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent);
 
-        DoubleRangePopup();
+        DoubleSliderPopup();
 
     public:
-        FTK_UI_API virtual ~DoubleRangePopup();
+        FTK_UI_API virtual ~DoubleSliderPopup();
 
         //! Create a new popup.
-        FTK_UI_API static std::shared_ptr<DoubleRangePopup> create(
+        FTK_UI_API static std::shared_ptr<DoubleSliderPopup> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<DoubleModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -63,8 +64,8 @@ namespace ftk
         FTK_PRIVATE();
     };
 
-    //! Popup for editing the range of an integer model.
-    class FTK_UI_API_TYPE IntRangePopup : public IWidgetPopup
+    //! Popup with a slider's options, for an integer model.
+    class FTK_UI_API_TYPE IntSliderPopup : public IWidgetPopup
     {
     protected:
         void _init(
@@ -72,13 +73,13 @@ namespace ftk
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent);
 
-        IntRangePopup();
+        IntSliderPopup();
 
     public:
-        FTK_UI_API virtual ~IntRangePopup();
+        FTK_UI_API virtual ~IntSliderPopup();
 
         //! Create a new popup.
-        FTK_UI_API static std::shared_ptr<IntRangePopup> create(
+        FTK_UI_API static std::shared_ptr<IntSliderPopup> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IntModel>&,
             const std::shared_ptr<IWidget>& parent = nullptr);

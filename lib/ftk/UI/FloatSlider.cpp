@@ -4,8 +4,6 @@
 #include <ftk/UI/FloatSlider.h>
 
 #include <ftk/UI/DrawUtil.h>
-#include <ftk/UI/Menu.h>
-#include <ftk/UI/RangePopup.h>
 
 #include <chrono>
 #include <optional>
@@ -22,7 +20,6 @@ namespace ftk
         std::shared_ptr<FloatModel> model;
         std::function<void(float)> callback;
         std::function<void(float, bool)> pressedCallback;
-        std::shared_ptr<FloatRangePopup> rangePopup;
         std::chrono::steady_clock::time_point pressTime;
         bool resetPress = false;
         std::shared_ptr<Observer<float> > valueObserver;
@@ -42,7 +39,6 @@ namespace ftk
         setHStretch(Stretch::Expanding);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
-        setContextMenuCallback([this] { return _createContextMenu(); });
 
         p.model = model;
 
@@ -186,7 +182,7 @@ namespace ftk
         FTK_P();
         if (!_isMousePressed())
         {
-            // An unclaimed button; a right click opens the context menu.
+            // An unclaimed button is left for others, e.g. a context menu.
             return;
         }
         takeKeyFocus();
@@ -295,72 +291,6 @@ namespace ftk
     {
         IMouseWidget::keyReleaseEvent(event);
         event.accept = true;
-    }
-
-    std::shared_ptr<Menu> IFloatSlider::_createContextMenu()
-    {
-        FTK_P();
-        auto context = getContext();
-        if (!context)
-            return nullptr;
-
-        // The menu takes the key focus while it is open and returns it
-        // here when it closes.
-        takeKeyFocus();
-
-        auto out = Menu::create(context);
-
-        // Hold the model rather than the widget so the actions stay valid
-        // if the slider is destroyed while the menu is open.
-        auto model = p.model;
-        auto reset = Action::create(
-            "Reset",
-            [model] { model->setDefault(); });
-        out->addAction(reset);
-        out->setEnabled(reset, model->hasDefault());
-
-        // A soft range is a starting point the user may adjust, so it
-        // is offered here; a hard range is a fixed bound.
-        if (model->isRangeSoft())
-        {
-            out->addDivider();
-
-            std::weak_ptr<IFloatSlider> weak(
-                std::static_pointer_cast<IFloatSlider>(shared_from_this()));
-            auto setRange = Action::create(
-                "Set Range...",
-                [weak]
-                {
-                    if (auto widget = weak.lock())
-                    {
-                        widget->_showRangePopup();
-                    }
-                });
-            out->addAction(setRange);
-        }
-
-        return out;
-    }
-
-    void IFloatSlider::_showRangePopup()
-    {
-        FTK_P();
-        auto context = getContext();
-        if (context && !p.rangePopup)
-        {
-            p.rangePopup = FloatRangePopup::create(context, p.model);
-            std::weak_ptr<IFloatSlider> weak(
-                std::static_pointer_cast<IFloatSlider>(shared_from_this()));
-            p.rangePopup->setCloseCallback(
-                [weak]
-                {
-                    if (auto widget = weak.lock())
-                    {
-                        widget->_p->rangePopup.reset();
-                    }
-                });
-            p.rangePopup->open(getWindow(), getGeometry());
-        }
     }
 
     float IFloatSlider::_posToValue(int pos) const

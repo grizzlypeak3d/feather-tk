@@ -3,6 +3,9 @@
 
 #include <ftk/UI/IntEditSlider.h>
 
+#include <ftk/UI/SliderPopup.h>
+#include <ftk/UI/ToolButton.h>
+
 #include <ftk/UI/IntEdit.h>
 #include <ftk/UI/IntSlider.h>
 #include <ftk/UI/RowLayout.h>
@@ -15,7 +18,10 @@ namespace ftk
 
         std::shared_ptr<IntEdit> edit;
         std::shared_ptr<IntSlider> slider;
+        std::shared_ptr<ToolButton> popupButton;
+        std::shared_ptr<IntSliderPopup> popup;
         std::shared_ptr<HorizontalLayout> layout;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
 
         std::function<void(int)> callback;
         std::function<void(int, bool)> pressedCallback;
@@ -38,11 +44,19 @@ namespace ftk
         p.slider = IntSlider::create(context, p.model);
         p.slider->setHStretch(Stretch::Expanding);
 
+        // The popup replaces the sliders' old context menu (#829): the
+        // small triangle can be seen, where a right click has to be
+        // guessed at.
+        p.popupButton = ToolButton::create(context);
+        p.popupButton->setPopupIcon(true);
+        p.popupButton->setTooltip("Reset and range options.");
+
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
+        p.popupButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](int value)
@@ -51,6 +65,30 @@ namespace ftk
                 if (p.callback)
                 {
                     p.callback(value);
+                }
+            });
+
+        std::weak_ptr<IntEditSlider> weak(
+            std::static_pointer_cast<IntEditSlider>(shared_from_this()));
+        p.popupButton->setClickedCallback(
+            [weak]
+            {
+                if (auto widget = weak.lock())
+                {
+                    widget->_showPopup();
+                }
+            });
+
+        // The button earns its place: a slider with no default and a
+        // hard range has an empty popup, so it shows no button.
+        p.hasDefaultObserver = Observer<bool>::create(
+            p.model->observeHasDefault(),
+            [weak](bool value)
+            {
+                if (auto widget = weak.lock())
+                {
+                    widget->_p->popupButton->setVisible(
+                        value || widget->_p->model->isRangeSoft());
                 }
             });
 
@@ -63,6 +101,27 @@ namespace ftk
                     p.pressedCallback(value, pressed);
                 }
             });
+    }
+
+    void IntEditSlider::_showPopup()
+    {
+        FTK_P();
+        auto context = getContext();
+        if (context && !p.popup)
+        {
+            p.popup = IntSliderPopup::create(context, p.model);
+            std::weak_ptr<IntEditSlider> weak(
+                std::static_pointer_cast<IntEditSlider>(shared_from_this()));
+            p.popup->setCloseCallback(
+                [weak]
+                {
+                    if (auto widget = weak.lock())
+                    {
+                        widget->_p->popup.reset();
+                    }
+                });
+            p.popup->open(getWindow(), getGeometry());
+        }
     }
 
     IntEditSlider::IntEditSlider() :

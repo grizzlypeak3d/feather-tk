@@ -7,7 +7,9 @@
 #include <ftk/UI/FloatSlider.h>
 #include <ftk/UI/IButton.h>
 #include <ftk/UI/Menu.h>
-#include <ftk/UI/RangePopup.h>
+#include <ftk/UI/FloatEditSlider.h>
+#include <ftk/UI/SliderPopup.h>
+#include <ftk/UI/ToolButton.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
 
@@ -121,104 +123,62 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(.25F == slider->getValue());
 
-                // A right click opens the context menu without moving the
-                // value.
-                slider->setValue(.75F);
-                window->click(center, MouseButton::Right);
+                // The popup button replaces the sliders' context menu
+                // (#829): the edit slider shows the small popup triangle,
+                // and the popup holds the reset and the range.
+                auto editSlider = FloatEditSlider::create(_context, layout);
+                editSlider->setDefault(.25F);
+                editSlider->setValue(.75F);
                 app->tick();
-                FTK_CHECK(.75F == slider->getValue());
-                std::shared_ptr<Menu> menu;
-                for (const auto& child : window->getChildren())
+                std::shared_ptr<IWidget> popupButton;
+                for (const auto& child :
+                    editSlider->getChildren().front()->getChildren())
                 {
-                    if (auto tmp = std::dynamic_pointer_cast<Menu>(child))
+                    if (auto tmp = std::dynamic_pointer_cast<ToolButton>(child))
                     {
-                        menu = tmp;
+                        popupButton = tmp;
                     }
                 }
-                FTK_CHECK(menu);
-
-                // A hard range is a fixed bound, so the menu only offers
-                // the reset; a soft range adds Set Range.
-                FTK_CHECK(1 == menu->getActions().size());
-                FTK_CHECK("Reset" == menu->getActions()[0]->getText());
-                menu->close();
+                FTK_CHECK(popupButton);
+                FTK_CHECK(popupButton->isVisible(false));
+                const Box2I& buttonGeometry = popupButton->getGeometry();
+                const V2I buttonCenter(
+                    buttonGeometry.min.x + buttonGeometry.w() / 2,
+                    buttonGeometry.min.y + buttonGeometry.h() / 2);
+                window->click(buttonCenter, MouseButton::Left);
                 app->tick();
-                slider->getModel()->setRangeSoft(true);
-                window->click(center, MouseButton::Right);
-                app->tick();
-                menu.reset();
+                std::shared_ptr<FloatSliderPopup> popup;
                 for (const auto& child : window->getChildren())
                 {
-                    if (auto tmp = std::dynamic_pointer_cast<Menu>(child))
-                    {
-                        menu = tmp;
-                    }
-                }
-                FTK_CHECK(menu);
-                FTK_CHECK(2 == menu->getActions().size());
-                FTK_CHECK("Reset" == menu->getActions()[0]->getText());
-                FTK_CHECK("Set Range..." == menu->getActions()[1]->getText());
-
-                // Reset from the menu.
-                menu->getActions()[0]->doCallback();
-                menu->close();
-                app->tick();
-                FTK_CHECK(.25F == slider->getValue());
-
-                // Clicking the menu's range item, the way a user does,
-                // closes the menu and opens the range popup.
-                window->click(center, MouseButton::Right);
-                app->tick();
-                menu.reset();
-                for (const auto& child : window->getChildren())
-                {
-                    if (auto tmp = std::dynamic_pointer_cast<Menu>(child))
-                    {
-                        menu = tmp;
-                    }
-                }
-                FTK_CHECK(menu);
-                auto item = findButton(menu, "Set Range...");
-                FTK_CHECK(item);
-                const Box2I& itemGeometry = item->getGeometry();
-                window->click(
-                    V2I(
-                        itemGeometry.min.x + itemGeometry.w() / 2,
-                        itemGeometry.min.y + itemGeometry.h() / 2),
-                    MouseButton::Left);
-                app->tick();
-                std::shared_ptr<FloatRangePopup> popup;
-                for (const auto& child : window->getChildren())
-                {
-                    if (auto tmp = std::dynamic_pointer_cast<FloatRangePopup>(child))
+                    if (auto tmp = std::dynamic_pointer_cast<FloatSliderPopup>(child))
                     {
                         popup = tmp;
                     }
                 }
                 FTK_CHECK(popup);
                 FTK_CHECK(popup->isOpen());
+
+                // Reset from the popup, the way a user does.
+                auto resetButton = findButton(popup, "Reset");
+                FTK_CHECK(resetButton);
+                const Box2I& resetGeometry = resetButton->getGeometry();
+                window->click(
+                    V2I(
+                        resetGeometry.min.x + resetGeometry.w() / 2,
+                        resetGeometry.min.y + resetGeometry.h() / 2),
+                    MouseButton::Left);
+                app->tick();
+                FTK_CHECK(.25F == editSlider->getValue());
                 popup->close();
                 app->tick();
 
                 // The popup can be opened again after closing.
-                window->click(center, MouseButton::Right);
-                app->tick();
-                menu.reset();
-                for (const auto& child : window->getChildren())
-                {
-                    if (auto tmp = std::dynamic_pointer_cast<Menu>(child))
-                    {
-                        menu = tmp;
-                    }
-                }
-                FTK_CHECK(menu);
-                menu->getActions()[1]->doCallback();
-                menu->close();
+                window->click(buttonCenter, MouseButton::Left);
                 app->tick();
                 popup.reset();
                 for (const auto& child : window->getChildren())
                 {
-                    if (auto tmp = std::dynamic_pointer_cast<FloatRangePopup>(child))
+                    if (auto tmp = std::dynamic_pointer_cast<FloatSliderPopup>(child))
                     {
                         popup = tmp;
                     }

@@ -3,6 +3,9 @@
 
 #include <ftk/UI/FloatEditSlider.h>
 
+#include <ftk/UI/SliderPopup.h>
+#include <ftk/UI/ToolButton.h>
+
 #include <ftk/UI/FloatEdit.h>
 #include <ftk/UI/FloatSlider.h>
 #include <ftk/UI/RowLayout.h>
@@ -15,7 +18,10 @@ namespace ftk
 
         std::shared_ptr<FloatEdit> edit;
         std::shared_ptr<FloatSlider> slider;
+        std::shared_ptr<ToolButton> popupButton;
+        std::shared_ptr<FloatSliderPopup> popup;
         std::shared_ptr<HorizontalLayout> layout;
+        std::shared_ptr<Observer<bool> > hasDefaultObserver;
 
         std::function<void(float)> callback;
         std::function<void(float, bool)> pressedCallback;
@@ -38,11 +44,19 @@ namespace ftk
         p.slider = FloatSlider::create(context, p.model);
         p.slider->setHStretch(Stretch::Expanding);
 
+        // The popup replaces the sliders' old context menu (#829): the
+        // small triangle can be seen, where a right click has to be
+        // guessed at.
+        p.popupButton = ToolButton::create(context);
+        p.popupButton->setPopupIcon(true);
+        p.popupButton->setTooltip("Reset and range options.");
+
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.edit->setParent(p.layout);
         p.slider->setParent(p.layout);
+        p.popupButton->setParent(p.layout);
 
         p.slider->setCallback(
             [this](float value)
@@ -51,6 +65,30 @@ namespace ftk
                 if (p.callback)
                 {
                     p.callback(value);
+                }
+            });
+
+        std::weak_ptr<FloatEditSlider> weak(
+            std::static_pointer_cast<FloatEditSlider>(shared_from_this()));
+        p.popupButton->setClickedCallback(
+            [weak]
+            {
+                if (auto widget = weak.lock())
+                {
+                    widget->_showPopup();
+                }
+            });
+
+        // The button earns its place: a slider with no default and a
+        // hard range has an empty popup, so it shows no button.
+        p.hasDefaultObserver = Observer<bool>::create(
+            p.model->observeHasDefault(),
+            [weak](bool value)
+            {
+                if (auto widget = weak.lock())
+                {
+                    widget->_p->popupButton->setVisible(
+                        value || widget->_p->model->isRangeSoft());
                 }
             });
 
@@ -63,6 +101,27 @@ namespace ftk
                     p.pressedCallback(value, pressed);
                 }
             });
+    }
+
+    void FloatEditSlider::_showPopup()
+    {
+        FTK_P();
+        auto context = getContext();
+        if (context && !p.popup)
+        {
+            p.popup = FloatSliderPopup::create(context, p.model);
+            std::weak_ptr<FloatEditSlider> weak(
+                std::static_pointer_cast<FloatEditSlider>(shared_from_this()));
+            p.popup->setCloseCallback(
+                [weak]
+                {
+                    if (auto widget = weak.lock())
+                    {
+                        widget->_p->popup.reset();
+                    }
+                });
+            p.popup->open(getWindow(), getGeometry());
+        }
     }
 
     FloatEditSlider::FloatEditSlider() :
