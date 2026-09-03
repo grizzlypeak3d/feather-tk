@@ -686,8 +686,14 @@ namespace ftk
         int modifiers)
     {
         FTK_P();
-        // Using the keyboard shows the key focus; see isKeyFocusVisible().
-        if (press && !p.keyFocusVisible)
+        // Navigating the focus shows it; see isKeyFocusVisible(). Only
+        // Tab reveals: a bare modifier is a statement about the next key,
+        // and the operating keys -- arrows, Return -- have effects of
+        // their own to show.
+        if (press && !p.keyFocusVisible &&
+            Key::Tab == key &&
+            (0 == modifiers ||
+                static_cast<int>(KeyModifier::Shift) == modifiers))
         {
             p.keyFocusVisible = true;
             if (auto focus = p.keyFocus.lock())

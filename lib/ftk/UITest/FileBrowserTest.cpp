@@ -555,23 +555,55 @@ namespace ftk
             app->tick();
             FTK_CHECK(widget->getView()->hasKeyFocus());
 
-            // Clicked in the list, which is where the pointer has to be for
-            // the second press below, and puts the focus back on the list.
+            // Clicked in the list, which is where the pointer has to be
+            // for the presses below, and puts the focus back on the list.
             browserWindow->click(V2I(700, 500));
             app->tick();
             FTK_CHECK(widget->getView()->hasKeyFocus());
 
-            // Escape is overloaded. The first press puts the list down and
-            // goes no further: closing here would leave no way to let go of
-            // the focus.
+            // The mouse put the focus down invisibly, and a focus nobody
+            // can see does not eat the key: Escape closes on the first
+            // press.
             browserWindow->keyPress(Key::Escape);
             app->tick();
-            FTK_CHECK(!widget->getView()->hasKeyFocus());
-            FTK_CHECK(2 == app->getWindows().size());
+            FTK_CHECK(opened.empty());
+            FTK_CHECK(1 == app->getWindows().size());
 
-            // The second closes. Nothing holds the focus now, so the window
-            // sends the key to the widgets under the pointer, and the
-            // browser is one of them.
+            // With the keyboard in use the focus shows, and Escape is
+            // overloaded: the first press puts the list down -- closing
+            // here would leave no way to let go of the focus -- and the
+            // second closes.
+            // A tick first: the window that just closed is let go of on
+            // the tick after, and reopening in the same breath can race
+            // its teardown.
+            app->tick();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            browserWindow = app->getWindows().back();
+            widget = _find<FileBrowserWidget>(browserWindow);
+            FTK_CHECK(widget);
+            browserWindow->layout(Size2I(1024, 720));
+            app->tick();
+            browserWindow->keyPress(Key::Tab, static_cast<int>(KeyModifier::Shift));
+            browserWindow->keyPress(Key::Tab);
+            app->tick();
+            FTK_CHECK(browserWindow->isKeyFocusVisible());
+            browserWindow->click(V2I(700, 500));
+            app->tick();
+            // The click hid the focus again; Tab shows it on the list.
+            browserWindow->keyPress(Key::Tab, static_cast<int>(KeyModifier::Shift));
+            app->tick();
+            const auto focusWidget = browserWindow->getKeyFocus();
+            browserWindow->keyPress(Key::Escape);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
             browserWindow->keyPress(Key::Escape);
             app->tick();
             FTK_CHECK(opened.empty());

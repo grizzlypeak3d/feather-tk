@@ -139,9 +139,9 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
 
         //! Get whether the key focus is shown. The focus follows every
-        //! interaction, but it is only drawn once the keyboard is used --
-        //! a mouse user is not shown focus rings they never asked for.
-        //! Using the keyboard shows the focus, and pressing a mouse
+        //! interaction, but it is only drawn once the keyboard navigates
+        //! it -- a mouse user is not shown focus rings they never asked
+        //! for. Tab and Shift+Tab show the focus, and pressing a mouse
         //! button hides it again.
         FTK_UI_API bool isKeyFocusVisible() const;
 
