@@ -11,7 +11,9 @@ namespace ftk
         std::vector<Color4F> palette =
         {
             // Saturated hues first, then neutrals: enough to tell items
-            // apart at a glance without inviting a color debate.
+            // apart at a glance without inviting a color debate. The set
+            // covers the OTIO marker color names, so any marker color a
+            // timeline can bring in can also be picked.
             Color4F(.9F, .25F, .2F, 1.F),
             Color4F(1.F, .6F, .1F, 1.F),
             Color4F(.9F, .85F, .2F, 1.F),
@@ -20,8 +22,10 @@ namespace ftk
             Color4F(.3F, .5F, .9F, 1.F),
             Color4F(.6F, .35F, .9F, 1.F),
             Color4F(.9F, .3F, .7F, 1.F),
+            Color4F(1.F, .65F, .75F, 1.F),
             Color4F(1.F, 1.F, 1.F, 1.F),
-            Color4F(.5F, .5F, .5F, 1.F)
+            Color4F(.5F, .5F, .5F, 1.F),
+            Color4F(0.F, 0.F, 0.F, 1.F)
         };
     };
 

@@ -6,6 +6,7 @@
 #include <ftk/UI/ColorSlider.h>
 #include <ftk/UI/ColorSwatch.h>
 #include <ftk/UI/Divider.h>
+#include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/FloatEdit.h>
 #include <ftk/UI/GridLayout.h>
 #include <ftk/UI/IntEdit.h>
@@ -469,7 +470,7 @@ namespace ftk
     namespace
     {
         //! The palette reads as two rows however many colors it holds.
-        const size_t paletteColumns = 5;
+        const size_t paletteColumns = 6;
     }
 
     void PaletteColorWidget::_init(
@@ -585,6 +586,12 @@ namespace ftk
                     margin(cell, p.size.border * 2),
                     event.style->getColorRole(ColorRole::Text));
             }
+            // A hairline keeps every swatch visible whatever the style:
+            // black on the dark one, white on the light one, would
+            // otherwise vanish into the background.
+            event.render->drawMesh(
+                border(margin(cell, p.size.border), p.size.border),
+                event.style->getColorRole(ColorRole::Border));
             event.render->drawRect(cell, p.colors[i]);
         }
     }
