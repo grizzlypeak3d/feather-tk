@@ -145,6 +145,12 @@ namespace ftk
         //! button hides it again.
         FTK_UI_API bool isKeyFocusVisible() const;
 
+        //! Hide the key focus again, the way a mouse press does. A dialog
+        //! calls this when it opens: each open starts as the mouse left
+        //! it, whatever the keyboard was doing in its previous life, and
+        //! Tab brings the keyboard back.
+        FTK_UI_API void hideKeyFocus();
+
         FTK_UI_API bool hasTextInput() const;
         FTK_UI_API virtual void setTextInput(bool);
 

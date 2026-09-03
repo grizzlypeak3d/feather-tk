@@ -100,6 +100,10 @@ namespace ftk
         p.open = true;
         p.restoreFocus = window->getKeyFocus();
         window->setKeyFocus(nullptr);
+        // Each open starts as the mouse left it: the shortcut that opened
+        // the dialog is a command, not a navigation, and a ring inherited
+        // from the previous visit reads as an inconsistency.
+        window->hideKeyFocus();
         setParent(window);
         _takeKeyFocus();
     }

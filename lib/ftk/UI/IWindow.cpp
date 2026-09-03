@@ -348,6 +348,19 @@ namespace ftk
         return _p->keyFocusVisible;
     }
 
+    void IWindow::hideKeyFocus()
+    {
+        FTK_P();
+        if (p.keyFocusVisible)
+        {
+            p.keyFocusVisible = false;
+            if (auto focus = p.keyFocus.lock())
+            {
+                focus->setDrawUpdate();
+            }
+        }
+    }
+
     bool IWindow::hasTextInput() const
     {
         return _p->textInput;
