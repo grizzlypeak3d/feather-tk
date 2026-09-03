@@ -502,13 +502,26 @@ namespace ftk
             event.accept = true;
             int lineStep = p.lineStep * p.size.displayScale;
             V2I scrollPos = getScrollPos();
+            // Shift turns the wheel sideways, the usual convention -- the
+            // horizontal scroll bar can be a long way from the content.
+            const bool shift =
+                event.modifiers & static_cast<int>(KeyModifier::Shift);
             switch (p.scrollArea->getScrollType())
             {
             case ScrollType::Horizontal:
                 scrollPos.x -= event.value.y * lineStep;
                 break;
             default:
-                scrollPos.y -= event.value.y * lineStep;
+                if (shift)
+                {
+                    scrollPos.x -= event.value.y * lineStep;
+                }
+                else
+                {
+                    // A trackpad scrolls both axes at once.
+                    scrollPos.x -= event.value.x * lineStep;
+                    scrollPos.y -= event.value.y * lineStep;
+                }
                 break;
             }
             setScrollPos(scrollPos);
