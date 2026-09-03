@@ -1341,10 +1341,15 @@ namespace ftk
                 case SDL_MOUSEWHEEL:
                     if (auto window = p.activeWindow.lock())
                     {
-                        const float contentScale = window->getContentScale();
+                        // In wheel detents, not pixels: the consumers count
+                        // steps -- a slider tick, a combo box item, a frame
+                        // of a scrub -- and a scroll area converts to pixels
+                        // with its own display scale. Multiplying by the
+                        // content scale here made one detent two of
+                        // everything on a high DPI display.
                         window->_scroll(V2F(
-                            event.wheel.preciseX * contentScale,
-                            event.wheel.preciseY * contentScale),
+                            event.wheel.preciseX,
+                            event.wheel.preciseY),
                             fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
@@ -1352,10 +1357,10 @@ namespace ftk
                 case SDL_EVENT_MOUSE_WHEEL:
                     if (auto window = p.activeWindow.lock())
                     {
-                        const float contentScale = window->getContentScale();
+                        // In wheel detents, not pixels; see the SDL2 case.
                         window->_scroll(V2F(
-                            event.wheel.x * contentScale,
-                            event.wheel.y * contentScale),
+                            event.wheel.x,
+                            event.wheel.y),
                             fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
