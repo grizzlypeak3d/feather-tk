@@ -103,6 +103,7 @@ namespace ftk
                     py::arg("andParentsEnabled") = true)
 
                 .def_property("acceptsKeyFocus", &IWidget::acceptsKeyFocus, &IWidget::setAcceptsKeyFocus)
+                .def("moveToIndex", &IWidget::moveToIndex)
                 .def_property_readonly("keyFocus", &IWidget::hasKeyFocus)
                 .def("takeKeyFocus", &IWidget::takeKeyFocus)
                 .def("releaseKeyFocus", &IWidget::releaseKeyFocus)

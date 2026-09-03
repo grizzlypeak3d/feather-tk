@@ -24,7 +24,9 @@ namespace ftk
                     py::arg("context"),
                     py::arg("parent") = nullptr)
                 .def_property("widget", &ItemButton::getWidget, &ItemButton::setWidget)
-                .def("setFocusCallback", &ItemButton::setFocusCallback);
+                .def("setFocusCallback", &ItemButton::setFocusCallback)
+                .def("setDragDropDataCallback", &ItemButton::setDragDropDataCallback)
+                .def("setDragDropCursorCallback", &ItemButton::setDragDropCursorCallback);
         }
 
         void itemButtonList(py::module_& m)

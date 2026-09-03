@@ -5,6 +5,8 @@
 
 #include <ftk/UI/DrawUtil.h>
 
+#include <ftk/Core/Vector.h>
+
 namespace ftk
 {
     struct ItemButton::Private
@@ -12,7 +14,11 @@ namespace ftk
         std::shared_ptr<IWidget> widget;
         Size2I sizeHint;
         int keyFocus = 0;
+        int dragLength = 0;
         std::function<void(bool)> focusCallback;
+        std::function<std::shared_ptr<IDragDropData>(void)> dragDropDataCallback;
+        std::function<std::shared_ptr<Image>(void)> dragDropCursorCallback;
+        bool dragging = false;
     };
 
     void ItemButton::_init(
@@ -84,6 +90,7 @@ namespace ftk
         IButton::sizeHintEvent(event);
         FTK_P();
         p.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+        p.dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
         p.sizeHint = p.widget ? p.widget->getSizeHint() : Size2I();
     }
 
@@ -129,6 +136,64 @@ namespace ftk
     void ItemButton::setFocusCallback(const std::function<void(bool)>& value)
     {
         _p->focusCallback = value;
+    }
+
+    void ItemButton::setDragDropDataCallback(
+        const std::function<std::shared_ptr<IDragDropData>(void)>& value)
+    {
+        _p->dragDropDataCallback = value;
+    }
+
+    void ItemButton::setDragDropCursorCallback(
+        const std::function<std::shared_ptr<Image>(void)>& value)
+    {
+        _p->dragDropCursorCallback = value;
+    }
+
+    void ItemButton::mouseMoveEvent(MouseMoveEvent& event)
+    {
+        IButton::mouseMoveEvent(event);
+        FTK_P();
+        if (p.dragDropDataCallback && _isMousePressed() && !p.dragging)
+        {
+            const float length = ftk::length(event.pos - _getMousePressPos());
+            if (length > p.dragLength)
+            {
+                p.dragging = true;
+                event.dragDropData = p.dragDropDataCallback();
+                if (p.dragDropCursorCallback)
+                {
+                    if (auto image = p.dragDropCursorCallback())
+                    {
+                        event.dragDropCursor = image;
+                        event.dragDropCursorHotspot = V2I(
+                            image->getWidth() / 2,
+                            image->getHeight() / 2);
+                    }
+                }
+            }
+        }
+    }
+
+    void ItemButton::mousePressEvent(MouseClickEvent& event)
+    {
+        // Cleared on the press rather than the release: a drag sees two
+        // releases -- the synthetic one the window sends when the drag
+        // starts, and the real one, which still reaches the button when
+        // the drag ends over nothing. Neither is a click.
+        _p->dragging = false;
+        IButton::mousePressEvent(event);
+    }
+
+    void ItemButton::mouseReleaseEvent(MouseClickEvent& event)
+    {
+        FTK_P();
+        if (p.dragging)
+        {
+            IMouseWidget::mouseReleaseEvent(event);
+            return;
+        }
+        IButton::mouseReleaseEvent(event);
     }
 
     void ItemButton::keyFocusEvent(bool value)
