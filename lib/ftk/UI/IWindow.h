@@ -221,6 +221,12 @@ namespace ftk
             int modifiers = 0,
             bool release = true);
 
+        //! Move the cursor there and scroll the mouse wheel.
+        FTK_UI_API void scroll(
+            const V2I& pos,
+            const V2F& value,
+            int modifiers = 0);
+
         //! Press a key and release it.
         FTK_UI_API void keyPress(Key, int modifiers = 0);
 

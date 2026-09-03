@@ -928,6 +928,13 @@ namespace ftk
         }
     }
 
+    void IWindow::scroll(const V2I& pos, const V2F& value, int modifiers)
+    {
+        _cursorEnter(true);
+        _cursorPos(pos);
+        _scroll(value, modifiers);
+    }
+
     void IWindow::keyPress(Key key, int modifiers)
     {
         _key(key, true, modifiers);
