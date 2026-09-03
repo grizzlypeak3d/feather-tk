@@ -101,7 +101,7 @@ namespace ftk
                     g.y() + g.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                event.style->getColorRole(ColorRole::Text, isEnabled()));
+                event.style->getColorRole(_textRole, isEnabled()));
         }
     }
 
@@ -112,9 +112,13 @@ namespace ftk
         IWidget::_init(context, "ftk::IncButtons", parent);
         _incButton = IncButton::create(context, shared_from_this());
         _incButton->setIcon("Increment");
+        // The arrow color, with the combo boxes and the popup buttons:
+        // these are arrow glyphs, not text.
+        _incButton->setTextRole(ColorRole::Arrow);
         _incButton->setVAlign(VAlign::Top);
         _decButton = IncButton::create(context, shared_from_this());
         _decButton->setIcon("Decrement");
+        _decButton->setTextRole(ColorRole::Arrow);
         _decButton->setVAlign(VAlign::Bottom);
     }
 
