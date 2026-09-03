@@ -68,6 +68,13 @@ namespace ftk
     private:
         void _setCurrent(int, bool callback);
 
+        //! A press on a row: the keyboard follows the click, entering the
+        //! list at the clicked row. Called by ItemButton for rows that do
+        //! not take the key focus themselves.
+        void _rowPress(const std::shared_ptr<ItemButton>&);
+
+        friend class ItemButton;
+
         FTK_PRIVATE();
     };
 

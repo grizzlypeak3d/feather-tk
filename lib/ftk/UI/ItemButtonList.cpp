@@ -89,6 +89,17 @@ namespace ftk
         return out;
     }
 
+    void ItemButtonList::_rowPress(const std::shared_ptr<ItemButton>& row)
+    {
+        takeKeyFocus();
+        const auto items = getItems();
+        const auto i = std::find(items.begin(), items.end(), row);
+        if (i != items.end())
+        {
+            _setCurrent(static_cast<int>(i - items.begin()), true);
+        }
+    }
+
     void ItemButtonList::_setCurrent(int value, bool callback)
     {
         FTK_P();
@@ -110,10 +121,11 @@ namespace ftk
     {
         VerticalLayout::drawOverlayEvent(drawRect, event);
         FTK_P();
-        // The current item wears the focus ring while the list shows the
-        // focus: the list is the focus unit, and this says where in it the
-        // keyboard is.
-        if (showKeyFocus() && p.current >= 0)
+        // The current item wears the focus ring while the list holds the
+        // keyboard, the way a menu marks its current item: the list only
+        // gains the focus from being used -- a row clicked, the arrows
+        // entering it, Tab -- so this is never a ring nobody asked for.
+        if (hasKeyFocus() && p.current >= 0)
         {
             const auto items = getItems();
             if (p.current < static_cast<int>(items.size()))

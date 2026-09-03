@@ -4,6 +4,7 @@
 #include <ftk/UI/ItemButton.h>
 
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/ItemButtonList.h>
 
 #include <ftk/Core/Vector.h>
 
@@ -183,6 +184,24 @@ namespace ftk
         // the drag ends over nothing. Neither is a click.
         _p->dragging = false;
         IButton::mousePressEvent(event);
+
+        // Clicking a row of a list is using the list: the keyboard
+        // follows the click, entering the list at the clicked row, so
+        // the arrows browse from there wherever the cursor goes next.
+        // Rows that take the key focus themselves have done so above.
+        if (!acceptsKeyFocus())
+        {
+            for (auto widget = getParent(); widget;
+                widget = widget->getParent())
+            {
+                if (auto list = std::dynamic_pointer_cast<ItemButtonList>(widget))
+                {
+                    list->_rowPress(
+                        std::dynamic_pointer_cast<ItemButton>(shared_from_this()));
+                    break;
+                }
+            }
+        }
     }
 
     void ItemButton::mouseReleaseEvent(MouseClickEvent& event)

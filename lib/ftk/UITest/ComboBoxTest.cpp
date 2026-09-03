@@ -132,9 +132,9 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(combo->hasKeyFocus());
 
-                // Click a row: the row accepts the press without wanting
-                // the focus, and the focus goes away rather than staying
-                // on the combo box.
+                // Click a row: the focus leaves the combo box and enters
+                // the list at the clicked row -- clicking a row is using
+                // the list.
                 const auto rows = list->getItems();
                 const Box2I& rowG = rows[0]->getGeometry();
                 window->click(V2I(
@@ -142,14 +142,15 @@ namespace ftk
                     rowG.min.y + rowG.h() / 2));
                 app->tick();
                 FTK_CHECK(!combo->hasKeyFocus());
+                FTK_CHECK(list->hasKeyFocus());
+                FTK_CHECK(0 == list->getCurrent());
 
-                // The arrows over the list now reach the list, not the
-                // combo box.
+                // The arrows now browse the list, not the combo box.
                 const int comboIndex = combo->getCurrentIndex();
                 window->keyPress(Key::Down);
                 app->tick();
                 FTK_CHECK(comboIndex == combo->getCurrentIndex());
-                FTK_CHECK(0 == list->getCurrent());
+                FTK_CHECK(1 == list->getCurrent());
             }
         }
     }
