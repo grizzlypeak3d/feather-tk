@@ -95,6 +95,6 @@ namespace ftk
         std::vector<char> buf(size + 1);
         memcpy(buf.data(), path.c_str(), size);
         buf[size] = 0;
-        return std::filesystem::u8path(mkdtemp(buf.data()));
+        return toFileSystem(mkdtemp(buf.data()));
     }
 }

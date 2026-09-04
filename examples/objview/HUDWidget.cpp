@@ -32,7 +32,7 @@ namespace objview
 
         if (auto doc = std::dynamic_pointer_cast<Document>(idoc))
         {
-            _labels["Name"]->setText(Format("Path: {0}").arg(doc->getPath().u8string()));
+            _labels["Name"]->setText(Format("Path: {0}").arg(ftk::fromFileSystem(doc->getPath())));
             auto mesh = doc->getMesh();
             _labels["Triangles"]->setText(Format("Triangles: {0}").arg(mesh ? mesh->triangles.size() : 0));
         }

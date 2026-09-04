@@ -7,6 +7,7 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Memory.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {
@@ -128,7 +129,7 @@ namespace ftk
                 pngWarningFunc);
             if (!p.png)
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(path.u8string()));
+                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(fromFileSystem(path)));
             }
 
 #if defined(_WINDOWS)
@@ -137,11 +138,11 @@ namespace ftk
                 p.f = nullptr;
             }
 #else // _WINDOWS
-            p.f = fopen(path.u8string().c_str(), "wb");
+            p.f = fopen(fromFileSystem(path).c_str(), "wb");
 #endif // _WINDOWS
             if (!p.f)
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(path.u8string()));
+                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(fromFileSystem(path)));
             }
         }
 
@@ -151,7 +152,7 @@ namespace ftk
             const ImageInfo& info = image->getInfo();
             if (!open(p.f, p.png, &p.pngInfo, info))
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\": {1}").arg(_path.u8string()).arg(p.error.message));
+                throw std::runtime_error(Format("Cannot open: \"{0}\": {1}").arg(fromFileSystem(_path)).arg(p.error.message));
             }
 
             size_t scanlineByteCount = 0;
@@ -173,12 +174,12 @@ namespace ftk
             {
                 if (!scanline(p.png, data))
                 {
-                    throw std::runtime_error(Format("Cannot write scanline: \"{0}\": {1}").arg(_path.u8string()).arg(y));
+                    throw std::runtime_error(Format("Cannot write scanline: \"{0}\": {1}").arg(fromFileSystem(_path)).arg(y));
                 }
             }
             if (!end(p.png, p.pngInfo))
             {
-                throw std::runtime_error(Format("Cannot close: \"{0}\"").arg(_path.u8string()));
+                throw std::runtime_error(Format("Cannot close: \"{0}\"").arg(fromFileSystem(_path)));
             }
         }
 

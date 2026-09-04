@@ -20,6 +20,7 @@
 #include <ftk/UI/DrawUtil.h>
 
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Path.h>
 
 #include <filesystem>
 #include <sstream>
@@ -395,7 +396,7 @@ namespace ftk
                     _accept(
                         !p.selection.empty() ?
                         p.selection :
-                        std::vector<Path>{ Path(p.model->getPath().u8string()) });
+                        std::vector<Path>{ Path(fromFileSystem(p.model->getPath())) });
                     break;
                 default: break;
                 }
@@ -654,7 +655,7 @@ namespace ftk
         // without it the last component reads as a file name, and
         // setFileName() replaces it -- saving to the parent of the
         // directory that was chosen.
-        Path path(appendSeparator(p.model->getPath().u8string()));
+        Path path(appendSeparator(fromFileSystem(p.model->getPath())));
         path.setFileName(fileName);
         // A name typed without an extension takes the one being filtered
         // for, before the existence check below: completing it after the
@@ -667,7 +668,7 @@ namespace ftk
         // Saving over a file that exists asks first. Cancel is the last
         // button, so it is the safe default.
         std::error_code ec;
-        if (std::filesystem::exists(std::filesystem::u8path(path.get()), ec))
+        if (std::filesystem::exists(toFileSystem(path.get()), ec))
         {
             if (auto context = getContext())
             {

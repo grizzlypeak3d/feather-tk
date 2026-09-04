@@ -26,6 +26,7 @@
 #include <ftk/Core/String.h>
 #include <ftk/Core/Time.h>
 #include <ftk/Core/Timer.h>
+#include <ftk/Core/Path.h>
 
 #if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
@@ -210,13 +211,13 @@ namespace ftk
                 { "-settingsFile" },
                 "Settings file name.",
                 "Files",
-                Format("{0}").arg(p.settingsPath.u8string()));
+                Format("{0}").arg(fromFileSystem(p.settingsPath)));
             cmdLineOptionsTmp.push_back(p.cmdLine.settingsFile);
             p.cmdLine.logFile = CmdLineOption<std::string>::create(
                 { "-logFile" },
                 "Log file name.",
                 "Files",
-                Format("{0}").arg(p.logFilePath.u8string()));
+                Format("{0}").arg(fromFileSystem(p.logFilePath)));
             cmdLineOptionsTmp.push_back(p.cmdLine.logFile);
             p.cmdLine.resetSettings = CmdLineFlag::create(
                 { "-resetSettings" },
@@ -248,12 +249,12 @@ namespace ftk
         {
             if (p.cmdLine.settingsFile->found())
             {
-                p.settingsPath = std::filesystem::u8path(
+                p.settingsPath = toFileSystem(
                     p.cmdLine.settingsFile->getValue());
             }
             if (p.cmdLine.logFile->found())
             {
-                p.logFilePath = std::filesystem::u8path(
+                p.logFilePath = toFileSystem(
                     p.cmdLine.logFile->getValue());
             }
             p.settings = Settings::create(
@@ -1666,7 +1667,7 @@ namespace ftk
                 ++p2.screenshotTicks;
                 if (p2.screenshotTicks < 5)
                     return;
-                app->writeScreenshot(std::filesystem::u8path(fileName));
+                app->writeScreenshot(toFileSystem(fileName));
                 app->exit();
             });
     }
@@ -1692,7 +1693,7 @@ namespace ftk
                 ++p2.widgetDumpTicks;
                 if (p2.widgetDumpTicks < 5)
                     return;
-                app->writeWidgetDump(std::filesystem::u8path(fileName));
+                app->writeWidgetDump(toFileSystem(fileName));
                 // A screenshot asked for in the same run gets to finish
                 // before the exit.
                 if (!p2.cmdLine.screenshot->found())
@@ -1716,14 +1717,14 @@ namespace ftk
         {
             logSystem->print(
                 "ftk::App",
-                Format("Cannot write widget dump to \"{0}\"").arg(path.u8string()),
+                Format("Cannot write widget dump to \"{0}\"").arg(fromFileSystem(path)),
                 LogType::Error);
             return false;
         }
         file << widgetDump(p.windows.front()).dump(2) << std::endl;
         logSystem->print(
             "ftk::App",
-            Format("Wrote widget dump to \"{0}\"").arg(path.u8string()));
+            Format("Wrote widget dump to \"{0}\"").arg(fromFileSystem(path)));
         return true;
     }
 
@@ -1770,14 +1771,14 @@ namespace ftk
         {
             logSystem->print(
                 "ftk::App",
-                Format("Cannot write screenshot to \"{0}\"").arg(path.u8string()),
+                Format("Cannot write screenshot to \"{0}\"").arg(fromFileSystem(path)),
                 LogType::Error);
             return false;
         }
         writer->write(image);
         logSystem->print(
             "ftk::App",
-            Format("Screenshot written to \"{0}\"").arg(path.u8string()));
+            Format("Screenshot written to \"{0}\"").arg(fromFileSystem(path)));
         return true;
     }
 

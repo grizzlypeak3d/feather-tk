@@ -58,7 +58,7 @@ namespace ftk
                 FileIO::create(frameFile(i), FileMode::Write);
             }
 
-            Path path = expandSeq(Path(frameFile(1).u8string()));
+            Path path = expandSeq(Path(fromFileSystem(frameFile(1))));
             FTK_CHECK("1-3" == getLabel(path.getSeq()));
 
             for (int i = 4; i <= 6; ++i)
@@ -264,7 +264,7 @@ namespace ftk
         {
             {
                 TmpDir tmpDir;
-                _print(Format("Tmp dir: {0}").arg(tmpDir.getPath().u8string()));
+                _print(Format("Tmp dir: {0}").arg(fromFileSystem(tmpDir.getPath())));
                 FileIO::create(tmpDir.getPath() / "render.exr", FileMode::Write);
             }
         }
@@ -811,19 +811,19 @@ namespace ftk
                 FileIO::create(dir / Format("render.{0}.png").arg(i).str(), FileMode::Write);
             }
 
-            Path path = expandSeq(Path((dir / "render.0.exr").u8string()));
+            Path path = expandSeq(Path(fromFileSystem(dir / "render.0.exr")));
             FTK_CHECK(0 == path.getFrames().value().min());
             FTK_CHECK(9 == path.getFrames().value().max());
 
-            path = expandSeq(Path((dir / "render.#.exr").u8string()));
+            path = expandSeq(Path(fromFileSystem(dir / "render.#.exr")));
             FTK_CHECK(0 == path.getFrames().value().min());
             FTK_CHECK(9 == path.getFrames().value().max());
 
-            path = expandSeq(Path((dir / "render.0.png").u8string()));
+            path = expandSeq(Path(fromFileSystem(dir / "render.0.png")));
             FTK_CHECK(100 == path.getFrames().value().min());
             FTK_CHECK(102 == path.getFrames().value().max());
 
-            path = expandSeq(Path((dir / "render.0.tiff").u8string()));
+            path = expandSeq(Path(fromFileSystem(dir / "render.0.tiff")));
             FTK_CHECK(0 == path.getFrames().value().min());
             FTK_CHECK(0 == path.getFrames().value().max());
 
@@ -837,7 +837,7 @@ namespace ftk
                         dir2 / Format("render.{0}.exr").arg(i, 4, '0').str(),
                         FileMode::Write);
                 }
-                path = expandSeq(Path((dir2 / "render.####.exr").u8string()));
+                path = expandSeq(Path(fromFileSystem(dir2 / "render.####.exr")));
                 _print("Partial sequence: " + getLabel(path.getSeq()));
                 FTK_CHECK(path.isPartialSeq());
                 FTK_CHECK(RangeI64(1, 9) == path.getFrames());

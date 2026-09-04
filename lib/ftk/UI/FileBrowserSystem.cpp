@@ -133,7 +133,7 @@ namespace ftk
             }
             const nfdu8filteritem_t* filterList = filterItems.empty() ? nullptr : filterItems.data();
             const nfdfiltersize_t filterCount = static_cast<nfdfiltersize_t>(filterItems.size());
-            const std::string defaultPathStr = options.path.u8string();
+            const std::string defaultPathStr = fromFileSystem(options.path);
             const nfdu8char_t* defaultPath = defaultPathStr.empty() ? nullptr : defaultPathStr.c_str();
 
             // Opening more than one is its own call and returns a path set

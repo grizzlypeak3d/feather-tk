@@ -4,6 +4,7 @@
 #include <ftk/Core/ImageIO.h>
 
 #include <ftk/Core/PNG.h>
+#include <ftk/Core/Path.h>
 
 #include <algorithm>
 
@@ -63,7 +64,7 @@ namespace ftk
         const ImageIOOptions&)
     {
         bool out = false;
-        const std::string ext = path.extension().u8string();
+        const std::string ext = fromFileSystem(path.extension());
         for (const auto& ext2 : _exts)
         {
             if (compare(ext, ext2, CaseCompare::Insensitive))
@@ -96,7 +97,7 @@ namespace ftk
         const ImageIOOptions&)
     {
         bool out = false;
-        const std::string ext = path.extension().u8string();
+        const std::string ext = fromFileSystem(path.extension());
         for (const auto& ext2 : _exts)
         {
             if (compare(ext, ext2, CaseCompare::Insensitive))

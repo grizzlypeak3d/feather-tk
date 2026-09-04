@@ -105,7 +105,7 @@ namespace textedit
                 std::vector<std::filesystem::path> paths;
                 for (const auto& text : textData->getText())
                 {
-                    paths.push_back(std::filesystem::u8path(text));
+                    paths.push_back(ftk::toFileSystem(text));
                 }
                 app->open(paths);
             }

@@ -63,7 +63,7 @@ namespace ftk
                 std::vector<ListItem> items;
                 for (const auto& drive : p.drives)
                 {
-                    items.push_back(ListItem(drive.u8string(), drive.u8string()));
+                    items.push_back(ListItem(fromFileSystem(drive), fromFileSystem(drive)));
                 }
                 p.listWidget->setItems(items);
             });
@@ -152,12 +152,12 @@ namespace ftk
         std::filesystem::path path = std::filesystem::current_path();
         p.shortcuts.push_back(path);
         std::vector<ListItem> items;
-        items.push_back(ListItem("Current", path.u8string()));
+        items.push_back(ListItem("Current", fromFileSystem(path)));
         for (auto userPath : getUserPathEnums())
         {
             path = getUserPath(userPath);
             p.shortcuts.push_back(path);
-            items.push_back(ListItem(path.filename().u8string(), path.u8string()));
+            items.push_back(ListItem(fromFileSystem(path.filename()), fromFileSystem(path)));
         }
         p.listWidget->setItems(items);
     }
@@ -236,7 +236,7 @@ namespace ftk
                     for (auto i = paths.rbegin(); i != paths.rend(); ++i)
                     {
                         std::filesystem::path tmp =
-                            std::filesystem::u8path(i->get());
+                            toFileSystem(i->get());
                         if (!std::filesystem::is_directory(tmp))
                         {
                             tmp = tmp.parent_path();
@@ -275,7 +275,7 @@ namespace ftk
             {
                 tmp = recent;
             }
-            items.push_back(ListItem(tmp.u8string(), recent.u8string()));
+            items.push_back(ListItem(fromFileSystem(tmp), fromFileSystem(recent)));
         }
         p.listWidget->setItems(items);
     }

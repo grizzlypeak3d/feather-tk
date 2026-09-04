@@ -58,7 +58,7 @@ namespace
         }
         else
         {
-            errors.push_back("Cannot read: " + path.u8string());
+            errors.push_back("Cannot read: " + ftk::fromFileSystem(path));
         }
 
         std::shared_ptr<IWidget> widget;
@@ -114,7 +114,7 @@ FTK_MAIN()
         if (fileArg->hasValue())
         {
             const std::filesystem::path path =
-                std::filesystem::u8path(fileArg->getValue());
+                ftk::toFileSystem(fileArg->getValue());
             scrollWidget->setWidget(load(context, path));
 
             // Watch the file by polling its write time; when it changes

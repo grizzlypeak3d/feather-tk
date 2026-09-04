@@ -211,7 +211,7 @@ namespace ftk
         if (!p.memStart && -1 == p.f)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Read, p.path.u8string()));
+                getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
         }
             
         switch (p.mode)
@@ -224,7 +224,7 @@ namespace ftk
                 if (memP > p.memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::ReadMMap, p.path.u8string()));
+                        getErrorMessage(ErrorType::ReadMMap, fromFileSystem(p.path)));
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
@@ -242,12 +242,12 @@ namespace ftk
                 if (r < 0)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string(), getErrorString()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path), getErrorString()));
                 }
                 else if (static_cast<size_t>(r) != size * wordSize)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
@@ -262,12 +262,12 @@ namespace ftk
             if (r < 0)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Read, p.path.u8string(), getErrorString()));
+                    getErrorMessage(ErrorType::Read, fromFileSystem(p.path), getErrorString()));
             }
             else if (static_cast<size_t>(r) != size * wordSize)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Read, p.path.u8string()));
+                    getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
             }
             if (p.endianConversion && wordSize > 1)
             {
@@ -287,7 +287,7 @@ namespace ftk
         if (p.mode != FileMode::Read && p.mode != FileMode::ReadWrite)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Read, p.path.u8string()));
+                getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
         }
 
         const size_t byteCount = size * wordSize;
@@ -296,7 +296,7 @@ namespace ftk
             throw std::runtime_error(
                 getErrorMessage(
                     p.memStart ? ErrorType::ReadMMap : ErrorType::Read,
-                    p.path.u8string()));
+                    fromFileSystem(p.path)));
         }
 
         if (p.memStart)
@@ -322,12 +322,12 @@ namespace ftk
                 if (r < 0)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string(), getErrorString()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path), getErrorString()));
                 }
                 else if (0 == r)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
                 }
                 out       += r;
                 offset    += r;
@@ -341,7 +341,7 @@ namespace ftk
         else
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Read, p.path.u8string()));
+                getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
         }
     }
 
@@ -352,7 +352,7 @@ namespace ftk
         if (-1 == p.f)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Write, p.path.u8string()));
+                getErrorMessage(ErrorType::Write, fromFileSystem(p.path)));
         }
 
         const uint8_t* inP = reinterpret_cast<const uint8_t*>(in);
@@ -366,7 +366,7 @@ namespace ftk
         if (::write(p.f, inP, size * wordSize) == -1)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Write, p.path.u8string(), getErrorString()));
+                getErrorMessage(ErrorType::Write, fromFileSystem(p.path), getErrorString()));
         }
         p.pos += size * wordSize;
         p.size = std::max(p.pos, p.size);
@@ -409,11 +409,11 @@ namespace ftk
             break;
         default: break;
         }
-        p.f = ::open(path.u8string().c_str(), openFlags, openMode);
+        p.f = ::open(fromFileSystem(path).c_str(), openFlags, openMode);
         if (-1 == p.f)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Open, path.u8string(), getErrorString()));
+                getErrorMessage(ErrorType::Open, fromFileSystem(path), getErrorString()));
         }
 
         // File information.
@@ -436,7 +436,7 @@ namespace ftk
             if (p.mMap == (void*)-1)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::MMap, path.u8string(), getErrorString()));
+                    getErrorMessage(ErrorType::MMap, fromFileSystem(path), getErrorString()));
             }
             p.memStart = reinterpret_cast<const uint8_t*>(p.mMap);
             p.memEnd   = p.memStart + p.size;
@@ -458,7 +458,7 @@ namespace ftk
                 out = false;
                 if (error)
                 {
-                    *error = getErrorMessage(ErrorType::CloseMMap, p.path.u8string(), getErrorString());
+                    *error = getErrorMessage(ErrorType::CloseMMap, fromFileSystem(p.path), getErrorString());
                 }
             }
             p.mMap = (void*)-1;
@@ -474,7 +474,7 @@ namespace ftk
                 out = false;
                 if (error)
                 {
-                    *error = getErrorMessage(ErrorType::Close, p.path.u8string(), getErrorString());
+                    *error = getErrorMessage(ErrorType::Close, fromFileSystem(p.path), getErrorString());
                 }
             }
             p.f = -1;
@@ -499,7 +499,7 @@ namespace ftk
                 if (memP > memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, fromFileSystem(path)));
                 }
                 break;
             case SeekMode::Forward:
@@ -507,7 +507,7 @@ namespace ftk
                 if (memP > memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, fromFileSystem(path)));
                 }
                 break;
             case SeekMode::Reverse:
@@ -515,7 +515,7 @@ namespace ftk
                 if (memP < memStart)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, fromFileSystem(path)));
                 }
                 break;
             default: break;
@@ -539,7 +539,7 @@ namespace ftk
             if (::lseek(f, offset, whence) == (off_t)-1)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Seek, path.u8string(), getErrorString()));
+                    getErrorMessage(ErrorType::Seek, fromFileSystem(path), getErrorString()));
             }
         }
         switch (seekMode)
@@ -561,10 +561,10 @@ namespace ftk
 
     void truncateFile(const std::filesystem::path& path, size_t size)
     {
-        if (::truncate(path.u8string().c_str(), size) != 0)
+        if (::truncate(fromFileSystem(path).c_str(), size) != 0)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Write, path.u8string(), getErrorString()));
+                getErrorMessage(ErrorType::Write, fromFileSystem(path), getErrorString()));
         }                
     }
 }

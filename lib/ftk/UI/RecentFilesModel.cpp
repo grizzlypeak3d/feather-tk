@@ -4,6 +4,7 @@
 #include <ftk/UI/RecentFilesModel.h>
 
 #include <ftk/Core/Context.h>
+#include <ftk/Core/Path.h>
 
 #include <nlohmann/json.hpp>
 
@@ -19,10 +20,10 @@ namespace ftk
             Path out = value;
             std::error_code ec;
             const std::filesystem::path abs = std::filesystem::absolute(
-                std::filesystem::u8path(out.getDir()), ec);
+                toFileSystem(out.getDir()), ec);
             if (!ec)
             {
-                out.setDir(appendSeparator(abs.u8string()));
+                out.setDir(appendSeparator(fromFileSystem(abs)));
             }
             return out;
         }

@@ -2,6 +2,7 @@
 // Copyright Contributors to the feather-tk project.
 
 #include <ftk/UI/FileBrowser.h>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {
@@ -23,7 +24,7 @@ namespace ftk
         _p(new Private)
     {
         FTK_P();
-        const auto path = std::filesystem::current_path().u8string();
+        const auto path = fromFileSystem(std::filesystem::current_path());
         p.paths.push_back(path);
         p.currentPath = 0;
         p.path = Observable<std::filesystem::path>::create(path);
@@ -73,7 +74,7 @@ namespace ftk
 
     void FileBrowserModel::setPath(const std::string& value)
     {
-        setPath(std::filesystem::u8path(value));
+        setPath(toFileSystem(value));
     }
 
     void FileBrowserModel::forward()

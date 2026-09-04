@@ -83,7 +83,7 @@ namespace ftk
                     std::filesystem::path path;
                     for (int i = 0; i <= index; ++i)
                     {
-                        path = path / std::filesystem::u8path(_p->pieces[i]);
+                        path = path / toFileSystem(_p->pieces[i]);
                     }
                     _p->path = path;
                     _widgetUpdate();
@@ -97,7 +97,7 @@ namespace ftk
         p.lineEdit->setCallback(
             [this](const std::string& value)
             {
-                _p->path = std::filesystem::u8path(value);
+                _p->path = toFileSystem(value);
                 _widgetUpdate();
                 if (_p->callback)
                 {
@@ -189,6 +189,6 @@ namespace ftk
             }
         }
 
-        p.lineEdit->setText(p.path.u8string());
+        p.lineEdit->setText(fromFileSystem(p.path));
     }
 }

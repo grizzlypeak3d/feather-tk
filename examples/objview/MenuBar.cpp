@@ -37,9 +37,9 @@ namespace objview
                 for (auto i = value.rbegin(); i != value.rend(); ++i)
                 {
                     const std::filesystem::path path =
-                        std::filesystem::u8path(i->get());
+                        ftk::toFileSystem(i->get());
                     auto action = Action::create(
-                        path.filename().u8string(),
+                        ftk::fromFileSystem(path.filename()),
                         [appWeak, path]
                         {
                             auto app = appWeak.lock();

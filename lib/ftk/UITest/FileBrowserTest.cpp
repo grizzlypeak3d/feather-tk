@@ -14,6 +14,7 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Time.h>
+#include <ftk/Core/Path.h>
 
 #include <fstream>
 
@@ -61,7 +62,7 @@ namespace ftk
                 auto model = FileBrowserModel::create(_context);
                 auto panel = FileBrowserPanel::create(_context, model, window);
                 auto recentFilesModel = RecentFilesModel::create(_context);
-                recentFilesModel->addRecent(Path(std::filesystem::current_path().u8string()));
+                recentFilesModel->addRecent(Path(fromFileSystem(std::filesystem::current_path())));
                 panel->setRecentFilesModel(recentFilesModel);
             }
         }
@@ -256,7 +257,7 @@ namespace ftk
                     _click(widget, "Ok");
                     FTK_CHECK(1 == accepted.size());
                     FTK_CHECK(
-                        appendSeparator(path.u8string()) + "playlist.otio" ==
+                        appendSeparator(fromFileSystem(path)) + "playlist.otio" ==
                         accepted.front().getFileName(true));
 
                     // Return in the name accepts as well, so a name can be
@@ -271,7 +272,7 @@ namespace ftk
                     edit->keyPressEvent(k);
                     FTK_CHECK(1 == accepted.size());
                     FTK_CHECK(
-                        appendSeparator(path.u8string()) + "typed.otio" ==
+                        appendSeparator(fromFileSystem(path)) + "typed.otio" ==
                         accepted.front().getFileName(true));
                 }
 

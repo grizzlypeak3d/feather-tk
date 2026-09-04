@@ -127,7 +127,7 @@ namespace textedit
                     {
                         if (auto app = appWeak.lock())
                         {
-                            app->open(std::filesystem::u8path(value.get()));
+                            app->open(ftk::toFileSystem(value.get()));
                         }
                     });
             });

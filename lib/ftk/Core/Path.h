@@ -18,6 +18,21 @@ namespace ftk
     //! \name File Paths
     ///@{
 
+    //! Convert a UTF-8 string to a file system path.
+    //!
+    //! ftk strings are UTF-8, and the standard's way of saying so changed
+    //! underfoot: C++20 deprecated u8path() and made u8string() return a
+    //! char8_t string. These two cross the boundary the same way under
+    //! either standard, and they are the only place the difference lives.
+    FTK_CORE_API std::filesystem::path toFileSystem(const std::string&);
+
+    //! Convert a file system path to a UTF-8 string.
+    FTK_CORE_API std::string fromFileSystem(const std::filesystem::path&);
+
+    //! Convert a file system path to a UTF-8 string with generic
+    //! (forward slash) separators.
+    FTK_CORE_API std::string fromFileSystemGeneric(const std::filesystem::path&);
+
     //! Does the file name start with a dot?
     FTK_CORE_API bool isDotFile(const std::string&);
 
@@ -409,3 +424,4 @@ namespace ftk
 }
 
 #include <ftk/Core/PathInline.h>
+#include <ftk/Core/Path.h>

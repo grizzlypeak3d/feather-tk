@@ -6,6 +6,7 @@
 #include <ftk/Core/Error.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Memory.h>
+#include <ftk/Core/Path.h>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -204,7 +205,7 @@ namespace ftk
         if (!p.memStart && !p.f)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Read, p.path.u8string()));
+                getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
         }
 
         switch (p.mode)
@@ -217,7 +218,7 @@ namespace ftk
                 if (memP > p.memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::ReadMMap, p.path.u8string()));
+                        getErrorMessage(ErrorType::ReadMMap, fromFileSystem(p.path)));
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
@@ -235,12 +236,12 @@ namespace ftk
                 if (!::ReadFile(p.f, in, static_cast<DWORD>(size * wordSize), &n, 0))
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string(), getLastError()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path), getLastError()));
                 }
                 if (n != size * wordSize)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
                 }
                 if (p.endianConversion && wordSize > 1)
                 {
@@ -255,12 +256,12 @@ namespace ftk
             if (!::ReadFile(p.f, in, static_cast<DWORD>(size * wordSize), &n, 0))
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Read, p.path.u8string(), getLastError()));
+                    getErrorMessage(ErrorType::Read, fromFileSystem(p.path), getLastError()));
             }
             if (n != size * wordSize)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Read, p.path.u8string()));
+                    getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
             }
             if (p.endianConversion && wordSize > 1)
             {
@@ -280,7 +281,7 @@ namespace ftk
         if (p.mode != FileMode::Read && p.mode != FileMode::ReadWrite)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Read, p.path.u8string()));
+                getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
         }
 
         const size_t byteCount = size * wordSize;
@@ -289,7 +290,7 @@ namespace ftk
             throw std::runtime_error(
                 getErrorMessage(
                     p.memStart ? ErrorType::ReadMMap : ErrorType::Read,
-                    p.path.u8string()));
+                    fromFileSystem(p.path)));
         }
 
         if (p.memStart)
@@ -326,12 +327,12 @@ namespace ftk
                 if (!::ReadFile(p.f, out, request, &n, &overlapped))
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string(), getLastError()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path), getLastError()));
                 }
                 if (0 == n)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::Read, p.path.u8string()));
+                        getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
                 }
                 out       += n;
                 offset    += n;
@@ -342,7 +343,7 @@ namespace ftk
             if (!::SetFilePointerEx(p.f, v, 0, FILE_BEGIN))
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Seek, p.path.u8string(), getLastError()));
+                    getErrorMessage(ErrorType::Seek, fromFileSystem(p.path), getLastError()));
             }
             if (p.endianConversion && wordSize > 1)
             {
@@ -352,7 +353,7 @@ namespace ftk
         else
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Read, p.path.u8string()));
+                getErrorMessage(ErrorType::Read, fromFileSystem(p.path)));
         }
     }
 
@@ -363,7 +364,7 @@ namespace ftk
         if (!p.f)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Write, p.path.u8string()));
+                getErrorMessage(ErrorType::Write, fromFileSystem(p.path)));
         }
 
         const uint8_t* inP = reinterpret_cast<const uint8_t*>(in);
@@ -379,7 +380,7 @@ namespace ftk
         if (!::WriteFile(p.f, inP, static_cast<DWORD>(size * wordSize), &n, 0))
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Write, p.path.u8string(), getLastError()));
+                getErrorMessage(ErrorType::Write, fromFileSystem(p.path), getLastError()));
         }
         p.pos += size * wordSize;
         p.size = std::max(p.pos, p.size);
@@ -449,7 +450,7 @@ namespace ftk
         if (INVALID_HANDLE_VALUE == p.f)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Open, path.u8string(), getLastError()));
+                getErrorMessage(ErrorType::Open, fromFileSystem(path), getLastError()));
         }
         p.path = path;
         p.mode = mode;
@@ -466,14 +467,14 @@ namespace ftk
             if (!p.mMap)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::MMap, path.u8string(), getLastError()));
+                    getErrorMessage(ErrorType::MMap, fromFileSystem(path), getLastError()));
             }
 
             p.memStart = reinterpret_cast<const uint8_t*>(MapViewOfFile(p.mMap, FILE_MAP_READ, 0, 0, 0));
             if (!p.memStart)
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::MMap, path.u8string()));
+                    getErrorMessage(ErrorType::MMap, fromFileSystem(path)));
             }
 
             p.memEnd = p.memStart + p.size;
@@ -503,7 +504,7 @@ namespace ftk
                     if (error)
                     {
                         *error = getErrorMessage(
-                            ErrorType::CloseMMap, p.path.u8string(), getLastError());
+                            ErrorType::CloseMMap, fromFileSystem(p.path), getLastError());
                     }
                 }
                 p.memStart = nullptr;
@@ -515,7 +516,7 @@ namespace ftk
                 if (error)
                 {
                     *error = getErrorMessage(
-                        ErrorType::Close, p.path.u8string(), getLastError());
+                        ErrorType::Close, fromFileSystem(p.path), getLastError());
                 }
             }
             p.mMap = nullptr;
@@ -548,7 +549,7 @@ namespace ftk
                 if (memP > memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, fromFileSystem(path)));
                 }
                 break;
             case SeekMode::Forward:
@@ -556,7 +557,7 @@ namespace ftk
                 if (memP > memEnd)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, fromFileSystem(path)));
                 }
                 break;
             case SeekMode::Reverse:
@@ -564,7 +565,7 @@ namespace ftk
                 if (memP < memStart)
                 {
                     throw std::runtime_error(
-                        getErrorMessage(ErrorType::SeekMMap, path.u8string()));
+                        getErrorMessage(ErrorType::SeekMMap, fromFileSystem(path)));
                 }
                 break;
             default: break;
@@ -589,7 +590,7 @@ namespace ftk
             if (!::SetFilePointerEx(f, v, 0, move))
             {
                 throw std::runtime_error(
-                    getErrorMessage(ErrorType::Seek, path.u8string(), getLastError()));
+                    getErrorMessage(ErrorType::Seek, fromFileSystem(path), getLastError()));
             }
         }
         switch (seekMode)
@@ -633,7 +634,7 @@ namespace ftk
         if (INVALID_HANDLE_VALUE == h)
         {
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Open, path.u8string(), getLastError()));
+                getErrorMessage(ErrorType::Open, fromFileSystem(path), getLastError()));
         }
         LARGE_INTEGER v;
         v.QuadPart = size;
@@ -645,13 +646,13 @@ namespace ftk
         {
             CloseHandle(h);
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Seek, path.u8string(), getLastError()));
+                getErrorMessage(ErrorType::Seek, fromFileSystem(path), getLastError()));
         }
         if (!::SetEndOfFile(h))
         {
             CloseHandle(h);
             throw std::runtime_error(
-                getErrorMessage(ErrorType::Write, path.u8string(), getLastError()));
+                getErrorMessage(ErrorType::Write, fromFileSystem(path), getLastError()));
         }
         CloseHandle(h);
     }
