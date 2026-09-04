@@ -59,6 +59,7 @@ namespace ftk
         std::shared_ptr<VerticalLayout> layout;
 
         std::function<void(const std::vector<Path>&)> callback;
+        std::function<void(const std::vector<Path>&)> selectCallback;
         std::function<void(void)> cancelCallback;
 
         std::shared_ptr<Observer<int> > currentObserver;
@@ -86,7 +87,10 @@ namespace ftk
         _setMousePressEnabled(true);
 
         p.mode = mode;
-        p.model = model;
+        // The create signature offers a default of no model, so honor it:
+        // a widget created without one gets its own, rather than crashing
+        // on the first dereference.
+        p.model = model ? model : FileBrowserModel::create(context);
         if (!path.empty())
         {
             p.model->setPath(path);
@@ -119,12 +123,12 @@ namespace ftk
         p.pathWidget = FileBrowserPath::create(context);
         p.pathWidget->setTooltip("Current directory");
 
-        p.panelWidget = FileBrowserPanel::create(context, model);
+        p.panelWidget = FileBrowserPanel::create(context, p.model);
         p.panelScrollWidget = ScrollWidget::create(context);
         p.panelScrollWidget->setWidget(p.panelWidget);
         p.panelScrollWidget->setVStretch(Stretch::Expanding);
 
-        p.view = FileBrowserView::create(context, mode, model);
+        p.view = FileBrowserView::create(context, mode, p.model);
         p.view->setKeyFocusCallback(
             [this](bool)
             {
@@ -306,6 +310,10 @@ namespace ftk
                     break;
                 default: break;
                 }
+                if (p.selectCallback)
+                {
+                    p.selectCallback(value);
+                }
             });
 
         p.fileEdit->setTextChangedCallback(
@@ -422,7 +430,7 @@ namespace ftk
             });
 
         p.pathObserver = Observer<std::filesystem::path>::create(
-            model->observePath(),
+            p.model->observePath(),
             [this](const std::filesystem::path& value)
             {
                 FTK_P();
@@ -431,28 +439,28 @@ namespace ftk
             });
 
         p.forwardObserver = Observer<bool>::create(
-            model->observeHasForward(),
+            p.model->observeHasForward(),
             [this](bool value)
             {
                 _p->forwardButton->setEnabled(value);
             });
 
         p.backObserver = Observer<bool>::create(
-            model->observeHasBack(),
+            p.model->observeHasBack(),
             [this](bool value)
             {
                 _p->backButton->setEnabled(value);
             });
 
         p.optionsObserver = Observer<FileBrowserOptions>::create(
-            model->observeOptions(),
+            p.model->observeOptions(),
             [this](const FileBrowserOptions&)
             {
                 _optionsUpdate();
             });
 
         p.extsObserver = ListObserver<std::string>::create(
-            model->observeExts(),
+            p.model->observeExts(),
             [this](const std::vector<std::string>&)
             {
                 _extsUpdate();
@@ -482,6 +490,12 @@ namespace ftk
         const std::function<void(const std::vector<Path>&)>& value)
     {
         _p->callback = value;
+    }
+
+    void FileBrowserWidget::setSelectCallback(
+        const std::function<void(const std::vector<Path>&)>& value)
+    {
+        _p->selectCallback = value;
     }
 
     void FileBrowserWidget::sizeHintEvent(const SizeHintEvent& event)

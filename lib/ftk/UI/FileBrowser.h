@@ -218,6 +218,11 @@ namespace ftk
         //! Set the callback.
         FTK_UI_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
 
+        //! Set the selection callback: what is selected, as it changes,
+        //! before anything is chosen. For an owner whose view follows the
+        //! selection, the way a preview does.
+        FTK_UI_API void setSelectCallback(const std::function<void(const std::vector<Path>&)>&);
+
         //! Set the cancel callback.
         FTK_UI_API void setCancelCallback(const std::function<void(void)>&);
 
