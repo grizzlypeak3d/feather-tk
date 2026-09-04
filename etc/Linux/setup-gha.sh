@@ -11,5 +11,5 @@ python --version
 # this script which configs measure coverage.
 sudo apt-get install lcov
 
-sudo apt-get install xorg-dev libglu1-mesa-dev mesa-common-dev mesa-utils xvfb
+sudo apt-get install xorg-dev libglu1-mesa-dev mesa-common-dev mesa-utils xvfb libpipewire-0.3-dev
 xvfb-run glxinfo
