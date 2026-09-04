@@ -75,7 +75,7 @@ jobs:
       run: |
         cd build-Debug
         sh ../ftk/etc/Linux/lcov.sh
-  linux-sdl3-build:
+  linux-sdl2-build:
     runs-on: ubuntu-latest
 
     env:
@@ -99,7 +99,7 @@ jobs:
 
     - name: Build
       run: |
-        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-sdl3
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-sdl2
 
     - name: Run tests
       run: |
