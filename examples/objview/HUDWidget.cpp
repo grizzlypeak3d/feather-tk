@@ -10,6 +10,7 @@
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 

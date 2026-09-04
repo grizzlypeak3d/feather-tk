@@ -8,6 +8,7 @@
 #include "SettingsModel.h"
 
 #include <ftk/UI/DialogSystem.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 

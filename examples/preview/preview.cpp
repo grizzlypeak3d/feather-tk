@@ -24,6 +24,7 @@
 
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Timer.h>
+#include <ftk/Core/Path.h>
 
 #include <PreviewJson.h>
 

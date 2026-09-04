@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/ImageIO.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 

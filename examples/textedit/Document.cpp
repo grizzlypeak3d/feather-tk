@@ -4,6 +4,7 @@
 #include "Document.h"
 
 #include <ftk/Core/FileIO.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 

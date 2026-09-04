@@ -3,6 +3,8 @@
 
 #include "Actions.h"
 
+#include <ftk/Core/Path.h>
+
 #include "App.h"
 #include "Document.h"
 #include "ImageView.h"

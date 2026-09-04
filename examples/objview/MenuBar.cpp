@@ -7,6 +7,7 @@
 #include "App.h"
 
 #include <ftk/UI/RecentFilesModel.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 

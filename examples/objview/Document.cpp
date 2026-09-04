@@ -3,6 +3,8 @@
 
 #include "Document.h"
 
+#include <ftk/Core/Path.h>
+
 #include "ObjIO.h"
 
 using namespace ftk;

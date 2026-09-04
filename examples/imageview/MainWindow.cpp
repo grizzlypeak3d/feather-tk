@@ -15,6 +15,7 @@
 
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 
