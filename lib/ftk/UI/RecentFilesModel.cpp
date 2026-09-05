@@ -112,7 +112,18 @@ namespace ftk
     void RecentFilesModel::addRecent(const Path& value)
     {
         FTK_P();
-        const Path abs = absolutePath(value);
+        Path abs = absolutePath(value);
+        // Whether this is a directory is recorded now, as a trailing
+        // separator, while the path was just opened and is warm: asking
+        // later means touching the file system again, and a recent on a
+        // network share that has gone to sleep hangs whoever asks.
+        std::error_code ec;
+        if (!abs.getFileName().empty() &&
+            std::filesystem::is_directory(
+                std::filesystem::u8path(abs.get()), ec))
+        {
+            abs = Path(appendSeparator(abs.get()));
+        }
         auto recent = p.recent->get();
         auto i = recent.begin();
         while (i != recent.end())

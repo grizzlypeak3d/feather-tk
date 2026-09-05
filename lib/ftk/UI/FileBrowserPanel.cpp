@@ -235,9 +235,13 @@ namespace ftk
                     _p->recent.clear();
                     for (auto i = paths.rbegin(); i != paths.rend(); ++i)
                     {
+                        // A directory was recorded with a trailing
+                        // separator, so the file system is not asked: a
+                        // recent on a sleeping network share would hang
+                        // the browser opening.
                         std::filesystem::path tmp =
                             std::filesystem::u8path(i->get());
-                        if (!std::filesystem::is_directory(tmp))
+                        if (!i->getFileName().empty())
                         {
                             tmp = tmp.parent_path();
                         }

@@ -92,6 +92,18 @@ namespace ftk
                 // is and is why the two entries are not the same.
                 FTK_CHECK(!model->getRecent()[1].isSeq());
             }
+            {
+                // A directory is recorded with a trailing separator, so
+                // whoever lists the recents can tell it from a file without
+                // asking the file system -- a recent on a sleeping network
+                // share hangs anyone who asks.
+                auto model = RecentFilesModel::create(_context);
+                const std::filesystem::path dir =
+                    std::filesystem::current_path();
+                model->addRecent(Path(dir.u8string()));
+                FTK_CHECK(1 == model->getRecent().size());
+                FTK_CHECK(model->getRecent()[0].getFileName().empty());
+            }
         }
     }
 }
