@@ -13,6 +13,31 @@
 
 namespace ftk
 {
+    std::filesystem::path toFileSystem(const std::string& value)
+    {
+#if defined(__cpp_char8_t)
+        return std::filesystem::path(
+            std::u8string(value.begin(), value.end()));
+#else
+        return std::filesystem::u8path(value);
+#endif // __cpp_char8_t
+    }
+
+    std::string fromFileSystem(const std::filesystem::path& value)
+    {
+        // Under C++17 u8string() is a std::string and this is a copy;
+        // under C++20 it is a std::u8string and the iterators convert
+        // the characters.
+        const auto u8 = value.u8string();
+        return std::string(u8.begin(), u8.end());
+    }
+
+    std::string fromFileSystemGeneric(const std::filesystem::path& value)
+    {
+        const auto u8 = value.generic_u8string();
+        return std::string(u8.begin(), u8.end());
+    }
+
     std::vector<std::string> split(std::filesystem::path path)
     {
         std::list<std::string> out;
@@ -21,13 +46,13 @@ namespace ftk
         {
             if (!path.filename().empty())
             {
-                out.push_front(path.filename().u8string());
+                out.push_front(fromFileSystem(path.filename()));
             }
             path = path.parent_path();
         }
         if (!path.empty())
         {
-            out.push_front(path.u8string());
+            out.push_front(fromFileSystem(path));
         }
         return std::vector<std::string>(out.begin(), out.end());
     }
@@ -793,8 +818,8 @@ namespace ftk
         {
             for (const auto& i : std::filesystem::directory_iterator(dir))
             {
-                const Path path(i.path().u8string(), pathOptions);
-                const std::string fileName = i.path().filename().u8string();
+                const Path path(fromFileSystem(i.path()), pathOptions);
+                const std::string fileName = fromFileSystem(i.path().filename());
 
                 // Apply filters.
                 bool keep = true;
@@ -938,7 +963,7 @@ namespace ftk
                 std::error_code ec;
                 if (entry.isDir &&
                     !std::filesystem::is_symlink(
-                        std::filesystem::u8path(entry.path.get()), ec) &&
+                        toFileSystem(entry.path.get()), ec) &&
                     !ec)
                 {
                     const auto children = dirList(
@@ -960,7 +985,7 @@ namespace ftk
         const std::string& dir,
         const DirListOptions& options)
     {
-        return dirList(std::filesystem::u8path(dir), options);
+        return dirList(toFileSystem(dir), options);
     }
 
     std::vector<FrameSeq> findSeq(
@@ -971,7 +996,7 @@ namespace ftk
         if (path.hasNum() || path.hasSeqWildcard())
         {
             const auto abs = std::filesystem::absolute(
-                std::filesystem::u8path(path.get()));
+                toFileSystem(path.get()));
             const auto parent = abs.parent_path();
             if (std::filesystem::exists(parent))
             {
@@ -981,7 +1006,7 @@ namespace ftk
                     {
                         continue;
                     }
-                    const Path entry(i.path().u8string(), pathOptions);
+                    const Path entry(fromFileSystem(i.path()), pathOptions);
                     if (path.seq(entry) && entry.getFrames().has_value())
                     {
                         frames.push_back(entry.getFrames().value().min());
@@ -1000,14 +1025,14 @@ namespace ftk
         if ((out.hasNum() && !out.isSeq()) || out.hasSeqWildcard())
         {
             // Find matching sequence files.
-            const auto abs = std::filesystem::absolute(std::filesystem::u8path(out.get()));
+            const auto abs = std::filesystem::absolute(toFileSystem(out.get()));
             const auto parent = abs.parent_path();
             if (std::filesystem::exists(parent))
             {
                 bool init = true;
                 for (const auto& i : std::filesystem::directory_iterator(parent))
                 {
-                    const Path entry(i.path().u8string(), pathOptions);
+                    const Path entry(fromFileSystem(i.path()), pathOptions);
                     const bool isDir = std::filesystem::is_directory(i.path());
                     if (init && !isDir)
                     {

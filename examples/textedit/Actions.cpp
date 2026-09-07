@@ -3,6 +3,8 @@
 
 #include "Actions.h"
 
+#include <ftk/Core/Path.h>
+
 #include "App.h"
 #include "Document.h"
 #include "MainWindow.h"
@@ -127,7 +129,7 @@ namespace textedit
                     {
                         if (auto app = appWeak.lock())
                         {
-                            app->open(std::filesystem::u8path(value.get()));
+                            app->open(ftk::toFileSystem(value.get()));
                         }
                     });
             });

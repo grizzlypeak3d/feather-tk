@@ -11,6 +11,7 @@
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {
@@ -46,7 +47,7 @@ namespace ftk
                 app->tick();
 
                 auto edit = FileEdit::create(_context, layout);
-                Path path(std::filesystem::current_path().u8string());
+                Path path(fromFileSystem(std::filesystem::current_path()));
                 edit->setPath(path);
                 edit->setPath(path);
                 FTK_CHECK(path == edit->getPath());

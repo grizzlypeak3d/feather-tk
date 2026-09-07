@@ -4,6 +4,7 @@
 #include "Document.h"
 
 #include <ftk/Core/FileIO.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 
@@ -113,12 +114,12 @@ namespace textedit
     void Document::_nameUpdate()
     {
         const std::filesystem::path& path = _path->get();
-        std::string name = !path.empty() ? path.filename().u8string() : "Untitled";
+        std::string name = !path.empty() ? ftk::fromFileSystem(path.filename()) : "Untitled";
         if (_changed->get())
         {
             name += "*";
         }
         _name->setIfChanged(name);
-        _tooltip->setIfChanged(!path.empty() ? path.u8string() : "Untitled");
+        _tooltip->setIfChanged(!path.empty() ? ftk::fromFileSystem(path) : "Untitled");
     }
 }

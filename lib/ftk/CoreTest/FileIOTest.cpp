@@ -6,6 +6,7 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/FileIO.h>
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Path.h>
 
 #include <algorithm>
 #include <atomic>
@@ -223,7 +224,7 @@ namespace ftk
                 catch (const std::exception&)
                 {}
                 {
-                    const std::filesystem::path path = _getTempDir() / std::filesystem::u8path("大平原");
+                    const std::filesystem::path path = _getTempDir() / toFileSystem("大平原");
                     auto fileIO = FileIO::create(path, FileMode::Write);
                     fileIO->writeU8(1);
                     fileIO.reset();

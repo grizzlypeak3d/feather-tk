@@ -10,6 +10,7 @@
 
 #include <ftk/Core/Error.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Path.h>
 
 namespace ftk
 {
@@ -166,7 +167,7 @@ namespace ftk
                 // directory is passed as it stands, whether it is what is
                 // being picked or what the field was left holding.
                 std::filesystem::path path =
-                    std::filesystem::u8path(p.path.get());
+                    toFileSystem(p.path.get());
                 std::error_code ec;
                 if (!path.empty() && !std::filesystem::is_directory(path, ec))
                 {

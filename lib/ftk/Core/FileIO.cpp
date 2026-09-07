@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Error.h>
+#include <ftk/Core/Path.h>
 
 #include <atomic>
 #include <algorithm>
@@ -48,14 +49,14 @@ namespace ftk
         FileRead readType,
         FileAccess access)
     {
-        return create(std::filesystem::u8path(path), mode, readType, access);
+        return create(toFileSystem(path), mode, readType, access);
     }
 
     std::shared_ptr<FileIO> FileIO::create(
         const std::string& path,
         const MemFile& memFile)
     {
-        return create(std::filesystem::u8path(path), memFile);
+        return create(toFileSystem(path), memFile);
     }
 
     void FileIO::read8(int8_t* value, size_t size)
@@ -276,7 +277,7 @@ namespace ftk
 
     std::vector<std::string> readLines(const std::string& path)
     {
-        return readLines(std::filesystem::u8path(path));
+        return readLines(toFileSystem(path));
     }
 
     void writeLines(const std::filesystem::path& path, const std::vector<std::string>& lines)
@@ -291,11 +292,11 @@ namespace ftk
 
     void writeLines(const std::string& path, const std::vector<std::string>& lines)
     {
-        writeLines(std::filesystem::u8path(path), lines);
+        writeLines(toFileSystem(path), lines);
     }
 
     void truncateFile(const std::string& path, size_t size)
     {
-        truncateFile(std::filesystem::u8path(path), size);
+        truncateFile(toFileSystem(path), size);
     }
 }

@@ -15,6 +15,7 @@
 
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 
@@ -118,7 +119,7 @@ namespace imageview
                 std::vector<std::filesystem::path> paths;
                 for (const auto& text : textData->getText())
                 {
-                    paths.push_back(std::filesystem::u8path(text));
+                    paths.push_back(ftk::toFileSystem(text));
                 }
                 app->open(paths);
             }

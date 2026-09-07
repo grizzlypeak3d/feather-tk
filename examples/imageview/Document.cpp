@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/ImageIO.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 
@@ -40,12 +41,12 @@ namespace imageview
 
     std::string Document::getName() const
     {
-        return _path.filename().u8string();
+        return ftk::fromFileSystem(_path.filename());
     }
 
     std::string Document::getTooltip() const
     {
-        return _path.u8string();
+        return ftk::fromFileSystem(_path);
     }
 
     const std::shared_ptr<ftk::Image>& Document::getImage() const

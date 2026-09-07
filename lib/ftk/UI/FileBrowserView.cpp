@@ -1156,13 +1156,13 @@ namespace ftk
                 }
                 else if (dirEntry.isDir)
                 {
-                    p.model->setPath(std::filesystem::u8path(dirEntry.path.get()));
+                    p.model->setPath(toFileSystem(dirEntry.path.get()));
                 }
                 break;
             case FileBrowserMode::Dir:
                 if (dirEntry.isDir)
                 {
-                    p.model->setPath(std::filesystem::u8path(dirEntry.path.get()));
+                    p.model->setPath(toFileSystem(dirEntry.path.get()));
                 }
                 break;
             default: break;

@@ -15,6 +15,7 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Path.h>
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -76,7 +77,7 @@ namespace ftk
                 if (dladdr(reinterpret_cast<void*>(&libraryPath), &info) &&
                     info.dli_fname)
                 {
-                    out = std::filesystem::u8path(info.dli_fname);
+                    out = toFileSystem(info.dli_fname);
                 }
 #endif // _WIN32
                 return out;
@@ -126,7 +127,7 @@ namespace ftk
                 logSystem->print(
                     "ftk::gl::System",
                     Format("Library: \"{0}\", modified {1}").
-                        arg(path.u8string()).
+                        arg(fromFileSystem(path)).
                         arg(modified));
             }
 #if defined(__APPLE__)

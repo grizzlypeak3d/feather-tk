@@ -100,7 +100,7 @@ namespace ftk
                 auto model = RecentFilesModel::create(_context);
                 const std::filesystem::path dir =
                     std::filesystem::current_path();
-                model->addRecent(Path(dir.u8string()));
+                model->addRecent(Path(fromFileSystem(dir)));
                 FTK_CHECK(1 == model->getRecent().size());
                 FTK_CHECK(model->getRecent()[0].getFileName().empty());
             }

@@ -21,13 +21,13 @@ namespace ftk
         void path(py::module_& m)
         {
             m.def("isDotFile", &isDotFile);
-            m.def("split", [](const std::string& path) { return split(std::filesystem::u8path(path)); });
+            m.def("split", [](const std::string& path) { return split(toFileSystem(path)); });
             m.def("getDrives", []
                 {
                     std::vector<std::string> out;
                     for (const auto& i : getDrives())
                     {
-                        out.push_back(i.u8string());
+                        out.push_back(fromFileSystem(i));
                     }
                     return out;
                 });
@@ -39,7 +39,7 @@ namespace ftk
                 .value("Downloads", UserPath::Downloads);
             FTK_ENUM_BIND(m, UserPath);
 
-            m.def("getUserPath", [](UserPath value) { return getUserPath(value).u8string(); });
+            m.def("getUserPath", [](UserPath value) { return fromFileSystem(getUserPath(value)); });
 
             m.def(
                 "toString",
@@ -171,7 +171,7 @@ namespace ftk
                 "dirList",
                 [](const std::string& path, const DirListOptions& options)
                 {
-                    return dirList(std::filesystem::u8path(path), options);
+                    return dirList(toFileSystem(path), options);
                 },
                 py::arg("path"),
                 py::arg("options") = DirListOptions());

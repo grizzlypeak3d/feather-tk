@@ -3,6 +3,8 @@
 
 #include "Document.h"
 
+#include <ftk/Core/Path.h>
+
 #include "ObjIO.h"
 
 using namespace ftk;
@@ -37,12 +39,12 @@ namespace objview
 
     std::string Document::getName() const
     {
-        return _path.filename().u8string();
+        return ftk::fromFileSystem(_path.filename());
     }
 
     std::string Document::getTooltip() const
     {
-        return _path.u8string();
+        return ftk::fromFileSystem(_path);
     }
 
     const std::shared_ptr<ftk::TriMesh3F>& Document::getMesh() const

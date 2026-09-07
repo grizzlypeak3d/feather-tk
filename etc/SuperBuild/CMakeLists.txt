@@ -15,8 +15,8 @@ set(ftk_nlohmann_json ON CACHE BOOL "Build nlohmann_json")
 set(ftk_PNG ON CACHE BOOL "Build PNG")
 set(ftk_Freetype ON CACHE BOOL "Build Freetype")
 set(ftk_lunasvg ON CACHE BOOL "Build lunasvg")
-set(ftk_SDL2 ON CACHE BOOL "Build SDL2")
-set(ftk_SDL3 OFF CACHE BOOL "Build SDL3")
+set(ftk_SDL2 OFF CACHE BOOL "Build SDL2")
+set(ftk_SDL3 ON CACHE BOOL "Build SDL3")
 set(ftk_nfd_DEFAULT OFF)
 if(WIN32 OR APPLE)
     set(ftk_nfd_DEFAULT ON)
@@ -37,7 +37,7 @@ list(PREPEND CMAKE_MODULE_PATH
     ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD 20)
 endif()
 
 if(NOT BUILD_SHARED_LIBS)
@@ -80,7 +80,10 @@ set(ftk_DEPS_ARGS
     -DCMAKE_POLICY_DEFAULT_CMP0091:STRING=NEW
     -DCMAKE_POLICY_DEFAULT_CMP0114:STRING=NEW
     -DCMAKE_FIND_FRAMEWORK=${CMAKE_FIND_FRAMEWORK}
-    -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+    # The dependencies build at the standard they support rather
+    # than inheriting ours: OpenTimelineIO does not compile as
+    # C++20. Mixing the standards is ABI safe.
+    -DCMAKE_CXX_STANDARD=17
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
     -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY}

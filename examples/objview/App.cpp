@@ -8,6 +8,7 @@
 #include "SettingsModel.h"
 
 #include <ftk/UI/DialogSystem.h>
+#include <ftk/Core/Path.h>
 
 using namespace ftk;
 
@@ -20,7 +21,7 @@ namespace
         std::vector<Path> out;
         for (const auto& i : value)
         {
-            out.push_back(Path(i.u8string()));
+            out.push_back(Path(ftk::fromFileSystem(i)));
         }
         return out;
     }
@@ -30,7 +31,7 @@ namespace
         std::vector<std::filesystem::path> out;
         for (const auto& i : value)
         {
-            out.push_back(std::filesystem::u8path(i.get()));
+            out.push_back(ftk::toFileSystem(i.get()));
         }
         return out;
     }
@@ -95,7 +96,7 @@ namespace objview
         {
             auto doc = Document::create(_context, path);
             _documentModel->add(doc);
-            _recentFilesModel->addRecent(Path(path.u8string()));
+            _recentFilesModel->addRecent(Path(ftk::fromFileSystem(path)));
         }
         catch (const std::exception& e)
         {
@@ -115,7 +116,7 @@ namespace objview
             {
                 auto doc = Document::create(_context, path);
                 _documentModel->add(doc);
-                _recentFilesModel->addRecent(Path(path.u8string()));
+                _recentFilesModel->addRecent(Path(ftk::fromFileSystem(path)));
             }
             catch (const std::exception& e)
             {
@@ -173,7 +174,7 @@ namespace objview
         std::vector<std::filesystem::path> paths;
         for (const std::string& path : _cmdLine.paths->getList())
         {
-            paths.push_back(std::filesystem::u8path(path));
+            paths.push_back(ftk::toFileSystem(path));
         }
         if (!paths.empty())
         {

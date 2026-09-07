@@ -8,6 +8,7 @@
 #include <ftk/Core/OS.h>
 
 #include <ftk/Core/String.h>
+#include <ftk/Core/Path.h>
 
 #include <filesystem>
 
@@ -39,7 +40,7 @@ namespace ftk
             // Where the running program is, which is what an application
             // looks for the things installed beside it from.
             const std::filesystem::path path = getExePath();
-            _print(Format("Executable: {0}").arg(path.u8string()));
+            _print(Format("Executable: {0}").arg(fromFileSystem(path)));
             FTK_CHECK(!path.empty());
             FTK_CHECK(path.is_absolute());
             FTK_CHECK(std::filesystem::exists(path));

@@ -6,6 +6,7 @@
 #include <ftk/Core/Memory.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Path.h>
 
 #include <cstring>
 
@@ -203,11 +204,11 @@ namespace ftk
                     p.f = nullptr;
                 }
 #else // _WINDOWS
-                p.f = fopen(path.u8string().c_str(), "rb");
+                p.f = fopen(fromFileSystem(path).c_str(), "rb");
 #endif // _WINDOWS
                 if (!p.f)
                 {
-                    throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(path.u8string()));
+                    throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(fromFileSystem(path)));
                 }
             }
 
@@ -226,7 +227,7 @@ namespace ftk
                 channels,
                 bitDepth))
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\": {1}").arg(path.u8string()).arg(p.error.message));
+                throw std::runtime_error(Format("Cannot open: \"{0}\": {1}").arg(fromFileSystem(path)).arg(p.error.message));
             }
             p.scanlineSize = width * channels * bitDepth / 8;
 
@@ -269,7 +270,7 @@ namespace ftk
             }
             if (ImageType::None == type)
             {
-                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(path.u8string()));
+                throw std::runtime_error(Format("Cannot open: \"{0}\"").arg(fromFileSystem(path)));
             }
 
             p.info = ImageInfo(width, height, type);
@@ -297,7 +298,7 @@ namespace ftk
                 if (!scanline(p.png, data))
                 {
                     throw std::runtime_error(Format("Cannot read: \"{0}\": {1}").
-                        arg(_path.u8string()).arg(p.error.message));
+                        arg(fromFileSystem(_path)).arg(p.error.message));
                 }
             }
             end(p.png, p.pngInfoEnd);
