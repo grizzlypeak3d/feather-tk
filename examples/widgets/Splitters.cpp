@@ -24,7 +24,7 @@ namespace widgets
         // the layout centers it across, and the spacers center it along.
         _splitter = Splitter::create(context, Orientation::Vertical, shared_from_this());
         auto splitter2 = Splitter::create(context, Orientation::Horizontal, _splitter);
-        for (const auto& text : { "One", "Two", "Three" })
+        for (const std::string& text : { "One", "Two", "Three" })
         {
             auto layout = VerticalLayout::create(
                 context,
