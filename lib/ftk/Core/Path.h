@@ -53,6 +53,14 @@ namespace ftk
         Documents,
         Downloads,
 
+        //! Where an application keeps its own files -- settings, logs,
+        //! recovery state: "Application Support" on macOS, the roaming
+        //! AppData directory on Windows, XDG_CONFIG_HOME or ~/.config
+        //! elsewhere. Not Documents, which cloud drives sync and macOS gates
+        //! behind a permission prompt; a log rewritten on every launch trips
+        //! over both.
+        Config,
+
         Count,
         First = Home
     };

@@ -18,7 +18,7 @@ namespace ftk
         const std::string& directory,
         const std::string& fileName)
     {
-        return getUserPath(UserPath::Documents) / directory / fileName;
+        return getUserPath(UserPath::Config) / directory / fileName;
     }
 
     struct Settings::Private

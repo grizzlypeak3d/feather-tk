@@ -55,6 +55,7 @@ namespace ftk
         case UserPath::Desktop:   id = FOLDERID_Desktop;   break;
         case UserPath::Documents: id = FOLDERID_Documents; break;
         case UserPath::Downloads: id = FOLDERID_Downloads; break;
+        case UserPath::Config:    id = FOLDERID_RoamingAppData; break;
         default: break;
         }
         wchar_t* path = nullptr;

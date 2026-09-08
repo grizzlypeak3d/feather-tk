@@ -98,7 +98,8 @@ namespace ftk
         "Home",
         "Desktop",
         "Documents",
-        "Downloads");
+        "Downloads",
+        "Config");
 
     TmpDir::TmpDir() :
         _path(createTmpDir())
