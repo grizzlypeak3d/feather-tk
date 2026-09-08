@@ -45,8 +45,16 @@ if(EMSCRIPTEN)
     set(ftk_CJK_DEFAULT OFF)
 endif()
 set(ftk_CJK ${ftk_CJK_DEFAULT} CACHE BOOL "Bundle the pan-CJK fallback font")
-set(ftk_SDL2 OFF CACHE BOOL "Enable support for SDL2")
-set(ftk_SDL3 ON CACHE BOOL "Enable support for SDL3")
+# The web build stays on SDL2: Emscripten supplies its own SDL2 port,
+# and the Emscripten code paths were written against it. Everywhere
+# else SDL3 is the default.
+if(EMSCRIPTEN)
+    set(ftk_SDL2 ON CACHE BOOL "Enable support for SDL2")
+    set(ftk_SDL3 OFF CACHE BOOL "Enable support for SDL3")
+else()
+    set(ftk_SDL2 OFF CACHE BOOL "Enable support for SDL2")
+    set(ftk_SDL3 ON CACHE BOOL "Enable support for SDL3")
+endif()
 set(ftk_nfd_DEFAULT OFF)
 if(WIN32 OR APPLE)
     set(ftk_nfd_DEFAULT ON)
