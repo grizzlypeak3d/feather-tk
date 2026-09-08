@@ -5,44 +5,51 @@
 
 #include <ftk/UI/LineEditModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void lineEditModel(py::module_& m)
+        void lineEditModel(nb::module_& m)
         {
-            py::class_<LineEditSelection>(m, "LineEditSelection")
-                .def(py::init<>())
-                .def(py::init<int>(), py::arg("pos"))
-                .def(py::init<int, int>(), py::arg("first"), py::arg("second"))
-                .def_readwrite("first", &LineEditSelection::first)
-                .def_readwrite("second", &LineEditSelection::second)
+            nb::class_<LineEditSelection>(m, "LineEditSelection")
+                .def(nb::init<>())
+                .def(nb::init<int>(), nb::arg("pos"))
+                .def(nb::init<int, int>(), nb::arg("first"), nb::arg("second"))
+                .def_rw("first", &LineEditSelection::first)
+                .def_rw("second", &LineEditSelection::second)
                 .def("isValid", &LineEditSelection::isValid)
                 .def("min", &LineEditSelection::min)
                 .def("max", &LineEditSelection::max)
                 .def("__eq__", &LineEditSelection::operator==)
                 .def("__ne__", &LineEditSelection::operator!=);
 
-            py::class_<LineEditModel, std::shared_ptr<LineEditModel> >(m, "LineEditModel")
+            nb::class_<LineEditModel>(m, "LineEditModel")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::string&>(&LineEditModel::create)),
-                    py::arg("context"),
-                    py::arg("text") = std::string())
-                .def_property("text", &LineEditModel::getText, &LineEditModel::setText)
+                    nb::arg("context"),
+                    nb::arg("text") = std::string())
+                .def_prop_rw("text", &LineEditModel::getText, &LineEditModel::setText)
                 .def("observeText", &LineEditModel::observeText)
                 .def("clearText", &LineEditModel::clearText)
-                .def_property("readOnly", &LineEditModel::isReadOnly, &LineEditModel::setReadOnly)
+                .def_prop_rw("readOnly", &LineEditModel::isReadOnly, &LineEditModel::setReadOnly)
                 .def("observeReadOnly", &LineEditModel::observeReadOnly)
-                .def_property("cursor", &LineEditModel::getCursor, &LineEditModel::setCursor)
+                .def_prop_rw("cursor", &LineEditModel::getCursor, &LineEditModel::setCursor)
                 .def("observeCursor", &LineEditModel::observeCursor)
-                .def_property("selection", &LineEditModel::getSelection, &LineEditModel::setSelection, py::return_value_policy::copy)
+                .def_prop_rw("selection", &LineEditModel::getSelection, &LineEditModel::setSelection, nb::rv_policy::copy)
                 .def("observeSelection", &LineEditModel::observeSelection)
                 .def("selectAll", &LineEditModel::selectAll)
                 .def("clearSelection", &LineEditModel::clearSelection)
@@ -51,9 +58,9 @@ namespace ftk
                 .def("cut", &LineEditModel::cut)
                 .def("copy", &LineEditModel::copy)
                 .def("paste", &LineEditModel::paste)
-                .def("input", &LineEditModel::input, py::arg("text"))
-                .def("key", &LineEditModel::key, py::arg("key"), py::arg("modifiers") = 0)
-                .def_property("regex", &LineEditModel::getRegex, &LineEditModel::setRegex);
+                .def("input", &LineEditModel::input, nb::arg("text"))
+                .def("key", &LineEditModel::key, nb::arg("key"), nb::arg("modifiers") = 0)
+                .def_prop_rw("regex", &LineEditModel::getRegex, &LineEditModel::setRegex);
         }
     }
 }

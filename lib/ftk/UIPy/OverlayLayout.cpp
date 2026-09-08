@@ -5,22 +5,24 @@
 
 #include <ftk/UI/OverlayLayout.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void overlayLayout(py::module_& m)
+        void overlayLayout(nb::module_& m)
         {
-            py::class_<OverlayLayout, IWidget, std::shared_ptr<OverlayLayout> >(m, "OverlayLayout")
+            nb::class_<OverlayLayout, IWidget>(m, "OverlayLayout")
                 .def(
-                    py::init(&OverlayLayout::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("marginRole",
+                    nb::new_(&OverlayLayout::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("marginRole",
                     &OverlayLayout::getMarginRole,
                     &OverlayLayout::setMarginRole);
         }

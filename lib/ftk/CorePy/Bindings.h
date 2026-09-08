@@ -4,7 +4,9 @@
 #pragma once
 
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
 #define FTK_ENUM_BIND(M, ENUM) \
     M.def("get" #ENUM "Enums", &get##ENUM##Enums); \
@@ -19,53 +21,53 @@ namespace ftk
     namespace python
     {
         template<typename T>
-        void cmdLineOption(pybind11::module_&, const std::string& type);
+        void cmdLineOption(nanobind::module_&, const std::string& type);
         template<typename T>
-        void cmdLineArg(pybind11::module_&, const std::string& type);
+        void cmdLineArg(nanobind::module_&, const std::string& type);
         template<typename T>
-        void cmdLineListArg(pybind11::module_&, const std::string& type);
+        void cmdLineListArg(nanobind::module_&, const std::string& type);
 
         template<typename T>
-        void observable(pybind11::module_&, const std::string& type);
+        void observable(nanobind::module_&, const std::string& type);
         template<typename T>
-        void observableList(pybind11::module_&, const std::string& type);
+        void observableList(nanobind::module_&, const std::string& type);
         template<typename T, typename U>
-        void observableMap(pybind11::module_&, const std::string& type);
+        void observableMap(nanobind::module_&, const std::string& type);
 
-        void box(pybind11::module_&);
-        void cmdLine(pybind11::module_&);
-        void color(pybind11::module_&);
-        void command(pybind11::module_&);
-        void context(pybind11::module_&);
-        void diagSystem(pybind11::module_&);
-        void fileLogSystem(pybind11::module_&);
-        void fontSystem(pybind11::module_&);
-        void iApp(pybind11::module_&);
-        void image(pybind11::module_&);
-        void iRender(pybind11::module_&);
-        void iSystem(pybind11::module_&);
-        void logSystem(pybind11::module_&);
-        void math(pybind11::module_&);
-        void matrix(pybind11::module_&);
-        void memory(pybind11::module_&);
-        void mesh(pybind11::module_&);
-        void noise(pybind11::module_&);
-        void observable(pybind11::module_&);
-        void observableList(pybind11::module_&);
-        void observableMap(pybind11::module_&);
-        void os(pybind11::module_&);
-        void path(pybind11::module_&);
-        void random(pybind11::module_&);
-        void range(pybind11::module_&);
-        void renderOptions(pybind11::module_&);
-        void size(pybind11::module_&);
-        void string(pybind11::module_&);
-        void time(pybind11::module_&);
-        void timer(pybind11::module_&);
-        void vector(pybind11::module_&);
-        void version(pybind11::module_&);
+        void box(nanobind::module_&);
+        void cmdLine(nanobind::module_&);
+        void color(nanobind::module_&);
+        void command(nanobind::module_&);
+        void context(nanobind::module_&);
+        void diagSystem(nanobind::module_&);
+        void fileLogSystem(nanobind::module_&);
+        void fontSystem(nanobind::module_&);
+        void iApp(nanobind::module_&);
+        void image(nanobind::module_&);
+        void iRender(nanobind::module_&);
+        void iSystem(nanobind::module_&);
+        void logSystem(nanobind::module_&);
+        void math(nanobind::module_&);
+        void matrix(nanobind::module_&);
+        void memory(nanobind::module_&);
+        void mesh(nanobind::module_&);
+        void noise(nanobind::module_&);
+        void observable(nanobind::module_&);
+        void observableList(nanobind::module_&);
+        void observableMap(nanobind::module_&);
+        void os(nanobind::module_&);
+        void path(nanobind::module_&);
+        void random(nanobind::module_&);
+        void range(nanobind::module_&);
+        void renderOptions(nanobind::module_&);
+        void size(nanobind::module_&);
+        void string(nanobind::module_&);
+        void time(nanobind::module_&);
+        void timer(nanobind::module_&);
+        void vector(nanobind::module_&);
+        void version(nanobind::module_&);
 
-        void coreBind(pybind11::module_&);
+        void coreBind(nanobind::module_&);
     }
 }
 

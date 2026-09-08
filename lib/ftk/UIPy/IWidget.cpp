@@ -9,11 +9,18 @@
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/Menu.h>
 
-#include <pybind11/functional.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -22,73 +29,102 @@ namespace ftk
         class PyIWidget : public PyWidget<IWidget>
         {
         public:
-            static std::shared_ptr<PyIWidget> create(
+            void pyInit(
                 const std::shared_ptr<Context>& context,
                 const std::string& objectName,
-                const std::shared_ptr<IWidget>& parent = nullptr)
+                const std::shared_ptr<IWidget>& parent)
             {
-                auto out = std::shared_ptr<PyIWidget>(new PyIWidget);
-                out->_init(context, objectName, parent);
-                return out;
+                _init(context, objectName, parent);
             }
         };
 
-        void iWidget(py::module_& m)
+        void iWidget(nb::module_& m)
         {
-            py::class_<IWidget, std::shared_ptr<IWidget>, PyIWidget>(m, "IWidget")
+            nb::class_<IWidget, PyIWidget>(m, "IWidget")
                 .def(
-                    py::init(&PyIWidget::create),
-                    py::arg("context"),
-                    py::arg("objectName"),
-                    py::arg("parent") = nullptr)
+                    "__init__",
+                    [](IWidget* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::string& objectName,
+                       const std::shared_ptr<IWidget>& parent)
+                    {
+                        pyConstruct<PyIWidget>(self,
+                            [&](PyIWidget& w)
+                            {
+                                w.pyInit(context, objectName, parent);
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("objectName"),
+                    nb::arg("parent") = nullptr)
 
-                .def_property_readonly("context", &IWidget::getContext)
+                .def_prop_ro("context", &IWidget::getContext)
 
-                .def_property("objectName", &IWidget::getObjectName, &IWidget::setObjectName)
-                .def_property_readonly("objectPath", &IWidget::getObjectPath)
-                .def_property("backgroundRole", &IWidget::getBackgroundRole, &IWidget::setBackgroundRole)
+                .def_prop_rw("objectName", &IWidget::getObjectName, &IWidget::setObjectName)
+                .def_prop_ro(
+                    "objectPath",
+                    // These take self as a shared_ptr: they reach
+                    // shared_from_this(), which only works while a C++
+                    // shared_ptr for the instance exists.
+                    [](const std::shared_ptr<IWidget>& self)
+                    {
+                        return self->getObjectPath();
+                    })
+                .def_prop_rw("backgroundRole", &IWidget::getBackgroundRole, &IWidget::setBackgroundRole)
 
-                .def_property("parent", &IWidget::getParent, &IWidget::setParent)
+                .def_prop_rw(
+                    "parent",
+                    &IWidget::getParent,
+                    [](const std::shared_ptr<IWidget>& self,
+                       const std::shared_ptr<IWidget>& value)
+                    {
+                        self->setParent(value);
+                    })
                 .def("getChildren", &IWidget::getChildren)
                 .def("moveToFront", &IWidget::moveToFront)
                 .def("moveToBack", &IWidget::moveToBack)
-                .def_property_readonly("window", &IWidget::getWindow)
+                .def_prop_ro(
+                    "window",
+                    [](const std::shared_ptr<IWidget>& self)
+                    {
+                        return self->getWindow();
+                    })
 
                 .def("getSizeHint", &IWidget::getSizeHint)
-                .def_property("hStretch", &IWidget::getHStretch, &IWidget::setHStretch)
-                .def_property("vStretch", &IWidget::getVStretch, &IWidget::setVStretch)
+                .def_prop_rw("hStretch", &IWidget::getHStretch, &IWidget::setHStretch)
+                .def_prop_rw("vStretch", &IWidget::getVStretch, &IWidget::setVStretch)
                 .def(
                     "setStretch",
-                    py::overload_cast<Stretch, Stretch>(&IWidget::setStretch),
-                    py::arg("horizontal"),
-                    py::arg("vertical"))
+                    nb::overload_cast<Stretch, Stretch>(&IWidget::setStretch),
+                    nb::arg("horizontal"),
+                    nb::arg("vertical"))
                 .def(
                     "setStretch",
-                    py::overload_cast<Stretch>(&IWidget::setStretch))
-                .def_property("hAlign", &IWidget::getHAlign, &IWidget::setHAlign)
-                .def_property("vAlign", &IWidget::getVAlign, &IWidget::setVAlign)
+                    nb::overload_cast<Stretch>(&IWidget::setStretch))
+                .def_prop_rw("hAlign", &IWidget::getHAlign, &IWidget::setHAlign)
+                .def_prop_rw("vAlign", &IWidget::getVAlign, &IWidget::setVAlign)
                 .def(
                     "setAlign",
                     &IWidget::setAlign,
-                    py::arg("horizontal"),
-                    py::arg("vertical"))
+                    nb::arg("horizontal"),
+                    nb::arg("vertical"))
                 .def("setGeometry", &IWidget::setGeometry)
-                .def_property_readonly("geometry", &IWidget::getGeometry, py::return_value_policy::copy)
+                .def_prop_ro("geometry", &IWidget::getGeometry, nb::rv_policy::copy)
                 .def("setPos", &IWidget::setPos)
                 .def("setSize", &IWidget::setSize)
 
                 .def(
                     "isVisible",
                     &IWidget::isVisible,
-                    py::arg("andParentsVisible") = true)
+                    nb::arg("andParentsVisible") = true)
                 .def("setVisible", &IWidget::setVisible)
                 .def("show", &IWidget::show)
                 .def("hide", &IWidget::hide)
-                .def_property_readonly("clipped", &IWidget::isClipped)
-                .def_property("clipChildren", &IWidget::doesClipChildren, &IWidget::setClipChildren)
-                .def_property_readonly("childrenClipRect", &IWidget::getChildrenClipRect)
+                .def_prop_ro("clipped", &IWidget::isClipped)
+                .def_prop_rw("clipChildren", &IWidget::doesClipChildren, &IWidget::setClipChildren)
+                .def_prop_ro("childrenClipRect", &IWidget::getChildrenClipRect)
 
-                .def_property(
+                .def_prop_rw(
                     "enabled",
                     // The getter has a defaulted argument, which a bound
                     // property cannot fill in.
@@ -100,66 +136,71 @@ namespace ftk
                 .def(
                     "isEnabled",
                     &IWidget::isEnabled,
-                    py::arg("andParentsEnabled") = true)
+                    nb::arg("andParentsEnabled") = true)
 
-                .def_property("acceptsKeyFocus", &IWidget::acceptsKeyFocus, &IWidget::setAcceptsKeyFocus)
+                .def_prop_rw("acceptsKeyFocus", &IWidget::acceptsKeyFocus, &IWidget::setAcceptsKeyFocus)
                 .def("moveToIndex", &IWidget::moveToIndex)
-                .def_property_readonly("keyFocus", &IWidget::hasKeyFocus)
-                .def("takeKeyFocus", &IWidget::takeKeyFocus)
+                .def_prop_ro("keyFocus", &IWidget::hasKeyFocus)
+                .def(
+                    "takeKeyFocus",
+                    [](const std::shared_ptr<IWidget>& self)
+                    {
+                        self->takeKeyFocus();
+                    })
                 .def("releaseKeyFocus", &IWidget::releaseKeyFocus)
 
-                .def_property("tooltip", &IWidget::getTooltip, &IWidget::setTooltip)
+                .def_prop_rw("tooltip", &IWidget::getTooltip, &IWidget::setTooltip)
                 .def(
                     "setContextMenuCallback",
                     &IWidget::setContextMenuCallback)
 
-                .def("childAddEvent", &IWidget::childAddEvent, py::arg("event"))
-                .def("childRemoveEvent", &IWidget::childRemoveEvent, py::arg("event"))
+                .def("childAddEvent", &IWidget::childAddEvent, nb::arg("event"))
+                .def("childRemoveEvent", &IWidget::childRemoveEvent, nb::arg("event"))
                 .def(
                     "tickEvent",
                     &IWidget::tickEvent,
-                    py::arg("parentsVisible"),
-                    py::arg("parentsEnabled"),
-                    py::arg("event"))
-                .def("styleEvent", &IWidget::styleEvent, py::arg("event"))
-                .def("sizeHintEvent", &IWidget::sizeHintEvent, py::arg("event"))
+                    nb::arg("parentsVisible"),
+                    nb::arg("parentsEnabled"),
+                    nb::arg("event"))
+                .def("styleEvent", &IWidget::styleEvent, nb::arg("event"))
+                .def("sizeHintEvent", &IWidget::sizeHintEvent, nb::arg("event"))
                 .def(
                     "clipEvent",
                     &IWidget::clipEvent,
-                    py::arg("clipRect"),
-                    py::arg("clipped"))
+                    nb::arg("clipRect"),
+                    nb::arg("clipped"))
                 .def(
                     "drawEvent",
                     &IWidget::drawEvent,
-                    py::arg("drawRect"),
-                    py::arg("event"))
+                    nb::arg("drawRect"),
+                    nb::arg("event"))
                 .def(
                     "drawOverlayEvent",
                     &IWidget::drawOverlayEvent,
-                    py::arg("drawRect"),
-                    py::arg("event"))
+                    nb::arg("drawRect"),
+                    nb::arg("event"))
                 .def("mouseEnterEvent", &IWidget::mouseEnterEvent)
                 .def("mouseLeaveEvent", &IWidget::mouseLeaveEvent)
-                .def("mouseMoveEvent", &IWidget::mouseMoveEvent, py::arg("event"))
-                .def("mousePressEvent", &IWidget::mousePressEvent, py::arg("event"))
-                .def("mouseReleaseEvent", &IWidget::mouseReleaseEvent, py::arg("event"))
-                .def("scrollEvent", &IWidget::scrollEvent, py::arg("event"))
-                .def("keyFocusEvent", &IWidget::keyFocusEvent, py::arg("focus"))
-                .def("keyPressEvent", &IWidget::keyPressEvent, py::arg("event"))
-                .def("keyReleaseEvent", &IWidget::keyReleaseEvent, py::arg("event"))
-                .def("textEvent", &IWidget::textEvent, py::arg("event"))
+                .def("mouseMoveEvent", &IWidget::mouseMoveEvent, nb::arg("event"))
+                .def("mousePressEvent", &IWidget::mousePressEvent, nb::arg("event"))
+                .def("mouseReleaseEvent", &IWidget::mouseReleaseEvent, nb::arg("event"))
+                .def("scrollEvent", &IWidget::scrollEvent, nb::arg("event"))
+                .def("keyFocusEvent", &IWidget::keyFocusEvent, nb::arg("focus"))
+                .def("keyPressEvent", &IWidget::keyPressEvent, nb::arg("event"))
+                .def("keyReleaseEvent", &IWidget::keyReleaseEvent, nb::arg("event"))
+                .def("textEvent", &IWidget::textEvent, nb::arg("event"))
                 .def(
                     "setSizeUpdate",
                     &IWidget::setSizeUpdate,
-                    py::arg("value") = true)
+                    nb::arg("value") = true)
                 .def(
                     "setDrawUpdate",
                     &IWidget::setDrawUpdate,
-                    py::arg("value") = true)
-                .def("dragEnterEvent", &IWidget::dragEnterEvent, py::arg("event"))
-                .def("dragLeaveEvent", &IWidget::dragLeaveEvent, py::arg("event"))
-                .def("dragMoveEvent", &IWidget::dragMoveEvent, py::arg("event"))
-                .def("dropEvent", &IWidget::dropEvent, py::arg("event"));
+                    nb::arg("value") = true)
+                .def("dragEnterEvent", &IWidget::dragEnterEvent, nb::arg("event"))
+                .def("dragLeaveEvent", &IWidget::dragLeaveEvent, nb::arg("event"))
+                .def("dragMoveEvent", &IWidget::dragMoveEvent, nb::arg("event"))
+                .def("dropEvent", &IWidget::dropEvent, nb::arg("event"));
         }
     }
 }

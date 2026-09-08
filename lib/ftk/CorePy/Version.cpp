@@ -5,15 +5,17 @@
 
 #include <ftk/Core/Version.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void version(py::module_& m)
+        void version(nb::module_& m)
         {
             m.attr("VERSION_MAJOR") = FTK_VERSION_MAJOR;
             m.attr("VERSION_MINOR") = FTK_VERSION_MINOR;

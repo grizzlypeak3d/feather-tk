@@ -7,10 +7,17 @@
 
 #include <ftk/UI/IContainer.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -19,33 +26,45 @@ namespace ftk
         class PyIContainer : public PyWidget<IContainer>
         {
         public:
-            static std::shared_ptr<PyIContainer> create(
+            void pyInit(
                 const std::shared_ptr<Context>& context,
                 const std::string& objectName,
-                const std::shared_ptr<IWidget>& parent = nullptr)
+                const std::shared_ptr<IWidget>& parent)
             {
-                auto out = std::shared_ptr<PyIContainer>(new PyIContainer);
-                out->_init(context, objectName, parent);
-                return out;
+                _init(context, objectName, parent);
             }
 
             using IContainer::_setWidget;
         };
 
-        void iContainer(py::module_& m)
+        void iContainer(nb::module_& m)
         {
-            py::class_<IContainer, IWidget, std::shared_ptr<IContainer>, PyIContainer>(m, "IContainer")
+            nb::class_<IContainer, IWidget, PyIContainer>(m, "IContainer")
                 .def(
-                    py::init(&PyIContainer::create),
-                    py::arg("context"),
-                    py::arg("objectName"),
-                    py::arg("parent") = nullptr)
-                .def_property_readonly("widget", &IContainer::getWidget)
+                    "__init__",
+                    [](IContainer* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::string& objectName,
+                       const std::shared_ptr<IWidget>& parent)
+                    {
+                        pyConstruct<PyIContainer>(self,
+                            [&](PyIContainer& w)
+                            {
+                                w.pyInit(context, objectName, parent);
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("objectName"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_ro("widget", &IContainer::getWidget)
                 .def(
                     "_setWidget",
-                    [](IContainer& self, const std::shared_ptr<IWidget>& value)
+                    // Self as a shared_ptr: _setWidget parents through
+                    // shared_from_this().
+                    [](const std::shared_ptr<IContainer>& self,
+                       const std::shared_ptr<IWidget>& value)
                     {
-                        static_cast<PyIContainer&>(self)._setWidget(value);
+                        static_cast<PyIContainer&>(*self)._setWidget(value);
                     });
         }
     }

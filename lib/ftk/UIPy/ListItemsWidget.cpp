@@ -5,55 +5,62 @@
 
 #include <ftk/UI/ListItemsWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void listItemsWidget(py::module_& m)
+        void listItemsWidget(nb::module_& m)
         {
-            py::class_<ListItem>(m, "ListItem")
-                .def(py::init<>())
+            nb::class_<ListItem>(m, "ListItem")
+                .def(nb::init<>())
                 .def(
-                    py::init<const std::string&, const std::string&>(),
-                    py::arg("text"),
-                    py::arg("tooltip") = std::string())
-                .def_readwrite("text", &ListItem::text)
-                .def_readwrite("tooltip", &ListItem::tooltip)
+                    nb::init<const std::string&, const std::string&>(),
+                    nb::arg("text"),
+                    nb::arg("tooltip") = std::string())
+                .def_rw("text", &ListItem::text)
+                .def_rw("tooltip", &ListItem::tooltip)
                 .def("__eq__", &ListItem::operator==)
                 .def("__ne__", &ListItem::operator!=);
 
-            py::class_<ListItemsWidget, IContainer, std::shared_ptr<ListItemsWidget> >(m, "ListItemsWidget")
+            nb::class_<ListItemsWidget, IContainer>(m, "ListItemsWidget")
                 .def(
-                    py::init(&ListItemsWidget::create),
-                    py::arg("context"),
-                    py::arg("type"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&ListItemsWidget::create),
+                    nb::arg("context"),
+                    nb::arg("type"),
+                    nb::arg("parent") = nullptr)
                 .def("getItems", &ListItemsWidget::getItems)
                 .def(
                     "setItems",
-                    py::overload_cast<const std::vector<ListItem>&>(&ListItemsWidget::setItems))
+                    nb::overload_cast<const std::vector<ListItem>&>(&ListItemsWidget::setItems))
                 .def(
                     "setItems",
-                    py::overload_cast<const std::vector<std::string>&>(&ListItemsWidget::setItems))
-                .def("getChecked", &ListItemsWidget::getChecked, py::arg("index"))
+                    nb::overload_cast<const std::vector<std::string>&>(&ListItemsWidget::setItems))
+                .def("getChecked", &ListItemsWidget::getChecked, nb::arg("index"))
                 .def(
                     "setChecked",
                     &ListItemsWidget::setChecked,
-                    py::arg("index"),
-                    py::arg("checked"))
+                    nb::arg("index"),
+                    nb::arg("checked"))
                 .def("setCallback", &ListItemsWidget::setCallback)
-                .def_property("current", &ListItemsWidget::getCurrent, &ListItemsWidget::setCurrent)
+                .def_prop_rw("current", &ListItemsWidget::getCurrent, &ListItemsWidget::setCurrent)
                 .def("observeCurrent", &ListItemsWidget::observeCurrent)
                 .def("observeScrollTo", &ListItemsWidget::observeScrollTo)
-                .def_property("search", &ListItemsWidget::getSearch, &ListItemsWidget::setSearch)
+                .def_prop_rw("search", &ListItemsWidget::getSearch, &ListItemsWidget::setSearch)
                 .def("clearSearch", &ListItemsWidget::clearSearch)
-                .def("getRect", &ListItemsWidget::getRect, py::arg("index"));
+                .def("getRect", &ListItemsWidget::getRect, nb::arg("index"));
         }
     }
 }

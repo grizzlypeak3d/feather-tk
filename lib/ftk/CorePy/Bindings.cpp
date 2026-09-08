@@ -5,15 +5,17 @@
 
 #include <ftk/Core/Context.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void coreBind(py::module_& m)
+        void coreBind(nb::module_& m)
         {
             iSystem(m);
             observable(m);

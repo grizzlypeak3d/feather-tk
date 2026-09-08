@@ -6,21 +6,28 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/IBaseSystem.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void context(py::module_& m)
+        void context(nb::module_& m)
         {
-            py::class_<Context, std::shared_ptr<Context> >(m, "Context")
-                .def(py::init(&Context::create))
+            nb::class_<Context>(m, "Context")
+                .def(nb::new_(&Context::create))
                 .def("addSystem", &Context::addSystem)
-                .def_property_readonly("systems", &Context::getSystems)
+                .def_prop_ro("systems", &Context::getSystems)
                 .def("getSystemByName", &Context::getSystemByName)
                 .def("tick", &Context::tick);
         }

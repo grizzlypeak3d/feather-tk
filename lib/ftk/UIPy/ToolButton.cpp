@@ -6,42 +6,49 @@
 #include <ftk/UI/Action.h>
 #include <ftk/UI/ToolButton.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void toolButton(py::module_& m)
+        void toolButton(nb::module_& m)
         {
-            py::class_<ToolButton, IButton, std::shared_ptr<ToolButton> >(m, "ToolButton")
+            nb::class_<ToolButton, IButton>(m, "ToolButton")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&ToolButton::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::string&,
                         const std::shared_ptr<IWidget>&>(&ToolButton::create)),
-                    py::arg("context"),
-                    py::arg("text"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("text"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<Action>&,
                         const std::shared_ptr<IWidget>&>(&ToolButton::create)),
-                    py::arg("context"),
-                    py::arg("action"),
-                    py::arg("parent") = nullptr)
-            .def_property("popupIcon", &ToolButton::hasPopupIcon, py::overload_cast<bool>(&ToolButton::setPopupIcon))
-            .def_property("secondaryText", &ToolButton::getSecondaryText, &ToolButton::setSecondaryText);
+                    nb::arg("context"),
+                    nb::arg("action"),
+                    nb::arg("parent") = nullptr)
+            .def_prop_rw("popupIcon", &ToolButton::hasPopupIcon, nb::overload_cast<bool>(&ToolButton::setPopupIcon))
+            .def_prop_rw("secondaryText", &ToolButton::getSecondaryText, &ToolButton::setSecondaryText);
         }
     }
 }

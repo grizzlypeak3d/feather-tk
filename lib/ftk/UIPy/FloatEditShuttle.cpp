@@ -5,44 +5,51 @@
 
 #include <ftk/UI/FloatEditShuttle.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void floatEditShuttle(py::module_& m)
+        void floatEditShuttle(nb::module_& m)
         {
-            py::class_<FloatEditShuttle, IContainer, std::shared_ptr<FloatEditShuttle> >(m, "FloatEditShuttle")
+            nb::class_<FloatEditShuttle, IContainer>(m, "FloatEditShuttle")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&FloatEditShuttle::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<FloatModel>&,
                         const std::shared_ptr<IWidget>&>(&FloatEditShuttle::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &FloatEditShuttle::getValue, &FloatEditShuttle::setValue)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("value", &FloatEditShuttle::getValue, &FloatEditShuttle::setValue)
                 .def("setCallback", &FloatEditShuttle::setCallback)
                 .def("setPressedCallback", &FloatEditShuttle::setPressedCallback)
-                .def_property("range", &FloatEditShuttle::getRange, py::overload_cast<const RangeF&>(&FloatEditShuttle::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<float, float>(&FloatEditShuttle::setRange))
-                .def_property("step", &FloatEditShuttle::getStep, &FloatEditShuttle::setStep)
-                .def_property("largeStep", &FloatEditShuttle::getLargeStep, &FloatEditShuttle::setLargeStep)
-                .def_property("defaultValue", &FloatEditShuttle::getDefault, &FloatEditShuttle::setDefault)
+                .def_prop_rw("range", &FloatEditShuttle::getRange, nb::overload_cast<const RangeF&>(&FloatEditShuttle::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<float, float>(&FloatEditShuttle::setRange))
+                .def_prop_rw("step", &FloatEditShuttle::getStep, &FloatEditShuttle::setStep)
+                .def_prop_rw("largeStep", &FloatEditShuttle::getLargeStep, &FloatEditShuttle::setLargeStep)
+                .def_prop_rw("defaultValue", &FloatEditShuttle::getDefault, &FloatEditShuttle::setDefault)
                 .def("getModel", &FloatEditShuttle::getModel)
-                .def_property("precision", &FloatEditShuttle::getPrecision, &FloatEditShuttle::setPrecision)
-                .def_property("font", &FloatEditShuttle::getFont, &FloatEditShuttle::setFont);
+                .def_prop_rw("precision", &FloatEditShuttle::getPrecision, &FloatEditShuttle::setPrecision)
+                .def_prop_rw("font", &FloatEditShuttle::getFont, &FloatEditShuttle::setFont);
         }
     }
 }

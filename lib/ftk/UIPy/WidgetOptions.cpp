@@ -7,34 +7,36 @@
 
 #include <ftk/UI/IWidget.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void widgetOptions(py::module_& m)
+        void widgetOptions(nb::module_& m)
         {
-            py::enum_<Orientation>(m, "Orientation")
+            nb::enum_<Orientation>(m, "Orientation")
                 .value("Horizontal", Orientation::Horizontal)
                 .value("Vertical", Orientation::Vertical);
             FTK_ENUM_BIND(m, Orientation);
 
-            py::enum_<Stretch>(m, "Stretch")
+            nb::enum_<Stretch>(m, "Stretch")
                 .value("Fixed", Stretch::Fixed)
                 .value("Expanding", Stretch::Expanding);
             FTK_ENUM_BIND(m, Stretch);
 
-            py::enum_<HAlign>(m, "HAlign")
+            nb::enum_<HAlign>(m, "HAlign")
                 .value("Fill", HAlign::Fill)
                 .value("Left", HAlign::Left)
                 .value("Center", HAlign::Center)
                 .value("Right", HAlign::Right);
             FTK_ENUM_BIND(m, HAlign);
 
-            py::enum_<VAlign>(m, "VAlign")
+            nb::enum_<VAlign>(m, "VAlign")
                 .value("Fill", VAlign::Fill)
                 .value("Top", VAlign::Top)
                 .value("Center", VAlign::Center)

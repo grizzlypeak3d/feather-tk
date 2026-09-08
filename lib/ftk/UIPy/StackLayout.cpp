@@ -5,31 +5,38 @@
 
 #include <ftk/UI/StackLayout.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void stackLayout(py::module_& m)
+        void stackLayout(nb::module_& m)
         {
-            py::class_<StackLayout, IWidget, std::shared_ptr<StackLayout> >(m, "StackLayout")
+            nb::class_<StackLayout, IWidget>(m, "StackLayout")
                 .def(
-                    py::init(&StackLayout::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("currentIndex", &StackLayout::getCurrentIndex, &StackLayout::setCurrentIndex)
+                    nb::new_(&StackLayout::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("currentIndex", &StackLayout::getCurrentIndex, &StackLayout::setCurrentIndex)
                 .def("nextIndex", &StackLayout::nextIndex)
-                .def_property_readonly("observeHasNextIndex", &StackLayout::observeHasNextIndex)
+                .def_prop_ro("observeHasNextIndex", &StackLayout::observeHasNextIndex)
                 .def("prevIndex", &StackLayout::prevIndex)
-                .def_property_readonly("observeHasPrevIndex", &StackLayout::observeHasPrevIndex)
+                .def_prop_ro("observeHasPrevIndex", &StackLayout::observeHasPrevIndex)
                 .def("firstIndex", &StackLayout::firstIndex)
                 .def("lastIndex", &StackLayout::lastIndex)
-                .def_property("currentWidget", &StackLayout::getCurrentWidget, &StackLayout::setCurrentWidget)
-                .def_property("marginRole", &StackLayout::getMarginRole, &StackLayout::setMarginRole)
+                .def_prop_rw("currentWidget", &StackLayout::getCurrentWidget, &StackLayout::setCurrentWidget)
+                .def_prop_rw("marginRole", &StackLayout::getMarginRole, &StackLayout::setMarginRole)
                 .def("clear", &StackLayout::clear);
         }
     }

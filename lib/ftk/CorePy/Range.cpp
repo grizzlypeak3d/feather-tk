@@ -5,28 +5,30 @@
 
 #include <ftk/Core/Range.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/operators.h>
 
 #include <sstream>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void range(py::module_& m)
+        void range(nb::module_& m)
         {
-            py::class_<RangeI>(m, "RangeI")
-                .def(py::init<>())
-                .def(py::init<int, int>())
-                .def_property_readonly("min", &RangeI::min)
-                .def_property_readonly("max", &RangeI::max)
-                .def_property_readonly("equal", &RangeI::equal)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self)
-                .def(pybind11::self < pybind11::self)
+            nb::class_<RangeI>(m, "RangeI")
+                .def(nb::init<>())
+                .def(nb::init<int, int>())
+                .def_prop_ro("min", &RangeI::min)
+                .def_prop_ro("max", &RangeI::max)
+                .def_prop_ro("equal", &RangeI::equal)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self)
+                .def(nanobind::self < nanobind::self)
                 .def("__repr__", [](const RangeI& v)
                     {
                         std::stringstream ss;
@@ -34,15 +36,15 @@ namespace ftk
                         return ss.str();
                     });
 
-            py::class_<RangeI64>(m, "RangeI64")
-                .def(py::init<>())
-                .def(py::init<int64_t, int64_t>())
-                .def_property_readonly("min", &RangeI64::min)
-                .def_property_readonly("max", &RangeI64::max)
-                .def_property_readonly("equal", &RangeI64::equal)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self)
-                .def(pybind11::self < pybind11::self)
+            nb::class_<RangeI64>(m, "RangeI64")
+                .def(nb::init<>())
+                .def(nb::init<int64_t, int64_t>())
+                .def_prop_ro("min", &RangeI64::min)
+                .def_prop_ro("max", &RangeI64::max)
+                .def_prop_ro("equal", &RangeI64::equal)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self)
+                .def(nanobind::self < nanobind::self)
                 .def("__repr__", [](const RangeI64& v)
                     {
                         std::stringstream ss;
@@ -50,15 +52,15 @@ namespace ftk
                         return ss.str();
                     });
 
-            py::class_<RangeF>(m, "RangeF")
-                .def(py::init<>())
-                .def(py::init<float, float>())
-                .def_property_readonly("min", &RangeF::min)
-                .def_property_readonly("max", &RangeF::max)
-                .def_property_readonly("equal", &RangeF::equal)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self)
-                .def(pybind11::self < pybind11::self)
+            nb::class_<RangeF>(m, "RangeF")
+                .def(nb::init<>())
+                .def(nb::init<float, float>())
+                .def_prop_ro("min", &RangeF::min)
+                .def_prop_ro("max", &RangeF::max)
+                .def_prop_ro("equal", &RangeF::equal)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self)
+                .def(nanobind::self < nanobind::self)
                 .def("__repr__", [](const RangeF& v)
                     {
                         std::stringstream ss;
@@ -66,15 +68,15 @@ namespace ftk
                         return ss.str();
                     });
 
-            py::class_<RangeD>(m, "RangeD")
-                .def(py::init<>())
-                .def(py::init<double, double>())
-                .def_property_readonly("min", &RangeD::min)
-                .def_property_readonly("max", &RangeD::max)
-                .def_property_readonly("equal", &RangeD::equal)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self)
-                .def(pybind11::self < pybind11::self)
+            nb::class_<RangeD>(m, "RangeD")
+                .def(nb::init<>())
+                .def(nb::init<double, double>())
+                .def_prop_ro("min", &RangeD::min)
+                .def_prop_ro("max", &RangeD::max)
+                .def_prop_ro("equal", &RangeD::equal)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self)
+                .def(nanobind::self < nanobind::self)
                 .def("__repr__", [](const RangeD& v)
                     {
                         std::stringstream ss;

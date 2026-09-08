@@ -5,35 +5,42 @@
 
 #include <ftk/Core/Box.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
 #include <sstream>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void box(py::module_& m)
+        void box(nb::module_& m)
         {
-            py::class_<Box2I>(m, "Box2I")
-                .def(py::init<>())
-                .def(py::init<V2I, V2I>())
-                .def(py::init<V2I, Size2I>())
-                .def(py::init<int, int, int, int>())
-                .def_readwrite("min", &Box2I::min)
-                .def_readwrite("max", &Box2I::max)
-                .def_property_readonly("x", &Box2I::x)
-                .def_property_readonly("y", &Box2I::y)
-                .def_property_readonly("size", &Box2I::size)
-                .def_property_readonly("w", &Box2I::w)
-                .def_property_readonly("h", &Box2I::h)
-                .def_property_readonly("valid", &Box2I::isValid)
-                .def(py::self == py::self)
-                .def(py::self != py::self)
+            nb::class_<Box2I>(m, "Box2I")
+                .def(nb::init<>())
+                .def(nb::init<V2I, V2I>())
+                .def(nb::init<V2I, Size2I>())
+                .def(nb::init<int, int, int, int>())
+                .def_rw("min", &Box2I::min)
+                .def_rw("max", &Box2I::max)
+                .def_prop_ro("x", &Box2I::x)
+                .def_prop_ro("y", &Box2I::y)
+                .def_prop_ro("size", &Box2I::size)
+                .def_prop_ro("w", &Box2I::w)
+                .def_prop_ro("h", &Box2I::h)
+                .def_prop_ro("valid", &Box2I::isValid)
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self)
                 .def("__repr__", [](const Box2I& v)
                     {
                         std::stringstream ss;
@@ -41,21 +48,21 @@ namespace ftk
                         return ss.str();
                     });
 
-            py::class_<Box2F>(m, "Box2F")
-                .def(py::init<>())
-                .def(py::init<V2F, V2F>())
-                .def(py::init<V2F, Size2F>())
-                .def(py::init<float, float, float, float>())
-                .def_readwrite("min", &Box2F::min)
-                .def_readwrite("max", &Box2F::max)
-                .def_property_readonly("x", &Box2F::x)
-                .def_property_readonly("y", &Box2F::y)
-                .def_property_readonly("size", &Box2F::size)
-                .def_property_readonly("w", &Box2F::w)
-                .def_property_readonly("h", &Box2F::h)
-                .def_property_readonly("valid", &Box2F::isValid)
-                .def(py::self == py::self)
-                .def(py::self != py::self)
+            nb::class_<Box2F>(m, "Box2F")
+                .def(nb::init<>())
+                .def(nb::init<V2F, V2F>())
+                .def(nb::init<V2F, Size2F>())
+                .def(nb::init<float, float, float, float>())
+                .def_rw("min", &Box2F::min)
+                .def_rw("max", &Box2F::max)
+                .def_prop_ro("x", &Box2F::x)
+                .def_prop_ro("y", &Box2F::y)
+                .def_prop_ro("size", &Box2F::size)
+                .def_prop_ro("w", &Box2F::w)
+                .def_prop_ro("h", &Box2F::h)
+                .def_prop_ro("valid", &Box2F::isValid)
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self)
                 .def("__repr__", [](const Box2F& v)
                     {
                         std::stringstream ss;
@@ -63,23 +70,23 @@ namespace ftk
                         return ss.str();
                     });
 
-            py::class_<Box3F>(m, "Box3F")
-                .def(py::init<>())
-                .def(py::init<V3F, V3F>())
-                .def(py::init<V3F, Size3F>())
-                .def(py::init<float, float, float, float, float, float>())
-                .def_readwrite("min", &Box3F::min)
-                .def_readwrite("max", &Box3F::max)
-                .def_property_readonly("x", &Box3F::x)
-                .def_property_readonly("y", &Box3F::y)
-                .def_property_readonly("z", &Box3F::z)
-                .def_property_readonly("size", &Box3F::size)
-                .def_property_readonly("w", &Box3F::w)
-                .def_property_readonly("h", &Box3F::h)
-                .def_property_readonly("d", &Box3F::d)
-                .def_property_readonly("valid", &Box3F::isValid)
-                .def(py::self == py::self)
-                .def(py::self != py::self)
+            nb::class_<Box3F>(m, "Box3F")
+                .def(nb::init<>())
+                .def(nb::init<V3F, V3F>())
+                .def(nb::init<V3F, Size3F>())
+                .def(nb::init<float, float, float, float, float, float>())
+                .def_rw("min", &Box3F::min)
+                .def_rw("max", &Box3F::max)
+                .def_prop_ro("x", &Box3F::x)
+                .def_prop_ro("y", &Box3F::y)
+                .def_prop_ro("z", &Box3F::z)
+                .def_prop_ro("size", &Box3F::size)
+                .def_prop_ro("w", &Box3F::w)
+                .def_prop_ro("h", &Box3F::h)
+                .def_prop_ro("d", &Box3F::d)
+                .def_prop_ro("valid", &Box3F::isValid)
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self)
                 .def("__repr__", [](const Box3F& v)
                     {
                         std::stringstream ss;

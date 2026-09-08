@@ -8,59 +8,59 @@ namespace ftk
     namespace python
     {
         template<typename T>
-        inline void cmdLineOption(pybind11::module_& m, const std::string& type)
+        inline void cmdLineOption(nanobind::module_& m, const std::string& type)
         {
             std::string name = "CmdLineOption" + type;
-            pybind11::class_<CmdLineOption<T>, ICmdLineOption, std::shared_ptr<CmdLineOption<T> > >(m, name.c_str())
+            nanobind::class_<CmdLineOption<T>, ICmdLineOption>(m, name.c_str())
                 .def(
-                    pybind11::init(&CmdLineOption<T>::create),
-                    pybind11::arg("names"),
-                    pybind11::arg("help"),
-                    pybind11::arg("group") = std::string(),
-                    pybind11::arg("defaultValue") = std::optional<T>(),
-                    pybind11::arg("possibleValues") = std::string())
-                .def_property_readonly("hasValue", &CmdLineOption<T>::hasValue)
-                .def_property_readonly("value", &CmdLineOption<T>::getValue);
+                    nanobind::new_(&CmdLineOption<T>::create),
+                    nanobind::arg("names"),
+                    nanobind::arg("help"),
+                    nanobind::arg("group") = std::string(),
+                    nanobind::arg("defaultValue") = std::optional<T>(),
+                    nanobind::arg("possibleValues") = std::string())
+                .def_prop_ro("hasValue", &CmdLineOption<T>::hasValue)
+                .def_prop_ro("value", &CmdLineOption<T>::getValue);
         }
 
         template<typename T>
-        inline void cmdLineListOption(pybind11::module_& m, const std::string& type)
+        inline void cmdLineListOption(nanobind::module_& m, const std::string& type)
         {
             std::string name = "CmdLineListOption" + type;
-            pybind11::class_<CmdLineListOption<T>, ICmdLineOption, std::shared_ptr<CmdLineListOption<T> > >(m, name.c_str())
+            nanobind::class_<CmdLineListOption<T>, ICmdLineOption>(m, name.c_str())
                 .def(
-                    pybind11::init(&CmdLineListOption<T>::create),
-                    pybind11::arg("names"),
-                    pybind11::arg("help"),
-                    pybind11::arg("group") = std::string())
-                .def_property_readonly("list", &CmdLineListOption<T>::getList);
+                    nanobind::new_(&CmdLineListOption<T>::create),
+                    nanobind::arg("names"),
+                    nanobind::arg("help"),
+                    nanobind::arg("group") = std::string())
+                .def_prop_ro("list", &CmdLineListOption<T>::getList);
         }
 
         template<typename T>
-        inline void cmdLineArg(pybind11::module_& m, const std::string& type)
+        inline void cmdLineArg(nanobind::module_& m, const std::string& type)
         {
             std::string name = "CmdLineArg" + type;
-            pybind11::class_<CmdLineArg<T>, ICmdLineArg, std::shared_ptr<CmdLineArg<T> > >(m, name.c_str())
+            nanobind::class_<CmdLineArg<T>, ICmdLineArg>(m, name.c_str())
                 .def(
-                    pybind11::init(&CmdLineArg<T>::create),
-                    pybind11::arg("name"),
-                    pybind11::arg("help"),
-                    pybind11::arg("optional") = false)
-                .def_property_readonly("hasValue", &CmdLineArg<T>::hasValue)
-                .def_property_readonly("value", &CmdLineArg<T>::getValue);
+                    nanobind::new_(&CmdLineArg<T>::create),
+                    nanobind::arg("name"),
+                    nanobind::arg("help"),
+                    nanobind::arg("optional") = false)
+                .def_prop_ro("hasValue", &CmdLineArg<T>::hasValue)
+                .def_prop_ro("value", &CmdLineArg<T>::getValue);
         }
 
         template<typename T>
-        inline void cmdLineListArg(pybind11::module_& m, const std::string& type)
+        inline void cmdLineListArg(nanobind::module_& m, const std::string& type)
         {
             std::string name = "CmdLineListArg" + type;
-            pybind11::class_<CmdLineListArg<T>, ICmdLineArg, std::shared_ptr<CmdLineListArg<T> > >(m, name.c_str())
+            nanobind::class_<CmdLineListArg<T>, ICmdLineArg>(m, name.c_str())
                 .def(
-                    pybind11::init(&CmdLineListArg<T>::create),
-                    pybind11::arg("name"),
-                    pybind11::arg("help"),
-                    pybind11::arg("optional") = false)
-                .def_property_readonly("list", &CmdLineListArg<T>::getList);
+                    nanobind::new_(&CmdLineListArg<T>::create),
+                    nanobind::arg("name"),
+                    nanobind::arg("help"),
+                    nanobind::arg("optional") = false)
+                .def_prop_ro("list", &CmdLineListArg<T>::getList);
         }
     }
 }

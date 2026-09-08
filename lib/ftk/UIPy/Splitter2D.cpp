@@ -5,27 +5,34 @@
 
 #include <ftk/UI/Splitter2D.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void splitter2D(py::module_& m)
+        void splitter2D(nb::module_& m)
         {
-            py::class_<Splitter2D, IWidget, std::shared_ptr<Splitter2D> >(m, "Splitter2D")
+            nb::class_<Splitter2D, IWidget>(m, "Splitter2D")
                 .def(
-                    py::init(&Splitter2D::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def("setWidgets", &Splitter2D::setWidgets, py::arg("widgets"))
-                .def_property("split", &Splitter2D::getSplit, &Splitter2D::setSplit, py::return_value_policy::copy)
+                    nb::new_(&Splitter2D::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def("setWidgets", &Splitter2D::setWidgets, nb::arg("widgets"))
+                .def_prop_rw("split", &Splitter2D::getSplit, &Splitter2D::setSplit, nb::rv_policy::copy)
                 .def("setSplitCallback", &Splitter2D::setSplitCallback)
-                .def_property("border", &Splitter2D::hasBorder, &Splitter2D::setBorder);
+                .def_prop_rw("border", &Splitter2D::hasBorder, &Splitter2D::setBorder);
         }
     }
 }

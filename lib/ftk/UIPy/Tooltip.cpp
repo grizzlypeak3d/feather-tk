@@ -5,23 +5,25 @@
 
 #include <ftk/UI/Tooltip.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void tooltip(py::module_& m)
+        void tooltip(nb::module_& m)
         {
-            py::class_<Tooltip, IPopup, std::shared_ptr<Tooltip> >(m, "Tooltip")
+            nb::class_<Tooltip, IPopup>(m, "Tooltip")
                 .def(
-                    py::init(&Tooltip::create),
-                    py::arg("context"),
-                    py::arg("text"),
-                    py::arg("pos"),
-                    py::arg("window"));
+                    nb::new_(&Tooltip::create),
+                    nb::arg("context"),
+                    nb::arg("text"),
+                    nb::arg("pos"),
+                    nb::arg("window"));
         }
     }
 }

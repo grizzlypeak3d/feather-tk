@@ -5,37 +5,44 @@
 
 #include <ftk/UI/GridLayout.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void gridLayout(py::module_& m)
+        void gridLayout(nb::module_& m)
         {
-            py::class_<GridLayout, IWidget, std::shared_ptr<GridLayout> >(m, "GridLayout")
+            nb::class_<GridLayout, IWidget>(m, "GridLayout")
                 .def(
-                    py::init(&GridLayout::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&GridLayout::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def("getGridPos", &GridLayout::getGridPos)
                 .def("getGridRow", &GridLayout::getGridRow)
                 .def("getGridColumn", &GridLayout::getGridColumn)
                 .def(
                     "setGridPos",
                     &GridLayout::setGridPos,
-                    py::arg("child"),
-                    py::arg("row"),
-                    py::arg("column"))
-                .def_property("rowBackgroundRole", &GridLayout::getRowBackgroundRole, &GridLayout::setRowBackgroundRole)
-                .def_property("marginRole", &GridLayout::getMarginRole, &GridLayout::setMarginRole)
-                .def_property("spacingRole",
+                    nb::arg("child"),
+                    nb::arg("row"),
+                    nb::arg("column"))
+                .def_prop_rw("rowBackgroundRole", &GridLayout::getRowBackgroundRole, &GridLayout::setRowBackgroundRole)
+                .def_prop_rw("marginRole", &GridLayout::getMarginRole, &GridLayout::setMarginRole)
+                .def_prop_rw("spacingRole",
                     &GridLayout::getSpacingRole,
-                    py::overload_cast<SizeRole>(&GridLayout::setSpacingRole))
-                .def("setSpacingRole", py::overload_cast<SizeRole, SizeRole>(&GridLayout::setSpacingRole))
+                    nb::overload_cast<SizeRole>(&GridLayout::setSpacingRole))
+                .def("setSpacingRole", nb::overload_cast<SizeRole, SizeRole>(&GridLayout::setSpacingRole))
                 .def("clear", &GridLayout::clear);
         }
     }

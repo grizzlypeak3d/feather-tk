@@ -8,20 +8,20 @@ namespace ftk
     namespace python
     {
         template<typename T, typename U>
-        inline void observableMap(pybind11::module_& m, const std::string& type)
+        inline void observableMap(nanobind::module_& m, const std::string& type)
         {
             std::string name = type + "MapObserver";
-            pybind11::class_<MapObserver<T, U>, std::shared_ptr<MapObserver<T, U> > >(m, name.c_str())
+            nanobind::class_<MapObserver<T, U>>(m, name.c_str())
                 .def(
-                    pybind11::init(&MapObserver<T, U>::create),
-                    pybind11::arg("observableMap"),
-                    pybind11::arg("callback"),
-                    pybind11::arg("action") = ObserverAction::Trigger);
+                    nanobind::new_(&MapObserver<T, U>::create),
+                    nanobind::arg("observableMap"),
+                    nanobind::arg("callback"),
+                    nanobind::arg("action") = ObserverAction::Trigger);
             name = "IObservable" + type + "Map";
-            pybind11::class_<IObservableMap<T, U>, std::shared_ptr<IObservableMap<T, U> > >(m, name.c_str());
+            nanobind::class_<IObservableMap<T, U>>(m, name.c_str());
             name = "Observable" + type + "Map";
-            pybind11::class_<ObservableMap<T, U>, IObservableMap<T, U>, std::shared_ptr<ObservableMap<T, U> > >(m, name.c_str())
-                .def(pybind11::init(pybind11::overload_cast<const std::map<T, U>&>(&ObservableMap<T, U>::create)))
+            nanobind::class_<ObservableMap<T, U>, IObservableMap<T, U>>(m, name.c_str())
+                .def(nanobind::new_(nanobind::overload_cast<const std::map<T, U>&>(&ObservableMap<T, U>::create)))
                 .def("setAlways", &ObservableMap<T, U>::setAlways)
                 .def("setIfChanged", &ObservableMap<T, U>::setIfChanged)
                 .def("get", &ObservableMap<T, U>::get);

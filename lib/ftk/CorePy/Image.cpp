@@ -5,19 +5,26 @@
 
 #include <ftk/Core/Image.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void image(py::module_& m)
+        void image(nb::module_& m)
         {
-            py::enum_<ImageType>(m, "ImageType")
+            nb::enum_<ImageType>(m, "ImageType")
                 .value("_None", ImageType::None)
                 .value("L_U8", ImageType::L_U8)
                 .value("L_U16", ImageType::L_U16)
@@ -51,67 +58,66 @@ namespace ftk
             m.def("getChannelCount", &getChannelCount);
             m.def("getBitDepth", &getBitDepth);
 
-            py::enum_<VideoLevels>(m, "VideoLevels")
+            nb::enum_<VideoLevels>(m, "VideoLevels")
                 .value("FullRange", VideoLevels::FullRange)
                 .value("LegalRange", VideoLevels::LegalRange);
             FTK_ENUM_BIND(m, VideoLevels);
 
-            py::enum_<YUVCoefficients>(m, "YUVCoefficients")
+            nb::enum_<YUVCoefficients>(m, "YUVCoefficients")
                 .value("REC709", YUVCoefficients::REC709)
                 .value("BT2020", YUVCoefficients::BT2020);
             FTK_ENUM_BIND(m, YUVCoefficients);
 
             m.def("getYUVCoefficients", &getYUVCoefficients);
 
-            py::class_<ImageMirror>(m, "ImageMirror")
-                .def(py::init<>())
-                .def(py::init<bool, bool>())
-                .def_readwrite("x", &ImageMirror::x)
-                .def_readwrite("y", &ImageMirror::y)
-                .def(py::self == py::self)
-                .def(py::self != py::self);
+            nb::class_<ImageMirror>(m, "ImageMirror")
+                .def(nb::init<>())
+                .def(nb::init<bool, bool>())
+                .def_rw("x", &ImageMirror::x)
+                .def_rw("y", &ImageMirror::y)
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self);
 
-            py::class_<ImageLayout>(m, "ImageLayout")
-                .def(py::init<>())
-                .def(py::init<const ImageMirror&, int, Endian>())
-                .def_readwrite("mirror", &ImageLayout::mirror)
-                .def_readwrite("alignment", &ImageLayout::alignment)
-                .def_readwrite("endian", &ImageLayout::endian)
-                .def(py::self == py::self)
-                .def(py::self != py::self);
+            nb::class_<ImageLayout>(m, "ImageLayout")
+                .def(nb::init<>())
+                .def(nb::init<const ImageMirror&, int, Endian>())
+                .def_rw("mirror", &ImageLayout::mirror)
+                .def_rw("alignment", &ImageLayout::alignment)
+                .def_rw("endian", &ImageLayout::endian)
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self);
 
-            py::class_<ImageInfo>(m, "ImageInfo")
-                .def(py::init<>())
-                .def(py::init<const Size2I&, ImageType>())
-                .def(py::init<int, int, ImageType>())
-                .def_readwrite("name", &ImageInfo::name)
-                .def_readwrite("size", &ImageInfo::size)
-                .def_readwrite("type", &ImageInfo::type)
-                .def_readwrite("pixelAspectRatio", &ImageInfo::pixelAspectRatio)
-                .def_readwrite("videoLevels", &ImageInfo::videoLevels)
-                .def_readwrite("yuvCoefficients", &ImageInfo::yuvCoefficients)
-                .def_readwrite("layout", &ImageInfo::layout)
-                .def_property_readonly("valid", &ImageInfo::isValid)
-                .def_property_readonly("aspect", &ImageInfo::getAspect)
-                .def_property_readonly("byteCount", &ImageInfo::getByteCount)
-                .def(py::self == py::self)
-                .def(py::self != py::self);
+            nb::class_<ImageInfo>(m, "ImageInfo")
+                .def(nb::init<>())
+                .def(nb::init<const Size2I&, ImageType>())
+                .def(nb::init<int, int, ImageType>())
+                .def_rw("name", &ImageInfo::name)
+                .def_rw("size", &ImageInfo::size)
+                .def_rw("type", &ImageInfo::type)
+                .def_rw("pixelAspectRatio", &ImageInfo::pixelAspectRatio)
+                .def_rw("videoLevels", &ImageInfo::videoLevels)
+                .def_rw("yuvCoefficients", &ImageInfo::yuvCoefficients)
+                .def_rw("layout", &ImageInfo::layout)
+                .def_prop_ro("valid", &ImageInfo::isValid)
+                .def_prop_ro("aspect", &ImageInfo::getAspect)
+                .def_prop_ro("byteCount", &ImageInfo::getByteCount)
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self);
 
-            py::class_<ImageTags>(m, "ImageTags");
 
-            py::class_<Image, std::shared_ptr<Image> >(m, "Image")
-                .def(py::init(py::overload_cast<const ImageInfo&>(&Image::create)))
-                .def(py::init(py::overload_cast<const Size2I&, ImageType>(&Image::create)))
-                .def(py::init(py::overload_cast<int, int, ImageType>(&Image::create)))
-                .def_property_readonly("info", &Image::getInfo, py::return_value_policy::copy)
-                .def_property_readonly("size", &Image::getSize, py::return_value_policy::copy)
-                .def_property_readonly("width", &Image::getWidth)
-                .def_property_readonly("height", &Image::getHeight)
-                .def_property_readonly("aspect", &Image::getAspect)
-                .def_property_readonly("type", &Image::getType)
-                .def_property_readonly("valid", &Image::isValid)
-                .def_property("tags", &Image::getTags, &Image::setTags, py::return_value_policy::copy)
-                .def_property_readonly("byteCount", &Image::getByteCount)
+            nb::class_<Image>(m, "Image")
+                .def(nb::new_(nb::overload_cast<const ImageInfo&>(&Image::create)))
+                .def(nb::new_(nb::overload_cast<const Size2I&, ImageType>(&Image::create)))
+                .def(nb::new_(nb::overload_cast<int, int, ImageType>(&Image::create)))
+                .def_prop_ro("info", &Image::getInfo, nb::rv_policy::copy)
+                .def_prop_ro("size", &Image::getSize, nb::rv_policy::copy)
+                .def_prop_ro("width", &Image::getWidth)
+                .def_prop_ro("height", &Image::getHeight)
+                .def_prop_ro("aspect", &Image::getAspect)
+                .def_prop_ro("type", &Image::getType)
+                .def_prop_ro("valid", &Image::isValid)
+                .def_prop_rw("tags", &Image::getTags, &Image::setTags, nb::rv_policy::copy)
+                .def_prop_ro("byteCount", &Image::getByteCount)
                 .def("zero", &Image::zero);
         }
     }

@@ -8,25 +8,43 @@ namespace ftk
     namespace python
     {
         template<typename T>
-        inline void observable(pybind11::module_& m, const std::string& type)
+        struct IsSharedPtr : std::false_type {};
+        template<typename T>
+        struct IsSharedPtr<std::shared_ptr<T> > : std::true_type {};
+
+        template<typename T>
+        inline void observable(nanobind::module_& m, const std::string& type)
         {
             std::string name = type + "Observer";
-            pybind11::class_<Observer<T>, std::shared_ptr<Observer<T> > >(m, name.c_str())
+            nanobind::class_<Observer<T>>(m, name.c_str())
                 .def(
-                    pybind11::init(&Observer<T>::create),
-                    pybind11::arg("observable"),
-                    pybind11::arg("callback"),
-                    pybind11::arg("action") = ObserverAction::Trigger);
+                    nanobind::new_(&Observer<T>::create),
+                    nanobind::arg("observable"),
+                    nanobind::arg("callback"),
+                    nanobind::arg("action") = ObserverAction::Trigger);
             name = "IObservable" + type;
-            pybind11::class_<IObservable<T>, std::shared_ptr<IObservable<T> > >(m, name.c_str())
+            nanobind::class_<IObservable<T>>(m, name.c_str())
                 .def("get", &IObservable<T>::get)
                 .def("getObserversCount", &IObservable<T>::getObserversCount);
             name = "Observable" + type;
-            pybind11::class_<Observable<T>, IObservable<T>, std::shared_ptr<Observable<T> > >(m, name.c_str())
-                .def(pybind11::init(pybind11::overload_cast<const T&>(&Observable<T>::create)))
-                .def("setAlways", &Observable<T>::setAlways)
-                .def("setIfChanged", &Observable<T>::setIfChanged)
-                .def("get", &Observable<T>::get);
+            auto cls = nanobind::class_<Observable<T>, IObservable<T>>(m, name.c_str());
+            // A shared_ptr observable holds "nothing yet" as a null pointer,
+            // which Python spells None -- the argument has to allow it.
+            if constexpr (IsSharedPtr<T>::value)
+            {
+                cls.def(
+                    nanobind::new_(nanobind::overload_cast<const T&>(&Observable<T>::create)),
+                    nanobind::arg("value").none());
+                cls.def("setAlways", &Observable<T>::setAlways, nanobind::arg("value").none());
+                cls.def("setIfChanged", &Observable<T>::setIfChanged, nanobind::arg("value").none());
+            }
+            else
+            {
+                cls.def(nanobind::new_(nanobind::overload_cast<const T&>(&Observable<T>::create)));
+                cls.def("setAlways", &Observable<T>::setAlways);
+                cls.def("setIfChanged", &Observable<T>::setIfChanged);
+            }
+            cls.def("get", &Observable<T>::get);
         }
     }
 }

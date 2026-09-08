@@ -7,23 +7,30 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/IApp.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iApp(py::module_& m)
+        void iApp(nb::module_& m)
         {
-            py::class_<IApp, std::shared_ptr<IApp> >(m, "IApp")
-                .def_property_readonly("exeName", &IApp::getExeName)
-                .def_property_readonly("context", &IApp::getContext)
-                .def_property_readonly("name", &IApp::getName)
-                .def_property_readonly("summary", &IApp::getSummary)
-                .def_property_readonly("hasCmdLineHelp", &IApp::hasCmdLineHelp);
+            nb::class_<IApp>(m, "IApp")
+                .def_prop_ro("exeName", &IApp::getExeName)
+                .def_prop_ro("context", &IApp::getContext)
+                .def_prop_ro("name", &IApp::getName)
+                .def_prop_ro("summary", &IApp::getSummary)
+                .def_prop_ro("hasCmdLineHelp", &IApp::hasCmdLineHelp);
         }
     }
 }

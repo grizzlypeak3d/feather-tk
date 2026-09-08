@@ -5,23 +5,30 @@
 
 #include <ftk/UI/Divider.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void divider(py::module_& m)
+        void divider(nb::module_& m)
         {
-            py::class_<Divider, IWidget, std::shared_ptr<Divider> >(m, "Divider")
+            nb::class_<Divider, IWidget>(m, "Divider")
                 .def(
-                    py::init(&Divider::create),
-                    py::arg("context"),
-                    py::arg("orientation"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&Divider::create),
+                    nb::arg("context"),
+                    nb::arg("orientation"),
+                    nb::arg("parent") = nullptr);
         }
     }
 }

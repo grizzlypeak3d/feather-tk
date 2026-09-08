@@ -5,34 +5,41 @@
 
 #include <ftk/UI/GroupBox.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void groupBox(py::module_& m)
+        void groupBox(nb::module_& m)
         {
-            py::class_<GroupBox, IWidget, std::shared_ptr<GroupBox> >(m, "GroupBox")
+            nb::class_<GroupBox, IWidget>(m, "GroupBox")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&GroupBox::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::string&,
                         const std::shared_ptr<IWidget>&>(&GroupBox::create)),
-                    py::arg("context"),
-                    py::arg("text"),
-                    py::arg("parent") = nullptr)
-                .def_property("text", &GroupBox::getText, &GroupBox::setText)
-                .def_property("font", &GroupBox::getFont, &GroupBox::setFont)
+                    nb::arg("context"),
+                    nb::arg("text"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("text", &GroupBox::getText, &GroupBox::setText)
+                .def_prop_rw("font", &GroupBox::getFont, &GroupBox::setFont)
                 .def("clear", &GroupBox::clear);
         }
     }

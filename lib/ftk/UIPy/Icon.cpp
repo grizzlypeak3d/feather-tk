@@ -5,34 +5,41 @@
 
 #include <ftk/UI/Icon.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void icon(py::module_& m)
+        void icon(nb::module_& m)
         {
-            py::class_<Icon, IWidget, std::shared_ptr<Icon> >(m, "Icon")
+            nb::class_<Icon, IWidget>(m, "Icon")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&Icon::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::string&,
                         const std::shared_ptr<IWidget>&>(&Icon::create)),
-                    py::arg("context"),
-                    py::arg("icon"),
-                    py::arg("parent") = nullptr)
-                .def_property("icon", &Icon::getIcon, &Icon::setIcon)
-                .def_property("marginRole", &Icon::getMarginRole, &Icon::setMarginRole);
+                    nb::arg("context"),
+                    nb::arg("icon"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("icon", &Icon::getIcon, &Icon::setIcon)
+                .def_prop_rw("marginRole", &Icon::getMarginRole, &Icon::setMarginRole);
         }
     }
 }

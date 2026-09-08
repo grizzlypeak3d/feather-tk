@@ -5,59 +5,66 @@
 
 #include <ftk/UI/RowLayout.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void rowLayout(py::module_& m)
+        void rowLayout(nb::module_& m)
         {
-            py::class_<RowMargins>(m, "RowMargins")
-                .def(py::init<>())
-                .def(py::init<SizeRole>())
+            nb::class_<RowMargins>(m, "RowMargins")
+                .def(nb::init<>())
+                .def(nb::init<SizeRole>())
                 .def(
-                    py::init<SizeRole, SizeRole>(),
-                    py::arg("horizontal"),
-                    py::arg("vertical"))
+                    nb::init<SizeRole, SizeRole>(),
+                    nb::arg("horizontal"),
+                    nb::arg("vertical"))
                 .def(
-                    py::init<SizeRole, SizeRole, SizeRole, SizeRole>(),
-                    py::arg("left"),
-                    py::arg("top"),
-                    py::arg("right"),
-                    py::arg("bottom"))
-                .def_readwrite("left", &RowMargins::left)
-                .def_readwrite("top", &RowMargins::top)
-                .def_readwrite("right", &RowMargins::right)
-                .def_readwrite("bottom", &RowMargins::bottom);
+                    nb::init<SizeRole, SizeRole, SizeRole, SizeRole>(),
+                    nb::arg("left"),
+                    nb::arg("top"),
+                    nb::arg("right"),
+                    nb::arg("bottom"))
+                .def_rw("left", &RowMargins::left)
+                .def_rw("top", &RowMargins::top)
+                .def_rw("right", &RowMargins::right)
+                .def_rw("bottom", &RowMargins::bottom);
 
-            py::class_<RowLayout, IWidget, std::shared_ptr<RowLayout> >(m, "RowLayout")
+            nb::class_<RowLayout, IWidget>(m, "RowLayout")
                 .def(
-                    py::init(&RowLayout::create),
-                    py::arg("context"),
-                    py::arg("orientation"),
-                    py::arg("parent") = nullptr)
-                .def_property("margins", &RowLayout::getMargins, &RowLayout::setMargins, py::return_value_policy::copy)
-                .def_property("marginRole", &RowLayout::getMarginRole, &RowLayout::setMarginRole)
-                .def_property("spacingRole", &RowLayout::getSpacingRole, &RowLayout::setSpacingRole)
-                .def("addSpacer", py::overload_cast<Stretch>(&RowLayout::addSpacer), py::arg("stretch"))
-                .def("addSpacer", py::overload_cast<SizeRole, Stretch>(&RowLayout::addSpacer), py::arg("spacingRole"), py::arg("stretch"))
+                    nb::new_(&RowLayout::create),
+                    nb::arg("context"),
+                    nb::arg("orientation"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("margins", &RowLayout::getMargins, &RowLayout::setMargins, nb::rv_policy::copy)
+                .def_prop_rw("marginRole", &RowLayout::getMarginRole, &RowLayout::setMarginRole)
+                .def_prop_rw("spacingRole", &RowLayout::getSpacingRole, &RowLayout::setSpacingRole)
+                .def("addSpacer", nb::overload_cast<Stretch>(&RowLayout::addSpacer), nb::arg("stretch"))
+                .def("addSpacer", nb::overload_cast<SizeRole, Stretch>(&RowLayout::addSpacer), nb::arg("spacingRole"), nb::arg("stretch"))
                 .def("clear", &RowLayout::clear);
 
-            py::class_<VerticalLayout, RowLayout, std::shared_ptr<VerticalLayout> >(m, "VerticalLayout")
+            nb::class_<VerticalLayout, RowLayout>(m, "VerticalLayout")
                 .def(
-                    py::init(&VerticalLayout::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&VerticalLayout::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr);
 
-            py::class_<HorizontalLayout, RowLayout, std::shared_ptr<HorizontalLayout> >(m, "HorizontalLayout")
+            nb::class_<HorizontalLayout, RowLayout>(m, "HorizontalLayout")
                 .def(
-                    py::init(&HorizontalLayout::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&HorizontalLayout::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr);
         }
     }
 }

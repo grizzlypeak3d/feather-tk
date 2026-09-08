@@ -10,49 +10,56 @@
 #include <ftk/UI/MessageDialog.h>
 #include <ftk/UI/Window.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void dialogSystem(py::module_& m)
+        void dialogSystem(nb::module_& m)
         {
-            py::class_<DialogSystem, ISystem, std::shared_ptr<DialogSystem> >(m, "DialogSystem")
+            nb::class_<DialogSystem, ISystem>(m, "DialogSystem")
                 .def(
-                    py::init(&DialogSystem::create),
-                    py::arg("context"))
+                    nb::new_(&DialogSystem::create),
+                    nb::arg("context"))
                 .def("message",
                     &DialogSystem::message,
-                    py::arg("title"),
-                    py::arg("text"),
-                    py::arg("window"))
+                    nb::arg("title"),
+                    nb::arg("text"),
+                    nb::arg("window"))
                 .def("choice",
                     &DialogSystem::choice,
-                    py::arg("title"),
-                    py::arg("text"),
-                    py::arg("choices"),
-                    py::arg("window"),
-                    py::arg("callback"))
+                    nb::arg("title"),
+                    nb::arg("text"),
+                    nb::arg("choices"),
+                    nb::arg("window"),
+                    nb::arg("callback"))
                 .def("input",
                     &DialogSystem::input,
-                    py::arg("title"),
-                    py::arg("text"),
-                    py::arg("value"),
-                    py::arg("window"),
-                    py::arg("callback"))
+                    nb::arg("title"),
+                    nb::arg("text"),
+                    nb::arg("value"),
+                    nb::arg("window"),
+                    nb::arg("callback"))
                 .def("confirm",
                     &DialogSystem::confirm,
-                    py::arg("title"),
-                    py::arg("text"),
-                    py::arg("window"),
-                    py::arg("callback"),
-                    py::arg("confirm") = "OK",
-                    py::arg("cancel") = "Cancel");
+                    nb::arg("title"),
+                    nb::arg("text"),
+                    nb::arg("window"),
+                    nb::arg("callback"),
+                    nb::arg("confirm") = "OK",
+                    nb::arg("cancel") = "Cancel");
         }
     }
 }

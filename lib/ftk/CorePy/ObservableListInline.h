@@ -8,32 +8,32 @@ namespace ftk
     namespace python
     {
         template<typename T>
-        inline void observableList(pybind11::module_& m, const std::string& type)
+        inline void observableList(nanobind::module_& m, const std::string& type)
         {
             std::string name = type + "ListObserver";
-            pybind11::class_<ListObserver<T>, std::shared_ptr<ListObserver<T> > >(m, name.c_str())
+            nanobind::class_<ListObserver<T>>(m, name.c_str())
                 .def(
-                    pybind11::init(&ListObserver<T>::create),
-                    pybind11::arg("observableList"),
-                    pybind11::arg("callback"),
-                    pybind11::arg("action") = ObserverAction::Trigger);
+                    nanobind::new_(&ListObserver<T>::create),
+                    nanobind::arg("observableList"),
+                    nanobind::arg("callback"),
+                    nanobind::arg("action") = ObserverAction::Trigger);
             name = "IObservable" + type + "List";
-            pybind11::class_<IObservableList<T>, std::shared_ptr<IObservableList<T> > >(m, name.c_str());
+            nanobind::class_<IObservableList<T>>(m, name.c_str());
             name = "Observable" + type + "List";
-            pybind11::class_<ObservableList<T>, IObservableList<T>, std::shared_ptr<ObservableList<T> > >(m, name.c_str())
-                .def(pybind11::init(pybind11::overload_cast<const std::vector<T>&>(&ObservableList<T>::create)))
+            nanobind::class_<ObservableList<T>, IObservableList<T>>(m, name.c_str())
+                .def(nanobind::new_(nanobind::overload_cast<const std::vector<T>&>(&ObservableList<T>::create)))
                 .def("setAlways", &ObservableList<T>::setAlways)
                 .def("setIfChanged", &ObservableList<T>::setIfChanged)
                 .def("clear", &ObservableList<T>::clear)
-                .def("setItem", &ObservableList<T>::setItem, pybind11::arg("index"), pybind11::arg("value"))
-                .def("setItemOnlyIfChanged", &ObservableList<T>::setItemOnlyIfChanged, pybind11::arg("index"), pybind11::arg("value"))
-                .def("pushBack", pybind11::overload_cast<const T&>(&ObservableList<T>::pushBack))
-                .def("pushBack", pybind11::overload_cast<const std::vector<T>&>(&ObservableList<T>::pushBack))
-                .def("insertItem", &ObservableList<T>::insertItem, pybind11::arg("index"), pybind11::arg("value"))
-                .def("insertItems", &ObservableList<T>::insertItems, pybind11::arg("index"), pybind11::arg("list"))
-                .def("removeItem", &ObservableList<T>::removeItem, pybind11::arg("index"))
-                .def("removeItems", &ObservableList<T>::removeItems, pybind11::arg("start"), pybind11::arg("end"))
-                .def("replaceItems", &ObservableList<T>::replaceItems, pybind11::arg("start"), pybind11::arg("end"), pybind11::arg("list"))
+                .def("setItem", &ObservableList<T>::setItem, nanobind::arg("index"), nanobind::arg("value"))
+                .def("setItemOnlyIfChanged", &ObservableList<T>::setItemOnlyIfChanged, nanobind::arg("index"), nanobind::arg("value"))
+                .def("pushBack", nanobind::overload_cast<const T&>(&ObservableList<T>::pushBack))
+                .def("pushBack", nanobind::overload_cast<const std::vector<T>&>(&ObservableList<T>::pushBack))
+                .def("insertItem", &ObservableList<T>::insertItem, nanobind::arg("index"), nanobind::arg("value"))
+                .def("insertItems", &ObservableList<T>::insertItems, nanobind::arg("index"), nanobind::arg("list"))
+                .def("removeItem", &ObservableList<T>::removeItem, nanobind::arg("index"))
+                .def("removeItems", &ObservableList<T>::removeItems, nanobind::arg("start"), nanobind::arg("end"))
+                .def("replaceItems", &ObservableList<T>::replaceItems, nanobind::arg("start"), nanobind::arg("end"), nanobind::arg("list"))
                 .def("get", &ObservableList<T>::get)
                 .def("getSize", &ObservableList<T>::getSize)
                 .def("isEmpty", &ObservableList<T>::isEmpty)

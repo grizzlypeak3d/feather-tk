@@ -7,44 +7,51 @@
 #include <ftk/UI/ItemButton.h>
 #include <ftk/UI/ItemButtonList.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void itemButton(py::module_& m)
+        void itemButton(nb::module_& m)
         {
-            py::class_<ItemButton, IButton, std::shared_ptr<ItemButton> >(m, "ItemButton")
+            nb::class_<ItemButton, IButton>(m, "ItemButton")
                 .def(
-                    py::init(&ItemButton::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("widget", &ItemButton::getWidget, &ItemButton::setWidget)
+                    nb::new_(&ItemButton::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("widget", &ItemButton::getWidget, &ItemButton::setWidget)
                 .def("setFocusCallback", &ItemButton::setFocusCallback)
                 .def("setDragDropDataCallback", &ItemButton::setDragDropDataCallback)
                 .def("setDragDropCursorCallback", &ItemButton::setDragDropCursorCallback);
 
-            py::class_<ItemControls, IMouseWidget, std::shared_ptr<ItemControls> >(m, "ItemControls")
+            nb::class_<ItemControls, IMouseWidget>(m, "ItemControls")
                 .def(
-                    py::init(&ItemControls::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("widget", &ItemControls::getWidget, &ItemControls::setWidget);
+                    nb::new_(&ItemControls::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("widget", &ItemControls::getWidget, &ItemControls::setWidget);
         }
 
-        void itemButtonList(py::module_& m)
+        void itemButtonList(nb::module_& m)
         {
-            py::class_<ItemButtonList, VerticalLayout, std::shared_ptr<ItemButtonList> >(m, "ItemButtonList")
+            nb::class_<ItemButtonList, VerticalLayout>(m, "ItemButtonList")
                 .def(
-                    py::init(&ItemButtonList::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("current", &ItemButtonList::getCurrent, &ItemButtonList::setCurrent)
+                    nb::new_(&ItemButtonList::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("current", &ItemButtonList::getCurrent, &ItemButtonList::setCurrent)
                 .def("setCurrentCallback", &ItemButtonList::setCurrentCallback)
                 .def("setActivateCallback", &ItemButtonList::setActivateCallback)
                 .def("setDeleteCallback", &ItemButtonList::setDeleteCallback);

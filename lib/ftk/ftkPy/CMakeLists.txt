@@ -1,4 +1,4 @@
-pybind11_add_module(ftkPy Bindings.cpp)
+nanobind_add_module(ftkPy NB_STATIC Bindings.cpp)
 
 target_include_directories(ftkPy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 

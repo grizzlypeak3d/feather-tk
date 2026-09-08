@@ -5,32 +5,39 @@
 
 #include <ftk/UI/IconSystem.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iconSystem(py::module_& m)
+        void iconSystem(nb::module_& m)
         {
-            py::class_<IconSystem, ISystem, std::shared_ptr<IconSystem> >(m, "IconSystem")
+            nb::class_<IconSystem, ISystem>(m, "IconSystem")
                 .def(
-                    py::init(&IconSystem::create),
-                    py::arg("context"))
-                .def_property_readonly("names", &IconSystem::getNames)
+                    nb::new_(&IconSystem::create),
+                    nb::arg("context"))
+                .def_prop_ro("names", &IconSystem::getNames)
                 .def(
                     "add",
                     &IconSystem::add,
-                    py::arg("name"),
-                    py::arg("svg"))
+                    nb::arg("name"),
+                    nb::arg("svg"))
                 .def(
                     "get",
                     &IconSystem::get,
-                    py::arg("name"),
-                    py::arg("displayScale"));
+                    nb::arg("name"),
+                    nb::arg("displayScale"));
         }
     }
 }

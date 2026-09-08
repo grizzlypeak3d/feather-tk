@@ -5,44 +5,51 @@
 
 #include <ftk/UI/IntSlider.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void intSlider(py::module_& m)
+        void intSlider(nb::module_& m)
         {
-            py::class_<IIntSlider, IMouseWidget, std::shared_ptr<IIntSlider> >(m, "IIntSlider")
-                .def_property("value", &IIntSlider::getValue, &IIntSlider::setValue)
+            nb::class_<IIntSlider, IMouseWidget>(m, "IIntSlider")
+                .def_prop_rw("value", &IIntSlider::getValue, &IIntSlider::setValue)
                 .def("setCallback", &IIntSlider::setCallback)
                 .def("setPressedCallback", &IIntSlider::setPressedCallback)
-                .def_property("range", &IIntSlider::getRange, py::overload_cast<const RangeI&>(&IIntSlider::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<int, int>(&IIntSlider::setRange))
-                .def_property("step", &IIntSlider::getStep, &IIntSlider::setStep)
-                .def_property("largeStep", &IIntSlider::getLargeStep, &IIntSlider::setLargeStep)
-                .def_property("defaultValue", &IIntSlider::getDefault, &IIntSlider::setDefault)
+                .def_prop_rw("range", &IIntSlider::getRange, nb::overload_cast<const RangeI&>(&IIntSlider::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<int, int>(&IIntSlider::setRange))
+                .def_prop_rw("step", &IIntSlider::getStep, &IIntSlider::setStep)
+                .def_prop_rw("largeStep", &IIntSlider::getLargeStep, &IIntSlider::setLargeStep)
+                .def_prop_rw("defaultValue", &IIntSlider::getDefault, &IIntSlider::setDefault)
                 .def("getModel", &IIntSlider::getModel);
 
-            py::class_<IntSlider, IIntSlider, std::shared_ptr<IntSlider> >(m, "IntSlider")
+            nb::class_<IntSlider, IIntSlider>(m, "IntSlider")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&IntSlider::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IntModel>&,
                         const std::shared_ptr<IWidget>&>(&IntSlider::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr);
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr);
         }
     }
 }

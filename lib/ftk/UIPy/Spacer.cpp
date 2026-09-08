@@ -5,23 +5,25 @@
 
 #include <ftk/UI/Spacer.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void spacer(py::module_& m)
+        void spacer(nb::module_& m)
         {
-            py::class_<Spacer, IWidget, std::shared_ptr<Spacer> >(m, "Spacer")
+            nb::class_<Spacer, IWidget>(m, "Spacer")
                 .def(
-                    py::init(&Spacer::create),
-                    py::arg("context"),
-                    py::arg("orientation"),
-                    py::arg("parent") = nullptr)
-                .def_property("spacingRole",
+                    nb::new_(&Spacer::create),
+                    nb::arg("context"),
+                    nb::arg("orientation"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("spacingRole",
                     &Spacer::getSpacingRole,
                     &Spacer::setSpacingRole);
         }

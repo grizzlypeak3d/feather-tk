@@ -5,43 +5,50 @@
 
 #include <ftk/UI/FloatEdit.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void floatEdit(py::module_& m)
+        void floatEdit(nb::module_& m)
         {
-            py::class_<FloatEdit, IContainer, std::shared_ptr<FloatEdit> >(m, "FloatEdit")
+            nb::class_<FloatEdit, IContainer>(m, "FloatEdit")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&FloatEdit::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<FloatModel>&,
                         const std::shared_ptr<IWidget>&>(&FloatEdit::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &FloatEdit::getValue, &FloatEdit::setValue)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("value", &FloatEdit::getValue, &FloatEdit::setValue)
                 .def("setCallback", &FloatEdit::setCallback)
-                .def_property("range", &FloatEdit::getRange, py::overload_cast<const RangeF&>(&FloatEdit::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<float, float>(&FloatEdit::setRange))
-                .def_property("step", &FloatEdit::getStep, &FloatEdit::setStep)
-                .def_property("largeStep", &FloatEdit::getLargeStep, &FloatEdit::setLargeStep)
-                .def_property("defaultValue", &FloatEdit::getDefault, &FloatEdit::setDefault)
+                .def_prop_rw("range", &FloatEdit::getRange, nb::overload_cast<const RangeF&>(&FloatEdit::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<float, float>(&FloatEdit::setRange))
+                .def_prop_rw("step", &FloatEdit::getStep, &FloatEdit::setStep)
+                .def_prop_rw("largeStep", &FloatEdit::getLargeStep, &FloatEdit::setLargeStep)
+                .def_prop_rw("defaultValue", &FloatEdit::getDefault, &FloatEdit::setDefault)
                 .def("getModel", &FloatEdit::getModel)
-                .def_property("precision", &FloatEdit::getPrecision, &FloatEdit::setPrecision)
-                .def_property("font", &FloatEdit::getFont, &FloatEdit::setFont);
+                .def_prop_rw("precision", &FloatEdit::getPrecision, &FloatEdit::setPrecision)
+                .def_prop_rw("font", &FloatEdit::getFont, &FloatEdit::setFont);
         }
     }
 }

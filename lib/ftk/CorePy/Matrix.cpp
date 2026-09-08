@@ -5,23 +5,25 @@
 
 #include <ftk/Core/Matrix.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/operators.h>
 
 #include <sstream>
 #include <stdexcept>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void matrix(py::module_& m)
+        void matrix(nb::module_& m)
         {
-            py::class_<M33F>(m, "M33F")
-                .def(py::init<>())
-                .def(py::init<
+            nb::class_<M33F>(m, "M33F")
+                .def(nb::init<>())
+                .def(nb::init<
                     float, float, float,
                     float, float, float,
                     float, float, float>())
@@ -31,10 +33,10 @@ namespace ftk
                     [](M33F& self, unsigned index, float v) { if (index >= 9) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
                     [](M33F& self, unsigned index) { if (index >= 9) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
-                .def(py::self * py::self)
-                .def(py::self * V2F())
-                .def(py::self == py::self)
-                .def(py::self != py::self)
+                .def(nb::self * nb::self)
+                .def(nb::self * V2F())
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self)
                 .def("__repr__", [](const M33F& v)
                     {
                         std::stringstream ss;
@@ -42,9 +44,9 @@ namespace ftk
                         return ss.str();
                     });
 
-            py::class_<M44F>(m, "M44F")
-                .def(py::init<>())
-                .def(py::init<
+            nb::class_<M44F>(m, "M44F")
+                .def(nb::init<>())
+                .def(nb::init<
                     float, float, float, float,
                     float, float, float, float,
                     float, float, float, float,
@@ -55,11 +57,11 @@ namespace ftk
                     [](M44F& self, unsigned index, float v) { if (index >= 16) throw std::out_of_range("index"); self[static_cast<int>(index)] = v; })
                 .def("__getitem__",
                     [](M44F& self, unsigned index) { if (index >= 16) throw std::out_of_range("index"); return self[static_cast<int>(index)]; })
-                .def(py::self * py::self)
-                .def(py::self * V3F())
-                .def(py::self * V4F())
-                .def(py::self == py::self)
-                .def(py::self != py::self)
+                .def(nb::self * nb::self)
+                .def(nb::self * V3F())
+                .def(nb::self * V4F())
+                .def(nb::self == nb::self)
+                .def(nb::self != nb::self)
                 .def("__repr__", [](const M44F& v)
                     {
                         std::stringstream ss;

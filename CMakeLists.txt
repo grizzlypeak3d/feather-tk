@@ -193,7 +193,9 @@ endif()
 
 if(ftk_PYTHON)
     find_package(Python3 REQUIRED Interpreter Development)
-    find_package(pybind11 REQUIRED)
+    # nanobind uses CMake's newer FindPython module.
+    find_package(Python REQUIRED COMPONENTS Interpreter Development)
+    find_package(nanobind REQUIRED CONFIG)
 endif()
 
 #-------------------------------------------------------------------------------

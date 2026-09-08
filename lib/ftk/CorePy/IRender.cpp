@@ -5,62 +5,69 @@
 
 #include <ftk/Core/IRender.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iRender(py::module_& m)
+        void iRender(nb::module_& m)
         {
-            py::class_<IRender, std::shared_ptr<IRender> >(m, "IRender")
+            nb::class_<IRender>(m, "IRender")
                 .def(
                     "begin",
                     &IRender::begin,
-                    py::arg("size"),
-                    py::arg("options"))
+                    nb::arg("size"),
+                    nb::arg("options"))
                 .def("end", &IRender::end)
-                .def_property("renderSize", &IRender::getRenderSize, &IRender::setRenderSize)
-                .def_property("viewport", &IRender::getViewport, &IRender::setViewport)
+                .def_prop_rw("renderSize", &IRender::getRenderSize, &IRender::setRenderSize)
+                .def_prop_rw("viewport", &IRender::getViewport, &IRender::setViewport)
                 .def("clearViewport", &IRender::clearViewport)
-                .def_property("clipRectEnabled", &IRender::getClipRectEnabled, &IRender::setClipRectEnabled)
-                .def_property("clipRect", &IRender::getClipRect, &IRender::setClipRect)
+                .def_prop_rw("clipRectEnabled", &IRender::getClipRectEnabled, &IRender::setClipRectEnabled)
+                .def_prop_rw("clipRect", &IRender::getClipRect, &IRender::setClipRect)
                 .def(
                     "drawRect",
-                    py::overload_cast<const Box2F&, const Color4F&>(&IRender::drawRect),
-                    py::arg("rect"),
-                    py::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F))
+                    nb::overload_cast<const Box2F&, const Color4F&>(&IRender::drawRect),
+                    nb::arg("rect"),
+                    nb::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F))
                 .def(
                     "drawRect",
-                    py::overload_cast<const Box2I&, const Color4F&>(&IRender::drawRect),
-                    py::arg("rect"),
-                    py::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F))
+                    nb::overload_cast<const Box2I&, const Color4F&>(&IRender::drawRect),
+                    nb::arg("rect"),
+                    nb::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F))
                 .def(
                     "drawText",
-                    py::overload_cast<
+                    nb::overload_cast<
                     const std::vector<std::shared_ptr<Glyph> >&,
                     const FontMetrics&,
                     const V2F&,
                     const Color4F&>(&IRender::drawText),
-                    py::arg("glyphs"),
-                    py::arg("fontMetrics"),
-                    py::arg("position"),
-                    py::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F))
+                    nb::arg("glyphs"),
+                    nb::arg("fontMetrics"),
+                    nb::arg("position"),
+                    nb::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F))
                 .def(
                     "drawText",
-                    py::overload_cast<
+                    nb::overload_cast<
                     const std::vector<std::shared_ptr<Glyph> >&,
                     const FontMetrics&,
                     const V2I&,
                     const Color4F&>(&IRender::drawText),
-                    py::arg("glyphs"),
-                    py::arg("fontMetrics"),
-                    py::arg("position"),
-                    py::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F));
+                    nb::arg("glyphs"),
+                    nb::arg("fontMetrics"),
+                    nb::arg("position"),
+                    nb::arg("color") = Color4F(1.F, 1.F, 1.F, 1.F));
         }
     }
 }

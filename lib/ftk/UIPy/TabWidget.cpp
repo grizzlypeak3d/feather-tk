@@ -5,42 +5,49 @@
 
 #include <ftk/UI/TabWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void tabWidget(py::module_& m)
+        void tabWidget(nb::module_& m)
         {
-            py::class_<TabWidget, IContainer, std::shared_ptr<TabWidget> >(m, "TabWidget")
+            nb::class_<TabWidget, IContainer>(m, "TabWidget")
                 .def(
-                    py::init(&TabWidget::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property_readonly("tabs", &TabWidget::getTabs)
+                    nb::new_(&TabWidget::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_ro("tabs", &TabWidget::getTabs)
                 .def(
                     "addTab",
                     &TabWidget::addTab,
-                    py::arg("name"),
-                    py::arg("widget"),
-                    py::arg("tooltip") = std::string())
+                    nb::arg("name"),
+                    nb::arg("widget"),
+                    nb::arg("tooltip") = std::string())
                 .def(
                     "removeTab",
-                    py::overload_cast<int>(&TabWidget::removeTab),
-                    py::arg("index"))
+                    nb::overload_cast<int>(&TabWidget::removeTab),
+                    nb::arg("index"))
                 .def(
                     "removeTab",
-                    py::overload_cast<const std::shared_ptr<IWidget>&>(&TabWidget::removeTab),
-                    py::arg("widget"))
+                    nb::overload_cast<const std::shared_ptr<IWidget>&>(&TabWidget::removeTab),
+                    nb::arg("widget"))
                 .def("clear", &TabWidget::clear)
-                .def_property("current", &TabWidget::getCurrent, &TabWidget::setCurrent)
+                .def_prop_rw("current", &TabWidget::getCurrent, &TabWidget::setCurrent)
                 .def("setCallback", &TabWidget::setCallback)
-                .def_property("currentWidget", &TabWidget::getCurrentWidget, &TabWidget::setCurrentWidget)
+                .def_prop_rw("currentWidget", &TabWidget::getCurrentWidget, &TabWidget::setCurrentWidget)
                 .def("setWidgetCallback", &TabWidget::setWidgetCallback)
                 .def(
                     "setTabText",
@@ -66,7 +73,7 @@ namespace ftk
                     {
                         self->setTabTooltip(widget, tooltip);
                     })
-                .def_property("closable", &TabWidget::isClosable, &TabWidget::setClosable)
+                .def_prop_rw("closable", &TabWidget::isClosable, &TabWidget::setClosable)
                 .def("setCloseCallback", &TabWidget::setCloseCallback);
         }
     }

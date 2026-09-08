@@ -7,19 +7,26 @@
 
 #include <ftk/UI/MDIWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void mdiWidget(py::module_& m)
+        void mdiWidget(nb::module_& m)
         {
-            py::enum_<MDIResize>(m, "MDIResize")
+            nb::enum_<MDIResize>(m, "MDIResize")
                 .value("_None", MDIResize::None)
                 .value("North", MDIResize::North)
                 .value("NorthEast", MDIResize::NorthEast)
@@ -31,14 +38,14 @@ namespace ftk
                 .value("NorthWest", MDIResize::NorthWest);
             FTK_ENUM_BIND(m, MDIResize);
 
-            py::class_<MDIWidget, IWidget, std::shared_ptr<MDIWidget> >(m, "MDIWidget")
+            nb::class_<MDIWidget, IWidget>(m, "MDIWidget")
                 .def(
-                    py::init(&MDIWidget::create),
-                    py::arg("context"),
-                    py::arg("title"),
-                    py::arg("parent") = nullptr)
-                .def_property("title", &MDIWidget::getTitle, &MDIWidget::setTitle)
-                .def_property("widget", &MDIWidget::getWidget, &MDIWidget::setWidget)
+                    nb::new_(&MDIWidget::create),
+                    nb::arg("context"),
+                    nb::arg("title"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("title", &MDIWidget::getTitle, &MDIWidget::setTitle)
+                .def_prop_rw("widget", &MDIWidget::getWidget, &MDIWidget::setWidget)
                 .def("setPressCallback", &MDIWidget::setPressCallback)
                 .def("setMoveCallback", &MDIWidget::setMoveCallback)
                 .def("setResizeCallback", &MDIWidget::setResizeCallback);

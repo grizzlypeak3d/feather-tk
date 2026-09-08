@@ -7,38 +7,45 @@
 
 #include <ftk/UI/ScrollArea.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void scrollArea(py::module_& m)
+        void scrollArea(nb::module_& m)
         {
-            py::enum_<ScrollType>(m, "ScrollType")
+            nb::enum_<ScrollType>(m, "ScrollType")
                 .value("Horizontal", ScrollType::Horizontal)
                 .value("Vertical", ScrollType::Vertical)
                 .value("Both", ScrollType::Both)
                 .value("Menu", ScrollType::Menu);
             FTK_ENUM_BIND(m, ScrollType);
 
-            py::class_<ScrollArea, IWidget, std::shared_ptr<ScrollArea> >(m, "ScrollArea")
+            nb::class_<ScrollArea, IWidget>(m, "ScrollArea")
                 .def(
-                    py::init(&ScrollArea::create),
-                    py::arg("context"),
-                    py::arg("type") = ScrollType::Both,
-                    py::arg("parent") = nullptr)
-                .def_property("scrollType", &ScrollArea::getScrollType, &ScrollArea::setScrollType)
-                .def_property_readonly("scrollSize", &ScrollArea::getScrollSize, py::return_value_policy::copy)
+                    nb::new_(&ScrollArea::create),
+                    nb::arg("context"),
+                    nb::arg("type") = ScrollType::Both,
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("scrollType", &ScrollArea::getScrollType, &ScrollArea::setScrollType)
+                .def_prop_ro("scrollSize", &ScrollArea::getScrollSize, nb::rv_policy::copy)
                 .def("setScrollSizeCallback", &ScrollArea::setScrollSizeCallback)
-                .def_property("scrollPos", &ScrollArea::getScrollPos, &ScrollArea::setScrollPos, py::return_value_policy::copy)
+                .def_prop_rw("scrollPos", &ScrollArea::getScrollPos, &ScrollArea::setScrollPos, nb::rv_policy::copy)
                 .def("setScrollPosCallback", &ScrollArea::setScrollPosCallback)
                 .def("scrollTo", &ScrollArea::scrollTo)
-                .def_property("areaResizable", &ScrollArea::isAreaResizable, &ScrollArea::setAreaResizable)
-                .def_property("sizeHintRole", &ScrollArea::getSizeHintRole, &ScrollArea::setSizeHintRole);
+                .def_prop_rw("areaResizable", &ScrollArea::isAreaResizable, &ScrollArea::setAreaResizable)
+                .def_prop_rw("sizeHintRole", &ScrollArea::getSizeHintRole, &ScrollArea::setSizeHintRole);
         }
     }
 }

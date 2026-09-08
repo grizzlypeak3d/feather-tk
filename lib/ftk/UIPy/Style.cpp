@@ -7,17 +7,19 @@
 
 #include <ftk/UI/Style.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void style(py::module_& m)
+        void style(nb::module_& m)
         {
-            py::enum_<SizeRole>(m, "SizeRole")
+            nb::enum_<SizeRole>(m, "SizeRole")
                 .value("_None", SizeRole::None)
                 .value("Margin", SizeRole::Margin)
                 .value("MarginSmall", SizeRole::MarginSmall)
@@ -44,7 +46,7 @@ namespace ftk
                 .value("CornerRadius", SizeRole::CornerRadius);
             FTK_ENUM_BIND(m, SizeRole);
 
-            py::enum_<ColorRole>(m, "ColorRole")
+            nb::enum_<ColorRole>(m, "ColorRole")
                 .value("_None", ColorRole::None)
                 .value("Window", ColorRole::Window)
                 .value("Base", ColorRole::Base)

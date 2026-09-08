@@ -7,33 +7,40 @@
 
 #include <ftk/UI/ActionGroup.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void actionGroup(py::module_& m)
+        void actionGroup(nb::module_& m)
         {
-            py::enum_<ActionGroupType>(m, "ActionGroupType")
+            nb::enum_<ActionGroupType>(m, "ActionGroupType")
                 .value("Click", ActionGroupType::Click)
                 .value("Check", ActionGroupType::Check)
                 .value("Radio", ActionGroupType::Radio)
                 .value("Toggle", ActionGroupType::Toggle);
             FTK_ENUM_BIND(m, ActionGroupType);
 
-            py::class_<ActionGroup, std::shared_ptr<ActionGroup> >(m, "ActionGroup")
+            nb::class_<ActionGroup>(m, "ActionGroup")
                 .def(
-                    py::init(&ActionGroup::create),
-                    py::arg("type"))
-                .def_property_readonly("actions", &ActionGroup::getActions)
+                    nb::new_(&ActionGroup::create),
+                    nb::arg("type"))
+                .def_prop_ro("actions", &ActionGroup::getActions)
                 .def("addAction", &ActionGroup::addAction)
                 .def("clear", &ActionGroup::clear)
-                .def_property("checked", &ActionGroup::getChecked, &ActionGroup::setChecked)
+                .def_prop_rw("checked", &ActionGroup::getChecked, &ActionGroup::setChecked)
                 .def("observeChecked", &ActionGroup::observeChecked)
                 .def("setCheckedCallback", &ActionGroup::setCheckedCallback);
         }

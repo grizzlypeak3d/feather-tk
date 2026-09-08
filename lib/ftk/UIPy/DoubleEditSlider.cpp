@@ -5,44 +5,51 @@
 
 #include <ftk/UI/DoubleEditSlider.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void doubleEditSlider(py::module_& m)
+        void doubleEditSlider(nb::module_& m)
         {
-            py::class_<DoubleEditSlider, IContainer, std::shared_ptr<DoubleEditSlider> >(m, "DoubleEditSlider")
+            nb::class_<DoubleEditSlider, IContainer>(m, "DoubleEditSlider")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&DoubleEditSlider::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<DoubleModel>&,
                         const std::shared_ptr<IWidget>&>(&DoubleEditSlider::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &DoubleEditSlider::getValue, &DoubleEditSlider::setValue)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("value", &DoubleEditSlider::getValue, &DoubleEditSlider::setValue)
                 .def("setCallback", &DoubleEditSlider::setCallback)
-                .def_property("range", &DoubleEditSlider::getRange, py::overload_cast<const RangeD&>(&DoubleEditSlider::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<double, double>(&DoubleEditSlider::setRange))
-                .def_property("step", &DoubleEditSlider::getStep, &DoubleEditSlider::setStep)
-                .def_property("largeStep", &DoubleEditSlider::getLargeStep, &DoubleEditSlider::setLargeStep)
-                .def_property("defaultValue", &DoubleEditSlider::getDefault, &DoubleEditSlider::setDefault)
+                .def_prop_rw("range", &DoubleEditSlider::getRange, nb::overload_cast<const RangeD&>(&DoubleEditSlider::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<double, double>(&DoubleEditSlider::setRange))
+                .def_prop_rw("step", &DoubleEditSlider::getStep, &DoubleEditSlider::setStep)
+                .def_prop_rw("largeStep", &DoubleEditSlider::getLargeStep, &DoubleEditSlider::setLargeStep)
+                .def_prop_rw("defaultValue", &DoubleEditSlider::getDefault, &DoubleEditSlider::setDefault)
                 .def("getModel", &DoubleEditSlider::getModel)
                 .def("setPressedCallback", &DoubleEditSlider::setPressedCallback)
-                .def_property("precision", &DoubleEditSlider::getPrecision, &DoubleEditSlider::setPrecision)
-                .def_property("font", &DoubleEditSlider::getFont, &DoubleEditSlider::setFont);
+                .def_prop_rw("precision", &DoubleEditSlider::getPrecision, &DoubleEditSlider::setPrecision)
+                .def_prop_rw("font", &DoubleEditSlider::getFont, &DoubleEditSlider::setFont);
 
         }
     }

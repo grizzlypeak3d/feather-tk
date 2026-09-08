@@ -5,25 +5,27 @@
 
 #include <ftk/Core/Random.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void random(py::module_& m)
+        void random(nb::module_& m)
         {
-            py::class_<Random>(m, "Random")
-                .def(py::init<>())
-                .def("getF", py::overload_cast<>(&Random::getF))
-                .def("getF", py::overload_cast<float>(&Random::getF))
-                .def("getF", py::overload_cast<float, float>(&Random::getF), py::arg("min"), py::arg("max"))
-                .def("getI", py::overload_cast<int>(&Random::getI))
-                .def("getI", py::overload_cast<int, int>(&Random::getI), py::arg("min"), py::arg("max"))
-                .def("setSeed", py::overload_cast<unsigned int>(&Random::setSeed))
-                .def("setSeed", py::overload_cast<>(&Random::setSeed));
+            nb::class_<Random>(m, "Random")
+                .def(nb::init<>())
+                .def("getF", nb::overload_cast<>(&Random::getF))
+                .def("getF", nb::overload_cast<float>(&Random::getF))
+                .def("getF", nb::overload_cast<float, float>(&Random::getF), nb::arg("min"), nb::arg("max"))
+                .def("getI", nb::overload_cast<int>(&Random::getI))
+                .def("getI", nb::overload_cast<int, int>(&Random::getI), nb::arg("min"), nb::arg("max"))
+                .def("setSeed", nb::overload_cast<unsigned int>(&Random::setSeed))
+                .def("setSeed", nb::overload_cast<>(&Random::setSeed));
         }
     }
 }

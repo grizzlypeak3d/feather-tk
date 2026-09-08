@@ -3,45 +3,83 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/UIPy/WidgetTrampoline.h>
+
 #include <ftk/UI/MenuBar.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void menuBar(py::module_& m)
+        namespace
         {
-            py::class_<MenuBar, IContainer, std::shared_ptr<MenuBar> >(m, "MenuBar")
+            //! Exposes the protected constructor and _init for Python-owned
+            //! construction; adds no members, so the base storage fits.
+            class PyMenuBar : public MenuBar
+            {
+            public:
+                template<typename... Args>
+                void pyInit(Args&&... args)
+                {
+                    _init(std::forward<Args>(args)...);
+                }
+            };
+        }
+
+        void menuBar(nb::module_& m)
+        {
+            nb::class_<MenuBar, IContainer>(m, "MenuBar")
                 .def(
-                    py::init(&MenuBar::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    "__init__",
+                    // Python subclasses pass their own __init__ arguments
+                    // through __new__, which a factory constructor cannot
+                    // accept -- so construction is __init__-based (see
+                    // WidgetTrampoline.h).
+                    [](MenuBar* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::shared_ptr<IWidget>& parent)
+                    {
+                        pyConstruct<PyMenuBar>(self,
+                            [&](PyMenuBar& w)
+                            {
+                                w.pyInit(context, parent);
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
                     "addMenu",
-                    py::overload_cast<const std::string&>(&MenuBar::addMenu),
-                    py::arg("text"))
+                    nb::overload_cast<const std::string&>(&MenuBar::addMenu),
+                    nb::arg("text"))
                 .def(
                     "addMenu",
-                    py::overload_cast<
+                    nb::overload_cast<
                         const std::string&,
                         const std::shared_ptr<Menu>&>(&MenuBar::addMenu),
-                    py::arg("text"),
-                    py::arg("menu"))
+                    nb::arg("text"),
+                    nb::arg("menu"))
                 .def(
                     "getMenu",
                     &MenuBar::getMenu,
-                    py::arg("text"))
+                    nb::arg("text"))
                 .def("clear", &MenuBar::clear)
                 .def(
                     "shortcut",
                     &MenuBar::shortcut,
-                    py::arg("key"),
-                    py::arg("modifiers"));
+                    nb::arg("key"),
+                    nb::arg("modifiers"));
         }
     }
 }

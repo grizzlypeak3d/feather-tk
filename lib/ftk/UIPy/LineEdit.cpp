@@ -6,49 +6,56 @@
 #include <ftk/UI/LineEdit.h>
 #include <ftk/UI/LineEditModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void lineEdit(py::module_& m)
+        void lineEdit(nb::module_& m)
         {
-            py::class_<LineEdit, IWidget, std::shared_ptr<LineEdit> >(m, "LineEdit")
+            nb::class_<LineEdit, IWidget>(m, "LineEdit")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&LineEdit::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<LineEditModel>&,
                         const std::shared_ptr<IWidget>&>(&LineEdit::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
                 .def("getModel", &LineEdit::getModel)
-                .def_property("text", &LineEdit::getText, &LineEdit::setText)
+                .def_prop_rw("text", &LineEdit::getText, &LineEdit::setText)
                 .def("clearText", &LineEdit::clearText)
                 .def("setCallback", &LineEdit::setCallback)
-                .def_property_readonly("hasCallbackOnFocusLost", &LineEdit::hasCallbackOnFocusLost)
+                .def_prop_ro("hasCallbackOnFocusLost", &LineEdit::hasCallbackOnFocusLost)
                 .def("setCallbackOnFocusLost", &LineEdit::setCallbackOnFocusLost)
                 .def("setTextChangedCallback", &LineEdit::setTextChangedCallback)
-                .def_property("format", &LineEdit::getFormat, &LineEdit::setFormat)
+                .def_prop_rw("format", &LineEdit::getFormat, &LineEdit::setFormat)
                 .def("setFocusCallback", &LineEdit::setFocusCallback)
-                .def_property("readOnly", &LineEdit::isReadOnly, &LineEdit::setReadOnly)
-                .def_property("selectAllOnFocus", &LineEdit::hasSelectAllOnFocus, &LineEdit::setSelectAllOnFocus)
-                .def_property_readonly("preedit", &LineEdit::getPreedit)
+                .def_prop_rw("readOnly", &LineEdit::isReadOnly, &LineEdit::setReadOnly)
+                .def_prop_rw("selectAllOnFocus", &LineEdit::hasSelectAllOnFocus, &LineEdit::setSelectAllOnFocus)
+                .def_prop_ro("preedit", &LineEdit::getPreedit)
                 .def("selectAll", &LineEdit::selectAll)
                 .def("clearSelection", &LineEdit::clearSelection)
-                .def_property("font", &LineEdit::getFont, &LineEdit::setFont)
-                .def_property("borderRole", &LineEdit::getBorderRole, &LineEdit::setBorderRole);
+                .def_prop_rw("font", &LineEdit::getFont, &LineEdit::setFont)
+                .def_prop_rw("borderRole", &LineEdit::getBorderRole, &LineEdit::setBorderRole);
         }
     }
 }

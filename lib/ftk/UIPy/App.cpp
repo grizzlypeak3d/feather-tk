@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/UIPy/WidgetTrampoline.h>
+
 #include <ftk/UI/App.h>
 #include <ftk/UI/Settings.h>
 #include <ftk/UI/Style.h>
@@ -13,13 +15,20 @@
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Context.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/filesystem.h>
 
-using namespace pybind11::literals;
-namespace py = pybind11;
+using namespace nanobind::literals;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -28,7 +37,18 @@ namespace ftk
         class PyApp : public App
         {
         public:
-            static std::shared_ptr<PyApp> create(
+            NB_TRAMPOLINE(App);
+
+            //! Keeps one shared_ptr control block alive for the life of the
+            //! application, the way pybind11's holder did: the windows store
+            //! weak_ptrs to the app, and a weak_ptr into a per-call control
+            //! block expires as soon as the call returns. Released when
+            //! run() finishes; an application that never runs reports the
+            //! instance in nanobind's exit-time leak check, which is
+            //! harmless.
+            std::shared_ptr<App> pyAnchor;
+
+            void pyInit(
                 const std::shared_ptr<Context>& context,
                 const std::vector<std::string>& argv,
                 const std::string& name,
@@ -37,125 +57,154 @@ namespace ftk
                 const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions,
                 const AppFiles& appFiles)
             {
-                auto out = std::shared_ptr<PyApp>(new PyApp);
-                out->_init(context, argv, name, summary, cmdLineArgs, cmdLineOptions, appFiles);
-                return out;
+                _init(context, argv, name, summary, cmdLineArgs, cmdLineOptions, appFiles);
             }
 
             virtual void run() override
             {
-                PYBIND11_OVERRIDE(void, App, run);
+                NB_OVERRIDE(run);
             }
 
             virtual void tick() override
             {
-                PYBIND11_OVERRIDE(void, App, tick);
+                NB_OVERRIDE(tick);
             }
         };
 
-        void app(py::module_& m)
+        void app(nb::module_& m)
         {
-            py::enum_<ColorStyle>(m, "ColorStyle")
+            nb::enum_<ColorStyle>(m, "ColorStyle")
                 .value("Dark", ColorStyle::Dark)
                 .value("Light", ColorStyle::Light)
                 .value("Custom", ColorStyle::Custom);
             FTK_ENUM_BIND(m, ColorStyle);
 
-            py::class_<ColorControls>(m, "ColorControls")
-                .def(py::init())
-                .def_readwrite("brightness", &ColorControls::brightness)
-                .def_readwrite("contrast", &ColorControls::contrast)
-                .def_readwrite("disabledAlpha", &ColorControls::disabledAlpha)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self);
+            nb::class_<ColorControls>(m, "ColorControls")
+                .def(nb::init<>())
+                .def_rw("brightness", &ColorControls::brightness)
+                .def_rw("contrast", &ColorControls::contrast)
+                .def_rw("disabledAlpha", &ColorControls::disabledAlpha)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
-            py::class_<Style, std::shared_ptr<Style> >(m, "Style")
-                .def_property(
+            nb::class_<Style>(m, "Style")
+                .def_prop_rw(
                     "colorControls",
                     &Style::getColorControls,
                     &Style::setColorControls,
-                    py::return_value_policy::copy)
-                .def_property(
+                    nb::rv_policy::copy)
+                .def_prop_rw(
                     "fonts",
                     &Style::getFonts,
                     &Style::setFonts,
-                    py::return_value_policy::copy)
+                    nb::rv_policy::copy)
                 .def(
                     "getSizeRole",
                     &Style::getSizeRole,
-                    py::arg("role"),
-                    py::arg("scale"))
+                    nb::arg("role"),
+                    nb::arg("scale"))
                 .def(
                     "getColorRole",
-                    py::overload_cast<ColorRole>(&Style::getColorRole, py::const_),
-                    py::arg("role"));
+                    nb::overload_cast<ColorRole>(&Style::getColorRole, nb::const_),
+                    nb::arg("role"));
 
-            py::class_<MonitorInfo>(m, "MonitorInfo")
-                .def_readwrite("name", &MonitorInfo::name)
-                .def_readwrite("size", &MonitorInfo::size)
-                .def_readwrite("refreshRate", &MonitorInfo::refreshRate)
-                .def_readwrite("dpi", &MonitorInfo::dpi)
-                .def_readwrite("bounds", &MonitorInfo::bounds)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self);
+            nb::class_<MonitorInfo>(m, "MonitorInfo")
+                .def_rw("name", &MonitorInfo::name)
+                .def_rw("size", &MonitorInfo::size)
+                .def_rw("refreshRate", &MonitorInfo::refreshRate)
+                .def_rw("dpi", &MonitorInfo::dpi)
+                .def_rw("bounds", &MonitorInfo::bounds)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
-            py::class_<AppFiles>(m, "AppFiles")
+            nb::class_<AppFiles>(m, "AppFiles")
                 .def(
-                    py::init([](
+                    "__init__",
+                    [](AppFiles* self,
                         const std::string& dirName,
                         const std::string& baseName,
                         int version)
                     {
-                        return AppFiles{ dirName, baseName, version };
-                    }),
-                    py::arg("dirName") = std::string(),
-                    py::arg("baseName") = std::string(),
-                    py::arg("version") = 0)
-                .def_readwrite("dirName", &AppFiles::dirName)
-                .def_readwrite("baseName", &AppFiles::baseName)
-                .def_readwrite("version", &AppFiles::version);
+                        new (self) AppFiles{ dirName, baseName, version };
+                    },
+                    nb::arg("dirName") = std::string(),
+                    nb::arg("baseName") = std::string(),
+                    nb::arg("version") = 0)
+                .def_rw("dirName", &AppFiles::dirName)
+                .def_rw("baseName", &AppFiles::baseName)
+                .def_rw("version", &AppFiles::version);
 
-            //py::class_<App, IApp, std::shared_ptr<App> >(m, "App")
-            py::class_<App, IApp, std::shared_ptr<App>, PyApp>(m, "App")
+            //nb::class_<App, IApp>(m, "App")
+            nb::class_<App, IApp, PyApp>(m, "App")
                 .def(
-                    py::init(py::overload_cast<
-                        const std::shared_ptr<Context>&,
-                        const std::vector<std::string>&,
-                        const std::string&,
-                        const std::string&,
-                        const std::vector<std::shared_ptr<ICmdLineArg> >&,
-                        const std::vector<std::shared_ptr<ICmdLineOption> >&,
-                        const AppFiles&>(&PyApp::create)),
-                    py::arg("context"),
-                    py::arg("argv"),
-                    py::arg("name"),
-                    py::arg("summary"),
-                    py::arg("cmdLineArgs") = std::vector<std::shared_ptr<ICmdLineArg> >(),
-                    py::arg("cmdLineOptions") = std::vector<std::shared_ptr<ICmdLineOption> >(),
-                    py::arg("appFiles") = AppFiles())
-                .def_property_readonly("settings", &App::getSettings)
-                .def_property_readonly("settingsPath", &App::getSettingsPath)
-                .def_property_readonly("logFilePath", &App::getLogFilePath)
-                .def_property_readonly("windows", &App::getWindows)
-                .def_property_readonly("observeMonitors", &App::observeMonitors)
-                .def_property_readonly("fontSystem", &App::getFontSystem)
-                .def_property_readonly("iconSystem", &App::getIconSystem)
-                .def_property_readonly("style", &App::getStyle)
-                .def_property("colorStyle", &App::getColorStyle, &App::setColorStyle)
-                .def_property_readonly("observeColorStyle", &App::observeColorStyle)
-                .def_property("customColorRoles", &App::getCustomColorRoles, &App::setCustomColorRoles, py::return_value_policy::copy)
-                .def_property_readonly("observeCustomColorRoles", &App::observeCustomColorRoles)
-                .def_property_readonly("defaultDisplayScale", &App::getDefaultDisplayScale)
-                .def_property("displayScale", &App::getDisplayScale, &App::setDisplayScale)
-                .def_property_readonly("observeDisplayScale", &App::observeDisplayScale)
-                .def_property("tooltipsEnabled", &App::areTooltipsEnabled, &App::setTooltipsEnabled)
-                .def_property_readonly("observeTooltipsEnabled", &App::observeTooltipsEnabled)
-                .def_static("setOffscreenDefault", &App::setOffscreenDefault, py::arg("value"))
-                .def("writeScreenshot", &App::writeScreenshot, py::arg("path"))
-                .def("writeWidgetDump", &App::writeWidgetDump, py::arg("path"))
+                    "__init__",
+                    [](App* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::vector<std::string>& argv,
+                       const std::string& name,
+                       const std::string& summary,
+                       const std::vector<std::shared_ptr<ICmdLineArg> >& cmdLineArgs,
+                       const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions,
+                       const AppFiles& appFiles)
+                    {
+                        pyConstruct<PyApp>(self,
+                            [&](PyApp& a)
+                            {
+                                a.pyInit(
+                                    context, argv, name, summary,
+                                    cmdLineArgs, cmdLineOptions, appFiles);
+                                a.pyAnchor = nanobind::cast<std::shared_ptr<App> >(
+                                    nanobind::find(self));
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("argv"),
+                    nb::arg("name"),
+                    nb::arg("summary"),
+                    nb::arg("cmdLineArgs") = std::vector<std::shared_ptr<ICmdLineArg> >(),
+                    nb::arg("cmdLineOptions") = std::vector<std::shared_ptr<ICmdLineOption> >(),
+                    nb::arg("appFiles") = AppFiles())
+                .def_prop_ro("settings", &App::getSettings)
+                .def_prop_ro("settingsPath", &App::getSettingsPath)
+                .def_prop_ro("logFilePath", &App::getLogFilePath)
+                .def_prop_ro("windows", &App::getWindows)
+                .def_prop_ro("observeMonitors", &App::observeMonitors)
+                .def_prop_ro("fontSystem", &App::getFontSystem)
+                .def_prop_ro("iconSystem", &App::getIconSystem)
+                .def_prop_ro("style", &App::getStyle)
+                .def_prop_rw("colorStyle", &App::getColorStyle, &App::setColorStyle)
+                .def_prop_ro("observeColorStyle", &App::observeColorStyle)
+                .def_prop_rw("customColorRoles", &App::getCustomColorRoles, &App::setCustomColorRoles, nb::rv_policy::copy)
+                .def_prop_ro("observeCustomColorRoles", &App::observeCustomColorRoles)
+                .def_prop_ro("defaultDisplayScale", &App::getDefaultDisplayScale)
+                .def_prop_rw("displayScale", &App::getDisplayScale, &App::setDisplayScale)
+                .def_prop_ro("observeDisplayScale", &App::observeDisplayScale)
+                .def_prop_rw("tooltipsEnabled", &App::areTooltipsEnabled, &App::setTooltipsEnabled)
+                .def_prop_ro("observeTooltipsEnabled", &App::observeTooltipsEnabled)
+                .def_static("setOffscreenDefault", &App::setOffscreenDefault, nb::arg("value"))
+                .def("writeScreenshot", &App::writeScreenshot, nb::arg("path"))
+                .def("writeWidgetDump", &App::writeWidgetDump, nb::arg("path"))
                 .def("exit", &App::exit)
-                .def("run", &App::run)
-                .def("tick", &App::tick);
+                // Self as a shared_ptr: the run loop hands weak references
+                // to the app out through shared_from_this() -- screenshots,
+                // widget dumps, captures -- which only works while a C++
+                // shared_ptr for the instance exists.
+                .def(
+                    "run",
+                    [](const std::shared_ptr<App>& self)
+                    {
+                        self->run();
+                        if (auto pyApp = dynamic_cast<PyApp*>(self.get()))
+                        {
+                            pyApp->pyAnchor.reset();
+                        }
+                    })
+                .def(
+                    "tick",
+                    [](const std::shared_ptr<App>& self)
+                    {
+                        self->tick();
+                    });
         }
     }
 }

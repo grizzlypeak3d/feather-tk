@@ -5,29 +5,36 @@
 
 #include <ftk/Core/CmdLine.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void cmdLine(py::module_& m)
+        void cmdLine(nb::module_& m)
         {
-            py::class_<ICmdLineOption, std::shared_ptr<ICmdLineOption> >(m, "ICmdLineOption")
-                .def_property_readonly("help", &ICmdLineOption::getHelp)
-                .def_property_readonly("group", &ICmdLineOption::getGroup)
-                .def_property_readonly("found", &ICmdLineOption::found)
-                .def_property_readonly("matchedName", &ICmdLineOption::getMatchedName);
+            nb::class_<ICmdLineOption>(m, "ICmdLineOption")
+                .def_prop_ro("help", &ICmdLineOption::getHelp)
+                .def_prop_ro("group", &ICmdLineOption::getGroup)
+                .def_prop_ro("found", &ICmdLineOption::found)
+                .def_prop_ro("matchedName", &ICmdLineOption::getMatchedName);
 
-            py::class_<CmdLineFlag, ICmdLineOption, std::shared_ptr<CmdLineFlag> >(m, "CmdLineFlag")
+            nb::class_<CmdLineFlag, ICmdLineOption>(m, "CmdLineFlag")
                 .def(
-                    pybind11::init(&CmdLineFlag::create),
-                    pybind11::arg("names"),
-                    pybind11::arg("help"),
-                    pybind11::arg("group") = std::string());
+                    nanobind::new_(&CmdLineFlag::create),
+                    nanobind::arg("names"),
+                    nanobind::arg("help"),
+                    nanobind::arg("group") = std::string());
 
             cmdLineOption<int>(m, "I");
             cmdLineOption<float>(m, "F");
@@ -37,7 +44,7 @@ namespace ftk
 
             cmdLineListOption<std::string>(m, "String");
 
-            py::class_<ICmdLineArg, std::shared_ptr<ICmdLineArg> >(m, "ICmdLineArg");
+            nb::class_<ICmdLineArg>(m, "ICmdLineArg");
 
             cmdLineArg<int>(m, "I");
             cmdLineArg<float>(m, "F");

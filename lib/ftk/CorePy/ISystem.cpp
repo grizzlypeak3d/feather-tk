@@ -6,25 +6,32 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/ISystem.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/chrono.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/chrono.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iSystem(py::module_& m)
+        void iSystem(nb::module_& m)
         {
-            py::class_<IBaseSystem, std::shared_ptr<IBaseSystem> >(m, "IBaseSystem")
-                .def_property_readonly("context", &ISystem::getContext)
-                .def_property_readonly("name", &ISystem::getName)
+            nb::class_<IBaseSystem>(m, "IBaseSystem")
+                .def_prop_ro("context", &ISystem::getContext)
+                .def_prop_ro("name", &ISystem::getName)
                 .def("tick", &ISystem::tick)
-                .def_property_readonly("tickTime", &ISystem::getTickTime);
+                .def_prop_ro("tickTime", &ISystem::getTickTime);
 
-            py::class_<ISystem, IBaseSystem, std::shared_ptr<ISystem> >(m, "ISystem");
+            nb::class_<ISystem, IBaseSystem>(m, "ISystem");
         }
     }
 }

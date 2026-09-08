@@ -8,34 +8,41 @@
 #include <ftk/UI/FileEdit.h>
 #include <ftk/UI/RecentFilesModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void fileEdit(py::module_& m)
+        void fileEdit(nb::module_& m)
         {
-            py::class_<FileEdit, IContainer, std::shared_ptr<FileEdit> >(m, "FileEdit")
+            nb::class_<FileEdit, IContainer>(m, "FileEdit")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&FileEdit::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         FileBrowserMode,
                         const std::shared_ptr<IWidget>&>(&FileEdit::create)),
-                    py::arg("context"),
-                    py::arg("mode"),
-                    py::arg("parent") = nullptr)
-                .def_property("path",
+                    nb::arg("context"),
+                    nb::arg("mode"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("path",
                     [](const std::shared_ptr<FileEdit>& w)
                     {
                         return w->getPath().get();

@@ -9,21 +9,28 @@
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/RecentFilesModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void fileBrowser(py::module_& m)
+        void fileBrowser(nb::module_& m)
         {
-            py::enum_<FileBrowserMode>(m, "FileBrowserMode")
+            nb::enum_<FileBrowserMode>(m, "FileBrowserMode")
                 .value("Open", FileBrowserMode::Open)
                 .value("Save", FileBrowserMode::Save)
                 .value("Dir", FileBrowserMode::Dir);
@@ -31,88 +38,88 @@ namespace ftk
 
             observable<std::filesystem::path>(m, "FileSystemPath");
 
-            py::class_<FileBrowserOpenOptions>(m, "FileBrowserOpenOptions")
-                .def(py::init<>())
-                .def_readwrite("title", &FileBrowserOpenOptions::title)
-                .def_readwrite("path", &FileBrowserOpenOptions::path)
-                .def_readwrite("mode", &FileBrowserOpenOptions::mode)
-                .def_readwrite("fileName", &FileBrowserOpenOptions::fileName)
-                .def_readwrite("extensions", &FileBrowserOpenOptions::extensions)
-                .def_readwrite("extensionsLabel", &FileBrowserOpenOptions::extensionsLabel)
-                .def_readwrite("multiple", &FileBrowserOpenOptions::multiple);
+            nb::class_<FileBrowserOpenOptions>(m, "FileBrowserOpenOptions")
+                .def(nb::init<>())
+                .def_rw("title", &FileBrowserOpenOptions::title)
+                .def_rw("path", &FileBrowserOpenOptions::path)
+                .def_rw("mode", &FileBrowserOpenOptions::mode)
+                .def_rw("fileName", &FileBrowserOpenOptions::fileName)
+                .def_rw("extensions", &FileBrowserOpenOptions::extensions)
+                .def_rw("extensionsLabel", &FileBrowserOpenOptions::extensionsLabel)
+                .def_rw("multiple", &FileBrowserOpenOptions::multiple);
 
-            py::class_<FileBrowserOptions>(m, "FileBrowserOptions")
-                .def(py::init())
-                .def_readwrite("dirList", &FileBrowserOptions::dirList)
-                .def_readwrite("panel", &FileBrowserOptions::panel)
-                .def_readwrite("pathEditable", &FileBrowserOptions::pathEditable)
-                .def_readwrite("bellows", &FileBrowserOptions::bellows)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self);
+            nb::class_<FileBrowserOptions>(m, "FileBrowserOptions")
+                .def(nb::init<>())
+                .def_rw("dirList", &FileBrowserOptions::dirList)
+                .def_rw("panel", &FileBrowserOptions::panel)
+                .def_rw("pathEditable", &FileBrowserOptions::pathEditable)
+                .def_rw("bellows", &FileBrowserOptions::bellows)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
-            py::class_<FileBrowserModel, std::shared_ptr<FileBrowserModel> >(m, "FileBrowserModel")
+            nb::class_<FileBrowserModel>(m, "FileBrowserModel")
                 .def(
-                    py::init(&FileBrowserModel::create),
-                    py::arg("context"))
-                .def_property(
+                    nb::new_(&FileBrowserModel::create),
+                    nb::arg("context"))
+                .def_prop_rw(
                     "path",
                     &FileBrowserModel::getPath,
                     // Named, because setPath is overloaded on the path and a
                     // UTF-8 string and its address alone does not say which.
                     // The path one: pybind11's filesystem caster already
                     // brings str and os.PathLike across as a path.
-                    py::overload_cast<
+                    nb::overload_cast<
                         const std::filesystem::path&>(&FileBrowserModel::setPath))
-                .def_property_readonly("observePath", &FileBrowserModel::observePath)
+                .def_prop_ro("observePath", &FileBrowserModel::observePath)
                 .def("forward", &FileBrowserModel::forward)
-                .def_property_readonly("observeHasForward", &FileBrowserModel::observeHasForward)
+                .def_prop_ro("observeHasForward", &FileBrowserModel::observeHasForward)
                 .def("back", &FileBrowserModel::back)
-                .def_property_readonly("observeHasBack", &FileBrowserModel::observeHasBack)
-                .def_property(
+                .def_prop_ro("observeHasBack", &FileBrowserModel::observeHasBack)
+                .def_prop_rw(
                     "options",
                     &FileBrowserModel::getOptions,
                     &FileBrowserModel::setOptions,
-                    py::return_value_policy::copy)
-                .def_property_readonly("observeOptions", &FileBrowserModel::observeOptions)
-                .def_property(
+                    nb::rv_policy::copy)
+                .def_prop_ro("observeOptions", &FileBrowserModel::observeOptions)
+                .def_prop_rw(
                     "exts",
                     &FileBrowserModel::getExts,
                     &FileBrowserModel::setExts)
-                .def_property_readonly("observeExts", &FileBrowserModel::observeExts)
-                .def_property(
+                .def_prop_ro("observeExts", &FileBrowserModel::observeExts)
+                .def_prop_rw(
                     "ext",
                     &FileBrowserModel::getExt,
                     &FileBrowserModel::setExt)
-                .def_property_readonly("observeExt", &FileBrowserModel::observeExt);
+                .def_prop_ro("observeExt", &FileBrowserModel::observeExt);
 
-            py::class_<FileBrowserSystem, ISystem, std::shared_ptr<FileBrowserSystem> >(m, "FileBrowserSystem")
+            nb::class_<FileBrowserSystem, ISystem>(m, "FileBrowserSystem")
                 .def(
-                    py::init(&FileBrowserSystem::create),
-                    py::arg("context"))
+                    nb::new_(&FileBrowserSystem::create),
+                    nb::arg("context"))
                 .def("open",
                     static_cast<void (FileBrowserSystem::*)(
                         const std::shared_ptr<IWindow>&,
                         const std::function<void(const Path&)>&,
                         const FileBrowserOpenOptions&)>(&FileBrowserSystem::open),
-                    py::arg("window"),
-                    py::arg("callback"),
-                    py::arg("options") = FileBrowserOpenOptions())
+                    nb::arg("window"),
+                    nb::arg("callback"),
+                    nb::arg("options") = FileBrowserOpenOptions())
                 .def("openMultiple",
                     static_cast<void (FileBrowserSystem::*)(
                         const std::shared_ptr<IWindow>&,
                         const std::function<void(const std::vector<Path>&)>&,
                         const FileBrowserOpenOptions&)>(&FileBrowserSystem::open),
-                    py::arg("window"),
-                    py::arg("callback"),
-                    py::arg("options") = FileBrowserOpenOptions())
-                .def_property(
+                    nb::arg("window"),
+                    nb::arg("callback"),
+                    nb::arg("options") = FileBrowserOpenOptions())
+                .def_prop_rw(
                     "nativeFileDialog",
                     &FileBrowserSystem::isNativeFileDialog,
                     &FileBrowserSystem::setNativeFileDialog)
-                .def_property_readonly(
+                .def_prop_ro(
                     "model",
                     &FileBrowserSystem::getModel)
-                .def_property(
+                .def_prop_rw(
                     "recentFilesModel",
                     &FileBrowserSystem::getRecentFilesModel,
                     &FileBrowserSystem::setRecentFilesModel);

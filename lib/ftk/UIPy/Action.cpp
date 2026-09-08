@@ -5,119 +5,126 @@
 
 #include <ftk/UI/Action.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void action(py::module_& m)
+        void action(nb::module_& m)
         {
-            py::class_<KeyShortcut>(m, "KeyShortcut")
-                .def(py::init<>())
-                .def(py::init<Key, KeyModifier>(), py::arg("key"), py::arg("modifier"))
+            nb::class_<KeyShortcut>(m, "KeyShortcut")
+                .def(nb::init<>())
+                .def(nb::init<Key, KeyModifier>(), nb::arg("key"), nb::arg("modifier"))
                 .def(
-                    py::init<Key, KeyModifier, KeyModifier>(),
-                    py::arg("key"),
-                    py::arg("modifier"),
-                    py::arg("modifier2"))
+                    nb::init<Key, KeyModifier, KeyModifier>(),
+                    nb::arg("key"),
+                    nb::arg("modifier"),
+                    nb::arg("modifier2"))
                 .def(
-                    py::init<Key, KeyModifier, KeyModifier, KeyModifier>(),
-                    py::arg("key"),
-                    py::arg("modifier"),
-                    py::arg("modifier2"),
-                    py::arg("modifier3"))
-                .def(py::init<Key, int>(), py::arg("key"), py::arg("modifiers") = 0)
-                .def_readwrite("key", &KeyShortcut::key)
-                .def_readwrite("modifiers", &KeyShortcut::modifiers);
+                    nb::init<Key, KeyModifier, KeyModifier, KeyModifier>(),
+                    nb::arg("key"),
+                    nb::arg("modifier"),
+                    nb::arg("modifier2"),
+                    nb::arg("modifier3"))
+                .def(nb::init<Key, int>(), nb::arg("key"), nb::arg("modifiers") = 0)
+                .def_rw("key", &KeyShortcut::key)
+                .def_rw("modifiers", &KeyShortcut::modifiers);
 
-            py::class_<Action, std::shared_ptr<Action> >(m, "Action")
+            nb::class_<Action>(m, "Action")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const std::function<void(void)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("callback"))
+                    nb::arg("text"),
+                    nb::arg("callback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const std::string&,
                         const std::function<void(void)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("icon"),
-                    py::arg("callback"))
+                    nb::arg("text"),
+                    nb::arg("icon"),
+                    nb::arg("callback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const KeyShortcut&,
                         const std::function<void(void)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("shortcut"),
-                    py::arg("callback"))
+                    nb::arg("text"),
+                    nb::arg("shortcut"),
+                    nb::arg("callback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const std::string&,
                         const KeyShortcut&,
                         const std::function<void(void)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("icon"),
-                    py::arg("shortcut"),
-                    py::arg("callback"))
+                    nb::arg("text"),
+                    nb::arg("icon"),
+                    nb::arg("shortcut"),
+                    nb::arg("callback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const std::function<void(bool)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("checkedCallback"))
+                    nb::arg("text"),
+                    nb::arg("checkedCallback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const std::string&,
                         const std::function<void(bool)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("icon"),
-                    py::arg("checkedCallback"))
+                    nb::arg("text"),
+                    nb::arg("icon"),
+                    nb::arg("checkedCallback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const KeyShortcut&,
                         const std::function<void(bool)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("shortcut"),
-                    py::arg("checkedCallback"))
+                    nb::arg("text"),
+                    nb::arg("shortcut"),
+                    nb::arg("checkedCallback"))
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::string&,
                         const std::string&,
                         const KeyShortcut&,
                         const std::function<void(bool)>&>(&Action::create)),
-                    py::arg("text"),
-                    py::arg("icon"),
-                    py::arg("shortcut"),
-                    py::arg("checkedCallback"))
-                .def_property("text", &Action::getText, &Action::setText)
-                .def_property_readonly("observeText", &Action::observeText)
-                .def_property("icon", &Action::getIcon, &Action::setIcon)
-                .def_property_readonly("observeIcon", &Action::observeIcon)
-                .def_property("checkedIcon", &Action::getCheckedIcon, &Action::setCheckedIcon)
-                .def_property_readonly("observeCheckedIcon", &Action::observeCheckedIcon)
-                .def_property("shortcuts", &Action::getShortcuts, &Action::setShortcuts, py::return_value_policy::copy)
+                    nb::arg("text"),
+                    nb::arg("icon"),
+                    nb::arg("shortcut"),
+                    nb::arg("checkedCallback"))
+                .def_prop_rw("text", &Action::getText, &Action::setText)
+                .def_prop_ro("observeText", &Action::observeText)
+                .def_prop_rw("icon", &Action::getIcon, &Action::setIcon)
+                .def_prop_ro("observeIcon", &Action::observeIcon)
+                .def_prop_rw("checkedIcon", &Action::getCheckedIcon, &Action::setCheckedIcon)
+                .def_prop_ro("observeCheckedIcon", &Action::observeCheckedIcon)
+                .def_prop_rw("shortcuts", &Action::getShortcuts, &Action::setShortcuts, nb::rv_policy::copy)
                 .def("doCallback", &Action::doCallback)
-                .def_property("checkType", &Action::getCheckType, &Action::setCheckType)
-                .def_property_readonly("checkable", &Action::isCheckable)
-                .def_property("checked", &Action::isChecked, &Action::setChecked)
-                .def_property_readonly("observeCheckType", &Action::observeCheckType)
-                .def_property_readonly("observeChecked", &Action::observeChecked)
+                .def_prop_rw("checkType", &Action::getCheckType, &Action::setCheckType)
+                .def_prop_ro("checkable", &Action::isCheckable)
+                .def_prop_rw("checked", &Action::isChecked, &Action::setChecked)
+                .def_prop_ro("observeCheckType", &Action::observeCheckType)
+                .def_prop_ro("observeChecked", &Action::observeChecked)
                 .def("doCheckedCallback", &Action::doCheckedCallback)
-                .def_property("enabled", &Action::isEnabled, &Action::setEnabled)
-                .def_property_readonly("observeEnabled", &Action::observeEnabled)
-                .def_property("tooltip", &Action::getTooltip, &Action::setTooltip)
-                .def_property_readonly("observeTooltip", &Action::observeTooltip);
+                .def_prop_rw("enabled", &Action::isEnabled, &Action::setEnabled)
+                .def_prop_ro("observeEnabled", &Action::observeEnabled)
+                .def_prop_rw("tooltip", &Action::getTooltip, &Action::setTooltip)
+                .def_prop_ro("observeTooltip", &Action::observeTooltip);
         }
     }
 }

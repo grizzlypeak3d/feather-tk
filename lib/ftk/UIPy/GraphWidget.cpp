@@ -5,30 +5,37 @@
 
 #include <ftk/UI/GraphWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void graphWidget(py::module_& m)
+        void graphWidget(nb::module_& m)
         {
-            py::class_<GraphLabel>(m, "GraphLabel")
-                .def(py::init<>())
-                .def_readwrite("colorRole", &GraphLabel::colorRole)
-                .def_readwrite("text", &GraphLabel::text)
-                .def_readwrite("format", &GraphLabel::format);
+            nb::class_<GraphLabel>(m, "GraphLabel")
+                .def(nb::init<>())
+                .def_rw("colorRole", &GraphLabel::colorRole)
+                .def_rw("text", &GraphLabel::text)
+                .def_rw("format", &GraphLabel::format);
 
-            py::class_<GraphWidget, IContainer, std::shared_ptr<GraphWidget> >(m, "GraphWidget")
+            nb::class_<GraphWidget, IContainer>(m, "GraphWidget")
                 .def(
-                    py::init(&GraphWidget::create),
-                    py::arg("context"),
-                    py::arg("title"),
-                    py::arg("labels"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&GraphWidget::create),
+                    nb::arg("context"),
+                    nb::arg("title"),
+                    nb::arg("labels"),
+                    nb::arg("parent") = nullptr)
                 .def("setSamples", &GraphWidget::setSamples)
                 .def("addSample", &GraphWidget::addSample);
         }

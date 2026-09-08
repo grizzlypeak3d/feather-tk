@@ -5,28 +5,30 @@
 
 #include <ftk/UI/IncButtons.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/function.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void incButtons(py::module_& m)
+        void incButtons(nb::module_& m)
         {
-            py::class_<IncButton, IButton, std::shared_ptr<IncButton> >(m, "IncButton")
+            nb::class_<IncButton, IButton>(m, "IncButton")
                 .def(
-                    py::init(&IncButton::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&IncButton::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr);
 
-            py::class_<IncButtons, IWidget, std::shared_ptr<IncButtons> >(m, "IncButtons")
+            nb::class_<IncButtons, IWidget>(m, "IncButtons")
                 .def(
-                    py::init(&IncButtons::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&IncButtons::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def("setIncCallback", &IncButtons::setIncCallback)
                 .def("setDecCallback", &IncButtons::setDecCallback);
         }

@@ -5,19 +5,21 @@
 
 #include <ftk/Core/Noise.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void noise(py::module_& m)
+        void noise(nb::module_& m)
         {
-            py::class_<Noise>(m, "Noise")
-                .def(py::init<>())
-                .def("get", &Noise::get, py::arg("x"), py::arg("y"), py::arg("z"));
+            nb::class_<Noise>(m, "Noise")
+                .def(nb::init<>())
+                .def("get", &Noise::get, nb::arg("x"), nb::arg("y"), nb::arg("z"));
         }
     }
 }

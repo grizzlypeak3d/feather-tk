@@ -4,12 +4,21 @@
 #include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/App.h>
+#include <ftk/UIPy/WidgetTrampoline.h>
+
 #include <ftk/UI/Window.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -18,24 +27,20 @@ namespace ftk
         class PyWindow : public Window
         {
         public:
-            static std::shared_ptr<PyWindow> create(
+            NB_TRAMPOLINE(Window);
+
+            void pyInit(
                 const std::shared_ptr<Context>& context,
                 const std::shared_ptr<App>& app,
                 const std::string& name,
                 const Size2I& size)
             {
-                auto out = std::shared_ptr<PyWindow>(new PyWindow);
-                out->_init(context, app, name, size);
-                return out;
+                _init(context, app, name, size);
             }
             
             void setGeometry(const Box2I& value) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    Window,
-                    setGeometry,
-                    value);
+                NB_OVERRIDE(setGeometry, value);
             }
             
             void tickEvent(
@@ -43,45 +48,42 @@ namespace ftk
                 bool parentsEnabled,
                 const TickEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    Window,
-                    tickEvent,
-                    parentsVisible,
-                    parentsEnabled,
-                    event);
+                NB_OVERRIDE(tickEvent, parentsVisible, parentsEnabled, event);
             }
             
             void sizeHintEvent(const SizeHintEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    Window,
-                    sizeHintEvent,
-                    event);
+                NB_OVERRIDE(sizeHintEvent, event);
             }
 
             void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    Window,
-                    drawEvent,
-                    drawRect,
-                    event);
+                NB_OVERRIDE(drawEvent, drawRect, event);
             }
         };
 
-        void window(py::module_& m)
+        void window(nb::module_& m)
         {
-            //py::class_<Window, IWindow, std::shared_ptr<Window> >(m, "Window")
-            py::class_<Window, IWindow, std::shared_ptr<Window>, PyWindow>(m, "Window")
+            //nb::class_<Window, IWindow>(m, "Window")
+            nb::class_<Window, IWindow, PyWindow>(m, "Window")
                 .def(
-                    py::init(&PyWindow::create),
-                    py::arg("context"),
-                    py::arg("app"),
-                    py::arg("name"),
-                    py::arg("size") = Size2I(1280, 960));
+                    "__init__",
+                    [](Window* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::shared_ptr<App>& app,
+                       const std::string& name,
+                       const Size2I& size)
+                    {
+                        pyConstruct<PyWindow>(self,
+                            [&](PyWindow& w)
+                            {
+                                w.pyInit(context, app, name, size);
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("app"),
+                    nb::arg("name"),
+                    nb::arg("size") = Size2I(1280, 960));
         }
     }
 }

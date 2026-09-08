@@ -5,38 +5,45 @@
 
 #include <ftk/UI/IntModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void intModel(py::module_& m)
+        void intModel(nb::module_& m)
         {
-            py::class_<IntModel, std::shared_ptr<IntModel> >(m, "IntModel")
-                .def(py::init(&IntModel::create))
-                .def_property("value", &IntModel::getValue, &IntModel::setValue)
+            nb::class_<IntModel>(m, "IntModel")
+                .def(nb::new_(&IntModel::create))
+                .def_prop_rw("value", &IntModel::getValue, &IntModel::setValue)
                 .def("setValueSoft", &IntModel::setValueSoft)
                 .def("observeValue", &IntModel::observeValue)
-                .def_property("range", &IntModel::getRange, &IntModel::setRange, py::return_value_policy::copy)
+                .def_prop_rw("range", &IntModel::getRange, &IntModel::setRange, nb::rv_policy::copy)
                 .def("observeRange", &IntModel::observeRange)
-                .def_property("rangeSoft", &IntModel::isRangeSoft, &IntModel::setRangeSoft)
-                .def_property("step", &IntModel::getStep, &IntModel::setStep)
-                .def_property("largeStep", &IntModel::getLargeStep, &IntModel::setLargeStep)
-                .def("stepInc", py::overload_cast<>(&IntModel::step))
+                .def_prop_rw("rangeSoft", &IntModel::isRangeSoft, &IntModel::setRangeSoft)
+                .def_prop_rw("step", &IntModel::getStep, &IntModel::setStep)
+                .def_prop_rw("largeStep", &IntModel::getLargeStep, &IntModel::setLargeStep)
+                .def("stepInc", nb::overload_cast<>(&IntModel::step))
                 .def("stepDec", &IntModel::stepDec)
-                .def("largeStepInc", py::overload_cast<>(&IntModel::largeStep))
+                .def("largeStepInc", nb::overload_cast<>(&IntModel::largeStep))
                 .def("largeStepDec", &IntModel::largeStepDec)
-                .def_property_readonly("hasDefault", &IntModel::hasDefault)
+                .def_prop_ro("hasDefault", &IntModel::hasDefault)
                 .def("observeHasDefault", &IntModel::observeHasDefault)
-                .def_property("defaultValue",
+                .def_prop_rw("defaultValue",
                     &IntModel::getDefault,
-                    py::overload_cast<int>(&IntModel::setDefault))
+                    nb::overload_cast<int>(&IntModel::setDefault))
                 .def("observeDefault", &IntModel::observeDefault)
-                .def("setDefault", py::overload_cast<>(&IntModel::setDefault))
+                .def("setDefault", nb::overload_cast<>(&IntModel::setDefault))
                 .def("clearDefault", &IntModel::clearDefault);
         }
     }

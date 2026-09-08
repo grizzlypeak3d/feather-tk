@@ -5,29 +5,36 @@
 
 #include <ftk/UI/ColorSwatch.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void colorSwatch(py::module_& m)
+        void colorSwatch(nb::module_& m)
         {
-            py::class_<ColorSwatch, IWidget, std::shared_ptr<ColorSwatch> >(m, "ColorSwatch")
+            nb::class_<ColorSwatch, IWidget>(m, "ColorSwatch")
                 .def(
-                    py::init(&ColorSwatch::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("color", &ColorSwatch::getColor, &ColorSwatch::setColor, py::return_value_policy::copy)
-                .def_property("border", &ColorSwatch::hasBorder, &ColorSwatch::setBorder)
-                .def_property("editable", &ColorSwatch::isEditable, &ColorSwatch::setEditable)
+                    nb::new_(&ColorSwatch::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("color", &ColorSwatch::getColor, &ColorSwatch::setColor, nb::rv_policy::copy)
+                .def_prop_rw("border", &ColorSwatch::hasBorder, &ColorSwatch::setBorder)
+                .def_prop_rw("editable", &ColorSwatch::isEditable, &ColorSwatch::setEditable)
                 .def("setCallback", &ColorSwatch::setCallback)
                 .def("setPressedCallback", &ColorSwatch::setPressedCallback)
-                .def_property("sizeRole", &ColorSwatch::getSizeRole, &ColorSwatch::setSizeRole);
+                .def_prop_rw("sizeRole", &ColorSwatch::getSizeRole, &ColorSwatch::setSizeRole);
         }
     }
 }

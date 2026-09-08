@@ -5,62 +5,70 @@
 
 #include <ftk/Core/Mesh.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/array.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void mesh(py::module_& m)
+        void mesh(nb::module_& m)
         {
-            py::class_<Vertex2>(m, "Vertex2")
-                .def(py::init<>())
-                .def(py::init<size_t>())
-                .def(py::init<size_t, size_t>())
-                .def(py::init<size_t, size_t, size_t>())
-                .def_readwrite("v", &Vertex2::v)
-                .def_readwrite("t", &Vertex2::t)
-                .def_readwrite("c", &Vertex2::c);
+            nb::class_<Vertex2>(m, "Vertex2")
+                .def(nb::init<>())
+                .def(nb::init<size_t>())
+                .def(nb::init<size_t, size_t>())
+                .def(nb::init<size_t, size_t, size_t>())
+                .def_rw("v", &Vertex2::v)
+                .def_rw("t", &Vertex2::t)
+                .def_rw("c", &Vertex2::c);
 
-            py::class_<Vertex3>(m, "Vertex3")
-                .def(py::init<>())
-                .def(py::init<size_t>())
-                .def(py::init<size_t, size_t>())
-                .def(py::init<size_t, size_t, size_t>())
-                .def(py::init<size_t, size_t, size_t, size_t>())
-                .def_readwrite("v", &Vertex3::v)
-                .def_readwrite("t", &Vertex3::t)
-                .def_readwrite("n", &Vertex3::n)
-                .def_readwrite("c", &Vertex3::c);
+            nb::class_<Vertex3>(m, "Vertex3")
+                .def(nb::init<>())
+                .def(nb::init<size_t>())
+                .def(nb::init<size_t, size_t>())
+                .def(nb::init<size_t, size_t, size_t>())
+                .def(nb::init<size_t, size_t, size_t, size_t>())
+                .def_rw("v", &Vertex3::v)
+                .def_rw("t", &Vertex3::t)
+                .def_rw("n", &Vertex3::n)
+                .def_rw("c", &Vertex3::c);
 
-            py::class_<Triangle2>(m, "Triangle2")
-                .def(py::init<>())
-                .def(py::init<const Vertex2&, const Vertex2&, const Vertex2&>())
-                .def_readwrite("v", &Triangle2::v);
+            nb::class_<Triangle2>(m, "Triangle2")
+                .def(nb::init<>())
+                .def(nb::init<const Vertex2&, const Vertex2&, const Vertex2&>())
+                .def_rw("v", &Triangle2::v);
 
-            py::class_<Triangle3>(m, "Triangle3")
-                .def(py::init<>())
-                .def(py::init<const Vertex3&, const Vertex3&, const Vertex3&>())
-                .def_readwrite("v", &Triangle3::v);
+            nb::class_<Triangle3>(m, "Triangle3")
+                .def(nb::init<>())
+                .def(nb::init<const Vertex3&, const Vertex3&, const Vertex3&>())
+                .def_rw("v", &Triangle3::v);
 
-            py::class_<TriMesh2F>(m, "TriMesh2F")
-                .def(py::init<>())
-                .def_readwrite("v", &TriMesh2F::v)
-                .def_readwrite("c", &TriMesh2F::c)
-                .def_readwrite("t", &TriMesh2F::t)
-                .def_readwrite("triangles", &TriMesh2F::triangles)
+            nb::class_<TriMesh2F>(m, "TriMesh2F")
+                .def(nb::init<>())
+                .def_rw("v", &TriMesh2F::v)
+                .def_rw("c", &TriMesh2F::c)
+                .def_rw("t", &TriMesh2F::t)
+                .def_rw("triangles", &TriMesh2F::triangles)
                 .def("getByteCount", &TriMesh2F::getByteCount);
 
-            py::class_<TriMesh3F>(m, "TriMesh3F")
-                .def(py::init<>())
-                .def_readwrite("v", &TriMesh3F::v)
-                .def_readwrite("c", &TriMesh3F::c)
-                .def_readwrite("t", &TriMesh3F::t)
-                .def_readwrite("n", &TriMesh3F::n)
-                .def_readwrite("triangles", &TriMesh3F::triangles)
+            nb::class_<TriMesh3F>(m, "TriMesh3F")
+                .def(nb::init<>())
+                .def_rw("v", &TriMesh3F::v)
+                .def_rw("c", &TriMesh3F::c)
+                .def_rw("t", &TriMesh3F::t)
+                .def_rw("n", &TriMesh3F::n)
+                .def_rw("triangles", &TriMesh3F::triangles)
                 .def("getByteCount", &TriMesh3F::getByteCount);
 
             m.def("edge", [](const V2F& p, const V2F& v0, const V2F& v1) { return edge(p, v0, v1); });

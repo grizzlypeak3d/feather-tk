@@ -6,29 +6,36 @@
 #include <ftk/UI/IWidgetPopup.h>
 #include <ftk/UI/IWindow.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iWidgetPopup(py::module_& m)
+        void iWidgetPopup(nb::module_& m)
         {
-            py::class_<IWidgetPopup, IPopup, std::shared_ptr<IWidgetPopup> >(m, "IWidgetPopup")
+            nb::class_<IWidgetPopup, IPopup>(m, "IWidgetPopup")
                 .def(
                     "open",
                     &IWidgetPopup::open,
-                    py::arg("window"),
-                    py::arg("buttonGeometry"),
-                    py::arg("widgetGeometry") = std::optional<Box2I>())
-                .def_property_readonly("isOpen", &IWidgetPopup::isOpen)
+                    nb::arg("window"),
+                    nb::arg("buttonGeometry"),
+                    nb::arg("widgetGeometry") = std::optional<Box2I>())
+                .def_prop_ro("isOpen", &IWidgetPopup::isOpen)
                 .def("setCloseCallback", &IWidgetPopup::setCloseCallback)
-                .def_property("widget", &IWidgetPopup::getWidget, &IWidgetPopup::setWidget)
-                .def_property("popupRole", &IWidgetPopup::getPopupRole, &IWidgetPopup::setPopupRole);
+                .def_prop_rw("widget", &IWidgetPopup::getWidget, &IWidgetPopup::setWidget)
+                .def_prop_rw("popupRole", &IWidgetPopup::getPopupRole, &IWidgetPopup::setPopupRole);
         }
     }
 }

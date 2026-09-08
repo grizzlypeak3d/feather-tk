@@ -5,27 +5,29 @@
 
 #include <ftk/UI/ScrollBar.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/function.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void scrollBar(py::module_& m)
+        void scrollBar(nb::module_& m)
         {
-            py::class_<ScrollBar, IWidget, std::shared_ptr<ScrollBar> >(m, "ScrollBar")
+            nb::class_<ScrollBar, IWidget>(m, "ScrollBar")
                 .def(
-                    py::init(&ScrollBar::create),
-                    py::arg("context"),
-                    py::arg("orientation"),
-                    py::arg("parent") = nullptr)
-                .def_property("scrollSize",
+                    nb::new_(&ScrollBar::create),
+                    nb::arg("context"),
+                    nb::arg("orientation"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("scrollSize",
                     &ScrollBar::getScrollSize,
                     &ScrollBar::setScrollSize)
-                .def_property("scrollPos",
+                .def_prop_rw("scrollPos",
                     &ScrollBar::getScrollPos,
                     &ScrollBar::setScrollPos)
                 .def("setScrollPosCallback", &ScrollBar::setScrollPosCallback);

@@ -8,11 +8,18 @@
 #include <ftk/CorePy/Bindings.h>
 #include <ftk/Core/Context.h>
 
-#include <pybind11/functional.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -31,10 +38,10 @@ namespace ftk
             };
         }
 
-        void documentModel(py::module_& m)
+        void documentModel(nb::module_& m)
         {
-            py::class_<IDocument, PyIDocument, std::shared_ptr<IDocument> >(m, "IDocument")
-                .def(py::init<>());
+            nb::class_<IDocument, PyIDocument>(m, "IDocument")
+                .def(nb::init<>());
 
             // The add and close observables carry weak pointers, which
             // do not cross into Python; observing the list covers the
@@ -42,20 +49,20 @@ namespace ftk
             ftk::python::observable<std::shared_ptr<IDocument> >(m, "IDocument");
             ftk::python::observableList<std::shared_ptr<IDocument> >(m, "IDocument");
 
-            py::class_<DocumentModel, std::shared_ptr<DocumentModel> >(m, "DocumentModel")
+            nb::class_<DocumentModel>(m, "DocumentModel")
                 .def(
-                    py::init(&DocumentModel::create),
-                    py::arg("context"))
+                    nb::new_(&DocumentModel::create),
+                    nb::arg("context"))
                 .def("getList", &DocumentModel::getList)
                 .def("observeList", &DocumentModel::observeList)
-                .def("add", &DocumentModel::add, py::arg("document"))
+                .def("add", &DocumentModel::add, nb::arg("document"))
                 .def("observeAdd", &DocumentModel::observeAdd)
-                .def("close", &DocumentModel::close, py::arg("index"))
+                .def("close", &DocumentModel::close, nb::arg("index"))
                 .def("closeAll", &DocumentModel::closeAll)
                 .def("observeClose", &DocumentModel::observeClose)
                 .def("observeCloseAll", &DocumentModel::observeCloseAll)
                 .def("getCurrent", &DocumentModel::getCurrent)
-                .def_property("currentIndex",
+                .def_prop_rw("currentIndex",
                     &DocumentModel::getCurrentIndex,
                     &DocumentModel::setCurrentIndex)
                 .def("observeCurrent", &DocumentModel::observeCurrent)

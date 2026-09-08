@@ -5,24 +5,31 @@
 
 #include <ftk/UI/ColorPopup.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void colorPopup(py::module_& m)
+        void colorPopup(nb::module_& m)
         {
-            py::class_<ColorPopup, IWidgetPopup, std::shared_ptr<ColorPopup> >(m, "ColorPopup")
+            nb::class_<ColorPopup, IWidgetPopup>(m, "ColorPopup")
                 .def(
-                    py::init(&ColorPopup::create),
-                    py::arg("context"),
-                    py::arg("color"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&ColorPopup::create),
+                    nb::arg("context"),
+                    nb::arg("color"),
+                    nb::arg("parent") = nullptr)
                 .def("setCallback", &ColorPopup::setCallback)
                 .def("setPressedCallback", &ColorPopup::setPressedCallback);
         }

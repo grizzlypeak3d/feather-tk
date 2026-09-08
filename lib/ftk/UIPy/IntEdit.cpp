@@ -5,42 +5,49 @@
 
 #include <ftk/UI/IntEdit.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void intEdit(py::module_& m)
+        void intEdit(nb::module_& m)
         {
-            py::class_<IntEdit, IContainer, std::shared_ptr<IntEdit> >(m, "IntEdit")
+            nb::class_<IntEdit, IContainer>(m, "IntEdit")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&IntEdit::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IntModel>&,
                         const std::shared_ptr<IWidget>&>(&IntEdit::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &IntEdit::getValue, &IntEdit::setValue)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("value", &IntEdit::getValue, &IntEdit::setValue)
                 .def("setCallback", &IntEdit::setCallback)
-                .def_property("range", &IntEdit::getRange, py::overload_cast<const RangeI&>(&IntEdit::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<int, int>(&IntEdit::setRange))
-                .def_property("step", &IntEdit::getStep, &IntEdit::setStep)
-                .def_property("largeStep", &IntEdit::getLargeStep, &IntEdit::setLargeStep)
-                .def_property("defaultValue", &IntEdit::getDefault, &IntEdit::setDefault)
+                .def_prop_rw("range", &IntEdit::getRange, nb::overload_cast<const RangeI&>(&IntEdit::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<int, int>(&IntEdit::setRange))
+                .def_prop_rw("step", &IntEdit::getStep, &IntEdit::setStep)
+                .def_prop_rw("largeStep", &IntEdit::getLargeStep, &IntEdit::setLargeStep)
+                .def_prop_rw("defaultValue", &IntEdit::getDefault, &IntEdit::setDefault)
                 .def("getModel", &IntEdit::getModel)
-                .def_property("font", &IntEdit::getFont, &IntEdit::setFont);
+                .def_prop_rw("font", &IntEdit::getFont, &IntEdit::setFont);
         }
     }
 }

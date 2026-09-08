@@ -5,9 +5,12 @@
 
 #include <ftk/Core/Command.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/trampoline.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -18,40 +21,36 @@ namespace ftk
         class PyICommand : public ICommand
         {
         public:
+            NB_TRAMPOLINE(ICommand);
+
             void exec() override
             {
-                PYBIND11_OVERRIDE_PURE(
-                    void,
-                    ICommand,
-                    exec);
+                NB_OVERRIDE_PURE(exec);
             }
 
             void undo() override
             {
-                PYBIND11_OVERRIDE_PURE(
-                    void,
-                    ICommand,
-                    undo);
+                NB_OVERRIDE_PURE(undo);
             }
         };
 
-        void command(py::module_& m)
+        void command(nb::module_& m)
         {
-            py::class_<ICommand, PyICommand, std::shared_ptr<ICommand> >(m, "ICommand")
-                .def(py::init<>())
+            nb::class_<ICommand, PyICommand>(m, "ICommand")
+                .def(nb::init<>())
                 .def("exec", &ICommand::exec)
                 .def("undo", &ICommand::undo);
 
-            py::class_<CommandStack, std::shared_ptr<CommandStack> >(m, "CommandStack")
-                .def(py::init(&CommandStack::create))
+            nb::class_<CommandStack>(m, "CommandStack")
+                .def(nb::new_(&CommandStack::create))
                 .def(
                     "push",
                     &CommandStack::push,
-                    py::arg("command"),
+                    nb::arg("command"),
                     // Keep the Python command object alive for at least as
                     // long as the CommandStack — prevents GC from collecting
                     // the subclass instance before undo() is called.
-                    py::keep_alive<1, 2>())
+                    nb::keep_alive<1, 2>())
                 .def("clear", &CommandStack::clear)
                 .def("undo", &CommandStack::undo)
                 .def("redo", &CommandStack::redo)

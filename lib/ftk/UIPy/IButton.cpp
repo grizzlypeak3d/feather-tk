@@ -5,30 +5,37 @@
 
 #include <ftk/UI/IButton.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iButton(py::module_& m)
+        void iButton(nb::module_& m)
         {
-            py::class_<IButton, IWidget, std::shared_ptr<IButton> >(m, "IButton")
-                .def_property("checkable", &IButton::isCheckable, &IButton::setCheckable)
-                .def_property("checked", &IButton::isChecked, &IButton::setChecked)
-                .def_property("text", &IButton::getText, &IButton::setText)
-                .def_property("font", &IButton::getFont, &IButton::setFont)
-                .def_property("icon", &IButton::getIcon, &IButton::setIcon)
-                .def_property("checkedIcon", &IButton::getCheckedIcon, &IButton::setCheckedIcon)
-                .def_property("buttonRole", &IButton::getButtonRole, &IButton::setButtonRole)
-                .def_property("checkedRole", &IButton::getCheckedRole, &IButton::setCheckedRole)
+            nb::class_<IButton, IWidget>(m, "IButton")
+                .def_prop_rw("checkable", &IButton::isCheckable, &IButton::setCheckable)
+                .def_prop_rw("checked", &IButton::isChecked, &IButton::setChecked)
+                .def_prop_rw("text", &IButton::getText, &IButton::setText)
+                .def_prop_rw("font", &IButton::getFont, &IButton::setFont)
+                .def_prop_rw("icon", &IButton::getIcon, &IButton::setIcon)
+                .def_prop_rw("checkedIcon", &IButton::getCheckedIcon, &IButton::setCheckedIcon)
+                .def_prop_rw("buttonRole", &IButton::getButtonRole, &IButton::setButtonRole)
+                .def_prop_rw("checkedRole", &IButton::getCheckedRole, &IButton::setCheckedRole)
                 .def("setHoveredCallback", &IButton::setHoveredCallback)
                 .def("setPressedCallback", &IButton::setPressedCallback)
-                .def_property("repeatClick", &IButton::hasRepeatClick, &IButton::setRepeatClick)
+                .def_prop_rw("repeatClick", &IButton::hasRepeatClick, &IButton::setRepeatClick)
                 .def("setClickedCallback", &IButton::setClickedCallback)
                 .def("setCheckedCallback", &IButton::setCheckedCallback);
         }

@@ -6,88 +6,95 @@
 #include <ftk/UI/FileBrowserWidgets.h>
 #include <ftk/UI/RecentFilesModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void fileBrowserWidgets(py::module_& m)
+        void fileBrowserWidgets(nb::module_& m)
         {
-            py::class_<FileBrowserPath, IContainer, std::shared_ptr<FileBrowserPath> >(m, "FileBrowserPath")
+            nb::class_<FileBrowserPath, IContainer>(m, "FileBrowserPath")
                 .def(
-                    py::init(&FileBrowserPath::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property(
+                    nb::new_(&FileBrowserPath::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw(
                     "path",
                     &FileBrowserPath::getPath,
                     &FileBrowserPath::setPath)
                 .def("setCallback", &FileBrowserPath::setCallback)
-                .def_property(
+                .def_prop_rw(
                     "editable",
                     &FileBrowserPath::isEditable,
                     &FileBrowserPath::setEditable)
                 .def("setEditableCallback", &FileBrowserPath::setEditableCallback);
 
-            py::class_<FileBrowserDrives, IContainer, std::shared_ptr<FileBrowserDrives> >(m, "FileBrowserDrives")
+            nb::class_<FileBrowserDrives, IContainer>(m, "FileBrowserDrives")
                 .def(
-                    py::init(&FileBrowserDrives::create),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&FileBrowserDrives::create),
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr);
 
-            py::class_<FileBrowserShortcuts, IContainer, std::shared_ptr<FileBrowserShortcuts> >(m, "FileBrowserShortcuts")
+            nb::class_<FileBrowserShortcuts, IContainer>(m, "FileBrowserShortcuts")
                 .def(
-                    py::init(&FileBrowserShortcuts::create),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&FileBrowserShortcuts::create),
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr);
 
-            py::class_<FileBrowserRecent, IContainer, std::shared_ptr<FileBrowserRecent> >(m, "FileBrowserRecent")
+            nb::class_<FileBrowserRecent, IContainer>(m, "FileBrowserRecent")
                 .def(
-                    py::init(&FileBrowserRecent::create),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property(
+                    nb::new_(&FileBrowserRecent::create),
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw(
                     "recentFilesModel",
                     &FileBrowserRecent::getRecentFilesModel,
                     &FileBrowserRecent::setRecentFilesModel);
 
-            py::class_<FileBrowserSettings, IContainer, std::shared_ptr<FileBrowserSettings> >(m, "FileBrowserSettings")
+            nb::class_<FileBrowserSettings, IContainer>(m, "FileBrowserSettings")
                 .def(
-                    py::init(&FileBrowserSettings::create),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr);
+                    nb::new_(&FileBrowserSettings::create),
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr);
 
-            py::class_<FileBrowserView, IWidget, std::shared_ptr<FileBrowserView> >(m, "FileBrowserView")
+            nb::class_<FileBrowserView, IWidget>(m, "FileBrowserView")
                 .def(
-                    py::init(&FileBrowserView::create),
-                    py::arg("context"),
-                    py::arg("mode"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&FileBrowserView::create),
+                    nb::arg("context"),
+                    nb::arg("mode"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
                 .def("reload", &FileBrowserView::reload)
                 .def("setCallback", &FileBrowserView::setCallback)
                 .def("setSelectCallback", &FileBrowserView::setSelectCallback)
-                .def_property(
+                .def_prop_rw(
                     "multiple",
                     &FileBrowserView::isMultiple,
                     &FileBrowserView::setMultiple)
-                .def_property_readonly("selection", &FileBrowserView::getSelection)
-                .def_property(
+                .def_prop_ro("selection", &FileBrowserView::getSelection)
+                .def_prop_rw(
                     "search",
                     &FileBrowserView::getSearch,
                     &FileBrowserView::setSearch)
-                .def_property_readonly("observeCurrent", &FileBrowserView::observeCurrent)
+                .def_prop_ro("observeCurrent", &FileBrowserView::observeCurrent)
                 .def("getRect", &FileBrowserView::getRect);
         }
     }

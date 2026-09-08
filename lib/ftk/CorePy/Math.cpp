@@ -5,15 +5,17 @@
 
 #include <ftk/Core/Math.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void math(py::module_& m)
+        void math(nb::module_& m)
         {
             m.attr("pi") = pi;
             m.attr("pi2") = pi2;

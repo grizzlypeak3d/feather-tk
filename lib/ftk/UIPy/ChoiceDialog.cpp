@@ -6,26 +6,33 @@
 #include <ftk/UI/ChoiceDialog.h>
 #include <ftk/UI/Window.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void choiceDialog(py::module_& m)
+        void choiceDialog(nb::module_& m)
         {
-            py::class_<ChoiceDialog, IDialog, std::shared_ptr<ChoiceDialog> >(m, "ChoiceDialog")
+            nb::class_<ChoiceDialog, IDialog>(m, "ChoiceDialog")
                 .def(
-                    py::init(&ChoiceDialog::create),
-                    py::arg("context"),
-                    py::arg("title"),
-                    py::arg("text"),
-                    py::arg("choices"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&ChoiceDialog::create),
+                    nb::arg("context"),
+                    nb::arg("title"),
+                    nb::arg("text"),
+                    nb::arg("choices"),
+                    nb::arg("parent") = nullptr)
                 .def("setCallback", &ChoiceDialog::setCallback);
         }
     }

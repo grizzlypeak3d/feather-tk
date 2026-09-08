@@ -6,50 +6,57 @@
 #include <ftk/UI/IMenuPopup.h>
 #include <ftk/UI/IWindow.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iMenuPopup(py::module_& m)
+        void iMenuPopup(nb::module_& m)
         {
-            py::class_<IMenuPopup, IPopup, std::shared_ptr<IMenuPopup> >(m, "IMenuPopup")
+            nb::class_<IMenuPopup, IPopup>(m, "IMenuPopup")
                 .def(
                     "open",
-                    py::overload_cast<
+                    nb::overload_cast<
                         const std::shared_ptr<IWindow>&,
                         const Box2I&>(&IMenuPopup::open),
-                    py::arg("window"),
-                    py::arg("buttonGeometry"))
+                    nb::arg("window"),
+                    nb::arg("buttonGeometry"))
                 .def(
                     "open",
-                    py::overload_cast<
+                    nb::overload_cast<
                         const std::shared_ptr<IWindow>&,
                         const V2I&>(&IMenuPopup::open),
-                    py::arg("window"),
-                    py::arg("pos"))
+                    nb::arg("window"),
+                    nb::arg("pos"))
                 .def("isOpen", &IMenuPopup::isOpen)
                 .def(
                     "setCloseCallback",
                     &IMenuPopup::setCloseCallback,
-                    py::arg("callback"))
+                    nb::arg("callback"))
                 .def(
                     "setPopup",
                     &IMenuPopup::setPopup,
-                    py::arg("type"))
+                    nb::arg("type"))
                 .def(
                     "setPopupRole",
                     &IMenuPopup::setPopupRole,
-                    py::arg("role"))
+                    nb::arg("role"))
                 .def(
                     "setWidget",
                     &IMenuPopup::setWidget,
-                    py::arg("widget"));
+                    nb::arg("widget"));
         }
     }
 }

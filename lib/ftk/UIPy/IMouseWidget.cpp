@@ -8,10 +8,17 @@
 #include <ftk/UI/IMouseWidget.h>
 #include <ftk/UI/IWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -20,14 +27,12 @@ namespace ftk
         class PyIMouseWidget : public PyWidget<IMouseWidget>
         {
         public:
-            static std::shared_ptr<PyIMouseWidget> create(
+            void pyInit(
                 const std::shared_ptr<Context>& context,
                 const std::string& objectName,
-                const std::shared_ptr<IWidget>& parent = nullptr)
+                const std::shared_ptr<IWidget>& parent)
             {
-                auto out = std::shared_ptr<PyIMouseWidget>(new PyIMouseWidget);
-                out->_init(context, objectName, parent);
-                return out;
+                _init(context, objectName, parent);
             }
 
             // The protected helpers, so a Python subclass can turn the
@@ -41,38 +46,48 @@ namespace ftk
             using IMouseWidget::_getMousePressPos;
         };
 
-        void iMouseWidget(py::module_& m)
+        void iMouseWidget(nb::module_& m)
         {
-            py::class_<
+            nb::class_<
                 IMouseWidget,
                 IWidget,
-                std::shared_ptr<IMouseWidget>,
                 PyIMouseWidget>(m, "IMouseWidget")
                 .def(
-                    py::init(&PyIMouseWidget::create),
-                    py::arg("context"),
-                    py::arg("objectName"),
-                    py::arg("parent") = nullptr)
+                    "__init__",
+                    [](IMouseWidget* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::string& objectName,
+                       const std::shared_ptr<IWidget>& parent)
+                    {
+                        pyConstruct<PyIMouseWidget>(self,
+                            [&](PyIMouseWidget& w)
+                            {
+                                w.pyInit(context, objectName, parent);
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("objectName"),
+                    nb::arg("parent") = nullptr)
                 .def(
                     "_setMouseHoverEnabled",
                     &PyIMouseWidget::_setMouseHoverEnabled,
-                    py::arg("value"))
+                    nb::arg("value"))
                 .def(
                     "_setMousePressEnabled",
                     &PyIMouseWidget::_setMousePressEnabled,
-                    py::arg("value"),
-                    py::arg("button") = MouseButton::Left,
-                    py::arg("modifiers") = -1)
+                    nb::arg("value"),
+                    nb::arg("button") = MouseButton::Left,
+                    nb::arg("modifiers") = -1)
                 .def("_isMouseInside", &PyIMouseWidget::_isMouseInside)
                 .def(
                     "_getMousePos",
                     &PyIMouseWidget::_getMousePos,
-                    py::return_value_policy::copy)
+                    nb::rv_policy::copy)
                 .def("_isMousePressed", &PyIMouseWidget::_isMousePressed)
                 .def(
                     "_getMousePressPos",
                     &PyIMouseWidget::_getMousePressPos,
-                    py::return_value_policy::copy);
+                    nb::rv_policy::copy);
         }
     }
 }

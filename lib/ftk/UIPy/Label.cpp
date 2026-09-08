@@ -5,42 +5,49 @@
 
 #include <ftk/UI/Label.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void label(py::module_& m)
+        void label(nb::module_& m)
         {
-            py::class_<Label, IWidget, std::shared_ptr<Label> >(m, "Label")
+            nb::class_<Label, IWidget>(m, "Label")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&Label::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::string&,
                         const std::shared_ptr<IWidget>&>(&Label::create)),
-                    py::arg("context"),
-                    py::arg("text"),
-                    py::arg("parent") = nullptr)
-                .def_property("text", &Label::getText, &Label::setText)
-                .def_property("textRole", &Label::getTextRole, &Label::setTextRole)
-                .def_property("marginRole", &Label::getMarginRole, py::overload_cast<SizeRole>(&Label::setMarginRole))
-                .def_property("hMarginRole", &Label::getHMarginRole, &Label::setHMarginRole)
-                .def_property("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
-                .def_property("hMarginRole", &Label::getHMarginRole, &Label::setHMarginRole)
-                .def_property("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
-                .def("setMarginRole", py::overload_cast<SizeRole, SizeRole>(&Label::setMarginRole))
-                .def_property("font", &Label::getFont, &Label::setFont)
-                .def_property("fontSize", &Label::getFontSize, &Label::setFontSize);
+                    nb::arg("context"),
+                    nb::arg("text"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("text", &Label::getText, &Label::setText)
+                .def_prop_rw("textRole", &Label::getTextRole, &Label::setTextRole)
+                .def_prop_rw("marginRole", &Label::getMarginRole, nb::overload_cast<SizeRole>(&Label::setMarginRole))
+                .def_prop_rw("hMarginRole", &Label::getHMarginRole, &Label::setHMarginRole)
+                .def_prop_rw("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
+                .def_prop_rw("hMarginRole", &Label::getHMarginRole, &Label::setHMarginRole)
+                .def_prop_rw("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
+                .def("setMarginRole", nb::overload_cast<SizeRole, SizeRole>(&Label::setMarginRole))
+                .def_prop_rw("font", &Label::getFont, &Label::setFont)
+                .def_prop_rw("fontSize", &Label::getFontSize, &Label::setFontSize);
         }
     }
 }

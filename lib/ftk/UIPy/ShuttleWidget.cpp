@@ -5,23 +5,25 @@
 
 #include <ftk/UI/ShuttleWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/function.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void shuttleWidget(py::module_& m)
+        void shuttleWidget(nb::module_& m)
         {
-            py::class_<ShuttleWidget, IMouseWidget, std::shared_ptr<ShuttleWidget> >(m, "ShuttleWidget")
+            nb::class_<ShuttleWidget, IMouseWidget>(m, "ShuttleWidget")
                 .def(
-                    py::init(&ShuttleWidget::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property_readonly("modifiers", &ShuttleWidget::getModifiers)
+                    nb::new_(&ShuttleWidget::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_ro("modifiers", &ShuttleWidget::getModifiers)
                 .def("setCallback", &ShuttleWidget::setCallback)
                 .def("setDeltaCallback", &ShuttleWidget::setDeltaCallback)
                 .def("setActiveCallback", &ShuttleWidget::setActiveCallback);

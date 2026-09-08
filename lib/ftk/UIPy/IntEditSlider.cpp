@@ -5,43 +5,50 @@
 
 #include <ftk/UI/IntEditSlider.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void intEditSlider(py::module_& m)
+        void intEditSlider(nb::module_& m)
         {
-            py::class_<IntEditSlider, IContainer, std::shared_ptr<IntEditSlider> >(m, "IntEditSlider")
+            nb::class_<IntEditSlider, IContainer>(m, "IntEditSlider")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&IntEditSlider::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IntModel>&,
                         const std::shared_ptr<IWidget>&>(&IntEditSlider::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &IntEditSlider::getValue, &IntEditSlider::setValue)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("value", &IntEditSlider::getValue, &IntEditSlider::setValue)
                 .def("setCallback", &IntEditSlider::setCallback)
-                .def_property("range", &IntEditSlider::getRange, py::overload_cast<const RangeI&>(&IntEditSlider::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<int, int>(&IntEditSlider::setRange))
-                .def_property("step", &IntEditSlider::getStep, &IntEditSlider::setStep)
-                .def_property("largeStep", &IntEditSlider::getLargeStep, &IntEditSlider::setLargeStep)
-                .def_property("defaultValue", &IntEditSlider::getDefault, &IntEditSlider::setDefault)
+                .def_prop_rw("range", &IntEditSlider::getRange, nb::overload_cast<const RangeI&>(&IntEditSlider::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<int, int>(&IntEditSlider::setRange))
+                .def_prop_rw("step", &IntEditSlider::getStep, &IntEditSlider::setStep)
+                .def_prop_rw("largeStep", &IntEditSlider::getLargeStep, &IntEditSlider::setLargeStep)
+                .def_prop_rw("defaultValue", &IntEditSlider::getDefault, &IntEditSlider::setDefault)
                 .def("getModel", &IntEditSlider::getModel)
                 .def("setPressedCallback", &IntEditSlider::setPressedCallback)
-                .def_property("font", &IntEditSlider::getFont, &IntEditSlider::setFont);
+                .def_prop_rw("font", &IntEditSlider::getFont, &IntEditSlider::setFont);
         }
     }
 }

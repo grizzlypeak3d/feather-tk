@@ -4,11 +4,13 @@
 #include <ftk/CorePy/Bindings.h>
 #include <ftk/UIPy/Bindings.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
-PYBIND11_MODULE(ftkPy, m)
+NB_MODULE(ftkPy, m)
 {
     m.doc() = "Feather-tk is a lightweight toolkit for building cross-platform C++ applications.";
     ftk::python::coreBind(m);

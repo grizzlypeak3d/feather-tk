@@ -5,28 +5,35 @@
 
 #include <ftk/UI/Splitter.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void splitter(py::module_& m)
+        void splitter(nb::module_& m)
         {
-            py::class_<Splitter, IWidget, std::shared_ptr<Splitter> >(m, "Splitter")
+            nb::class_<Splitter, IWidget>(m, "Splitter")
                 .def(
-                    py::init(&Splitter::create),
-                    py::arg("context"),
-                    py::arg("orientation"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&Splitter::create),
+                    nb::arg("context"),
+                    nb::arg("orientation"),
+                    nb::arg("parent") = nullptr)
                 .def("setWidgets", &Splitter::setWidgets)
-                .def_property("split", &Splitter::getSplit, &Splitter::setSplit)
+                .def_prop_rw("split", &Splitter::getSplit, &Splitter::setSplit)
                 .def("setSplitCallback", &Splitter::setSplitCallback)
-                .def_property("border", &Splitter::hasBorder, &Splitter::setBorder);
+                .def_prop_rw("border", &Splitter::hasBorder, &Splitter::setBorder);
         }
     }
 }

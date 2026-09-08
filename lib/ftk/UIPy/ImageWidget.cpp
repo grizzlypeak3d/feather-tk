@@ -5,23 +5,25 @@
 
 #include <ftk/UI/ImageWidget.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void imageWidget(py::module_& m)
+        void imageWidget(nb::module_& m)
         {
-            py::class_<ImageWidget, IWidget, std::shared_ptr<ImageWidget> >(m, "ImageWidget")
+            nb::class_<ImageWidget, IWidget>(m, "ImageWidget")
                 .def(
-                    py::init(&ImageWidget::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("image", &ImageWidget::getImage, &ImageWidget::setImage)
-                .def_property("marginRole",
+                    nb::new_(&ImageWidget::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("image", &ImageWidget::getImage, &ImageWidget::setImage)
+                .def_prop_rw("marginRole",
                     &ImageWidget::getMarginRole,
                     &ImageWidget::setMarginRole);
         }

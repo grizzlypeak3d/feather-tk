@@ -5,23 +5,25 @@
 
 #include <ftk/UI/FlowLayout.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void flowLayout(py::module_& m)
+        void flowLayout(nb::module_& m)
         {
-            py::class_<FlowLayout, IWidget, std::shared_ptr<FlowLayout> >(m, "FlowLayout")
+            nb::class_<FlowLayout, IWidget>(m, "FlowLayout")
                 .def(
-                    py::init(&FlowLayout::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("marginRole", &FlowLayout::getMarginRole, &FlowLayout::setMarginRole)
-                .def_property("spacingRole", &FlowLayout::getSpacingRole, &FlowLayout::setSpacingRole);
+                    nb::new_(&FlowLayout::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("marginRole", &FlowLayout::getMarginRole, &FlowLayout::setMarginRole)
+                .def_prop_rw("spacingRole", &FlowLayout::getSpacingRole, &FlowLayout::setSpacingRole);
         }
     }
 }

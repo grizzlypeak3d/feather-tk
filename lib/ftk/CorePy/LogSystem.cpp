@@ -6,45 +6,52 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/LogSystem.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/chrono.h>
-#include <pybind11/functional.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/chrono.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void logSystem(py::module_& m)
+        void logSystem(nb::module_& m)
         {
-            py::enum_<LogType>(m, "LogType")
+            nb::enum_<LogType>(m, "LogType")
                 .value("Message", LogType::Message)
                 .value("Warning", LogType::Warning)
                 .value("Error", LogType::Error);
             FTK_ENUM_BIND(m, LogType);
                 
-            py::class_<LogItem>(m, "LogItem")
-                .def(py::init<>())
-                .def_readwrite("time", &LogItem::time)
-                .def_readwrite("prefix", &LogItem::prefix)
-                .def_readwrite("message", &LogItem::message)
-                .def_readwrite("type", &LogItem::type)
-                .def(pybind11::self == pybind11::self)
-                .def(pybind11::self != pybind11::self);
+            nb::class_<LogItem>(m, "LogItem")
+                .def(nb::init<>())
+                .def_rw("time", &LogItem::time)
+                .def_rw("prefix", &LogItem::prefix)
+                .def_rw("message", &LogItem::message)
+                .def_rw("type", &LogItem::type)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             m.def("getLabel", [](LogType value) { return getLabel(value); });
 
             observableList<LogItem>(m, "LogItem");
 
-            py::class_<LogSystem, IBaseSystem, std::shared_ptr<LogSystem> >(m, "LogSystem")
+            nb::class_<LogSystem, IBaseSystem>(m, "LogSystem")
                 .def(
-                    py::init(&LogSystem::create),
-                    py::arg("context"))
+                    nb::new_(&LogSystem::create),
+                    nb::arg("context"))
                 .def("print", &LogSystem::print)
-                .def_property_readonly("observeLogItems", &LogSystem::observeLogItems);
+                .def_prop_ro("observeLogItems", &LogSystem::observeLogItems);
         }
     }
 }

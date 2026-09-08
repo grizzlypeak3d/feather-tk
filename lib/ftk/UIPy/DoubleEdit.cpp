@@ -5,44 +5,51 @@
 
 #include <ftk/UI/DoubleEdit.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void doubleEdit(py::module_& m)
+        void doubleEdit(nb::module_& m)
         {
-            py::class_<DoubleEdit, IContainer, std::shared_ptr<DoubleEdit> >(m, "DoubleEdit")
+            nb::class_<DoubleEdit, IContainer>(m, "DoubleEdit")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&DoubleEdit::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<DoubleModel>&,
                         const std::shared_ptr<IWidget>&>(&DoubleEdit::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr)
-                .def_property("value", &DoubleEdit::getValue, &DoubleEdit::setValue)
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("value", &DoubleEdit::getValue, &DoubleEdit::setValue)
                 .def("setCallback", &DoubleEdit::setCallback)
-                .def_property("range", &DoubleEdit::getRange, py::overload_cast<const RangeD&>(&DoubleEdit::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<double, double>(&DoubleEdit::setRange))
-                .def_property("step", &DoubleEdit::getStep, &DoubleEdit::setStep)
-                .def_property("largeStep", &DoubleEdit::getLargeStep, &DoubleEdit::setLargeStep)
-                .def_property("defaultValue", &DoubleEdit::getDefault, &DoubleEdit::setDefault)
+                .def_prop_rw("range", &DoubleEdit::getRange, nb::overload_cast<const RangeD&>(&DoubleEdit::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<double, double>(&DoubleEdit::setRange))
+                .def_prop_rw("step", &DoubleEdit::getStep, &DoubleEdit::setStep)
+                .def_prop_rw("largeStep", &DoubleEdit::getLargeStep, &DoubleEdit::setLargeStep)
+                .def_prop_rw("defaultValue", &DoubleEdit::getDefault, &DoubleEdit::setDefault)
                 .def("getModel", &DoubleEdit::getModel)
-                .def_property("precision", &DoubleEdit::getPrecision, &DoubleEdit::setPrecision)
-                .def_property("font", &DoubleEdit::getFont, &DoubleEdit::setFont)
-                .def_property("borderRole", &DoubleEdit::getBorderRole, &DoubleEdit::setBorderRole);
+                .def_prop_rw("precision", &DoubleEdit::getPrecision, &DoubleEdit::setPrecision)
+                .def_prop_rw("font", &DoubleEdit::getFont, &DoubleEdit::setFont)
+                .def_prop_rw("borderRole", &DoubleEdit::getBorderRole, &DoubleEdit::setBorderRole);
         }
     }
 }

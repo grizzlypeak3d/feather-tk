@@ -5,26 +5,28 @@
 
 #include <ftk/Core/OS.h>
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void os(py::module_& m)
+        void os(nb::module_& m)
         {
             m.def(
                 "openURL",
                 &openURL,
-                py::arg("url"),
+                nb::arg("url"),
                 "Open a URL in an external application.");
-            py::class_<SysInfo>(m, "SystInfo")
-                .def_readwrite("name", &SysInfo::name)
-                .def_readwrite("cores", &SysInfo::cores)
-                .def_readwrite("ram", &SysInfo::ram)
-                .def_readwrite("ramGB", &SysInfo::ramGB);
+            nb::class_<SysInfo>(m, "SystInfo")
+                .def_rw("name", &SysInfo::name)
+                .def_rw("cores", &SysInfo::cores)
+                .def_rw("ram", &SysInfo::ram)
+                .def_rw("ramGB", &SysInfo::ramGB);
 
             m.def("getSystInfo", &getSysInfo, "Get operating system information.");
         }

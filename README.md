@@ -55,7 +55,7 @@ writing custom widgets straightforward.
 - **OpenGL rendering** — OpenGL 4.1 and OpenGL ES 2 backends.
 - **HiDPI** — display scale awareness throughout; all size roles scale correctly on
   high-density displays and multi-monitor setups.
-- **Python bindings** — pybind11-based Python API (work in progress).
+- **Python bindings** — nanobind-based Python API (work in progress).
 - **Testable by design** — applications run headless, write screenshots, and drive
   their own UI from scripts; the same machinery tests feather-tk itself.
 - **Cross-platform** — works on Linux, macOS, and Windows, and runs in the
@@ -284,7 +284,7 @@ Required:
 
 Optional:
 - [Native File Dialog Extended](https://github.com/btzy/nativefiledialog-extended) — for native file dialogs
-- [pybind11](https://github.com/pybind/pybind11) — for Python bindings
+- [nanobind](https://github.com/wjakob/nanobind) — for Python bindings
 
 A CMake superbuild script builds all dependencies from source automatically.
 

@@ -5,44 +5,51 @@
 
 #include <ftk/UI/DoubleSlider.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void doubleSlider(py::module_& m)
+        void doubleSlider(nb::module_& m)
         {
-            py::class_<IDoubleSlider, IMouseWidget, std::shared_ptr<IDoubleSlider> >(m, "IDoubleSlider")
-                .def_property("value", &IDoubleSlider::getValue, &IDoubleSlider::setValue)
+            nb::class_<IDoubleSlider, IMouseWidget>(m, "IDoubleSlider")
+                .def_prop_rw("value", &IDoubleSlider::getValue, &IDoubleSlider::setValue)
                 .def("setCallback", &IDoubleSlider::setCallback)
                 .def("setPressedCallback", &IDoubleSlider::setPressedCallback)
-                .def_property("range", &IDoubleSlider::getRange, py::overload_cast<const RangeD&>(&IDoubleSlider::setRange), py::return_value_policy::copy)
-                .def("setRange", py::overload_cast<double, double>(&IDoubleSlider::setRange))
-                .def_property("step", &IDoubleSlider::getStep, &IDoubleSlider::setStep)
-                .def_property("largeStep", &IDoubleSlider::getLargeStep, &IDoubleSlider::setLargeStep)
-                .def_property("defaultValue", &IDoubleSlider::getDefault, &IDoubleSlider::setDefault)
+                .def_prop_rw("range", &IDoubleSlider::getRange, nb::overload_cast<const RangeD&>(&IDoubleSlider::setRange), nb::rv_policy::copy)
+                .def("setRange", nb::overload_cast<double, double>(&IDoubleSlider::setRange))
+                .def_prop_rw("step", &IDoubleSlider::getStep, &IDoubleSlider::setStep)
+                .def_prop_rw("largeStep", &IDoubleSlider::getLargeStep, &IDoubleSlider::setLargeStep)
+                .def_prop_rw("defaultValue", &IDoubleSlider::getDefault, &IDoubleSlider::setDefault)
                 .def("getModel", &IDoubleSlider::getModel);
 
-            py::class_<DoubleSlider, IDoubleSlider, std::shared_ptr<DoubleSlider> >(m, "DoubleSlider")
+            nb::class_<DoubleSlider, IDoubleSlider>(m, "DoubleSlider")
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<IWidget>&>(&DoubleSlider::create)),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def(
-                    py::init(py::overload_cast<
+                    nb::new_(nb::overload_cast<
                         const std::shared_ptr<Context>&,
                         const std::shared_ptr<DoubleModel>&,
                         const std::shared_ptr<IWidget>&>(&DoubleSlider::create)),
-                    py::arg("context"),
-                    py::arg("model"),
-                    py::arg("parent") = nullptr);
+                    nb::arg("context"),
+                    nb::arg("model"),
+                    nb::arg("parent") = nullptr);
         }
     }
 }

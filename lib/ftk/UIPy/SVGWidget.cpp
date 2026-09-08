@@ -5,29 +5,36 @@
 
 #include <ftk/UI/SVGWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void svgWidget(py::module_& m)
+        void svgWidget(nb::module_& m)
         {
-            py::class_<SvgWidget, IWidget, std::shared_ptr<SvgWidget> >(m, "SvgWidget")
+            nb::class_<SvgWidget, IWidget>(m, "SvgWidget")
                 .def(
-                    py::init(&SvgWidget::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
-                .def_property("svgData",
+                    nb::new_(&SvgWidget::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
+                .def_prop_rw("svgData",
                     &SvgWidget::getSVGData,
                     &SvgWidget::setSVGData)
-                .def_property("svgWidth",
+                .def_prop_rw("svgWidth",
                     &SvgWidget::getSVGWidth,
                     &SvgWidget::setSVGWidth)
-                .def_property("marginRole",
+                .def_prop_rw("marginRole",
                     &SvgWidget::getMarginRole,
                     &SvgWidget::setMarginRole);
         }

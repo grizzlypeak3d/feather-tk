@@ -9,22 +9,29 @@
 
 #include <ftk/Core/Context.h>
 
-#include <pybind11/functional.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void uiBind(py::module_& m)
+        void uiBind(nb::module_& m)
         {
             m.def(
                 "uiInit",
                 &uiInit,
-                py::arg("context"),
+                nb::arg("context"),
                 "Initialize the library.");
 
             m.def(
@@ -33,7 +40,7 @@ namespace ftk
                 {
                     return widgetDump(widget).dump(2);
                 },
-                py::arg("widget"),
+                nb::arg("widget"),
                 "Serialize a widget tree as JSON for inspection.");
 
             m.def(
@@ -48,17 +55,17 @@ namespace ftk
                         parent);
                     return std::make_pair(result.widget, result.errors);
                 },
-                py::arg("context"),
-                py::arg("json"),
-                py::arg("parent") = nullptr,
+                nb::arg("context"),
+                nb::arg("json"),
+                nb::arg("parent") = nullptr,
                 "Create a widget tree from JSON; returns the widget and "
                 "a list of errors.");
 
             m.def(
                 "findWidget",
                 &findWidget,
-                py::arg("widget"),
-                py::arg("id"),
+                nb::arg("widget"),
+                nb::arg("id"),
                 "Find a widget by the id it was given in the JSON.");
 
             style(m);

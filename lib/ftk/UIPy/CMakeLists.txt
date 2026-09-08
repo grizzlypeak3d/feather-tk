@@ -112,7 +112,10 @@ set(SOURCE
 add_library(ftkUIPy STATIC ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 set_target_properties(ftkUIPy PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(ftkUIPy PRIVATE ${PROJECT_SOURCE_DIR}/lib)
+target_include_directories(ftkUIPy PRIVATE
+    ${PROJECT_SOURCE_DIR}/lib
+    ${NB_DIR}/include
+    ${NB_DIR}/ext/robin_map/include)
 
 target_link_libraries(ftkUIPy ftkUI Python3::Python)
 

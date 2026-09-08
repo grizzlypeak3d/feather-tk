@@ -8,75 +8,82 @@
 #include <ftk/UI/Event.h>
 #include <ftk/UI/IWidget.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void event(py::module_& m)
+        void event(nb::module_& m)
         {
-            py::class_<ChildAddEvent>(m, "ChildAddEvent")
-                .def(py::init<const std::shared_ptr<IWidget>&>())
-                .def_readwrite("child", &ChildAddEvent::child);
+            nb::class_<ChildAddEvent>(m, "ChildAddEvent")
+                .def(nb::init<const std::shared_ptr<IWidget>&>())
+                .def_rw("child", &ChildAddEvent::child);
 
-            py::class_<ChildRemoveEvent>(m, "ChildRemoveEvent")
-                .def(py::init<const std::shared_ptr<IWidget>&, int>())
-                .def_readwrite("child", &ChildRemoveEvent::child)
-                .def_readwrite("index", &ChildRemoveEvent::index);
+            nb::class_<ChildRemoveEvent>(m, "ChildRemoveEvent")
+                .def(nb::init<const std::shared_ptr<IWidget>&, int>())
+                .def_rw("child", &ChildRemoveEvent::child)
+                .def_rw("index", &ChildRemoveEvent::index);
 
-            py::class_<TickEvent>(m, "TickEvent");
+            nb::class_<TickEvent>(m, "TickEvent");
 
-            py::class_<StyleEvent>(m, "StyleEvent")
-                .def_readwrite("displayScaleChange", &StyleEvent::displayScaleChange)
-                .def_readwrite("sizeRoleChange", &StyleEvent::sizeRoleChange)
-                .def_readwrite("colorRoleChange", &StyleEvent::colorRoleChange)
-                .def_readwrite("fontChange", &StyleEvent::fontChange);
+            nb::class_<StyleEvent>(m, "StyleEvent")
+                .def_rw("displayScaleChange", &StyleEvent::displayScaleChange)
+                .def_rw("sizeRoleChange", &StyleEvent::sizeRoleChange)
+                .def_rw("colorRoleChange", &StyleEvent::colorRoleChange)
+                .def_rw("fontChange", &StyleEvent::fontChange);
 
-            py::class_<SizeHintEvent>(m, "SizeHintEvent")
-                .def(py::init<
+            nb::class_<SizeHintEvent>(m, "SizeHintEvent")
+                .def(nb::init<
                     const std::shared_ptr<FontSystem>&,
                     const std::shared_ptr<IconSystem>&,
                     float,
                     const std::shared_ptr<Style>&>())
-                .def_readwrite("fontSystem", &SizeHintEvent::fontSystem)
-                .def_readwrite("iconSystem", &SizeHintEvent::iconSystem)
-                .def_readwrite("displayScale", &SizeHintEvent::displayScale)
-                .def_readwrite("style", &SizeHintEvent::style);
+                .def_rw("fontSystem", &SizeHintEvent::fontSystem)
+                .def_rw("iconSystem", &SizeHintEvent::iconSystem)
+                .def_rw("displayScale", &SizeHintEvent::displayScale)
+                .def_rw("style", &SizeHintEvent::style);
 
-            py::class_<DrawEvent>(m, "DrawEvent")
-                .def(py::init<
+            nb::class_<DrawEvent>(m, "DrawEvent")
+                .def(nb::init<
                     const std::shared_ptr<FontSystem>&,
                     const std::shared_ptr<IconSystem>&,
                     float,
                     const std::shared_ptr<Style>&,
                     const std::shared_ptr<IRender>& >())
-                .def_readwrite("fontSystem", &DrawEvent::fontSystem)
-                .def_readwrite("iconSystem", &DrawEvent::iconSystem)
-                .def_readwrite("displayScale", &DrawEvent::displayScale)
-                .def_readwrite("style", &DrawEvent::style)
-                .def_readwrite("render", &DrawEvent::render);
+                .def_rw("fontSystem", &DrawEvent::fontSystem)
+                .def_rw("iconSystem", &DrawEvent::iconSystem)
+                .def_rw("displayScale", &DrawEvent::displayScale)
+                .def_rw("style", &DrawEvent::style)
+                .def_rw("render", &DrawEvent::render);
 
-            py::class_<IDragDropData, std::shared_ptr<IDragDropData> >(m, "IDragDropData");
+            nb::class_<IDragDropData>(m, "IDragDropData");
 
-            py::class_<MouseEnterEvent>(m, "MouseEnterEvent")
-                .def(py::init<const V2I&>())
-                .def_readwrite("pos", &MouseEnterEvent::pos)
-                .def_readwrite("accept", &MouseEnterEvent::accept);
+            nb::class_<MouseEnterEvent>(m, "MouseEnterEvent")
+                .def(nb::init<const V2I&>())
+                .def_rw("pos", &MouseEnterEvent::pos)
+                .def_rw("accept", &MouseEnterEvent::accept);
 
-            py::class_<MouseMoveEvent>(m, "MouseMoveEvent")
-                .def(py::init<const V2I&, const V2I&>())
-                .def_readwrite("pos", &MouseMoveEvent::pos)
-                .def_readwrite("prev", &MouseMoveEvent::prev)
-                .def_readwrite("accept", &MouseMoveEvent::accept)
-                .def_readwrite("dragDropData", &MouseMoveEvent::dragDropData)
-                .def_readwrite("dragDropCursor", &MouseMoveEvent::dragDropCursor)
-                .def_readwrite("dragDropCursorHotspot", &MouseMoveEvent::dragDropCursorHotspot);
+            nb::class_<MouseMoveEvent>(m, "MouseMoveEvent")
+                .def(nb::init<const V2I&, const V2I&>())
+                .def_rw("pos", &MouseMoveEvent::pos)
+                .def_rw("prev", &MouseMoveEvent::prev)
+                .def_rw("accept", &MouseMoveEvent::accept)
+                .def_rw("dragDropData", &MouseMoveEvent::dragDropData)
+                .def_rw("dragDropCursor", &MouseMoveEvent::dragDropCursor)
+                .def_rw("dragDropCursorHotspot", &MouseMoveEvent::dragDropCursorHotspot);
 
-            py::enum_<MouseButton>(m, "MouseButton")
+            nb::enum_<MouseButton>(m, "MouseButton")
                 .value("_None", MouseButton::None)
                 .value("Left", MouseButton::Left)
                 .value("Middle", MouseButton::Middle)
@@ -85,7 +92,7 @@ namespace ftk
                 .value("Extra2", MouseButton::Extra2);
             FTK_ENUM_BIND(m, MouseButton);
 
-            py::enum_<KeyModifier>(m, "KeyModifier")
+            nb::enum_<KeyModifier>(m, "KeyModifier")
                 .value("_None", KeyModifier::None)
                 .value("Shift", KeyModifier::Shift)
                 .value("Control", KeyModifier::Control)
@@ -95,24 +102,24 @@ namespace ftk
             m.attr("commandKeyModifier") = commandKeyModifier;
 
             m.def("getKeyModifierLabel", &getKeyModifierLabel);
-            m.def("to_string", pybind11::overload_cast<KeyModifier>(&to_string));
+            m.def("to_string", nanobind::overload_cast<KeyModifier>(&to_string));
 
-            py::class_<MouseClickEvent>(m, "MouseClickEvent")
-                .def(py::init<>())
-                .def(py::init<MouseButton, int, const V2I&>())
-                .def_readwrite("button", &MouseClickEvent::button)
-                .def_readwrite("modifiers", &MouseClickEvent::modifiers)
-                .def_readwrite("pos", &MouseClickEvent::pos)
-                .def_readwrite("accept", &MouseClickEvent::accept);
+            nb::class_<MouseClickEvent>(m, "MouseClickEvent")
+                .def(nb::init<>())
+                .def(nb::init<MouseButton, int, const V2I&>())
+                .def_rw("button", &MouseClickEvent::button)
+                .def_rw("modifiers", &MouseClickEvent::modifiers)
+                .def_rw("pos", &MouseClickEvent::pos)
+                .def_rw("accept", &MouseClickEvent::accept);
 
-            py::class_<ScrollEvent>(m, "ScrollEvent")
-                .def(py::init<const V2F&, int, const V2I&>())
-                .def_readwrite("value", &ScrollEvent::value)
-                .def_readwrite("modifiers", &ScrollEvent::modifiers)
-                .def_readwrite("pos", &ScrollEvent::pos)
-                .def_readwrite("accept", &ScrollEvent::accept);
+            nb::class_<ScrollEvent>(m, "ScrollEvent")
+                .def(nb::init<const V2F&, int, const V2I&>())
+                .def_rw("value", &ScrollEvent::value)
+                .def_rw("modifiers", &ScrollEvent::modifiers)
+                .def_rw("pos", &ScrollEvent::pos)
+                .def_rw("accept", &ScrollEvent::accept);
 
-            py::enum_<Key>(m, "Key")
+            nb::enum_<Key>(m, "Key")
                 .value("Unknown", Key::Unknown)
                 .value("Return", Key::Return)
                 .value("Escape", Key::Escape)
@@ -231,35 +238,35 @@ namespace ftk
             m.def(
                 "getShortcutLabel",
                 &getShortcutLabel,
-                py::arg("key"),
-                py::arg("modifiers"));
+                nb::arg("key"),
+                nb::arg("modifiers"));
 
-            py::class_<KeyEvent>(m, "KeyEvent")
-                .def(py::init<>())
-                .def(py::init<Key, int, const V2I&>())
-                .def_readwrite("key", &KeyEvent::key)
-                .def_readwrite("modifiers", &KeyEvent::modifiers)
-                .def_readwrite("pos", &KeyEvent::pos)
-                .def_readwrite("accept", &KeyEvent::accept);
+            nb::class_<KeyEvent>(m, "KeyEvent")
+                .def(nb::init<>())
+                .def(nb::init<Key, int, const V2I&>())
+                .def_rw("key", &KeyEvent::key)
+                .def_rw("modifiers", &KeyEvent::modifiers)
+                .def_rw("pos", &KeyEvent::pos)
+                .def_rw("accept", &KeyEvent::accept);
 
-            py::class_<TextEvent>(m, "TextEvent")
-                .def(py::init<const std::string&>())
-                .def_readwrite("text", &TextEvent::text)
-                .def_readwrite("accept", &TextEvent::accept);
+            nb::class_<TextEvent>(m, "TextEvent")
+                .def(nb::init<const std::string&>())
+                .def_rw("text", &TextEvent::text)
+                .def_rw("accept", &TextEvent::accept);
 
-            py::class_<DragDropTextData, IDragDropData, std::shared_ptr<DragDropTextData> >(m, "DragDropTextData")
-                .def(py::init<const std::vector<std::string>&>())
-                .def_property_readonly("text", &DragDropTextData::getText);
+            nb::class_<DragDropTextData, IDragDropData>(m, "DragDropTextData")
+                .def(nb::init<const std::vector<std::string>&>())
+                .def_prop_ro("text", &DragDropTextData::getText);
 
-            py::class_<DragDropEvent>(m, "DragDropEvent")
-                .def(py::init<
+            nb::class_<DragDropEvent>(m, "DragDropEvent")
+                .def(nb::init<
                     const V2I&,
                     const V2I&,
                     const std::shared_ptr<IDragDropData>&>())
-                .def_readwrite("pos", &DragDropEvent::pos)
-                .def_readwrite("prev", &DragDropEvent::prev)
-                .def_readwrite("data", &DragDropEvent::data)
-                .def_readwrite("accept", &DragDropEvent::accept);
+                .def_rw("pos", &DragDropEvent::pos)
+                .def_rw("prev", &DragDropEvent::prev)
+                .def_rw("data", &DragDropEvent::data)
+                .def_rw("accept", &DragDropEvent::accept);
         }
     }
 }

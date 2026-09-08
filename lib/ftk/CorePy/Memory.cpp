@@ -5,23 +5,30 @@
 
 #include <ftk/Core/Memory.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void memory(py::module_& m)
+        void memory(nb::module_& m)
         {
             m.attr("kilobyte") = kilobyte;
             m.attr("megabyte") = megabyte;
             m.attr("gigabyte") = gigabyte;
             m.attr("terabyte") = terabyte;
 
-            py::enum_<Endian>(m, "Endian")
+            nb::enum_<Endian>(m, "Endian")
                 .value("MSB", Endian::MSB)
                 .value("LSB", Endian::LSB);
             FTK_ENUM_BIND(m, Endian);

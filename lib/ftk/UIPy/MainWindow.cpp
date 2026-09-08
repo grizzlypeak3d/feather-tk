@@ -4,13 +4,22 @@
 #include <ftk/UIPy/Bindings.h>
 
 #include <ftk/UI/App.h>
+#include <ftk/UIPy/WidgetTrampoline.h>
+
 #include <ftk/UI/MainWindow.h>
 #include <ftk/UI/MenuBar.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -19,171 +28,69 @@ namespace ftk
         class PyMainWindow : public MainWindow
         {
         public:
-            static std::shared_ptr<PyMainWindow> create(
+            NB_TRAMPOLINE(MainWindow);
+            using Base = MainWindow;
+
+            void pyInit(
                 const std::shared_ptr<Context>& context,
                 const std::shared_ptr<App>& app,
                 const Size2I& size)
             {
-                auto out = std::shared_ptr<PyMainWindow>(new PyMainWindow);
-                out->_init(context, app, size);
-                return out;
+                _init(context, app, size);
             }
-            
+
             void setGeometry(const Box2I& value) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    setGeometry,
-                    value);
+                NB_OVERRIDE(setGeometry, value);
             }
-            
+
             void tickEvent(
                 bool parentsVisible,
                 bool parentsEnabled,
                 const TickEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    tickEvent,
-                    parentsVisible,
-                    parentsEnabled,
-                    event);
+                NB_OVERRIDE(tickEvent, parentsVisible, parentsEnabled, event);
             }
-            
+
             void sizeHintEvent(const SizeHintEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    sizeHintEvent,
-                    event);
+                NB_OVERRIDE(sizeHintEvent, event);
             }
-            
+
             void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    MainWindow,
-                    drawEvent,
-                    drawRect,
-                    event);
-            }
-    
-            void dragEnterEvent(DragDropEvent& event) override
-            {
-                // The event is passed by pointer: passed by reference,
-                // pybind hands Python a copy, and anything Python writes
-                // to it -- the accept flag -- is written to the copy.
-                pybind11::gil_scoped_acquire gil;
-                if (pybind11::function override = pybind11::get_override(
-                    static_cast<const MainWindow*>(this), "dragEnterEvent"))
-                {
-                    override(&event);
-                }
-                else
-                {
-                    MainWindow::dragEnterEvent(event);
-                }
+                NB_OVERRIDE(drawEvent, drawRect, event);
             }
 
-            void dragLeaveEvent(DragDropEvent& event) override
-            {
-                // The event is passed by pointer: passed by reference,
-                // pybind hands Python a copy, and anything Python writes
-                // to it -- the accept flag -- is written to the copy.
-                pybind11::gil_scoped_acquire gil;
-                if (pybind11::function override = pybind11::get_override(
-                    static_cast<const MainWindow*>(this), "dragLeaveEvent"))
-                {
-                    override(&event);
-                }
-                else
-                {
-                    MainWindow::dragLeaveEvent(event);
-                }
-            }
-
-            void dragMoveEvent(DragDropEvent& event) override
-            {
-                // The event is passed by pointer: passed by reference,
-                // pybind hands Python a copy, and anything Python writes
-                // to it -- the accept flag -- is written to the copy.
-                pybind11::gil_scoped_acquire gil;
-                if (pybind11::function override = pybind11::get_override(
-                    static_cast<const MainWindow*>(this), "dragMoveEvent"))
-                {
-                    override(&event);
-                }
-                else
-                {
-                    MainWindow::dragMoveEvent(event);
-                }
-            }
-
-            void dropEvent(DragDropEvent& event) override
-            {
-                // The event is passed by pointer: passed by reference,
-                // pybind hands Python a copy, and anything Python writes
-                // to it -- the accept flag -- is written to the copy.
-                pybind11::gil_scoped_acquire gil;
-                if (pybind11::function override = pybind11::get_override(
-                    static_cast<const MainWindow*>(this), "dropEvent"))
-                {
-                    override(&event);
-                }
-                else
-                {
-                    MainWindow::dropEvent(event);
-                }
-            }
-
-            void keyPressEvent(KeyEvent& event) override
-            {
-                // The event is passed by pointer: passed by reference,
-                // pybind hands Python a copy, and anything Python writes
-                // to it -- the accept flag -- is written to the copy.
-                pybind11::gil_scoped_acquire gil;
-                if (pybind11::function override = pybind11::get_override(
-                    static_cast<const MainWindow*>(this), "keyPressEvent"))
-                {
-                    override(&event);
-                }
-                else
-                {
-                    MainWindow::keyPressEvent(event);
-                }
-            }
-
-            void keyReleaseEvent(KeyEvent& event) override
-            {
-                // The event is passed by pointer: passed by reference,
-                // pybind hands Python a copy, and anything Python writes
-                // to it -- the accept flag -- is written to the copy.
-                pybind11::gil_scoped_acquire gil;
-                if (pybind11::function override = pybind11::get_override(
-                    static_cast<const MainWindow*>(this), "keyReleaseEvent"))
-                {
-                    override(&event);
-                }
-                else
-                {
-                    MainWindow::keyReleaseEvent(event);
-                }
-            }
+            FTK_WIDGET_EVENT_REF(dragEnterEvent, DragDropEvent)
+            FTK_WIDGET_EVENT_REF(dragLeaveEvent, DragDropEvent)
+            FTK_WIDGET_EVENT_REF(dragMoveEvent, DragDropEvent)
+            FTK_WIDGET_EVENT_REF(dropEvent, DragDropEvent)
+            FTK_WIDGET_EVENT_REF(keyPressEvent, KeyEvent)
+            FTK_WIDGET_EVENT_REF(keyReleaseEvent, KeyEvent)
         };
 
-        void mainWindow(py::module_& m)
+        void mainWindow(nb::module_& m)
         {
-            py::class_<MainWindow, Window, std::shared_ptr<MainWindow>, PyMainWindow >(m, "MainWindow")
+            nb::class_<MainWindow, Window, PyMainWindow >(m, "MainWindow")
                 .def(
-                    py::init(&PyMainWindow::create),
-                    py::arg("context"),
-                    py::arg("app"),
-                    py::arg("size") = Size2I(1280, 960))
-                .def_property("menuBar", &MainWindow::getMenuBar, &MainWindow::setMenuBar)
-                .def_property("widget", &MainWindow::getWidget, &MainWindow::setWidget);
+                    "__init__",
+                    [](MainWindow* self,
+                       const std::shared_ptr<Context>& context,
+                       const std::shared_ptr<App>& app,
+                       const Size2I& size)
+                    {
+                        pyConstruct<PyMainWindow>(self,
+                            [&](PyMainWindow& w)
+                            {
+                                w.pyInit(context, app, size);
+                            });
+                    },
+                    nb::arg("context"),
+                    nb::arg("app"),
+                    nb::arg("size") = Size2I(1280, 960))
+                .def_prop_rw("menuBar", &MainWindow::getMenuBar, &MainWindow::setMenuBar)
+                .def_prop_rw("widget", &MainWindow::getWidget, &MainWindow::setWidget);
         }
     }
 }

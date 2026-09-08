@@ -6,10 +6,19 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/IWindow.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/trampoline.h>
 
-namespace py = pybind11;
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
+
+namespace nb = nanobind;
 
 namespace ftk
 {
@@ -18,13 +27,11 @@ namespace ftk
         class PyIWindow : public IWindow
         {
         public:
+            NB_TRAMPOLINE(IWindow);
+
             void setGeometry(const Box2I& value) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWindow,
-                    setGeometry,
-                    value);
+                NB_OVERRIDE(setGeometry, value);
             }
             
             void tickEvent(
@@ -32,92 +39,77 @@ namespace ftk
                 bool parentsEnabled,
                 const TickEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWindow,
-                    tickEvent,
-                    parentsVisible,
-                    parentsEnabled,
-                    event);
+                NB_OVERRIDE(tickEvent, parentsVisible, parentsEnabled, event);
             }
             
             void sizeHintEvent(const SizeHintEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWindow,
-                    sizeHintEvent,
-                    event);
+                NB_OVERRIDE(sizeHintEvent, event);
             }
             
             void drawEvent(const Box2I& drawRect, const DrawEvent& event) override
             {
-                PYBIND11_OVERRIDE(
-                    void,
-                    IWindow,
-                    drawEvent,
-                    drawRect,
-                    event);
+                NB_OVERRIDE(drawEvent, drawRect, event);
             }
         };
 
-        void iWindow(py::module_& m)
+        void iWindow(nb::module_& m)
         {
-            //py::class_<IWindow, IWidget, std::shared_ptr<IWindow> >(m, "IWindow")
-            py::class_<IWindow, IWidget, std::shared_ptr<IWindow>, PyIWindow>(m, "IWindow")
-                .def_property_readonly("app", &IWindow::getApp)
-                .def_property_readonly("windowID", &IWindow::getID)
-                .def_property_readonly("screen", &IWindow::getScreen)
-                .def_property("title", &IWindow::getTitle, &IWindow::setTitle)
-                .def_property("size", &IWindow::getSize, &IWindow::setSize, py::return_value_policy::copy)
-                .def_property("minSize", &IWindow::getMinSize, &IWindow::setMinSize)
-                .def_property("fullScreen", &IWindow::isFullScreen, &IWindow::setFullScreen)
-                .def_property_readonly("observeFullScreen", &IWindow::observeFullScreen)
-                .def_property("floatOnTop", &IWindow::isFloatOnTop, &IWindow::setFloatOnTop)
-                .def_property_readonly("observeFloatOnTop", &IWindow::observeFloatOnTop)
+            //nb::class_<IWindow, IWidget>(m, "IWindow")
+            nb::class_<IWindow, IWidget, PyIWindow>(m, "IWindow")
+                .def_prop_ro("app", &IWindow::getApp)
+                .def_prop_ro("windowID", &IWindow::getID)
+                .def_prop_ro("screen", &IWindow::getScreen)
+                .def_prop_rw("title", &IWindow::getTitle, &IWindow::setTitle)
+                .def_prop_rw("size", &IWindow::getSize, &IWindow::setSize, nb::rv_policy::copy)
+                .def_prop_rw("minSize", &IWindow::getMinSize, &IWindow::setMinSize)
+                .def_prop_rw("fullScreen", &IWindow::isFullScreen, &IWindow::setFullScreen)
+                .def_prop_ro("observeFullScreen", &IWindow::observeFullScreen)
+                .def_prop_rw("floatOnTop", &IWindow::isFloatOnTop, &IWindow::setFloatOnTop)
+                .def_prop_ro("observeFloatOnTop", &IWindow::observeFloatOnTop)
                 .def("getWindowInfo", &IWindow::getWindowInfo)
-                .def_property_readonly("bufferSize", &IWindow::getBufferSize, py::return_value_policy::copy)
-                .def_property("bufferType", &IWindow::getBufferType, &IWindow::setBufferType)
-                .def_property_readonly("observeBufferType", &IWindow::observeBufferType)
-                .def_property_readonly("contentScale", &IWindow::getContentScale)
-                .def_property("displayScale", &IWindow::getDisplayScale, &IWindow::setDisplayScale)
-                .def_property_readonly("observeDisplayScale", &IWindow::observeDisplayScale).
-                def_property("keyFocus", &IWindow::getKeyFocus, &IWindow::setKeyFocus)
+                .def_prop_ro("bufferSize", &IWindow::getBufferSize, nb::rv_policy::copy)
+                .def_prop_rw("bufferType", &IWindow::getBufferType, &IWindow::setBufferType)
+                .def_prop_ro("observeBufferType", &IWindow::observeBufferType)
+                .def_prop_ro("contentScale", &IWindow::getContentScale)
+                .def_prop_rw("displayScale", &IWindow::getDisplayScale, &IWindow::setDisplayScale)
+                .def_prop_ro("observeDisplayScale", &IWindow::observeDisplayScale).
+                def_prop_rw("keyFocus", &IWindow::getKeyFocus, &IWindow::setKeyFocus)
                 .def("getNextKeyFocus", &IWindow::getNextKeyFocus)
                 .def("getPrevKeyFocus", &IWindow::getPrevKeyFocus)
-                .def_property("tooltipsEnabled", &IWindow::getTooltipsEnabled, &IWindow::setTooltipsEnabled)
-                .def_property_readonly("cursorPos", &IWindow::getCursorPos)
-                .def_property_readonly("dragDropActive", &IWindow::isDragDropActive)
+                .def_prop_rw("tooltipsEnabled", &IWindow::getTooltipsEnabled, &IWindow::setTooltipsEnabled)
+                .def_prop_ro("cursorPos", &IWindow::getCursorPos)
+                .def_prop_ro("dragDropActive", &IWindow::isDragDropActive)
                 .def(
                     "layout",
                     &IWindow::layout,
-                    py::arg("size"))
+                    nb::arg("size"))
                 .def(
                     "click",
                     &IWindow::click,
-                    py::arg("pos"),
-                    py::arg("button") = MouseButton::Left,
-                    py::arg("modifiers") = 0)
+                    nb::arg("pos"),
+                    nb::arg("button") = MouseButton::Left,
+                    nb::arg("modifiers") = 0)
                 .def(
                     "drag",
                     &IWindow::drag,
-                    py::arg("path"),
-                    py::arg("modifiers") = 0,
-                    py::arg("release") = true)
+                    nb::arg("path"),
+                    nb::arg("modifiers") = 0,
+                    nb::arg("release") = true)
                 .def(
                     "keyPress",
                     &IWindow::keyPress,
-                    py::arg("key"),
-                    py::arg("modifiers") = 0)
+                    nb::arg("key"),
+                    nb::arg("modifiers") = 0)
                 .def(
                     "text",
                     &IWindow::text,
-                    py::arg("text"))
+                    nb::arg("text"))
                 .def(
                     "textEditing",
                     &IWindow::textEditing,
-                    py::arg("text"),
-                    py::arg("cursor") = 0)
+                    nb::arg("text"),
+                    nb::arg("cursor") = 0)
                 .def("setIcon", &IWindow::setIcon)
                 .def("screenshot", &IWindow::screenshot)
                 .def("close", &IWindow::close)

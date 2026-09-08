@@ -6,19 +6,26 @@
 #include <ftk/UI/IDialog.h>
 #include <ftk/UI/Window.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void iDialog(py::module_& m)
+        void iDialog(nb::module_& m)
         {
-            py::class_<IDialog, IPopup, std::shared_ptr<IDialog> >(m, "IDialog")
+            nb::class_<IDialog, IPopup>(m, "IDialog")
                 .def("open", &IDialog::open)
                 .def("isOpen", &IDialog::isOpen)
                 .def("setCloseCallback", &IDialog::setCloseCallback);

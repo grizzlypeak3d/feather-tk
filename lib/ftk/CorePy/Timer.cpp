@@ -6,25 +6,32 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Timer.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/chrono.h>
-#include <pybind11/functional.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/chrono.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void timer(py::module_& m)
+        void timer(nb::module_& m)
         {
-            py::class_<Timer, std::shared_ptr<Timer> >(m, "Timer")
+            nb::class_<Timer>(m, "Timer")
                 .def(
-                    py::init(&Timer::create),
-                    py::arg("context"))
-                .def_property("repeating", &Timer::isRepeating, &Timer::setRepeating)
+                    nb::new_(&Timer::create),
+                    nb::arg("context"))
+                .def_prop_rw("repeating", &Timer::isRepeating, &Timer::setRepeating)
                 .def("start", [](
                     const std::shared_ptr<Timer>& timer,
                     float seconds,
@@ -33,8 +40,8 @@ namespace ftk
                         timer->start(std::chrono::milliseconds(long(seconds * 1000.0)), callback);
                     })
                 .def("stop", &Timer::stop)
-                .def_property_readonly("active", &Timer::isActive)
-                .def_property_readonly("timeout", &Timer::getTimeout);
+                .def_prop_ro("active", &Timer::isActive)
+                .def_prop_ro("timeout", &Timer::getTimeout);
         }
     }
 }

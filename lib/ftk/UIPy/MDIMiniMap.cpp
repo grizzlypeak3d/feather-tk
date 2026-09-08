@@ -5,27 +5,34 @@
 
 #include <ftk/UI/MDIMiniMap.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/function.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void mdiMiniMap(py::module_& m)
+        void mdiMiniMap(nb::module_& m)
         {
-            py::class_<MDIMiniMap, IWidget, std::shared_ptr<MDIMiniMap> >(m, "MDIMiniMap")
+            nb::class_<MDIMiniMap, IWidget>(m, "MDIMiniMap")
                 .def(
-                    py::init(&MDIMiniMap::create),
-                    py::arg("context"),
-                    py::arg("parent") = nullptr)
+                    nb::new_(&MDIMiniMap::create),
+                    nb::arg("context"),
+                    nb::arg("parent") = nullptr)
                 .def("setScrollInfo", &MDIMiniMap::setScrollInfo)
                 .def("setCallback", &MDIMiniMap::setCallback)
                 .def("setChildGeometry", &MDIMiniMap::setChildGeometry)
-                .def_property("childColorRole", &MDIMiniMap::getChildColorRole, &MDIMiniMap::setChildColorRole);
+                .def_prop_rw("childColorRole", &MDIMiniMap::getChildColorRole, &MDIMiniMap::setChildColorRole);
         }
     }
 }

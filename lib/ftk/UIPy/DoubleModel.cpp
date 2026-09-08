@@ -5,38 +5,45 @@
 
 #include <ftk/UI/DoubleModel.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/list.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/filesystem.h>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 namespace ftk
 {
     namespace python
     {
-        void doubleModel(py::module_& m)
+        void doubleModel(nb::module_& m)
         {
-            py::class_<DoubleModel, std::shared_ptr<DoubleModel> >(m, "DoubleModel")
-                .def(py::init(&DoubleModel::create))
-                .def_property("value", &DoubleModel::getValue, &DoubleModel::setValue)
+            nb::class_<DoubleModel>(m, "DoubleModel")
+                .def(nb::new_(&DoubleModel::create))
+                .def_prop_rw("value", &DoubleModel::getValue, &DoubleModel::setValue)
                 .def("setValueSoft", &DoubleModel::setValueSoft)
                 .def("observeValue", &DoubleModel::observeValue)
-                .def_property("range", &DoubleModel::getRange, &DoubleModel::setRange, py::return_value_policy::copy)
+                .def_prop_rw("range", &DoubleModel::getRange, &DoubleModel::setRange, nb::rv_policy::copy)
                 .def("observeRange", &DoubleModel::observeRange)
-                .def_property("rangeSoft", &DoubleModel::isRangeSoft, &DoubleModel::setRangeSoft)
-                .def_property("step", &DoubleModel::getStep, &DoubleModel::setStep)
-                .def_property("largeStep", &DoubleModel::getLargeStep, &DoubleModel::setLargeStep)
-                .def("stepInc", py::overload_cast<>(&DoubleModel::step))
+                .def_prop_rw("rangeSoft", &DoubleModel::isRangeSoft, &DoubleModel::setRangeSoft)
+                .def_prop_rw("step", &DoubleModel::getStep, &DoubleModel::setStep)
+                .def_prop_rw("largeStep", &DoubleModel::getLargeStep, &DoubleModel::setLargeStep)
+                .def("stepInc", nb::overload_cast<>(&DoubleModel::step))
                 .def("stepDec", &DoubleModel::stepDec)
-                .def("largeStepInc", py::overload_cast<>(&DoubleModel::largeStep))
+                .def("largeStepInc", nb::overload_cast<>(&DoubleModel::largeStep))
                 .def("largeStepDec", &DoubleModel::largeStepDec)
-                .def_property_readonly("hasDefault", &DoubleModel::hasDefault)
+                .def_prop_ro("hasDefault", &DoubleModel::hasDefault)
                 .def("observeHasDefault", &DoubleModel::observeHasDefault)
-                .def_property("defaultValue",
+                .def_prop_rw("defaultValue",
                     &DoubleModel::getDefault,
-                    py::overload_cast<double>(&DoubleModel::setDefault))
+                    nb::overload_cast<double>(&DoubleModel::setDefault))
                 .def("observeDefault", &DoubleModel::observeDefault)
-                .def("setDefault", py::overload_cast<>(&DoubleModel::setDefault))
+                .def("setDefault", nb::overload_cast<>(&DoubleModel::setDefault))
                 .def("clearDefault", &DoubleModel::clearDefault);
         }
     }
