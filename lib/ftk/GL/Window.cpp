@@ -439,10 +439,15 @@ namespace ftk
                     0x00ff0000,
                     0xff000000))
 #elif defined(FTK_SDL3)
+                // RGBA32, not RGBA8888: the 8888 formats are packed 32-bit
+                // words, so on a little-endian machine RGBA8888 reads the
+                // bytes as ABGR and the icon comes out red-shifted. RGBA32
+                // is the byte-order alias that matches the masks the SDL2
+                // path uses.
                 if (SDL_Surface* sdlSurface = SDL_CreateSurfaceFrom(
                     info.size.w,
                     info.size.h,
-                    SDL_PIXELFORMAT_RGBA8888,
+                    SDL_PIXELFORMAT_RGBA32,
                     mirrored->getData(),
                     info.size.w * 4))
 #endif // FTK_SDL2
