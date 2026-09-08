@@ -70,12 +70,6 @@ namespace ftk
             p.actionToButton[action] = button;
 
             auto buttonWeak = std::weak_ptr<MenuButton>(button);
-            // The menu holds itself weakly for the work that happens after an
-            // action's callback. Closing a menu from an action that rebuilds
-            // the menu bar it lives in is an ordinary thing to write, and
-            // would otherwise leave the menu reading its own freed members.
-            auto menuWeak = std::weak_ptr<Menu>(
-                std::dynamic_pointer_cast<Menu>(shared_from_this()));
             button->setHoveredCallback(
                 [this, buttonWeak](bool value)
                 {
@@ -88,28 +82,36 @@ namespace ftk
                         _setCurrent(buttonWeak.lock());
                     }
                 });
+            // The button stands in for the menu in the work that happens
+            // after an action's callback: the menu's layout owns it, so the
+            // button surviving the callback proves the menu did too. An
+            // action that rebuilds the menu bar it lives in is an ordinary
+            // thing to write, and this menu cannot be read after that. A
+            // weak_ptr to the menu itself would say the same thing less
+            // reliably -- a menu owned from Python only has a control block
+            // while one of its bound calls is on the stack.
             button->setClickedCallback(
-                [this, menuWeak, action, buttonWeak]
+                [this, action, buttonWeak]
                 {
                     _setCurrent(buttonWeak.lock());
                     action->doCallback();
-                    if (auto menu = menuWeak.lock())
+                    if (buttonWeak.lock())
                     {
                         if (!action->isCheckable())
                         {
-                            menu->_accept();
+                            _accept();
                         }
                     }
                 });
             button->setCheckedCallback(
-                [this, menuWeak, action, buttonWeak](bool value)
+                [this, action, buttonWeak](bool value)
                 {
                     _setCurrent(buttonWeak.lock());
                     action->setChecked(value);
                     action->doCheckedCallback(value);
-                    if (auto menu = menuWeak.lock())
+                    if (buttonWeak.lock())
                     {
-                        menu->_accept();
+                        _accept();
                     }
                 });
             button->setEnabledCallback(
@@ -176,12 +178,6 @@ namespace ftk
             p.buttonToSubMenu[button] = out;
 
             auto buttonWeak = std::weak_ptr<MenuButton>(button);
-            // The menu holds itself weakly for the work that happens after an
-            // action's callback. Closing a menu from an action that rebuilds
-            // the menu bar it lives in is an ordinary thing to write, and
-            // would otherwise leave the menu reading its own freed members.
-            auto menuWeak = std::weak_ptr<Menu>(
-                std::dynamic_pointer_cast<Menu>(shared_from_this()));
             button->setHoveredCallback(
                 [this, out, buttonWeak](bool value)
                 {
@@ -198,6 +194,8 @@ namespace ftk
                                 _setCurrent(button);
                                 if (!out->isEmpty())
                                 {
+                                    out->_p->parentMenu =
+                                        std::dynamic_pointer_cast<Menu>(shared_from_this());
                                     out->open(getWindow(), button->getGeometry());
                                 }
                             }
@@ -219,6 +217,12 @@ namespace ftk
                             _setCurrent(button);
                             if (!out->isEmpty())
                             {
+                                // Refresh the parent link: constructed from
+                                // Python, this menu had no lasting control
+                                // block at addSubMenu() time, but by now the
+                                // menu bar holds one.
+                                out->_p->parentMenu =
+                                    std::dynamic_pointer_cast<Menu>(shared_from_this());
                                 out->open(getWindow(), button->getGeometry());
                             }
                         }
