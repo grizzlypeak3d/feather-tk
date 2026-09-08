@@ -39,14 +39,19 @@ namespace ftk
         public:
             NB_TRAMPOLINE(App);
 
-            //! Keeps one shared_ptr control block alive for the life of the
-            //! application, the way pybind11's holder did: the windows store
-            //! weak_ptrs to the app, and a weak_ptr into a per-call control
-            //! block expires as soon as the call returns. Released when
-            //! run() finishes; an application that never runs reports the
-            //! instance in nanobind's exit-time leak check, which is
-            //! harmless.
-            std::shared_ptr<App> pyAnchor;
+            // One control block for the life of the application, the way
+            // pybind11's holder was: the windows store weak_ptrs to the app,
+            // and a weak_ptr into nanobind's per-call control block expires
+            // as soon as the call returns. The deleter does nothing because
+            // the Python object owns the C++ one -- a block that owned a
+            // Python reference would be a cycle the garbage collector
+            // cannot see, and an application that never ran ("-h",
+            // "-sysInfo") would be reported as leaked at exit. Made in the
+            // constructor so that it is in place before anything casts the
+            // instance: the shared_ptr caster reuses a live weak_from_this().
+            PyApp() :
+                _anchor(this, [](App*) {})
+            {}
 
             void pyInit(
                 const std::shared_ptr<Context>& context,
@@ -73,6 +78,9 @@ namespace ftk
             {
                 NB_OVERRIDE(tick);
             }
+
+        private:
+            std::shared_ptr<App> _anchor;
         };
 
         void app(nb::module_& m)
@@ -154,8 +162,6 @@ namespace ftk
                                 a.pyInit(
                                     context, argv, name, summary,
                                     cmdLineArgs, cmdLineOptions, appFiles);
-                                a.pyAnchor = nanobind::cast<std::shared_ptr<App> >(
-                                    nanobind::find(self));
                             });
                     },
                     nb::arg("context"),
@@ -195,10 +201,6 @@ namespace ftk
                     [](const std::shared_ptr<App>& self)
                     {
                         self->run();
-                        if (auto pyApp = dynamic_cast<PyApp*>(self.get()))
-                        {
-                            pyApp->pyAnchor.reset();
-                        }
                     })
                 .def(
                     "tick",
