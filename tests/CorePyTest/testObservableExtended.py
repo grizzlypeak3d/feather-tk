@@ -89,6 +89,12 @@ class ObservableListMutationTest(unittest.TestCase):
             self.obs, lambda v: setattr(self, 'received', v))
         self.received = None  # clear the trigger-on-subscribe value
 
+    def tearDown(self):
+        # The callback refers back to the test case, through a reference
+        # the garbage collector cannot see; unittest keeps the test cases
+        # to the end, so the cycle is cut here.
+        self.observer = None
+
     def test_pushBack_single(self):
         self.obs.pushBack(1)
         self.assertEqual(self.received, [1])
@@ -165,6 +171,9 @@ class ObservableMapMutationTest(unittest.TestCase):
         self.observer = ftk.StringIntMapObserver(
             self.obs, lambda v: setattr(self, 'received', v))
         self.received = None
+
+    def tearDown(self):
+        self.observer = None
 
     def test_set_and_notify(self):
         self.obs.setAlways({"x": 1})

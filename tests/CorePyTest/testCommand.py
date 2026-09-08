@@ -183,6 +183,13 @@ class CommandStackObservableTest(unittest.TestCase):
             self.stack.observeHasRedo(),
             lambda v: self.has_redo.__setitem__(0, v))
 
+    def tearDown(self):
+        # The callbacks refer back to the test case, through references
+        # the garbage collector cannot see; unittest keeps the test cases
+        # to the end, so the cycle is cut here.
+        self.undo_observer = None
+        self.redo_observer = None
+
     def test_initial_state(self):
         self.assertFalse(self.has_undo[0])
         self.assertFalse(self.has_redo[0])
