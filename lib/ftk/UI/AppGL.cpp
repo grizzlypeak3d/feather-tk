@@ -3,6 +3,7 @@
 
 #include <ftk/UI/App.h>
 
+#include <ftk/UI/Capture.h>
 #include <ftk/UI/ClipboardSystem.h>
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Init.h>
@@ -115,6 +116,9 @@ namespace ftk
             std::shared_ptr<CmdLineFlag> resetSettings;
             std::shared_ptr<CmdLineOption<std::string> > screenshot;
             std::shared_ptr<CmdLineOption<std::string> > widgetDump;
+            std::shared_ptr<CmdLineOption<std::string> > captureManifest;
+            std::shared_ptr<CmdLineOption<std::string> > captureShot;
+            std::shared_ptr<CmdLineOption<std::string> > captureOutput;
         };
         CmdLine cmdLine;
 
@@ -205,6 +209,22 @@ namespace ftk
             "Write the window's widget tree as JSON to this file and then exit.",
             "Testing");
         cmdLineOptionsTmp.push_back(p.cmdLine.widgetDump);
+        p.cmdLine.captureManifest = CmdLineOption<std::string>::create(
+            { "-captureManifest" },
+            "Screenshot manifest (JSON).",
+            "Capture");
+        cmdLineOptionsTmp.push_back(p.cmdLine.captureManifest);
+        p.cmdLine.captureShot = CmdLineOption<std::string>::create(
+            { "-captureShot" },
+            "Id of the single shot to capture.",
+            "Capture");
+        cmdLineOptionsTmp.push_back(p.cmdLine.captureShot);
+        p.cmdLine.captureOutput = CmdLineOption<std::string>::create(
+            { "-captureOutput" },
+            "Output directory for PNG + JSON.",
+            "Capture",
+            std::string("."));
+        cmdLineOptionsTmp.push_back(p.cmdLine.captureOutput);
         if (!p.settingsPath.empty())
         {
             p.cmdLine.settingsFile = CmdLineOption<std::string>::create(
@@ -242,6 +262,7 @@ namespace ftk
         p.offscreen =
             p.cmdLine.screenshot->found() ||
             p.cmdLine.widgetDump->found() ||
+            p.cmdLine.captureShot->found() ||
             p.cmdLine.exit->found() ||
             offscreenDefault;
 
@@ -1032,6 +1053,23 @@ namespace ftk
         FTK_P();
         auto t0 = std::chrono::steady_clock::now();
 
+        // Set up a capture run before the visibility check below: begin()
+        // makes the application offscreen and then shows the window itself.
+        std::shared_ptr<Capture> capture;
+        if (p.cmdLine.captureShot->found())
+        {
+            capture = _createCapture(
+                toFileSystem(p.cmdLine.captureManifest->getValue()),
+                p.cmdLine.captureShot->getValue(),
+                toFileSystem(p.cmdLine.captureOutput->getValue()));
+            if (!capture || !capture->begin())
+            {
+                throw std::runtime_error(Format(
+                    "Cannot set up capture: {0}").
+                    arg(p.cmdLine.captureShot->getValue()));
+            }
+        }
+
         // Make sure one of the windows is visible.
         bool visible = false;
         for (const auto& window : p.windows)
@@ -1104,6 +1142,13 @@ namespace ftk
             {
                 break;
             }
+        }
+
+        if (capture && !capture->succeeded())
+        {
+            throw std::runtime_error(Format(
+                "Cannot capture shot: {0}").
+                arg(p.cmdLine.captureShot->getValue()));
         }
 #endif // __EMSCRIPTEN__
     }
@@ -1745,6 +1790,24 @@ namespace ftk
             "ftk::App",
             Format("Wrote widget dump to \"{0}\"").arg(fromFileSystem(path)));
         return true;
+    }
+
+    bool App::isCaptureRun() const
+    {
+        return _p->cmdLine.captureShot->found();
+    }
+
+    std::shared_ptr<Capture> App::_createCapture(
+        const std::filesystem::path& manifest,
+        const std::string& shotId,
+        const std::filesystem::path& outputDir)
+    {
+        return Capture::create(
+            _context,
+            std::static_pointer_cast<App>(shared_from_this()),
+            manifest,
+            shotId,
+            outputDir);
     }
 
     bool App::writeScreenshot(const std::filesystem::path& path)

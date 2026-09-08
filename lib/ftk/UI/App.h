@@ -17,6 +17,7 @@
 
 namespace ftk
 {
+    class Capture;
     class FontSystem;
     class Settings;
     class IWidget;
@@ -157,6 +158,10 @@ namespace ftk
         //! has run and laid the window out.
         FTK_UI_API bool writeWidgetDump(const std::filesystem::path&);
 
+        //! Whether this run was started with the -captureShot option;
+        //! see Capture.
+        FTK_UI_API bool isCaptureRun() const;
+
         ///@}
 
         //! \name Color Style
@@ -248,6 +253,13 @@ namespace ftk
     protected:
         void _addWindow(const std::shared_ptr<IWindow>&);
         void _removeWindow(const std::shared_ptr<IWindow>&);
+
+        //! Create the capture for a -captureShot run. An application
+        //! overrides this to supply its Capture subclass.
+        FTK_UI_API virtual std::shared_ptr<Capture> _createCapture(
+            const std::filesystem::path& manifest,
+            const std::string& shotId,
+            const std::filesystem::path& outputDir);
 
     private:
         void _runIteration();
