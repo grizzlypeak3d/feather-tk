@@ -60,11 +60,15 @@ namespace ftk
                 _init(context, argv, name, summary, cmdLineArgs, cmdLineOptions, appFiles);
             }
 
-            virtual void run() override
-            {
-                NB_OVERRIDE(run);
-            }
-
+            // run() is deliberately NOT trampolined. It is only ever
+            // initiated from Python, where the subclass's own method runs
+            // first and calls super().run() -- and nanobind's re-entrancy
+            // guard only covers overrides entered through the trampoline,
+            // so dispatching here would run the Python override a second
+            // time (two main windows, one set of models). Nothing in C++
+            // calls run() virtually. tick() stays trampolined: the C++
+            // event loop dispatches it, which is the entry the guard
+            // covers.
             virtual void tick() override
             {
                 NB_OVERRIDE(tick);
