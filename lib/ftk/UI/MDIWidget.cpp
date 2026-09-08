@@ -19,6 +19,7 @@ namespace ftk
 {
     FTK_ENUM_IMPL(
         MDIResize,
+        "None",
         "North",
         "North East",
         "East",

@@ -16,7 +16,8 @@ namespace ftk
 {
     FTK_ENUM_IMPL(
         FileBrowserMode,
-        "File",
+        "Open",
+        "Save",
         "Dir");
 
     FTK_ENUM_IMPL(
