@@ -14,6 +14,7 @@
 #include <nanobind/stl/map.h>
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/optional.h>
+#include <nanobind/stl/function.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/filesystem.h>
 
@@ -59,6 +60,12 @@ namespace ftk
                     },
                     nb::arg("context"),
                     nb::arg("parent") = nullptr)
+                .def(
+                    "setCurrentCallback",
+                    // The highlighted item, for a status bar hint; None
+                    // when the menus close.
+                    &MenuBar::setCurrentCallback,
+                    nb::arg("callback"))
                 .def(
                     "addMenu",
                     nb::overload_cast<const std::string&>(&MenuBar::addMenu),

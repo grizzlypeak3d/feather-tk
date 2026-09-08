@@ -14,6 +14,7 @@
 #include <nanobind/stl/map.h>
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/optional.h>
+#include <nanobind/stl/function.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/filesystem.h>
 
@@ -60,6 +61,10 @@ namespace ftk
                     nb::arg("context"),
                     nb::arg("parent") = nullptr)
                 .def("getActions", &Menu::getActions)
+                .def(
+                    "setCurrentCallback",
+                    &Menu::setCurrentCallback,
+                    nb::arg("callback"))
                 .def(
                     "addAction",
                     // Self as a shared_ptr: the menu wires the action's
