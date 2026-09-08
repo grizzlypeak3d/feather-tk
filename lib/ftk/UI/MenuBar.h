@@ -54,6 +54,12 @@ namespace ftk
         //! Get a menu.
         FTK_UI_API std::shared_ptr<Menu> getMenu(const std::string&) const;
 
+        //! Set a callback for the highlighted item's action, across every
+        //! menu on the bar and their sub menus. It fires with the action
+        //! when the highlight moves, and with nothing when it leaves.
+        FTK_UI_API void setCurrentCallback(
+            const std::function<void(const std::shared_ptr<Action>&)>&);
+
         //! Set a menu's title.
         //!
         //! Taken by menu rather than by title, because the use for this is a

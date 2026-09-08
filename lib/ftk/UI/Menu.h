@@ -73,6 +73,13 @@ namespace ftk
         //! Handle keyboard shortcuts.
         FTK_UI_API bool shortcut(Key, int);
 
+        //! Set a callback for the highlighted item's action. It fires
+        //! with the action when the highlight moves (by mouse or
+        //! keyboard), with nothing when the highlight leaves or the menu
+        //! closes, and it reaches into the sub menus.
+        FTK_UI_API void setCurrentCallback(
+            const std::function<void(const std::shared_ptr<Action>&)>&);
+
         FTK_UI_API void close() override;
 
         FTK_UI_API void keyFocusEvent(bool) override;

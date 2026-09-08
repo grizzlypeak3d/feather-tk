@@ -14,6 +14,7 @@ namespace ftk
         std::vector<std::shared_ptr<MenuBarButton> > buttons;
         std::shared_ptr<HorizontalLayout> layout;
         int current = -1;
+        std::function<void(const std::shared_ptr<Action>&)> currentCallback;
     };
 
     void MenuBar::_init(
@@ -52,6 +53,7 @@ namespace ftk
     {
         FTK_P();
         p.menus.push_back(menu);
+        menu->setCurrentCallback(p.currentCallback);
         if (auto context = getContext())
         {
             auto button = MenuBarButton::create(context, text, p.layout);
@@ -106,6 +108,17 @@ namespace ftk
         auto menu = Menu::create(getContext());
         addMenu(text, menu);
         return menu;
+    }
+
+    void MenuBar::setCurrentCallback(
+        const std::function<void(const std::shared_ptr<Action>&)>& value)
+    {
+        FTK_P();
+        p.currentCallback = value;
+        for (const auto& menu : p.menus)
+        {
+            menu->setCurrentCallback(value);
+        }
     }
 
     std::shared_ptr<Menu> MenuBar::getMenu(const std::string& text) const

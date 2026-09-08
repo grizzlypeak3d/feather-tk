@@ -19,6 +19,7 @@ namespace ftk
         std::map<std::shared_ptr<Menu>, std::shared_ptr<MenuButton> > subMenuToButton;
         std::map<std::shared_ptr<MenuButton>, std::shared_ptr<Menu> > buttonToSubMenu;
         std::shared_ptr<VerticalLayout> layout;
+        std::function<void(const std::shared_ptr<Action>&)> currentCallback;
     };
 
     void Menu::_init(
@@ -160,6 +161,7 @@ namespace ftk
             out = Menu::create(context);
             out->setPopup(MenuPopup::SubMenu);
             out->_p->parentMenu = std::dynamic_pointer_cast<Menu>(shared_from_this());
+            out->_p->currentCallback = p.currentCallback;
             p.subMenus.push_back(out);
 
             auto button = MenuButton::create(context, nullptr, p.layout);
@@ -332,6 +334,7 @@ namespace ftk
             subMenu->close();
         }
         IMenuPopup::close();
+        _setCurrent(nullptr);
     }
 
     void Menu::keyFocusEvent(bool value)
@@ -433,6 +436,19 @@ namespace ftk
         event.accept = true;
     }
 
+    void Menu::setCurrentCallback(
+        const std::function<void(const std::shared_ptr<Action>&)>& value)
+    {
+        FTK_P();
+        p.currentCallback = value;
+        // The sub menus report through the same callback: to the caller
+        // the menu and its sub menus are one menu.
+        for (const auto& subMenu : p.subMenus)
+        {
+            subMenu->setCurrentCallback(value);
+        }
+    }
+
     void Menu::_setCurrent(const std::shared_ptr<MenuButton>& button)
     {
         FTK_P();
@@ -440,6 +456,19 @@ namespace ftk
             return;
         p.current = button;
         _currentUpdate();
+        if (p.currentCallback)
+        {
+            std::shared_ptr<Action> action;
+            for (const auto& i : p.actionToButton)
+            {
+                if (i.second == p.current)
+                {
+                    action = i.first;
+                    break;
+                }
+            }
+            p.currentCallback(action);
+        }
     }
 
     void Menu::_currentUpdate()
