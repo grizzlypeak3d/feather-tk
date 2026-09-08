@@ -67,6 +67,10 @@ namespace ftk
         //! Get which screen the window is on.
         FTK_UI_API virtual int getScreen() const = 0;
 
+        //! Get the display scale the system reports for this window, or
+        //! zero where the platform has no answer.
+        FTK_UI_API virtual float getSystemDisplayScale() const;
+
         //! Window Title
         ///@{
 

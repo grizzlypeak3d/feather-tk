@@ -497,6 +497,25 @@ namespace ftk
         return _p->displayScale;
     }
 
+    void App::setDisplayScaleFromWindow(float value)
+    {
+        FTK_P();
+        // The window knows its own display scale better than the display
+        // does: on macOS SDL_GetDisplayContentScale reports one for
+        // external monitors that are in fact scaled, and the truth is
+        // only available per window. The command line still wins.
+        if (!p.cmdLine.displayScale->hasValue() &&
+            value > 0.F &&
+            value != p.displayScale->get())
+        {
+            auto logSystem = _context->getSystem<LogSystem>();
+            logSystem->print(
+                "ftk::App",
+                Format("Display scale from the window: {0}").arg(value));
+            setDisplayScale(value);
+        }
+    }
+
     void App::setDisplayScale(float value)
     {
         FTK_P();

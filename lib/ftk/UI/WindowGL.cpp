@@ -3,6 +3,8 @@
 
 #include <ftk/UI/Window.h>
 
+#include <ftk/UI/App.h>
+
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Style.h>
 #include <ftk/UI/Util.h>
@@ -68,6 +70,23 @@ namespace ftk
             title,
             size,
             static_cast<int>(gl::WindowOptions::DoubleBuffer));
+
+        // Now that the platform window exists it can say what display
+        // scale it really has; _addWindow ran before it existed and could
+        // not.
+        app->setDisplayScaleFromWindow(p.window->getDisplayScale());
+        setDisplayScale(app->observeDisplayScale()->get());
+
+        // The initial sizes, asked for rather than waited for: a window
+        // that is never shown -- an offscreen screenshot run -- gets no
+        // SHOWN or EXPOSED event to deliver them, and without a buffer
+        // size nothing ever draws.
+        const Size2I initialSize = p.window->getSize();
+        const Size2I initialBufferSize = p.window->getFrameBufferSize();
+        if (initialSize.isValid() && initialBufferSize.isValid())
+        {
+            _setSize(initialSize, initialBufferSize);
+        }
 
         p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(
             context->getLogSystem(),
@@ -153,6 +172,12 @@ namespace ftk
     uint32_t Window::getID() const
     {
         return _p->window->getID();
+    }
+
+    float Window::getSystemDisplayScale() const
+    {
+        FTK_P();
+        return p.window ? p.window->getDisplayScale() : 0.F;
     }
 
     int Window::getScreen() const

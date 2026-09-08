@@ -133,6 +133,11 @@ namespace ftk
     IWindow::~IWindow()
     {}
 
+    float IWindow::getSystemDisplayScale() const
+    {
+        return 0.F;
+    }
+
     std::shared_ptr<App> IWindow::getApp() const
     {
         return _p->app.lock();

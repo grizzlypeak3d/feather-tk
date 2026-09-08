@@ -182,6 +182,11 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
         FTK_UI_API void setDisplayScale(float);
 
+        //! Update the display scale from what the system reports for a
+        //! window; zero means the platform had no answer. The command
+        //! line option still wins.
+        FTK_UI_API void setDisplayScaleFromWindow(float);
+
         FTK_UI_API const std::shared_ptr<CmdLineOption<float> >& getDisplayScaleCmdLineOption() const;
 
         ///@}

@@ -63,6 +63,13 @@ namespace ftk
             //! Get the window ID.
             FTK_GL_API uint32_t getID() const;
 
+            //! Get the display scale of the display the window is on, or
+            //! zero where the platform has no answer. Per window rather
+            //! than per display: on macOS the display-level content scale
+            //! reports one for external monitors that are in fact scaled,
+            //! and only the window knows its own backing.
+            FTK_GL_API float getDisplayScale() const;
+
             //! Get the window title.
             FTK_GL_API std::string getTitle() const;
 
@@ -71,6 +78,13 @@ namespace ftk
 
             //! Set the window size.
             FTK_GL_API void setSize(const Size2I&);
+
+            //! Get the window size. Valid for a hidden window too, which
+            //! is what a screenshot run has.
+            FTK_GL_API Size2I getSize() const;
+
+            //! Get the frame buffer size in pixels.
+            FTK_GL_API Size2I getFrameBufferSize() const;
 
             //! Get the window minimum size.
             FTK_GL_API Size2I getMinSize() const;

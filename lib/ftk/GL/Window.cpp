@@ -333,6 +333,19 @@ namespace ftk
             return SDL_GetWindowID(_p->sdlWindow);
         }
 
+    float Window::getDisplayScale() const
+    {
+        FTK_P();
+        float out = 0.F;
+#if defined(FTK_SDL3)
+        if (p.sdlWindow)
+        {
+            out = SDL_GetWindowDisplayScale(p.sdlWindow);
+        }
+#endif // FTK_SDL3
+        return out;
+    }
+
         std::string Window::getTitle() const
         {
             return SDL_GetWindowTitle(_p->sdlWindow);
@@ -349,7 +362,33 @@ namespace ftk
             SDL_SetWindowSize(_p->sdlWindow, value.w, value.h);
         }
 
-        Size2I Window::getMinSize() const
+        Size2I Window::getSize() const
+    {
+        FTK_P();
+        Size2I out;
+        if (p.sdlWindow)
+        {
+            SDL_GetWindowSize(p.sdlWindow, &out.w, &out.h);
+        }
+        return out;
+    }
+
+    Size2I Window::getFrameBufferSize() const
+    {
+        FTK_P();
+        Size2I out;
+        if (p.sdlWindow)
+        {
+#if defined(FTK_SDL2)
+            SDL_GL_GetDrawableSize(p.sdlWindow, &out.w, &out.h);
+#elif defined(FTK_SDL3)
+            SDL_GetWindowSizeInPixels(p.sdlWindow, &out.w, &out.h);
+#endif // FTK_SDL2
+        }
+        return out;
+    }
+
+    Size2I Window::getMinSize() const
         {
             Size2I out;
             SDL_GetWindowMinimumSize(_p->sdlWindow, &out.w, &out.h);
