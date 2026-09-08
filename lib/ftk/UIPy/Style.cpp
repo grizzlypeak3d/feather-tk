@@ -63,6 +63,7 @@ namespace ftk
                 .value("Overlay", ColorRole::Overlay)
                 .value("TooltipWindow", ColorRole::TooltipWindow)
                 .value("TooltipText", ColorRole::TooltipText)
+                .value("Arrow", ColorRole::Arrow)
                 .value("Red", ColorRole::Red)
                 .value("Green", ColorRole::Green)
                 .value("Blue", ColorRole::Blue)
