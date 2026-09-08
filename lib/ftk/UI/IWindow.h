@@ -207,6 +207,10 @@ namespace ftk
         FTK_UI_API void layout(const Size2I&);
 
         //! Move the cursor there, press, release.
+        //! Move the cursor to a position without pressing anything,
+        //! for driving hover-dependent behavior from tests.
+        FTK_UI_API void hover(const V2I& pos);
+
         FTK_UI_API void click(
             const V2I&,
             MouseButton = MouseButton::Left,

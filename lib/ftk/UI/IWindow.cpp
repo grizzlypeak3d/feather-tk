@@ -897,6 +897,12 @@ namespace ftk
         _setSize(size, size);
     }
 
+    void IWindow::hover(const V2I& pos)
+    {
+        _cursorEnter(true);
+        _cursorPos(pos);
+    }
+
     void IWindow::click(const V2I& pos, MouseButton button, int modifiers)
     {
         _cursorEnter(true);

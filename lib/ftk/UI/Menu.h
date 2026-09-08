@@ -73,20 +73,32 @@ namespace ftk
         //! Handle keyboard shortcuts.
         FTK_UI_API bool shortcut(Key, int);
 
-        //! Set a callback for the highlighted item's action. It fires
-        //! with the action when the highlight moves (by mouse or
-        //! keyboard), with nothing when the highlight leaves or the menu
-        //! closes, and it reaches into the sub menus.
+        //! Set a callback for the item the user is on: the item under
+        //! the cursor -- a disabled item included, the way a tooltip
+        //! would show for it -- or the current item when navigating by
+        //! keyboard, announced when the menu opens too. It fires with
+        //! nothing when the menu closes, and it reaches into the sub
+        //! menus.
         FTK_UI_API void setCurrentCallback(
             const std::function<void(const std::shared_ptr<Action>&)>&);
 
+        //! Bring the position overload into scope; the override below
+        //! would otherwise hide it.
+        using IMenuPopup::open;
+
+        FTK_UI_API void open(
+            const std::shared_ptr<IWindow>&,
+            const Box2I& buttonGeometry) override;
         FTK_UI_API void close() override;
 
+        FTK_UI_API void tickEvent(bool, bool, const TickEvent&) override;
         FTK_UI_API void keyFocusEvent(bool) override;
         FTK_UI_API void keyPressEvent(KeyEvent&) override;
         FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 
     private:
+        std::shared_ptr<Action> _getAction(const std::shared_ptr<MenuButton>&) const;
+        void _announce(const std::shared_ptr<Action>&);
         void _setCurrent(const std::shared_ptr<MenuButton>&);
         void _currentUpdate();
 

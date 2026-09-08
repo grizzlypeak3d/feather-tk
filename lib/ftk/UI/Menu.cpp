@@ -4,6 +4,7 @@
 #include <ftk/UI/MenuPrivate.h>
 
 #include <ftk/UI/Divider.h>
+#include <ftk/UI/IWindow.h>
 #include <ftk/UI/RowLayout.h>
 
 namespace ftk
@@ -20,6 +21,8 @@ namespace ftk
         std::map<std::shared_ptr<MenuButton>, std::shared_ptr<Menu> > buttonToSubMenu;
         std::shared_ptr<VerticalLayout> layout;
         std::function<void(const std::shared_ptr<Action>&)> currentCallback;
+        std::shared_ptr<Action> announced;
+        V2I tickCursorPos;
     };
 
     void Menu::_init(
@@ -326,6 +329,18 @@ namespace ftk
         return out;
     }
 
+    void Menu::open(
+        const std::shared_ptr<IWindow>& window,
+        const Box2I& buttonGeometry)
+    {
+        FTK_P();
+        IMenuPopup::open(window, buttonGeometry);
+        // Announced rather than waited for: the first item is already
+        // current when the menu opens, so no highlight change is coming
+        // to say it.
+        _announce(_getAction(p.current));
+    }
+
     void Menu::close()
     {
         FTK_P();
@@ -335,6 +350,46 @@ namespace ftk
         }
         IMenuPopup::close();
         _setCurrent(nullptr);
+        _announce(nullptr);
+    }
+
+    void Menu::tickEvent(
+        bool parentsVisible,
+        bool parentsEnabled,
+        const TickEvent& event)
+    {
+        IMenuPopup::tickEvent(parentsVisible, parentsEnabled, event);
+        FTK_P();
+        // The item under the cursor is found from here rather than from
+        // mouse events: a disabled item takes no events -- the scroll
+        // widget behind it does -- but it shows a tooltip, so it should
+        // announce like one. This is the tooltip's own approach, a walk
+        // from the cursor, at the menu's scale.
+        if (isOpen())
+        {
+            if (auto window = getWindow())
+            {
+                // Only when the cursor arrives, not while it sits: a
+                // parked cursor would otherwise talk over the keyboard.
+                const V2I& pos = window->getCursorPos();
+                if (pos != p.tickCursorPos)
+                {
+                    p.tickCursorPos = pos;
+                    for (const auto& button : p.buttons)
+                    {
+                        if (contains(button->getGeometry(), pos) &&
+                            !button->isClipped())
+                        {
+                            if (!button->isEnabled())
+                            {
+                                _announce(_getAction(button));
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void Menu::keyFocusEvent(bool value)
@@ -449,6 +504,34 @@ namespace ftk
         }
     }
 
+    std::shared_ptr<Action> Menu::_getAction(
+        const std::shared_ptr<MenuButton>& button) const
+    {
+        FTK_P();
+        std::shared_ptr<Action> out;
+        for (const auto& i : p.actionToButton)
+        {
+            if (i.second == button)
+            {
+                out = i.first;
+                break;
+            }
+        }
+        return out;
+    }
+
+    void Menu::_announce(const std::shared_ptr<Action>& action)
+    {
+        FTK_P();
+        if (action == p.announced)
+            return;
+        p.announced = action;
+        if (p.currentCallback)
+        {
+            p.currentCallback(action);
+        }
+    }
+
     void Menu::_setCurrent(const std::shared_ptr<MenuButton>& button)
     {
         FTK_P();
@@ -456,19 +539,7 @@ namespace ftk
             return;
         p.current = button;
         _currentUpdate();
-        if (p.currentCallback)
-        {
-            std::shared_ptr<Action> action;
-            for (const auto& i : p.actionToButton)
-            {
-                if (i.second == p.current)
-                {
-                    action = i.first;
-                    break;
-                }
-            }
-            p.currentCallback(action);
-        }
+        _announce(_getAction(button));
     }
 
     void Menu::_currentUpdate()
