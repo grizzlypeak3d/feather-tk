@@ -77,10 +77,7 @@ namespace ftk
 
         void app(nb::module_& m)
         {
-            nb::enum_<ColorStyle>(m, "ColorStyle")
-                .value("Dark", ColorStyle::Dark)
-                .value("Light", ColorStyle::Light)
-                .value("Custom", ColorStyle::Custom);
+            FTK_ENUM_PY(m, ColorStyle);
             FTK_ENUM_BIND(m, ColorStyle);
 
             nb::class_<ColorControls>(m, "ColorControls")

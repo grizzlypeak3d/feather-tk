@@ -26,11 +26,7 @@ namespace ftk
     {
         void actionGroup(nb::module_& m)
         {
-            nb::enum_<ActionGroupType>(m, "ActionGroupType")
-                .value("Click", ActionGroupType::Click)
-                .value("Check", ActionGroupType::Check)
-                .value("Radio", ActionGroupType::Radio)
-                .value("Toggle", ActionGroupType::Toggle);
+            FTK_ENUM_PY(m, ActionGroupType);
             FTK_ENUM_BIND(m, ActionGroupType);
 
             nb::class_<ActionGroup>(m, "ActionGroup")

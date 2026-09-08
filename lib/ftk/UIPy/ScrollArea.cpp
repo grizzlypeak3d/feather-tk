@@ -25,11 +25,7 @@ namespace ftk
     {
         void scrollArea(nb::module_& m)
         {
-            nb::enum_<ScrollType>(m, "ScrollType")
-                .value("Horizontal", ScrollType::Horizontal)
-                .value("Vertical", ScrollType::Vertical)
-                .value("Both", ScrollType::Both)
-                .value("Menu", ScrollType::Menu);
+            FTK_ENUM_PY(m, ScrollType);
             FTK_ENUM_BIND(m, ScrollType);
 
             nb::class_<ScrollArea, IWidget>(m, "ScrollArea")

@@ -39,11 +39,7 @@ namespace ftk
                     return out;
                 });
 
-            nb::enum_<UserPath>(m, "UserPath")
-                .value("Home", UserPath::Home)
-                .value("Desktop", UserPath::Desktop)
-                .value("Documents", UserPath::Documents)
-                .value("Downloads", UserPath::Downloads);
+            FTK_ENUM_PY(m, UserPath);
             FTK_ENUM_BIND(m, UserPath);
 
             m.def("getUserPath", [](UserPath value) { return fromFileSystem(getUserPath(value)); });
@@ -143,11 +139,7 @@ namespace ftk
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
 
-            nb::enum_<DirListSort>(m, "DirListSort")
-                .value("Name", DirListSort::Name)
-                .value("Extension", DirListSort::Extension)
-                .value("Size", DirListSort::Size)
-                .value("Time", DirListSort::Time);
+            FTK_ENUM_PY(m, DirListSort);
             FTK_ENUM_BIND(m, DirListSort);
 
             nb::class_<DirListOptions>(m, "DirListOptions")

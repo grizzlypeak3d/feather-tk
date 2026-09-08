@@ -26,16 +26,7 @@ namespace ftk
     {
         void mdiWidget(nb::module_& m)
         {
-            nb::enum_<MDIResize>(m, "MDIResize")
-                .value("_None", MDIResize::None)
-                .value("North", MDIResize::North)
-                .value("NorthEast", MDIResize::NorthEast)
-                .value("East", MDIResize::East)
-                .value("SouthEast", MDIResize::SouthEast)
-                .value("South", MDIResize::South)
-                .value("SouthWest", MDIResize::SouthWest)
-                .value("West", MDIResize::West)
-                .value("NorthWest", MDIResize::NorthWest);
+            FTK_ENUM_PY(m, MDIResize);
             FTK_ENUM_BIND(m, MDIResize);
 
             nb::class_<MDIWidget, IWidget>(m, "MDIWidget")

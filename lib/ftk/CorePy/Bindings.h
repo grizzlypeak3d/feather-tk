@@ -8,6 +8,9 @@
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/string.h>
 
+#include <cctype>
+#include <vector>
+
 #define FTK_ENUM_BIND(M, ENUM) \
     M.def("get" #ENUM "Enums", &get##ENUM##Enums); \
     M.def("getLabel", [](ENUM v) { return getLabel(v); }); \
@@ -16,10 +19,59 @@
     // \bug ImportError: Internal error while parsing type signature (1)
     //M.def("get" #ENUM "Labels", &get##ENUM##Labels);
 
+//! Bind an FTK_ENUM'd enum, taking every value and its Python name from
+//! the labels -- a value added to the enum is bound the moment it exists,
+//! where a hand-written list falls behind silently (Key was missing
+//! F13-F24 for years). See ftk::python::bindEnum().
+#define FTK_ENUM_PY(M, ENUM) \
+    ftk::python::bindEnum<ENUM>(M, #ENUM, get##ENUM##Labels())
+
 namespace ftk
 {
     namespace python
     {
+        //! A Python name for an enum label: the label with the
+        //! non-identifier characters removed, prefixed with an underscore
+        //! when it would start with a digit or shadow a Python keyword --
+        //! "Margin Small" is MarginSmall, "Extra 1" is Extra1, "None" is
+        //! _None.
+        inline std::string enumValueName(const std::string& label)
+        {
+            std::string out;
+            for (char c : label)
+            {
+                if (std::isalnum(static_cast<unsigned char>(c)) || '_' == c)
+                {
+                    out.push_back(c);
+                }
+            }
+            if (out.empty() ||
+                std::isdigit(static_cast<unsigned char>(out[0])) ||
+                "None" == out || "True" == out || "False" == out)
+            {
+                out.insert(out.begin(), '_');
+            }
+            return out;
+        }
+
+        //! Bind an enum from its FTK_ENUM labels; see FTK_ENUM_PY. Only
+        //! for enums whose values run 0..Count-1 -- a bitmask binds its
+        //! values by hand.
+        template<typename T>
+        inline nanobind::enum_<T> bindEnum(
+            nanobind::module_& m,
+            const char* name,
+            const std::vector<std::string>& labels)
+        {
+            nanobind::enum_<T> out(m, name);
+            for (std::size_t i = 0; i < labels.size(); ++i)
+            {
+                out.value(
+                    enumValueName(labels[i]).c_str(),
+                    static_cast<T>(i));
+            }
+            return out;
+        }
         template<typename T>
         void cmdLineOption(nanobind::module_&, const std::string& type);
         template<typename T>

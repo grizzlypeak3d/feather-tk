@@ -19,57 +19,10 @@ namespace ftk
     {
         void style(nb::module_& m)
         {
-            nb::enum_<SizeRole>(m, "SizeRole")
-                .value("_None", SizeRole::None)
-                .value("Margin", SizeRole::Margin)
-                .value("MarginSmall", SizeRole::MarginSmall)
-                .value("MarginLarge", SizeRole::MarginLarge)
-                .value("MarginInside", SizeRole::MarginInside)
-                .value("MarginDialog", SizeRole::MarginDialog)
-                .value("Spacing", SizeRole::Spacing)
-                .value("SpacingSmall", SizeRole::SpacingSmall)
-                .value("SpacingLarge", SizeRole::SpacingLarge)
-                .value("SpacingTool", SizeRole::SpacingTool)
-                .value("SizeRole_Icon", SizeRole::Icon)
-                .value("Thumbnail", SizeRole::Thumbnail)
-                .value("Border", SizeRole::Border)
-                .value("KeyFocus", SizeRole::KeyFocus)
-                .value("LabelPad", SizeRole::LabelPad)
-                .value("ScrollArea", SizeRole::ScrollArea)
-                .value("ScrollAreaSmall", SizeRole::ScrollAreaSmall)
-                .value("Slider", SizeRole::Slider)
-                .value("Handle", SizeRole::Handle)
-                .value("Swatch", SizeRole::Swatch)
-                .value("SwatchLarge", SizeRole::SwatchLarge)
-                .value("Shadow", SizeRole::Shadow)
-                .value("DragLength", SizeRole::DragLength)
-                .value("CornerRadius", SizeRole::CornerRadius);
+            FTK_ENUM_PY(m, SizeRole);
             FTK_ENUM_BIND(m, SizeRole);
 
-            nb::enum_<ColorRole>(m, "ColorRole")
-                .value("_None", ColorRole::None)
-                .value("Window", ColorRole::Window)
-                .value("Base", ColorRole::Base)
-                .value("Well", ColorRole::Well)
-                .value("Header", ColorRole::Header)
-                .value("Button", ColorRole::Button)
-                .value("Text", ColorRole::Text)
-                .value("TextDisabled", ColorRole::TextDisabled)
-                .value("Border", ColorRole::Border)
-                .value("Hover", ColorRole::Hover)
-                .value("Pressed", ColorRole::Pressed)
-                .value("Checked", ColorRole::Checked)
-                .value("KeyFocus", ColorRole::KeyFocus)
-                .value("Overlay", ColorRole::Overlay)
-                .value("TooltipWindow", ColorRole::TooltipWindow)
-                .value("TooltipText", ColorRole::TooltipText)
-                .value("Arrow", ColorRole::Arrow)
-                .value("Red", ColorRole::Red)
-                .value("Green", ColorRole::Green)
-                .value("Blue", ColorRole::Blue)
-                .value("Cyan", ColorRole::Cyan)
-                .value("Magenta", ColorRole::Magenta)
-                .value("Yellow", ColorRole::Yellow);
+            FTK_ENUM_PY(m, ColorRole);
             FTK_ENUM_BIND(m, ColorRole);
         }
     }

@@ -26,11 +26,7 @@ namespace ftk
     {
         void buttonGroup(nb::module_& m)
         {
-            nb::enum_<ButtonGroupType>(m, "ButtonGroupType")
-                .value("Click", ButtonGroupType::Click)
-                .value("Check", ButtonGroupType::Check)
-                .value("Radio", ButtonGroupType::Radio)
-                .value("Toggle", ButtonGroupType::Toggle);
+            FTK_ENUM_PY(m, ButtonGroupType);
             FTK_ENUM_BIND(m, ButtonGroupType);
 
             nb::class_<ButtonGroup>(m, "ButtonGroup")

@@ -24,6 +24,10 @@ namespace ftk
     {
         void image(nb::module_& m)
         {
+            // Hand-written rather than FTK_ENUM_PY: the structured enumerator
+            // names (L_U8, RGBA_F16) are the Python API, and the labels
+            // ("L U8") would flatten them. The enum contiguity test catches
+            // a value this list falls behind on.
             nb::enum_<ImageType>(m, "ImageType")
                 .value("_None", ImageType::None)
                 .value("L_U8", ImageType::L_U8)
@@ -52,20 +56,18 @@ namespace ftk
                 .value("YUV_444P_U8", ImageType::YUV_444P_U8)
                 .value("YUV_420P_U16", ImageType::YUV_420P_U16)
                 .value("YUV_422P_U16", ImageType::YUV_422P_U16)
-                .value("YUV_444P_U16", ImageType::YUV_444P_U16);
+                .value("YUV_444P_U16", ImageType::YUV_444P_U16)
+                .value("YUV_420SP_U8", ImageType::YUV_420SP_U8)
+                .value("YUV_420SP_U16", ImageType::YUV_420SP_U16);
             FTK_ENUM_BIND(m, ImageType);
 
             m.def("getChannelCount", &getChannelCount);
             m.def("getBitDepth", &getBitDepth);
 
-            nb::enum_<VideoLevels>(m, "VideoLevels")
-                .value("FullRange", VideoLevels::FullRange)
-                .value("LegalRange", VideoLevels::LegalRange);
+            FTK_ENUM_PY(m, VideoLevels);
             FTK_ENUM_BIND(m, VideoLevels);
 
-            nb::enum_<YUVCoefficients>(m, "YUVCoefficients")
-                .value("REC709", YUVCoefficients::REC709)
-                .value("BT2020", YUVCoefficients::BT2020);
+            FTK_ENUM_PY(m, YUVCoefficients);
             FTK_ENUM_BIND(m, YUVCoefficients);
 
             m.def("getYUVCoefficients", &getYUVCoefficients);

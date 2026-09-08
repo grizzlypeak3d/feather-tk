@@ -30,10 +30,7 @@ namespace ftk
     {
         void fileBrowser(nb::module_& m)
         {
-            nb::enum_<FileBrowserMode>(m, "FileBrowserMode")
-                .value("Open", FileBrowserMode::Open)
-                .value("Save", FileBrowserMode::Save)
-                .value("Dir", FileBrowserMode::Dir);
+            FTK_ENUM_PY(m, FileBrowserMode);
             FTK_ENUM_BIND(m, FileBrowserMode);
 
             observable<std::filesystem::path>(m, "FileSystemPath");

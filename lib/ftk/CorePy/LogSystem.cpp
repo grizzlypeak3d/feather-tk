@@ -27,10 +27,7 @@ namespace ftk
     {
         void logSystem(nb::module_& m)
         {
-            nb::enum_<LogType>(m, "LogType")
-                .value("Message", LogType::Message)
-                .value("Warning", LogType::Warning)
-                .value("Error", LogType::Error);
+            FTK_ENUM_PY(m, LogType);
             FTK_ENUM_BIND(m, LogType);
                 
             nb::class_<LogItem>(m, "LogItem")

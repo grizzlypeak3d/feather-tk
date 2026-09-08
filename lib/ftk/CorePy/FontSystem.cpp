@@ -25,11 +25,7 @@ namespace ftk
     {
         void fontSystem(nb::module_& m)
         {
-            nb::enum_<FontType>(m, "FontType")
-                .value("Regular", FontType::Regular)
-                .value("Bold", FontType::Bold)
-                .value("Mono", FontType::Mono)
-                .value("Symbols", FontType::Symbols);
+            FTK_ENUM_PY(m, FontType);
             FTK_ENUM_BIND(m, FontType);
 
             nb::class_<FontInfo>(m, "FontInfo")

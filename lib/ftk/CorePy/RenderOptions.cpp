@@ -41,30 +41,16 @@ namespace ftk
                 .def(nb::self == nb::self)
                 .def(nb::self != nb::self);
 
-            nb::enum_<ChannelDisplay>(m, "ChannelDisplay")
-                .value("Color", ChannelDisplay::Color)
-                .value("Red", ChannelDisplay::Red)
-                .value("Green", ChannelDisplay::Green)
-                .value("Blue", ChannelDisplay::Blue)
-                .value("Alpha", ChannelDisplay::Alpha);
+            FTK_ENUM_PY(m, ChannelDisplay);
             FTK_ENUM_BIND(m, ChannelDisplay);
 
-            nb::enum_<InputVideoLevels>(m, "InputVideoLevels")
-                .value("FromFile", InputVideoLevels::FromFile)
-                .value("FullRange", InputVideoLevels::FullRange)
-                .value("LegalRange", InputVideoLevels::LegalRange);
+            FTK_ENUM_PY(m, InputVideoLevels);
             FTK_ENUM_BIND(m, InputVideoLevels);
 
-            nb::enum_<AlphaBlend>(m, "AlphaBlend")
-                .value("_None", AlphaBlend::None)
-                .value("Straight", AlphaBlend::Straight)
-                .value("Premultiplied", AlphaBlend::Premultiplied);
+            FTK_ENUM_PY(m, AlphaBlend);
             FTK_ENUM_BIND(m, AlphaBlend);
 
-            nb::enum_<ImageFilter>(m, "ImageFilter")
-                .value("Nearest", ImageFilter::Nearest)
-                .value("Linear", ImageFilter::Linear)
-                .value("HighQuality", ImageFilter::HighQuality);
+            FTK_ENUM_PY(m, ImageFilter);
             FTK_ENUM_BIND(m, ImageFilter);
 
             nb::class_<ImageFilters>(m, "ImageFilters")
