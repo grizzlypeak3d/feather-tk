@@ -89,8 +89,17 @@ namespace ftk
                     nb::arg("context"),
                     nb::arg("app"),
                     nb::arg("size") = Size2I(1280, 960))
-                .def_prop_rw("menuBar", &MainWindow::getMenuBar, &MainWindow::setMenuBar)
-                .def_prop_rw("widget", &MainWindow::getWidget, &MainWindow::setWidget);
+                .def_prop_rw(
+                    "menuBar",
+                    &MainWindow::getMenuBar,
+                    &MainWindow::setMenuBar,
+                    // None removes it -- presentation mode does.
+                    nb::for_setter(nb::arg("value").none()))
+                .def_prop_rw(
+                    "widget",
+                    &MainWindow::getWidget,
+                    &MainWindow::setWidget,
+                    nb::for_setter(nb::arg("value").none()));
         }
     }
 }

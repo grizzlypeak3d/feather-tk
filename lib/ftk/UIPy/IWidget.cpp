@@ -79,7 +79,9 @@ namespace ftk
                        const std::shared_ptr<IWidget>& value)
                     {
                         self->setParent(value);
-                    })
+                    },
+                    // None unparents.
+                    nb::for_setter(nb::arg("value").none()))
                 .def("getChildren", &IWidget::getChildren)
                 .def("moveToFront", &IWidget::moveToFront)
                 .def("moveToBack", &IWidget::moveToBack)
