@@ -65,6 +65,13 @@ namespace ftk
         const uint8_t* p = nullptr;
         size_t size = 0;
 
+        //! Where the memory came from, when it is a window into a file
+        //! on disk: the file's path and the window's offset in it. Empty
+        //! for memory with no disk address. What a reader that cannot
+        //! take memory -- a sub-process -- uses to reach the same bytes.
+        std::string path;
+        size_t offset = 0;
+
         FTK_CORE_API bool operator == (const MemFile&) const;
         FTK_CORE_API bool operator != (const MemFile&) const;
     };

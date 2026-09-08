@@ -14,7 +14,9 @@ namespace ftk
         return
             f == other.f &&
             p == other.p &&
-            size == other.size;
+            size == other.size &&
+            path == other.path &&
+            offset == other.offset;
     }
 
     inline bool MemFile::operator != (const MemFile& other) const
