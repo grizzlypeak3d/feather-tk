@@ -344,7 +344,9 @@ namespace ftk
             p.defaultDisplayScale = SDL_GetDisplayContentScale(sdlDisplays[0]);
             SDL_free(sdlDisplays);
         }
+#if defined(__APPLE__) || defined(_WINDOWS)
         SDL_AddEventWatch(_eventWatch, this);
+#endif // __APPLE__
 #endif // FTK_SDL2
         if (p.cmdLine.displayScale->hasValue())
         {
@@ -389,7 +391,9 @@ namespace ftk
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Destroy app...");
 #if defined(FTK_SDL3)
+#if defined(__APPLE__) || defined(_WINDOWS)
         SDL_RemoveEventWatch(_eventWatch, this);
+#endif // __APPLE__
 #endif // FTK_SDL3
 
         // The application runs on the thread that owns the context, so this
@@ -1726,6 +1730,10 @@ namespace ftk
     // is polling, too -- the modal loop lives inside that call, and a
     // window being made or destroyed sends the same event at a moment
     // it cannot be drawn.
+    //
+    // Only installed on macOS and Windows. Linux has no modal loop, the
+    // run loop draws each resize itself, and on Wayland the second draw
+    // this added waited on the compositor every time: resizing crawled.
     void App::_liveResize(uint32_t id)
     {
         FTK_P();
