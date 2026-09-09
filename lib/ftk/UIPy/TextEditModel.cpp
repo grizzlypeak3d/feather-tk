@@ -9,6 +9,7 @@
 
 #include <nanobind/stl/function.h>
 #include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/list.h>
@@ -32,8 +33,8 @@ namespace ftk
                 .def_rw("line", &TextEditPos::line)
                 .def_rw("chr", &TextEditPos::chr)
                 .def("isValid", &TextEditPos::isValid)
-                .def("__eq__", &TextEditPos::operator==)
-                .def("__ne__", &TextEditPos::operator!=)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self)
                 .def("__lt__", &TextEditPos::operator<)
                 .def("__gt__", &TextEditPos::operator>);
 
@@ -47,14 +48,14 @@ namespace ftk
                 .def("isValid", &TextEditSelection::isValid)
                 .def("min", &TextEditSelection::min)
                 .def("max", &TextEditSelection::max)
-                .def("__eq__", &TextEditSelection::operator==)
-                .def("__ne__", &TextEditSelection::operator!=);
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             nb::class_<TextEditModelOptions>(m, "TextEditModelOptions")
                 .def(nb::init<>())
                 .def_rw("tabSpaces", &TextEditModelOptions::tabSpaces)
-                .def("__eq__", &TextEditModelOptions::operator==)
-                .def("__ne__", &TextEditModelOptions::operator!=);
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             ftk::python::observable<TextEditPos>(m, "TextEditPos");
             ftk::python::observable<TextEditSelection>(m, "TextEditSelection");

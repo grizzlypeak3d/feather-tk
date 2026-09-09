@@ -35,20 +35,6 @@ namespace ftk
         bottom(bottom)
     {}
 
-    bool RowMargins::operator == (const RowMargins& other) const
-    {
-        return
-            left == other.left &&
-            top == other.top &&
-            right == other.right &&
-            bottom == other.bottom;
-    }
-
-    bool RowMargins::operator != (const RowMargins& other) const
-    {
-        return !(*this == other);
-    }
-
     struct RowLayout::Private
     {
         Orientation orientation = Orientation::Horizontal;

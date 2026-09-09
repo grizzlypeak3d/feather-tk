@@ -8,6 +8,7 @@
 #include <ftk/UI/TextEditModel.h>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
 #include <nanobind/stl/function.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
@@ -31,8 +32,8 @@ namespace ftk
                 .def_rw("fontInfo", &TextEditOptions::fontInfo)
                 .def_rw("cursorBlink", &TextEditOptions::cursorBlink)
                 .def_rw("autoScrollTimeout", &TextEditOptions::autoScrollTimeout)
-                .def("__eq__", &TextEditOptions::operator==)
-                .def("__ne__", &TextEditOptions::operator!=);
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             nb::class_<TextEdit, IWidget>(
                 m, "TextEdit",

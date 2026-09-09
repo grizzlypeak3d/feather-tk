@@ -25,8 +25,7 @@ namespace ftk
 
         FTK_UI_API bool isValid() const;
 
-        FTK_UI_API bool operator == (const TextEditPos&) const;
-        FTK_UI_API bool operator != (const TextEditPos&) const;
+        bool operator == (const TextEditPos&) const = default;
         FTK_UI_API bool operator < (const TextEditPos&) const;
         FTK_UI_API bool operator > (const TextEditPos&) const;
     };
@@ -50,8 +49,7 @@ namespace ftk
         //! Get the maximum.
         FTK_UI_API TextEditPos max() const;
 
-        FTK_UI_API bool operator == (const TextEditSelection&) const;
-        FTK_UI_API bool operator != (const TextEditSelection&) const;
+        bool operator == (const TextEditSelection&) const = default;
     };
 
     //! Text edit model options.
@@ -59,8 +57,7 @@ namespace ftk
     {
         int tabSpaces = 4;
 
-        FTK_UI_API bool operator == (const TextEditModelOptions&) const;
-        FTK_UI_API bool operator != (const TextEditModelOptions&) const;
+        bool operator == (const TextEditModelOptions&) const = default;
     };
 
     //! Text edit model.

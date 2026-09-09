@@ -20,20 +20,6 @@ namespace ftk
         "Warning",
         "Error");
 
-    bool LogItem::operator == (const LogItem& other) const
-    {
-        return
-            time == other.time &&
-            prefix == other.prefix &&
-            message == other.message &&
-            type == other.type;
-    }
-
-    bool LogItem::operator != (const LogItem& other) const
-    {
-        return !(*this == other);
-    }
-
     std::string getLabel(const LogItem& item, LogLabel label)
     {
         std::stringstream ss;

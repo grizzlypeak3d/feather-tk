@@ -54,21 +54,6 @@ namespace ftk
         bool offscreenDefault = false;
     }
 
-    bool MonitorInfo::operator == (const MonitorInfo& other) const
-    {
-        return
-            name == other.name &&
-            size == other.size &&
-            refreshRate == other.refreshRate &&
-            dpi == other.dpi &&
-            bounds == other.bounds;
-    }
-
-    bool MonitorInfo::operator != (const MonitorInfo& other) const
-    {
-        return !(*this == other);
-    }
-
     FTK_ENUM_IMPL(
         ColorStyle,
         "Dark",
@@ -1450,7 +1435,6 @@ namespace ftk
                     }
                     break;
 #endif // FTK_SDL2
-
 
 #if defined(FTK_SDL2)
                 case SDL_KEYDOWN:

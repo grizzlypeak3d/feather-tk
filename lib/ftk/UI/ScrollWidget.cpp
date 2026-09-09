@@ -15,18 +15,6 @@
 
 namespace ftk
 {
-    bool ScrollInfo::operator == (const ScrollInfo& other) const
-    {
-        return
-            viewport == other.viewport &&
-            scrollSize == other.scrollSize &&
-            scrollPos == other.scrollPos;
-    }
-
-    bool ScrollInfo::operator != (const ScrollInfo& other) const
-    {
-        return !(*this == other);
-    }
 
     struct ScrollWidget::Private
     {

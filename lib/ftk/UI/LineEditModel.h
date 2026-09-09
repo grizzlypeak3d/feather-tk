@@ -32,8 +32,7 @@ namespace ftk
         //! Get the maximum.
         FTK_UI_API int max() const;
 
-        FTK_UI_API bool operator == (const LineEditSelection&) const;
-        FTK_UI_API bool operator != (const LineEditSelection&) const;
+        bool operator == (const LineEditSelection&) const = default;
     };
         
     //! Line edit model.

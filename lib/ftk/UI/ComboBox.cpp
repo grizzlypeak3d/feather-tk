@@ -18,16 +18,6 @@ namespace ftk
         icon(icon)
     {}
 
-    bool ComboBoxItem::operator == (const ComboBoxItem& other) const
-    {
-        return text == other.text && icon == other.icon;
-    }
-
-    bool ComboBoxItem::operator != (const ComboBoxItem& other) const
-    {
-        return !(*this == other);
-    }
-
     struct ComboBox::Private
     {
         std::vector<ComboBoxItem> items;

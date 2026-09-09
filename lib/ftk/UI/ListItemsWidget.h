@@ -24,8 +24,7 @@ namespace ftk
         std::string text;
         std::string tooltip;
 
-        FTK_UI_API bool operator == (const ListItem&) const;
-        FTK_UI_API bool operator != (const ListItem&) const;
+        bool operator == (const ListItem&) const = default;
     };
 
     //! List items widget.

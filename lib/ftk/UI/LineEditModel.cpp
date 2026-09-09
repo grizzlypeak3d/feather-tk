@@ -104,18 +104,6 @@ namespace ftk
         return std::max(first, second);
     }
 
-    bool LineEditSelection::operator == (const LineEditSelection& other) const
-    {
-        return
-            first == other.first &&
-            second == other.second;
-    }
-
-    bool LineEditSelection::operator != (const LineEditSelection& other) const
-    {
-        return !(*this == other);
-    }
-
     struct LineEditModel::Private
     {
         std::weak_ptr<Context> context;

@@ -18,8 +18,7 @@ namespace ftk
         Size2I scrollSize;
         V2I    scrollPos;
 
-        FTK_UI_API bool operator == (const ScrollInfo&) const;
-        FTK_UI_API bool operator != (const ScrollInfo&) const;
+        bool operator == (const ScrollInfo&) const = default;
     };
 
     //! Scroll widget.

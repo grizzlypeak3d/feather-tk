@@ -121,20 +121,6 @@ namespace ftk
             }
         }
 
-        bool OffscreenBufferOptions::operator == (const OffscreenBufferOptions& other) const
-        {
-            return
-                colorFilters == other.colorFilters &&
-                depth == other.depth &&
-                stencil == other.stencil &&
-                sampling == other.sampling;
-        }
-
-        bool OffscreenBufferOptions::operator != (const OffscreenBufferOptions& other) const
-        {
-            return !(*this == other);
-        }
-
         struct OffscreenBuffer::Private
         {
             TextureInfo info;

@@ -139,18 +139,6 @@ namespace ftk
         return ss.str();
     }
 
-    bool PathOptions::operator == (const PathOptions& other) const
-    {
-        return
-            seqNegative == other.seqNegative &&
-            seqMaxDigits == other.seqMaxDigits;
-    }
-
-    bool PathOptions::operator != (const PathOptions& other) const
-    {
-        return !(*this == other);
-    }
-
     FrameSeq::FrameSeq(const RangeI64& range, int inc) :
         range(range),
         inc(inc)
@@ -165,16 +153,6 @@ namespace ftk
         range(frame, frame),
         inc(1)
     {}
-
-    bool FrameSeq::operator == (const FrameSeq& other) const
-    {
-        return range == other.range && inc == other.inc;
-    }
-
-    bool FrameSeq::operator != (const FrameSeq& other) const
-    {
-        return !(*this == other);
-    }
 
     std::vector<FrameSeq> toFrameSeq(const std::vector<int64_t>& value)
     {
@@ -764,48 +742,12 @@ namespace ftk
         _frames = getRange(_seq);
     }
 
-
     FTK_ENUM_IMPL(
         DirListSort,
         "Name",
         "Extension",
         "Size",
         "Time");
-
-    bool DirListOptions::operator == (const DirListOptions& other) const
-    {
-        return
-            sort == other.sort &&
-            sortReverse == other.sortReverse &&
-            filter == other.filter &&
-            filterFiles == other.filterFiles &&
-            filterExt == other.filterExt &&
-            seq == other.seq &&
-            seqExts == other.seqExts &&
-            seqNegative == other.seqNegative &&
-            seqMaxDigits == other.seqMaxDigits &&
-            hidden == other.hidden &&
-            depth == other.depth;
-    }
-
-    bool DirListOptions::operator != (const DirListOptions& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool DirEntry::operator == (const DirEntry& other) const
-    {
-        return
-            path == other.path &&
-            isDir == other.isDir &&
-            size == other.size &&
-            time == other.time;
-    }
-
-    bool DirEntry::operator != (const DirEntry& other) const
-    {
-        return !(*this == other);
-    }
 
     std::vector<DirEntry> dirList(
         const std::filesystem::path& dir,

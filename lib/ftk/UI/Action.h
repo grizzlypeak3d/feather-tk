@@ -23,8 +23,7 @@ namespace ftk
         Key key       = Key::Unknown;
         int modifiers = 0;
 
-        FTK_UI_API bool operator == (const KeyShortcut&) const;
-        FTK_UI_API bool operator != (const KeyShortcut&) const;
+        bool operator == (const KeyShortcut&) const = default;
     };
 
     //! How an action carries a checked state.

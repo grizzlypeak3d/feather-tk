@@ -9,18 +9,4 @@ namespace ftk
         size(size)
     {}
 
-    inline bool MemFile::operator == (const MemFile& other) const
-    {
-        return
-            f == other.f &&
-            p == other.p &&
-            size == other.size &&
-            path == other.path &&
-            offset == other.offset;
-    }
-
-    inline bool MemFile::operator != (const MemFile& other) const
-    {
-        return !(*this == other);
-    }
 }

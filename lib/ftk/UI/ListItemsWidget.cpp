@@ -15,18 +15,6 @@ namespace ftk
         tooltip(tooltip)
     {}
 
-    bool ListItem::operator == (const ListItem& other) const
-    {
-        return
-            text == other.text &&
-            tooltip == other.tooltip;
-    }
-
-    bool ListItem::operator != (const ListItem& other) const
-    {
-        return !(*this == other);
-    }
-
     struct ListItemsWidget::Private
     {
         ButtonGroupType type = ButtonGroupType::Click;

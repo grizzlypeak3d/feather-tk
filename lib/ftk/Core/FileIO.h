@@ -72,8 +72,7 @@ namespace ftk
         std::string path;
         size_t offset = 0;
 
-        FTK_CORE_API bool operator == (const MemFile&) const;
-        FTK_CORE_API bool operator != (const MemFile&) const;
+        bool operator == (const MemFile&) const = default;
     };
 
     //! Seek modes.

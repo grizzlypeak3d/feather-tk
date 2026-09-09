@@ -10,18 +10,6 @@
 
 namespace ftk
 {
-    bool TextEditOptions::operator == (const TextEditOptions& other) const
-    {
-        return
-            fontInfo == other.fontInfo &&
-            cursorBlink == other.cursorBlink &&
-            autoScrollTimeout == other.autoScrollTimeout;
-    }
-
-    bool TextEditOptions::operator != (const TextEditOptions& other) const
-    {
-        return !(*this == other);
-    }
 
     struct TextEdit::Private
     {

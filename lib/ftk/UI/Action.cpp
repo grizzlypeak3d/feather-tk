@@ -29,18 +29,6 @@ namespace ftk
         modifiers(modifiers)
     {}
 
-    bool KeyShortcut::operator == (const KeyShortcut& other) const
-    {
-        return
-            key == other.key &&
-            modifiers == other.modifiers;
-    }
-
-    bool KeyShortcut::operator != (const KeyShortcut& other) const
-    {
-        return !(*this == other);
-    }
-
     struct Action::Private
     {
         std::shared_ptr<Observable<std::string> > text;

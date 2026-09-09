@@ -19,18 +19,6 @@ namespace ftk
         color(color)
     {}
 
-    bool PieChartData::operator == (const PieChartData& other) const
-    {
-        return
-            percentage == other.percentage &&
-            color == other.color;
-    }
-
-    bool PieChartData::operator != (const PieChartData& other) const
-    {
-        return !(*this == other);
-    }
-
     struct PieChart::Private
     {
         std::vector<PieChartData> data;

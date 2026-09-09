@@ -24,8 +24,7 @@ namespace ftk
         std::string text;
         std::string icon;
 
-        FTK_UI_API bool operator == (const ComboBoxItem&) const;
-        FTK_UI_API bool operator != (const ComboBoxItem&) const;
+        bool operator == (const ComboBoxItem&) const = default;
     };
 
     //! Combo box.

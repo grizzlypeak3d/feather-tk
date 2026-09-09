@@ -6,6 +6,7 @@
 #include <ftk/UI/ComboBox.h>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
 #include <nanobind/stl/function.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
@@ -32,8 +33,8 @@ namespace ftk
                     nb::arg("icon") = std::string())
                 .def_rw("text", &ComboBoxItem::text)
                 .def_rw("icon", &ComboBoxItem::icon)
-                .def("__eq__", &ComboBoxItem::operator==)
-                .def("__ne__", &ComboBoxItem::operator!=);
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             nb::class_<ComboBox, IWidget>(m, "ComboBox")
                 .def(

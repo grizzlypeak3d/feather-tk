@@ -101,8 +101,7 @@ namespace ftk
         //! this dims toward the underlying surface.
         float disabledAlpha = .5F;
 
-        FTK_UI_API bool operator == (const ColorControls&) const;
-        FTK_UI_API bool operator != (const ColorControls&) const;
+        bool operator == (const ColorControls&) const = default;
     };
 
     //! Get the default color controls.

@@ -69,8 +69,7 @@ namespace ftk
             { "Settings",  false }
         };
 
-        FTK_UI_API bool operator == (const FileBrowserOptions&) const;
-        FTK_UI_API bool operator != (const FileBrowserOptions&) const;
+        bool operator == (const FileBrowserOptions&) const = default;
     };
 
     //! File browser thumbnail request.

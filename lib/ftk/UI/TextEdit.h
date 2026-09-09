@@ -21,8 +21,7 @@ namespace ftk
         float    cursorBlink       = .5F;
         float    autoScrollTimeout = .05F;
 
-        FTK_UI_API bool operator == (const TextEditOptions&) const;
-        FTK_UI_API bool operator != (const TextEditOptions&) const;
+        bool operator == (const TextEditOptions&) const = default;
     };
         
     //! Text edit widget.

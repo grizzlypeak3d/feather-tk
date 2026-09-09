@@ -75,8 +75,7 @@ namespace ftk
             OffscreenStencil stencil = OffscreenStencil::None;
             OffscreenSampling sampling = OffscreenSampling::None;
 
-            FTK_GL_API bool operator == (const OffscreenBufferOptions&) const;
-            FTK_GL_API bool operator != (const OffscreenBufferOptions&) const;
+            bool operator == (const OffscreenBufferOptions&) const = default;
         };
         
         //! Offscreen buffer.

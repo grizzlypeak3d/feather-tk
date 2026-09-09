@@ -8,16 +8,6 @@ namespace ftk
         y(y)
     {}
 
-    constexpr bool ImageMirror::operator == (const ImageMirror& other) const
-    {
-        return other.x == x && other.y == y;
-    }
-
-    constexpr bool ImageMirror::operator != (const ImageMirror& other) const
-    {
-        return !(other == *this);
-    }
-
     inline ImageLayout::ImageLayout(
         const ImageMirror& mirror,
         int alignment,
@@ -26,19 +16,6 @@ namespace ftk
         alignment(alignment),
         endian(endian)
     {}
-
-    constexpr bool ImageLayout::operator == (const ImageLayout & other) const
-    {
-        return
-            other.mirror == mirror &&
-            other.alignment == alignment &&
-            other.endian == endian;
-    }
-
-    constexpr bool ImageLayout::operator != (const ImageLayout & other) const
-    {
-        return !(other == *this);
-    }
 
     inline ImageInfo::ImageInfo(const Size2I& size, ImageType type) :
         size(size),
@@ -60,22 +37,7 @@ namespace ftk
         return size.h > 0 ? (size.w / static_cast<float>(size.h) * pixelAspectRatio) : 0.F;
     }
 
-    inline bool ImageInfo::operator == (const ImageInfo& other) const
-    {
-        return
-            name == other.name &&
-            size == other.size &&
-            type == other.type &&
-            pixelAspectRatio == other.pixelAspectRatio &&
-            videoLevels == other.videoLevels &&
-            yuvCoefficients == other.yuvCoefficients &&
-            layout == other.layout;
-    }
         
-    inline bool ImageInfo::operator != (const ImageInfo& other) const
-    {
-        return !(*this == other);
-    }
 
     inline const ImageInfo& Image::getInfo() const
     {

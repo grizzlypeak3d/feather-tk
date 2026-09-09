@@ -6,6 +6,7 @@
 #include <ftk/UI/LineEditModel.h>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/list.h>
@@ -32,8 +33,8 @@ namespace ftk
                 .def("isValid", &LineEditSelection::isValid)
                 .def("min", &LineEditSelection::min)
                 .def("max", &LineEditSelection::max)
-                .def("__eq__", &LineEditSelection::operator==)
-                .def("__ne__", &LineEditSelection::operator!=);
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             nb::class_<LineEditModel>(m, "LineEditModel")
                 .def(

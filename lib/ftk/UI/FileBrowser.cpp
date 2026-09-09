@@ -42,21 +42,6 @@ namespace ftk
         return out;
     }
 
-    bool FileBrowserOptions::operator == (const FileBrowserOptions& other) const
-    {
-        return
-            dirList == other.dirList &&
-            thumbnails == other.thumbnails &&
-            panel == other.panel &&
-            pathEditable == other.pathEditable &&
-            bellows == other.bellows;
-    }
-
-    bool FileBrowserOptions::operator != (const FileBrowserOptions& other) const
-    {
-        return !(*this == other);
-    }
-
     IFileBrowserThumbnails::~IFileBrowserThumbnails()
     {}
 

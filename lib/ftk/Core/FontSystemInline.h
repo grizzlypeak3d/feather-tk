@@ -8,16 +8,6 @@ namespace ftk
         size(size)
     {}
 
-    inline bool FontInfo::operator == (const FontInfo & other) const
-    {
-        return name == other.name && size == other.size;
-    }
-
-    inline bool FontInfo::operator != (const FontInfo& other) const
-    {
-        return !(*this == other);
-    }
-
     inline bool FontInfo::operator < (const FontInfo& other) const
     {
         return std::tie(name, size) < std::tie(other.name, other.size);
@@ -27,16 +17,6 @@ namespace ftk
         code(code),
         fontInfo(fontInfo)
     {}
-
-    inline bool GlyphInfo::operator == (const GlyphInfo & other) const
-    {
-        return code == other.code && fontInfo == other.fontInfo;
-    }
-
-    inline bool GlyphInfo::operator != (const GlyphInfo& other) const
-    {
-        return !(*this == other);
-    }
 
     inline bool GlyphInfo::operator < (const GlyphInfo& other) const
     {

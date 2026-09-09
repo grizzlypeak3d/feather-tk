@@ -38,8 +38,7 @@ namespace ftk
         std::string message;
         LogType     type    = LogType::Message;
 
-        FTK_CORE_API bool operator == (const LogItem&) const;
-        FTK_CORE_API bool operator != (const LogItem&) const;
+        bool operator == (const LogItem&) const = default;
     };
 
     //! Get a log item label.

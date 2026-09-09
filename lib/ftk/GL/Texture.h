@@ -79,8 +79,7 @@ namespace ftk
             FTK_GL_API float getAspect() const;
             FTK_GL_API size_t getByteCount() const;
 
-            FTK_GL_API bool operator == (const TextureInfo&) const;
-            FTK_GL_API bool operator != (const TextureInfo&) const;
+            bool operator == (const TextureInfo&) const = default;
         };
 
         //! Get a texture information label.
@@ -92,8 +91,7 @@ namespace ftk
             ImageFilters filters;
             bool         pbo     = false;
 
-            FTK_GL_API bool operator == (const TextureOptions&) const;
-            FTK_GL_API bool operator != (const TextureOptions&) const;
+            bool operator == (const TextureOptions&) const = default;
         };
 
         //! Texture.

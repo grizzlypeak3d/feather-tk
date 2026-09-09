@@ -28,8 +28,7 @@ namespace ftk
         SizeRole right  = SizeRole::None;
         SizeRole bottom = SizeRole::None;
 
-        FTK_UI_API bool operator == (const RowMargins&) const;
-        FTK_UI_API bool operator != (const RowMargins&) const;
+        bool operator == (const RowMargins&) const = default;
     };
 
     //! Row layout.

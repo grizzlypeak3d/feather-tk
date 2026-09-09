@@ -22,8 +22,7 @@ namespace ftk
         float         percentage = 0.F;
         Color4F color;
 
-        FTK_UI_API bool operator == (const PieChartData&) const;
-        FTK_UI_API bool operator != (const PieChartData&) const;
+        bool operator == (const PieChartData&) const = default;
     };
 
     //! Pie chart widget.

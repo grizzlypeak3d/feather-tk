@@ -26,16 +26,6 @@ namespace ftk
         return line != -1 && chr != -1;
     }
 
-    bool TextEditPos::operator == (const TextEditPos& other) const
-    {
-        return line == other.line && chr == other.chr;
-    }
-
-    bool TextEditPos::operator != (const TextEditPos& other) const
-    {
-        return !(*this == other);
-    }
-
     bool TextEditPos::operator < (const TextEditPos& other) const
     {
         return line < other.line ||
@@ -73,28 +63,6 @@ namespace ftk
     TextEditPos TextEditSelection::max() const
     {
         return std::max(first, second);
-    }
-
-    bool TextEditSelection::operator == (const TextEditSelection& other) const
-    {
-        return
-            first == other.first &&
-            second == other.second;
-    }
-
-    bool TextEditSelection::operator != (const TextEditSelection& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool TextEditModelOptions::operator != (const TextEditModelOptions& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool TextEditModelOptions::operator == (const TextEditModelOptions& other) const
-    {
-        return tabSpaces == other.tabSpaces;
     }
 
     namespace

@@ -355,17 +355,6 @@ namespace ftk
             return out;
         }
         
-        bool TextureInfo::operator == (const TextureInfo& other) const
-        {
-            return
-                size == other.size &&
-                type == other.type;
-        }
-
-        bool TextureInfo::operator != (const TextureInfo& other) const
-        {
-            return !(*this == other);
-        }
 
         std::string getLabel(const TextureInfo& info)
         {
@@ -374,18 +363,6 @@ namespace ftk
                 arg(info.size.h).
                 arg(info.getAspect(), 2).
                 arg(info.type);
-        }
-
-        bool TextureOptions::operator == (const TextureOptions& other) const
-        {
-            return
-                filters == other.filters &&
-                pbo == other.pbo;
-        }
-
-        bool TextureOptions::operator != (const TextureOptions& other) const
-        {
-            return !(*this == other);
         }
 
         namespace

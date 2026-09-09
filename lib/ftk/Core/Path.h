@@ -103,8 +103,7 @@ namespace ftk
         bool   seqNegative  = true;
         size_t seqMaxDigits = 9;
 
-        FTK_CORE_API bool operator == (const PathOptions&) const;
-        FTK_CORE_API bool operator != (const PathOptions&) const;
+        bool operator == (const PathOptions&) const = default;
     };
 
     //! Frame sequence.
@@ -118,8 +117,7 @@ namespace ftk
         RangeI64 range;
         int      inc = 1;
 
-        FTK_CORE_API bool operator == (const FrameSeq&) const;
-        FTK_CORE_API bool operator != (const FrameSeq&) const;
+        bool operator == (const FrameSeq&) const = default;
     };
 
     //! Convert frames to frame sequences.
@@ -361,8 +359,7 @@ namespace ftk
         //! links from listing forever.
         int                      depth        = 1;
 
-        FTK_CORE_API bool operator == (const DirListOptions&) const;
-        FTK_CORE_API bool operator != (const DirListOptions&) const;
+        bool operator == (const DirListOptions&) const = default;
     };
 
     //! Directory list entry.
@@ -375,8 +372,7 @@ namespace ftk
         std::uintmax_t                  size = 0;
         std::filesystem::file_time_type time;
 
-        FTK_CORE_API bool operator == (const DirEntry&) const;
-        FTK_CORE_API bool operator != (const DirEntry&) const;
+        bool operator == (const DirEntry&) const = default;
     };
 
     //! List directory contents.

@@ -171,19 +171,6 @@ namespace ftk
         return out;
     }
 
-    bool ColorControls::operator == (const ColorControls& other) const
-    {
-        return
-            brightness == other.brightness &&
-            contrast == other.contrast &&
-            disabledAlpha == other.disabledAlpha;
-    }
-
-    bool ColorControls::operator != (const ColorControls& other) const
-    {
-        return !(*this == other);
-    }
-
     struct Style::Private
     {
         std::weak_ptr<Context> context;

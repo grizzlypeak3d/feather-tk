@@ -36,8 +36,7 @@ namespace ftk
         V2F         dpi;
         Box2I       bounds;
 
-        FTK_UI_API bool operator == (const MonitorInfo&) const;
-        FTK_UI_API bool operator != (const MonitorInfo&) const;
+        bool operator == (const MonitorInfo&) const = default;
     };
 
     //! Color style.

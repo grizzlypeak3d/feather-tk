@@ -106,8 +106,7 @@ namespace ftk
         bool x = false;
         bool y = false;
 
-        constexpr bool operator == (const ImageMirror&) const;
-        constexpr bool operator != (const ImageMirror&) const;
+        constexpr bool operator == (const ImageMirror&) const = default;
     };
 
     //! Image data layout.
@@ -123,8 +122,7 @@ namespace ftk
         int         alignment = 1;
         Endian      endian    = getEndian();
 
-        constexpr bool operator == (const ImageLayout&) const;
-        constexpr bool operator != (const ImageLayout&) const;
+        constexpr bool operator == (const ImageLayout&) const = default;
     };
 
     //! Image information.
@@ -151,8 +149,7 @@ namespace ftk
         //! Get the number of bytes used to store an image.
         FTK_CORE_API size_t getByteCount() const;
 
-        FTK_CORE_API bool operator == (const ImageInfo&) const;
-        FTK_CORE_API bool operator != (const ImageInfo&) const;
+        bool operator == (const ImageInfo&) const = default;
     };
 
     //! Get an image information label.

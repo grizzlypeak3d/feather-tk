@@ -6,6 +6,7 @@
 #include <ftk/UI/ListItemsWidget.h>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/operators.h>
 #include <nanobind/stl/function.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
@@ -32,8 +33,8 @@ namespace ftk
                     nb::arg("tooltip") = std::string())
                 .def_rw("text", &ListItem::text)
                 .def_rw("tooltip", &ListItem::tooltip)
-                .def("__eq__", &ListItem::operator==)
-                .def("__ne__", &ListItem::operator!=);
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
 
             nb::class_<ListItemsWidget, IContainer>(m, "ListItemsWidget")
                 .def(
