@@ -31,3 +31,10 @@ std::string getDownloadsPath()
     NSString *path = [paths firstObject];
     return std::string([path fileSystemRepresentation]);
 }
+
+std::string getAppSupportPath()
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString *path = [paths firstObject];
+    return std::string([path fileSystemRepresentation]);
+}

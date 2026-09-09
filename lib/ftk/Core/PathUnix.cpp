@@ -54,6 +54,7 @@ namespace ftk
         case UserPath::Desktop:   out = getDesktopPath(); break;
         case UserPath::Documents: out = getDocsPath(); break;
         case UserPath::Downloads: out = getDownloadsPath(); break;
+        case UserPath::Config:    out = getAppSupportPath(); break;
         default: break;
         }
 #else // __APPLE__
@@ -64,6 +65,12 @@ namespace ftk
         case UserPath::Desktop:   out = home / "Desktop";   break;
         case UserPath::Documents: out = home / "Documents"; break;
         case UserPath::Downloads: out = home / "Downloads"; break;
+        case UserPath::Config:
+        {
+            const char* xdg = std::getenv("XDG_CONFIG_HOME");
+            out = xdg && *xdg ? std::filesystem::path(xdg) : home / ".config";
+            break;
+        }
         default: break;
         }
 #endif // __APPLE__

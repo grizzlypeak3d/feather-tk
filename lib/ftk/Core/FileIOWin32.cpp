@@ -419,6 +419,14 @@ namespace ftk
             break;
         case FileMode::Write:
             desiredAccess = GENERIC_WRITE;
+            // Readers are let in while this writes: a log being tailed, a
+            // sync client uploading it, a scanner looking at it. With no
+            // sharing at all, any of those holding the file made the open
+            // here fail, which is how a synced Documents folder kept the
+            // application from starting. Other writers are still kept out --
+            // two of these truncating one file would destroy each other's
+            // output.
+            shareMode = FILE_SHARE_READ;
             disposition = CREATE_ALWAYS;
             break;
         case FileMode::ReadWrite:
@@ -428,6 +436,7 @@ namespace ftk
             break;
         case FileMode::Append:
             desiredAccess = GENERIC_WRITE;
+            shareMode = FILE_SHARE_READ;
             disposition = OPEN_EXISTING;
             break;
         default: break;

@@ -7,4 +7,5 @@ std::string getHomePath();
 std::string getDesktopPath();
 std::string getDocsPath();
 std::string getDownloadsPath();
+std::string getAppSupportPath();
 

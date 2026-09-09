@@ -15,7 +15,7 @@ namespace ftk
 {
     class Context;
 
-    //! Get a settings path.
+    //! Get a settings path, under UserPath::Config.
     FTK_UI_API std::filesystem::path getSettingsPath(
         const std::string& directory,
         const std::string& fileName);

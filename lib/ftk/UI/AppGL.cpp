@@ -273,6 +273,27 @@ namespace ftk
                 p.settingsPath = toFileSystem(
                     p.cmdLine.settingsFile->getValue());
             }
+            else
+            {
+                // The settings lived under Documents before 0.12. A file
+                // there and none here is brought across once, so that the
+                // directory moving does not read as the settings being lost.
+                // Copied rather than moved, so an older build still finds
+                // its own. Nothing here may fail the launch, and after a
+                // release or two nothing here is needed.
+                std::error_code ec;
+                const std::filesystem::path previous =
+                    getUserPath(UserPath::Documents) /
+                    appFiles.dirName /
+                    p.settingsPath.filename();
+                if (!std::filesystem::exists(p.settingsPath, ec) &&
+                    std::filesystem::exists(previous, ec))
+                {
+                    std::filesystem::create_directories(
+                        p.settingsPath.parent_path(), ec);
+                    std::filesystem::copy_file(previous, p.settingsPath, ec);
+                }
+            }
             if (p.cmdLine.logFile->found())
             {
                 p.logFilePath = toFileSystem(

@@ -18,7 +18,7 @@ namespace ftk
         const std::string& directory,
         const std::string& fileName)
     {
-        return getUserPath(UserPath::Documents) / directory / fileName;
+        return getUserPath(UserPath::Config) / directory / fileName;
     }
 
     struct Settings::Private
@@ -26,6 +26,13 @@ namespace ftk
         std::weak_ptr<LogSystem> logSystem;
         std::filesystem::path path;
         nlohmann::json settings;
+
+        // The file was there and could not be opened. It is left as it is:
+        // it may well be intact and merely busy, and writing the defaults
+        // over it on the way out would turn a failed launch into lost
+        // settings. A file that opened and would not parse is another
+        // matter -- that one is replaced, as it always was.
+        bool preserve = false;
     };
 
     Settings::Settings(
@@ -43,24 +50,31 @@ namespace ftk
 
         if (!p.path.empty())
         {
-            if (p.path.has_parent_path())
+            // Reading the settings must not be able to stop the application.
+            // The file can be held by a scanner or a sync client at the
+            // moment it is opened -- the same way the log was, before that
+            // was guarded -- and an exception leaving here leaves main().
+            bool opened = false;
+            try
             {
-                std::filesystem::create_directories(p.path.parent_path());
-            }
-            if (std::filesystem::exists(p.path) && !reset)
-            {
-                const std::string contents = read(FileIO::create(p.path, FileMode::Read));
-                try
+                if (p.path.has_parent_path())
                 {
+                    std::filesystem::create_directories(p.path.parent_path());
+                }
+                if (std::filesystem::exists(p.path) && !reset)
+                {
+                    const std::string contents = read(FileIO::create(p.path, FileMode::Read));
+                    opened = true;
                     p.settings = nlohmann::json::parse(contents);
                 }
-                catch (const std::exception& e)
-                {
-                    logSystem->print(
-                        "ftk::Settings",
-                        Format("Cannot read settings: {0}: {1}").arg(p.path).arg(e.what()),
-                        LogType::Error);
-                }
+            }
+            catch (const std::exception& e)
+            {
+                p.preserve = !opened;
+                logSystem->print(
+                    "ftk::Settings",
+                    Format("Cannot read settings: {0}: {1}").arg(p.path).arg(e.what()),
+                    LogType::Error);
             }
         }
     }
@@ -86,7 +100,7 @@ namespace ftk
     void Settings::save()
     {
         FTK_P();
-        if (!p.path.empty())
+        if (!p.path.empty() && !p.preserve)
         {
             try
             {
