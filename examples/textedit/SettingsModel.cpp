@@ -8,8 +8,7 @@ using namespace ftk;
 namespace textedit
 {
     void SettingsModel::_init(
-        const std::shared_ptr<Context>& context,
-        float defaultDisplayScale)
+        const std::shared_ptr<Context>& context)
     {
         _settings = Settings::create(context, getSettingsPath("feather-tk", "textedit.json"));
 
@@ -44,7 +43,6 @@ namespace textedit
         _window = Observable<WindowSettings>::create(window);
 
         StyleSettings style;
-        style.displayScale = defaultDisplayScale;
         _settings->getT("/Style", style);
         _style = Observable<StyleSettings>::create(style);
     }
@@ -72,11 +70,10 @@ namespace textedit
     }
 
     std::shared_ptr<SettingsModel> SettingsModel::create(
-        const std::shared_ptr<Context>& context,
-        float defaultDisplayScale)
+        const std::shared_ptr<Context>& context)
     {
         auto out = std::shared_ptr<SettingsModel>(new SettingsModel);
-        out->_init(context, defaultDisplayScale);
+        out->_init(context);
         return out;
     }
 

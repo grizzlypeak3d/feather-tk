@@ -145,7 +145,7 @@ namespace objview
     void App::run()
     {
         // Create models.
-        _settingsModel = SettingsModel::create(_context, getDefaultDisplayScale());
+        _settingsModel = SettingsModel::create(_context);
         _documentModel = DocumentModel::create(_context);
         _recentFilesModel = RecentFilesModel::create(_context);
         _recentFilesModel->setRecent(toPaths(_settingsModel->getRecentFiles()));

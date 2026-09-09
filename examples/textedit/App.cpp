@@ -317,7 +317,7 @@ namespace textedit
     {
         // The models come first: the window's widgets observe them at
         // construction, so they have to exist before the window does.
-        _settingsModel = SettingsModel::create(_context, getDefaultDisplayScale());
+        _settingsModel = SettingsModel::create(_context);
         _documentModel = DocumentModel::create(_context);
         _recentFilesModel = RecentFilesModel::create(_context);
         _recentFilesModel->setRecent(toPaths(_settingsModel->getRecentFiles()));

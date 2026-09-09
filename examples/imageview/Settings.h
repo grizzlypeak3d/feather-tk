@@ -20,7 +20,8 @@ namespace imageview
     //! Style settings.
     struct StyleSettings
     {
-        float displayScale = 2.F;
+        //! Zero follows the display.
+        float displayScale = 0.F;
         ftk::ColorStyle colorStyle = ftk::ColorStyle::Dark;
 
         bool operator == (const StyleSettings&) const;

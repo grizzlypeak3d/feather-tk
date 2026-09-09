@@ -15,8 +15,7 @@ namespace objview
     {
     protected:
         void _init(
-            const std::shared_ptr<ftk::Context>&,
-            float defaultDisplayScale);
+            const std::shared_ptr<ftk::Context>&);
 
         SettingsModel() = default;
 
@@ -25,8 +24,7 @@ namespace objview
 
         //! Create a new settings model.
         static std::shared_ptr<SettingsModel> create(
-            const std::shared_ptr<ftk::Context>&,
-            float defaultDisplayScale);
+            const std::shared_ptr<ftk::Context>&);
 
         //! \name Recent Files
         ///@{

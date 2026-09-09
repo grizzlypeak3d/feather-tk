@@ -186,6 +186,9 @@ namespace ftk
         FTK_UI_API float getDefaultDisplayScale() const;
         FTK_UI_API float getDisplayScale() const;
         FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
+        //! Set the display scale. Zero asks for the display's scale,
+        //! corrected by the window's once there is one; a positive value
+        //! is used as given and the window does not correct it.
         FTK_UI_API void setDisplayScale(float);
 
         //! Update the display scale from what the system reports for a
@@ -280,6 +283,7 @@ namespace ftk
             bool enabled,
             const TickEvent&);
 
+        void _displayScaleUpdate(float);
         void _monitorsUpdate();
         void _styleUpdate();
 

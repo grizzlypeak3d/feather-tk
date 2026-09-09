@@ -44,6 +44,16 @@ namespace ftk
                 auto layout = VerticalLayout::create(_context, window);
                 auto button = PushButton::create(_context, "Button", layout);
                 FTK_CHECK(app->getWindows().front() == window);
+
+                // A scale the application set is not corrected by the window;
+                // an automatic one is.
+                app->setDisplayScale(1.5F);
+                app->setDisplayScaleFromWindow(2.F);
+                FTK_CHECK(1.5F == app->getDisplayScale());
+                app->setDisplayScale(0.F);
+                FTK_CHECK(2.F == app->getDisplayScale());
+                app->setDisplayScaleFromWindow(3.F);
+                FTK_CHECK(3.F == app->getDisplayScale());
                 window->show();
                 window->setSize(Size2I(1280, 960));
 

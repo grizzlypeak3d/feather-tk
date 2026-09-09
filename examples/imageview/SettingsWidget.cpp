@@ -36,7 +36,8 @@ namespace imageview
         _colorStyleComboBox->setItems(getColorStyleLabels());
         _colorStyleComboBox->setHStretch(Stretch::Expanding);
         _displayScales = getDisplayScales();
-        std::vector<std::string> labels;
+        // The first entry is automatic: zero in the setting.
+        std::vector<std::string> labels = { "Auto" };
         for (auto d : _displayScales)
         {
             labels.push_back(Format("{0}").arg(d).operator std::string());
@@ -93,7 +94,7 @@ namespace imageview
                 if (auto app = appWeak.lock())
                 {
                     auto style = app->getSettingsModel()->getStyle();
-                    style.displayScale = _displayScales[index];
+                    style.displayScale = index > 0 ? _displayScales[index - 1] : 0.F;
                     app->getSettingsModel()->setStyle(style);
                 }
             });
@@ -104,12 +105,12 @@ namespace imageview
             [this](const StyleSettings& value)
             {
                 _colorStyleComboBox->setCurrentIndex(static_cast<int>(value.colorStyle));
-                int index = -1;
+                int index = value.displayScale <= 0.F ? 0 : -1;
                 for (int i = 0; i < static_cast<int>(_displayScales.size()); ++i)
                 {
                     if (value.displayScale == _displayScales[i])
                     {
-                        index = i;
+                        index = i + 1;
                         break;
                     }
                 }

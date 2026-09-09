@@ -124,6 +124,10 @@ namespace ftk
         std::shared_ptr<Observable<ColorStyle> > colorStyle;
         std::shared_ptr<ObservableMap<ColorRole, Color4F> > customColorRoles;
         float defaultDisplayScale = 1.F;
+        // The display scale is automatic until the application sets a
+        // positive one; the window's correction applies only while it is.
+        bool displayScaleAuto = true;
+        float windowDisplayScale = 0.F;
         std::shared_ptr<Observable<float> > displayScale;
         std::shared_ptr<Observable<bool> > tooltipsEnabled;
         bool running = true;
@@ -535,8 +539,15 @@ namespace ftk
         // The window knows its own display scale better than the display
         // does: on macOS SDL_GetDisplayContentScale reports one for
         // external monitors that are in fact scaled, and the truth is
-        // only available per window. The command line still wins.
+        // only available per window. The command line still wins, and so
+        // does a scale the application set: a saved 1.5 was being replaced
+        // by the window's 1 at every launch on Linux.
+        if (value > 0.F)
+        {
+            p.windowDisplayScale = value;
+        }
         if (!p.cmdLine.displayScale->hasValue() &&
+            p.displayScaleAuto &&
             value > 0.F &&
             value != p.displayScale->get())
         {
@@ -544,11 +555,20 @@ namespace ftk
             logSystem->print(
                 "ftk::App",
                 Format("Display scale from the window: {0}").arg(value));
-            setDisplayScale(value);
+            _displayScaleUpdate(value);
         }
     }
 
     void App::setDisplayScale(float value)
+    {
+        FTK_P();
+        p.displayScaleAuto = value <= 0.F;
+        _displayScaleUpdate(p.displayScaleAuto ?
+            (p.windowDisplayScale > 0.F ? p.windowDisplayScale : p.defaultDisplayScale) :
+            value);
+    }
+
+    void App::_displayScaleUpdate(float value)
     {
         FTK_P();
         p.displayScale->setIfChanged(value);
