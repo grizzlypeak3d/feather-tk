@@ -34,7 +34,13 @@ set(SDL3_ARGS
     -DSDL_HAPTIC=OFF
     -DSDL_POWER=OFF
     -DSDL_SENSOR=OFF
-    -DSDL_DIALOG=OFF)
+    -DSDL_DIALOG=OFF
+    # SDL builds its test programs by default when it is the main project,
+    # which it is in this superbuild: testffmpeg finds whatever FFmpeg is in
+    # the install prefix and fails against it.
+    -DSDL_TEST_LIBRARY=OFF
+    -DSDL_TESTS=OFF
+    -DSDL_EXAMPLES=OFF)
 
 ExternalProject_Add(
     SDL3
