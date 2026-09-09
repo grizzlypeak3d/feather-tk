@@ -52,6 +52,7 @@
 #include <ftk/UITest/ScrollBarTest.h>
 #include <ftk/UITest/ScrollWidgetTest.h>
 #include <ftk/UITest/SearchBoxTest.h>
+#include <ftk/UITest/SettingsTest.h>
 #include <ftk/UITest/SplitterTest.h>
 #include <ftk/UITest/ActionGroupTest.h>
 #include <ftk/UITest/FlowLayoutTest.h>
@@ -255,6 +256,7 @@ namespace ftk
                 p.tests.push_back(ui_test::ScrollBarTest::create(context));
                 p.tests.push_back(ui_test::ScrollWidgetTest::create(context));
                 p.tests.push_back(ui_test::SearchBoxTest::create(context));
+                p.tests.push_back(ui_test::SettingsTest::create(context));
                 p.tests.push_back(ui_test::SplitterTest::create(context));
                 p.tests.push_back(ui_test::ActionGroupTest::create(context));
                 p.tests.push_back(ui_test::FlowLayoutTest::create(context));

@@ -46,6 +46,7 @@ set(HEADERS
     ScrollBarTest.h
     ScrollWidgetTest.h
     SearchBoxTest.h
+    SettingsTest.h
     SplitterTest.h
     ActionGroupTest.h
     FlowLayoutTest.h
@@ -105,6 +106,7 @@ set(SOURCE
     ScrollBarTest.cpp
     ScrollWidgetTest.cpp
     SearchBoxTest.cpp
+    SettingsTest.cpp
     SplitterTest.cpp
     ActionGroupTest.cpp
     FlowLayoutTest.cpp

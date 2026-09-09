@@ -30,8 +30,8 @@ namespace ftk
         // The file was there and could not be opened. It is left as it is:
         // it may well be intact and merely busy, and writing the defaults
         // over it on the way out would turn a failed launch into lost
-        // settings. A file that opened and would not parse is another
-        // matter -- that one is replaced, as it always was.
+        // settings. A file that opened and would not parse is set aside
+        // under another name (see the constructor) and replaced.
         bool preserve = false;
     };
 
@@ -75,6 +75,23 @@ namespace ftk
                     "ftk::Settings",
                     Format("Cannot read settings: {0}: {1}").arg(p.path).arg(e.what()),
                     LogType::Error);
+                if (opened)
+                {
+                    // Kept rather than overwritten with the defaults at
+                    // exit: the settings can be got back from it by hand.
+                    try
+                    {
+                        std::filesystem::path bad = p.path;
+                        bad += ".bad";
+                        std::filesystem::rename(p.path, bad);
+                        logSystem->print(
+                            "ftk::Settings",
+                            Format("Settings set aside: {0}").arg(bad),
+                            LogType::Warning);
+                    }
+                    catch (const std::exception&)
+                    {}
+                }
             }
         }
     }
@@ -104,7 +121,15 @@ namespace ftk
         {
             try
             {
-                FileIO::create(p.path, FileMode::Write)->write(p.settings.dump(4));
+                // Written whole to a file of its own and then renamed into
+                // place, so the settings file is never partly written:
+                // another instance starting as this one quits read a
+                // truncated file, took the defaults, and wrote them back
+                // over the settings at its own exit.
+                std::filesystem::path tmp = p.path;
+                tmp += ".tmp";
+                FileIO::create(tmp, FileMode::Write)->write(p.settings.dump(4));
+                std::filesystem::rename(tmp, p.path);
             }
             catch (const std::exception& e)
             {
