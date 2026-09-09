@@ -30,6 +30,10 @@ namespace ftk
             //! Set the render factory.
             FTK_GL_API void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
 
+            //! Get the name of the video driver SDL chose (e.g., "x11",
+            //! "wayland", "cocoa", "windows").
+            FTK_GL_API std::string getVideoDriver() const;
+
         private:
             FTK_PRIVATE();
         };

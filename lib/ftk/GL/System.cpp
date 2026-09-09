@@ -160,6 +160,12 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot initialize SDL: {0}").
                     arg(SDL_GetError()));
             }
+            // Which windowing system SDL chose. On Linux the same build
+            // runs on X11 or Wayland, and nothing else in a report says
+            // which one it was.
+            logSystem->print(
+                "ftk::gl::System",
+                Format("Video driver: {0}").arg(getVideoDriver()));
 #if defined(FTK_SDL2)
             if (SDL_GL_LoadLibrary(NULL) < 0)
 #elif defined(FTK_SDL3)
@@ -227,6 +233,12 @@ namespace ftk
         const std::shared_ptr<IRenderFactory>& System::getRenderFactory() const
         {
             return _p->renderFactory;
+        }
+
+        std::string System::getVideoDriver() const
+        {
+            const char* driver = SDL_GetCurrentVideoDriver();
+            return driver ? driver : std::string();
         }
 
         void System::setRenderFactory(const std::shared_ptr<IRenderFactory>& value)
