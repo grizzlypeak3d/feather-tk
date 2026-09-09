@@ -129,6 +129,12 @@ namespace ftk
         const Box2I& buttonGeometry)
     {
         FTK_P();
+        // A popup opens in a window; a widget that has none, or has lost
+        // the way to it, has nowhere to open.
+        if (!window)
+        {
+            return;
+        }
         p.buttonGeometry = buttonGeometry;
         p.open = true;
         p.restoreFocus = window->getKeyFocus();

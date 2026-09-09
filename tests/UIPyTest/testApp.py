@@ -29,6 +29,20 @@ class AppTest(unittest.TestCase):
         self.assertIs(window.app, app)
         self.assertEqual(sys.getrefcount(app), sys.getrefcount(probe))
 
+    def test_parentAfterChildren(self):
+        # A Python widget that is given children before it is given a
+        # parent: the children still find it, and the window through it.
+        app = ftk.App(self.context, ["app", "-exit"], "ftkPyTest", "Test application")
+        window = ftk.Window(self.context, app, "ftkPyTest")
+        class Container(ftk.IContainer):
+            def __init__(self, context, parent = None):
+                ftk.IContainer.__init__(self, context, "Container", parent)
+        container = Container(self.context)
+        combo = ftk.ComboBox(self.context, ["A", "B"], container)
+        container.parent = window
+        self.assertIs(combo.parent, container)
+        self.assertIs(combo.window, window)
+
     def test_neverRun(self):
         freed = []
         class App(ftk.App):

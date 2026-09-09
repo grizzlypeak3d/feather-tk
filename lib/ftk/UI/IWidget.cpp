@@ -104,6 +104,18 @@ namespace ftk
             value->setSizeUpdate();
             value->setDrawUpdate();
         }
+
+        // The children reach this widget through weak pointers taken when
+        // they were added. A widget owned from Python has no lasting control
+        // block until a parent holds one, so children added before then point
+        // at a block that is gone, and a combo box in a tool built before the
+        // tool was placed could not find its window. They are pointed at the
+        // block the parent now holds. In C++ the two are the same block and
+        // this changes nothing.
+        for (const auto& child : _children)
+        {
+            child->_parent = widget;
+        }
     }
 
     int IWidget::getChildIndex(const std::shared_ptr<IWidget>& value) const
