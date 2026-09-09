@@ -15,11 +15,13 @@ namespace ftk
     class FTK_UI_API_TYPE ItemButton : public IButton
     {
     protected:
-        void _init(
+        // Exported: the class macro is empty on Windows, so a subclass in
+        // another library needs these two by name like any other member.
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent);
 
-        ItemButton();
+        FTK_UI_API ItemButton();
 
     public:
         FTK_UI_API virtual ~ItemButton();
