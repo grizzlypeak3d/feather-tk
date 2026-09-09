@@ -15,6 +15,8 @@
 #include <filesystem>
 #include <list>
 
+union SDL_Event;
+
 namespace ftk
 {
     class Capture;
@@ -267,6 +269,11 @@ namespace ftk
         void _widgetDumpInit(const std::string& fileName);
 
         std::shared_ptr<IWindow> _getWindow(uint32_t id) const;
+        void _windowResized(const std::shared_ptr<IWindow>&, uint32_t id);
+#if defined(FTK_SDL3)
+        void _liveResize(uint32_t id);
+        static bool _eventWatch(void*, SDL_Event*);
+#endif // FTK_SDL3
 
         void _tickRecursive(
             const std::shared_ptr<IWidget>&,

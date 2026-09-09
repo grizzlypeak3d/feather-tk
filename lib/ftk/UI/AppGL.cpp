@@ -142,6 +142,7 @@ namespace ftk
         std::shared_ptr<Observable<float> > displayScale;
         std::shared_ptr<Observable<bool> > tooltipsEnabled;
         bool running = true;
+        bool polling = false;
         std::shared_ptr<ObservableList<MonitorInfo> > monitors;
         std::list<std::shared_ptr<IWindow> > windows;
         std::weak_ptr<IWindow> activeWindow;
@@ -354,6 +355,7 @@ namespace ftk
             p.defaultDisplayScale = SDL_GetDisplayContentScale(sdlDisplays[0]);
             SDL_free(sdlDisplays);
         }
+        SDL_AddEventWatch(_eventWatch, this);
 #endif // FTK_SDL2
         if (p.cmdLine.displayScale->hasValue())
         {
@@ -397,6 +399,9 @@ namespace ftk
     {
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Destroy app...");
+#if defined(FTK_SDL3)
+        SDL_RemoveEventWatch(_eventWatch, this);
+#endif // FTK_SDL3
 
         // The application runs on the thread that owns the context, so this
         // is where the systems' threads can be stopped while the context is
@@ -1180,6 +1185,7 @@ namespace ftk
         {
             auto logSystem = _context->getSystem<LogSystem>();
             SDL_Event event;
+            p.polling = true;
             while (SDL_PollEvent(&event))
             {
                 //std::cout << "Event: " << fromSDLEvent(event.type) << std::endl;
@@ -1333,14 +1339,7 @@ namespace ftk
                 case SDL_EVENT_WINDOW_RESIZED:
                     if (auto window = _getWindow(event.window.windowID))
                     {
-                        if (SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID))
-                        {
-                            Size2I windowSize;
-                            Size2I frameBufferSize;
-                            SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
-                            SDL_GetWindowSizeInPixels(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
-                            window->_setSize(windowSize, frameBufferSize);
-                        }
+                        _windowResized(window, event.window.windowID);
                     }
                     break;
                 case SDL_EVENT_WINDOW_MOUSE_ENTER:
@@ -1643,6 +1642,7 @@ namespace ftk
                 default: break;
                 }
             }
+            p.polling = false;
 
             tick();
         }
@@ -1697,6 +1697,57 @@ namespace ftk
             p.mousePos.erase(j);
         }
     }
+
+    void App::_windowResized(const std::shared_ptr<IWindow>& window, uint32_t id)
+    {
+        if (SDL_Window* sdlWindow = SDL_GetWindowFromID(id))
+        {
+            Size2I windowSize;
+            Size2I frameBufferSize;
+            SDL_GetWindowSize(sdlWindow, &windowSize.w, &windowSize.h);
+            SDL_GetWindowSizeInPixels(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
+            window->_setSize(windowSize, frameBufferSize);
+        }
+    }
+
+#if defined(FTK_SDL3)
+    // While a window is being resized macOS and Windows run a modal loop
+    // of their own, and the run loop gets no turn until the mouse is
+    // released: the window showed its last frame stretched until then.
+    // SDL calls an event watch synchronously from inside that loop, so
+    // the resized window is laid out and drawn from here. Only that
+    // window, and nothing else: this runs from the middle of the event
+    // pump the run loop is in, and the event still arrives there
+    // afterwards to be handled the ordinary way. Only while the run loop
+    // is polling, too -- the modal loop lives inside that call, and a
+    // window being made or destroyed sends the same event at a moment
+    // it cannot be drawn.
+    void App::_liveResize(uint32_t id)
+    {
+        FTK_P();
+        if (!p.polling || !SDL_IsMainThread())
+        {
+            return;
+        }
+        if (auto window = _getWindow(id))
+        {
+            _windowResized(window, id);
+            if (window->isVisible(false))
+            {
+                window->_update(p.fontSystem, p.iconSystem, p.style);
+            }
+        }
+    }
+
+    bool App::_eventWatch(void* userdata, SDL_Event* event)
+    {
+        if (SDL_EVENT_WINDOW_RESIZED == event->type)
+        {
+            static_cast<App*>(userdata)->_liveResize(event->window.windowID);
+        }
+        return true;
+    }
+#endif // FTK_SDL3
 
     std::shared_ptr<IWindow> App::_getWindow(uint32_t id) const
     {
