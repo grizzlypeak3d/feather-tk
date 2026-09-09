@@ -42,6 +42,18 @@ class AppTest(unittest.TestCase):
         container.parent = window
         self.assertIs(combo.parent, container)
         self.assertIs(combo.window, window)
+        # Taken out and put back: the links are made again.
+        container.parent = None
+        container.parent = window
+        self.assertIs(combo.parent, container)
+        self.assertIs(combo.window, window)
+        # A container widget set rather than parented.
+        bellows = ftk.Bellows(self.context, "Bellows", window)
+        inner = Container(self.context)
+        label = ftk.Label(self.context, "Label", inner)
+        bellows.widget = inner
+        self.assertIs(label.parent, inner)
+        self.assertIs(label.window, window)
 
     def test_neverRun(self):
         freed = []
