@@ -34,6 +34,9 @@ namespace ftk
             //! "wayland", "cocoa", "windows").
             FTK_GL_API std::string getVideoDriver() const;
 
+            //! Get the version of SDL in use.
+            FTK_GL_API std::string getSDLVersion() const;
+
         private:
             FTK_PRIVATE();
         };

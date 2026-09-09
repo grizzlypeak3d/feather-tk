@@ -241,6 +241,21 @@ namespace ftk
             return driver ? driver : std::string();
         }
 
+        std::string System::getSDLVersion() const
+        {
+#if defined(FTK_SDL2)
+            SDL_version v;
+            SDL_GetVersion(&v);
+            return Format("{0}.{1}.{2}").arg(v.major).arg(v.minor).arg(v.patch);
+#elif defined(FTK_SDL3)
+            const int v = SDL_GetVersion();
+            return Format("{0}.{1}.{2}").
+                arg(SDL_VERSIONNUM_MAJOR(v)).
+                arg(SDL_VERSIONNUM_MINOR(v)).
+                arg(SDL_VERSIONNUM_MICRO(v));
+#endif // FTK_SDL2
+        }
+
         void System::setRenderFactory(const std::shared_ptr<IRenderFactory>& value)
         {
             _p->renderFactory = value;
