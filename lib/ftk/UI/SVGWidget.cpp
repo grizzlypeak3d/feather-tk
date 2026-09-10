@@ -7,7 +7,7 @@
 
 #include <ftk/Core/String.h>
 
-#include <lunasvg/lunasvg.h>
+#include <lunasvg.h>
 
 #include <optional>
 

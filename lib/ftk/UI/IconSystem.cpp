@@ -11,7 +11,7 @@
 
 #include <ftk_resource/IconResources.h>
 
-#include <lunasvg/lunasvg.h>
+#include <lunasvg.h>
 
 #include <atomic>
 #include <condition_variable>
