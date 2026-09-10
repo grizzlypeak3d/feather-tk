@@ -8,9 +8,24 @@
 
 namespace ftk
 {
+    inline const std::vector<std::string>& ICmdLineOption::getNames() const
+    {
+        return _names;
+    }
+
+    inline bool ICmdLineOption::hasValue() const
+    {
+        return _hasValue;
+    }
+
     inline const std::string& ICmdLineOption::getHelp() const
     {
         return _help;
+    }
+
+    inline const std::string& ICmdLineOption::getHelpText() const
+    {
+        return _helpText;
     }
 
     inline const std::string& ICmdLineOption::getGroup() const
@@ -35,17 +50,19 @@ namespace ftk
         _defaultValue(defaultValue),
         _possibleValues(possibleValues)
     {
-        _help = join(_names, ", ") + " (value) - " + help;
+        _hasValue = true;
+        std::string text = help;
         if (_defaultValue.has_value())
         {
             std::stringstream ss;
             ss << _defaultValue.value();
-            _help += " Default: \"" + ss.str() + "\".";
+            text += " Default: \"" + ss.str() + "\".";
         }
         if (!_possibleValues.empty())
         {
-            _help += " Options: " + _possibleValues + ".";
+            text += " Options: " + _possibleValues + ".";
         }
+        _setHelp(text);
     }
 
     template<typename T>
@@ -130,7 +147,10 @@ namespace ftk
         const std::string& help,
         const std::string& group) :
         ICmdLineOption(names, help, group)
-    {}
+    {
+        _hasValue = true;
+        _setHelp(help);
+    }
 
     template<typename T>
     inline std::shared_ptr<CmdLineListOption<T> > CmdLineListOption<T>::create(

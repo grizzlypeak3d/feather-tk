@@ -28,8 +28,17 @@ namespace ftk
     public:
         FTK_CORE_API virtual ~ICmdLineOption() = 0;
             
-        //! Get the help.
+        //! Get the names.
+        const std::vector<std::string>& getNames() const;
+
+        //! Get whether the option takes a value.
+        bool hasValue() const;
+
+        //! Get the help: the names, whether a value follows, and the text.
         const std::string& getHelp() const;
+
+        //! Get the help text alone, without the names.
+        const std::string& getHelpText() const;
 
         //! Get the group.
         const std::string& getGroup() const;
@@ -44,7 +53,12 @@ namespace ftk
         const std::string& getMatchedName() const;
 
     protected:
+        //! Compose the help from the names and the text.
+        FTK_CORE_API void _setHelp(const std::string& text);
+
         std::vector<std::string> _names;
+        bool _hasValue = false;
+        std::string _helpText;
         std::string _help;
         std::string _group;
         std::string _matchedName;

@@ -24,7 +24,10 @@ namespace ftk
         void cmdLine(nb::module_& m)
         {
             nb::class_<ICmdLineOption>(m, "ICmdLineOption")
+                .def_prop_ro("names", &ICmdLineOption::getNames)
+                .def_prop_ro("hasValue", &ICmdLineOption::hasValue)
                 .def_prop_ro("help", &ICmdLineOption::getHelp)
+                .def_prop_ro("helpText", &ICmdLineOption::getHelpText)
                 .def_prop_ro("group", &ICmdLineOption::getGroup)
                 .def_prop_ro("found", &ICmdLineOption::found)
                 .def_prop_ro("matchedName", &ICmdLineOption::getMatchedName);

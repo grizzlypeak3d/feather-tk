@@ -73,7 +73,9 @@ namespace ftk
         std::shared_ptr<Context> _context;
         
     private:
+        std::string _getCmdLineUsage() const;
         void _printCmdLineHelp();
+        void _printCmdLineJSON();
         void _printLog(const std::vector<LogItem>&);
 
         FTK_PRIVATE();

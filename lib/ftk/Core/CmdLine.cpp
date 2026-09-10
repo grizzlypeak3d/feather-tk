@@ -12,9 +12,16 @@ namespace ftk
         const std::string& help,
         const std::string& group) :
         _names(names),
-        _help(help),
         _group(group)
-    {}
+    {
+        _setHelp(help);
+    }
+
+    void ICmdLineOption::_setHelp(const std::string& text)
+    {
+        _helpText = text;
+        _help = join(_names, ", ") + (_hasValue ? " (value)" : "") + " - " + text;
+    }
 
     ICmdLineOption::~ICmdLineOption()
     {}
@@ -29,9 +36,7 @@ namespace ftk
         const std::string& help,
         const std::string& group) :
         ICmdLineOption(names, help, group)
-    {
-        _help = join(_names, ", ") + " - " + help;
-    }
+    {}
 
     std::shared_ptr<CmdLineFlag> CmdLineFlag::create(
         const std::vector<std::string>& names,

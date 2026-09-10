@@ -8,6 +8,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
+#include <nlohmann/json.hpp>
+
 #include <iostream>
 
 namespace ftk
@@ -41,6 +43,7 @@ namespace ftk
         std::vector<std::shared_ptr<ICmdLineArg> > cmdLineArgs;
         std::shared_ptr<CmdLineFlag> logFlag;
         std::shared_ptr<CmdLineFlag> helpFlag;
+        std::shared_ptr<CmdLineFlag> helpJSONFlag;
         bool help = false;
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptions;
         std::shared_ptr<ListObserver<LogItem> > logObserver;
@@ -76,6 +79,13 @@ namespace ftk
             { "-help", "-h", "--help", "--h" },
             "Show this message.");
         p.cmdLineOptions.push_back(p.helpFlag);
+        // The same as the help, as data: what the documentation is made
+        // from, so that a page describing the options is made from the
+        // options rather than kept by hand.
+        p.helpJSONFlag = CmdLineFlag::create(
+            { "-helpJSON" },
+            "Print the command line arguments and options as JSON and exit.");
+        p.cmdLineOptions.push_back(p.helpJSONFlag);
 
         _parseCmdLine();
 
@@ -162,6 +172,11 @@ namespace ftk
                 ++requiredArgs;
             }
         }
+        if (p.helpJSONFlag->found())
+        {
+            _printCmdLineJSON();
+            return;
+        }
         if (p.argv.size() < requiredArgs ||
             p.helpFlag->found())
         {
@@ -200,6 +215,63 @@ namespace ftk
         std::cerr << "ERROR: " << value << std::endl;
     }
 
+    std::string IApp::_getCmdLineUsage() const
+    {
+        FTK_P();
+        std::stringstream ss;
+        ss << p.name;
+        if (!p.cmdLineArgs.empty())
+        {
+            std::vector<std::string> args;
+            for (const auto& i : p.cmdLineArgs)
+            {
+                const bool optional = i->isOptional();
+                args.push_back(
+                    (optional ? "[" : "(") +
+                    toLower(i->getName()) +
+                    (optional ? "]" : ")"));
+            }
+            ss << " " << join(args, " ");
+        }
+        if (!p.cmdLineOptions.empty())
+        {
+            ss << " [option],...";
+        }
+        return ss.str();
+    }
+
+    void IApp::_printCmdLineJSON()
+    {
+        FTK_P();
+        p.help = true;
+        nlohmann::json json;
+        json["name"] = p.name;
+        json["summary"] = p.summary;
+        json["usage"] = _getCmdLineUsage();
+        json["arguments"] = nlohmann::json::array();
+        for (const auto& i : p.cmdLineArgs)
+        {
+            json["arguments"].push_back(
+            {
+                { "name", i->getName() },
+                { "help", i->getHelp() },
+                { "optional", i->isOptional() }
+            });
+        }
+        json["options"] = nlohmann::json::array();
+        for (const auto& i : p.cmdLineOptions)
+        {
+            json["options"].push_back(
+            {
+                { "names", i->getNames() },
+                { "value", i->hasValue() },
+                { "help", i->getHelpText() },
+                { "group", i->getGroup() }
+            });
+        }
+        _print(json.dump(4));
+    }
+
     void IApp::_printCmdLineHelp()
     {
         FTK_P();
@@ -207,29 +279,8 @@ namespace ftk
         _print("\n" + p.name + "\n");
         _print("    " + p.summary + "\n");
         _print("Usage:\n");
-        {
-            std::stringstream ss;
-            ss << "    " + p.name;
-            if (!p.cmdLineArgs.empty())
-            {
-                std::vector<std::string> args;
-                for (const auto& i : p.cmdLineArgs)
-                {
-                    const bool optional = i->isOptional();
-                    args.push_back(
-                        (optional ? "[" : "(") +
-                        toLower(i->getName()) +
-                        (optional ? "]" : ")"));
-                }
-                ss << " " << join(args, " ");
-            }
-            if (!p.cmdLineOptions.empty())
-            {
-                ss << " [option],...";
-            }
-            _print(ss.str());
-            _print("");
-        }
+        _print("    " + _getCmdLineUsage());
+        _print("");
         if (!p.cmdLineArgs.empty())
         {
             _print("Arguments:\n");
