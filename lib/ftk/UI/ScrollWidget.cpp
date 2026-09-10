@@ -22,7 +22,18 @@ namespace ftk
         bool scrollBarsAutoHide = true;
         bool scrollEventsEnabled = true;
         bool dragScroll = false;
+        // Pixels per wheel detent at display scale 1. Three lines on
+        // Windows and desktop Linux, their convention: a notch there is
+        // exactly one detent, nothing accelerates it, and a touchpad is
+        // calibrated to the same unit. On macOS the system scales the
+        // wheel with its own acceleration, and a trackpad arrives as a
+        // tenth of a detent per point of finger, so a line is enough: three
+        // would put a trackpad at six times the finger.
+#if defined(__APPLE__)
         int lineStep = 20;
+#else // __APPLE__
+        int lineStep = 60;
+#endif // __APPLE__
         bool border = true;
         SizeRole marginRole = SizeRole::None;
 
