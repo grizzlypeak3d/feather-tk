@@ -218,17 +218,20 @@ namespace ftk
         cmdLineOptionsTmp.push_back(p.cmdLine.captureOutput);
         if (!p.settingsPath.empty())
         {
+            // The defaults are described rather than printed: they are
+            // this user's paths, and the help is also the documentation's
+            // command line page, made on one machine and checked on another.
             p.cmdLine.settingsFile = CmdLineOption<std::string>::create(
                 { "-settingsFile" },
-                "Settings file name.",
-                "Files",
-                Format("{0}").arg(fromFileSystem(p.settingsPath)));
+                "Settings file name. The default is in the application "
+                "support directory; System Information shows it.",
+                "Files");
             cmdLineOptionsTmp.push_back(p.cmdLine.settingsFile);
             p.cmdLine.logFile = CmdLineOption<std::string>::create(
                 { "-logFile" },
-                "Log file name.",
-                "Files",
-                Format("{0}").arg(fromFileSystem(p.logFilePath)));
+                "Log file name. The default is in the application support "
+                "directory; System Information shows it.",
+                "Files");
             cmdLineOptionsTmp.push_back(p.cmdLine.logFile);
             p.cmdLine.resetSettings = CmdLineFlag::create(
                 { "-resetSettings" },
