@@ -897,15 +897,20 @@ namespace ftk
         _setSize(size, size);
     }
 
+    // The cursor is inside for the input verbs whatever the window's state: they are
+    // input from a test, which drives an offscreen window on purpose, and
+    // _cursorEnter() takes an offscreen window for one the cursor cannot be
+    // in -- which is right for the platform's enter events and would here
+    // send every widget a leave between one step and the next.
     void IWindow::hover(const V2I& pos)
     {
-        _cursorEnter(true);
+        _p->inside = true;
         _cursorPos(pos);
     }
 
     void IWindow::click(const V2I& pos, MouseButton button, int modifiers)
     {
-        _cursorEnter(true);
+        _p->inside = true;
         _cursorPos(pos);
         _mouseButton(button, true, modifiers);
         _mouseButton(button, false, modifiers);
@@ -918,7 +923,7 @@ namespace ftk
     {
         if (path.size() < 2)
             return;
-        _cursorEnter(true);
+        _p->inside = true;
         _cursorPos(path[0]);
         _mouseButton(MouseButton::Left, true, modifiers);
         const int steps = 8;
@@ -941,7 +946,7 @@ namespace ftk
 
     void IWindow::scroll(const V2I& pos, const V2F& value, int modifiers)
     {
-        _cursorEnter(true);
+        _p->inside = true;
         _cursorPos(pos);
         _scroll(value, modifiers);
     }
