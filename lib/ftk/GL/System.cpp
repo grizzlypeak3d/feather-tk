@@ -88,6 +88,7 @@ namespace ftk
         {
             std::weak_ptr<LogSystem> logSystem;
             std::shared_ptr<IRenderFactory> renderFactory;
+            bool init = false;
         };
         
         System::System(const std::shared_ptr<Context>& context) :
@@ -96,9 +97,7 @@ namespace ftk
         {
             FTK_P();
 
-            // Initialize SDL.
             auto logSystem = context->getLogSystem();
-            logSystem->print("ftk::gl::System", "Init SDL video and events...");
             p.logSystem = logSystem;
 
             // Which build of the library is actually running. A run that
@@ -130,56 +129,6 @@ namespace ftk
                         arg(fromFileSystem(path)).
                         arg(modified));
             }
-#if defined(__APPLE__)
-            // On macOS 14 and later SDL no longer activates the application
-            // at launch, so an application launched from a terminal starts
-            // without keyboard focus: the terminal keeps it, and typing
-            // goes there until the window is clicked. This asks for the old
-            // behavior, but only when a terminal is attached: anything
-            // launched through Launch Services -- the Finder, the dock,
-            // open -- is activated by it, and SDL's activation path costs
-            // a delay at startup. The environment variable
-            // SDL_MAC_BACKGROUND_APP still overrides it.
-            if (isatty(STDIN_FILENO) || isatty(STDERR_FILENO))
-            {
-                SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
-            }
-#endif // __APPLE__
-#if defined(FTK_SDL2)
-            SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
-#if defined(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT)
-            // Without this, input method compositions longer than the
-            // event's fixed buffer are truncated.
-            SDL_SetHint(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT, "1");
-#endif // SDL_HINT_IME_SUPPORT_EXTENDED_TEXT
-            if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
-#elif defined(FTK_SDL3)
-            if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
-#endif // FTK_SDL2
-            {
-                throw std::runtime_error(Format("Cannot initialize SDL: {0}").
-                    arg(SDL_GetError()));
-            }
-            // Which windowing system SDL chose. On Linux the same build
-            // runs on X11 or Wayland, and nothing else in a report says
-            // which one it was.
-            logSystem->print(
-                "ftk::gl::System",
-                Format("Video driver: {0}").arg(getVideoDriver()));
-#if defined(FTK_SDL2)
-            if (SDL_GL_LoadLibrary(NULL) < 0)
-#elif defined(FTK_SDL3)
-            if (!SDL_GL_LoadLibrary(NULL))
-#endif // FTK_SDL2
-            {
-                throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
-                    arg(SDL_GetError()));
-            }
-#if defined(FTK_SDL2)
-            SDL_LogSetOutputFunction(logOutput, this);
-#elif defined(FTK_SDL3)
-            SDL_SetLogOutputFunction(logOutput, this);
-#endif // FTK_SDL2
 
             // Create default render factory.
             p.renderFactory = std::make_shared<RenderFactory>();
@@ -222,7 +171,10 @@ namespace ftk
 #elif defined(FTK_SDL3)
             SDL_SetLogOutputFunction(nullptr, nullptr);
 #endif // FTK_SDL2
-            SDL_Quit();
+            if (p.init)
+            {
+                SDL_Quit();
+            }
         }
 
         std::shared_ptr<System> System::create(const std::shared_ptr<Context>& context)
@@ -233,6 +185,74 @@ namespace ftk
         const std::shared_ptr<IRenderFactory>& System::getRenderFactory() const
         {
             return _p->renderFactory;
+        }
+
+        void System::init()
+        {
+            FTK_P();
+            if (p.init)
+            {
+                return;
+            }
+            p.init = true;
+            auto logSystem = p.logSystem.lock();
+            if (logSystem)
+            {
+                logSystem->print("ftk::gl::System", "Init SDL video and events...");
+            }
+#if defined(__APPLE__)
+            // On macOS 14 and later SDL no longer activates the application
+            // at launch, so an application launched from a terminal starts
+            // without keyboard focus: the terminal keeps it, and typing
+            // goes there until the window is clicked. This asks for the old
+            // behavior, but only when a terminal is attached: anything
+            // launched through Launch Services -- the Finder, the dock,
+            // open -- is activated by it, and SDL's activation path costs
+            // a delay at startup. The environment variable
+            // SDL_MAC_BACKGROUND_APP still overrides it.
+            if (isatty(STDIN_FILENO) || isatty(STDERR_FILENO))
+            {
+                SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
+            }
+#endif // __APPLE__
+#if defined(FTK_SDL2)
+            SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
+#if defined(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT)
+            // Without this, input method compositions longer than the
+            // event's fixed buffer are truncated.
+            SDL_SetHint(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT, "1");
+#endif // SDL_HINT_IME_SUPPORT_EXTENDED_TEXT
+            if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
+#elif defined(FTK_SDL3)
+            if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
+#endif // FTK_SDL2
+            {
+                throw std::runtime_error(Format("Cannot initialize SDL: {0}").
+                    arg(SDL_GetError()));
+            }
+            // Which windowing system SDL chose. On Linux the same build
+            // runs on X11 or Wayland, and nothing else in a report says
+            // which one it was.
+            if (logSystem)
+            {
+                logSystem->print(
+                    "ftk::gl::System",
+                    Format("Video driver: {0}").arg(getVideoDriver()));
+            }
+#if defined(FTK_SDL2)
+            if (SDL_GL_LoadLibrary(NULL) < 0)
+#elif defined(FTK_SDL3)
+            if (!SDL_GL_LoadLibrary(NULL))
+#endif // FTK_SDL2
+            {
+                throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
+                    arg(SDL_GetError()));
+            }
+#if defined(FTK_SDL2)
+            SDL_LogSetOutputFunction(logOutput, this);
+#elif defined(FTK_SDL3)
+            SDL_SetLogOutputFunction(logOutput, this);
+#endif // FTK_SDL2
         }
 
         std::string System::getVideoDriver() const

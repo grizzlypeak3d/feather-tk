@@ -5,6 +5,7 @@
 
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Init.h>
+#include <ftk/GL/System.h>
 #include <ftk/GL/Util.h>
 
 #include <ftk/Core/Box.h>
@@ -56,6 +57,11 @@ namespace ftk
             FTK_P();
 
             p.logSystem = context->getLogSystem();
+
+            // Before the attributes: SDL 3 refuses them until the video
+            // subsystem is up, and the window would then get whatever
+            // context it defaults to.
+            context->getSystem<System>()->init();
 
             SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
             const bool doubleBuffer = options & static_cast<int>(WindowOptions::DoubleBuffer);

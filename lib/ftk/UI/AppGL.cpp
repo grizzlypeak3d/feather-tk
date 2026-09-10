@@ -15,6 +15,7 @@
 #include <ftk/GL/Init.h>
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/OffscreenBuffer.h>
+#include <ftk/GL/System.h>
 #include <ftk/GL/Shader.h>
 #include <ftk/GL/Texture.h>
 
@@ -245,6 +246,15 @@ namespace ftk
             cmdLineOptionsTmp);
         uiInit(context);
 
+        // The help has been printed and the process leaves as soon as this
+        // returns, so the video subsystem is not started for it: that wants
+        // a display, and a shell over ssh has none to give.
+        const bool video = !hasCmdLineHelp();
+        if (video)
+        {
+            context->getSystem<gl::System>()->init();
+        }
+
         // Writing a screenshot is the whole of such a run, so there is nothing
         // for a window on screen to be good for; see IWindow::setOffscreen().
         // A process that asked for it up front -- a test runner -- gets it
@@ -326,28 +336,31 @@ namespace ftk
         }
         p.customColorRoles = ObservableMap<ColorRole, Color4F>::create(ftk::getCustomColorRoles());
 
+        if (video)
+        {
 #if defined(FTK_SDL2)
-        float dDpi = 0.F;
-        float hDpi = 0.F;
-        float vDpi = 0.F;
-        if (0 == SDL_GetDisplayDPI(0, &dDpi, &hDpi, &vDpi))
-        {
-            logSystem->print(
-                "ftk::App",
-                Format("Display DPI: {0}").arg(hDpi));
-            p.defaultDisplayScale = std::round(hDpi / getBaseDPI());
-        }
+            float dDpi = 0.F;
+            float hDpi = 0.F;
+            float vDpi = 0.F;
+            if (0 == SDL_GetDisplayDPI(0, &dDpi, &hDpi, &vDpi))
+            {
+                logSystem->print(
+                    "ftk::App",
+                    Format("Display DPI: {0}").arg(hDpi));
+                p.defaultDisplayScale = std::round(hDpi / getBaseDPI());
+            }
 #elif defined(FTK_SDL3)
-        int sdlDisplayCount = 0;
-        if (SDL_DisplayID* sdlDisplays = SDL_GetDisplays(&sdlDisplayCount))
-        {
-            p.defaultDisplayScale = SDL_GetDisplayContentScale(sdlDisplays[0]);
-            SDL_free(sdlDisplays);
-        }
+            int sdlDisplayCount = 0;
+            if (SDL_DisplayID* sdlDisplays = SDL_GetDisplays(&sdlDisplayCount))
+            {
+                p.defaultDisplayScale = SDL_GetDisplayContentScale(sdlDisplays[0]);
+                SDL_free(sdlDisplays);
+            }
 #if defined(__APPLE__) || defined(_WINDOWS)
-        SDL_AddEventWatch(_eventWatch, this);
+            SDL_AddEventWatch(_eventWatch, this);
 #endif // __APPLE__
 #endif // FTK_SDL2
+        }
         if (p.cmdLine.displayScale->hasValue())
         {
             p.defaultDisplayScale = p.cmdLine.displayScale->getValue();
