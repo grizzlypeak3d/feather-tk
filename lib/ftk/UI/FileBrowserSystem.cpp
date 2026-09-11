@@ -45,6 +45,8 @@ namespace ftk
         //! the close callback in _openWindow().
         std::shared_ptr<Window> closing;
         std::shared_ptr<Timer> closeTimer;
+
+        bool nfdInit = false;
     };
 
     FileBrowserSystem::FileBrowserSystem(const std::shared_ptr<Context>& context) :
@@ -56,17 +58,16 @@ namespace ftk
         p.model = FileBrowserModel::create(context);
         p.recentFilesModel = RecentFilesModel::create(context);
         p.closeTimer = Timer::create(context);
-
-#if defined(FTK_NFD)
-        NFD::Init();
-#endif // FTK_NFD
     }
 
     FileBrowserSystem::~FileBrowserSystem()
     {
         FTK_P();
 #if defined(FTK_NFD)
-        NFD::Quit();
+        if (p.nfdInit)
+        {
+            NFD::Quit();
+        }
 #endif // FTK_NFD
     }
 
@@ -103,6 +104,17 @@ namespace ftk
         FTK_P();
         bool native = p.native;
 #if defined(FTK_NFD)
+        // Initialized here rather than at startup. On macOS it makes the
+        // application object, and SDL only makes an application a regular
+        // one -- in the dock and the application switcher -- when it makes
+        // that object itself; an application launched from a shell was left
+        // an accessory with neither. By the first dialog SDL has made it,
+        // and NFD leaves a regular application as it is.
+        if (native && !p.nfdInit)
+        {
+            p.nfdInit = NFD_OKAY == NFD::Init();
+            native = p.nfdInit;
+        }
         if (native)
         {
             // Build a single native filter group from the extensions. NFD wants
