@@ -44,15 +44,11 @@ namespace ftk
     {
         Dark,
         Light,
-        Custom,
 
         Count,
         First = Dark
     };
     FTK_ENUM(FTK_UI_API, ColorStyle);
-
-    //! Get custom color roles.
-    FTK_UI_API std::map<ColorRole, Color4F> getCustomColorRoles();
 
     //! Get display scales.
     FTK_UI_API std::vector<float> getDisplayScales();
@@ -171,10 +167,6 @@ namespace ftk
         FTK_UI_API ColorStyle getColorStyle() const;
         FTK_UI_API std::shared_ptr<IObservable<ColorStyle> > observeColorStyle() const;
         FTK_UI_API void setColorStyle(ColorStyle);
-
-        FTK_UI_API const std::map<ColorRole, Color4F>& getCustomColorRoles() const;
-        FTK_UI_API std::shared_ptr<IObservableMap<ColorRole, Color4F> > observeCustomColorRoles() const;
-        FTK_UI_API void setCustomColorRoles(const std::map<ColorRole, Color4F>&);
 
         FTK_UI_API const std::shared_ptr<CmdLineOption<ColorStyle> >& getColorStyleCmdLineOption() const;
 

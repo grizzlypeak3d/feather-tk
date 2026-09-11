@@ -181,8 +181,6 @@ namespace ftk
                 .def_prop_ro("style", &App::getStyle)
                 .def_prop_rw("colorStyle", &App::getColorStyle, &App::setColorStyle)
                 .def_prop_ro("observeColorStyle", &App::observeColorStyle)
-                .def_prop_rw("customColorRoles", &App::getCustomColorRoles, &App::setCustomColorRoles, nb::rv_policy::copy)
-                .def_prop_ro("observeCustomColorRoles", &App::observeCustomColorRoles)
                 .def_prop_ro("defaultDisplayScale", &App::getDefaultDisplayScale)
                 .def_prop_rw("displayScale", &App::getDisplayScale, &App::setDisplayScale)
                 .def_prop_ro("observeDisplayScale", &App::observeDisplayScale)

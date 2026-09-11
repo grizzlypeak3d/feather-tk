@@ -58,16 +58,7 @@ namespace ftk
     FTK_ENUM_IMPL(
         ColorStyle,
         "Dark",
-        "Light",
-        "Custom");
-
-    std::map<ColorRole, Color4F> getCustomColorRoles()
-    {
-        std::map<ColorRole, Color4F> out = getDefaultColorRoles();
-        out[ColorRole::Window] = Color4F(.15F, .15F, .2F);
-        out[ColorRole::Button] = Color4F(.2F, .2F, .3F);
-        return out;
-    }
+        "Light");
 
     std::vector<float> getDisplayScales()
     {
@@ -123,7 +114,6 @@ namespace ftk
         std::shared_ptr<IconSystem> iconSystem;
         std::shared_ptr<Style> style;
         std::shared_ptr<Observable<ColorStyle> > colorStyle;
-        std::shared_ptr<ObservableMap<ColorRole, Color4F> > customColorRoles;
         float defaultDisplayScale = 1.F;
         // The display scale is automatic until the application sets a
         // positive one; the window's correction applies only while it is.
@@ -337,7 +327,6 @@ namespace ftk
         {
             p.colorStyle->setIfChanged(p.cmdLine.colorStyle->getValue());
         }
-        p.customColorRoles = ObservableMap<ColorRole, Color4F>::create(ftk::getCustomColorRoles());
 
         if (video)
         {
@@ -508,28 +497,6 @@ namespace ftk
         if (p.colorStyle->setIfChanged(value))
         {
             _styleUpdate();
-        }
-    }
-
-    const std::map<ColorRole, Color4F>& App::getCustomColorRoles() const
-    {
-        return _p->customColorRoles->get();
-    }
-
-    std::shared_ptr<IObservableMap<ColorRole, Color4F> > App::observeCustomColorRoles() const
-    {
-        return _p->customColorRoles;
-    }
-
-    void App::setCustomColorRoles(const std::map<ColorRole, Color4F>& value)
-    {
-        FTK_P();
-        if (p.customColorRoles->setIfChanged(value))
-        {
-            if (ColorStyle::Custom == p.colorStyle->get())
-            {
-                _styleUpdate();
-            }
         }
     }
 
@@ -2051,9 +2018,6 @@ namespace ftk
         case ColorStyle::Light:
             colorRoles = getLightColorRoles();
             colorControls.disabledAlpha = getLightColorControls().disabledAlpha;
-            break;
-        case ColorStyle::Custom:
-            colorRoles = p.customColorRoles->get();
             break;
         default: break;
         }
