@@ -118,6 +118,9 @@ namespace ftk
         //! subclass otherwise has to remember not to have.
         FTK_UI_API virtual void _sizeDirty();
 
+        //! Get the color for the text and icon.
+        FTK_UI_API Color4F _getTextColor(const DrawEvent&) const;
+
 
         std::string _text;
         FontType _font = FontType::Regular;

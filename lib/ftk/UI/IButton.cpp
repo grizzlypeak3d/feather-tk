@@ -158,6 +158,28 @@ namespace ftk
         setDrawUpdate();
     }
 
+    Color4F IButton::_getTextColor(const DrawEvent& event) const
+    {
+        // A checked button's text sits on the checked color, which has
+        // nothing to do with the style's text color: the light style's text
+        // is black, and a checked color can be dark in either style. Black
+        // or white is taken from the fill instead.
+        Color4F out;
+        if (_checked && _checkedRole != ColorRole::None)
+        {
+            out = contrastColor(event.style->getColorRole(_checkedRole));
+            if (!isEnabled())
+            {
+                out.a *= event.style->getColorControls().disabledAlpha;
+            }
+        }
+        else
+        {
+            out = event.style->getColorRole(_textRole, isEnabled());
+        }
+        return out;
+    }
+
     ColorRole IButton::getTextRole() const
     {
         return _textRole;

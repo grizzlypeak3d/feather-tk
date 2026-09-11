@@ -442,7 +442,7 @@ namespace ftk
                     p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                event.style->getColorRole(_textRole, isEnabled()));
+                _getTextColor(event));
             x += iconSize.w;
         }
             
@@ -458,7 +458,7 @@ namespace ftk
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
                     p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
-                event.style->getColorRole(_textRole, isEnabled()));
+                _getTextColor(event));
             x += p.size.pad * 2 + p.size.textSize.w;
         }
 

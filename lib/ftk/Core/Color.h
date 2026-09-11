@@ -125,6 +125,9 @@ namespace ftk
     //! Convert to greyscale.
     FTK_CORE_API Color4F greyscale(const Color4F&);
 
+    //! Get black or white, whichever reads better on the given color.
+    FTK_CORE_API Color4F contrastColor(const Color4F&);
+
     //! Get a brightness color matrix.
     FTK_CORE_API M44F brightness(const V3F&);
 

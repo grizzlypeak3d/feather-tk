@@ -164,6 +164,19 @@ namespace ftk
         return (c <= 0.04045f) ? c / 12.92f : powf((c + 0.055f) / 1.055f, 2.4f);
     }
 
+    Color4F contrastColor(const Color4F& value)
+    {
+        // The relative luminance at which black and white text have the
+        // same contrast ratio, (L + .05) / .05 = 1.05 / (L + .05).
+        const float luminance =
+            .2126F * srgbToLinear(value.r) +
+            .7152F * srgbToLinear(value.g) +
+            .0722F * srgbToLinear(value.b);
+        return luminance > .1791F ?
+            Color4F(0.F, 0.F, 0.F) :
+            Color4F(1.F, 1.F, 1.F);
+    }
+
     std::string to_string(const Color1F& value)
     {
         std::stringstream ss;
