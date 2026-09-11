@@ -161,8 +161,12 @@ namespace ftk
         out[ColorRole::Border] = Color4F(.82F, .82F, .82F);
         out[ColorRole::Hover] = Color4F(0.F, 0.F, 0.F, .1F);
         out[ColorRole::Pressed] = Color4F(0.F, 0.F, 0.F, .2F);
-        out[ColorRole::Checked]  = Color4F(.62F, .42F, .12F);
-        out[ColorRole::KeyFocus] = Color4F(.74F, .50F, .13F);
+        // A light blue under the black icons and text, rather than the
+        // dark style's amber, which is a heavy block among light grey
+        // buttons. The focus outline is a deeper blue of the same hue so
+        // the style has one accent.
+        out[ColorRole::Checked]  = Color4F(.6F, .78F, .95F);
+        out[ColorRole::KeyFocus] = Color4F(.2F, .47F, .8F);
         out[ColorRole::Overlay] = Color4F(1.F, 1.F, 1.F, .5F);
         out[ColorRole::Arrow] = Color4F(0.F, 0.F, 0.F);
         out[ColorRole::TooltipWindow] = Color4F(1.F, 1.F, 1.F);
