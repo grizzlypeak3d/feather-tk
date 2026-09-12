@@ -10,7 +10,13 @@
 
 #include <nlohmann/json.hpp>
 
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
+
+#if defined(__GLIBC__)
+#include <malloc.h>
+#endif // __GLIBC__
 
 namespace ftk
 {
@@ -58,6 +64,23 @@ namespace ftk
         const std::vector<std::shared_ptr<ICmdLineOption> >& cmdLineOptions)
     {
         FTK_P();
+
+#if defined(__GLIBC__)
+        // Large blocks -- the pixels of images and decoded frames above all
+        // -- get mappings of their own, returned to the system as soon as
+        // they are freed. Left to glibc, blocks that size come from the heap
+        // of the thread that asked for them, a decoder's, and freed ones stay
+        // there for that thread to use again: moving to another file, whose
+        // decoders are other threads, kept the first file's whole cache on
+        // top of the second one's. Setting the threshold also stops glibc
+        // raising it as blocks are freed. One given in GLIBC_TUNABLES is left
+        // alone.
+        const char* tunables = std::getenv("GLIBC_TUNABLES");
+        if (!tunables || !std::strstr(tunables, "mmap_threshold"))
+        {
+            mallopt(M_MMAP_THRESHOLD, 1024 * 1024);
+        }
+#endif // __GLIBC__
 
         _context = context;
 
