@@ -4,6 +4,7 @@
 #include <ftk/UI/ItemButtonList.h>
 
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/ScrollWidget.h>
 
 #include <ftk/Core/Math.h>
 
@@ -109,9 +110,41 @@ namespace ftk
             return;
         p.current = value;
         setDrawUpdate();
+        if (callback)
+        {
+            // Only when the list itself moved the current item. Setting it
+            // from outside happens while the rows are being rebuilt, when
+            // their geometries are still those of the list as it was.
+            _scrollToCurrent();
+        }
         if (callback && p.currentCallback && p.current >= 0)
         {
             p.currentCallback(p.current);
+        }
+    }
+
+    void ItemButtonList::_scrollToCurrent()
+    {
+        FTK_P();
+        const auto items = getItems();
+        if (p.current < 0 || p.current >= static_cast<int>(items.size()))
+        {
+            return;
+        }
+        // The scroll area is not the list's own: a list is put inside one by
+        // whoever lays it out, and several lists can share it.
+        if (auto scrollWidget = getParentT<ScrollWidget>())
+        {
+            if (const auto& content = scrollWidget->getWidget())
+            {
+                // scrollTo() takes the box in the scrolled content's space,
+                // and a geometry is in the window's. It does nothing when the
+                // item is already in view.
+                const Box2I& g = items[p.current]->getGeometry();
+                scrollWidget->scrollTo(Box2I(
+                    g.min - content->getGeometry().min,
+                    g.size()));
+            }
         }
     }
 

@@ -68,6 +68,11 @@ namespace ftk
     private:
         void _setCurrent(int, bool callback);
 
+        //! Keep the current item in view. The arrows, Home and End move the
+        //! current item, and a list taller than the scroll area holding it
+        //! would otherwise carry the focus ring out of sight.
+        void _scrollToCurrent();
+
         //! A press on a row: the keyboard follows the click, entering the
         //! list at the clicked row. Called by ItemButton for rows that do
         //! not take the key focus themselves.
