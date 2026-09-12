@@ -337,6 +337,9 @@ namespace ftk
                 "void main()\n"
                 "{\n"
                 "    vec4 c = vec4(0.0);\n"
+                "    vec4 lo = vec4(1.0e38);\n"
+                "    vec4 hi = vec4(-1.0e38);\n"
+                "    bool range = false;\n"
                 "    float outCoord = scaleVertical ? fTexture.y : fTexture.x;\n"
                 "    for (int i = 0; i < scaleTaps; ++i)\n"
                 "    {\n"
@@ -344,9 +347,21 @@ namespace ftk
                 "        vec2 t = scaleVertical ?\n"
                 "            vec2(fTexture.x, tap.x) :\n"
                 "            vec2(tap.x, fTexture.y);\n"
-                "        c += tap.y * texture(textureSampler, t);\n"
+                "        vec4 texel = texture(textureSampler, t);\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
                 "    }\n"
-                "    outColor = c;\n"
+                // Held to the range of the texels the kernel weighs up. Its
+                // negative lobes overshoot a hard edge, and a sum of many
+                // weights over a flat area lands a hair above or below the
+                // value there; either way the pass invents values the
+                // picture does not have, which the clipping warning reports.
+                "    outColor = range ? clamp(c, lo, hi) : c;\n"
                 "}\n").
                 arg(scaleTap);
         }
@@ -384,6 +399,9 @@ namespace ftk
                 "void main()\n"
                 "{\n"
                 "    vec4 c = vec4(0.0);\n"
+                "    vec4 lo = vec4(1.0e38);\n"
+                "    vec4 hi = vec4(-1.0e38);\n"
+                "    bool range = false;\n"
                 "    for (int i = 0; i < scaleTaps; ++i)\n"
                 "    {\n"
                 "        vec2 tap = scaleTap(scaleContrib, fTexture.x, i, scaleTaps);\n"
@@ -392,7 +410,7 @@ namespace ftk
                 "        {\n"
                 "            t.x = 1.0 - t.x;\n"
                 "        }\n"
-                "        c += tap.y * sampleTexture("
+                "        vec4 texel = sampleTexture("
                 "            t,\n"
                 "            imageType,\n"
                 "            channelCount,\n"
@@ -401,8 +419,16 @@ namespace ftk
                 "            textureSampler0,\n"
                 "            textureSampler1,\n"
                 "            textureSampler2);\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
                 "    }\n"
-                "    outColor = c;\n"
+                // See textureScaleFragmentSource().
+                "    outColor = range ? clamp(c, lo, hi) : c;\n"
                 "}\n").
                 arg(imageType).
                 arg(videoLevels).
@@ -437,6 +463,9 @@ namespace ftk
                 "void main()\n"
                 "{\n"
                 "    vec4 c = vec4(0.0);\n"
+                "    vec4 lo = vec4(1.0e38);\n"
+                "    vec4 hi = vec4(-1.0e38);\n"
+                "    bool range = false;\n"
                 "    for (int i = 0; i < scaleTaps; ++i)\n"
                 "    {\n"
                 "        vec2 tap = scaleTap(scaleContrib, fTexture.y, i, scaleTaps);\n"
@@ -448,9 +477,17 @@ namespace ftk
                 "        {\n"
                 "            y = 1.0 - y;\n"
                 "        }\n"
-                "        c += tap.y * texture(textureSampler0, vec2(fTexture.x, y));\n"
+                "        vec4 texel = texture(textureSampler0, vec2(fTexture.x, y));\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
                 "    }\n"
-                "    outColor = c * color;\n"
+                // See textureScaleFragmentSource().
+                "    outColor = (range ? clamp(c, lo, hi) : c) * color;\n"
                 "    if (opaque)\n"
                 "    {\n"
                 "        outColor.a = 1.0;\n"
