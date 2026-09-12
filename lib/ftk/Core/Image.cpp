@@ -88,13 +88,15 @@ namespace ftk
     FTK_ENUM_IMPL(
         YUVCoefficients,
         "REC709",
-        "BT2020");
+        "BT2020",
+        "BT601");
 
     V4F getYUVCoefficients(YUVCoefficients value)
     {
         //! References:
         //! * https://www.itu.int/rec/R-REC-BT.709
         //! * https://www.itu.int/rec/R-REC-BT.2020
+        //! * https://www.itu.int/rec/R-REC-BT.601
         //! * https://gist.github.com/yohhoy/dafa5a47dade85d8b40625261af3776a
         //!
         //!     Y  = a * R + b * G + c * B
@@ -116,7 +118,8 @@ namespace ftk
         const std::array<V4F, static_cast<size_t>(YUVCoefficients::Count)> data =
         {
             V4F(1.5748, 0.468124273, 0.187324273, 1.8556),
-            V4F(1.4746, 0.571353127, 0.164553127, 1.8814)
+            V4F(1.4746, 0.571353127, 0.164553127, 1.8814),
+            V4F(1.402, 0.714136286, 0.344136286, 1.772)
         };
         return data[static_cast<size_t>(value)];
     }
