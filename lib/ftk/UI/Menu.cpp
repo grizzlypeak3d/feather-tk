@@ -352,9 +352,11 @@ namespace ftk
         {
             subMenu->close();
         }
-        IMenuPopup::close();
         _setCurrent(nullptr);
         _announce(nullptr);
+        // Last, because the close callback is where an owner lets go of
+        // the menu, and this may be the end of it.
+        IMenuPopup::close();
     }
 
     void Menu::tickEvent(

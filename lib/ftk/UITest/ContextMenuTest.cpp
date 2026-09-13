@@ -227,6 +227,29 @@ namespace ftk
             app->tick();
             FTK_CHECK(window->getPopups().empty());
 
+            // The close callback may drop the last reference to the menu,
+            // the way an owner that makes a menu each time it opens one
+            // does. Nothing of the menu can be used after it.
+            {
+                auto owned = Menu::create(_context);
+                owned->addAction(Action::create("Action", [](bool) {}));
+                owned->open(window, V2I(0, 0));
+                app->tick();
+                bool closed = false;
+                owned->setCloseCallback(
+                    [&owned, &closed]
+                    {
+                        closed = true;
+                        owned.reset();
+                    });
+                Menu* raw = owned.get();
+                raw->close();
+                FTK_CHECK(closed);
+                FTK_CHECK(!owned);
+                app->tick();
+                FTK_CHECK(window->getPopups().empty());
+            }
+
             // The context menu acts on the editing session, so opening it
             // does not end the session: nothing is committed, no focus
             // change is reported, and the selection stays. Without this a
