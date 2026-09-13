@@ -598,10 +598,17 @@ namespace ftk
             FTK_CHECK(browserWindow->isKeyFocusVisible());
             browserWindow->click(V2I(700, 500));
             app->tick();
-            // The click hid the focus again; Tab shows it on the list.
+            // The click hid the focus again; a step back and forward shows it
+            // on the list. Both presses in the same breath: what comes before
+            // the list is the side panel, which changes as the drives arrive
+            // from their polling thread, so a lone Shift+Tab lands somewhere
+            // different from run to run and can be clipped out of the focus
+            // before Escape.
             browserWindow->keyPress(Key::Tab, static_cast<int>(KeyModifier::Shift));
+            browserWindow->keyPress(Key::Tab);
             app->tick();
-            const auto focusWidget = browserWindow->getKeyFocus();
+            FTK_CHECK(widget->getView()->hasKeyFocus());
+            FTK_CHECK(browserWindow->isKeyFocusVisible());
             browserWindow->keyPress(Key::Escape);
             app->tick();
             FTK_CHECK(2 == app->getWindows().size());
