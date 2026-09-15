@@ -7,10 +7,88 @@
 
 #include <ftk/Core/String.h>
 
+#include <algorithm>
 #include <optional>
 
 namespace ftk
 {
+    namespace
+    {
+        const std::string ellipsis = "...";
+
+        //! The longest elision of the text that fits the width: the most
+        //! characters kept, from whichever end the mode says, around an
+        //! ellipsis. Measured in the font, since characters are not all as
+        //! wide, and cut on code point boundaries so none is split.
+        std::string elideToWidth(
+            const std::shared_ptr<FontSystem>& fontSystem,
+            const std::string& text,
+            const FontInfo& fontInfo,
+            int width,
+            ElideMode mode)
+        {
+            std::vector<size_t> bounds;
+            for (size_t i = 0; i < text.size();)
+            {
+                bounds.push_back(i);
+                const size_t next = utf8Next(text, i);
+                if (next <= i)
+                {
+                    break;
+                }
+                i = next;
+            }
+            bounds.push_back(text.size());
+            const size_t count = bounds.size() - 1;
+
+            const auto candidate = [&](size_t n)
+            {
+                switch (mode)
+                {
+                case ElideMode::Left:
+                    return ellipsis + text.substr(bounds[count - n]);
+                case ElideMode::Middle:
+                {
+                    // The odd character, if there is one, goes to the
+                    // beginning, as ftk::elide() does.
+                    const size_t head = n - n / 2;
+                    const size_t tail = n / 2;
+                    return text.substr(0, bounds[head]) + ellipsis +
+                        text.substr(bounds[count - tail]);
+                }
+                case ElideMode::Right:
+                default:
+                    return text.substr(0, bounds[n]) + ellipsis;
+                }
+            };
+
+            // Widths only grow with more characters kept, so the most that
+            // fit can be searched for rather than tried one at a time.
+            size_t lo = 0;
+            size_t hi = count > 0 ? count - 1 : 0;
+            std::string out = ellipsis;
+            while (lo <= hi)
+            {
+                const size_t mid = lo + (hi - lo) / 2;
+                std::string s = candidate(mid);
+                if (fontSystem->getSize(s, fontInfo).w <= width)
+                {
+                    out = std::move(s);
+                    lo = mid + 1;
+                }
+                else
+                {
+                    if (0 == mid)
+                    {
+                        break;
+                    }
+                    hi = mid - 1;
+                }
+            }
+            return out;
+        }
+    }
+
     struct Label::Private
     {
         std::string text;
@@ -20,6 +98,8 @@ namespace ftk
         FontType font = FontType::Regular;
         int fontSize = FontInfo().size;
         bool clipText = false;
+        bool elide = false;
+        ElideMode elideMode = ElideMode::Right;
 
         struct SizeData
         {
@@ -214,6 +294,44 @@ namespace ftk
         setDrawUpdate();
     }
 
+    bool Label::getElide() const
+    {
+        return _p->elide;
+    }
+
+    ElideMode Label::getElideMode() const
+    {
+        return _p->elideMode;
+    }
+
+    void Label::setElide(bool value, ElideMode mode)
+    {
+        FTK_P();
+        if (value == p.elide && mode == p.elideMode)
+            return;
+        // A layout sizes a left aligned widget to its size hint, which here
+        // is only the ellipsis; filling is what lets the label have the room
+        // it is given. The text is drawn from the left either way. Turning
+        // eliding off puts back the label's own alignment, unless something
+        // has changed it since.
+        if (value != p.elide)
+        {
+            if (value)
+            {
+                setHAlign(HAlign::Fill);
+            }
+            else if (HAlign::Fill == getHAlign())
+            {
+                setHAlign(HAlign::Left);
+            }
+        }
+        p.elide = value;
+        p.elideMode = mode;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     Size2I Label::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -250,7 +368,17 @@ namespace ftk
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
 
-            p.size.sizeHint = margin(p.size.textSize, p.size.hMargin, p.size.vMargin);
+            Size2I size = p.size.textSize;
+            if (p.elide)
+            {
+                // No wider than what is left when nothing fits, so the
+                // text never decides how wide the label's parent is.
+                const Size2I ellipsisSize =
+                    event.fontSystem->getSize(ellipsis, p.size.fontInfo);
+                size.w = std::min(size.w, ellipsisSize.w);
+                size.h = std::max(size.h, ellipsisSize.h);
+            }
+            p.size.sizeHint = margin(size, p.size.hMargin, p.size.vMargin);
 
             p.draw.reset();
         }
@@ -278,13 +406,25 @@ namespace ftk
             p.draw->g2 = margin(p.draw->g, -p.size.hMargin, -p.size.vMargin, -p.size.hMargin, -p.size.vMargin);
             if (!p.text.empty())
             {
-                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
+                const std::string text =
+                    p.elide && p.size.textSize.w > p.draw->g2.w() ?
+                    elideToWidth(
+                        event.fontSystem,
+                        p.text,
+                        p.size.fontInfo,
+                        p.draw->g2.w(),
+                        p.elideMode) :
+                    p.text;
+                p.draw->glyphs = event.fontSystem->getGlyphs(text, p.size.fontInfo);
             }
         }
 
+        // Clipped when eliding too: with less room than the ellipsis
+        // itself, even that is wider than the label.
+        const bool clip = p.clipText || p.elide;
         const bool clipRectEnabledPrev = event.render->getClipRectEnabled();
         const Box2I clipRectPrev = event.render->getClipRect();
-        if (p.clipText)
+        if (clip)
         {
             event.render->setClipRectEnabled(true);
             event.render->setClipRect(getGeometry());
@@ -296,7 +436,7 @@ namespace ftk
             p.draw->g2.min,
             event.style->getColorRole(p.textRole, isEnabled()));
 
-        if (p.clipText)
+        if (clip)
         {
             event.render->setClipRectEnabled(clipRectEnabledPrev);
             event.render->setClipRect(clipRectPrev);

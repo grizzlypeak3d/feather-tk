@@ -47,7 +47,14 @@ namespace ftk
                 .def_prop_rw("vMarginRole", &Label::getVMarginRole, &Label::setVMarginRole)
                 .def("setMarginRole", nb::overload_cast<SizeRole, SizeRole>(&Label::setMarginRole))
                 .def_prop_rw("font", &Label::getFont, &Label::setFont)
-                .def_prop_rw("fontSize", &Label::getFontSize, &Label::setFontSize);
+                .def_prop_rw("fontSize", &Label::getFontSize, &Label::setFontSize)
+                .def_prop_ro("elide", &Label::getElide)
+                .def_prop_ro("elideMode", &Label::getElideMode)
+                .def(
+                    "setElide",
+                    &Label::setElide,
+                    nb::arg("elide"),
+                    nb::arg("mode") = ElideMode::Right);
         }
     }
 }

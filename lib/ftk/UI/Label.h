@@ -6,6 +6,8 @@
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IWidget.h>
 
+#include <ftk/Core/String.h>
+
 namespace ftk
 {
     //! \name Text Widgets
@@ -88,6 +90,23 @@ namespace ftk
 
         //! Set whether the text is clipped.
         FTK_UI_API void setClipText(bool);
+
+        //! Get whether the text is elided to fit the width.
+        FTK_UI_API bool getElide() const;
+
+        //! Get which end of elided text is kept.
+        FTK_UI_API ElideMode getElideMode() const;
+
+        //! Set whether the text is elided to fit the width the label is
+        //! given, and which end of it to keep. The size hint is then only as
+        //! wide as the ellipsis, so a long text does not widen whatever holds
+        //! the label; give the label an expanding stretch for it to use the
+        //! room there is. Turning it on sets the horizontal alignment to
+        //! fill, since a left aligned widget is laid out at its size hint,
+        //! and turning it off sets it back to left. The text is measured in
+        //! its font rather than counted in characters, and a character is
+        //! never split.
+        FTK_UI_API void setElide(bool, ElideMode = ElideMode::Right);
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;

@@ -69,6 +69,33 @@ namespace ftk
                 label->setFont(FontType::Mono);
                 FTK_CHECK(FontType::Mono == label->getFont());
 
+                // Eliding: the size hint stops following the text, and the
+                // text is cut to the geometry when drawn.
+                label->setText("A long line of text that is wider than any room it will be given");
+                app->tick();
+                const int textWidth = label->getSizeHint().w;
+                label->setElide(true, ElideMode::Middle);
+                label->setElide(true, ElideMode::Middle);
+                FTK_CHECK(label->getElide());
+                FTK_CHECK(ElideMode::Middle == label->getElideMode());
+                FTK_CHECK(HAlign::Fill == label->getHAlign());
+                app->tick();
+                FTK_CHECK(label->getSizeHint().w < textWidth);
+                // Laid out across the room it is given, not at its hint.
+                FTK_CHECK(label->getGeometry().w() > label->getSizeHint().w);
+                label->setElide(true, ElideMode::Left);
+                FTK_CHECK(ElideMode::Left == label->getElideMode());
+                app->tick();
+                label->setElide(true, ElideMode::Right);
+                app->tick();
+                label->setText("大平原 \xF0\x9F\x8E\xAC wide characters");
+                app->tick();
+                label->setElide(false);
+                FTK_CHECK(!label->getElide());
+                FTK_CHECK(HAlign::Left == label->getHAlign());
+                app->tick();
+                FTK_CHECK(label->getSizeHint().w >= textWidth / 4);
+
                 label->setEnabled(false);
                 app->tick();
                 label->setEnabled(true);
