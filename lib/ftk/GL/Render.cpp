@@ -3,6 +3,8 @@
 
 #include <ftk/GL/RenderPrivate.h>
 
+#include <atomic>
+
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
@@ -18,6 +20,17 @@ namespace ftk
             const int pboSizeMin = 1024;
         }
 
+        namespace
+        {
+            // Summed over the live renderers, the way the object counts in
+            // Texture and its siblings are. Each renderer takes its own
+            // contribution back out when it goes.
+            std::atomic<size_t> textureCacheByteCount = 0;
+            std::atomic<size_t> textureCacheCount = 0;
+            std::atomic<size_t> texturePoolByteCount = 0;
+            std::atomic<size_t> texturePoolCount = 0;
+        }
+
         void Render::_init(
             const std::shared_ptr<LogSystem>& logSystem,
             const std::shared_ptr<FontSystem>& fontSystem)
@@ -30,7 +43,14 @@ namespace ftk
         {}
 
         Render::~Render()
-        {}
+        {
+            FTK_P();
+            // Nothing of this renderer's is left in the totals.
+            textureCacheByteCount -= p.cacheTotals.cacheByteCount;
+            textureCacheCount -= p.cacheTotals.cacheCount;
+            texturePoolByteCount -= p.cacheTotals.poolByteCount;
+            texturePoolCount -= p.cacheTotals.poolCount;
+        }
 
         std::shared_ptr<Render> Render::create(
             const std::shared_ptr<LogSystem>& logSystem,
@@ -136,9 +156,49 @@ namespace ftk
                 1.F));
         }
         
+        void Render::_cacheTotalsUpdate()
+        {
+            FTK_P();
+            const auto apply = [](
+                std::atomic<size_t>& total, size_t& previous, size_t current)
+            {
+                total += current - previous;
+                previous = current;
+            };
+            apply(textureCacheByteCount, p.cacheTotals.cacheByteCount,
+                p.textureCache.getSize());
+            apply(textureCacheCount, p.cacheTotals.cacheCount,
+                p.textureCache.getCount());
+            apply(texturePoolByteCount, p.cacheTotals.poolByteCount,
+                p.texturePool.getSize());
+            apply(texturePoolCount, p.cacheTotals.poolCount,
+                p.texturePool.getCount());
+        }
+
+        size_t Render::getTextureCacheByteCount()
+        {
+            return textureCacheByteCount;
+        }
+
+        size_t Render::getTextureCacheCount()
+        {
+            return textureCacheCount;
+        }
+
+        size_t Render::getTexturePoolByteCount()
+        {
+            return texturePoolByteCount;
+        }
+
+        size_t Render::getTexturePoolCount()
+        {
+            return texturePoolCount;
+        }
+
         void Render::end()
         {
             FTK_P();
+            _cacheTotalsUpdate();
             const auto now = std::chrono::steady_clock::now();
             const auto diff = std::chrono::duration_cast<std::chrono::microseconds>(
                 now - p.startTime);

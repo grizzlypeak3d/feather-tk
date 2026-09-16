@@ -39,6 +39,23 @@ namespace ftk
             //! Get a shader.
             FTK_GL_API std::shared_ptr<Shader> getShader(const std::string&);
 
+            //! \name Texture caches
+            //!
+            //! Totalled over every renderer, the way the object counts are.
+            //! The cache holds the textures of images that are drawn again --
+            //! the timeline's thumbnails -- and the pool holds one set per
+            //! size and type for images that are not, which is how the video
+            //! frames are drawn. Reported apart because they are bounded
+            //! apart, and a total on its own cannot say which is growing.
+            ///@{
+
+            FTK_GL_API static size_t getTextureCacheByteCount();
+            FTK_GL_API static size_t getTextureCacheCount();
+            FTK_GL_API static size_t getTexturePoolByteCount();
+            FTK_GL_API static size_t getTexturePoolCount();
+
+            ///@}
+
             FTK_GL_API void begin(
                 const Size2I&,
                 const RenderOptions& = RenderOptions()) override;
@@ -107,6 +124,8 @@ namespace ftk
             FTK_GL_API RenderDiag getDiag() const override;
 
         private:
+            void _cacheTotalsUpdate();
+
             std::vector<std::shared_ptr<Texture> > _getTextures(
                 const ImageInfo&,
                 const ImageFilters&,

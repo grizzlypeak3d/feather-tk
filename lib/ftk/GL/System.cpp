@@ -144,6 +144,12 @@ namespace ftk
             diagSystem->addSampler(
                 "ftk GL Memory/Textures: {0}MB",
                 [] { return gl::Texture::getTotalByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "ftk GL Memory/Texture cache: {0}MB",
+                [] { return gl::Render::getTextureCacheByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "ftk GL Memory/Texture pool: {0}MB",
+                [] { return gl::Render::getTexturePoolByteCount() / megabyte; });
 
             diagSystem->addSampler(
                 "ftk GL Objects/Buffers: {0}",
@@ -157,6 +163,14 @@ namespace ftk
             diagSystem->addSampler(
                 "ftk GL Objects/Textures: {0}",
                 [] { return gl::Texture::getObjectCount(); });
+            // The two caches the textures are held in, apart: the total on
+            // its own cannot say which of them is growing.
+            diagSystem->addSampler(
+                "ftk GL Objects/Texture cache: {0}",
+                [] { return gl::Render::getTextureCacheCount(); });
+            diagSystem->addSampler(
+                "ftk GL Objects/Texture pool: {0}",
+                [] { return gl::Render::getTexturePoolCount(); });
         }
 
         System::~System()

@@ -48,6 +48,16 @@ namespace ftk
             LRUCache<
                 std::shared_ptr<Image>,
                 std::vector<std::shared_ptr<Texture> > > textureCache;
+            //! What this renderer last contributed to the totals, so that it
+            //! can take it back out again.
+            struct CacheTotals
+            {
+                size_t cacheByteCount = 0;
+                size_t cacheCount     = 0;
+                size_t poolByteCount  = 0;
+                size_t poolCount      = 0;
+            };
+            CacheTotals cacheTotals;
             std::shared_ptr<gl::TextureAtlas> glyphAtlas;
             std::unordered_map<GlyphInfo, BoxPackID> glyphIDs;
             TriMesh2F textMesh;
