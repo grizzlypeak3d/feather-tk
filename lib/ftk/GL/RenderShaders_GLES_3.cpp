@@ -173,7 +173,8 @@ namespace ftk
                 "const int ImageType_YUV_422P_U16      = 26;\n"
                 "const int ImageType_YUV_444P_U16      = 27;\n"
                 "const int ImageType_YUV_420SP_U8      = 28;\n"
-                "const int ImageType_YUV_420SP_U16     = 29;\n";
+                "const int ImageType_YUV_420SP_U16     = 29;\n"
+                "const int ImageType_RGB_F16_P         = 30;\n";
 
             const std::string channelDisplay =
                 "// enum ftk::ChannelDisplay\n"
@@ -255,6 +256,22 @@ namespace ftk
                 "        c.g = clamp(c.g, 0.0, 1.0);\n"
                 "        c.b = clamp(c.b, 0.0, 1.0);\n"
                 "        c.a = 1.0;\n"
+                "    }\n"
+                "    else if (ImageType_RGB_F16_P == imageType)\n"
+                "    {\n"
+                "        // One plane per channel. No clamp: this is a float\n"
+                "        // type, and the float types are not clamped below\n"
+                "        // either.\n"
+                "        c.r = texture(s0, textureCoord).r;\n"
+                "        c.g = texture(s1, textureCoord).r;\n"
+                "        c.b = texture(s2, textureCoord).r;\n"
+                "        c.a = 1.0;\n"
+                "        if (VideoLevels_LegalRange == videoLevels)\n"
+                "        {\n"
+                "            c.r = (c.r - (16.0 / 255.0)) * (255.0 / (235.0 - 16.0));\n"
+                "            c.g = (c.g - (16.0 / 255.0)) * (255.0 / (235.0 - 16.0));\n"
+                "            c.b = (c.b - (16.0 / 255.0)) * (255.0 / (235.0 - 16.0));\n"
+                "        }\n"
                 "    }\n"
                 "    else\n"
                 "    {\n"

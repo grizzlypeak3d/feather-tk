@@ -347,6 +347,14 @@ namespace ftk
                 out.push_back(Texture::create(infoTmp, options));
                 break;
             }
+            case ImageType::RGB_F16_P:
+            {
+                const auto infoTmp = ImageInfo(info.size, ImageType::L_F16);
+                out.push_back(Texture::create(infoTmp, options));
+                out.push_back(Texture::create(infoTmp, options));
+                out.push_back(Texture::create(infoTmp, options));
+                break;
+            }
             default:
             {
                 auto texture = Texture::create(info, options);
@@ -454,6 +462,21 @@ namespace ftk
                 }
                 break;
             }
+            case ImageType::RGB_F16_P:
+            {
+                if (3 == textures.size())
+                {
+                    const std::size_t plane =
+                        static_cast<std::size_t>(info.size.w) * info.size.h * 2;
+                    for (std::size_t i = 0; i < 3; ++i)
+                    {
+                        textures[i]->copy(
+                            image->getData() + i * plane,
+                            textures[i]->getImageInfo());
+                    }
+                }
+                break;
+            }
             case ImageType::YUV_420SP_U16:
             {
                 if (2 == textures.size())
@@ -491,6 +514,7 @@ namespace ftk
             case ImageType::YUV_420P_U16:
             case ImageType::YUV_422P_U16:
             case ImageType::YUV_444P_U16:
+            case ImageType::RGB_F16_P:
                 if (3 == textures.size())
                 {
                     glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + offset));

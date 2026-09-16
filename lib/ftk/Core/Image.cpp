@@ -51,7 +51,9 @@ namespace ftk
         "YUV 444P U16",
 
         "YUV 420SP U8",
-        "YUV 420SP U16");
+        "YUV 420SP U16",
+
+        "RGB F16 P");
 
     int getChannelCount(ImageType value)
     {
@@ -64,7 +66,8 @@ namespace ftk
             4, 4, 4, 4, 4,
             3, 3, 3,
             3, 3, 3,
-            3, 3
+            3, 3,
+            3
         };
         return values[static_cast<size_t>(value)];
     }
@@ -80,7 +83,8 @@ namespace ftk
             8, 16, 32, 16, 32,
             8, 8, 8,
             16, 16, 16,
-            8, 16
+            8, 16,
+            16
         };
         return values[static_cast<size_t>(value)];
     }
@@ -173,9 +177,19 @@ namespace ftk
         case ImageType::YUV_420SP_U8:  out = w * h + ((w + 1) / 2) * ((h + 1) / 2) * 2; break;
         case ImageType::YUV_420SP_U16: out = (w * h + ((w + 1) / 2) * ((h + 1) / 2) * 2) * 2; break;
 
+        // Three planes, each the size of a single channel half image.
+        case ImageType::RGB_F16_P:
+            out = getAlignedByteCount(w * 2, alignment) * h * 3;
+            break;
+
         default: break;
         }
         return out;
+    }
+
+    ImageType getInterleavedType(ImageType value)
+    {
+        return ImageType::RGB_F16_P == value ? ImageType::RGB_F16 : value;
     }
 
     std::string getLabel(const ImageInfo& info)
@@ -184,7 +198,7 @@ namespace ftk
             arg(info.size.w).
             arg(info.size.h).
             arg(info.getAspect(), 2).
-            arg(info.type);
+            arg(getInterleavedType(info.type));
     }
 
     namespace

@@ -61,6 +61,20 @@ namespace ftk
         YUV_420SP_U8,   //!< Semi-planar 4:2:0 8-bit (e.g. hardware-decoded NV12)
         YUV_420SP_U16,  //!< Semi-planar 4:2:0 16-bit (e.g. hardware-decoded P010)
 
+        //! Planar three channel half float: red, then green, then blue, each
+        //! its own plane.
+        //!
+        //! The same bytes as RGB_F16 in a different order, uploaded as three
+        //! single channel textures rather than one three channel one. There
+        //! is no three channel half format on Metal, so a RGB_F16 texture is
+        //! backed by a four channel one and every upload of it is widened by
+        //! the driver; three single channel textures are each a format that
+        //! does exist, so nothing is widened.
+        //!
+        //! Added at the end deliberately: the shaders carry these values as
+        //! literals, so inserting one anywhere else renumbers them.
+        RGB_F16_P,
+
         Count,
         First = None
     };
@@ -71,6 +85,18 @@ namespace ftk
 
     //! Get the bit-depth for the given image type.
     FTK_CORE_API int getBitDepth(ImageType);
+
+    //! Get the interleaved equivalent of a planar image type.
+    //!
+    //! RGB_F16_P is how this renderer holds a three channel half image, not
+    //! anything the file said, so it reports as the RGB_F16 it is. Every
+    //! other type describes what the file has -- the planar YUV ones
+    //! included, which are planar because the picture is -- and comes back
+    //! unchanged.
+    //!
+    //! For showing a type to someone. What the renderer does with an image
+    //! should use the type itself.
+    FTK_CORE_API ImageType getInterleavedType(ImageType);
 
     //! Video levels.
     enum class FTK_CORE_API_TYPE VideoLevels
