@@ -542,6 +542,16 @@ namespace ftk
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
+                // Ask for a new allocation before mapping. The buffer the
+                // last upload was given is one the driver may still be
+                // reading, and mapping that one waits for it to finish;
+                // a fresh one has no reader to wait for, and the old one is
+                // freed once the upload that used it is done.
+                glBufferData(
+                    GL_PIXEL_UNPACK_BUFFER,
+                    p.info.getByteCount(),
+                    NULL,
+                    GL_STREAM_DRAW);
                 if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
                 {
                     memcpy(
@@ -598,6 +608,16 @@ namespace ftk
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
+                // Ask for a new allocation before mapping. The buffer the
+                // last upload was given is one the driver may still be
+                // reading, and mapping that one waits for it to finish;
+                // a fresh one has no reader to wait for, and the old one is
+                // freed once the upload that used it is done.
+                glBufferData(
+                    GL_PIXEL_UNPACK_BUFFER,
+                    p.info.getByteCount(),
+                    NULL,
+                    GL_STREAM_DRAW);
                 if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
                 {
                     memcpy(
@@ -653,6 +673,16 @@ namespace ftk
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
+                // Ask for a new allocation before mapping. The buffer the
+                // last upload was given is one the driver may still be
+                // reading, and mapping that one waits for it to finish;
+                // a fresh one has no reader to wait for, and the old one is
+                // freed once the upload that used it is done.
+                glBufferData(
+                    GL_PIXEL_UNPACK_BUFFER,
+                    p.info.getByteCount(),
+                    NULL,
+                    GL_STREAM_DRAW);
                 if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
                 {
                     memcpy(
