@@ -1178,6 +1178,25 @@ namespace ftk
             auto logSystem = _context->getSystem<LogSystem>();
             SDL_Event event;
             p.polling = true;
+            // The window a mouse event is for is the one SDL tagged it with,
+            // as for the keyboard below. Following the enter and leave
+            // events instead lost the pointer between windows: a leave for
+            // the window just left can arrive after the enter for the one
+            // just entered and cleared it, and a window that is shown makes
+            // itself the active one wherever the pointer is. On the web
+            // every window shares the one canvas and SDL's mouse focus is
+            // not to be trusted, so there the active window still decides.
+            const auto mouseWindow = [&]([[maybe_unused]] uint32_t id)
+            {
+#if !defined(__EMSCRIPTEN__)
+                if (auto window = _getWindow(id))
+                {
+                    p.activeWindow = window;
+                    return window;
+                }
+#endif // __EMSCRIPTEN__
+                return p.activeWindow.lock();
+            };
             while (SDL_PollEvent(&event))
             {
                 //std::cout << "Event: " << fromSDLEvent(event.type) << std::endl;
@@ -1283,7 +1302,12 @@ namespace ftk
                             // window makes every mouse move a leave/enter
                             // pair. A leave cannot mean the cursor left the
                             // page's only canvas, so the active window stays.
-                            p.activeWindow.reset();
+                            // Elsewhere only the window leaving stops being
+                            // the active one; see mouseWindow above.
+                            if (p.activeWindow.lock() == window)
+                            {
+                                p.activeWindow.reset();
+                            }
 #endif // __EMSCRIPTEN__
                         }
                         break;
@@ -1345,7 +1369,12 @@ namespace ftk
                     if (auto window = _getWindow(event.window.windowID))
                     {
                         window->_cursorEnter(false);
-                        p.activeWindow.reset();
+                        // Only the window leaving stops being the active
+                        // one; see mouseWindow above.
+                        if (p.activeWindow.lock() == window)
+                        {
+                            p.activeWindow.reset();
+                        }
                     }
                     break;
                 case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
@@ -1361,7 +1390,7 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_MOTION:
 #endif // FTK_SDL2
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = mouseWindow(event.motion.windowID))
                     {
                         const float contentScale = window->getContentScale();
                         const V2I pos(
@@ -1377,7 +1406,7 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
 #endif // FTK_SDL2
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = mouseWindow(event.button.windowID))
                     {
                         p.mouseButtonWindow = window;
                         window->_mouseButton(
@@ -1401,7 +1430,7 @@ namespace ftk
                         auto window = p.mouseButtonWindow.lock();
                         if (!window)
                         {
-                            window = p.activeWindow.lock();
+                            window = mouseWindow(event.button.windowID);
                         }
                         p.mouseButtonWindow.reset();
                         if (window)
@@ -1416,7 +1445,7 @@ namespace ftk
 
 #if defined(FTK_SDL2)
                 case SDL_MOUSEWHEEL:
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = mouseWindow(event.wheel.windowID))
                     {
                         // In wheel detents, not pixels: the consumers count
                         // steps -- a slider tick, a combo box item, a frame
@@ -1432,7 +1461,7 @@ namespace ftk
                     break;
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_WHEEL:
-                    if (auto window = p.activeWindow.lock())
+                    if (auto window = mouseWindow(event.wheel.windowID))
                     {
                         // In wheel detents, not pixels; see the SDL2 case.
                         window->_scroll(V2F(

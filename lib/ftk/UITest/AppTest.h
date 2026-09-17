@@ -21,6 +21,9 @@ namespace ftk
                 const std::shared_ptr<Context>&);
 
             void run() override;
+
+        private:
+            void _mouseRouting();
         };
     }
 }
