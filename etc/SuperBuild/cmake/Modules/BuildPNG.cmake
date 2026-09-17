@@ -20,6 +20,9 @@ set(PNG_ARGS
     -DPNG_SHARED=${PNG_SHARED_LIBS}
     -DPNG_STATIC=${PNG_STATIC_LIBS}
     -DPNG_TESTS=OFF
+    # A framework is built on macOS by default, beside the library and
+    # nothing uses it.
+    -DPNG_FRAMEWORK=OFF
     -DPNG_ARM_NEON=off
     -DSKIP_INSTALL_EXECUTABLES=ON
     -DSKIP_INSTALL_PROGRAMS=ON

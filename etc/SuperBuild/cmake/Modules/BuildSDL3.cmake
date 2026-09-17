@@ -3,7 +3,13 @@ include(ExternalProject)
 set(SDL3_GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git")
 set(SDL3_GIT_TAG "release-3.4.16")
 
-set(SDL3_STATIC NOT ${BUILD_SHARED_LIBS})
+# One or the other. "NOT" is not an operator outside if(): written into
+# set() it made the list "NOT;ON", which is true, and a shared build
+# installed the static library as well.
+set(SDL3_STATIC ON)
+if(BUILD_SHARED_LIBS)
+    set(SDL3_STATIC OFF)
+endif()
 set(SDL3_ARGS
     ${ftk_DEPS_ARGS}
     -DSDL_SHARED=${BUILD_SHARED_LIBS}
