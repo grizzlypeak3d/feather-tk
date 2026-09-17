@@ -56,6 +56,9 @@ result = "{major}.{minor}.{patch}{dev}"
 [tool.cibuildwheel]
 build = "cp312-*"
 skip = "*-musllinux_*"
+# Each runner builds its own architecture only; "auto" adds 32-bit Windows
+# and Linux, which are not supported.
+archs = ["native"]
 build-verbosity = 1
 # The runners have no OpenGL; the tests that need it skip.
 test-command = "python {project}/tests/run-python-tests.py"
