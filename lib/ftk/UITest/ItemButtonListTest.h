@@ -9,22 +9,21 @@ namespace ftk
 {
     namespace ui_test
     {
-        class AppTest : public test::ITest
+        class ItemButtonListTest : public test::ITest
         {
         protected:
-            AppTest(const std::shared_ptr<Context>&);
+            ItemButtonListTest(const std::shared_ptr<Context>&);
 
         public:
-            virtual ~AppTest();
+            virtual ~ItemButtonListTest();
 
-            static std::shared_ptr<AppTest> create(
+            static std::shared_ptr<ItemButtonListTest> create(
                 const std::shared_ptr<Context>&);
 
             void run() override;
 
         private:
-            void _mouseRouting();
+            void _doubleClick();
         };
     }
 }
-

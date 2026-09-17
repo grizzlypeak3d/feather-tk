@@ -35,6 +35,7 @@
 #include <ftk/UITest/IntEditTest.h>
 #include <ftk/UITest/IntEditSliderTest.h>
 #include <ftk/UITest/IntSliderTest.h>
+#include <ftk/UITest/ItemButtonListTest.h>
 #include <ftk/UITest/IntModelTest.h>
 #include <ftk/UITest/LabelTest.h>
 #include <ftk/UITest/LayoutUtilTest.h>
@@ -239,6 +240,7 @@ namespace ftk
                 p.tests.push_back(ui_test::IntEditTest::create(context));
                 p.tests.push_back(ui_test::IntEditSliderTest::create(context));
                 p.tests.push_back(ui_test::IntSliderTest::create(context));
+                p.tests.push_back(ui_test::ItemButtonListTest::create(context));
                 p.tests.push_back(ui_test::IntModelTest::create(context));
                 p.tests.push_back(ui_test::LabelTest::create(context));
                 p.tests.push_back(ui_test::LayoutUtilTest::create(context));

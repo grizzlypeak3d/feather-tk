@@ -449,11 +449,20 @@ namespace ftk
         //! Get the file browser model.
         FTK_UI_API const std::shared_ptr<FileBrowserModel>& getModel() const;
 
-        //! Get the recent files model.
-        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
+        //! Get the recent directories model.
+        //!
+        //! What the browser's recent list shows. The directory of every
+        //! choice made in the browser is added to it, whatever the choice was
+        //! for -- a LUT's as well as a movie's -- and it is a list of its own,
+        //! apart from an application's recent files, so those choices do not
+        //! join them. An application that opens files some other way, from
+        //! the command line or by drag and drop, adds their directories here
+        //! itself if the browser is to offer them.
+        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentDirsModel() const;
 
-        //! Set the recent files model.
-        FTK_UI_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+        //! Set the recent directories model, for an application that keeps
+        //! the list between runs.
+        FTK_UI_API void setRecentDirsModel(const std::shared_ptr<RecentFilesModel>&);
 
         //! Get the thumbnails.
         FTK_UI_API const std::shared_ptr<IFileBrowserThumbnails>& getThumbnails() const;
@@ -462,12 +471,18 @@ namespace ftk
         FTK_UI_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
 
     private:
+        void _addRecentDirs(const std::vector<Path>&, FileBrowserMode);
         void _openDialog(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWindow>&,
             const std::function<void(const std::vector<Path>&)>&,
             const FileBrowserOpenOptions&,
             const std::shared_ptr<FileBrowserModel>&);
+        bool _raiseWindow(
+            const std::function<void(const std::vector<Path>&)>&,
+            const FileBrowserOpenOptions&);
+        void _setWindowCallback(
+            const std::function<void(const std::vector<Path>&)>&);
         void _openWindow(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,

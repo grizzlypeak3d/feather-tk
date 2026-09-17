@@ -377,23 +377,23 @@ namespace ftk
                     system->setNativeFileDialog(false);
 
                     // Acted on one at a time, and acting reaches back into
-                    // the browser: an application that remembers what it
-                    // opened is sharing this model with the browser that is
-                    // still up.
-                    auto recentFilesModel2 = RecentFilesModel::create(_context);
-                    system->setRecentFilesModel(recentFilesModel2);
+                    // the browser: an application that adds the directories
+                    // of what it opened is changing the list the browser
+                    // that is still up is showing.
+                    auto recentDirsModel2 = RecentFilesModel::create(_context);
+                    system->setRecentDirsModel(recentDirsModel2);
                     std::vector<Path> opened;
                     FileBrowserOpenOptions openOptions;
                     openOptions.multiple = true;
                     openOptions.path = path;
                     system->open(
                         window,
-                        [&opened, recentFilesModel2](const std::vector<Path>& value)
+                        [&opened, recentDirsModel2](const std::vector<Path>& value)
                         {
                             for (const auto& i : value)
                             {
                                 opened.push_back(i);
-                                recentFilesModel2->addRecent(i);
+                                recentDirsModel2->addRecent(Path(i.getDir()));
                             }
                         },
                         openOptions);
@@ -616,6 +616,92 @@ namespace ftk
             app->tick();
             FTK_CHECK(opened.empty());
             FTK_CHECK(1 == app->getWindows().size());
+
+            // Asked for again while it is up, the same browser comes to the
+            // front rather than being made anew, which would lose where it
+            // was and what it showed; the new request's callback is the one
+            // that answers.
+            app->tick();
+            std::vector<Path> first;
+            system->open(
+                window,
+                [&first](const std::vector<Path>& value)
+                {
+                    first = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            const auto reused = app->getWindows().back();
+            opened.clear();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            FTK_CHECK(reused == app->getWindows().back());
+            widget = _find<FileBrowserWidget>(reused);
+            FTK_CHECK(widget);
+            view = widget->getView();
+            k = KeyEvent(Key::Home, 0, V2I());
+            view->keyPressEvent(k);
+            _click(reused, "Ok");
+            FTK_CHECK(first.empty());
+            FTK_CHECK(1 == opened.size());
+            app->tick();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // A different kind of request replaces it, and the replacement
+            // stays up through the old one being let go of on the next tick.
+            system->open(window, [](const std::vector<Path>&) {}, openOptions);
+            app->tick();
+            const auto replaced = app->getWindows().back();
+            FileBrowserOpenOptions dirOptions = openOptions;
+            dirOptions.mode = FileBrowserMode::Dir;
+            system->open(window, [](const std::vector<Path>&) {}, dirOptions);
+            app->tick();
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            FTK_CHECK(replaced != app->getWindows().back());
+            system->close();
+            app->tick();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // A choice records the directory it was made in, whatever it was
+            // for, in the list the browser shows.
+            {
+                const auto recentDirs = RecentFilesModel::create(_context);
+                system->setRecentDirsModel(recentDirs);
+                app->tick();
+                system->open(window, [](const std::vector<Path>&) {}, openOptions);
+                app->tick();
+                auto recentWindow = app->getWindows().back();
+                auto recentWidget = _find<FileBrowserWidget>(recentWindow);
+                FTK_CHECK(recentWidget);
+                FTK_CHECK(recentWidget->getRecentFilesModel() == recentDirs);
+                auto recentView = recentWidget->getView();
+                KeyEvent key(Key::Home, 0, V2I());
+                recentView->keyPressEvent(key);
+                _click(recentWindow, "Ok");
+                app->tick();
+                app->tick();
+                FTK_CHECK(1 == recentDirs->getRecent().size());
+                if (!recentDirs->getRecent().empty())
+                {
+                    _print(Format("Recent directory: {0}").
+                        arg(recentDirs->getRecent().front().get()));
+                    FTK_CHECK(recentDirs->getRecent().front().get() ==
+                        appendSeparator(fromFileSystem(path)));
+                }
+                system->setRecentDirsModel(RecentFilesModel::create(_context));
+            }
 
             // Closing one that is not open is not an error: an application
             // does this when its own window goes away.
