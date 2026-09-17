@@ -617,6 +617,63 @@ namespace ftk
             FTK_CHECK(opened.empty());
             FTK_CHECK(1 == app->getWindows().size());
 
+            // Asked for again while it is up, the same browser comes to the
+            // front rather than being made anew, which would lose where it
+            // was and what it showed; the new request's callback is the one
+            // that answers.
+            app->tick();
+            std::vector<Path> first;
+            system->open(
+                window,
+                [&first](const std::vector<Path>& value)
+                {
+                    first = value;
+                },
+                openOptions);
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            const auto reused = app->getWindows().back();
+            opened.clear();
+            system->open(
+                window,
+                [&opened](const std::vector<Path>& value)
+                {
+                    opened = value;
+                },
+                openOptions);
+            app->tick();
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            FTK_CHECK(reused == app->getWindows().back());
+            widget = _find<FileBrowserWidget>(reused);
+            FTK_CHECK(widget);
+            view = widget->getView();
+            k = KeyEvent(Key::Home, 0, V2I());
+            view->keyPressEvent(k);
+            _click(reused, "Ok");
+            FTK_CHECK(first.empty());
+            FTK_CHECK(1 == opened.size());
+            app->tick();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
+            // A different kind of request replaces it, and the replacement
+            // stays up through the old one being let go of on the next tick.
+            system->open(window, [](const std::vector<Path>&) {}, openOptions);
+            app->tick();
+            const auto replaced = app->getWindows().back();
+            FileBrowserOpenOptions dirOptions = openOptions;
+            dirOptions.mode = FileBrowserMode::Dir;
+            system->open(window, [](const std::vector<Path>&) {}, dirOptions);
+            app->tick();
+            app->tick();
+            FTK_CHECK(2 == app->getWindows().size());
+            FTK_CHECK(replaced != app->getWindows().back());
+            system->close();
+            app->tick();
+            app->tick();
+            FTK_CHECK(1 == app->getWindows().size());
+
             // Closing one that is not open is not an error: an application
             // does this when its own window goes away.
             system->close();

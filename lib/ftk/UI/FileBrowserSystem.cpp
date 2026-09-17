@@ -35,6 +35,9 @@ namespace ftk
 
         std::shared_ptr<Window> window;
         std::shared_ptr<FileBrowserWidget> widget;
+        //! What the browser in the window was opened for, which decides
+        //! whether another request can use it as it is.
+        FileBrowserMode mode = FileBrowserMode::Open;
         //! The window the browser was opened from, to be given the focus
         //! back when the browser goes.
         std::weak_ptr<IWindow> openedFrom;
@@ -212,6 +215,23 @@ namespace ftk
         {
             if (auto context = _context.lock())
             {
+                // A window of its own needs the application to make one. A
+                // window that has outlived its application has none, and the
+                // dialog is the answer that always works.
+                std::shared_ptr<App> app;
+                if (p.floating && window)
+                {
+                    app = window->getApp();
+                }
+                if (app)
+                {
+                    p.openedFrom = window;
+                    if (_raiseWindow(callback, options))
+                    {
+                        return;
+                    }
+                }
+
                 // When a filter is given, use a dedicated model so the shared
                 // model (configured elsewhere, e.g. for media) is left untouched.
                 std::shared_ptr<FileBrowserModel> model = p.model;
@@ -226,17 +246,8 @@ namespace ftk
                     model->setExtsFilter(options.extensions, options.extensionsLabel);
                 }
 
-                // A window of its own needs the application to make one. A
-                // window that has outlived its application has none, and the
-                // dialog is the answer that always works.
-                std::shared_ptr<App> app;
-                if (p.floating && window)
-                {
-                    app = window->getApp();
-                }
                 if (app)
                 {
-                    p.openedFrom = window;
                     _openWindow(context, app, callback, options, model);
                 }
                 else
@@ -280,6 +291,59 @@ namespace ftk
             });
     }
 
+    bool FileBrowserSystem::_raiseWindow(
+        const std::function<void(const std::vector<Path>&)>& callback,
+        const FileBrowserOpenOptions& options)
+    {
+        FTK_P();
+
+        // A browser already up for the same kind of request is the one to
+        // use: brought to the front, where it is, showing where it was left.
+        // Only the mode and the filter are fixed when the browser is made,
+        // so those decide; everything else the request asks for is set on
+        // it again.
+        if (!p.window || !p.widget || options.mode != p.mode)
+        {
+            return false;
+        }
+        const auto& model = p.widget->getModel();
+        const bool sameFilter = options.extensions.empty() ?
+            model == p.model :
+            (model != p.model &&
+                model->getExtsFilter() == options.extensions &&
+                model->getExtsFilterLabel() == options.extensionsLabel);
+        if (!sameFilter)
+        {
+            return false;
+        }
+
+        p.window->setTitle(options.title);
+        p.widget->setMultiple(
+            FileBrowserMode::Open == options.mode && options.multiple);
+        p.widget->setFileName(options.fileName);
+        _setWindowCallback(callback);
+        p.window->raise();
+        return true;
+    }
+
+    void FileBrowserSystem::_setWindowCallback(
+        const std::function<void(const std::vector<Path>&)>& callback)
+    {
+        FTK_P();
+        p.widget->setCallback(
+            [this, callback](const std::vector<Path>& value)
+            {
+                callback(value);
+                // Pinned, the browser stays up for the next one. The caller
+                // has already been told about this one, so what it does with
+                // the window underneath is its own business.
+                if (!_p->pinned)
+                {
+                    close();
+                }
+            });
+    }
+
     void FileBrowserSystem::_openWindow(
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<App>& app,
@@ -295,6 +359,7 @@ namespace ftk
         close();
 
         p.window = Window::create(context, app, options.title, p.windowSize);
+        p.mode = options.mode;
         p.widget = FileBrowserWidget::create(
             context,
             options.path,
@@ -334,18 +399,7 @@ namespace ftk
                 _p->pinned = value;
             });
 
-        p.widget->setCallback(
-            [this, callback](const std::vector<Path>& value)
-            {
-                callback(value);
-                // Pinned, the browser stays up for the next one. The caller
-                // has already been told about this one, so what it does with
-                // the window underneath is its own business.
-                if (!_p->pinned)
-                {
-                    close();
-                }
-            });
+        _setWindowCallback(callback);
         p.widget->setCancelCallback(
             [this]
             {
@@ -374,6 +428,14 @@ namespace ftk
                     {
                         FTK_P();
                         p.closing.reset();
+                        // A browser that replaced this one is up by now, and
+                        // raising the window it was opened from would put
+                        // that in front of it; the new browser keeps the
+                        // window to go back to.
+                        if (p.window)
+                        {
+                            return;
+                        }
                         // After letting go of it, so that the window being
                         // given the focus is not the one being taken away.
                         // Which window the platform would otherwise pick is

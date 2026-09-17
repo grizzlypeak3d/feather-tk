@@ -468,6 +468,11 @@ namespace ftk
             const std::function<void(const std::vector<Path>&)>&,
             const FileBrowserOpenOptions&,
             const std::shared_ptr<FileBrowserModel>&);
+        bool _raiseWindow(
+            const std::function<void(const std::vector<Path>&)>&,
+            const FileBrowserOpenOptions&);
+        void _setWindowCallback(
+            const std::function<void(const std::vector<Path>&)>&);
         void _openWindow(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
