@@ -661,7 +661,6 @@ class App(ftk.App):
 
         fileBrowserSystem = self.context.getSystemByName("ftk::FileBrowserSystem")
         fileBrowserSystem.nativeFileDialog = False
-        fileBrowserSystem.recentFilesModel = self.recentFilesModel
 
         self._window = MainWindow(self.context, self, ftk.Size2I(1280, 960))
 
@@ -696,6 +695,9 @@ class App(ftk.App):
             try:
                 self.documentModel.add(Document(self.context, path))
                 self.recentFilesModel.addRecent(ftk.Path(path))
+                fileBrowserSystem = self.context.getSystemByName("ftk::FileBrowserSystem")
+                fileBrowserSystem.recentDirsModel.addRecent(
+                    ftk.Path(ftk.Path(path).dir))
             except Exception as e:
                 errors.append(str(e))
         if errors:

@@ -117,10 +117,6 @@ namespace ftk
                     "model",
                     &FileBrowserSystem::getModel)
                 .def_prop_rw(
-                    "recentFilesModel",
-                    &FileBrowserSystem::getRecentFilesModel,
-                    &FileBrowserSystem::setRecentFilesModel)
-                .def_prop_rw(
                     "recentDirsModel",
                     &FileBrowserSystem::getRecentDirsModel,
                     &FileBrowserSystem::setRecentDirsModel);

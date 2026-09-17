@@ -103,6 +103,8 @@ namespace textedit
             auto doc = Document::create(_context, path);
             _documentModel->add(doc);
             _recentFilesModel->addRecent(Path(ftk::fromFileSystem(path)));
+            _context->getSystem<FileBrowserSystem>()->getRecentDirsModel()->addRecent(
+                Path(ftk::fromFileSystem(path.parent_path())));
         }
         catch (const std::exception& e)
         {
@@ -125,6 +127,8 @@ namespace textedit
                 auto doc = Document::create(_context, path);
                 _documentModel->add(doc);
                 _recentFilesModel->addRecent(Path(ftk::fromFileSystem(path)));
+                _context->getSystem<FileBrowserSystem>()->getRecentDirsModel()->addRecent(
+                    Path(ftk::fromFileSystem(path.parent_path())));
             }
             catch (const std::exception& e)
             {
@@ -325,7 +329,6 @@ namespace textedit
         // Initialize the file browser.
         auto fileBrowserSystem = _context->getSystem<FileBrowserSystem>();
         fileBrowserSystem->setNativeFileDialog(false);
-        fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
 
         // Create the main window.
         _mainWindow = MainWindow::create(

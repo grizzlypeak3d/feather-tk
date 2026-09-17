@@ -8,7 +8,6 @@
 #include <ftk/UI/RecentFilesModel.h>
 #include <ftk/UI/Window.h>
 
-#include <ftk/Core/ObservableList.h>
 #include <ftk/Core/Path.h>
 #include <ftk/Core/Timer.h>
 
@@ -29,14 +28,8 @@ namespace ftk
         bool pinned = false;
         Size2I windowSize = Size2I(1024, 720);
         std::shared_ptr<FileBrowserModel> model;
-        //! The application's recent files, and the directories chosen in.
-        std::shared_ptr<RecentFilesModel> recentFilesModel;
+        //! The directories chosen in, which is what the recent list shows.
         std::shared_ptr<RecentFilesModel> recentDirsModel;
-        //! What the browser's recent list shows: both of the above. The
-        //! browser only reads it, so one it can be handed is all it needs.
-        std::shared_ptr<RecentFilesModel> browserRecentModel;
-        std::shared_ptr<ListObserver<Path> > recentFilesObserver;
-        std::shared_ptr<ListObserver<Path> > recentDirsObserver;
         std::shared_ptr<IFileBrowserThumbnails> thumbnails;
 
         std::shared_ptr<FileBrowser> fileBrowser;
@@ -67,10 +60,7 @@ namespace ftk
         FTK_P();
 
         p.model = FileBrowserModel::create(context);
-        p.recentFilesModel = RecentFilesModel::create(context);
         p.recentDirsModel = RecentFilesModel::create(context);
-        p.browserRecentModel = RecentFilesModel::create(context);
-        _recentObserve();
         p.closeTimer = Timer::create(context);
     }
 
@@ -289,7 +279,7 @@ namespace ftk
         p.fileBrowser->setTitle(options.title);
         p.fileBrowser->setMultiple(
             FileBrowserMode::Open == options.mode && options.multiple);
-        p.fileBrowser->setRecentFilesModel(p.browserRecentModel);
+        p.fileBrowser->setRecentFilesModel(p.recentDirsModel);
         p.fileBrowser->setFileName(options.fileName);
         p.fileBrowser->open(window);
         const FileBrowserMode mode = options.mode;
@@ -385,7 +375,7 @@ namespace ftk
             p.window);
         p.widget->setMultiple(
             FileBrowserMode::Open == options.mode && options.multiple);
-        p.widget->setRecentFilesModel(p.browserRecentModel);
+        p.widget->setRecentFilesModel(p.recentDirsModel);
         p.widget->setFileName(options.fileName);
 
         // A browser underneath an always on top window is one that cannot
@@ -540,17 +530,6 @@ namespace ftk
         return _p->model;
     }
 
-    const std::shared_ptr<RecentFilesModel>& FileBrowserSystem::getRecentFilesModel() const
-    {
-        return _p->recentFilesModel;
-    }
-
-    void FileBrowserSystem::setRecentFilesModel(const std::shared_ptr<RecentFilesModel>& value)
-    {
-        _p->recentFilesModel = value;
-        _recentObserve();
-    }
-
     const std::shared_ptr<RecentFilesModel>& FileBrowserSystem::getRecentDirsModel() const
     {
         return _p->recentDirsModel;
@@ -559,57 +538,6 @@ namespace ftk
     void FileBrowserSystem::setRecentDirsModel(const std::shared_ptr<RecentFilesModel>& value)
     {
         _p->recentDirsModel = value;
-        _recentObserve();
-    }
-
-    void FileBrowserSystem::_recentObserve()
-    {
-        FTK_P();
-        p.recentFilesObserver.reset();
-        p.recentDirsObserver.reset();
-        if (p.recentFilesModel)
-        {
-            p.recentFilesObserver = ListObserver<Path>::create(
-                p.recentFilesModel->observeRecent(),
-                [this](const std::vector<Path>&)
-                {
-                    _recentUpdate();
-                });
-        }
-        if (p.recentDirsModel)
-        {
-            p.recentDirsObserver = ListObserver<Path>::create(
-                p.recentDirsModel->observeRecent(),
-                [this](const std::vector<Path>&)
-                {
-                    _recentUpdate();
-                });
-        }
-        _recentUpdate();
-    }
-
-    void FileBrowserSystem::_recentUpdate()
-    {
-        FTK_P();
-        if (!p.browserRecentModel)
-        {
-            return;
-        }
-        // Most recent last, which is where the list is read from: the
-        // directories chosen in come after the application's files, so they
-        // are offered first. The two have no times to be merged by.
-        std::vector<Path> recent;
-        if (p.recentFilesModel)
-        {
-            recent = p.recentFilesModel->getRecent();
-        }
-        if (p.recentDirsModel)
-        {
-            const auto& dirs = p.recentDirsModel->getRecent();
-            recent.insert(recent.end(), dirs.begin(), dirs.end());
-        }
-        p.browserRecentModel->setRecentMax(recent.size());
-        p.browserRecentModel->setRecent(recent);
     }
 
     void FileBrowserSystem::_addRecentDirs(
@@ -624,15 +552,15 @@ namespace ftk
         for (const auto& path : paths)
         {
             // The directory the choice was made in: a chosen directory is
-            // that directory, anything else is in one.
-            std::filesystem::path dir = toFileSystem(path.get());
-            if (FileBrowserMode::Dir != mode)
-            {
-                dir = dir.parent_path();
-            }
+            // that directory, anything else is in one. Recorded with its
+            // separator, which is how the list tells a directory from a file
+            // without asking the file system.
+            const std::string dir = FileBrowserMode::Dir == mode ?
+                appendSeparator(path.get()) :
+                path.getDir();
             if (!dir.empty())
             {
-                p.recentDirsModel->addRecent(Path(fromFileSystem(dir)));
+                p.recentDirsModel->addRecent(Path(dir));
             }
         }
     }

@@ -377,23 +377,23 @@ namespace ftk
                     system->setNativeFileDialog(false);
 
                     // Acted on one at a time, and acting reaches back into
-                    // the browser: an application that remembers what it
-                    // opened is sharing this model with the browser that is
-                    // still up.
-                    auto recentFilesModel2 = RecentFilesModel::create(_context);
-                    system->setRecentFilesModel(recentFilesModel2);
+                    // the browser: an application that adds the directories
+                    // of what it opened is changing the list the browser
+                    // that is still up is showing.
+                    auto recentDirsModel2 = RecentFilesModel::create(_context);
+                    system->setRecentDirsModel(recentDirsModel2);
                     std::vector<Path> opened;
                     FileBrowserOpenOptions openOptions;
                     openOptions.multiple = true;
                     openOptions.path = path;
                     system->open(
                         window,
-                        [&opened, recentFilesModel2](const std::vector<Path>& value)
+                        [&opened, recentDirsModel2](const std::vector<Path>& value)
                         {
                             for (const auto& i : value)
                             {
                                 opened.push_back(i);
-                                recentFilesModel2->addRecent(i);
+                                recentDirsModel2->addRecent(Path(i.getDir()));
                             }
                         },
                         openOptions);
@@ -675,12 +675,9 @@ namespace ftk
             FTK_CHECK(1 == app->getWindows().size());
 
             // A choice records the directory it was made in, whatever it was
-            // for, and leaves the application's recent files alone: those
-            // are the application's to fill. The browser lists both.
+            // for, in the list the browser shows.
             {
-                const auto recentFiles = RecentFilesModel::create(_context);
                 const auto recentDirs = RecentFilesModel::create(_context);
-                system->setRecentFilesModel(recentFiles);
                 system->setRecentDirsModel(recentDirs);
                 app->tick();
                 system->open(window, [](const std::vector<Path>&) {}, openOptions);
@@ -688,13 +685,13 @@ namespace ftk
                 auto recentWindow = app->getWindows().back();
                 auto recentWidget = _find<FileBrowserWidget>(recentWindow);
                 FTK_CHECK(recentWidget);
+                FTK_CHECK(recentWidget->getRecentFilesModel() == recentDirs);
                 auto recentView = recentWidget->getView();
                 KeyEvent key(Key::Home, 0, V2I());
                 recentView->keyPressEvent(key);
                 _click(recentWindow, "Ok");
                 app->tick();
                 app->tick();
-                FTK_CHECK(recentFiles->getRecent().empty());
                 FTK_CHECK(1 == recentDirs->getRecent().size());
                 if (!recentDirs->getRecent().empty())
                 {
@@ -703,20 +700,6 @@ namespace ftk
                     FTK_CHECK(recentDirs->getRecent().front().get() ==
                         appendSeparator(fromFileSystem(path)));
                 }
-
-                // What the browser shows is the two together.
-                recentFiles->addRecent(Path(fromFileSystem(path / "file.txt")));
-                system->open(window, [](const std::vector<Path>&) {}, openOptions);
-                app->tick();
-                recentWindow = app->getWindows().back();
-                recentWidget = _find<FileBrowserWidget>(recentWindow);
-                FTK_CHECK(recentWidget);
-                FTK_CHECK(recentWidget->getRecentFilesModel() &&
-                    2 == recentWidget->getRecentFilesModel()->getRecent().size());
-                system->close();
-                app->tick();
-                app->tick();
-                system->setRecentFilesModel(RecentFilesModel::create(_context));
                 system->setRecentDirsModel(RecentFilesModel::create(_context));
             }
 
