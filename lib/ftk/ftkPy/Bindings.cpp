@@ -10,7 +10,7 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(ftkPy, m)
+NB_MODULE(_feather_tk, m)
 {
     m.doc() = "Feather-tk is a lightweight toolkit for building cross-platform C++ applications.";
     ftk::python::coreBind(m);

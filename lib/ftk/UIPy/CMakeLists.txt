@@ -107,8 +107,8 @@ set(SOURCE
     WidgetOptions.cpp
     Window.cpp)
 
-# Static. The bindings are linked by ftkPy and nothing else, so there is no
-# API here for anything to import -- the module absorbs them.
+# Static. The bindings are linked by the feather_tk module and nothing else,
+# so there is no API here for anything to import -- the module absorbs them.
 add_library(ftkUIPy STATIC ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 # Hidden, as the module is: the binding classes hold nanobind's types,
 # which are hidden, and GCC warns about a class more visible than its
@@ -123,13 +123,13 @@ target_include_directories(ftkUIPy PRIVATE
     ${NB_DIR}/include
     ${NB_DIR}/ext/robin_map/include)
 
-target_link_libraries(ftkUIPy ftkUI Python3::Python)
+target_link_libraries(ftkUIPy PUBLIC ftkUI PRIVATE ${ftk_NANOBIND_LIBRARY})
 
 set_target_properties(ftkUIPy PROPERTIES FOLDER lib)
 set_target_properties(ftkUIPy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(TARGETS ftkUIPy
-    ARCHIVE DESTINATION lib COMPONENT dev
+    ARCHIVE DESTINATION lib COMPONENT dev ${ftk_PYTHON_ARCHIVE_INSTALL}
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
     PUBLIC_HEADER DESTINATION include/ftk/UIPy COMPONENT dev)

@@ -5,10 +5,10 @@
 Python 3.8 stopped resolving an extension module's dependencies through PATH
 on Windows. It searches the directory the module itself is in, the system
 directories, and whatever os.add_dll_directory() has been told about, and
-nothing else. Built shared, ftkPy links ftkCore, ftkUI and ftkGL and the
-libraries under them, so importing it without this fails with
+nothing else. Built shared, the feather_tk module links ftkCore, ftkUI and
+ftkGL and the libraries under them, so importing it without this fails with
 
-    ImportError: DLL load failed while importing ftkPy:
+    ImportError: DLL load failed while importing _feather_tk:
     The specified module could not be found.
 
 and no amount of PATH helps. Any directories given on the command line are

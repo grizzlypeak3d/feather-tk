@@ -6,17 +6,17 @@ if(ftk_PYTHON)
     # os.add_dll_directory() can point an extension module at them. PATH, which
     # the continuous integration jobs set, has no effect.
     add_test(
-        NAME ftkPy-test
-        COMMAND ${Python3_EXECUTABLE}
+        NAME feather_tk-test
+        COMMAND ${Python_EXECUTABLE}
             ${CMAKE_CURRENT_SOURCE_DIR}/run-python-tests.py
             ${CMAKE_INSTALL_PREFIX}/bin)
-    # The just-built module rather than an external PYTHONPATH, so a plain
+    # The just-built package ahead of any external PYTHONPATH, so a plain
     # ctest run works anywhere. The flag crosses to Python as an environment
     # variable, where the tests that need OpenGL read it and skip.
-    set(PYTHON_TEST_ENV "PYTHONPATH=path_list_append:$<TARGET_FILE_DIR:ftkPy>")
+    set(PYTHON_TEST_ENV "PYTHONPATH=path_list_prepend:${CMAKE_BINARY_DIR}/python")
     if(ftk_TESTS_NO_GL)
         list(APPEND PYTHON_TEST_ENV "FTK_TESTS_NO_GL=set:1")
     endif()
-    set_tests_properties(ftkPy-test PROPERTIES
+    set_tests_properties(feather_tk-test PROPERTIES
         ENVIRONMENT_MODIFICATION "${PYTHON_TEST_ENV}")
 endif()

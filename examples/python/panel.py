@@ -10,7 +10,7 @@
 # ftk_embed_text(), a script just reads the file beside it. Python also
 # needs no casts: findWidget() returns the widget as its concrete type.
 
-import ftkPy as ftk
+import feather_tk as ftk
 
 import os
 import sys

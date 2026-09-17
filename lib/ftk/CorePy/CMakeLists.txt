@@ -40,8 +40,8 @@ set(SOURCE
     Vector.cpp
     Version.cpp)
 
-# Static. The bindings are linked by ftkPy and nothing else, so there is no
-# API here for anything to import -- the module absorbs them.
+# Static. The bindings are linked by the feather_tk module and nothing else,
+# so there is no API here for anything to import -- the module absorbs them.
 add_library(ftkCorePy STATIC ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 # Hidden, as the module is: the binding classes hold nanobind's types,
 # which are hidden, and GCC warns about a class more visible than its
@@ -56,13 +56,13 @@ target_include_directories(ftkCorePy PRIVATE
     ${NB_DIR}/include
     ${NB_DIR}/ext/robin_map/include)
 
-target_link_libraries(ftkCorePy ftkCore Python3::Python)
+target_link_libraries(ftkCorePy PUBLIC ftkCore PRIVATE ${ftk_NANOBIND_LIBRARY})
 
 set_target_properties(ftkCorePy PROPERTIES FOLDER lib)
 set_target_properties(ftkCorePy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(TARGETS ftkCorePy
-    ARCHIVE DESTINATION lib COMPONENT dev
+    ARCHIVE DESTINATION lib COMPONENT dev ${ftk_PYTHON_ARCHIVE_INSTALL}
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
     PUBLIC_HEADER DESTINATION include/ftk/CorePy COMPONENT dev)

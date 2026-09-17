@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
-import ftkPy as ftk
+import feather_tk as ftk
 
 import gc
 import unittest

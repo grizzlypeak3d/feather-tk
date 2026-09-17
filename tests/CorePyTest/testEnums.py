@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
-import ftkPy as ftk
+import feather_tk as ftk
 
 import unittest
 
@@ -29,7 +29,7 @@ class EnumsTest(unittest.TestCase):
                         values,
                         list(range(len(values))),
                         f"{prefix}.{name} has gaps: {values}")
-                elif isinstance(obj, type(ftk)) and obj.__name__.startswith("ftkPy"):
+                elif isinstance(obj, type(ftk)) and obj.__name__.startswith("feather_tk"):
                     walk(obj, f"{prefix}.{name}")
         walk(ftk, "ftk")
         self.assertGreater(len(seen), 0)
