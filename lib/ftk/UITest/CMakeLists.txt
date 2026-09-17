@@ -30,6 +30,7 @@ set(HEADERS
     IntEditTest.h
     IntModelTest.h
     IntSliderTest.h
+    ItemButtonListTest.h
     LabelTest.h
     LayoutUtilTest.h
     LineEditModelTest.h
@@ -90,6 +91,7 @@ set(SOURCE
     IntEditTest.cpp
     IntModelTest.cpp
     IntSliderTest.cpp
+    ItemButtonListTest.cpp
     LabelTest.cpp
     LayoutUtilTest.cpp
     LineEditModelTest.cpp

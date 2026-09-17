@@ -54,7 +54,8 @@ namespace ftk
                 .def_prop_rw("current", &ItemButtonList::getCurrent, &ItemButtonList::setCurrent)
                 .def("setCurrentCallback", &ItemButtonList::setCurrentCallback)
                 .def("setActivateCallback", &ItemButtonList::setActivateCallback)
-                .def("setDeleteCallback", &ItemButtonList::setDeleteCallback);
+                .def("setDeleteCallback", &ItemButtonList::setDeleteCallback)
+                .def("setDoubleClickCallback", &ItemButtonList::setDoubleClickCallback);
         }
     }
 }

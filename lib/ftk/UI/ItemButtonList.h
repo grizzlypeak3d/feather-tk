@@ -17,7 +17,9 @@ namespace ftk
     //! rows that are widgets: the rows do not take the key focus
     //! themselves, the arrows move the current item, Return activates it,
     //! and Delete removes it. The current item outlives the focus leaving
-    //! the list, so a control that acts on it always has a target.
+    //! the list, so a control that acts on it always has a target. A double
+    //! click on a row is reported on its own, for the second thing a row
+    //! can do.
     //!
     //! The rows are the ItemButton children, in order; other children --
     //! dividers, an empty-list label -- are ignored. The caller adds and
@@ -53,6 +55,13 @@ namespace ftk
 
         //! Set the callback for Return on the current item.
         FTK_UI_API void setActivateCallback(const std::function<void(int)>&);
+
+        //! Set the callback for a double click on a row.
+        //!
+        //! Counted from the presses rather than the clicks: a callback is
+        //! free to rebuild the rows, and the release of a row that no longer
+        //! exists never arrives.
+        FTK_UI_API void setDoubleClickCallback(const std::function<void(int)>&);
 
         //! Set the callback for Delete on the current item.
         FTK_UI_API void setDeleteCallback(const std::function<void(int)>&);

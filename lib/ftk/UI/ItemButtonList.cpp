@@ -9,15 +9,26 @@
 #include <ftk/Core/Math.h>
 
 #include <algorithm>
+#include <chrono>
 
 namespace ftk
 {
+    namespace
+    {
+        const float doubleClickTime = .5F;
+    }
+
     struct ItemButtonList::Private
     {
         int current = -1;
         std::function<void(int)> currentCallback;
         std::function<void(int)> activateCallback;
         std::function<void(int)> deleteCallback;
+        std::function<void(int)> doubleClickCallback;
+
+        //! The row of the previous press, and when it happened.
+        int click = -1;
+        std::chrono::steady_clock::time_point clickTime;
 
         struct SizeData
         {
@@ -77,6 +88,11 @@ namespace ftk
         _p->deleteCallback = value;
     }
 
+    void ItemButtonList::setDoubleClickCallback(const std::function<void(int)>& value)
+    {
+        _p->doubleClickCallback = value;
+    }
+
     std::vector<std::shared_ptr<ItemButton> > ItemButtonList::getItems() const
     {
         std::vector<std::shared_ptr<ItemButton> > out;
@@ -92,12 +108,29 @@ namespace ftk
 
     void ItemButtonList::_rowPress(const std::shared_ptr<ItemButton>& row)
     {
+        FTK_P();
         takeKeyFocus();
         const auto items = getItems();
         const auto i = std::find(items.begin(), items.end(), row);
         if (i != items.end())
         {
-            _setCurrent(static_cast<int>(i - items.begin()), true);
+            const int index = static_cast<int>(i - items.begin());
+            const auto now = std::chrono::steady_clock::now();
+            const std::chrono::duration<float> diff = now - p.clickTime;
+            // Two presses on the same row in quick succession. The rows are
+            // matched by position rather than by widget, so a row rebuilt
+            // between the two presses is still the same row.
+            const bool doubleClick =
+                index == p.click && diff.count() < doubleClickTime;
+            // A third press starts a new pair rather than making a second
+            // double click out of the same gesture.
+            p.click = doubleClick ? -1 : index;
+            p.clickTime = now;
+            _setCurrent(index, true);
+            if (doubleClick && p.doubleClickCallback)
+            {
+                p.doubleClickCallback(index);
+            }
         }
     }
 
