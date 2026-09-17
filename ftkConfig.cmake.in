@@ -3,6 +3,12 @@
 # \todo Is this the correct way to locate the custom Find*.cmake files?
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
+# The dependencies are installed with feather-tk, by the super build and in a
+# wheel, so they are looked for here first. This file runs in the caller's
+# scope, so the search path is put back afterwards.
+set(_ftk_PREFIX_PATH ${CMAKE_PREFIX_PATH})
+list(PREPEND CMAKE_PREFIX_PATH "${PACKAGE_PREFIX_DIR}")
+
 include(CMakeFindDependencyMacro)
 find_dependency(Threads)
 find_dependency(ZLIB)
@@ -31,10 +37,11 @@ if(@ftk_nfd@)
     find_dependency(nfd)
 endif()
 
-if(@ftk_PYTHON@)
-    find_dependency(Python3)
-    find_dependency(pybind11)
-endif()
+# The bindings are linked into the feather_tk module and nothing else, so a
+# consumer needs neither Python nor nanobind to use this package.
+
+set(CMAKE_PREFIX_PATH ${_ftk_PREFIX_PATH})
+unset(_ftk_PREFIX_PATH)
 
 include("${CMAKE_CURRENT_LIST_DIR}/ftkEmbedText.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ftkIconResources.cmake")

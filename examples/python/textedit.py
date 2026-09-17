@@ -12,7 +12,7 @@
 # and the tool bar so their enabled and checked states stay in sync
 # everywhere at once.
 
-import ftkPy as ftk
+import feather_tk as ftk
 
 import os
 import sys

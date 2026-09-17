@@ -13,7 +13,7 @@
 # writes the widget tree as JSON, and the FTK_TRACE_EVENTS environment
 # variable logs input dispatch.
 
-import ftkPy as ftk
+import feather_tk as ftk
 
 import json
 import sys

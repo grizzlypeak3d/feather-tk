@@ -2,7 +2,7 @@
 [![Build Status](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml)
 [![Web](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/web-workflow.yml/badge.svg)](https://grizzlypeak3d.github.io/feather-tk/)
 
-# ![feather-tk Icon](etc/Icons/feather_tk_32.png)&nbsp;feather-tk
+# ![feather-tk Icon](https://raw.githubusercontent.com/grizzlypeak3d/feather-tk/main/etc/Icons/feather_tk_32.png)&nbsp;feather-tk
 
 A lightweight C++ toolkit for building professional tools for film, VFX, and animation.
 
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 Simple Python example that shows a window with a text label (Python bindings
 are a work in progress):
 ```python
-import ftkPy as ftk
+import feather_tk as ftk
 import sys
 
 # Create the context and application.
@@ -196,7 +196,7 @@ widget, errors = ftk.widgetLoad(context, jsonString)
 ftk.findWidget(widget, "apply").setClickedCallback(callback)
 ```
 
-The [preview](examples/preview/) example renders a layout file and reloads it as
+The [preview](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/preview/) example renders a layout file and reloads it as
 the file is edited in any editor, with problems shown in the window; the
 `ftk_embed_text()` CMake function embeds the same file in the binary for
 shipping. Applications register their own widget types with
@@ -208,35 +208,35 @@ shipping. Applications register their own widget types with
 
 Image viewer with menus, toolbars, and persistent settings:
 
-![Image viewer example](etc/Images/imageview.png)
+![Image viewer example](https://raw.githubusercontent.com/grizzlypeak3d/feather-tk/main/etc/Images/imageview.png)
 
 3D object viewer with offscreen rendering and heads-up display:
 
-![Object viewer example](etc/Images/objview.png)
+![Object viewer example](https://raw.githubusercontent.com/grizzlypeak3d/feather-tk/main/etc/Images/objview.png)
 
 Text editor with multiple documents:
 
-![Text editor example](etc/Images/textedit.png)
+![Text editor example](https://raw.githubusercontent.com/grizzlypeak3d/feather-tk/main/etc/Images/textedit.png)
 
 Gallery of the widgets, layouts, and dialogs --
 [run it in your browser](https://grizzlypeak3d.github.io/feather-tk/widgets/index.html):
 
-[![Widget gallery example](etc/Images/widgets.png)](https://grizzlypeak3d.github.io/feather-tk/widgets/index.html)
+[![Widget gallery example](https://raw.githubusercontent.com/grizzlypeak3d/feather-tk/main/etc/Images/widgets.png)](https://grizzlypeak3d.github.io/feather-tk/widgets/index.html)
 
-The examples in the [examples/](examples/) directory:
+The examples in the [examples/](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/) directory:
 
 | Example | Demonstrates |
 | --- | --- |
-| [simple](examples/simple/) | The minimal application: a window and a label |
-| [widgets](examples/widgets/) | Gallery of the widgets, layouts, dialogs, and drag and drop; `-tab <name> -screenshot <file>` captures any page |
-| [textedit](examples/textedit/) | Application architecture: documents, actions shared between the menus and tool bars, and persistent settings |
-| [imageview](examples/imageview/) | A custom image display widget |
-| [objview](examples/objview/) | Custom OpenGL rendering inside a widget |
-| [panel](examples/panel/) | A tool panel loaded from JSON with the behavior wired up by id |
-| [preview](examples/preview/) | Live preview of a widget layout from JSON, reloading as the file is edited |
-| [gfx](examples/gfx/) | Procedural drawing |
-| [windows](examples/windows/) | Multiple windows |
-| [python](examples/python/) | Python counterparts: per-topic scripts, [textedit.py](examples/python/textedit.py) mirroring the C++ textedit for a side by side reading, and [testing.py](examples/python/testing.py), an application that drives and checks itself |
+| [simple](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/simple/) | The minimal application: a window and a label |
+| [widgets](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/widgets/) | Gallery of the widgets, layouts, dialogs, and drag and drop; `-tab <name> -screenshot <file>` captures any page |
+| [textedit](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/textedit/) | Application architecture: documents, actions shared between the menus and tool bars, and persistent settings |
+| [imageview](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/imageview/) | A custom image display widget |
+| [objview](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/objview/) | Custom OpenGL rendering inside a widget |
+| [panel](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/panel/) | A tool panel loaded from JSON with the behavior wired up by id |
+| [preview](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/preview/) | Live preview of a widget layout from JSON, reloading as the file is edited |
+| [gfx](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/gfx/) | Procedural drawing |
+| [windows](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/windows/) | Multiple windows |
+| [python](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/python/) | Python counterparts: per-topic scripts, [textedit.py](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/python/textedit.py) mirroring the C++ textedit for a side by side reading, and [testing.py](https://github.com/grizzlypeak3d/feather-tk/tree/main/examples/python/testing.py), an application that drives and checks itself |
 
 The Python examples mirror the C++ topics. The objview example has no Python
 counterpart because the OpenGL layer is deliberately not wrapped; the largest
@@ -267,6 +267,31 @@ Widget callbacks are single-slot: setting a callback replaces the previous one.
 When more than one party cares about a change, the state belongs in an observable
 — any number of observers can subscribe — and the callback's job is only to write
 the change into it.
+
+---
+
+## Python
+
+The Python bindings are on PyPI, as one wheel per platform for CPython 3.12
+and later:
+```sh
+pip install feather-tk
+```
+```python
+import feather_tk as ftk
+```
+
+The wheel also carries the C++ libraries, headers, and CMake package the
+module is built on, so a project with its own bindings can build against the
+same installation:
+```sh
+cmake -DCMAKE_PREFIX_PATH=$(python -c "import feather_tk; print(feather_tk.get_cmake_dir())") ...
+```
+
+To build a wheel from source, with the dependencies built along the way:
+```sh
+pip wheel ./feather-tk
+```
 
 ---
 

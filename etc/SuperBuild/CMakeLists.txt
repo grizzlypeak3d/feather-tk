@@ -102,9 +102,11 @@ set(ftk_DEPS_ARGS
 # own rpath, not with the rpaths of whatever loaded it, and a dependency
 # built here had none: liblunasvg could not find libplutovg beside it unless
 # LD_LIBRARY_PATH said where to look. Every dependency gets the directory it
-# is installed in. macOS resolves with the rpaths of the loading chain and
-# needs nothing.
-if(UNIX AND NOT APPLE)
+# is installed in. macOS resolves with the rpaths of the loading chain, but
+# the wheel repair tool checks each library alone, so it gets one too.
+if(APPLE)
+    list(APPEND ftk_DEPS_ARGS -DCMAKE_INSTALL_RPATH=@loader_path)
+elseif(UNIX)
     list(APPEND ftk_DEPS_ARGS -DCMAKE_INSTALL_RPATH=$ORIGIN)
 endif()
 string(REPLACE ";" " " ftk_DEPS_ARGS_TMP "${ftk_DEPS_ARGS}")

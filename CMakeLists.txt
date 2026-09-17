@@ -25,6 +25,15 @@ project(
     VERSION ${ftk_VERSION_MAJOR}.${ftk_VERSION_MINOR}.${ftk_VERSION_PATCH}
     LANGUAGES CXX C)
 
+# A Python wheel build: scikit-build-core sets SKBUILD. The wheel settings
+# are read before the options below, the way "cmake -C" would read them, so
+# they win; the dependencies are built here too, since pip runs one CMake
+# project and nothing before it.
+if(SKBUILD)
+    include(etc/Config/wheel.cmake)
+    include(etc/Python/ftkWheelDeps.cmake)
+endif()
+
 #-------------------------------------------------------------------------------
 # Options
 
@@ -61,6 +70,12 @@ if(WIN32 OR APPLE)
 endif()
 set(ftk_nfd ${ftk_nfd_DEFAULT} CACHE BOOL "Enable support for native file dialogs")
 set(ftk_PYTHON OFF CACHE BOOL "Enable support for Python")
+# One module for every Python from 3.12 on, rather than one per version.
+set(ftk_PYTHON_STABLE_ABI ON CACHE BOOL "Build the Python module against the stable ABI")
+# Where the feather_tk package goes, relative to the install prefix. The
+# default keeps "PYTHONPATH=<prefix>/lib" working; a wheel puts the
+# package at its root instead.
+set(ftk_PYTHON_INSTALL_DIR "lib/feather_tk" CACHE STRING "Python package install directory")
 set(ftk_TESTS ON CACHE BOOL "Enable tests")
 set(ftk_TESTS_NO_GL OFF CACHE BOOL "Run only the tests that do not need OpenGL")
 set(ftk_EXAMPLES ON CACHE BOOL "Enable examples")
@@ -105,7 +120,11 @@ endif()
 
 if(WIN32)
 elseif(APPLE)
-    set(CMAKE_INSTALL_RPATH "@executable_path/../lib")
+    # @loader_path rather than @executable_path, so that the libraries have
+    # an rpath of their own as well as the executables: the loading chain's
+    # rpaths usually cover a library, but not one loaded by itself, and the
+    # wheel repair tool checks each library that way.
+    set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
     # The freshly built libraries have to come before the installed
     # copies, or a binary run from the build tree quietly loads the
     # stale install -- so they are gathered into one directory that
@@ -192,9 +211,18 @@ if(ftk_nfd)
 endif()
 
 if(ftk_PYTHON)
-    find_package(Python3 REQUIRED Interpreter Development)
-    # nanobind uses CMake's newer FindPython module.
-    find_package(Python REQUIRED COMPONENTS Interpreter Development)
+    # Development.Module rather than Development: an extension module does not
+    # link libpython, which the manylinux images do not have and which a
+    # macOS wheel would otherwise carry with it. The interpreter that loads
+    # the module supplies the symbols.
+    set(ftk_PYTHON_COMPONENTS Interpreter Development.Module)
+    set(ftk_PYTHON_VERSION 3.10)
+    if(ftk_PYTHON_STABLE_ABI)
+        # nanobind supports the stable ABI from Python 3.12.
+        list(APPEND ftk_PYTHON_COMPONENTS Development.SABIModule)
+        set(ftk_PYTHON_VERSION 3.12)
+    endif()
+    find_package(Python ${ftk_PYTHON_VERSION} REQUIRED COMPONENTS ${ftk_PYTHON_COMPONENTS})
     find_package(nanobind REQUIRED CONFIG)
 endif()
 
