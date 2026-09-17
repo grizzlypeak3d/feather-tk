@@ -30,8 +30,18 @@ namespace ftk
         void WindowTest::run()
         {
             {
+                // Hidden, like every other OpenGL test's window. A shown
+                // one takes the pointer and the keyboard from whoever is
+                // at the machine, and going full screen on it blanks the
+                // display -- twice, on the way in and on the way back.
+                // Nothing here reads the window off the screen.
                 Size2I size(1024, 1024);
-                auto window = Window::create(_context, "WindowTest", size);
+                auto window = Window::create(
+                    _context,
+                    "WindowTest",
+                    size,
+                    static_cast<int>(WindowOptions::DoubleBuffer) |
+                    static_cast<int>(WindowOptions::MakeCurrent));
                 FTK_CHECK(window->getID());
                 _print(Format("Screen: {0}").arg(window->getScreen()));
                 _print(Format("Full screen: {0}").arg(window->isFullScreen()));
@@ -40,7 +50,6 @@ namespace ftk
                 size = Size2I(512, 512);
                 window->setSize(size);
                 window->hide();
-                window->show();
                 window->setFullScreen(true);
                 window->setFullScreen(true);
                 window->setFullScreen(false);
