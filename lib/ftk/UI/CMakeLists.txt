@@ -16,6 +16,7 @@ set(HEADERS
     ColorWidget.h
     ColorWidgetSystem.h
     ComboBox.h
+    ComboBoxMenu.h
     ConfirmDialog.h
     DiagWidget.h
     DialogSystem.h

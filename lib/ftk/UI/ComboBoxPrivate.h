@@ -5,8 +5,8 @@
 
 #include <ftk/UI/Export.h>
 #include <ftk/UI/ComboBox.h>
+#include <ftk/UI/ComboBoxMenu.h>
 #include <ftk/UI/IButton.h>
-#include <ftk/UI/IMenuPopup.h>
 
 namespace ftk
 {
@@ -41,41 +41,6 @@ namespace ftk
         void _sizeDirty() override;
 
     private:
-        FTK_PRIVATE();
-    };
-
-    class ComboBoxMenu : public IMenuPopup
-    {
-    protected:
-        void _init(
-            const std::shared_ptr<Context>&,
-            const std::vector<ComboBoxItem>&,
-            int currentIndex,
-            const std::shared_ptr<IWidget>& parent);
-
-        ComboBoxMenu();
-
-    public:
-        virtual ~ComboBoxMenu();
-
-        FTK_UI_API static std::shared_ptr<ComboBoxMenu> create(
-            const std::shared_ptr<Context>&,
-            const std::vector<ComboBoxItem>&,
-            int currentIndex,
-            const std::shared_ptr<IWidget>& parent = nullptr);
-
-        FTK_UI_API void setCallback(const std::function<void(int)>&);
-
-        void setGeometry(const Box2I&) override;
-        void keyFocusEvent(bool) override;
-        void keyPressEvent(KeyEvent&) override;
-        void keyReleaseEvent(KeyEvent&) override;
-
-    private:
-        void _setCurrent(int);
-        void _currentUpdate();
-        void _scrollToCurrent();
-
         FTK_PRIVATE();
     };
 }
