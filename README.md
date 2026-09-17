@@ -1,14 +1,20 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Build Status](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/ci-workflow.yml)
 [![Web](https://github.com/grizzlypeak3d/feather-tk/actions/workflows/web-workflow.yml/badge.svg)](https://grizzlypeak3d.github.io/feather-tk/)
+[![PyPI](https://img.shields.io/pypi/v/feather-tk.svg)](https://pypi.org/project/feather-tk/)
 
 # ![feather-tk Icon](https://raw.githubusercontent.com/grizzlypeak3d/feather-tk/main/etc/Icons/feather_tk_32.png)&nbsp;feather-tk
 
-A lightweight C++ toolkit for building professional tools for film, VFX, and animation.
+A lightweight toolkit for building professional tools for film, VFX, and
+animation, in C++ or Python.
 
 feather-tk is purpose-built for media production software, with features like
 high-bit-depth color and multi-monitor HiDPI support. It powers [DJV](https://github.com/grizzlypeak3d/DJV),
 a production-proven image sequence viewer used in professional VFX and animation workflows.
+
+```sh
+pip install feather-tk
+```
 
 **[Try it in your browser](https://grizzlypeak3d.github.io/feather-tk/)** --
 the examples run in WebAssembly.
@@ -20,7 +26,11 @@ the examples run in WebAssembly.
 **Lightweight and self-contained.** feather-tk has a small, well-defined set of
 dependencies, and includes a CMake superbuild for building the dependencies.
 
-**Modern C++ throughout.** Clean ownership model using `std::shared_ptr`, a reactive
+**C++ and Python.** The Python bindings follow the C++ API closely, so the
+documentation and examples of one read for the other, and they install with
+pip on Linux, macOS, and Windows.
+
+**Modern C++ at the core.** Clean ownership model using `std::shared_ptr`, a reactive
 observable system for UI state, and a consistent event-driven architecture that makes
 writing custom widgets straightforward.
 
@@ -52,10 +62,11 @@ writing custom widgets straightforward.
   on exit.
 - **Widgets from JSON** — layouts loaded from data, with behavior attached in code by
   id; a live preview example reloads a layout as the file is edited.
-- **OpenGL rendering** — OpenGL 4.1 and OpenGL ES 2 backends.
+- **OpenGL rendering** — OpenGL 4.1 and OpenGL ES 3 backends.
 - **HiDPI** — display scale awareness throughout; all size roles scale correctly on
   high-density displays and multi-monitor setups.
-- **Python bindings** — nanobind-based Python API (work in progress).
+- **Python bindings** — the C++ API from Python, installed with
+  `pip install feather-tk` (a work in progress; the OpenGL layer is not wrapped).
 - **Testable by design** — applications run headless, write screenshots, and drive
   their own UI from scripts; the same machinery tests feather-tk itself.
 - **Cross-platform** — works on Linux, macOS, and Windows, and runs in the
@@ -84,7 +95,9 @@ on every platform, and rendering the application controls end to end.
 
 ## Quick start
 
-Simple C++ example that shows a window with a text label:
+### C++
+
+A window with a text label:
 ```cpp
 #include <ftk/UI/App.h>
 #include <ftk/UI/Label.h>
@@ -131,8 +144,9 @@ int main(int argc, char** argv)
 }
 ```
 
-Simple Python example that shows a window with a text label (Python bindings
-are a work in progress):
+### Python
+
+A window with a text label, after `pip install feather-tk`:
 ```python
 import feather_tk as ftk
 import sys
@@ -157,7 +171,6 @@ app.run()
 # Clean up.
 window = None
 app = None
-
 ```
 
 ---
@@ -296,6 +309,9 @@ pip wheel ./feather-tk
 ---
 
 ## Building
+
+Building from source is for the C++ libraries, or for Python on a platform
+without a wheel; see [Python](#python) for the package.
 
 ### Dependencies
 

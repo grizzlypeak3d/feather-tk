@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
-"""feather-tk is a lightweight toolkit for building cross-platform C++
-applications.
+"""feather-tk is a lightweight toolkit for building professional tools for
+film, VFX, and animation.
 
 The API is the C++ one, compiled into the _feather_tk module and gathered
 here, so that the package can also carry the libraries the module is built

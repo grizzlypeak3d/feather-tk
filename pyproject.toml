@@ -7,7 +7,7 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "feather-tk"
 dynamic = ["version"]
-description = "A lightweight toolkit for building cross-platform applications"
+description = "A lightweight toolkit for building professional tools for film, VFX, and animation"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "BSD-3-Clause"
