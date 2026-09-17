@@ -119,7 +119,11 @@ namespace ftk
                 .def_prop_rw(
                     "recentFilesModel",
                     &FileBrowserSystem::getRecentFilesModel,
-                    &FileBrowserSystem::setRecentFilesModel);
+                    &FileBrowserSystem::setRecentFilesModel)
+                .def_prop_rw(
+                    "recentDirsModel",
+                    &FileBrowserSystem::getRecentDirsModel,
+                    &FileBrowserSystem::setRecentDirsModel);
 
             m.def("to_json",
                 [](const FileBrowserOptions& value)

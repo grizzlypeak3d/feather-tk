@@ -674,6 +674,52 @@ namespace ftk
             app->tick();
             FTK_CHECK(1 == app->getWindows().size());
 
+            // A choice records the directory it was made in, whatever it was
+            // for, and leaves the application's recent files alone: those
+            // are the application's to fill. The browser lists both.
+            {
+                const auto recentFiles = RecentFilesModel::create(_context);
+                const auto recentDirs = RecentFilesModel::create(_context);
+                system->setRecentFilesModel(recentFiles);
+                system->setRecentDirsModel(recentDirs);
+                app->tick();
+                system->open(window, [](const std::vector<Path>&) {}, openOptions);
+                app->tick();
+                auto recentWindow = app->getWindows().back();
+                auto recentWidget = _find<FileBrowserWidget>(recentWindow);
+                FTK_CHECK(recentWidget);
+                auto recentView = recentWidget->getView();
+                KeyEvent key(Key::Home, 0, V2I());
+                recentView->keyPressEvent(key);
+                _click(recentWindow, "Ok");
+                app->tick();
+                app->tick();
+                FTK_CHECK(recentFiles->getRecent().empty());
+                FTK_CHECK(1 == recentDirs->getRecent().size());
+                if (!recentDirs->getRecent().empty())
+                {
+                    _print(Format("Recent directory: {0}").
+                        arg(recentDirs->getRecent().front().get()));
+                    FTK_CHECK(recentDirs->getRecent().front().get() ==
+                        appendSeparator(fromFileSystem(path)));
+                }
+
+                // What the browser shows is the two together.
+                recentFiles->addRecent(Path(fromFileSystem(path / "file.txt")));
+                system->open(window, [](const std::vector<Path>&) {}, openOptions);
+                app->tick();
+                recentWindow = app->getWindows().back();
+                recentWidget = _find<FileBrowserWidget>(recentWindow);
+                FTK_CHECK(recentWidget);
+                FTK_CHECK(recentWidget->getRecentFilesModel() &&
+                    2 == recentWidget->getRecentFilesModel()->getRecent().size());
+                system->close();
+                app->tick();
+                app->tick();
+                system->setRecentFilesModel(RecentFilesModel::create(_context));
+                system->setRecentDirsModel(RecentFilesModel::create(_context));
+            }
+
             // Closing one that is not open is not an error: an application
             // does this when its own window goes away.
             system->close();

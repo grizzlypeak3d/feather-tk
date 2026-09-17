@@ -453,7 +453,23 @@ namespace ftk
         FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
 
         //! Set the recent files model.
+        //!
+        //! The application's recent files. The browser lists the directories
+        //! they are in, together with the recent directories below, and
+        //! never adds to it: what goes in here is the application's to say.
         FTK_UI_API void setRecentFilesModel(const std::shared_ptr<RecentFilesModel>&);
+
+        //! Get the recent directories model.
+        FTK_UI_API const std::shared_ptr<RecentFilesModel>& getRecentDirsModel() const;
+
+        //! Set the recent directories model.
+        //!
+        //! The directory of every choice made in the browser is added to it,
+        //! whatever the choice was for -- a LUT's as well as a movie's -- so
+        //! that the browser offers it again without the choice joining the
+        //! application's recent files. An application that wants the list
+        //! kept between runs sets one it saves.
+        FTK_UI_API void setRecentDirsModel(const std::shared_ptr<RecentFilesModel>&);
 
         //! Get the thumbnails.
         FTK_UI_API const std::shared_ptr<IFileBrowserThumbnails>& getThumbnails() const;
@@ -462,6 +478,9 @@ namespace ftk
         FTK_UI_API void setThumbnails(const std::shared_ptr<IFileBrowserThumbnails>&);
 
     private:
+        void _recentObserve();
+        void _recentUpdate();
+        void _addRecentDirs(const std::vector<Path>&, FileBrowserMode);
         void _openDialog(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWindow>&,
