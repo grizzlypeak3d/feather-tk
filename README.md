@@ -160,10 +160,17 @@ if app.hasCmdLineHelp:
 # Create a window.
 window = ftk.MainWindow(context, app, ftk.Size2I(1280, 960))
 
-# Create a label.
-label = ftk.Label(context, "Hello world")
+# Create a label, centered in the window: the layout centers it across,
+# and the spacers center it along.
+layout = ftk.VerticalLayout(context)
+spacer = ftk.Spacer(context, ftk.Orientation.Vertical, layout)
+spacer.setStretch(ftk.Stretch.Expanding)
+label = ftk.Label(context, "Hello world", layout)
+label.fontSize = 32
 label.hAlign = ftk.HAlign.Center
-window.widget = label
+spacer = ftk.Spacer(context, ftk.Orientation.Vertical, layout)
+spacer.setStretch(ftk.Stretch.Expanding)
+window.widget = layout
 
 # Run the application.
 app.run()
