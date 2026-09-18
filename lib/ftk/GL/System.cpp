@@ -236,7 +236,19 @@ namespace ftk
 #endif // FTK_SDL2
             if (p.init)
             {
-                SDL_Quit();
+                // Only what init() started. SDL counts each subsystem's
+                // users, and another library in the same process can be one:
+                // tlRender starts SDL's audio, and its player destroys its
+                // audio stream in its own destructor. SDL_Quit() took audio
+                // down with everything else whenever this went first -- as
+                // it does when Python frees a module's objects at exit, in no
+                // order -- and the player's destructor then crashed in SDL.
+                // SDL itself is quit by whichever user is last.
+                SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+                if (0 == SDL_WasInit(0))
+                {
+                    SDL_Quit();
+                }
             }
         }
 
