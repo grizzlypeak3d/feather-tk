@@ -24,6 +24,12 @@
 #include <unistd.h>
 #endif // _WIN32
 
+#if defined(__APPLE__)
+#include <CoreFoundation/CoreFoundation.h>
+#include <objc/message.h>
+#include <objc/runtime.h>
+#endif // __APPLE__
+
 #include <ctime>
 #include <filesystem>
 
@@ -41,6 +47,49 @@ namespace ftk
     {
         namespace
         {
+#if defined(__APPLE__)
+            // After an application quits abnormally, macOS asks on its next
+            // launch whether to reopen its windows, in a modal alert raised
+            // while the launch is handled -- inside the first event poll.
+            // Nothing is polled until it is answered, so a run nobody is at
+            // -- "-exit", a screenshot, a test -- waits on it for good: a
+            // Python run killed once hung every run of Python after it.
+            //
+            // SDL turns the restoring off with ApplePersistenceIgnoreState,
+            // but registers it once launching has finished, after the alert.
+            // Registered here, before SDL starts, it is in place in time.
+            // The same defaults SDL registers itself; the Objective-C
+            // runtime saves a source file of another language for the one
+            // call. NSDictionary and CFDictionary are the same object.
+            void registerMacDefaults()
+            {
+                Class userDefaultsClass = objc_getClass("NSUserDefaults");
+                if (!userDefaultsClass)
+                {
+                    return;
+                }
+                auto getObject = reinterpret_cast<id(*)(id, SEL)>(objc_msgSend);
+                auto setObject = reinterpret_cast<void(*)(id, SEL, id)>(objc_msgSend);
+                id userDefaults = getObject(
+                    reinterpret_cast<id>(userDefaultsClass),
+                    sel_registerName("standardUserDefaults"));
+                const void* keys[] = { CFSTR("ApplePersistenceIgnoreState") };
+                const void* values[] = { kCFBooleanTrue };
+                CFDictionaryRef defaults = CFDictionaryCreate(
+                    kCFAllocatorDefault,
+                    keys,
+                    values,
+                    1,
+                    &kCFTypeDictionaryKeyCallBacks,
+                    &kCFTypeDictionaryValueCallBacks);
+                setObject(
+                    userDefaults,
+                    sel_registerName("registerDefaults:"),
+                    (id)defaults);
+                CFRelease(defaults);
+            }
+#endif // __APPLE__
+
             void logOutput(void *userData, int category, SDL_LogPriority priority, const char *message)
             {
                 if (userData)
@@ -215,6 +264,8 @@ namespace ftk
                 logSystem->print("ftk::gl::System", "Init SDL video and events...");
             }
 #if defined(__APPLE__)
+            registerMacDefaults();
+
             // On macOS 14 and later SDL no longer activates the application
             // at launch, so an application launched from a terminal starts
             // without keyboard focus: the terminal keeps it, and typing
