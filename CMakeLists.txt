@@ -258,3 +258,16 @@ install(
         cmake/ftkIconResources.cpp.in
     DESTINATION lib/cmake/ftk
     COMPONENT dev)
+
+# Last, once everything is installed: the extra copies of each library a
+# wheel would otherwise carry are dropped, and any CMake package naming the
+# directory the dependencies were built in is made to name the wheel's own
+# files. See etc/Python/relocate.py.
+if(SKBUILD)
+    install(CODE "execute_process(
+        COMMAND \"${Python_EXECUTABLE}\"
+            \"${PROJECT_SOURCE_DIR}/etc/Python/relocate.py\"
+            \"\${CMAKE_INSTALL_PREFIX}\"
+            \"${ftk_WHEEL_DEPS}\"
+        COMMAND_ERROR_IS_FATAL ANY)")
+endif()

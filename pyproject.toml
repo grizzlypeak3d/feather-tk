@@ -60,20 +60,25 @@ skip = "*-musllinux_*"
 # and Linux, which are not supported.
 archs = ["native"]
 build-verbosity = 1
-# The runners have no OpenGL; the tests that need it skip.
-test-command = "python {project}/tests/run-python-tests.py"
+# The runners have no OpenGL; the tests that need it skip. After them, a C++
+# program is built against the installed wheel with cmake from pip, which
+# checks that the CMake package in it finds its own files.
+test-requires = ["cmake"]
+test-command = "python {project}/tests/run-python-tests.py && python {project}/tests/wheel-consumer/check.py"
 test-environment = { FTK_TESTS_NO_GL = "1" }
 
 [tool.cibuildwheel.linux]
 # What SDL3 needs at build time for X11 and Wayland; it loads the libraries
-# themselves from the system at run time. The images are AlmaLinux 8, which
+# themselves from the system at run time. patchelf is for
+# etc/Python/relocate.py. The images are AlmaLinux 8, which
 # has no libdecor, so the Wayland windows are decorated by the compositor or
 # not at all.
 before-all = """
 dnf install -y \
     libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel \
     mesa-libGL-devel mesa-libEGL-devel \
-    wayland-devel wayland-protocols-devel libxkbcommon-devel
+    wayland-devel wayland-protocols-devel libxkbcommon-devel \
+    patchelf
 """
 
 [tool.cibuildwheel.windows]
