@@ -45,7 +45,7 @@ namespace ftk
     FileLogSystem::FileLogSystem(
         const std::shared_ptr<Context>& context,
         const std::filesystem::path& path) :
-        ISystem(context, "ftk:::FileLogSystem"),
+        ISystem(context, "ftk::FileLogSystem"),
         _p(new Private)
     {
         FTK_P();

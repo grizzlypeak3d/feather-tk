@@ -42,6 +42,10 @@ namespace ftk
         };
 
         const auto system = context->getSystem<DiagSystem>();
+        // A sample now, so the graphs open with their current values rather
+        // than with empty boxes and unlabelled colors until the next tick,
+        // which is seconds away and reads as the tool being broken.
+        system->tick();
         const auto& groups = system->getGroups();
         for (auto i = groups.rbegin(); i != groups.rend(); ++i)
         {
