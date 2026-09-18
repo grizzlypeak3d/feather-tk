@@ -24,6 +24,12 @@ if(EMSCRIPTEN)
     endif()
 endif()
 
+# The Python examples are the same programs again, and running each one is
+# how they are tested; see their CMakeLists.
+if(ftk_PYTHON)
+    add_subdirectory(python)
+endif()
+
 foreach(ftk_WEB_APP ${ftk_EXAMPLES})
     add_subdirectory(${ftk_WEB_APP})
     if(EMSCRIPTEN)
