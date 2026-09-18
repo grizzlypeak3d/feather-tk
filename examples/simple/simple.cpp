@@ -28,7 +28,7 @@ int main(int argc, char** argv)
         auto spacer = Spacer::create(context, Orientation::Vertical, layout);
         spacer->setStretch(Stretch::Expanding);
         auto label = Label::create(context, "Hello world", layout);
-        label->setFontSize(32);
+        label->setFontSize(64);
         label->setHAlign(HAlign::Center);
         spacer = Spacer::create(context, Orientation::Vertical, layout);
         spacer->setStretch(Stretch::Expanding);

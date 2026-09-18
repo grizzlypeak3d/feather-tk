@@ -19,7 +19,7 @@ layout = ftk.VerticalLayout(context)
 spacer = ftk.Spacer(context, ftk.Orientation.Vertical, layout)
 spacer.setStretch(ftk.Stretch.Expanding)
 label = ftk.Label(context, "Hello world", layout)
-label.fontSize = 32
+label.fontSize = 64
 label.hAlign = ftk.HAlign.Center
 spacer = ftk.Spacer(context, ftk.Orientation.Vertical, layout)
 spacer.setStretch(ftk.Stretch.Expanding)

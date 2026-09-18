@@ -126,7 +126,7 @@ int main(int argc, char** argv)
         auto spacer = Spacer::create(context, Orientation::Vertical, layout);
         spacer->setStretch(Stretch::Expanding);
         auto label = Label::create(context, "Hello world", layout);
-        label->setFontSize(32);
+        label->setFontSize(64);
         label->setHAlign(HAlign::Center);
         spacer = Spacer::create(context, Orientation::Vertical, layout);
         spacer->setStretch(Stretch::Expanding);
@@ -166,7 +166,7 @@ layout = ftk.VerticalLayout(context)
 spacer = ftk.Spacer(context, ftk.Orientation.Vertical, layout)
 spacer.setStretch(ftk.Stretch.Expanding)
 label = ftk.Label(context, "Hello world", layout)
-label.fontSize = 32
+label.fontSize = 64
 label.hAlign = ftk.HAlign.Center
 spacer = ftk.Spacer(context, ftk.Orientation.Vertical, layout)
 spacer.setStretch(ftk.Stretch.Expanding)
