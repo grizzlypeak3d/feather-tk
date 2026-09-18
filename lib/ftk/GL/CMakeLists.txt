@@ -78,6 +78,10 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_link_libraries(ftkGL PUBLIC ftkCore)
+if(APPLE)
+    # For the defaults registered before SDL starts; see System.cpp.
+    target_link_libraries(ftkGL PRIVATE "-framework Foundation")
+endif()
 if(NOT EMSCRIPTEN)
     target_link_libraries(ftkGL PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
 endif()
