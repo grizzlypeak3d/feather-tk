@@ -86,6 +86,7 @@ namespace ftk
         struct CmdLine
         {
             std::shared_ptr<CmdLineFlag> exit;
+            std::shared_ptr<CmdLineFlag> offscreen;
             std::shared_ptr<CmdLineOption<float> > displayScale;
             std::shared_ptr<CmdLineOption<ColorStyle> > colorStyle;
             std::shared_ptr<CmdLineOption<std::string> > settingsFile;
@@ -168,6 +169,15 @@ namespace ftk
             "that can be clicked into by accident.",
             "Testing");
         cmdLineOptionsTmp.push_back(p.cmdLine.exit);
+        p.cmdLine.offscreen = CmdLineFlag::create(
+            { "-offscreen" },
+            "Run with the windows drawn but not shown, for a run driven by "
+            "commands rather than a person: a window that appears for the "
+            "length of a scripted job is one that can be clicked into by "
+            "accident. Unlike -exit, the application runs until it is told "
+            "to stop.",
+            "Testing");
+        cmdLineOptionsTmp.push_back(p.cmdLine.offscreen);
         p.cmdLine.displayScale = CmdLineOption<float>::create(
             { "-displayScale", "-ds" },
             "Set the display scale.",
@@ -257,6 +267,7 @@ namespace ftk
             p.cmdLine.widgetDump->found() ||
             p.cmdLine.captureShot->found() ||
             p.cmdLine.exit->found() ||
+            p.cmdLine.offscreen->found() ||
             offscreenDefault;
 
         if (!p.settingsPath.empty())
