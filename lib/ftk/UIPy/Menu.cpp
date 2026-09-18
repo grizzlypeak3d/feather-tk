@@ -14,7 +14,7 @@
 #include <nanobind/stl/map.h>
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/optional.h>
-#include <nanobind/stl/function.h>
+#include <ftk/CorePy/Function.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/filesystem.h>
 

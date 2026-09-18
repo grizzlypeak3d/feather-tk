@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/CorePy/Function.h>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/shared_ptr.h>

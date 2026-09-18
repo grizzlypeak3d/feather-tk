@@ -7,7 +7,7 @@
 
 #include <ftk/CorePy/Bindings.h>
 
-#include <nanobind/stl/function.h>
+#include <ftk/CorePy/Function.h>
 #include <nanobind/nanobind.h>
 #include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
