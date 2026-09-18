@@ -17,6 +17,8 @@ on:
       - etc/Config/wheel.cmake
       - etc/Python/**
       - lib/ftk/ftkPy/**
+      - ftkConfig.cmake.in
+      - tests/wheel-consumer/**
       - .github/workflows/wheels-workflow.yml
   workflow_dispatch:
     inputs:
