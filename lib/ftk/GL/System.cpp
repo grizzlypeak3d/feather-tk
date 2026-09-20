@@ -73,7 +73,11 @@ namespace ftk
                 id userDefaults = getObject(
                     reinterpret_cast<id>(userDefaultsClass),
                     sel_registerName("standardUserDefaults"));
-                const void* keys[] = { CFSTR("ApplePersistenceIgnoreState") };
+                // The "Quietly" spelling: the plain one has AppKit log
+                // "ApplePersistenceIgnoreState: Existing state will not be
+                // touched" on every run, which is the application's output
+                // as far as anyone reading a terminal is concerned.
+                const void* keys[] = { CFSTR("ApplePersistenceIgnoreStateQuietly") };
                 const void* values[] = { kCFBooleanTrue };
                 CFDictionaryRef defaults = CFDictionaryCreate(
                     kCFAllocatorDefault,
