@@ -76,7 +76,3 @@ doubleEditSlider.setCallback(lambda value: print("Double:", value))
 # Run the application.
 app.run()
 
-# Clean up.
-window = None
-app = None
-

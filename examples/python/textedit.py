@@ -792,4 +792,3 @@ if __name__ == "__main__":
     if app.hasCmdLineHelp:
         sys.exit(0)
     app.run()
-    app = None

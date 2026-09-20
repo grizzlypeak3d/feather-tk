@@ -83,7 +83,3 @@ window = DialogsWindow(context, app, ftk.Size2I(1280, 960))
 
 # Run the application.
 app.run()
-
-# Clean up.
-window = None
-app = None

@@ -66,7 +66,3 @@ bellows.widget = vLayout
 
 # Run the application.
 app.run()
-
-# Clean up.
-window = None
-app = None

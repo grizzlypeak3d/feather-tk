@@ -28,7 +28,3 @@ window.widget = layout
 # Run the application.
 app.run()
 
-# Clean up.
-window = None
-app = None
-
