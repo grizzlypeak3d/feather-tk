@@ -303,7 +303,12 @@ namespace ftk
                 }
                 break;
             case Key::Escape:
-                if (hasKeyFocus() && showKeyFocus())
+                // Asked of the focus alone, unlike the widgets that only
+                // leave on Escape while the focus ring is being shown: the
+                // menu bar highlights the current menu whenever it has the
+                // focus, including when a click gave it, so Escape has
+                // something visible to dismiss in either case.
+                if (hasKeyFocus())
                 {
                     event.accept = true;
                     releaseKeyFocus();
