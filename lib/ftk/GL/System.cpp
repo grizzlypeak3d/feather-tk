@@ -296,6 +296,13 @@ namespace ftk
                 SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
             }
 #endif // __APPLE__
+#if defined(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
+            // The click that activates a window is delivered to the widget
+            // under it, rather than only raising the window. SDL ignores it
+            // by default, which leaves a window that highlights what the
+            // mouse is over but takes a second click to press it.
+            SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+#endif // SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH
 #if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
 #if defined(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT)
