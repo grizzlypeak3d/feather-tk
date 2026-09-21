@@ -66,6 +66,11 @@ add_custom_command(
         --dll-dir $<TARGET_FILE_DIR:ftkGL>
         --dll-dir $<TARGET_FILE_DIR:ftkUI>
         --dll-dir ${CMAKE_INSTALL_PREFIX}/bin
+        # SDL, FreeType, libpng and zlib: from the prefix a source build
+        # installs them to, or the one a wheel build builds them into,
+        # which is not installed yet when this runs.
+        --dll-dir ${ftk_WHEEL_DEPS}/bin
+        --dll-dir ${ftk_WHEEL_DEPS}/lib
         --
         ${ftk_STUBGEN}
         -q
