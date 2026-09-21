@@ -42,9 +42,33 @@ elseif(UNIX)
         INSTALL_RPATH "$ORIGIN/${ftk_PYTHON_LIB_RPATH}")
 endif()
 
+# Type stubs: the signatures of a compiled module in a form editors and
+# type checkers can read, since there is no Python source in it for them to
+# parse. Written by nanobind from the bindings themselves, which imports the
+# module that was just built, so the package directory is laid out first.
+# py.typed is what says the stubs beside it are to be trusted.
+nanobind_add_stub(_feather_tk_stub
+    MODULE feather_tk._feather_tk
+    OUTPUT ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi
+    PYTHON_PATH ${CMAKE_BINARY_DIR}/python
+    DEPENDS _feather_tk)
+file(TOUCH ${ftk_PYTHON_PACKAGE_DIR}/py.typed)
+
+# What the stub could not resolve is a C++ type the bindings never exposed;
+# the build says so rather than leaving it in the file to be found. See
+# etc/Python/check_stub.py.
+add_custom_command(
+    TARGET _feather_tk_stub POST_BUILD
+    COMMAND ${Python_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/etc/Python/check_stub.py
+        ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi)
+
 install(TARGETS _feather_tk
     LIBRARY DESTINATION ${ftk_PYTHON_INSTALL_DIR}
     RUNTIME DESTINATION ${ftk_PYTHON_INSTALL_DIR})
 install(
-    FILES __init__.py
+    FILES
+        __init__.py
+        ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi
+        ${ftk_PYTHON_PACKAGE_DIR}/py.typed
     DESTINATION ${ftk_PYTHON_INSTALL_DIR})
