@@ -1,6 +1,7 @@
 set(HEADERS
     Bindings.h
     Function.h
+    WeakPtr.h
     CmdLineInline.h
     ObservableInline.h
     ObservableListInline.h
