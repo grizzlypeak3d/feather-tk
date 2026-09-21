@@ -141,6 +141,11 @@ namespace ftk
         return _keyFocus;
     }
 
+    inline bool IWidget::keyFocusAlwaysVisible() const
+    {
+        return _keyFocusAlwaysVisible;
+    }
+
     inline const std::string& IWidget::getTooltip() const
     {
         return _tooltip;

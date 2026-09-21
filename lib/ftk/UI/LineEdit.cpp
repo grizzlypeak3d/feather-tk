@@ -86,6 +86,8 @@ namespace ftk
 
         setHAlign(HAlign::Fill);
         setAcceptsKeyFocus(true);
+        // The caret has to be where the typing will go.
+        setKeyFocusAlwaysVisible(true);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
         setContextMenuCallback([this] { return _createContextMenu(); });
@@ -444,7 +446,7 @@ namespace ftk
         }
 
         // Draw the focus and border.
-        const bool keyFocus = hasKeyFocus();
+        const bool keyFocus = showKeyFocus();
         event.render->drawMesh(
             keyFocus ? p.draw->keyFocus : p.draw->border,
             event.style->getColorRole(
