@@ -45,13 +45,36 @@ endif()
 # Type stubs: the signatures of a compiled module in a form editors and
 # type checkers can read, since there is no Python source in it for them to
 # parse. Written by nanobind from the bindings themselves, which imports the
-# module that was just built, so the package directory is laid out first.
-# py.typed is what says the stubs beside it are to be trusted.
-nanobind_add_stub(_feather_tk_stub
-    MODULE feather_tk._feather_tk
-    OUTPUT ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi
-    PYTHON_PATH ${CMAKE_BINARY_DIR}/python
-    DEPENDS _feather_tk)
+# module that was just built -- through etc/Python/make_stub.py, which names
+# the directories its libraries are in first, since on Windows they are not
+# beside it and only os.add_dll_directory() finds them. py.typed is what
+# says the stubs beside it are to be trusted.
+#
+# nanobind_add_stub() would do this, but it runs stubgen directly with no
+# way to name those directories.
+if(EXISTS ${NB_DIR}/src/stubgen.py)
+    set(ftk_STUBGEN ${NB_DIR}/src/stubgen.py)
+else()
+    set(ftk_STUBGEN ${NB_DIR}/stubgen.py)
+endif()
+set(ftk_PYTHON_STUB ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi)
+add_custom_command(
+    OUTPUT ${ftk_PYTHON_STUB}
+    COMMAND ${Python_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/etc/Python/make_stub.py
+        --dll-dir $<TARGET_FILE_DIR:ftkCore>
+        --dll-dir $<TARGET_FILE_DIR:ftkGL>
+        --dll-dir $<TARGET_FILE_DIR:ftkUI>
+        --dll-dir ${CMAKE_INSTALL_PREFIX}/bin
+        --
+        ${ftk_STUBGEN}
+        -q
+        -m feather_tk._feather_tk
+        -i ${CMAKE_BINARY_DIR}/python
+        -o ${ftk_PYTHON_STUB}
+    DEPENDS _feather_tk ${ftk_STUBGEN} ${PROJECT_SOURCE_DIR}/etc/Python/make_stub.py
+    COMMENT "Generating _feather_tk.pyi")
+add_custom_target(_feather_tk_stub ALL DEPENDS ${ftk_PYTHON_STUB})
 file(TOUCH ${ftk_PYTHON_PACKAGE_DIR}/py.typed)
 
 # What the stub could not resolve is a C++ type the bindings never exposed;
@@ -61,7 +84,7 @@ add_custom_command(
     TARGET _feather_tk_stub POST_BUILD
     COMMAND ${Python_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/etc/Python/check_stub.py
-        ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi)
+        ${ftk_PYTHON_STUB})
 
 install(TARGETS _feather_tk
     LIBRARY DESTINATION ${ftk_PYTHON_INSTALL_DIR}
