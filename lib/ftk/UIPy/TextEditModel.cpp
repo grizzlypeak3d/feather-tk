@@ -57,6 +57,8 @@ namespace ftk
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
 
+            observable<TextEditModelOptions>(m, "TextEditModelOptions");
+
             ftk::python::observable<TextEditPos>(m, "TextEditPos");
             ftk::python::observable<TextEditSelection>(m, "TextEditSelection");
 

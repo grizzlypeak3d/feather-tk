@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/TextEdit.h>
 #include <ftk/UI/TextEditModel.h>
@@ -34,6 +36,8 @@ namespace ftk
                 .def_rw("autoScrollTimeout", &TextEditOptions::autoScrollTimeout)
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
+
+            observable<TextEditOptions>(m, "TextEditOptions");
 
             nb::class_<TextEdit, IWidget>(
                 m, "TextEdit",

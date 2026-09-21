@@ -117,6 +117,8 @@ namespace ftk
                     nb::overload_cast<ColorRole>(&Style::getColorRole, nb::const_),
                     nb::arg("role"));
 
+            observable<ColorStyle>(m, "ColorStyle");
+
             nb::class_<MonitorInfo>(m, "MonitorInfo")
                 .def_rw("name", &MonitorInfo::name)
                 .def_rw("size", &MonitorInfo::size)
@@ -125,6 +127,8 @@ namespace ftk
                 .def_rw("bounds", &MonitorInfo::bounds)
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
+
+            observableList<MonitorInfo>(m, "MonitorInfo");
 
             nb::class_<AppFiles>(m, "AppFiles")
                 .def(
