@@ -40,6 +40,10 @@ namespace ftk
             observable<RangeF>(m, "RangeF");
             observable<RangeD>(m, "RangeD");
             observable<V2I>(m, "V2I");
+            // A map of strings, which is ftk::ImageTags and also
+            // tlRender's IOOptions: one C++ type, so one binding, and the
+            // name says what it is rather than what one of them calls it.
+            observable<std::map<std::string, std::string> >(m, "StringMap");
         }
     }
 }
