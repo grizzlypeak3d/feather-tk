@@ -9,6 +9,7 @@
 #include <ftk/Core/Context.h>
 
 #include <ftk/CorePy/Function.h>
+#include <ftk/CorePy/WeakPtr.h>
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
@@ -47,6 +48,19 @@ namespace ftk
             // do not cross into Python; observing the list covers the
             // same ground.
             ftk::python::observable<std::shared_ptr<IDocument> >(m, "IDocument");
+            // The weak pointers the model hands out: what observes them
+            // and what reads them, but not Observable<T>, which compares
+            // values with == and a weak pointer has no ==. Named as
+            // ftk::python::observable() would name them.
+            nb::class_<IObservable<std::weak_ptr<IDocument> > >(m, "IObservableWeakIDocument")
+                .def("get", &IObservable<std::weak_ptr<IDocument> >::get)
+                .def("getObserversCount", &IObservable<std::weak_ptr<IDocument> >::getObserversCount);
+            nb::class_<Observer<std::weak_ptr<IDocument> > >(m, "WeakIDocumentObserver")
+                .def(
+                    nb::new_(&Observer<std::weak_ptr<IDocument> >::create),
+                    nb::arg("observable"),
+                    nb::arg("callback"),
+                    nb::arg("action") = ObserverAction::Trigger);
             ftk::python::observableList<std::shared_ptr<IDocument> >(m, "IDocument");
 
             nb::class_<DocumentModel>(m, "DocumentModel")

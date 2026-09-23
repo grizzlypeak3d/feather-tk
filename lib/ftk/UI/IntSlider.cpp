@@ -36,6 +36,10 @@ namespace ftk
         FTK_P();
 
         setAcceptsKeyFocus(true);
+
+        // The arrows change the value, so the slider says it has them.
+
+        setKeyFocusAlwaysVisible(true);
         setHStretch(Stretch::Expanding);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);

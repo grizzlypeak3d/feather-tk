@@ -67,6 +67,8 @@ namespace ftk
     {
         IMouseWidget::_init(context, "ftk::ComboBox", parent);
         setAcceptsKeyFocus(true);
+        // The arrows change the item, so the box says it has them.
+        setKeyFocusAlwaysVisible(true);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
     }

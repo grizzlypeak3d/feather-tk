@@ -5,6 +5,7 @@
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/ComboBox.h>
+#include <ftk/UI/PushButton.h>
 #include <ftk/UI/ItemButton.h>
 #include <ftk/UI/ItemButtonList.h>
 #include <ftk/UI/Label.h>
@@ -62,6 +63,22 @@ namespace ftk
                 widget->setCurrentIndex(1);
                 widget->setCurrentIndex(1);
                 FTK_CHECK(1 == widget->getCurrentIndex());
+                // The arrows change the item, so the focus is drawn as soon
+                // as the box has it, rather than waiting for the keyboard
+                // the way a button's does.
+                FTK_CHECK(widget->keyFocusAlwaysVisible());
+                auto button = PushButton::create(_context, "Button", layout);
+                app->tick();
+                widget->takeKeyFocus();
+                app->tick();
+                FTK_CHECK(widget->showKeyFocus());
+                button->takeKeyFocus();
+                app->tick();
+                FTK_CHECK(button->hasKeyFocus());
+                FTK_CHECK(!button->showKeyFocus());
+                widget->takeKeyFocus();
+                app->tick();
+
                 int index = -1;
                 widget->setIndexCallback(
                     [&index](int value)

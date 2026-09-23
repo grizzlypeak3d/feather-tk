@@ -339,6 +339,19 @@ namespace ftk
         setDrawUpdate();
     }
 
+    void IWidget::setKeyFocusAlwaysVisible(bool value)
+    {
+        if (value == _keyFocusAlwaysVisible)
+        {
+            return;
+        }
+        _keyFocusAlwaysVisible = value;
+        if (_keyFocus)
+        {
+            setDrawUpdate();
+        }
+    }
+
     void IWidget::setAcceptsKeyFocus(bool value)
     {
         _acceptsKeyFocus = value;
@@ -358,7 +371,7 @@ namespace ftk
     bool IWidget::showKeyFocus() const
     {
         bool out = _keyFocus;
-        if (out)
+        if (out && !_keyFocusAlwaysVisible)
         {
             auto widget = _parent.lock();
             std::shared_ptr<IWidget> top;

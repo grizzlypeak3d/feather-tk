@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/IMenuPopup.h>
 #include <ftk/UI/IWindow.h>
 
@@ -25,6 +27,10 @@ namespace ftk
     {
         void iMenuPopup(nb::module_& m)
         {
+            nb::enum_<MenuPopup>(m, "MenuPopup")
+                .value("Menu", MenuPopup::Menu)
+                .value("SubMenu", MenuPopup::SubMenu);
+
             nb::class_<IMenuPopup, IPopup>(m, "IMenuPopup")
                 .def(
                     "open",

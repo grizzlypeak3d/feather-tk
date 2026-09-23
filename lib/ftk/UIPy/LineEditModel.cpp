@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/LineEditModel.h>
 
 #include <nanobind/nanobind.h>
@@ -35,6 +37,8 @@ namespace ftk
                 .def("max", &LineEditSelection::max)
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
+
+            observable<LineEditSelection>(m, "LineEditSelection");
 
             nb::class_<LineEditModel>(m, "LineEditModel")
                 .def(

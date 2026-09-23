@@ -54,6 +54,8 @@ namespace ftk
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
 
+            observable<FileBrowserOptions>(m, "FileBrowserOptions");
+
             nb::class_<FileBrowserModel>(m, "FileBrowserModel")
                 .def(
                     nb::new_(&FileBrowserModel::create),

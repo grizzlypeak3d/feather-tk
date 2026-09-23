@@ -14,7 +14,7 @@
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/optional.h>
 #include <nanobind/stl/shared_ptr.h>
-#include <nanobind/stl/filesystem.h>
+#include <nanobind/stl/chrono.h>
 #include <nanobind/stl/filesystem.h>
 
 #include <sstream>
@@ -162,7 +162,23 @@ namespace ftk
                 .def_rw("path", &DirEntry::path)
                 .def_rw("isDir", &DirEntry::isDir)
                 .def_rw("size", &DirEntry::size)
-                .def_rw("time", &DirEntry::time)
+                // A file time is kept by the file system's own clock,
+                // which nanobind has no caster for and datetime has no
+                // notion of: it crosses as a system clock time, offset by
+                // the difference between the two clocks now. clock_cast
+                // would say it better, where every standard library has it.
+                .def_prop_rw(
+                    "time",
+                    [](const DirEntry& value)
+                    {
+                        return std::chrono::system_clock::now() +
+                            (value.time - std::filesystem::file_time_type::clock::now());
+                    },
+                    [](DirEntry& entry, std::chrono::system_clock::time_point value)
+                    {
+                        entry.time = std::filesystem::file_time_type::clock::now() +
+                            (value - std::chrono::system_clock::now());
+                    })
                 .def(nanobind::self == nanobind::self)
                 .def(nanobind::self != nanobind::self);
 

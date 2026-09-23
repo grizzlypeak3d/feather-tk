@@ -224,12 +224,23 @@ namespace ftk
 
         //! Get whether the key focus should be drawn: the widget has it,
         //! and the window is showing it -- the focus follows the mouse
-        //! silently and is only drawn once the keyboard is used. Draw code
-        //! asks this; behavior asks hasKeyFocus(). The exception is the
-        //! Escape that releases the focus, which asks this too: releasing
-        //! a focus nobody can see reads as the key doing nothing, and eats
-        //! the press that was meant to close a popup.
+        //! silently and is only drawn once the keyboard is used -- or the
+        //! widget always shows it. Draw code asks this; behavior asks
+        //! hasKeyFocus(). The exception is the Escape that releases the
+        //! focus, which asks this too: releasing a focus nobody can see
+        //! reads as the key doing nothing, and eats the press that was
+        //! meant to close a popup.
         FTK_UI_API bool showKeyFocus() const;
+
+        //! Get whether the key focus is drawn whenever the widget has it.
+        bool keyFocusAlwaysVisible() const;
+
+        //! Set whether the key focus is drawn whenever the widget has it,
+        //! rather than once the keyboard has been used. For a widget whose
+        //! own keys change what it holds -- a line edit, a combo box, a
+        //! slider -- where the keys would otherwise act with nothing to say
+        //! they were going to.
+        FTK_UI_API void setKeyFocusAlwaysVisible(bool);
 
         //! Does this widget, or any of its children, have key focus?
         FTK_UI_API bool containsKeyFocus() const;
@@ -389,6 +400,7 @@ namespace ftk
 
         bool _acceptsKeyFocus = false;
         bool _keyFocus = false;
+        bool _keyFocusAlwaysVisible = false;
 
         std::string _tooltip;
 

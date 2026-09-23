@@ -3,10 +3,14 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/App.h>
 #include <ftk/UI/IWindow.h>
 
 #include <nanobind/trampoline.h>
+
+#include <ftk/CorePy/Function.h>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
@@ -55,6 +59,9 @@ namespace ftk
 
         void iWindow(nb::module_& m)
         {
+            FTK_ENUM_PY(m, WindowBufferType);
+            observable<WindowBufferType>(m, "WindowBufferType");
+
             //nb::class_<IWindow, IWidget>(m, "IWindow")
             nb::class_<IWindow, IWidget, PyIWindow>(m, "IWindow")
                 .def_prop_ro("app", &IWindow::getApp)

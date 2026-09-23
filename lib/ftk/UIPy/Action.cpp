@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/Action.h>
 
 #include <nanobind/nanobind.h>
@@ -24,6 +26,9 @@ namespace ftk
     {
         void action(nb::module_& m)
         {
+            FTK_ENUM_PY(m, ActionCheckType);
+            observable<ActionCheckType>(m, "ActionCheckType");
+
             nb::class_<KeyShortcut>(m, "KeyShortcut")
                 .def(nb::init<>())
                 .def(nb::init<Key, KeyModifier>(), nb::arg("key"), nb::arg("modifier"))
