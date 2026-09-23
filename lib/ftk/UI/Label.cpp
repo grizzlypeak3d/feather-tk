@@ -426,8 +426,13 @@ namespace ftk
         const Box2I clipRectPrev = event.render->getClipRect();
         if (clip)
         {
+            // Inside what is already clipped, not instead of it: a label in
+            // a scroll area that took its own geometry drew the text past
+            // the bottom of the area and over whatever was below it.
             event.render->setClipRectEnabled(true);
-            event.render->setClipRect(getGeometry());
+            event.render->setClipRect(clipRectEnabledPrev ?
+                intersect(getGeometry(), clipRectPrev) :
+                getGeometry());
         }
 
         event.render->drawText(
