@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   web-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4

@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   linux-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
@@ -40,7 +40,7 @@ jobs:
 
 
   linux-build-python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
@@ -74,7 +74,7 @@ jobs:
         cd build-Debug
         sh ../ftk/etc/Linux/lcov.sh
   linux-sdl2-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
@@ -109,7 +109,7 @@ jobs:
         sh ../ftk/etc/Linux/lcov.sh
 
   linux-gles3-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: 4
