@@ -3,6 +3,7 @@
 
 #include <ftk/UI/MessageDialog.h>
 
+#include <ftk/UI/ClipboardSystem.h>
 #include <ftk/UI/Divider.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/PushButton.h>
@@ -40,6 +41,7 @@ namespace ftk
     private:
         std::shared_ptr<Label> _label;
         std::shared_ptr<ScrollWidget> _scrollWidget;
+        std::shared_ptr<PushButton> _copyButton;
         std::shared_ptr<PushButton> _okButton;
         std::shared_ptr<VerticalLayout> _layout;
         std::function<void(void)> _callback;
@@ -65,6 +67,22 @@ namespace ftk
         _scrollWidget->setSizeHintRole(SizeRole::ScrollAreaSmall);
         _scrollWidget->setWidget(_label);
 
+        // A message worth showing is often one worth sending to somebody
+        // else, and retyping what a dialog says is nobody's idea of a bug
+        // report. The text is the message as it was given, not what the
+        // label happens to have room for.
+        _copyButton = PushButton::create(context, "Copy");
+        _copyButton->setTooltip("Copy this message to the clipboard.");
+        std::weak_ptr<Context> contextWeak(context);
+        _copyButton->setClickedCallback(
+            [contextWeak, text]
+            {
+                if (auto context = contextWeak.lock())
+                {
+                    context->getSystem<ClipboardSystem>()->setText(text);
+                }
+            });
+
         _okButton = PushButton::create(context, "OK");
 
         _layout = VerticalLayout::create(context, shared_from_this());
@@ -75,6 +93,7 @@ namespace ftk
         hLayout->setMarginRole(SizeRole::MarginSmall);
         hLayout->setSpacingRole(SizeRole::SpacingSmall);
         hLayout->addSpacer(Stretch::Expanding);
+        _copyButton->setParent(hLayout);
         _okButton->setParent(hLayout);
 
         _okButton->setClickedCallback(
