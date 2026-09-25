@@ -7,7 +7,6 @@
 #include "Buttons.h"
 #include "Dialogs.h"
 #include "DragDrop.h"
-#include "Fonts.h"
 #include "Graphs.h"
 #include "Icons.h"
 #include "Images.h"
@@ -38,7 +37,6 @@ namespace widgets
         _widgets["Buttons"] = &Buttons::create;
         _widgets["Dialogs"] = &Dialogs::create;
         _widgets["DragDrop"] = &DragDrop::create;
-        _widgets["Fonts"] = &Fonts::create;
         _widgets["Graphs"] = &Graphs::create;
         _widgets["Icons"] = &Icons::create;
         _widgets["Images"] = &Images::create;
