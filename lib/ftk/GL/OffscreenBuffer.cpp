@@ -155,7 +155,9 @@ namespace ftk
                 return out;
             };
             TextureType out = type;
-            if (!renderable(out))
+            // No color at all, e.g. a buffer of depth alone, is not one to
+            // give a color to.
+            if (out != TextureType::None && !renderable(out))
             {
                 // As much of the precision as there is to keep.
                 const bool f32Type =

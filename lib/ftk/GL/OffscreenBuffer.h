@@ -24,7 +24,7 @@ namespace ftk
         //! floating point only with the EXT_color_buffer_float extension,
         //! or for half float EXT_color_buffer_half_float, and to three
         //! channel 32 bit float never. A type it cannot render to gives the
-        //! closest one it can, down to RGBA_U8.
+        //! closest one it can, down to RGBA_U8; None stays None.
         FTK_GL_API TextureType getRenderableType(TextureType);
 
         //! Offscreen buffer depth size.

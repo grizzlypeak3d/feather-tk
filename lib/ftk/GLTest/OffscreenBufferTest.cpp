@@ -61,6 +61,11 @@ namespace ftk
             {
                 auto window = createWindow(_context);
 
+                // No color stays no color, and eight bit RGBA is rendered
+                // to everywhere.
+                FTK_CHECK(TextureType::None == getRenderableType(TextureType::None));
+                FTK_CHECK(TextureType::RGBA_U8 == getRenderableType(TextureType::RGBA_U8));
+
                 struct Test
                 {
                     Size2I size;
@@ -121,7 +126,9 @@ namespace ftk
                         FTK_CHECK(test.size == offscreen->getSize());
                         FTK_CHECK(test.size.w == offscreen->getWidth());
                         FTK_CHECK(test.size.h == offscreen->getHeight());
-                        FTK_CHECK(test.type == offscreen->getType());
+                        // What the driver can render to, which on OpenGL ES
+                        // is not every type.
+                        FTK_CHECK(getRenderableType(test.type) == offscreen->getType());
                         FTK_CHECK(test.options == offscreen->getOptions());
                         FTK_CHECK(offscreen->getID());
                         if (test.type != TextureType::None)
