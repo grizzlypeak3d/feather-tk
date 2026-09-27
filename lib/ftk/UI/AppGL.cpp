@@ -347,10 +347,15 @@ namespace ftk
             float vDpi = 0.F;
             if (0 == SDL_GetDisplayDPI(0, &dDpi, &hDpi, &vDpi))
             {
+                // The diagonal, which a rotated display does not change: X11
+                // reports a rotated display's width in pixels against the
+                // physical width it has unrotated, so the horizontal DPI of
+                // a portrait panel turned landscape comes out nearly twice
+                // what it is. For square pixels the two are the same.
                 logSystem->print(
                     "ftk::App",
-                    Format("Display DPI: {0}").arg(hDpi));
-                p.defaultDisplayScale = std::round(hDpi / getBaseDPI());
+                    Format("Display DPI: {0}").arg(dDpi));
+                p.defaultDisplayScale = std::round(dDpi / getBaseDPI());
             }
 #elif defined(FTK_SDL3)
             int sdlDisplayCount = 0;
