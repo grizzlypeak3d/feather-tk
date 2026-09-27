@@ -27,6 +27,7 @@ namespace ftk
             void _pinch();
             void _undecided();
             void _fingers();
+            void _mouseDelay();
         };
     }
 }

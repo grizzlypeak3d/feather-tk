@@ -173,4 +173,75 @@ namespace ftk
             }
         }
     }
+
+    void TouchMouseDelay::setTimeout(const std::chrono::steady_clock::duration& value)
+    {
+        _timeout = value;
+    }
+
+    void TouchMouseDelay::setThreshold(float value)
+    {
+        _threshold = value;
+    }
+
+    bool TouchMouseDelay::event(
+        const V2F& pos,
+        bool release,
+        const std::chrono::steady_clock::time_point& now)
+    {
+        bool out = true;
+        switch (_state)
+        {
+        case State::Idle:
+            _state = State::Holding;
+            _start = now;
+            _startPos = pos;
+            _ready = release;
+            _released = release;
+            break;
+        case State::Holding:
+            if (release)
+            {
+                _ready = true;
+                _released = true;
+            }
+            else if (length(pos - _startPos) > _threshold)
+            {
+                _ready = true;
+            }
+            break;
+        case State::Passing:
+            out = false;
+            if (release)
+            {
+                _state = State::Idle;
+            }
+            break;
+        }
+        return out;
+    }
+
+    bool TouchMouseDelay::isReady(const std::chrono::steady_clock::time_point& now) const
+    {
+        return State::Holding == _state && (_ready || now - _start >= _timeout);
+    }
+
+    void TouchMouseDelay::sent()
+    {
+        _state = _released ? State::Idle : State::Passing;
+        _ready = false;
+        _released = false;
+    }
+
+    void TouchMouseDelay::drop()
+    {
+        _state = State::Idle;
+        _ready = false;
+        _released = false;
+    }
+
+    bool TouchMouseDelay::isHolding() const
+    {
+        return State::Holding == _state;
+    }
 }

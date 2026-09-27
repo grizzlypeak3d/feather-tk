@@ -33,6 +33,7 @@ namespace ftk
             _pinch();
             _undecided();
             _fingers();
+            _mouseDelay();
         }
 
         void TouchGestureTest::_pan()
@@ -171,6 +172,62 @@ namespace ftk
             gestures = r.takeGestures();
             FTK_CHECK(1 == gestures.size());
             FTK_CHECK(TouchGestureType::Begin == gestures[0].type);
+        }
+
+        void TouchGestureTest::_mouseDelay()
+        {
+            using namespace std::chrono;
+            const auto t0 = steady_clock::now();
+
+            // A tap waits for nothing: the release sends the press with it.
+            {
+                TouchMouseDelay d;
+                d.setThreshold(16.F);
+                FTK_CHECK(d.event(V2F(10.F, 10.F), false, t0));
+                FTK_CHECK(d.isHolding());
+                FTK_CHECK(!d.isReady(t0));
+                FTK_CHECK(d.event(V2F(10.F, 10.F), true, t0 + milliseconds(20)));
+                FTK_CHECK(d.isReady(t0 + milliseconds(20)));
+                d.sent();
+                FTK_CHECK(!d.isHolding());
+            }
+
+            // A finger that stays down goes through after the timeout, and
+            // the rest of its touch goes straight through.
+            {
+                TouchMouseDelay d;
+                d.setTimeout(milliseconds(100));
+                FTK_CHECK(d.event(V2F(10.F, 10.F), false, t0));
+                FTK_CHECK(!d.isReady(t0 + milliseconds(50)));
+                FTK_CHECK(d.isReady(t0 + milliseconds(100)));
+                d.sent();
+                FTK_CHECK(!d.event(V2F(12.F, 10.F), false, t0 + milliseconds(120)));
+                FTK_CHECK(!d.event(V2F(12.F, 10.F), true, t0 + milliseconds(140)));
+                // And the next touch is held again.
+                FTK_CHECK(d.event(V2F(50.F, 50.F), false, t0 + milliseconds(500)));
+            }
+
+            // A finger that moves past the threshold goes through at once.
+            {
+                TouchMouseDelay d;
+                d.setThreshold(16.F);
+                d.event(V2F(10.F, 10.F), false, t0);
+                d.event(V2F(20.F, 10.F), false, t0 + milliseconds(10));
+                FTK_CHECK(!d.isReady(t0 + milliseconds(10)));
+                d.event(V2F(30.F, 10.F), false, t0 + milliseconds(20));
+                FTK_CHECK(d.isReady(t0 + milliseconds(20)));
+            }
+
+            // A second finger in time drops it all, and the next touch is
+            // held again.
+            {
+                TouchMouseDelay d;
+                d.event(V2F(10.F, 10.F), false, t0);
+                d.drop();
+                FTK_CHECK(!d.isHolding());
+                FTK_CHECK(!d.isReady(t0 + seconds(1)));
+                FTK_CHECK(d.event(V2F(10.F, 10.F), false, t0 + seconds(1)));
+            }
         }
     }
 }

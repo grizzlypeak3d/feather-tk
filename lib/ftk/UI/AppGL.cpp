@@ -137,6 +137,8 @@ namespace ftk
         // one the first finger touched.
         TouchGestureRecognizer touch;
         std::weak_ptr<IWindow> touchWindow;
+        TouchMouseDelay touchMouseDelay;
+        std::vector<SDL_Event> touchMouseHeld;
 
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
@@ -1248,11 +1250,149 @@ namespace ftk
                     const V2F posPixels(pos.x * size.w, pos.y * size.h);
                     switch (type)
                     {
-                    case FingerEvent::Down: p.touch.fingerDown(id, posPixels); break;
+                    case FingerEvent::Down:
+                        p.touch.fingerDown(id, posPixels);
+                        if (p.touch.isMouseBlocked() && p.touchMouseDelay.isHolding())
+                        {
+                            // The second finger, in time: the first was
+                            // never the mouse.
+                            p.touchMouseHeld.clear();
+                            p.touchMouseDelay.drop();
+                        }
+                        break;
                     case FingerEvent::Motion: p.touch.fingerMove(id, posPixels); break;
                     case FingerEvent::Up: p.touch.fingerUp(id); break;
                     }
                 }
+            };
+
+            // A mouse event to its window.
+            const auto mouseDispatch = [&](const SDL_Event& event)
+            {
+                switch (event.type)
+                {
+#if defined(FTK_SDL2)
+                case SDL_MOUSEMOTION:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_MOTION:
+#endif // FTK_SDL2
+                    if (auto window = mouseWindow(event.motion.windowID))
+                    {
+                        const float contentScale = window->getContentScale();
+                        const V2I pos(
+                            event.motion.x * contentScale,
+                            event.motion.y * contentScale);
+                        window->_cursorPos(pos);
+                        p.mousePos[window] = pos;
+                    }
+                    break;
+
+#if defined(FTK_SDL2)
+                case SDL_MOUSEBUTTONDOWN:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+#endif // FTK_SDL2
+                    if (auto window = mouseWindow(event.button.windowID))
+                    {
+                        p.mouseButtonWindow = window;
+                        window->_mouseButton(
+                            fromSDLMouseButton(event.button.button),
+                            true,
+                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
+                    }
+                    break;
+
+#if defined(FTK_SDL2)
+                case SDL_MOUSEBUTTONUP:
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_BUTTON_UP:
+#endif // FTK_SDL2
+                {
+                    // The release goes to the window that saw the press.
+                    // The cursor may be somewhere else by now -- on the
+                    // web it can be outside the window entirely, which
+                    // cleared the active window, and dropping the release
+                    // left the button stuck down.
+                    auto window = p.mouseButtonWindow.lock();
+                    if (!window)
+                    {
+                        window = mouseWindow(event.button.windowID);
+                    }
+                    p.mouseButtonWindow.reset();
+                    if (window)
+                    {
+                        window->_mouseButton(
+                            fromSDLMouseButton(event.button.button),
+                            false,
+                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
+                    }
+                    break;
+                }
+                default: break;
+                }
+            };
+
+            // The mouse a finger makes is held back until it is clear the
+            // finger is not the first of a gesture; see TouchMouseDelay.
+            const auto touchMouseSend = [&]()
+            {
+                auto held = std::move(p.touchMouseHeld);
+                p.touchMouseHeld.clear();
+                p.touchMouseDelay.sent();
+                for (const auto& event : held)
+                {
+                    mouseDispatch(event);
+                }
+            };
+            const auto mouse = [&](const SDL_Event& event)
+            {
+#if defined(FTK_SDL2)
+                const bool motion = SDL_MOUSEMOTION == event.type;
+                const bool release = SDL_MOUSEBUTTONUP == event.type;
+#elif defined(FTK_SDL3)
+                const bool motion = SDL_EVENT_MOUSE_MOTION == event.type;
+                const bool release = SDL_EVENT_MOUSE_BUTTON_UP == event.type;
+#endif // FTK_SDL2
+                if (p.touch.isMouseBlocked())
+                {
+                    // A gesture is under way, which let go of the press
+                    // when it started.
+                    if (release)
+                    {
+                        p.mouseButtonWindow.reset();
+                    }
+                    return;
+                }
+                const bool touch = SDL_TOUCH_MOUSEID ==
+                    (motion ? event.motion.which : event.button.which);
+                if (touch)
+                {
+                    auto window = mouseWindow(motion ? event.motion.windowID : event.button.windowID);
+                    const float contentScale = window ? window->getContentScale() : 1.F;
+                    const V2F pos(
+                        (motion ? event.motion.x : event.button.x) * contentScale,
+                        (motion ? event.motion.y : event.button.y) * contentScale);
+                    if (!p.touchMouseDelay.isHolding() && window)
+                    {
+                        p.touchMouseDelay.setThreshold(12.F * window->getDisplayScale());
+                    }
+                    const auto now = std::chrono::steady_clock::now();
+                    if (p.touchMouseDelay.event(pos, release, now))
+                    {
+                        p.touchMouseHeld.push_back(event);
+                        if (p.touchMouseDelay.isReady(now))
+                        {
+                            touchMouseSend();
+                        }
+                        return;
+                    }
+                }
+                else if (p.touchMouseDelay.isHolding())
+                {
+                    // Another mouse: what was held goes first, in order.
+                    touchMouseSend();
+                }
+                mouseDispatch(event);
             };
 
             while (SDL_PollEvent(&event))
@@ -1445,74 +1585,14 @@ namespace ftk
 
 #if defined(FTK_SDL2)
                 case SDL_MOUSEMOTION:
-#elif defined(FTK_SDL3)
-                case SDL_EVENT_MOUSE_MOTION:
-#endif // FTK_SDL2
-                    if (p.touch.isMouseBlocked())
-                    {
-                        break;
-                    }
-                    if (auto window = mouseWindow(event.motion.windowID))
-                    {
-                        const float contentScale = window->getContentScale();
-                        const V2I pos(
-                            event.motion.x * contentScale,
-                            event.motion.y * contentScale);
-                        window->_cursorPos(pos);
-                        p.mousePos[window] = pos;
-                    }
-                    break;
-
-#if defined(FTK_SDL2)
                 case SDL_MOUSEBUTTONDOWN:
-#elif defined(FTK_SDL3)
-                case SDL_EVENT_MOUSE_BUTTON_DOWN:
-#endif // FTK_SDL2
-                    if (p.touch.isMouseBlocked())
-                    {
-                        break;
-                    }
-                    if (auto window = mouseWindow(event.button.windowID))
-                    {
-                        p.mouseButtonWindow = window;
-                        window->_mouseButton(
-                            fromSDLMouseButton(event.button.button),
-                            true,
-                            fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
-                    }
-                    break;
-
-#if defined(FTK_SDL2)
                 case SDL_MOUSEBUTTONUP:
 #elif defined(FTK_SDL3)
+                case SDL_EVENT_MOUSE_MOTION:
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
 #endif // FTK_SDL2
-                    if (p.touch.isMouseBlocked())
-                    {
-                        // The gesture let go of the press when it started.
-                        p.mouseButtonWindow.reset();
-                        break;
-                    }
-                    {
-                        // The release goes to the window that saw the press.
-                        // The cursor may be somewhere else by now -- on the
-                        // web it can be outside the window entirely, which
-                        // cleared the active window, and dropping the release
-                        // left the button stuck down.
-                        auto window = p.mouseButtonWindow.lock();
-                        if (!window)
-                        {
-                            window = mouseWindow(event.button.windowID);
-                        }
-                        p.mouseButtonWindow.reset();
-                        if (window)
-                        {
-                            window->_mouseButton(
-                                fromSDLMouseButton(event.button.button),
-                                false,
-                                fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
-                        }
-                    }
+                    mouse(event);
                     break;
 
 #if defined(FTK_SDL2)
@@ -1794,6 +1874,12 @@ namespace ftk
                 }
             }
             p.polling = false;
+
+            // The held mouse, once it has waited long enough.
+            if (p.touchMouseDelay.isReady(std::chrono::steady_clock::now()))
+            {
+                touchMouseSend();
+            }
 
             // The touch gestures, now that every finger has moved.
             if (auto window = p.touchWindow.lock())

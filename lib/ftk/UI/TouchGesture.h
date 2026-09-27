@@ -5,6 +5,7 @@
 
 #include <ftk/UI/Event.h>
 
+#include <chrono>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -87,5 +88,61 @@ namespace ftk
         V2F _lastCenter;
         float _lastDistance = 0.F;
         std::vector<TouchGesture> _gestures;
+    };
+
+    //! Holds back, briefly, the mouse a touch screen makes of the first
+    //! finger.
+    //!
+    //! The first finger of a two finger gesture is the mouse until the
+    //! second touches, and in that time it hovers, presses, selects, and
+    //! drags whatever is under it. Held back, the second finger touches
+    //! first, and the mouse is dropped without any of that. The events go
+    //! through once the finger lifts, which is a tap and waits for nothing,
+    //! or moves past the threshold, or the timeout passes; after that the
+    //! rest of the touch goes straight through.
+    class FTK_UI_API_TYPE TouchMouseDelay
+    {
+    public:
+        //! Set how long the events are held.
+        FTK_UI_API void setTimeout(const std::chrono::steady_clock::duration&);
+
+        //! Set how far, in pixels, the finger moves before the events go
+        //! through.
+        FTK_UI_API void setThreshold(float);
+
+        //! A mouse event made from a touch, at a position in pixels. Returns
+        //! whether it is to be held.
+        FTK_UI_API bool event(
+            const V2F& pos,
+            bool release,
+            const std::chrono::steady_clock::time_point&);
+
+        //! Whether the held events are to go through now.
+        FTK_UI_API bool isReady(const std::chrono::steady_clock::time_point&) const;
+
+        //! The held events went through.
+        FTK_UI_API void sent();
+
+        //! The held events were dropped: a gesture started.
+        FTK_UI_API void drop();
+
+        //! Whether events are being held.
+        FTK_UI_API bool isHolding() const;
+
+    private:
+        enum class State
+        {
+            Idle,
+            Holding,
+            Passing
+        };
+
+        std::chrono::steady_clock::duration _timeout = std::chrono::milliseconds(100);
+        float _threshold = 16.F;
+        State _state = State::Idle;
+        std::chrono::steady_clock::time_point _start;
+        V2F _startPos;
+        bool _ready = false;
+        bool _released = false;
     };
 }
