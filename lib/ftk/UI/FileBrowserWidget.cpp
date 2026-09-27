@@ -15,6 +15,7 @@
 #include <ftk/UI/SearchBox.h>
 #include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/Splitter.h>
+#include <ftk/UI/ToolBar.h>
 #include <ftk/UI/ToolButton.h>
 
 #include <ftk/UI/DrawUtil.h>
@@ -196,11 +197,15 @@ namespace ftk
         auto hLayout = HorizontalLayout::create(context, vLayout);
         hLayout->setSpacingRole(SizeRole::SpacingTool);
         hLayout->setVAlign(VAlign::Center);
-        p.panelButton->setParent(hLayout);
-        p.upButton->setParent(hLayout);
-        p.backButton->setParent(hLayout);
-        p.forwardButton->setParent(hLayout);
-        p.reloadButton->setParent(hLayout);
+        auto panelToolBar = ToolBar::create(context, Orientation::Horizontal, hLayout);
+        panelToolBar->setGrouped(true);
+        panelToolBar->addWidget(p.panelButton);
+        auto navToolBar = ToolBar::create(context, Orientation::Horizontal, hLayout);
+        navToolBar->setGrouped(true);
+        navToolBar->addWidget(p.upButton);
+        navToolBar->addWidget(p.backButton);
+        navToolBar->addWidget(p.forwardButton);
+        navToolBar->addWidget(p.reloadButton);
         p.pathWidget->setParent(hLayout);
         p.splitter = Splitter::create(context, Orientation::Horizontal, vLayout);
         p.splitter->setSplit(.2F);

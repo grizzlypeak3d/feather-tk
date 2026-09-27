@@ -15,7 +15,6 @@ namespace ftk
         {
             bool init = true;
             int margin = 0;
-            int border = 0;
             int keyFocus = 0;
             int pad = 0;
             int cornerRadius = 0;
@@ -31,7 +30,6 @@ namespace ftk
             Box2I bg;
             Box2I inside;
             TriMesh2F button;
-            TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -110,7 +108,6 @@ namespace ftk
         {
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
@@ -167,7 +164,6 @@ namespace ftk
                 -(p.size.margin + p.size.pad + p.size.keyFocus),
                 -(p.size.margin + p.size.keyFocus));
             p.draw->button = rect(g, p.size.cornerRadius);
-            p.draw->border = border(g, p.size.border, p.size.cornerRadius);
             p.draw->keyFocus = border(g, p.size.keyFocus, p.size.cornerRadius);
         }
 
@@ -194,18 +190,13 @@ namespace ftk
                 event.style->getColorRole(ColorRole::Hover));
         }
 
-        // Draw the focus and border.
+        // Draw the focus. No border: the fill sets the button apart, as
+        // it does the tool bar groups.
         if (showKeyFocus())
         {
             event.render->drawMesh(
                 p.draw->keyFocus,
                 event.style->getColorRole(ColorRole::KeyFocus));
-        }
-        else
-        {
-            event.render->drawMesh(
-                p.draw->border,
-                event.style->getColorRole(ColorRole::Border));
         }
 
         // Draw the icon and text.

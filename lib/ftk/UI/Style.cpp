@@ -63,7 +63,7 @@ namespace ftk
         out[SizeRole::SwatchLarge] = 40;
         out[SizeRole::Shadow] = 15;
         out[SizeRole::DragLength] = 10;
-        out[SizeRole::CornerRadius] = 4;
+        out[SizeRole::CornerRadius] = 6;
         return out;
     }
 
@@ -113,8 +113,11 @@ namespace ftk
         out[ColorRole::Checked] = Color4F(.56F, .36F, .15F);
         out[ColorRole::KeyFocus] = Color4F(.8F, .6F, .3F);
         out[ColorRole::Overlay] = Color4F(0.F, 0.F, 0.F, .5F);
-        out[ColorRole::TooltipWindow] = Color4F(.2F, .2F, .2F);
-        out[ColorRole::TooltipText] = Color4F(.9F, .9F, .9F);
+        // Warm, and lighter than the menus and headers: a tooltip is the
+        // same rounded shape as a menu, and the color says it is only
+        // information. The classic yellow would glare here.
+        out[ColorRole::TooltipWindow] = Color4F(.3F, .28F, .22F);
+        out[ColorRole::TooltipText] = Color4F(.95F, .95F, .95F);
         // The arrow glyphs -- combo boxes, popup buttons -- draw over the
         // button color, so they are dark in both of the stock themes. A
         // role rather than the icon file's own color, so that a style
@@ -154,7 +157,10 @@ namespace ftk
         out[ColorRole::Window] = Color4F(.95F, .95F, .95F);
         out[ColorRole::Base] = Color4F(1.F, 1.F, 1.F);
         out[ColorRole::Well] = Color4F(1.F, 1.F, 1.F);
-        out[ColorRole::Header] = Color4F(.85F, .85F, .85F);
+        // Lighter than the buttons: the tool bar groups, the menu bar, and
+        // the bellows are drawn in it, and at the buttons' grey they were
+        // the heaviest thing in the window.
+        out[ColorRole::Header] = Color4F(.9F, .9F, .9F);
         out[ColorRole::Button] = Color4F(.85F, .85F, .85F);
         out[ColorRole::Text] = Color4F(0.F, 0.F, 0.F);
         out[ColorRole::TextDisabled] = Color4F(.4F, .4F, .4F);
@@ -169,7 +175,8 @@ namespace ftk
         out[ColorRole::KeyFocus] = Color4F(.2F, .47F, .8F);
         out[ColorRole::Overlay] = Color4F(1.F, 1.F, 1.F, .5F);
         out[ColorRole::Arrow] = Color4F(0.F, 0.F, 0.F);
-        out[ColorRole::TooltipWindow] = Color4F(1.F, 1.F, 1.F);
+        // The classic pale yellow, which tells a tooltip from a menu.
+        out[ColorRole::TooltipWindow] = Color4F(1.F, 1.F, .88F);
         out[ColorRole::TooltipText] = Color4F(0.F, 0.F, 0.F);
 
         return out;

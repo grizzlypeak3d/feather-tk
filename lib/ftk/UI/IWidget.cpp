@@ -339,6 +339,14 @@ namespace ftk
         setDrawUpdate();
     }
 
+    bool IWidget::isSegment() const
+    {
+        return false;
+    }
+
+    void IWidget::setSegment(ColorRole, const std::array<bool, 4>&)
+    {}
+
     void IWidget::setKeyFocusAlwaysVisible(bool value)
     {
         if (value == _keyFocusAlwaysVisible)

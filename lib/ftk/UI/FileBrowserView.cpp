@@ -506,13 +506,15 @@ namespace ftk
         FTK_P();
         const Box2I& g = getGeometry();
 
-        // Draw the selection. Filled, so that several selected items read as
-        // a block rather than as several outlines.
+        // Draw the selection. Tinted rather than outlined, so that several
+        // selected items read as a block.
+        const Color4F selectionColor = checkedTint(
+            event.style->getColorRole(ColorRole::Checked));
         for (int i : p.selection)
         {
             event.render->drawRect(
                 move(getRect(i), g.min),
-                event.style->getColorRole(ColorRole::Checked));
+                selectionColor);
         }
 
         // Draw the current state. Over the selection: with several selected

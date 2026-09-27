@@ -7,6 +7,7 @@
 #include <ftk/UI/Event.h>
 #include <ftk/UI/WidgetOptions.h>
 
+#include <array>
 #include <functional>
 #include <list>
 
@@ -207,6 +208,17 @@ namespace ftk
 
         //! Set the background role.
         FTK_UI_API void setBackgroundRole(ColorRole);
+
+        //! Get whether the widget can take a place in a grouped tool bar's
+        //! run, drawn as one control with its neighbors. False by default.
+        FTK_UI_API virtual bool isSegment() const;
+
+        //! Set the background, and which corners are rounded, for the
+        //! widget's place in a run: top left, top right, bottom right, and
+        //! bottom left. Does nothing by default.
+        FTK_UI_API virtual void setSegment(
+            ColorRole background,
+            const std::array<bool, 4>& roundedCorners);
 
         ///@}
 

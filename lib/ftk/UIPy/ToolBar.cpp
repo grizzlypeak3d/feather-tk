@@ -65,6 +65,8 @@ namespace ftk
                     nb::arg("orientation") = Orientation::Horizontal,
                     nb::arg("parent") = nullptr)
                 .def_prop_rw("marginRole", &ToolBar::getMarginRole, &ToolBar::setMarginRole)
+                .def_prop_rw("spacingRole", &ToolBar::getSpacingRole, &ToolBar::setSpacingRole)
+                .def_prop_rw("grouped", &ToolBar::isGrouped, &ToolBar::setGrouped)
                 .def("addAction", &ToolBar::addAction)
                 .def("addWidget", &ToolBar::addWidget)
                 .def("clear", &ToolBar::clear);

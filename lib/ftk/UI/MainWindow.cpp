@@ -5,7 +5,6 @@
 
 #include <ftk/UI/Action.h>
 #include <ftk/UI/App.h>
-#include <ftk/UI/Divider.h>
 #include <ftk/UI/MenuBar.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/Core/Format.h>
@@ -36,7 +35,6 @@ namespace ftk
         std::map<ColorStyle, std::shared_ptr<Action> > colorStyleActions;
         std::map<WindowBufferType, std::shared_ptr<Action> > bufferActions;
         std::shared_ptr<Action> tooltipsAction;
-        std::shared_ptr<Divider> menuBarDivider;
         std::shared_ptr<IWidget> centralWidget;
         std::shared_ptr<VerticalLayout> layout;
 
@@ -57,6 +55,9 @@ namespace ftk
         setIcon(context->getSystem<IconSystem>()->get("feather_tk_512", 1.F));
 
         p.menuBar = MenuBar::create(context);
+        // A tone rather than a line between the menu bar and what is
+        // below it.
+        p.menuBar->setBackgroundRole(ColorRole::Header);
         auto fileMenu = Menu::create(context);
         std::weak_ptr<App> appWeak(app);
         fileMenu->addAction(Action::create(
@@ -159,12 +160,9 @@ namespace ftk
 
         p.menuBar->addMenu("Window", p.menus["Window"]);
 
-        p.menuBarDivider = Divider::create(context, Orientation::Vertical);
-
         p.layout = VerticalLayout::create(context, shared_from_this());
         p.layout->setSpacingRole(SizeRole::None);
         p.menuBar->setParent(p.layout);
-        p.menuBarDivider->setParent(p.layout);
 
         p.displayScaleObserver = Observer<float>::create(
             app->observeDisplayScale(),
@@ -249,12 +247,10 @@ namespace ftk
         p.menuBar = value;
         if (p.menuBar)
         {
+            p.menuBar->setBackgroundRole(ColorRole::Header);
             p.menuBar->setParent(p.layout);
             p.layout->moveToBack(p.menuBar);
         }
-        // The divider belongs to the menu bar; without one it would be a
-        // stray line across the top of the window.
-        p.menuBarDivider->setVisible(p.menuBar.get() != nullptr);
     }
 
     const std::shared_ptr<IWidget>& MainWindow::getWidget() const

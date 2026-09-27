@@ -3,8 +3,11 @@
 
 #include <ftk/UI/DrawUtil.h>
 
+#include <array>
+
 #include <ftk/Core/Math.h>
 
+#include <algorithm>
 #include <cmath>
 
 namespace ftk
@@ -14,26 +17,30 @@ namespace ftk
         // Default circle resolution.
         constexpr size_t circleResolution = 16;
 
-        // Compute the sin and cos values for the default circle resolution.
+        // The sin and cos values for the default circle resolution, in whole
+        // degrees. The angles asked for are the circle's (every 24 degrees)
+        // and the rounded corners' (every 6 degrees), which are all whole
+        // degrees, so the nearest sample is the exact value.
         struct CircleSample { float c, s; };
-        using CircleTable = std::array<CircleSample, circleResolution>;
+        constexpr size_t circleTableSize = 361;
+        using CircleTable = std::array<CircleSample, circleTableSize>;
 
         CircleSample getCircleSample(float v)
         {
             static const CircleTable table = []
             {
                 CircleTable t;
-                for (size_t k = 0; k < circleResolution; ++k)
+                for (size_t k = 0; k < circleTableSize; ++k)
                 {
-                    const float a = k / static_cast<float>(circleResolution - 1) * pi2;
+                    const float a = deg2rad(static_cast<float>(k));
                     t[k] = { cosf(a), sinf(a) };
                 }
                 return t;
             }();
             const int i = clamp(
-                static_cast<int>(v / pi2 * (circleResolution - 1)),
+                static_cast<int>(std::round(rad2deg(v))),
                 0,
-                static_cast<int>(circleResolution - 1));
+                static_cast<int>(circleTableSize - 1));
             return table[i];
         }
 
@@ -55,6 +62,17 @@ namespace ftk
         int cornerRadius,
         size_t resolution)
     {
+        return rect(
+            box,
+            { cornerRadius, cornerRadius, cornerRadius, cornerRadius },
+            resolution);
+    }
+
+    TriMesh2F rect(
+        const Box2I& box,
+        const std::array<int, 4>& cornerRadii,
+        size_t resolution)
+    {
         const auto& sinf = circleResolution == resolution ? &sinfTable : &::sinf;
         const auto& cosf = circleResolution == resolution ? &cosfTable : &::cosf;
 
@@ -65,7 +83,10 @@ namespace ftk
         const float w = box.w();
         const float h = box.h();
 
-        if (0 == cornerRadius)
+        if (0 == cornerRadii[0] &&
+            0 == cornerRadii[1] &&
+            0 == cornerRadii[2] &&
+            0 == cornerRadii[3])
         {
             out.v.reserve(4);
             out.v.emplace_back(x, y);
@@ -79,14 +100,24 @@ namespace ftk
         }
         else
         {
-            const int r = cornerRadius;
-
+            // The corners are built in the order bottom right, bottom left,
+            // top left, top right, each a fan around a center inset by its
+            // own radius. A zero radius puts the center on the corner and
+            // the fan collapses to it, so the topology is the same for any
+            // mix of round and square corners.
+            const std::array<float, 4> r =
+            {
+                static_cast<float>(cornerRadii[2]),
+                static_cast<float>(cornerRadii[3]),
+                static_cast<float>(cornerRadii[0]),
+                static_cast<float>(cornerRadii[1])
+            };
             const std::vector<V2F> c =
             {
-                V2F(x + w - r, y + h - r),
-                V2F(x + r, y + h - r),
-                V2F(x + r, y + r),
-                V2F(x + w - r, y + r)
+                V2F(x + w - r[0], y + h - r[0]),
+                V2F(x + r[1], y + h - r[1]),
+                V2F(x + r[2], y + r[2]),
+                V2F(x + w - r[3], y + r[3])
             };
             size_t i = 0;
             for (size_t j = 0; j < 4; ++j)
@@ -99,8 +130,8 @@ namespace ftk
                     const float cos = cosf(deg2rad(a));
                     const float sin = sinf(deg2rad(a));
                     out.v.emplace_back(
-                        c[j].x + cos * r,
-                        c[j].y + sin * r);
+                        c[j].x + cos * r[j],
+                        c[j].y + sin * r[j]);
                 }
                 for (size_t k = 0; k < resolution - 1; ++k)
                 {
@@ -176,6 +207,15 @@ namespace ftk
         int radius,
         size_t resolution)
     {
+        return border(box, width, { radius, radius, radius, radius }, resolution);
+    }
+
+    TriMesh2F border(
+        const Box2I& box,
+        int width,
+        const std::array<int, 4>& radii,
+        size_t resolution)
+    {
         const auto& sinf = circleResolution == resolution ? &sinfTable : &::sinf;
         const auto& cosf = circleResolution == resolution ? &cosfTable : &::cosf;
 
@@ -186,7 +226,7 @@ namespace ftk
         const float w = box.w();
         const float h = box.h();
 
-        if (0 == radius)
+        if (0 == radii[0] && 0 == radii[1] && 0 == radii[2] && 0 == radii[3])
         {
             out.v.reserve(8);
             out.v.emplace_back(x, y);
@@ -210,30 +250,57 @@ namespace ftk
         }
         else
         {
-            const int r = radius;
-
+            // The corners in the order bottom right, bottom left, top left,
+            // top right, each a pair of fans -- the outside and the inside
+            // edge -- around a center inset by its own radius. A square
+            // corner keeps the topology: both fans collapse to a point, the
+            // corner itself outside and the corner inset by the width inside.
+            const std::array<float, 4> r =
+            {
+                static_cast<float>(radii[2]),
+                static_cast<float>(radii[3]),
+                static_cast<float>(radii[0]),
+                static_cast<float>(radii[1])
+            };
             const std::vector<V2F> c =
             {
-                V2F(x + w - r, y + h - r),
-                V2F(x + r, y + h - r),
-                V2F(x + r, y + r),
-                V2F(x + w - r, y + r)
+                V2F(x + w - r[0], y + h - r[0]),
+                V2F(x + r[1], y + h - r[1]),
+                V2F(x + r[2], y + r[2]),
+                V2F(x + w - r[3], y + r[3])
+            };
+            const std::array<V2F, 4> inward =
+            {
+                V2F(-1.F, -1.F),
+                V2F(1.F, -1.F),
+                V2F(1.F, 1.F),
+                V2F(-1.F, 1.F)
             };
             size_t i = 0;
             for (size_t j = 0; j < 4; ++j)
             {
                 for (size_t k = 0; k < resolution; ++k)
                 {
-                    const float v = k / static_cast<float>(resolution - 1);
-                    const float a = lerp(v, j * 90.F, j * 90.F + 90.F);
-                    const float cos = cosf(deg2rad(a));
-                    const float sin = sinf(deg2rad(a));
-                    out.v.emplace_back(
-                        c[j].x + cos * r,
-                        c[j].y + sin * r);
-                    out.v.emplace_back(
-                        c[j].x + cos * (r - width),
-                        c[j].y + sin * (r - width));
+                    if (r[j] > 0.F)
+                    {
+                        const float v = k / static_cast<float>(resolution - 1);
+                        const float a = lerp(v, j * 90.F, j * 90.F + 90.F);
+                        const float cos = cosf(deg2rad(a));
+                        const float sin = sinf(deg2rad(a));
+                        out.v.emplace_back(
+                            c[j].x + cos * r[j],
+                            c[j].y + sin * r[j]);
+                        out.v.emplace_back(
+                            c[j].x + cos * (r[j] - width),
+                            c[j].y + sin * (r[j] - width));
+                    }
+                    else
+                    {
+                        out.v.emplace_back(c[j].x, c[j].y);
+                        out.v.emplace_back(
+                            c[j].x + inward[j].x * width,
+                            c[j].y + inward[j].y * width);
+                    }
                 }
                 for (size_t k = 0; k < resolution - 1; ++k)
                 {
@@ -262,6 +329,39 @@ namespace ftk
         }
 
         return out;
+    }
+
+    Color4F checkedTint(const Color4F& checked)
+    {
+        Color4F out = checked;
+        out.a *= .3F;
+        return out;
+    }
+
+    Color4F checkedHighlight(const Color4F& checked)
+    {
+        // Away from what it sits on, keeping the hue: a dark accent, the
+        // dark style's amber, is brightened; a light one, the light style's
+        // blue, is deepened, since brightening it only washes it out.
+        const float luminance =
+            .2126F * checked.r +
+            .7152F * checked.g +
+            .0722F * checked.b;
+        if (luminance < .5F)
+        {
+            return Color4F(
+                std::min(checked.r * 1.6F, 1.F),
+                std::min(checked.g * 1.6F, 1.F),
+                std::min(checked.b * 1.6F, 1.F),
+                checked.a);
+        }
+        float rgb[3] = { checked.r, checked.g, checked.b };
+        float hsv[3] = { 0.F, 0.F, 0.F };
+        rgbToHSV(rgb, hsv);
+        hsv[1] = std::min(hsv[1] * 2.F, 1.F);
+        hsv[2] *= .75F;
+        hsvToRGB(hsv, rgb);
+        return Color4F(rgb[0], rgb[1], rgb[2], checked.a);
     }
 
     TriMesh2F shadow(

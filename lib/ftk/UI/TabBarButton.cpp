@@ -18,6 +18,7 @@ namespace ftk
             bool init = true;
             int margin = 0;
             int keyFocus = 0;
+            int cornerRadius = 0;
             int pad = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
@@ -28,8 +29,11 @@ namespace ftk
         };
         SizeData size;
 
+        std::array<bool, 4> roundedCorners = { true, true, false, false };
+
         struct DrawData
         {
+            TriMesh2F bgMesh;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -76,6 +80,16 @@ namespace ftk
         setDrawUpdate();
     }
 
+    void TabBarButton::setRoundedCorners(const std::array<bool, 4>& value)
+    {
+        FTK_P();
+        if (value == p.roundedCorners)
+            return;
+        p.roundedCorners = value;
+        p.draw.reset();
+        setDrawUpdate();
+    }
+
     Size2I TabBarButton::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -119,6 +133,7 @@ namespace ftk
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
@@ -151,29 +166,40 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            p.draw->keyFocus = border(p.size.g, p.size.keyFocus);
+            // The top corners rounded, the bottom square where the tab meets
+            // what it shows.
+            const int r = p.size.cornerRadius;
+            const std::array<int, 4> radii =
+            {
+                p.roundedCorners[0] ? r : 0,
+                p.roundedCorners[1] ? r : 0,
+                p.roundedCorners[2] ? r : 0,
+                p.roundedCorners[3] ? r : 0
+            };
+            p.draw->bgMesh = rect(p.size.g, radii);
+            p.draw->keyFocus = border(p.size.g, p.size.keyFocus, radii);
         }
 
         // Draw the background.
         const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
         if (colorRole != ColorRole::None)
         {
-            event.render->drawRect(
-                p.size.g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(colorRole));
         }
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
-            event.render->drawRect(
-                p.size.g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                p.size.g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Hover));
         }
 

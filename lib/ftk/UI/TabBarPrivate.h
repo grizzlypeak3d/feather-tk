@@ -29,6 +29,10 @@ namespace ftk
 
         void setCurrent(bool);
 
+        //! Set which corners are rounded: top left, top right, bottom
+        //! right, bottom left.
+        void setRoundedCorners(const std::array<bool, 4>&);
+
 
         Size2I getSizeHint() const override;
         void setGeometry(const Box2I&) override;

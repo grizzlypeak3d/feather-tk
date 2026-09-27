@@ -105,6 +105,8 @@ namespace ftk
         FTK_UI_API void setBorderRole(ColorRole);
 
         FTK_UI_API void takeKeyFocus() override;
+        FTK_UI_API bool isSegment() const override;
+        FTK_UI_API void setSegment(ColorRole, const std::array<bool, 4>&) override;
         FTK_UI_API void scrollEvent(ScrollEvent&) override;
         FTK_UI_API void keyPressEvent(KeyEvent&) override;
         FTK_UI_API void keyReleaseEvent(KeyEvent&) override;

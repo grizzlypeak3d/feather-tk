@@ -131,6 +131,8 @@ namespace ftk
             const TickEvent&) override;
         FTK_UI_API void clipEvent(const Box2I&, bool) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;
+        FTK_UI_API bool isSegment() const override;
+        FTK_UI_API void setSegment(ColorRole, const std::array<bool, 4>&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_UI_API void mouseMoveEvent(MouseMoveEvent&) override;

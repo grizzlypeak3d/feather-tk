@@ -64,6 +64,8 @@ namespace ftk
         //! Set the decrement callback.
         FTK_UI_API void setDecCallback(const std::function<void(void)>&);
 
+        FTK_UI_API bool isSegment() const override;
+        FTK_UI_API void setSegment(ColorRole, const std::array<bool, 4>&) override;
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
 

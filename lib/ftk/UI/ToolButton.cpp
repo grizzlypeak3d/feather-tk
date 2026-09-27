@@ -8,6 +8,8 @@
 
 #include <optional>
 
+#include <algorithm>
+
 namespace ftk
 {
     struct ToolButton::Private
@@ -15,6 +17,7 @@ namespace ftk
         std::shared_ptr<Action> action;
         SizeRole marginRole = SizeRole::MarginInside;
         SizeRole cornerRadiusRole = SizeRole::CornerRadius;
+        std::array<bool, 4> roundedCorners = { true, true, true, true };
         ColorRole accentUnderline = ColorRole::None;
         bool popupIcon = false;
         float popupIconScale = 1.F;
@@ -180,6 +183,22 @@ namespace ftk
         p.marginRole = value;
         p.size.init = true;
         setSizeUpdate();
+        setDrawUpdate();
+    }
+
+    bool ToolButton::isSegment() const
+    {
+        return true;
+    }
+
+    void ToolButton::setSegment(ColorRole background, const std::array<bool, 4>& value)
+    {
+        FTK_P();
+        setButtonRole(background);
+        if (value == p.roundedCorners)
+            return;
+        p.roundedCorners = value;
+        p.draw.reset();
         setDrawUpdate();
     }
 
@@ -381,18 +400,35 @@ namespace ftk
             p.draw->bg = getGeometry();
             const int kf = acceptsKeyFocus() ? p.size.keyFocus : 0;
             p.draw->inside = margin(p.draw->bg, -(p.size.margin + kf));
-            p.draw->bgMesh = rect(p.draw->bg, p.size.cornerRadius);
+            const int r = p.size.cornerRadius;
+            p.draw->bgMesh = rect(
+                p.draw->bg,
+                {
+                    p.roundedCorners[0] ? r : 0,
+                    p.roundedCorners[1] ? r : 0,
+                    p.roundedCorners[2] ? r : 0,
+                    p.roundedCorners[3] ? r : 0
+                });
             p.draw->keyFocus = border(p.draw->bg, p.size.keyFocus, p.size.cornerRadius);
         }
 
-        // Draw the background.
-        const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
-        if (colorRole != ColorRole::None)
+        // Draw the background. Full strength when disabled: the faded icon
+        // says so, and a group keeps one shape when only some of its
+        // buttons are disabled.
+        if (_buttonRole != ColorRole::None)
         {
             event.render->drawMesh(
                 p.draw->bgMesh,
-                event.style->getColorRole(colorRole, isEnabled()));
+                event.style->getColorRole(_buttonRole));
         }
+        const bool checkedTint = _checked && _checkedRole != ColorRole::None;
+        if (checkedTint)
+        {
+            event.render->drawMesh(p.draw->bgMesh, _getCheckedTint(event));
+        }
+        const Color4F textColor = checkedTint ?
+            _getCheckedColor(event) :
+            _getTextColor(event);
 
         // Draw the mouse state.
         if (_isMousePressed())
@@ -442,7 +478,7 @@ namespace ftk
                     p.draw->inside.y() + p.draw->inside.h() / 2 - iconSize.h / 2,
                     iconSize.w,
                     iconSize.h),
-                _getTextColor(event));
+                textColor);
             x += iconSize.w;
         }
             
@@ -458,7 +494,7 @@ namespace ftk
                 p.size.fontMetrics,
                 V2I(x + p.size.pad,
                     p.draw->inside.y() + p.draw->inside.h() / 2 - p.size.textSize.h / 2),
-                _getTextColor(event));
+                textColor);
             x += p.size.pad * 2 + p.size.textSize.w;
         }
 

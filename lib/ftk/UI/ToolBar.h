@@ -56,6 +56,17 @@ namespace ftk
         //! Set the spacing role.
         FTK_UI_API void setSpacingRole(SizeRole);
 
+        //! Get whether the buttons are grouped.
+        FTK_UI_API bool isGrouped() const;
+
+        //! Set whether the buttons are grouped. A run of widgets that are
+        //! segments, IWidget::isSegment(), is drawn as one control: they
+        //! touch and have a background, and only the corners at the ends of
+        //! the run are rounded. Any other widget ends a run.
+        FTK_UI_API void setGrouped(bool);
+
+        FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
+
 
     private:
         FTK_PRIVATE();

@@ -31,6 +31,10 @@ namespace ftk
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
         ColorRole wellRole = ColorRole::Well;
+        // Square: a well to type in, set apart from the rounded buttons.
+        // Only a corner at the end of a group is rounded, to finish the
+        // group's shape.
+        std::array<bool, 4> roundedCorners = { false, false, false, false };
 
         std::weak_ptr<Menu> contextMenu;
         bool contextMenuFocus = false;
@@ -379,6 +383,23 @@ namespace ftk
         }
     }
 
+    bool LineEdit::isSegment() const
+    {
+        return true;
+    }
+
+    void LineEdit::setSegment(ColorRole, const std::array<bool, 4>& value)
+    {
+        // The corners only: a field keeps its own well in a run of buttons,
+        // so that it still reads as something to type into.
+        FTK_P();
+        if (value == p.roundedCorners)
+            return;
+        p.roundedCorners = value;
+        p.draw.reset();
+        setDrawUpdate();
+    }
+
     void LineEdit::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
@@ -430,9 +451,17 @@ namespace ftk
             p.draw->g = _getAlignGeometry();
             p.draw->g2 = _getMarginGeometry();
             p.draw->g3 = _getTextGeometry();
-            p.draw->bgMesh = rect(p.draw->g, p.size.cornerRadius);
-            p.draw->border = border(p.draw->g, p.size.border, p.size.cornerRadius);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus, p.size.cornerRadius);
+            const int r = p.size.cornerRadius;
+            const std::array<int, 4> radii =
+            {
+                p.roundedCorners[0] ? r : 0,
+                p.roundedCorners[1] ? r : 0,
+                p.roundedCorners[2] ? r : 0,
+                p.roundedCorners[3] ? r : 0
+            };
+            p.draw->bgMesh = rect(p.draw->g, radii);
+            p.draw->border = border(p.draw->g, p.size.border, radii);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus, radii);
         }
 
         const bool enabled = isEnabled();

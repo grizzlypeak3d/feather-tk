@@ -6,6 +6,8 @@
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IButton.h>
 
+#include <array>
+
 namespace ftk
 {
     class Action;
@@ -56,6 +58,8 @@ namespace ftk
         //! Set the corner radius role.
         void setCornerRadiusRole(SizeRole);
 
+
+
         //! Get whether an active accent underline is drawn.
         ColorRole hasAccentUnderline() const;
 
@@ -88,6 +92,8 @@ namespace ftk
         FTK_UI_API void styleEvent(const StyleEvent&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_UI_API void clipEvent(const Box2I&, bool) override;
+        FTK_UI_API bool isSegment() const override;
+        FTK_UI_API void setSegment(ColorRole, const std::array<bool, 4>&) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_UI_API void keyPressEvent(KeyEvent&) override;
         FTK_UI_API void keyReleaseEvent(KeyEvent&) override;

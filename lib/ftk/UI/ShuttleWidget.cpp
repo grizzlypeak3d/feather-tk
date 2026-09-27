@@ -3,6 +3,8 @@
 
 #include <ftk/UI/ShuttleWidget.h>
 
+#include <ftk/UI/DrawUtil.h>
+
 #include <ftk/Core/Format.h>
 
 #include <optional>
@@ -18,11 +20,14 @@ namespace ftk
         std::function<void(int)> deltaCallback;
         int modifiers = 0;
         std::function<void(bool)> activeCallback;
+        ColorRole buttonRole = ColorRole::None;
+        std::array<bool, 4> roundedCorners = { true, true, true, true };
 
         struct SizeData
         {
             bool init = true;
             int margin = 0;
+            int cornerRadius = 0;
             float iconScale = 1.F;
             Size2I sizeHint;
         };
@@ -98,6 +103,21 @@ namespace ftk
         }
     }
 
+    bool ShuttleWidget::isSegment() const
+    {
+        return true;
+    }
+
+    void ShuttleWidget::setSegment(ColorRole background, const std::array<bool, 4>& value)
+    {
+        FTK_P();
+        if (background == p.buttonRole && value == p.roundedCorners)
+            return;
+        p.buttonRole = background;
+        p.roundedCorners = value;
+        setDrawUpdate();
+    }
+
     void ShuttleWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
@@ -105,6 +125,7 @@ namespace ftk
         {
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.iconScale = event.displayScale;
             p.iconImages.clear();
             for (int i = 0; i < 8; ++i)
@@ -129,16 +150,31 @@ namespace ftk
         FTK_P();
 
         const Box2I& g = getGeometry();
+        const int r = p.size.cornerRadius;
+        const TriMesh2F mesh = rect(
+            g,
+            {
+                p.roundedCorners[0] ? r : 0,
+                p.roundedCorners[1] ? r : 0,
+                p.roundedCorners[2] ? r : 0,
+                p.roundedCorners[3] ? r : 0
+            });
+        if (p.buttonRole != ColorRole::None)
+        {
+            event.render->drawMesh(
+                mesh,
+                event.style->getColorRole(p.buttonRole));
+        }
         if (_isMousePressed())
         {
-            event.render->drawRect(
-                g,
+            event.render->drawMesh(
+                mesh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                g,
+            event.render->drawMesh(
+                mesh,
                 event.style->getColorRole(ColorRole::Hover));
         }
 

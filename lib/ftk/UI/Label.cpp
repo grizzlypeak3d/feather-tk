@@ -97,6 +97,7 @@ namespace ftk
         SizeRole vMarginRole = SizeRole::None;
         FontType font = FontType::Regular;
         int fontSize = FontInfo().size;
+        HAlign textAlign = HAlign::Left;
         bool clipText = false;
         bool elide = false;
         ElideMode elideMode = ElideMode::Right;
@@ -285,6 +286,20 @@ namespace ftk
         return _p->clipText;
     }
 
+    HAlign Label::getTextAlign() const
+    {
+        return _p->textAlign;
+    }
+
+    void Label::setTextAlign(HAlign value)
+    {
+        FTK_P();
+        if (value == p.textAlign)
+            return;
+        p.textAlign = value;
+        setDrawUpdate();
+    }
+
     void Label::setClipText(bool value)
     {
         FTK_P();
@@ -435,10 +450,22 @@ namespace ftk
                 getGeometry());
         }
 
+        V2I pos = p.draw->g2.min;
+        const int textW = std::min(p.size.textSize.w, p.draw->g2.w());
+        switch (p.textAlign)
+        {
+        case HAlign::Center:
+            pos.x += (p.draw->g2.w() - textW) / 2;
+            break;
+        case HAlign::Right:
+            pos.x += p.draw->g2.w() - textW;
+            break;
+        default: break;
+        }
         event.render->drawText(
             p.draw->glyphs,
             p.size.fontMetrics,
-            p.draw->g2.min,
+            pos,
             event.style->getColorRole(p.textRole, isEnabled()));
 
         if (clip)

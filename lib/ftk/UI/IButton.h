@@ -121,6 +121,12 @@ namespace ftk
         //! Get the color for the text and icon.
         FTK_UI_API Color4F _getTextColor(const DrawEvent&) const;
 
+        //! Get the tint drawn over a checked button.
+        FTK_UI_API Color4F _getCheckedTint(const DrawEvent&) const;
+
+        //! Get the color for the text and icon of a checked button.
+        FTK_UI_API Color4F _getCheckedColor(const DrawEvent&) const;
+
 
         std::string _text;
         FontType _font = FontType::Regular;

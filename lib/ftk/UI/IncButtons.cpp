@@ -73,7 +73,7 @@ namespace ftk
         {
             event.render->drawRect(
                 g,
-                event.style->getColorRole(colorRole, isEnabled()));
+                event.style->getColorRole(colorRole));
         }
 
         if (_isMousePressed())
@@ -137,6 +137,19 @@ namespace ftk
         return out;
     }
     
+    bool IncButtons::isSegment() const
+    {
+        return true;
+    }
+
+    void IncButtons::setSegment(ColorRole background, const std::array<bool, 4>&)
+    {
+        // The background only: the buttons are too small for a rounded
+        // corner to read as anything but a blemish.
+        _incButton->setButtonRole(background);
+        _decButton->setButtonRole(background);
+    }
+
     Size2I IncButtons::getSizeHint() const
     {
         const Size2I incSizeHint = _incButton->getSizeHint();

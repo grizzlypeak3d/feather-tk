@@ -91,6 +91,8 @@ namespace ftk
         {
             bool init = true;
             int shadow = 0;
+            int border = 0;
+            int cornerRadius = 0;
         };
         SizeData size;
 
@@ -99,6 +101,8 @@ namespace ftk
             Box2I g;
             Box2I g2;
             TriMesh2F shadow;
+            TriMesh2F bgMesh;
+            TriMesh2F borderMesh;
         };
         std::optional<DrawData> draw;
     };
@@ -111,7 +115,12 @@ namespace ftk
         IPopup::_init(context, objectName, parent);
         FTK_P();
 
+        // The popup draws its own rounded background and border; the items
+        // are inset from them, so that the square scroll area stays clear
+        // of the rounded corners.
         p.scrollWidget = ScrollWidget::create(context, ScrollType::Menu);
+        p.scrollWidget->setBorder(false);
+        p.scrollWidget->setMarginRole(SizeRole::MarginSmall);
 
         p.menuPopupWidget = MenuPopupWidget::create(context, shared_from_this());
         p.scrollWidget->setParent(p.menuPopupWidget);
@@ -320,6 +329,8 @@ namespace ftk
         {
             p.size.init = false;
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.draw.reset();
         }
     }
@@ -351,12 +362,17 @@ namespace ftk
                 p.draw->g.w() + p.size.shadow * 2,
                 p.draw->g.h() + p.size.shadow);
             p.draw->shadow = shadow(p.draw->g2, p.size.shadow);
+            p.draw->bgMesh = rect(p.draw->g, p.size.cornerRadius);
+            p.draw->borderMesh = border(p.draw->g, p.size.border, p.size.cornerRadius);
         }
 
         event.render->drawColorMesh(p.draw->shadow);
-        event.render->drawRect(
-            p.draw->g,
+        event.render->drawMesh(
+            p.draw->bgMesh,
             event.style->getColorRole(p.popupRole));
+        event.render->drawMesh(
+            p.draw->borderMesh,
+            event.style->getColorRole(ColorRole::Border));
     }
 
     void IMenuPopup::mousePressEvent(MouseClickEvent& event)

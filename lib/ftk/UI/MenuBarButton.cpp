@@ -18,6 +18,7 @@ namespace ftk
             bool init = true;
             int margin = 0;
             int keyFocus = 0;
+            int cornerRadius = 0;
             int pad = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
@@ -30,6 +31,7 @@ namespace ftk
         {
             Box2I g;
             Box2I g2;
+            TriMesh2F bgMesh;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
         };
@@ -114,6 +116,7 @@ namespace ftk
             p.size.init = false;
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
@@ -148,29 +151,37 @@ namespace ftk
             p.draw = Private::DrawData();
             p.draw->g = getGeometry();
             p.draw->g2 = margin(p.draw->g, -(p.size.margin + p.size.keyFocus));
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
+            // Rounded and inset from the edges of the bar, like the items of
+            // the menu it opens.
+            const Box2I g3 = margin(p.draw->g, -p.size.margin);
+            p.draw->bgMesh = rect(g3, p.size.cornerRadius);
+            p.draw->keyFocus = border(g3, p.size.keyFocus, p.size.cornerRadius);
         }
 
         // Draw the background.
-        const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
-        if (colorRole != ColorRole::None)
+        if (_buttonRole != ColorRole::None)
         {
-            event.render->drawRect(
-                p.draw->g,
-                event.style->getColorRole(colorRole));
+            event.render->drawMesh(
+                p.draw->bgMesh,
+                event.style->getColorRole(_buttonRole));
+        }
+        const bool checkedTint = _checked && _checkedRole != ColorRole::None;
+        if (checkedTint)
+        {
+            event.render->drawMesh(p.draw->bgMesh, _getCheckedTint(event));
         }
 
         // Draw the mouse state.
         if (_isMousePressed())
         {
-            event.render->drawRect(
-                p.draw->g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                p.draw->g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Hover));
         }
 
@@ -191,6 +202,8 @@ namespace ftk
             p.draw->glyphs,
             p.size.fontMetrics,
             V2I(p.draw->g2.x() + p.size.pad, p.draw->g2.y()),
+            checkedTint ?
+            _getCheckedColor(event) :
             event.style->getColorRole(_textRole));
     }
 }

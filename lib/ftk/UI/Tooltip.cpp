@@ -23,6 +23,7 @@ namespace ftk
             int border = 0;
             int handle = 0;
             int shadow = 0;
+            int cornerRadius = 0;
         };
         SizeData size;
 
@@ -31,6 +32,7 @@ namespace ftk
             Box2I g;
             TriMesh2F shadow;
             TriMesh2F border;
+            TriMesh2F bgMesh;
         };
         std::optional<DrawData> draw;
     };
@@ -174,6 +176,7 @@ namespace ftk
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.draw.reset();
         }
     }
@@ -204,7 +207,11 @@ namespace ftk
                 p.draw->g.min.y,
                 p.draw->g.w() + p.size.shadow * 2,
                 p.draw->g.h() + p.size.shadow), p.size.shadow);
-            p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
+            p.draw->border = border(
+                margin(p.draw->g, p.size.border),
+                p.size.border,
+                p.size.cornerRadius + p.size.border);
+            p.draw->bgMesh = rect(p.draw->g, p.size.cornerRadius);
         }
 
         if (p.draw.has_value())
@@ -213,8 +220,8 @@ namespace ftk
             event.render->drawMesh(
                 p.draw->border,
                 event.style->getColorRole(ColorRole::Border));
-            event.render->drawRect(
-                p.draw->g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::TooltipWindow));
         }
     }

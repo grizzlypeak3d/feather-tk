@@ -85,6 +85,14 @@ namespace ftk
         //! Set the font size.
         FTK_UI_API void setFontSize(int);
 
+        //! Get the alignment of the text within the label.
+        FTK_UI_API HAlign getTextAlign() const;
+
+        //! Set the alignment of the text within the label, for a label
+        //! given more room than its text needs. This is separate from the
+        //! widget's own alignment, which is where a layout puts the label.
+        FTK_UI_API void setTextAlign(HAlign);
+
         //! Get whether the text is clipped.
         FTK_UI_API bool getClipText() const;
 

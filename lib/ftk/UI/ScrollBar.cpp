@@ -5,6 +5,7 @@
 
 #include <ftk/UI/DrawUtil.h>
 
+#include <algorithm>
 #include <optional>
 
 namespace ftk
@@ -20,7 +21,6 @@ namespace ftk
         {
             bool init = true;
             int handle = 0;
-            int border = 0;
             Size2I sizeHint;
         };
         SizeData size;
@@ -119,7 +119,6 @@ namespace ftk
         {
             p.size.init = false;
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
-            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
 
             p.size.sizeHint = Size2I(p.size.handle, p.size.handle);
             switch (p.orientation)
@@ -145,21 +144,24 @@ namespace ftk
         const int scrollPosMax = _getScrollPosMax();
         if (scrollPosMax > 0)
         {
-            const Box2I g = margin(_getHandleGeometry(), -p.size.border);
-            event.render->drawRect(
-                g,
+            // A pill filling the trough, like the rest of the controls are
+            // rounded.
+            const Box2I g = _getHandleGeometry();
+            const TriMesh2F mesh = rect(g, std::min(g.w(), g.h()) / 2);
+            event.render->drawMesh(
+                mesh,
                 event.style->getColorRole(ColorRole::Button));
 
             if (_isMousePressed())
             {
-                event.render->drawRect(
-                    g,
+                event.render->drawMesh(
+                    mesh,
                     event.style->getColorRole(ColorRole::Pressed));
             }
             else if (_isMouseInside())
             {
-                event.render->drawRect(
-                    g,
+                event.render->drawMesh(
+                    mesh,
                     event.style->getColorRole(ColorRole::Hover));
             }
         }

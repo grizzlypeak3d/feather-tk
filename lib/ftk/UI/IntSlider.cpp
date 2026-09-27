@@ -5,6 +5,7 @@
 
 #include <ftk/UI/DrawUtil.h>
 
+#include <algorithm>
 #include <chrono>
 #include <optional>
 
@@ -454,29 +455,32 @@ namespace ftk
         }
 
         // Draw the handle.
+        // A pill, like the rest of the controls are rounded.
         const Box2I gh = _getHandleGeometry();
-        event.render->drawRect(
-            gh,
+        const int ghr = std::min(gh.w(), gh.h()) / 2;
+        const TriMesh2F ghMesh = rect(gh, ghr);
+        event.render->drawMesh(
+            ghMesh,
             event.style->getColorRole(ColorRole::Button, enabled));
         event.render->drawMesh(
-            border(gh, p.size.border),
+            border(gh, p.size.border, ghr),
             event.style->getColorRole(ColorRole::Border, enabled));
         if (showKeyFocus())
         {
-            event.render->drawRect(
-                gh,
+            event.render->drawMesh(
+                ghMesh,
                 event.style->getColorRole(ColorRole::KeyFocus));
         }
         if (_isMousePressed())
         {
-            event.render->drawRect(
-                gh,
+            event.render->drawMesh(
+                ghMesh,
                 event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                gh,
+            event.render->drawMesh(
+                ghMesh,
                 event.style->getColorRole(ColorRole::Hover));
         }
     }

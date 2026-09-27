@@ -39,10 +39,22 @@ namespace ftk
                 return out;
             }
 
+            // The content is inset from the popup's rounded corners, so
+            // that a square background in it stays inside them.
+            void setInset(int value)
+            {
+                if (value == _inset)
+                    return;
+                _inset = value;
+                setSizeUpdate();
+            }
+
             Size2I getSizeHint() const override
             {
                 const auto& children = getChildren();
-                return !children.empty() ? children.front()->getSizeHint() : Size2I();
+                return !children.empty() ?
+                    margin(children.front()->getSizeHint(), _inset) :
+                    Size2I();
             }
 
             void setGeometry(const Box2I& value) override
@@ -51,7 +63,7 @@ namespace ftk
                 const auto& children = getChildren();
                 if (!children.empty())
                 {
-                    children.front()->setGeometry(value);
+                    children.front()->setGeometry(margin(value, -_inset));
                 }
             }
 
@@ -59,6 +71,9 @@ namespace ftk
             {
                 event.accept = true;
             }
+
+        private:
+            int _inset = 0;
         };
     }
 
@@ -78,6 +93,7 @@ namespace ftk
             bool init = true;
             int border = 0;
             int shadow = 0;
+            int cornerRadius = 0;
         };
         SizeData size;
 
@@ -88,6 +104,7 @@ namespace ftk
             Box2I g3;
             TriMesh2F shadow;
             TriMesh2F border;
+            TriMesh2F bgMesh;
         };
         std::optional<DrawData> draw;
     };
@@ -274,6 +291,8 @@ namespace ftk
             p.size.init = false;
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
+            p.popupWidget->setInset(event.style->getSizeRole(SizeRole::MarginInside, event.displayScale));
             p.draw.reset();
         }
     }
@@ -306,15 +325,16 @@ namespace ftk
                 p.draw->g.w() + p.size.shadow * 2,
                 p.draw->g.h() + p.size.shadow);
             p.draw->shadow = shadow(p.draw->g3, p.size.shadow);
-            p.draw->border = border(p.draw->g2, p.size.border);
+            p.draw->border = border(p.draw->g2, p.size.border, p.size.cornerRadius + p.size.border);
+            p.draw->bgMesh = rect(p.draw->g, p.size.cornerRadius);
         }
 
         event.render->drawColorMesh(p.draw->shadow);
         event.render->drawMesh(
             p.draw->border,
             event.style->getColorRole(ColorRole::Border));
-        event.render->drawRect(
-            p.draw->g,
+        event.render->drawMesh(
+            p.draw->bgMesh,
             event.style->getColorRole(p.popupRole));
     }
 

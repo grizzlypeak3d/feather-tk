@@ -248,6 +248,22 @@ namespace ftk
 
     
 
+    bool DoubleEdit::isSegment() const
+    {
+        return true;
+    }
+
+    void DoubleEdit::setSegment(ColorRole background, const std::array<bool, 4>& value)
+    {
+        // The field meets the step buttons on its right, so its right side
+        // is always square and there is no gap between them; the step
+        // buttons take the background.
+        FTK_P();
+        p.layout->setSpacingRole(SizeRole::None);
+        p.lineEdit->setSegment(background, { value[0], false, false, value[3] });
+        p.incButtons->setSegment(background, { false, value[1], value[2], false });
+    }
+
     void DoubleEdit::scrollEvent(ScrollEvent& event)
     {
         FTK_P();

@@ -89,6 +89,7 @@ namespace ftk
         void _widgetUpdate();
         void _setCurrent(int);
         void _currentUpdate();
+        void _scrollToCurrent();
 
         FTK_PRIVATE();
     };

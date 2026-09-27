@@ -180,6 +180,16 @@ namespace ftk
         return out;
     }
 
+    Color4F IButton::_getCheckedTint(const DrawEvent& event) const
+    {
+        return checkedTint(event.style->getColorRole(_checkedRole, isEnabled()));
+    }
+
+    Color4F IButton::_getCheckedColor(const DrawEvent& event) const
+    {
+        return checkedHighlight(event.style->getColorRole(_checkedRole, isEnabled()));
+    }
+
     ColorRole IButton::getTextRole() const
     {
         return _textRole;

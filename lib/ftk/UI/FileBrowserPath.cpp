@@ -4,11 +4,11 @@
 #include <ftk/UI/FileBrowserPrivate.h>
 
 #include <ftk/UI/ButtonGroup.h>
-#include <ftk/UI/Divider.h>
 #include <ftk/UI/LineEdit.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/StackLayout.h>
+#include <ftk/UI/ToolBar.h>
 #include <ftk/UI/ToolButton.h>
 
 #include <ftk/Core/Path.h>
@@ -23,7 +23,7 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> layout;
         std::shared_ptr<ToolButton> editableButton;
         std::shared_ptr<StackLayout> stackLayout;
-        std::shared_ptr<HorizontalLayout> buttonsLayout;
+        std::shared_ptr<ToolBar> buttonsLayout;
         std::shared_ptr<ScrollWidget> buttonsScrollWidget;
         std::vector<std::shared_ptr<IButton> > buttons;
         std::shared_ptr<ButtonGroup> buttonGroup;
@@ -46,7 +46,10 @@ namespace ftk
         p.layout->setSpacingRole(SizeRole::SpacingTool);
         p.layout->setVAlign(VAlign::Center);
 
-        p.editableButton = ToolButton::create(context, p.layout);
+        auto editToolBar = ToolBar::create(context, Orientation::Horizontal, p.layout);
+        editToolBar->setGrouped(true);
+        p.editableButton = ToolButton::create(context);
+        editToolBar->addWidget(p.editableButton);
         p.editableButton->setCheckable(true);
         p.editableButton->setIcon("Edit");
         p.editableButton->setTooltip("Edit the path");
@@ -54,10 +57,12 @@ namespace ftk
         p.stackLayout = StackLayout::create(context, p.layout);
         p.stackLayout->setHStretch(Stretch::Expanding);
 
-        p.buttonsLayout = HorizontalLayout::create(context);
-        p.buttonsLayout->setSpacingRole(SizeRole::None);
+        // The pieces of the path as one group, like the buttons beside it.
+        p.buttonsLayout = ToolBar::create(context);
+        p.buttonsLayout->setGrouped(true);
 
         p.buttonsScrollWidget = ScrollWidget::create(context, ScrollType::Horizontal, p.stackLayout);
+        p.buttonsScrollWidget->setBorder(false);
         p.buttonsScrollWidget->setWidget(p.buttonsLayout);
 
         p.buttonGroup = ButtonGroup::create(context, ButtonGroupType::Click);
@@ -181,11 +186,10 @@ namespace ftk
         {
             for (size_t i = 0; i < p.pieces.size(); ++i)
             {
-                auto button = ToolButton::create(context, p.pieces[i], p.buttonsLayout);
-                button->setCornerRadiusRole(SizeRole::None);
+                auto button = ToolButton::create(context, p.pieces[i]);
+                p.buttonsLayout->addWidget(button);
                 p.buttons.push_back(button);
                 p.buttonGroup->addButton(button);
-                Divider::create(context, Orientation::Horizontal, p.buttonsLayout);
             }
         }
 

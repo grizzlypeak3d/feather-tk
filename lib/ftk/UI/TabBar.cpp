@@ -5,7 +5,6 @@
 
 #include <ftk/UI/ButtonGroup.h>
 #include <ftk/UI/ComboBoxMenu.h>
-#include <ftk/UI/Divider.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/ToolButton.h>
@@ -33,6 +32,7 @@ namespace ftk
         std::function<void(int)> closeCallback;
 
         int currentFocus = -1;
+        bool scrollToCurrent = false;
     };
 
     void TabBar::_init(
@@ -48,8 +48,9 @@ namespace ftk
 
         p.closeButtonGroup = ButtonGroup::create(context, ButtonGroupType::Click);
 
+        // A hairline between the tabs, like the one between bellows.
         p.buttonLayout = HorizontalLayout::create(context);
-        p.buttonLayout->setSpacingRole(SizeRole::None);
+        p.buttonLayout->setSpacingRole(SizeRole::Border);
 
         p.scrollWidget = ScrollWidget::create(context, ScrollType::Horizontal);
         p.scrollWidget->setScrollBarsVisible(false);
@@ -66,7 +67,17 @@ namespace ftk
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
         p.scrollWidget->setParent(p.layout);
-        Divider::create(context, Orientation::Horizontal, p.layout);
+        // A tab that was just added has no geometry to scroll to until the
+        // layout has been done, which is when the scroll size changes.
+        p.scrollWidget->setScrollInfoCallback(
+            [this](const ScrollInfo&)
+            {
+                if (_p->scrollToCurrent)
+                {
+                    _scrollToCurrent();
+                    _p->scrollToCurrent = false;
+                }
+            });
         p.menuButton->setParent(p.layout);
 
         _widgetUpdate();
@@ -395,16 +406,21 @@ namespace ftk
         {
             for (size_t i = 0; i < p.text.size(); ++i)
             {
-                auto button = TabBarButton::create(context, p.text[i], p.buttonLayout);
+                // The tab and its close button touch; the tabs are spaced.
+                auto tabLayout = HorizontalLayout::create(context, p.buttonLayout);
+                tabLayout->setSpacingRole(SizeRole::None);
+                auto button = TabBarButton::create(context, p.text[i], tabLayout);
                 button->setTooltip(p.tooltips[i]);
+                // A close button finishes the tab: it takes the top right
+                // corner.
+                button->setRoundedCorners({ true, !p.closable, false, false });
                 p.buttons.push_back(button);
                 p.buttonGroup->addButton(button);
 
                 if (p.closable)
                 {
-                    auto closeButton = ToolButton::create(context, p.buttonLayout);
+                    auto closeButton = ToolButton::create(context, tabLayout);
                     closeButton->setAcceptsKeyFocus(false);
-                    closeButton->setCornerRadiusRole(SizeRole::None);
                     closeButton->setIcon("Close");
                     p.closeButtons.push_back(closeButton);
                     p.closeButtonGroup->addButton(closeButton);
@@ -444,18 +460,32 @@ namespace ftk
             // soon as the tab is focused.
             const bool current = p.current == static_cast<int>(i);
             const bool currentFocus = focus && p.currentFocus == static_cast<int>(i);
-            p.closeButtons[i]->setButtonRole(current ? ColorRole::Button : ColorRole::None);
+            p.closeButtons[i]->setSegment(
+                current ? ColorRole::Button : ColorRole::None,
+                { false, true, false, false });
             p.closeButtons[i]->setTextRole(current ? ColorRole::Text : ColorRole::TextDisabled);
             p.closeButtons[i]->setAccentUnderline(
                 currentFocus ? ColorRole::KeyFocus :
                 (current ? ColorRole::Checked : ColorRole::None));
         }
+        // Now, for a tab that is already laid out, and again after the
+        // layout for one that is not.
+        _scrollToCurrent();
+        p.scrollToCurrent = true;
+    }
+
+    void TabBar::_scrollToCurrent()
+    {
+        FTK_P();
         if (p.currentFocus >= 0 && p.currentFocus < static_cast<int>(p.buttons.size()))
         {
-            const Box2I g =
-                p.buttons[p.currentFocus]->getGeometry() -
-                p.buttonLayout->getGeometry().min;
-            p.scrollWidget->scrollTo(g);
+            // The whole tab, with its close button.
+            Box2I g = p.buttons[p.currentFocus]->getGeometry();
+            if (p.currentFocus < static_cast<int>(p.closeButtons.size()))
+            {
+                g = expand(g, p.closeButtons[p.currentFocus]->getGeometry());
+            }
+            p.scrollWidget->scrollTo(g - p.buttonLayout->getGeometry().min);
         }
     }
 }

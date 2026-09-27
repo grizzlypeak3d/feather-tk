@@ -100,13 +100,16 @@ namespace ftk
         IButton::drawEvent(drawRect, event);
         const Box2I& g = getGeometry();
 
-        // Draw the background.
-        const ColorRole colorRole = _checked ? _checkedRole : _buttonRole;
-        if (colorRole != ColorRole::None)
+        // Draw the background, with the checked tint over it.
+        if (_buttonRole != ColorRole::None)
         {
             event.render->drawRect(
                 g,
-                event.style->getColorRole(colorRole));
+                event.style->getColorRole(_buttonRole));
+        }
+        if (_checked && _checkedRole != ColorRole::None)
+        {
+            event.render->drawRect(g, _getCheckedTint(event));
         }
 
         // Draw the mouse state.

@@ -6,6 +6,7 @@
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IMouseWidget.h>
 
+
 namespace ftk
 {
     //! Shuttle widget.
@@ -36,6 +37,10 @@ namespace ftk
         FTK_UI_API void setDeltaCallback(const std::function<void(int)>&);
         FTK_UI_API void setActiveCallback(const std::function<void(bool)>&);
 
+
+
+        FTK_UI_API bool isSegment() const override;
+        FTK_UI_API void setSegment(ColorRole, const std::array<bool, 4>&) override;
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;

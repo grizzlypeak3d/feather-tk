@@ -28,6 +28,7 @@ namespace ftk
         //! The title bar and the content together, which is what the border
         //! and the shadow are drawn around.
         Box2I geom;
+        Box2I titleGeom;
 
         struct SizeData
         {
@@ -35,6 +36,8 @@ namespace ftk
             int margin = 0;
             int border = 0;
             int shadow = 0;
+            int cornerRadius = 0;
+            int inset = 0;
         };
         SizeData size;
 
@@ -44,6 +47,8 @@ namespace ftk
             Box2I g2;
             TriMesh2F shadow;
             TriMesh2F border;
+            TriMesh2F bgMesh;
+            TriMesh2F titleMesh;
         };
         std::optional<DrawData> draw;
     };
@@ -62,9 +67,10 @@ namespace ftk
         p.titleLabel = Label::create(context, shared_from_this());
         p.titleLabel->setFont(FontType::Bold);
         p.titleLabel->setMarginRole(SizeRole::MarginSmall);
-        p.titleLabel->setBackgroundRole(ColorRole::Header);
-        // The bar spans the dialog, which is the label's own background.
+        // The bar spans the dialog, which draws it with the rounded top
+        // corners; the title is centered in it like a window's.
         p.titleLabel->setHAlign(HAlign::Fill);
+        p.titleLabel->setTextAlign(HAlign::Center);
         p.titleLabel->setVisible(false);
 
         p.titleDivider = Divider::create(context, Orientation::Vertical, shared_from_this());
@@ -183,7 +189,11 @@ namespace ftk
             }
         }
 
+        // The content is inset from the sides and the bottom, so that a
+        // square background in it stays inside the rounded corners.
+        const int inset = p.size.inset;
         const Box2I g = margin(value, -p.size.margin);
+        const Box2I gc(g.x() + inset, g.y(), g.w() - inset * 2, g.h() - inset);
         const bool title = p.titleLabel->isVisible(false);
         const int titleH = title ?
             (p.titleLabel->getSizeHint().h + p.titleDivider->getSizeHint().h) :
@@ -196,7 +206,7 @@ namespace ftk
             switch (content->getHStretch())
             {
             case Stretch::Expanding:
-                size.w = g.w();
+                size.w = gc.w();
                 break;
             case Stretch::Fixed:
             default:
@@ -206,7 +216,7 @@ namespace ftk
             switch (content->getVStretch())
             {
             case Stretch::Expanding:
-                size.h = g.h() - titleH;
+                size.h = gc.h() - titleH;
                 break;
             case Stretch::Fixed:
             default:
@@ -221,16 +231,18 @@ namespace ftk
         }
 
         const Box2I geom(
-            g.x() + g.w() / 2 - size.w / 2,
-            g.y() + g.h() / 2 - (size.h + titleH) / 2,
-            size.w,
-            size.h + titleH);
+            g.x() + g.w() / 2 - (size.w + inset * 2) / 2,
+            g.y() + g.h() / 2 - (size.h + titleH + inset) / 2,
+            size.w + inset * 2,
+            size.h + titleH + inset);
 
         int y = geom.min.y;
+        Box2I titleGeom;
         if (title)
         {
             const int h = p.titleLabel->getSizeHint().h;
-            p.titleLabel->setGeometry(Box2I(geom.min.x, y, geom.w(), h));
+            titleGeom = Box2I(geom.min.x, y, geom.w(), h);
+            p.titleLabel->setGeometry(titleGeom);
             y += h;
             const int dividerH = p.titleDivider->getSizeHint().h;
             p.titleDivider->setGeometry(Box2I(geom.min.x, y, geom.w(), dividerH));
@@ -238,12 +250,13 @@ namespace ftk
         }
         if (content)
         {
-            content->setGeometry(Box2I(geom.min.x, y, geom.w(), size.h));
+            content->setGeometry(Box2I(geom.min.x + inset, y, size.w, size.h));
         }
 
-        if (geom != p.geom)
+        if (geom != p.geom || titleGeom != p.titleGeom)
         {
             p.geom = geom;
+            p.titleGeom = titleGeom;
             p.draw.reset();
         }
     }
@@ -269,6 +282,8 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::MarginDialog, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
+            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
+            p.size.inset = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.draw.reset();
         }
     }
@@ -316,7 +331,16 @@ namespace ftk
                     p.draw->g.w() + p.size.shadow * 2,
                     p.draw->g.h() + p.size.shadow);
                 p.draw->shadow = shadow(p.draw->g2, p.size.shadow);
-                p.draw->border = border(margin(p.draw->g, p.size.border), p.size.border);
+                p.draw->border = border(
+                    margin(p.draw->g, p.size.border),
+                    p.size.border,
+                    p.size.cornerRadius + p.size.border);
+                p.draw->bgMesh = rect(p.draw->g, p.size.cornerRadius);
+                if (p.titleGeom.isValid())
+                {
+                    const int r = p.size.cornerRadius;
+                    p.draw->titleMesh = rect(p.titleGeom, { r, r, 0, 0 });
+                }
             }
         }
 
@@ -326,9 +350,15 @@ namespace ftk
             event.render->drawMesh(
                 p.draw->border,
                 event.style->getColorRole(ColorRole::Border));
-            event.render->drawRect(
-                p.draw->g,
+            event.render->drawMesh(
+                p.draw->bgMesh,
                 event.style->getColorRole(ColorRole::Window));
+            if (p.titleLabel->isVisible(false))
+            {
+                event.render->drawMesh(
+                    p.draw->titleMesh,
+                    event.style->getColorRole(ColorRole::Header));
+            }
         }
     }
 
