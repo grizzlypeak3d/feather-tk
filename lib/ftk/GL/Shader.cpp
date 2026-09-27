@@ -141,14 +141,41 @@ namespace ftk
             --objectCount;
         }
 
+        std::string getShaderHeader()
+        {
+#if defined(FTK_API_GLES_3)
+            // Everything high precision: ES 3.0 guarantees it in fragment
+            // shaders, pictures want it, and the samplers otherwise default
+            // to low precision there.
+            return
+                "#version 300 es\n"
+                "precision highp float;\n"
+                "precision highp int;\n"
+                "precision highp sampler2D;\n"
+                "precision highp sampler3D;\n";
+#else // FTK_API_GLES_3
+            return "#version 410\n";
+#endif // FTK_API_GLES_3
+        }
+
+        namespace
+        {
+            std::string withHeader(const std::string& source)
+            {
+                return source.compare(0, 8, "#version") == 0 ?
+                    source :
+                    getShaderHeader() + source;
+            }
+        }
+
         std::shared_ptr<Shader> Shader::create(
             const std::string& vertexSource,
             const std::string& fragmentSource,
             const std::map<std::string, int>& attribLocations)
         {
             auto out = std::shared_ptr<Shader>(new Shader);
-            out->_p->vertexSource = vertexSource;
-            out->_p->fragmentSource = fragmentSource;
+            out->_p->vertexSource = withHeader(vertexSource);
+            out->_p->fragmentSource = withHeader(fragmentSource);
             out->_p->attribLocations = attribLocations;
             out->_init();
             return out;

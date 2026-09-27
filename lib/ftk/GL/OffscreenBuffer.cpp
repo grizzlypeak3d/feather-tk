@@ -3,6 +3,8 @@
 
 #include <ftk/GL/OffscreenBuffer.h>
 
+#include <ftk/GL/Util.h>
+
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Texture.h>
 
@@ -89,7 +91,6 @@ namespace ftk
                 case OffscreenDepth::_16:
                     out = GL_DEPTH_COMPONENT16;
                     break;
-#if defined(FTK_API_GL_4_1)
                 case OffscreenDepth::_24:
                     switch (stencil)
                     {
@@ -114,11 +115,71 @@ namespace ftk
                     default: break;
                     }
                     break;
-#endif // FTK_API_GL_4_1
                 default: break;
                 }
                 return out;
             }
+        }
+
+        TextureType getRenderableType(TextureType type)
+        {
+#if defined(FTK_API_GLES_3)
+            const bool f32 = hasExtension("GL_EXT_color_buffer_float");
+            const bool f16 = f32 || hasExtension("GL_EXT_color_buffer_half_float");
+            const auto renderable = [f16, f32](TextureType value)
+            {
+                bool out = false;
+                switch (value)
+                {
+                case TextureType::L_U8:
+                case TextureType::LA_U8:
+                case TextureType::RGB_U8:
+                case TextureType::RGBA_U8:
+                    out = true;
+                    break;
+                case TextureType::L_F16:
+                case TextureType::LA_F16:
+                case TextureType::RGBA_F16:
+                    out = f16;
+                    break;
+                case TextureType::RGB_F16:
+                    out = hasExtension("GL_EXT_color_buffer_half_float");
+                    break;
+                case TextureType::L_F32:
+                case TextureType::LA_F32:
+                case TextureType::RGBA_F32:
+                    out = f32;
+                    break;
+                default: break;
+                }
+                return out;
+            };
+            TextureType out = type;
+            if (!renderable(out))
+            {
+                // As much of the precision as there is to keep.
+                const bool f32Type =
+                    TextureType::L_F32 == type ||
+                    TextureType::LA_F32 == type ||
+                    TextureType::RGB_F32 == type ||
+                    TextureType::RGBA_F32 == type;
+                if (f32Type && renderable(TextureType::RGBA_F32))
+                {
+                    out = TextureType::RGBA_F32;
+                }
+                else if (renderable(TextureType::RGBA_F16))
+                {
+                    out = TextureType::RGBA_F16;
+                }
+                else
+                {
+                    out = TextureType::RGBA_U8;
+                }
+            }
+            return out;
+#else // FTK_API_GLES_3
+            return type;
+#endif // FTK_API_GLES_3
         }
 
         struct OffscreenBuffer::Private
@@ -146,6 +207,7 @@ namespace ftk
             totalByteCount += info.getByteCount();
 
             p.info = info;
+            p.info.type = getRenderableType(info.type);
             p.options = options;
 
             if (!p.info.isValid())
@@ -273,14 +335,13 @@ namespace ftk
             }
             if (p.depthStencilID)
             {
+                // Stencil alone is a stencil attachment: attached as depth
+                // and stencil, the depth half has nothing to attach.
+                const bool depth = p.options.depth != OffscreenDepth::None;
+                const bool stencil = p.options.stencil != OffscreenStencil::None;
                 const GLenum attachment =
-                    p.options.stencil != OffscreenStencil::None ?
-#if defined(FTK_API_GL_4_1)
-                    GL_DEPTH_STENCIL_ATTACHMENT :
-#elif defined(FTK_API_GLES_3)
-                    GL_STENCIL_ATTACHMENT :
-#endif // FTK_API_GL_4_1
-                    GL_DEPTH_ATTACHMENT;
+                    depth && stencil ? GL_DEPTH_STENCIL_ATTACHMENT :
+                    (stencil ? GL_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT);
                 glFramebufferRenderbuffer(
                     GL_FRAMEBUFFER,
                     attachment,
@@ -400,9 +461,13 @@ namespace ftk
             const TextureInfo& info,
             const OffscreenBufferOptions& options)
         {
+            // Against what the buffer would be made with, which is not always
+            // what was asked for; see getRenderableType().
+            TextureInfo renderable = info;
+            renderable.type = getRenderableType(info.type);
             bool out = false;
             out |= info.size.isValid() && !offscreenBuffer;
-            out |= info.size.isValid() && offscreenBuffer && offscreenBuffer->getInfo() != info;
+            out |= info.size.isValid() && offscreenBuffer && offscreenBuffer->getInfo() != renderable;
             out |= info.size.isValid() && offscreenBuffer && offscreenBuffer->getOptions() != options;
             return out;
         }

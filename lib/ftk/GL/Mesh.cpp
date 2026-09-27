@@ -671,13 +671,8 @@ namespace ftk
         {
             FTK_P();
 
-#if defined(FTK_API_GL_4_1)
             glGenVertexArrays(1, &p.vao);
             glBindVertexArray(p.vao);
-#elif defined(FTK_API_GLES_3)
-            glGenVertexArrays(1, &p.vao);
-            glBindVertexArray(p.vao);
-#endif // FTK_API_GL_4_1
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
             const std::size_t byteCount = getByteCount(type);
             switch (type)
@@ -741,11 +736,7 @@ namespace ftk
             FTK_P();
             if (p.vao)
             {
-#if defined(FTK_API_GL_4_1)
                 glDeleteVertexArrays(1, &p.vao);
-#elif defined(FTK_API_GLES_3)
-                glDeleteVertexArrays(1, &p.vao);
-#endif // FTK_API_GL_4_1
                 p.vao = 0;
             }
         }
@@ -762,11 +753,7 @@ namespace ftk
 
         void VAO::bind()
         {
-#if defined(FTK_API_GL_4_1)
             glBindVertexArray(_p->vao);
-#elif defined(FTK_API_GLES_3)
-            glBindVertexArray(_p->vao);
-#endif // FTK_API_GL_4_1
         }
 
         void VAO::draw(unsigned int mode, std::size_t offset, std::size_t size)

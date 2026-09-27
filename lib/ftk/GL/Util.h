@@ -19,6 +19,11 @@ namespace ftk
         //! Get the major version number from an OpenGL version string.
         FTK_GL_API int getMajorVersion(const std::string&);
 
+        //! Get whether the current context has an extension, e.g.
+        //! "GL_EXT_color_buffer_float". The answer is kept after the first
+        //! question: the extensions are the driver's, not the context's.
+        FTK_GL_API bool hasExtension(const std::string&);
+
         //! Get the glReadPixels format.
         FTK_GL_API unsigned int getReadPixelsFormat(ImageType);
 

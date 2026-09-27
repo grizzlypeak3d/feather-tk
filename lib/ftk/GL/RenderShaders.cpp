@@ -12,8 +12,6 @@ namespace ftk
         std::string vertexSource()
         {
             return
-                "#version 300 es\n"
-                "precision mediump float;\n"
                 "\n"
                 "in vec3 vPos;\n"
                 "in vec2 vTexture;\n"
@@ -36,8 +34,7 @@ namespace ftk
         std::string meshFragmentSource()
         {
             return
-                "#version 300 es\n"
-                "precision mediump float;\n"
+                "\n"
                 "out vec4 outColor;\n"
                 "\n"
                 "uniform vec4 color;\n"
@@ -52,11 +49,9 @@ namespace ftk
         std::string colorMeshVertexSource()
         {
             return
-                "#version 300 es\n"
-                "precision mediump float;\n"
                 "\n"
-                "in vec3 vPos;\n"
-                "in vec4 vColor;\n"
+                "layout(location = 0) in vec3 vPos;\n"
+                "layout(location = 1) in vec4 vColor;\n"
                 "out vec4 fColor;\n"
                 "\n"
                 "struct Transform\n"
@@ -76,11 +71,9 @@ namespace ftk
         std::string colorMeshFragmentSource()
         {
             return
-                "#version 300 es\n"
-                "precision mediump float;\n"
-                "out vec4 outColor;\n"
                 "\n"
                 "in vec4 fColor;\n"
+                "out vec4 outColor;\n"
                 "\n"
                 "uniform vec4 color;\n"
                 "\n"
@@ -94,11 +87,9 @@ namespace ftk
         std::string textureFragmentSource()
         {
             return
-                "#version 300 es\n"
-                "precision mediump float;\n"
-                "out vec4 outColor;\n"
                 "\n"
                 "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
                 "\n"
                 "uniform vec4 color;\n"
                 "uniform bool opaque;\n"
@@ -106,7 +97,6 @@ namespace ftk
                 "\n"
                 "void main()\n"
                 "{\n"
-                "\n"
                 "    outColor = texture(textureSampler, fTexture) * color;\n"
                 "    if (opaque)\n"
                 "    {\n"
@@ -118,11 +108,9 @@ namespace ftk
         std::string textFragmentSource()
         {
             return
-                "#version 300 es\n"
-                "precision mediump float;\n"
-                "out vec4 outColor;\n"
                 "\n"
                 "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
                 "\n"
                 "uniform vec4 color;\n"
                 "uniform sampler2D textureSampler;\n"
@@ -210,9 +198,9 @@ namespace ftk
                 "vec4 sampleTexture("
                 "    vec2 textureCoord,\n"
                 "    int imageType,\n"
+                "    int channelCount,\n"
                 "    int videoLevels,\n"
                 "    vec4 yuvCoefficients,\n"
-                "    int channelCount,\n"
                 "    sampler2D s0,\n"
                 "    sampler2D s1,\n"
                 "    sampler2D s2)\n"
@@ -322,7 +310,7 @@ namespace ftk
                 "            }\n"
                 "        }\n"
                 "\n"
-                "        // Swizzle for the image channels.\n"
+                "        // Swizzle for the channel count.\n"
                 "        if (1 == channelCount)\n"
                 "        {\n"
                 "            c.g = c.b = c.r;\n"
@@ -342,14 +330,222 @@ namespace ftk
                 "}\n";
         }
 
+        namespace
+        {
+            // One tap of a separable resample. The contribution texture holds,
+            // for each output pixel, the source coordinate and weight of every
+            // tap: column = output pixel, row = tap. Built on the CPU because
+            // it depends only on the two sizes and the kernel, not on the
+            // picture, so a whole pass shares one table.
+            const std::string scaleTap =
+                "vec2 scaleTap(sampler2D contrib, float outCoord, int tap, int taps)\n"
+                "{\n"
+                "    float t = taps > 1 ?\n"
+                "        (float(tap) / float(taps - 1)) :\n"
+                "        0.0;\n"
+                "    return texture(contrib, vec2(outCoord, t)).rg;\n"
+                "}\n";
+        }
+
+        std::string textureScaleFragmentSource()
+        {
+            // One axis of a separable resample over an ordinary texture. Used
+            // for both passes; which axis is a uniform, so this compiles once.
+            return Format(
+                "\n"
+                "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
+                "\n"
+                "{0}\n"
+                "\n"
+                "uniform sampler2D textureSampler;\n"
+                "uniform sampler2D scaleContrib;\n"
+                "uniform int       scaleTaps;\n"
+                "uniform bool      scaleVertical;\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = vec4(0.0);\n"
+                "    vec4 lo = vec4(1.0e38);\n"
+                "    vec4 hi = vec4(-1.0e38);\n"
+                "    bool range = false;\n"
+                "    float outCoord = scaleVertical ? fTexture.y : fTexture.x;\n"
+                "    for (int i = 0; i < scaleTaps; ++i)\n"
+                "    {\n"
+                "        vec2 tap = scaleTap(scaleContrib, outCoord, i, scaleTaps);\n"
+                "        vec2 t = scaleVertical ?\n"
+                "            vec2(fTexture.x, tap.x) :\n"
+                "            vec2(tap.x, fTexture.y);\n"
+                "        vec4 texel = texture(textureSampler, t);\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
+                "    }\n"
+                // Held to the range of the texels the kernel weighs up. Its
+                // negative lobes overshoot a hard edge, and a sum of many
+                // weights over a flat area lands a hair above or below the
+                // value there; either way the pass invents values the
+                // picture does not have, which the clipping warning reports.
+                "    outColor = range ? clamp(c, lo, hi) : c;\n"
+                "}\n").
+                arg(scaleTap);
+        }
+
+        std::string imageScaleXFragmentSource()
+        {
+            // Pass one: resample across, and convert the picture to RGBA on
+            // the way so that the second pass has one plane to weigh rather
+            // than three.
+            return Format(
+                "\n"
+                "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
+                "\n"
+                "{0}\n"
+                "\n"
+                "{1}\n"
+                "\n"
+                "{2}\n"
+                "\n"
+                "{3}\n"
+                "\n"
+                "uniform int       imageType;\n"
+                "uniform int       channelCount;\n"
+                "uniform int       videoLevels;\n"
+                "uniform vec4      yuvCoefficients;\n"
+                "uniform int       mirrorX;\n"
+                "uniform sampler2D textureSampler0;\n"
+                "uniform sampler2D textureSampler1;\n"
+                "uniform sampler2D textureSampler2;\n"
+                "uniform sampler2D scaleContrib;\n"
+                "uniform int       scaleTaps;\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = vec4(0.0);\n"
+                "    vec4 lo = vec4(1.0e38);\n"
+                "    vec4 hi = vec4(-1.0e38);\n"
+                "    bool range = false;\n"
+                "    for (int i = 0; i < scaleTaps; ++i)\n"
+                "    {\n"
+                "        vec2 tap = scaleTap(scaleContrib, fTexture.x, i, scaleTaps);\n"
+                "        vec2 t = vec2(tap.x, fTexture.y);\n"
+                "        if (1 == mirrorX)\n"
+                "        {\n"
+                "            t.x = 1.0 - t.x;\n"
+                "        }\n"
+                "        vec4 texel = sampleTexture("
+                "            t,\n"
+                "            imageType,\n"
+                "            channelCount,\n"
+                "            videoLevels,\n"
+                "            yuvCoefficients,\n"
+                "            textureSampler0,\n"
+                "            textureSampler1,\n"
+                "            textureSampler2);\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
+                "    }\n"
+                // See textureScaleFragmentSource().
+                "    outColor = range ? clamp(c, lo, hi) : c;\n"
+                "}\n").
+                arg(imageType).
+                arg(videoLevels).
+                arg(sampleTexture).
+                arg(scaleTap);
+        }
+
+        std::string imageScaleYFragmentSource()
+        {
+            // Pass two: resample down the other axis, and apply what the image
+            // options say about the result -- which is done here rather than in
+            // the first pass because a channel shown on its own, or an alpha
+            // forced opaque, is a statement about the finished pixel.
+            return Format(
+                "\n"
+                "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
+                "\n"
+                "{0}\n"
+                "\n"
+                "{1}\n"
+                "\n"
+                "uniform vec4      color;\n"
+                "uniform bool      opaque;\n"
+                "uniform int       channelDisplay;\n"
+                "uniform int       mirrorY;\n"
+                "uniform sampler2D textureSampler0;\n"
+                "uniform sampler2D scaleContrib;\n"
+                "uniform int       scaleTaps;\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = vec4(0.0);\n"
+                "    vec4 lo = vec4(1.0e38);\n"
+                "    vec4 hi = vec4(-1.0e38);\n"
+                "    bool range = false;\n"
+                "    for (int i = 0; i < scaleTaps; ++i)\n"
+                "    {\n"
+                "        vec2 tap = scaleTap(scaleContrib, fTexture.y, i, scaleTaps);\n"
+                "        float y = tap.x;\n"
+                // Drawing the first pass into a texture turns it over once
+                // more than the single pass path, so this reads the opposite
+                // way round to the image shader.
+                "        if (1 == mirrorY)\n"
+                "        {\n"
+                "            y = 1.0 - y;\n"
+                "        }\n"
+                "        vec4 texel = texture(textureSampler0, vec2(fTexture.x, y));\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
+                "    }\n"
+                // See textureScaleFragmentSource().
+                "    outColor = (range ? clamp(c, lo, hi) : c) * color;\n"
+                "    if (opaque)\n"
+                "    {\n"
+                "        outColor.a = 1.0;\n"
+                "    }\n"
+                "    if (ChannelDisplay_Red == channelDisplay)\n"
+                "    {\n"
+                "        outColor.g = outColor.b = outColor.r;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Green == channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.b = outColor.g;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Blue == channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.g = outColor.b;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Alpha == channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.g = outColor.b = outColor.a;\n"
+                "    }\n"
+                "}\n").
+                arg(channelDisplay).
+                arg(scaleTap);
+        }
+
         std::string imageFragmentSource()
         {
             return Format(
-                "#version 300 es\n"
-                "precision mediump float;\n"
-                "out vec4 outColor;\n"
                 "\n"
                 "in vec2 fTexture;\n"
+                "out vec4 outColor;\n"
                 "\n"
                 "{0}\n"
                 "\n"
@@ -386,9 +582,9 @@ namespace ftk
                 "    outColor = sampleTexture("
                 "        t,\n"
                 "        imageType,\n"
+                "        channelCount,\n"
                 "        videoLevels,\n"
                 "        yuvCoefficients,\n"
-                "        channelCount,\n"
                 "        textureSampler0,\n"
                 "        textureSampler1,\n"
                 "        textureSampler2) *\n"
@@ -421,3 +617,4 @@ namespace ftk
         }
     }
 }
+

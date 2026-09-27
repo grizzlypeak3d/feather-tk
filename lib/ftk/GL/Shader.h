@@ -21,6 +21,11 @@ namespace ftk
         //! \name Shaders
         ///@{
         
+        //! Get the shader header for the OpenGL in use: the GLSL version, and
+        //! for OpenGL ES the precision. A shader source without a "#version"
+        //! line of its own is given this one, so that one source serves both.
+        FTK_GL_API std::string getShaderHeader();
+
         //! Shader.
         class FTK_GL_API_TYPE Shader : public std::enable_shared_from_this<Shader>
         {

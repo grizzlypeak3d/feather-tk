@@ -438,7 +438,6 @@ namespace ftk
                 throw std::runtime_error("Invalid texture");
             }
 
-#if defined(FTK_API_GL_4_1)
             if (options.pbo)
             {
                 glGenBuffers(1, &p.pbo);
@@ -450,7 +449,6 @@ namespace ftk
                     GL_STREAM_DRAW);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
             }
-#endif // FTK_API_GL_4_1
 
             const UploadUnit uploadUnit;
             glGenTextures(1, &p.id);
@@ -538,7 +536,6 @@ namespace ftk
             const auto& info = data->getInfo();
             if (!_isCompatible(info))
                 return false;
-#if defined(FTK_API_GL_4_1)
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
@@ -552,7 +549,11 @@ namespace ftk
                     p.info.getByteCount(),
                     NULL,
                     GL_STREAM_DRAW);
-                if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
+                if (void* buffer = glMapBufferRange(
+                    GL_PIXEL_UNPACK_BUFFER,
+                    0,
+                    p.info.getByteCount(),
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT))
                 {
                     memcpy(
                         buffer,
@@ -561,7 +562,9 @@ namespace ftk
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
+#if defined(FTK_API_GL_4_1)
                     glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
+#endif // FTK_API_GL_4_1
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -576,7 +579,6 @@ namespace ftk
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
             }
             else
-#endif // FTK_API_GL_4_1
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
@@ -604,7 +606,6 @@ namespace ftk
             const auto& info = data->getInfo();
             if (!_isCompatible(info))
                 return false;
-#if defined(FTK_API_GL_4_1)
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
@@ -618,7 +619,11 @@ namespace ftk
                     p.info.getByteCount(),
                     NULL,
                     GL_STREAM_DRAW);
-                if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
+                if (void* buffer = glMapBufferRange(
+                    GL_PIXEL_UNPACK_BUFFER,
+                    0,
+                    p.info.getByteCount(),
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT))
                 {
                     memcpy(
                         buffer,
@@ -627,7 +632,9 @@ namespace ftk
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
+#if defined(FTK_API_GL_4_1)
                     glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
+#endif // FTK_API_GL_4_1
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -642,7 +649,6 @@ namespace ftk
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
             }
             else
-#endif // FTK_API_GL_4_1
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
@@ -669,7 +675,6 @@ namespace ftk
             FTK_P();
             if (!_isCompatible(info))
                 return false;
-#if defined(FTK_API_GL_4_1)
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
@@ -683,7 +688,11 @@ namespace ftk
                     p.info.getByteCount(),
                     NULL,
                     GL_STREAM_DRAW);
-                if (void* buffer = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY))
+                if (void* buffer = glMapBufferRange(
+                    GL_PIXEL_UNPACK_BUFFER,
+                    0,
+                    p.info.getByteCount(),
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT))
                 {
                     memcpy(
                         buffer,
@@ -692,7 +701,9 @@ namespace ftk
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
+#if defined(FTK_API_GL_4_1)
                     glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
+#endif // FTK_API_GL_4_1
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -707,7 +718,6 @@ namespace ftk
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
             }
             else
-#endif // FTK_API_GL_4_1
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);

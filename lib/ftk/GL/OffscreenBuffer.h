@@ -15,12 +15,17 @@ namespace ftk
         //! \name Offscreen Buffers
         ///@{
         
-        //! Default offscreen color buffer.
-#if defined(FTK_API_GL_4_1)
+        //! Default offscreen color buffer. Where it cannot be rendered to,
+        //! the buffer is made with getRenderableType().
         const TextureType offscreenColorDefault = TextureType::RGBA_F32;
-#elif defined(FTK_API_GLES_3)
-        const TextureType offscreenColorDefault = TextureType::RGBA_U8;
-#endif // FTK_API_GL_4_1
+
+        //! Get the texture type an offscreen buffer is made with, for the
+        //! type asked for. OpenGL renders to all of them; OpenGL ES 3.0 to
+        //! floating point only with the EXT_color_buffer_float extension,
+        //! or for half float EXT_color_buffer_half_float, and to three
+        //! channel 32 bit float never. A type it cannot render to gives the
+        //! closest one it can, down to RGBA_U8.
+        FTK_GL_API TextureType getRenderableType(TextureType);
 
         //! Offscreen buffer depth size.
         enum class FTK_GL_API_TYPE OffscreenDepth
@@ -36,11 +41,7 @@ namespace ftk
         FTK_ENUM(FTK_GL_API, OffscreenDepth);
 
         //! Default offscreen depth buffer.
-#if defined(FTK_API_GL_4_1)
         const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_24;
-#elif defined(FTK_API_GLES_3)
-        const OffscreenDepth offscreenDepthDefault = OffscreenDepth::_16;
-#endif // FTK_API_GL_4_1
 
         //! Offscreen buffer stencil size.
         enum class FTK_GL_API_TYPE OffscreenStencil

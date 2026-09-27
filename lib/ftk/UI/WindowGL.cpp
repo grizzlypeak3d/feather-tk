@@ -444,8 +444,6 @@ namespace ftk
                 try
                 {
                     const std::string vertexSource =
-                        "#version 300 es\n"
-                        "precision mediump float;\n"
                         "\n"
                         "in vec3 vPos;\n"
                         "in vec2 vTexture;\n"
@@ -464,8 +462,6 @@ namespace ftk
                         "    fTexture = vTexture;\n"
                         "}\n";
                     const std::string fragmentSource =
-                        "#version 300 es\n"
-                        "precision mediump float;\n"
                         "out vec4 outColor;\n"
                         "\n"
                         "in vec2 fTexture;\n"

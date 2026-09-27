@@ -8,12 +8,36 @@
 #include <ftk/Core/String.h>
 
 #include <cctype>
+#include <map>
+#include <mutex>
 #include <sstream>
 
 namespace ftk
 {
     namespace gl
     {
+        bool hasExtension(const std::string& value)
+        {
+            static std::mutex mutex;
+            static std::map<std::string, bool> cache;
+            std::lock_guard<std::mutex> lock(mutex);
+            const auto i = cache.find(value);
+            if (i != cache.end())
+            {
+                return i->second;
+            }
+            bool out = false;
+            GLint count = 0;
+            glGetIntegerv(GL_NUM_EXTENSIONS, &count);
+            for (GLint j = 0; j < count && !out; ++j)
+            {
+                const GLubyte* extension = glGetStringi(GL_EXTENSIONS, j);
+                out = extension && value == reinterpret_cast<const char*>(extension);
+            }
+            cache[value] = out;
+            return out;
+        }
+
         int getMajorVersion(const std::string& version)
         {
             int out = 0;
@@ -163,25 +187,13 @@ namespace ftk
             switch (alphaBlend)
             {
             case AlphaBlend::None:
-#if defined(FTK_API_GL_4_1)
                 glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ZERO);
-#elif defined(FTK_API_GLES_3)
-                glBlendFunc(GL_ONE, GL_ZERO);
-#endif // FTK_API_GL_4_1
                 break;
             case AlphaBlend::Straight:
-#if defined(FTK_API_GL_4_1)
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-#elif defined(FTK_API_GLES_3)
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif // FTK_API_GL_4_1
                 break;
             case AlphaBlend::Premultiplied:
-#if defined(FTK_API_GL_4_1)
                 glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-#elif defined(FTK_API_GLES_3)
-                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-#endif // FTK_API_GL_4_1
                 break;
             default: break;
             }
