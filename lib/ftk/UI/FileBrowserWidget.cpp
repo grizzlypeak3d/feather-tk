@@ -194,8 +194,9 @@ namespace ftk
         vLayout->setSpacingRole(SizeRole::SpacingSmall);
         vLayout->setMarginRole(SizeRole::MarginSmall);
         vLayout->setVStretch(Stretch::Expanding);
+        // Spaced like the main tool bars' groups.
         auto hLayout = HorizontalLayout::create(context, vLayout);
-        hLayout->setSpacingRole(SizeRole::SpacingTool);
+        hLayout->setSpacingRole(SizeRole::SpacingSmall);
         hLayout->setVAlign(VAlign::Center);
         auto panelToolBar = ToolBar::create(context, Orientation::Horizontal, hLayout);
         panelToolBar->setGrouped(true);
