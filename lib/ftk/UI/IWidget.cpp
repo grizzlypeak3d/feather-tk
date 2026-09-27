@@ -504,6 +504,9 @@ namespace ftk
     void IWidget::scrollEvent(ScrollEvent&)
     {}
 
+    void IWidget::gestureEvent(GestureEvent&)
+    {}
+
     void IWidget::keyFocusEvent(bool value)
     {
         _keyFocus = value;

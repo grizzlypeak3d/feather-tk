@@ -235,6 +235,13 @@ namespace ftk
             const V2F& value,
             int modifiers = 0);
 
+        //! Put two fingers down around a position, then move them by the
+        //! pan and pinch them by the zoom, then lift them.
+        FTK_UI_API void gesture(
+            const V2I& pos,
+            const V2F& pan,
+            float zoom = 1.F);
+
         //! Press a key and release it.
         FTK_UI_API void keyPress(Key, int modifiers = 0);
 
@@ -316,6 +323,8 @@ namespace ftk
         FTK_UI_API void _cursorPos(const V2I&);
         FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);
         void _scroll(const V2F&, int modifiers);
+        void _gesture(const V2I& pos, const V2F& pan, float zoom);
+        void _gestureEnd();
         void _drop(const V2I& pos, const std::shared_ptr<IDragDropData>&);
 
         void _drawEventRecursive(

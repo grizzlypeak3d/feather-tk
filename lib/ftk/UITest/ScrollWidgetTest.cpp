@@ -97,6 +97,36 @@ namespace ftk
             FTK_CHECK(!scrollWidget->hasBorder());
             scrollWidget->setBorder(true);
 
+            // Two fingers drag the content along the axes that scroll.
+            scrollWidget->setScrollPos(V2I(100, 100));
+            app->tick();
+            {
+                const ScrollInfo info = scrollWidget->getScrollInfo();
+                const bool canX = info.scrollSize.w > info.viewport.w();
+                const bool canY = info.scrollSize.h > info.viewport.h();
+                const V2I prev = scrollWidget->getScrollPos();
+                window->gesture(center(info.viewport), V2F(-10.F, -20.F));
+                const V2I pos = scrollWidget->getScrollPos();
+                _print(Format("Gesture scroll pos: {0}").arg(pos));
+                FTK_CHECK(pos.x == prev.x + (canX ? 10 : 0));
+                FTK_CHECK(pos.y == prev.y + (canY ? 20 : 0));
+
+                // Fingers moving less than a pixel at a time still move it.
+                for (int i = 0; i < 10; ++i)
+                {
+                    window->gesture(center(info.viewport), V2F(-.25F, -.25F));
+                }
+                const V2I pos2 = scrollWidget->getScrollPos();
+                FTK_CHECK(pos2.x - pos.x == (canX ? 2 : 0));
+                FTK_CHECK(pos2.y - pos.y == (canY ? 2 : 0));
+
+                // Not with the scroll events disabled.
+                scrollWidget->setScrollEventsEnabled(false);
+                window->gesture(center(info.viewport), V2F(-10.F, -20.F));
+                FTK_CHECK(pos2 == scrollWidget->getScrollPos());
+                scrollWidget->setScrollEventsEnabled(true);
+            }
+
             Size2I size = scrollWidget->getScrollSize();
             scrollWidget->setScrollPos(V2I(size.w, size.h));
             app->tick();

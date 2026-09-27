@@ -113,6 +113,13 @@ namespace ftk
                 .def_rw("pos", &ScrollEvent::pos)
                 .def_rw("accept", &ScrollEvent::accept);
 
+            nb::class_<GestureEvent>(m, "GestureEvent")
+                .def(nb::init<const V2I&, const V2F&, float>())
+                .def_rw("pos", &GestureEvent::pos)
+                .def_rw("pan", &GestureEvent::pan)
+                .def_rw("zoom", &GestureEvent::zoom)
+                .def_rw("accept", &GestureEvent::accept);
+
             FTK_ENUM_PY(m, Key);
             FTK_ENUM_BIND(m, Key);
 

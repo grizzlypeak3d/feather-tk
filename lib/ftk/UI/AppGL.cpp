@@ -131,6 +131,16 @@ namespace ftk
         std::map<std::shared_ptr<IWindow>, V2I> mousePos;
         std::vector<std::string> dropFiles;
 
+        // The fingers down on a touch screen, in the order they came down,
+        // at positions normalized to the window. Two of them are a gesture;
+        // one alone is left to SDL, which makes it the mouse.
+        std::vector<std::pair<uint64_t, V2F> > fingers;
+        bool gesture = false;
+        std::weak_ptr<IWindow> gestureWindow;
+        V2F gestureCenter;
+        float gestureDistance = 0.F;
+        bool gestureMouseBlock = false;
+
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
     };
@@ -1213,6 +1223,99 @@ namespace ftk
 #endif // __EMSCRIPTEN__
                 return p.activeWindow.lock();
             };
+            // A gesture follows the first two fingers down. The mouse SDL
+            // makes of the first finger is blocked from the start of a
+            // gesture until every finger is lifted: it would otherwise
+            // drag whatever the first finger touched along with the pinch.
+            enum class FingerEvent { Down, Motion, Up };
+            const auto finger = [&](
+                FingerEvent type,
+                uint64_t id,
+                const V2F& pos,
+                uint32_t windowID)
+            {
+                auto i = std::find_if(
+                    p.fingers.begin(),
+                    p.fingers.end(),
+                    [id](const std::pair<uint64_t, V2F>& value)
+                    {
+                        return value.first == id;
+                    });
+                switch (type)
+                {
+                case FingerEvent::Down:
+                    if (i == p.fingers.end())
+                    {
+                        p.fingers.push_back(std::make_pair(id, pos));
+                    }
+                    break;
+                case FingerEvent::Motion:
+                    if (i != p.fingers.end())
+                    {
+                        i->second = pos;
+                    }
+                    break;
+                case FingerEvent::Up:
+                    if (i != p.fingers.end())
+                    {
+                        p.fingers.erase(i);
+                    }
+                    break;
+                }
+
+                auto window = p.gestureWindow.lock();
+                if (!window)
+                {
+                    window = mouseWindow(windowID);
+                }
+                if (p.fingers.size() >= 2 && window)
+                {
+                    const Size2I& size = window->getBufferSize();
+                    const V2F a(
+                        p.fingers[0].second.x * size.w,
+                        p.fingers[0].second.y * size.h);
+                    const V2F b(
+                        p.fingers[1].second.x * size.w,
+                        p.fingers[1].second.y * size.h);
+                    const V2F center((a.x + b.x) / 2.F, (a.y + b.y) / 2.F);
+                    const float distance = length(b - a);
+                    const V2I centerI(std::round(center.x), std::round(center.y));
+                    if (!p.gesture)
+                    {
+                        p.gesture = true;
+                        p.gestureWindow = window;
+                        p.gestureMouseBlock = true;
+                        window->_gesture(centerI, V2F(), 1.F);
+                    }
+                    else if (FingerEvent::Motion == type)
+                    {
+                        // A finger coming or going only moves the baseline,
+                        // so a third finger or a lifted one does not jump.
+                        window->_gesture(
+                            centerI,
+                            center - p.gestureCenter,
+                            p.gestureDistance > 0.F && distance > 0.F ?
+                            (distance / p.gestureDistance) :
+                            1.F);
+                    }
+                    p.gestureCenter = center;
+                    p.gestureDistance = distance;
+                }
+                else if (p.gesture)
+                {
+                    p.gesture = false;
+                    p.gestureWindow.reset();
+                    if (window)
+                    {
+                        window->_gestureEnd();
+                    }
+                }
+                if (p.fingers.empty())
+                {
+                    p.gestureMouseBlock = false;
+                }
+            };
+
             while (SDL_PollEvent(&event))
             {
                 //std::cout << "Event: " << fromSDLEvent(event.type) << std::endl;
@@ -1406,6 +1509,10 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_MOTION:
 #endif // FTK_SDL2
+                    if (p.gestureMouseBlock)
+                    {
+                        break;
+                    }
                     if (auto window = mouseWindow(event.motion.windowID))
                     {
                         const float contentScale = window->getContentScale();
@@ -1422,6 +1529,10 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
 #endif // FTK_SDL2
+                    if (p.gestureMouseBlock)
+                    {
+                        break;
+                    }
                     if (auto window = mouseWindow(event.button.windowID))
                     {
                         p.mouseButtonWindow = window;
@@ -1437,6 +1548,12 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_BUTTON_UP:
 #endif // FTK_SDL2
+                    if (p.gestureMouseBlock)
+                    {
+                        // The gesture let go of the press when it started.
+                        p.mouseButtonWindow.reset();
+                        break;
+                    }
                     {
                         // The release goes to the window that saw the press.
                         // The cursor may be somewhere else by now -- on the
@@ -1486,6 +1603,65 @@ namespace ftk
                             fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
                     break;
+#endif // FTK_SDL2
+
+#if defined(FTK_SDL2)
+                case SDL_FINGERDOWN:
+                case SDL_FINGERMOTION:
+                case SDL_FINGERUP:
+                    // Only a touch screen: the fingers on a touch pad are
+                    // already the mouse and its scrolling.
+                    if (SDL_TOUCH_DEVICE_DIRECT == SDL_GetTouchDeviceType(event.tfinger.touchId))
+                    {
+                        finger(
+                            SDL_FINGERDOWN == event.type ? FingerEvent::Down :
+                            SDL_FINGERUP == event.type ? FingerEvent::Up :
+                            FingerEvent::Motion,
+                            static_cast<uint64_t>(event.tfinger.fingerId),
+                            V2F(event.tfinger.x, event.tfinger.y),
+                            event.tfinger.windowID);
+                    }
+                    break;
+#elif defined(FTK_SDL3)
+                case SDL_EVENT_FINGER_DOWN:
+                case SDL_EVENT_FINGER_MOTION:
+                case SDL_EVENT_FINGER_UP:
+                case SDL_EVENT_FINGER_CANCELED:
+                    // Only a touch screen; see the SDL2 case.
+                    if (SDL_TOUCH_DEVICE_DIRECT == SDL_GetTouchDeviceType(event.tfinger.touchID))
+                    {
+                        finger(
+                            SDL_EVENT_FINGER_DOWN == event.type ? FingerEvent::Down :
+                            SDL_EVENT_FINGER_MOTION == event.type ? FingerEvent::Motion :
+                            FingerEvent::Up,
+                            static_cast<uint64_t>(event.tfinger.fingerID),
+                            V2F(event.tfinger.x, event.tfinger.y),
+                            event.tfinger.windowID);
+                    }
+                    break;
+#if SDL_VERSION_ATLEAST(3, 4, 0)
+                case SDL_EVENT_PINCH_BEGIN:
+                case SDL_EVENT_PINCH_UPDATE:
+                case SDL_EVENT_PINCH_END:
+                    // A touch pad pinch, which has no position of its own:
+                    // it zooms around the pointer. The fingers' dragging
+                    // stays the scrolling it already is.
+                    if (auto window = mouseWindow(event.pinch.windowID))
+                    {
+                        if (SDL_EVENT_PINCH_END == event.type)
+                        {
+                            window->_gestureEnd();
+                        }
+                        else
+                        {
+                            window->_gesture(
+                                window->getCursorPos(),
+                                V2F(),
+                                SDL_EVENT_PINCH_BEGIN == event.type ? 1.F : event.pinch.scale);
+                        }
+                    }
+                    break;
+#endif // SDL_VERSION_ATLEAST
 #endif // FTK_SDL2
 
 #if defined(FTK_SDL2)

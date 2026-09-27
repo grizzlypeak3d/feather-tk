@@ -205,6 +205,27 @@ namespace ftk
         bool accept    = false;
     };
 
+    //! Touch gesture event: two fingers dragging and pinching.
+    struct FTK_UI_API_TYPE GestureEvent
+    {
+        FTK_UI_API GestureEvent(
+            const V2I& pos,
+            const V2F& pan,
+            float      zoom);
+
+        //! The point between the fingers.
+        V2I   pos;
+
+        //! How far that point moved since the last event.
+        V2F   pan;
+
+        //! How much the distance between the fingers changed since the
+        //! last event, as a ratio.
+        float zoom   = 1.F;
+
+        bool  accept = false;
+    };
+
     //! Keys.
     enum class FTK_UI_API_TYPE Key
     {

@@ -59,11 +59,14 @@ namespace imageview
         ftk::Size2I getSizeHint() const override;
         void setGeometry(const ftk::Box2I&) override;
         void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
+        void gestureEvent(ftk::GestureEvent&) override;
 
     private:
         std::shared_ptr<ftk::Image> _image;
         std::shared_ptr<ftk::Observable<float> > _zoom;
         bool _frameInit = true;
+        ftk::V2F _gestureRemainder;
+        ftk::V2I _gestureScrollPos;
         std::shared_ptr<ftk::Observable<ftk::ChannelDisplay> > _channelDisplay;
     };
 }

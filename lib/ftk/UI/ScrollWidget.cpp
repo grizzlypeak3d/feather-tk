@@ -36,6 +36,7 @@ namespace ftk
 #endif // __APPLE__
         bool border = true;
         SizeRole marginRole = SizeRole::None;
+        V2F gesturePan;
 
         std::shared_ptr<IWidget> widget;
         std::shared_ptr<ScrollArea> scrollArea;
@@ -545,6 +546,41 @@ namespace ftk
                 if (canY)
                 {
                     scrollPos.y -= dy * lineStep;
+                }
+                setScrollPos(scrollPos);
+            }
+        }
+    }
+
+    void ScrollWidget::gestureEvent(GestureEvent& event)
+    {
+        IWidget::gestureEvent(event);
+        FTK_P();
+        if (p.scrollEventsEnabled)
+        {
+            // Two fingers drag the content, like a touch screen's one
+            // finger drags it elsewhere. Claimed only when the content can
+            // scroll, for the same reason as the wheel.
+            const ScrollInfo info = getScrollInfo();
+            const bool canX = info.scrollSize.w > info.viewport.w();
+            const bool canY = info.scrollSize.h > info.viewport.h();
+            if (canX || canY)
+            {
+                event.accept = true;
+
+                // What is left over from rounding carries to the next
+                // event, or fingers moving slowly would scroll nothing.
+                p.gesturePan = p.gesturePan + event.pan;
+                const V2I pan(p.gesturePan.x, p.gesturePan.y);
+                p.gesturePan = p.gesturePan - V2F(pan.x, pan.y);
+                V2I scrollPos = getScrollPos();
+                if (canX)
+                {
+                    scrollPos.x -= pan.x;
+                }
+                if (canY)
+                {
+                    scrollPos.y -= pan.y;
                 }
                 setScrollPos(scrollPos);
             }

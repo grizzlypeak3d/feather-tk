@@ -353,6 +353,10 @@ namespace ftk
         //! Scroll event.
         FTK_UI_API virtual void scrollEvent(ScrollEvent&);
 
+        //! Touch gesture event. The widget that accepts the first event
+        //! of a gesture receives the rest of it.
+        FTK_UI_API virtual void gestureEvent(GestureEvent&);
+
         //! Key focus event. If this method is overridden the base method
         //! should be called.
         FTK_UI_API virtual void keyFocusEvent(bool);

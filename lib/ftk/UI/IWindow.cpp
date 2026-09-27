@@ -76,6 +76,9 @@ namespace ftk
         V2I dragDropCursorHotspot;
         std::weak_ptr<IWidget> dragDropHover;
 
+        bool gesture = false;
+        std::weak_ptr<IWidget> gestureWidget;
+
         // Keep the context menu alive; Menu::close() unparents itself and
         // then keeps running, so the window's child list must not be the
         // only owner. Released on the tick after it closes.
@@ -951,6 +954,13 @@ namespace ftk
         _scroll(value, modifiers);
     }
 
+    void IWindow::gesture(const V2I& pos, const V2F& pan, float zoom)
+    {
+        _gesture(pos, V2F(), 1.F);
+        _gesture(V2I(pos.x + pan.x, pos.y + pan.y), pan, zoom);
+        _gestureEnd();
+    }
+
     void IWindow::keyPress(Key key, int modifiers)
     {
         _key(key, true, modifiers);
@@ -1212,6 +1222,80 @@ namespace ftk
                 break;
             }
         }
+    }
+
+    void IWindow::_gesture(const V2I& pos, const V2F& pan, float zoom)
+    {
+        FTK_P();
+        GestureEvent event(pos, pan, zoom);
+        if (!p.gesture)
+        {
+            p.gesture = true;
+            _closeTooltip();
+
+            // The first finger was the mouse until the second came down,
+            // so whatever it pressed is let go. A drag and drop in flight
+            // is dropped nowhere.
+            if (auto pressed = p.mousePress.lock())
+            {
+                p.mousePress.reset();
+                if (auto hover = p.dragDropHover.lock())
+                {
+                    p.dragDropHover.reset();
+                    DragDropEvent event(
+                        p.cursorPos,
+                        p.cursorPosPrev,
+                        p.dragDropData);
+                    hover->dragLeaveEvent(event);
+                }
+                else
+                {
+                    p.mouseClickEvent.pos = p.cursorPos;
+                    p.mouseClickEvent.accept = false;
+                    pressed->mouseReleaseEvent(p.mouseClickEvent);
+                }
+                p.dragDropData.reset();
+                p.dragDropCursor.reset();
+                setDrawUpdate();
+            }
+
+            // The widget under the fingers that accepts the start of the
+            // gesture keeps it, wherever the fingers go after.
+            if (traceEvents())
+            {
+                _trace(Format("Gesture at {0},{1}").arg(pos.x).arg(pos.y));
+            }
+            auto widgets = _getUnderCursor(UnderCursor::Hover, pos);
+            for (auto i = widgets.begin(); i != widgets.end(); ++i)
+            {
+                (*i)->gestureEvent(event);
+                if (event.accept)
+                {
+                    if (traceEvents())
+                    {
+                        _trace(Format("    accepted by {0}").
+                            arg((*i)->getObjectName()));
+                    }
+                    p.gestureWidget = *i;
+                    break;
+                }
+                if (std::dynamic_pointer_cast<IDialog>(*i))
+                {
+                    break;
+                }
+            }
+        }
+        else if (auto widget = p.gestureWidget.lock())
+        {
+            widget->gestureEvent(event);
+        }
+    }
+
+    void IWindow::_gestureEnd()
+    {
+        FTK_P();
+        p.gesture = false;
+        p.gestureWidget.reset();
     }
 
     void IWindow::_drop(const V2I& pos, const std::shared_ptr<IDragDropData>& data)

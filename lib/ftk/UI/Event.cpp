@@ -104,6 +104,15 @@ namespace ftk
         pos(pos)
     {}
 
+    GestureEvent::GestureEvent(
+        const V2I& pos,
+        const V2F& pan,
+        float      zoom) :
+        pos(pos),
+        pan(pan),
+        zoom(zoom)
+    {}
+
     namespace
     {
         std::map<KeyModifier, std::string> keyModifierLabels =

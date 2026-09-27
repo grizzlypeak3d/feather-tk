@@ -180,6 +180,7 @@ namespace ftk
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
         FTK_UI_API void scrollEvent(ScrollEvent&) override;
+        FTK_UI_API void gestureEvent(GestureEvent&) override;
         FTK_UI_API void keyPressEvent(KeyEvent&) override;
         FTK_UI_API void keyReleaseEvent(KeyEvent&) override;
 

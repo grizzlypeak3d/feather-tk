@@ -9,6 +9,8 @@
 
 #include <ftk/UI/ScrollArea.h>
 
+#include <cmath>
+
 using namespace ftk;
 
 namespace imageview
@@ -158,6 +160,62 @@ namespace imageview
                     size.h),
                 Color4F(1.F, 1.F, 1.F),
                 options);
+        }
+    }
+
+    // Two fingers pinch the zoom and drag the scroll area. The point of
+    // the image between the fingers stays between them, so the scroll
+    // position is worked out here, with the zoom, rather than left to the
+    // scroll widget around the view.
+    void ImageView::gestureEvent(GestureEvent& event)
+    {
+        IWidget::gestureEvent(event);
+        auto scrollArea = getParentT<ScrollArea>();
+        if (_image && scrollArea)
+        {
+            event.accept = true;
+
+            // What was left over belongs to a scroll position the view is
+            // no longer at if it was scrolled some other way since.
+            if (scrollArea->getScrollPos() != _gestureScrollPos)
+            {
+                _gestureRemainder = V2F();
+            }
+
+            // The image point that was between the fingers.
+            const float zoom = _zoom->get();
+            const Box2I& g = getGeometry();
+            const Size2I imageSize = _image->getSize() * zoom;
+            const V2F prev(event.pos.x - event.pan.x, event.pos.y - event.pan.y);
+            const V2F imagePos(
+                (prev.x - (g.x() + g.w() / 2 - imageSize.w / 2)) / zoom,
+                (prev.y - (g.y() + g.h() / 2 - imageSize.h / 2)) / zoom);
+
+            // Where the scroll position puts it back between them at the
+            // new zoom. The scroll area sizes this view to the larger of
+            // the image and itself, and the image is centered in the view.
+            const float zoomNew = clamp(zoom * event.zoom, .01F, 100.F);
+            const Size2I imageSizeNew = _image->getSize() * zoomNew;
+            const Box2I& area = scrollArea->getGeometry();
+            const Size2I viewSizeNew(
+                std::max(imageSizeNew.w, area.w()),
+                std::max(imageSizeNew.h, area.h()));
+            const V2F scrollPos(
+                area.x() + viewSizeNew.w / 2 - imageSizeNew.w / 2 +
+                imagePos.x * zoomNew - event.pos.x + _gestureRemainder.x * zoomNew / zoom,
+                area.y() + viewSizeNew.h / 2 - imageSizeNew.h / 2 +
+                imagePos.y * zoomNew - event.pos.y + _gestureRemainder.y * zoomNew / zoom);
+
+            // What is left over from rounding carries to the next event,
+            // or fingers moving slowly would move nothing.
+            const V2I scrollPosI(std::round(scrollPos.x), std::round(scrollPos.y));
+            _gestureRemainder = V2F(scrollPos.x - scrollPosI.x, scrollPos.y - scrollPosI.y);
+            _gestureScrollPos = scrollPosI;
+            setZoom(zoomNew);
+
+            // Not clamped: the scroll size is the old zoom's until the next
+            // layout, which clamps it.
+            scrollArea->setScrollPos(scrollPosI, false);
         }
     }
 }

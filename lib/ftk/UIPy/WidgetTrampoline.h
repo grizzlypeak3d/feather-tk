@@ -122,6 +122,7 @@ namespace ftk
             FTK_WIDGET_EVENT_REF(mousePressEvent, MouseClickEvent)
             FTK_WIDGET_EVENT_REF(mouseReleaseEvent, MouseClickEvent)
             FTK_WIDGET_EVENT_REF(scrollEvent, ScrollEvent)
+            FTK_WIDGET_EVENT_REF(gestureEvent, GestureEvent)
             FTK_WIDGET_EVENT_REF(keyPressEvent, KeyEvent)
             FTK_WIDGET_EVENT_REF(keyReleaseEvent, KeyEvent)
             FTK_WIDGET_EVENT_REF(textEvent, TextEvent)

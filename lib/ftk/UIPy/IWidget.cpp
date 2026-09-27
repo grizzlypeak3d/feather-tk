@@ -187,6 +187,7 @@ namespace ftk
                 .def("mousePressEvent", &IWidget::mousePressEvent, nb::arg("event"))
                 .def("mouseReleaseEvent", &IWidget::mouseReleaseEvent, nb::arg("event"))
                 .def("scrollEvent", &IWidget::scrollEvent, nb::arg("event"))
+                .def("gestureEvent", &IWidget::gestureEvent, nb::arg("event"))
                 .def("keyFocusEvent", &IWidget::keyFocusEvent, nb::arg("focus"))
                 .def("keyPressEvent", &IWidget::keyPressEvent, nb::arg("event"))
                 .def("keyReleaseEvent", &IWidget::keyReleaseEvent, nb::arg("event"))
