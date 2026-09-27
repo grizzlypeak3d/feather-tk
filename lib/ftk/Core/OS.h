@@ -32,6 +32,12 @@ namespace ftk
 
         //! The user's locale, which is what selects the code page above.
         std::string locale;
+
+        //! The desktop, on Linux: the desktop environment or compositor,
+        //! and whether the session is Wayland or X11. Empty elsewhere. It
+        //! says what the video driver alone does not: that an application
+        //! on X11 is running through XWayland on a Wayland desktop.
+        std::string desktop;
     };
 
     //! Get operating system information.

@@ -33,6 +33,41 @@ namespace ftk
         {
             _env();
             _exePath();
+            _desktop();
+        }
+
+        void OSTest::_desktop()
+        {
+            // What the session says it is, on Linux; nothing elsewhere.
+            std::string desktopPrev;
+            std::string typePrev;
+            const bool hasDesktop = getEnv("XDG_CURRENT_DESKTOP", desktopPrev);
+            const bool hasType = getEnv("XDG_SESSION_TYPE", typePrev);
+            setEnv("XDG_CURRENT_DESKTOP", "labwc:wlroots");
+            setEnv("XDG_SESSION_TYPE", "wayland");
+            const std::string desktop = getSysInfo().desktop;
+            _print(Format("Desktop: {0}").arg(desktop));
+#if defined(__APPLE__) || defined(_WINDOWS)
+            FTK_CHECK(desktop.empty());
+#else // __APPLE__
+            FTK_CHECK("labwc:wlroots (wayland)" == desktop);
+#endif // __APPLE__
+            if (hasDesktop)
+            {
+                setEnv("XDG_CURRENT_DESKTOP", desktopPrev);
+            }
+            else
+            {
+                delEnv("XDG_CURRENT_DESKTOP");
+            }
+            if (hasType)
+            {
+                setEnv("XDG_SESSION_TYPE", typePrev);
+            }
+            else
+            {
+                delEnv("XDG_SESSION_TYPE");
+            }
         }
         
         void OSTest::_exePath()

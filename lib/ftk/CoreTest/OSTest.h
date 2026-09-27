@@ -25,6 +25,7 @@ namespace ftk
         private:
             void _env();
             void _exePath();
+            void _desktop();
         };
     }
 }

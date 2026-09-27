@@ -36,7 +36,11 @@ namespace ftk
             arg(sysInfo.cores).
             arg(sysInfo.ramGB).
             arg(sysInfo.locale).
-            arg(sysInfo.codePage));
+            arg(sysInfo.codePage).
+            str() +
+            (!sysInfo.desktop.empty() ?
+                Format("\n    * Desktop:   {0}").arg(sysInfo.desktop).str() :
+                std::string()));
 
         addSystem(TimerSystem::create(shared_from_this()));
         addSystem(DiagSystem::create(shared_from_this()));

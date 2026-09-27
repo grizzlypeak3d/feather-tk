@@ -157,6 +157,24 @@ namespace ftk
         out.ramGB = d.quot + (d.rem ? 1 : 0);
         out.codePage = getCodePage();
         out.locale = getLocale();
+#if !defined(__APPLE__)
+        // What the session says it is: "labwc:wlroots", "ubuntu:GNOME".
+        std::string desktop;
+        if (!getEnv("XDG_CURRENT_DESKTOP", desktop) || desktop.empty())
+        {
+            getEnv("DESKTOP_SESSION", desktop);
+        }
+        std::string sessionType;
+        getEnv("XDG_SESSION_TYPE", sessionType);
+        if (!desktop.empty() && !sessionType.empty())
+        {
+            out.desktop = desktop + " (" + sessionType + ")";
+        }
+        else
+        {
+            out.desktop = !desktop.empty() ? desktop : sessionType;
+        }
+#endif // __APPLE__
         return out;
     }
             

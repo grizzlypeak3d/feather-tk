@@ -26,7 +26,8 @@ namespace ftk
                 .def_rw("name", &SysInfo::name)
                 .def_rw("cores", &SysInfo::cores)
                 .def_rw("ram", &SysInfo::ram)
-                .def_rw("ramGB", &SysInfo::ramGB);
+                .def_rw("ramGB", &SysInfo::ramGB)
+                .def_rw("desktop", &SysInfo::desktop);
 
             m.def("getSystInfo", &getSysInfo, "Get operating system information.");
         }
