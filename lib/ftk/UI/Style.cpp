@@ -63,7 +63,7 @@ namespace ftk
         out[SizeRole::SwatchLarge] = 40;
         out[SizeRole::Shadow] = 15;
         out[SizeRole::DragLength] = 10;
-        out[SizeRole::CornerRadius] = 6;
+        out[SizeRole::CornerRadius] = 4;
         return out;
     }
 
