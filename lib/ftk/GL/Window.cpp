@@ -32,6 +32,88 @@ namespace ftk
 {
     namespace gl
     {
+#if !defined(__EMSCRIPTEN__)
+        namespace
+        {
+            // The usable area of a display: the display less the task bar,
+            // the dock, or the panel.
+            bool getUsableBounds(
+#if defined(FTK_SDL2)
+                int display,
+#elif defined(FTK_SDL3)
+                SDL_DisplayID display,
+#endif // FTK_SDL2
+                Box2I& out)
+            {
+                SDL_Rect rect;
+#if defined(FTK_SDL2)
+                const bool ok = 0 == SDL_GetDisplayUsableBounds(display, &rect);
+#elif defined(FTK_SDL3)
+                const bool ok = SDL_GetDisplayUsableBounds(display, &rect);
+#endif // FTK_SDL2
+                if (ok && rect.w > 0 && rect.h > 0)
+                {
+                    out = Box2I(rect.x, rect.y, rect.w, rect.h);
+                }
+                return ok && rect.w > 0 && rect.h > 0;
+            }
+
+            // Keep a window, its title bar included, on the usable area of
+            // the display it is on: a size saved on a larger screen, or a
+            // default made for a landscape one, would otherwise leave part
+            // of it out of reach.
+            void fitToDisplay(SDL_Window* sdlWindow)
+            {
+                Box2I bounds;
+#if defined(FTK_SDL2)
+                const int display = SDL_GetWindowDisplayIndex(sdlWindow);
+#elif defined(FTK_SDL3)
+                const SDL_DisplayID display = SDL_GetDisplayForWindow(sdlWindow);
+#endif // FTK_SDL2
+                if (!getUsableBounds(display, bounds))
+                {
+                    return;
+                }
+
+                // The frame, where the platform can say; zero where it
+                // cannot yet, which leaves the frame to the window manager.
+                int top = 0;
+                int left = 0;
+                int bottom = 0;
+                int right = 0;
+                SDL_GetWindowBordersSize(sdlWindow, &top, &left, &bottom, &right);
+
+                Size2I size;
+                SDL_GetWindowSize(sdlWindow, &size.w, &size.h);
+                const Size2I maxSize(
+                    std::max(bounds.w() - left - right, 1),
+                    std::max(bounds.h() - top - bottom, 1));
+                if (size.w > maxSize.w || size.h > maxSize.h)
+                {
+                    size.w = std::min(size.w, maxSize.w);
+                    size.h = std::min(size.h, maxSize.h);
+                    SDL_SetWindowSize(sdlWindow, size.w, size.h);
+                }
+
+                V2I pos;
+                SDL_GetWindowPosition(sdlWindow, &pos.x, &pos.y);
+                const V2I fitted(
+                    std::clamp(
+                        pos.x,
+                        bounds.min.x + left,
+                        std::max(bounds.max.x + 1 - right - size.w, bounds.min.x + left)),
+                    std::clamp(
+                        pos.y,
+                        bounds.min.y + top,
+                        std::max(bounds.max.y + 1 - bottom - size.h, bounds.min.y + top)));
+                if (fitted != pos)
+                {
+                    SDL_SetWindowPosition(sdlWindow, fitted.x, fitted.y);
+                }
+            }
+        }
+#endif // __EMSCRIPTEN__
+
         struct Window::Private
         {
             std::weak_ptr<LogSystem> logSystem;
@@ -110,6 +192,23 @@ namespace ftk
             {
                 windowSize.w = cssW;
                 windowSize.h = cssH;
+            }
+#else // __EMSCRIPTEN__
+            // No larger than the primary display's usable area, which is
+            // where a window with no position of its own opens; the display
+            // it does land on is checked again below.
+            {
+                Box2I bounds;
+#if defined(FTK_SDL2)
+                const bool ok = getUsableBounds(0, bounds);
+#elif defined(FTK_SDL3)
+                const bool ok = getUsableBounds(SDL_GetPrimaryDisplay(), bounds);
+#endif // FTK_SDL2
+                if (ok)
+                {
+                    windowSize.w = std::min(windowSize.w, bounds.w());
+                    windowSize.h = std::min(windowSize.h, bounds.h());
+                }
             }
 #endif // __EMSCRIPTEN__
             p.sdlWindow = SDL_CreateWindow(
@@ -255,43 +354,9 @@ namespace ftk
                 clearCurrent();
             }
 
-#if defined(_WINDOWS)
-
-            //! \bug Make sure the window fits the monitor.
-#if defined(FTK_SDL2)
-            SDL_DisplayMode sdlDisplayMode;
-            SDL_GetCurrentDisplayMode(
-                SDL_GetWindowDisplayIndex(p.sdlWindow),
-                &sdlDisplayMode);
-            if (size.w > sdlDisplayMode.w || size.h > sdlDisplayMode.h)
-            {
-                SDL_SetWindowSize(
-                    p.sdlWindow,
-                    std::min(size.w, sdlDisplayMode.w),
-                    std::min(size.h, sdlDisplayMode.h));
-            }
-#elif defined(FTK_SDL3)
-            const SDL_DisplayMode* sdlDisplayMode = SDL_GetCurrentDisplayMode(
-                SDL_GetDisplayForWindow(p.sdlWindow));
-            if (size.w > sdlDisplayMode->w || size.h > sdlDisplayMode->h)
-            {
-                SDL_SetWindowSize(
-                    p.sdlWindow,
-                    std::min(size.w, sdlDisplayMode->w),
-                    std::min(size.h, sdlDisplayMode->h));
-            }
-#endif // FTK_SDL2
-
-            //! \bug Make sure the window title bar does not go off screen.
-            V2I pos;
-            SDL_GetWindowPosition(p.sdlWindow, &pos.x, &pos.y);
-            if (pos.x <= 0 || pos.y <= 0)
-            {
-                pos.x = std::max(pos.x, 100);
-                pos.y = std::max(pos.y, 100);
-                SDL_SetWindowPosition(p.sdlWindow, pos.x, pos.y);
-            }
-#endif // _WINDOWS
+#if !defined(__EMSCRIPTEN__)
+            fitToDisplay(p.sdlWindow);
+#endif // __EMSCRIPTEN__
         }
         
         Window::~Window()
@@ -366,6 +431,9 @@ namespace ftk
         {
             setFullScreen(false);
             SDL_SetWindowSize(_p->sdlWindow, value.w, value.h);
+#if !defined(__EMSCRIPTEN__)
+            fitToDisplay(_p->sdlWindow);
+#endif // __EMSCRIPTEN__
         }
 
         Size2I Window::getSize() const
