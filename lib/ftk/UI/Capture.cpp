@@ -269,8 +269,14 @@ namespace ftk
         auto window = app->getWindows().front();
 
         // Deterministic presentation. Capture runs should also pass
-        // -resetSettings so saved window state can't override this.
-        app->setColorStyle(ColorStyle::Dark);
+        // -resetSettings so saved window state can't override this. Dark
+        // unless the shot names a style, e.g. { "colorStyle": "Light" }.
+        ColorStyle colorStyle = ColorStyle::Dark;
+        if (p.shot.contains("colorStyle"))
+        {
+            from_string(p.shot.at("colorStyle").get<std::string>(), colorStyle);
+        }
+        app->setColorStyle(colorStyle);
         app->setTooltipsEnabled(false);
         if (p.shot.contains("window"))
         {
