@@ -189,6 +189,11 @@ namespace ftk
         int         modifiers = 0;
         V2I         pos;
         bool        accept    = false;
+
+        //! The press was taken away before it was released: a touch
+        //! gesture started. The release ends it without acting on it, so
+        //! a button under the first finger does not click.
+        bool        cancel    = false;
     };
 
     //! Scroll event (mouse wheel or touch pad).

@@ -739,7 +739,7 @@ namespace ftk
         const Box2I& g = getGeometry();
         if (p.mouse.pressed != -1)
         {
-            if (contains(getRect(p.mouse.pressed), event.pos - g.min))
+            if (!event.cancel && contains(getRect(p.mouse.pressed), event.pos - g.min))
             {
                 const auto now = std::chrono::steady_clock::now();
                 const std::chrono::duration<float> diff = now - p.mouse.clickTime;

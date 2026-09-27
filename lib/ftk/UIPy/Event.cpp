@@ -104,7 +104,8 @@ namespace ftk
                 .def_rw("button", &MouseClickEvent::button)
                 .def_rw("modifiers", &MouseClickEvent::modifiers)
                 .def_rw("pos", &MouseClickEvent::pos)
-                .def_rw("accept", &MouseClickEvent::accept);
+                .def_rw("accept", &MouseClickEvent::accept)
+                .def_rw("cancel", &MouseClickEvent::cancel);
 
             nb::class_<ScrollEvent>(m, "ScrollEvent")
                 .def(nb::init<const V2F&, int, const V2I&>())

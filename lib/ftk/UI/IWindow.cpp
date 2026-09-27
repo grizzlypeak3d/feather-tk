@@ -1234,8 +1234,9 @@ namespace ftk
             _closeTooltip();
 
             // The first finger was the mouse until the second came down,
-            // so whatever it pressed is let go. A drag and drop in flight
-            // is dropped nowhere.
+            // so whatever it pressed is let go, cancelled rather than
+            // released: a button under it does not click. A drag and drop
+            // in flight is dropped nowhere.
             if (auto pressed = p.mousePress.lock())
             {
                 p.mousePress.reset();
@@ -1252,7 +1253,9 @@ namespace ftk
                 {
                     p.mouseClickEvent.pos = p.cursorPos;
                     p.mouseClickEvent.accept = false;
+                    p.mouseClickEvent.cancel = true;
                     pressed->mouseReleaseEvent(p.mouseClickEvent);
+                    p.mouseClickEvent.cancel = false;
                 }
                 p.dragDropData.reset();
                 p.dragDropCursor.reset();

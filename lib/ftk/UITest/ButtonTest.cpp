@@ -146,6 +146,21 @@ namespace ftk
             bool checked = false;
             button->setCheckedCallback([&checked](bool value) { checked = value; });
 
+            // A press that a touch gesture takes over is cancelled rather
+            // than released: the button under the first finger does not
+            // click.
+            button->setRepeatClick(false);
+            app->tick();
+            const V2I c = center(button->getGeometry());
+            window->click(c);
+            FTK_CHECK(1 == clicks);
+            window->drag({ c, c }, 0, false);
+            window->gesture(c, V2F());
+            FTK_CHECK(1 == clicks);
+            window->click(c);
+            FTK_CHECK(2 == clicks);
+            clicks = 0;
+
             app->setDisplayScale(2.F);
             app->tick();
             app->setDisplayScale(1.F);

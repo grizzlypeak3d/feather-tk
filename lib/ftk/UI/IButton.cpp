@@ -341,7 +341,7 @@ namespace ftk
     {
         IMouseWidget::mouseReleaseEvent(event);
         setDrawUpdate();
-        if (contains(getGeometry(), _getMousePos()))
+        if (!event.cancel && contains(getGeometry(), _getMousePos()))
         {
             click();
         }
