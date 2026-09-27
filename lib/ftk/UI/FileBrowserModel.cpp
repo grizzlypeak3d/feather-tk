@@ -4,6 +4,8 @@
 #include <ftk/UI/FileBrowser.h>
 #include <ftk/Core/Path.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     struct FileBrowserModel::Private
@@ -16,6 +18,8 @@ namespace ftk
         std::shared_ptr<Observable<FileBrowserOptions> > options;
         std::shared_ptr<ObservableList<std::string> > exts;
         std::shared_ptr<Observable<std::string> > ext;
+        std::shared_ptr<ObservableList<FileBrowserExtGroup> > extGroups;
+        std::shared_ptr<Observable<std::string> > extGroup;
         std::vector<std::string> extsFilter;
         std::string extsFilterLabel;
     };
@@ -33,6 +37,8 @@ namespace ftk
         p.options = Observable<FileBrowserOptions>::create();
         p.exts = ObservableList<std::string>::create();
         p.ext = Observable<std::string>::create();
+        p.extGroups = ObservableList<FileBrowserExtGroup>::create();
+        p.extGroup = Observable<std::string>::create();
     }
 
     FileBrowserModel::~FileBrowserModel()
@@ -153,7 +159,62 @@ namespace ftk
 
     void FileBrowserModel::setExt(const std::string& value)
     {
-        _p->ext->setIfChanged(value);
+        FTK_P();
+        if (!value.empty())
+        {
+            p.extGroup->setIfChanged(std::string());
+        }
+        p.ext->setIfChanged(value);
+    }
+
+    const std::vector<FileBrowserExtGroup>& FileBrowserModel::getExtGroups() const
+    {
+        return _p->extGroups->get();
+    }
+
+    std::shared_ptr<IObservableList<FileBrowserExtGroup> > FileBrowserModel::observeExtGroups() const
+    {
+        return _p->extGroups;
+    }
+
+    void FileBrowserModel::setExtGroups(const std::vector<FileBrowserExtGroup>& value)
+    {
+        FTK_P();
+        if (p.extGroups->setIfChanged(value))
+        {
+            // A group that is gone is not one to filter by.
+            const auto i = std::find_if(
+                value.begin(),
+                value.end(),
+                [&p](const FileBrowserExtGroup& group)
+                {
+                    return group.label == p.extGroup->get();
+                });
+            if (i == value.end())
+            {
+                p.extGroup->setIfChanged(std::string());
+            }
+        }
+    }
+
+    const std::string& FileBrowserModel::getExtGroup() const
+    {
+        return _p->extGroup->get();
+    }
+
+    std::shared_ptr<IObservable<std::string> > FileBrowserModel::observeExtGroup() const
+    {
+        return _p->extGroup;
+    }
+
+    void FileBrowserModel::setExtGroup(const std::string& value)
+    {
+        FTK_P();
+        if (!value.empty())
+        {
+            p.ext->setIfChanged(std::string());
+        }
+        p.extGroup->setIfChanged(value);
     }
 
     const std::vector<std::string>& FileBrowserModel::getExtsFilter() const

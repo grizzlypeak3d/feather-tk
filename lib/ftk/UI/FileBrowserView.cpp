@@ -107,6 +107,7 @@ namespace ftk
         std::shared_ptr<Observer<std::filesystem::path> > pathObserver;
         std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
         std::shared_ptr<Observer<std::string> > extObserver;
+        std::shared_ptr<Observer<std::string> > extGroupObserver;
 
         float iconScale = 1.F;
         std::shared_ptr<Image> directoryImage;
@@ -205,6 +206,13 @@ namespace ftk
 
         p.extObserver = Observer<std::string>::create(
             model->observeExt(),
+            [this](const std::string&)
+            {
+                _clearCurrent();
+                _directoryUpdate();
+            });
+        p.extGroupObserver = Observer<std::string>::create(
+            model->observeExtGroup(),
             [this](const std::string&)
             {
                 _clearCurrent();
@@ -925,9 +933,21 @@ namespace ftk
         dirListOptions.filter = p.search;
         dirListOptions.filterFiles = FileBrowserMode::Dir == p.mode;
         const std::string& ext = p.model->getExt();
+        const std::string& extGroup = p.model->getExtGroup();
         if (!ext.empty())
         {
             dirListOptions.filterExt.push_back(ext);
+        }
+        else if (!extGroup.empty())
+        {
+            for (const auto& group : p.model->getExtGroups())
+            {
+                if (group.label == extGroup)
+                {
+                    dirListOptions.filterExt = group.exts;
+                    break;
+                }
+            }
         }
         else
         {

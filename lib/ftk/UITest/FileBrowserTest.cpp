@@ -40,6 +40,7 @@ namespace ftk
             _shortcuts();
             _view();
             _selection();
+            _extGroups();
             _widget();
             _dialog();
             _floating();
@@ -126,6 +127,77 @@ namespace ftk
                 options.dirList.sort = DirListSort::Time;
                 model->setOptions(options);
                 app->tick();
+            }
+        }
+
+        void FileBrowserTest::_extGroups()
+        {
+            {
+                std::vector<std::string> argv;
+                argv.push_back("FileBrowserTest");
+                auto app = App::create(
+                    _context,
+                    argv,
+                    "FileBrowserTest",
+                    "File browser test.");
+                auto window = Window::create(_context, app, "FileBrowserTest");
+                window->show();
+                app->tick();
+
+                const std::filesystem::path path =
+                    std::filesystem::temp_directory_path() / "ftkFileBrowserExtGroupsTest";
+                std::filesystem::remove_all(path);
+                std::filesystem::create_directories(path);
+                for (const auto& fileName : {
+                    "alpha.png",
+                    "beta.exr",
+                    "gamma.mov",
+                    "delta.txt" })
+                {
+                    std::ofstream(path / fileName);
+                }
+
+                auto model = FileBrowserModel::create(_context);
+                auto view = FileBrowserView::create(
+                    _context, FileBrowserMode::Open, model, window);
+                size_t itemCount = 0;
+                auto itemCountObserver = Observer<size_t>::create(
+                    view->observeItemCount(),
+                    [&itemCount](size_t value) { itemCount = value; });
+                model->setPath(path);
+                view->reload();
+                app->tick();
+                FTK_CHECK(4 == itemCount);
+
+                model->setExts({ ".exr", ".mov", ".png" });
+                model->setExtGroups({
+                    { "Images", { ".exr", ".png" } },
+                    { "Movies", { ".mov" } } });
+                FTK_CHECK(2 == model->getExtGroups().size());
+
+                // A group filters by all of its extensions.
+                model->setExtGroup("Images");
+                app->tick();
+                FTK_CHECK(2 == itemCount);
+                model->setExtGroup("Movies");
+                app->tick();
+                FTK_CHECK(1 == itemCount);
+
+                // A group and a single extension are alternatives.
+                model->setExt(".png");
+                FTK_CHECK(model->getExtGroup().empty());
+                app->tick();
+                FTK_CHECK(1 == itemCount);
+                model->setExtGroup("Images");
+                FTK_CHECK(model->getExt().empty());
+
+                // A group that is gone is not filtered by.
+                model->setExtGroups({ { "Movies", { ".mov" } } });
+                FTK_CHECK(model->getExtGroup().empty());
+                app->tick();
+                FTK_CHECK(4 == itemCount);
+
+                std::filesystem::remove_all(path);
             }
         }
 

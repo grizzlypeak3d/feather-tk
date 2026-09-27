@@ -56,6 +56,25 @@ namespace ftk
 
             observable<FileBrowserOptions>(m, "FileBrowserOptions");
 
+            nb::class_<FileBrowserExtGroup>(m, "FileBrowserExtGroup")
+                .def(nb::init<>())
+                .def(
+                    "__init__",
+                    [](FileBrowserExtGroup* self,
+                       const std::string& label,
+                       const std::vector<std::string>& exts)
+                    {
+                        new (self) FileBrowserExtGroup{ label, exts };
+                    },
+                    nb::arg("label"),
+                    nb::arg("exts"))
+                .def_rw("label", &FileBrowserExtGroup::label)
+                .def_rw("exts", &FileBrowserExtGroup::exts)
+                .def(nanobind::self == nanobind::self)
+                .def(nanobind::self != nanobind::self);
+
+            observableList<FileBrowserExtGroup>(m, "FileBrowserExtGroup");
+
             nb::class_<FileBrowserModel>(m, "FileBrowserModel")
                 .def(
                     nb::new_(&FileBrowserModel::create),
@@ -89,7 +108,17 @@ namespace ftk
                     "ext",
                     &FileBrowserModel::getExt,
                     &FileBrowserModel::setExt)
-                .def_prop_ro("observeExt", &FileBrowserModel::observeExt);
+                .def_prop_ro("observeExt", &FileBrowserModel::observeExt)
+                .def_prop_rw(
+                    "extGroups",
+                    &FileBrowserModel::getExtGroups,
+                    &FileBrowserModel::setExtGroups)
+                .def_prop_ro("observeExtGroups", &FileBrowserModel::observeExtGroups)
+                .def_prop_rw(
+                    "extGroup",
+                    &FileBrowserModel::getExtGroup,
+                    &FileBrowserModel::setExtGroup)
+                .def_prop_ro("observeExtGroup", &FileBrowserModel::observeExtGroup);
 
             nb::class_<FileBrowserSystem, ISystem>(m, "FileBrowserSystem")
                 .def(

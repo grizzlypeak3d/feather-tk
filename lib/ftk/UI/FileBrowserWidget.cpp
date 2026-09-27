@@ -71,6 +71,7 @@ namespace ftk
         std::shared_ptr<Observer<bool> > backObserver;
         std::shared_ptr<Observer<FileBrowserOptions> > optionsObserver;
         std::shared_ptr<ListObserver<std::string> > extsObserver;
+        std::shared_ptr<ListObserver<FileBrowserExtGroup> > extGroupsObserver;
     };
 
     void FileBrowserWidget::_init(
@@ -347,11 +348,23 @@ namespace ftk
             [this](int value)
             {
                 FTK_P();
-                const std::vector<std::string>& exts = p.model->getExts();
-                if (value >= 0 && value <= static_cast<int>(exts.size()))
+                if (_useExtGroups())
                 {
-                    const std::string ext = value > 0 ? exts[value - 1] : "";
-                    p.model->setExt(ext);
+                    const auto& groups = p.model->getExtGroups();
+                    if (value >= 0 && value <= static_cast<int>(groups.size()))
+                    {
+                        p.model->setExt(std::string());
+                        p.model->setExtGroup(value > 0 ? groups[value - 1].label : "");
+                    }
+                }
+                else
+                {
+                    const std::vector<std::string>& exts = p.model->getExts();
+                    if (value >= 0 && value <= static_cast<int>(exts.size()))
+                    {
+                        const std::string ext = value > 0 ? exts[value - 1] : "";
+                        p.model->setExt(ext);
+                    }
                 }
             });
 
@@ -469,6 +482,12 @@ namespace ftk
         p.extsObserver = ListObserver<std::string>::create(
             p.model->observeExts(),
             [this](const std::vector<std::string>&)
+            {
+                _extsUpdate();
+            });
+        p.extGroupsObserver = ListObserver<FileBrowserExtGroup>::create(
+            p.model->observeExtGroups(),
+            [this](const std::vector<FileBrowserExtGroup>&)
             {
                 _extsUpdate();
             });
@@ -727,9 +746,35 @@ namespace ftk
         p.reverseSortButton->setChecked(options.dirList.sortReverse);
     }
 
+    bool FileBrowserWidget::_useExtGroups() const
+    {
+        // A filter set by whoever opened the browser is its own short list.
+        FTK_P();
+        return !p.model->getExtGroups().empty() && p.model->getExtsFilter().empty();
+    }
+
     void FileBrowserWidget::_extsUpdate()
     {
         FTK_P();
+        if (_useExtGroups())
+        {
+            const auto& groups = p.model->getExtGroups();
+            std::vector<std::string> labels;
+            labels.push_back("*.*");
+            int index = 0;
+            for (size_t i = 0; i < groups.size(); ++i)
+            {
+                labels.push_back(groups[i].label);
+                if (groups[i].label == p.model->getExtGroup())
+                {
+                    index = static_cast<int>(i) + 1;
+                }
+            }
+            p.extsComboBox->setItems(labels);
+            p.extsComboBox->setCurrentIndex(index);
+            return;
+        }
+
         const std::vector<std::string>& exts = p.model->getExts();
         const std::string& ext = p.model->getExt();
 

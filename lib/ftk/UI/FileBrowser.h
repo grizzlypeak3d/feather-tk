@@ -104,6 +104,15 @@ namespace ftk
     };
 
     //! File browser model.
+    //! A group of file extensions offered as one choice, e.g. "Images".
+    struct FTK_UI_API_TYPE FileBrowserExtGroup
+    {
+        std::string label;
+        std::vector<std::string> exts;
+
+        bool operator == (const FileBrowserExtGroup&) const = default;
+    };
+
     class FTK_UI_API_TYPE FileBrowserModel : public std::enable_shared_from_this<FileBrowserModel>
     {
     public:
@@ -171,6 +180,28 @@ namespace ftk
 
         //! Set the current extension.
         FTK_UI_API void setExt(const std::string&);
+
+        //! Get the extension groups.
+        FTK_UI_API const std::vector<FileBrowserExtGroup>& getExtGroups() const;
+
+        //! Observe the extension groups.
+        FTK_UI_API std::shared_ptr<IObservableList<FileBrowserExtGroup> > observeExtGroups() const;
+
+        //! Set groups of extensions, each offered as one choice, e.g.
+        //! "Images". Given groups, the extensions combo box offers them in
+        //! place of the single extensions, which a long list of formats
+        //! makes too many to choose from; the search box still finds one.
+        FTK_UI_API void setExtGroups(const std::vector<FileBrowserExtGroup>&);
+
+        //! Get the current extension group, by label; empty for none.
+        FTK_UI_API const std::string& getExtGroup() const;
+
+        //! Observe the current extension group.
+        FTK_UI_API std::shared_ptr<IObservable<std::string> > observeExtGroup() const;
+
+        //! Set the current extension group, by label. A group and a single
+        //! extension are alternatives: setting one clears the other.
+        FTK_UI_API void setExtGroup(const std::string&);
 
         //! Get the extension filter.
         FTK_UI_API const std::vector<std::string>& getExtsFilter() const;
@@ -280,6 +311,7 @@ namespace ftk
         void _accept(const std::vector<Path>&);
 
         void _optionsUpdate();
+        bool _useExtGroups() const;
         void _extsUpdate();
 
         FTK_PRIVATE();

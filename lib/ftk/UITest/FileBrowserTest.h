@@ -30,6 +30,7 @@ namespace ftk
             void _shortcuts();
             void _view();
             void _selection();
+            void _extGroups();
             std::shared_ptr<LineEdit> _findLineEdit(const std::shared_ptr<IWidget>&);
             void _click(const std::shared_ptr<IWidget>&, const std::string& text);
 
