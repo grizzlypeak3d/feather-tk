@@ -285,6 +285,22 @@ namespace ftk
                 view->setMultiple(false);
                 FTK_CHECK(1 == view->getSelection().size());
 
+                // A press selects, and a touch gesture that takes the press
+                // puts the selection back: the first finger of a pan was
+                // not choosing anything.
+                {
+                    const std::vector<Path> before = view->getSelection();
+                    const Box2I& g = view->getGeometry();
+                    const V2I row(g.min.x + g.w() / 2, g.min.y + 4);
+                    window->drag({ row, row }, 0, false);
+                    const std::vector<Path> pressed = view->getSelection();
+                    FTK_CHECK(1 == pressed.size());
+                    FTK_CHECK(before != pressed);
+                    window->gesture(row, V2F(0.F, -20.F));
+                    FTK_CHECK(before == view->getSelection());
+                    FTK_CHECK(before == selection);
+                }
+
                 // And the whole way through the widget: what the view has
                 // selected is what the Ok button hands back.
                 {

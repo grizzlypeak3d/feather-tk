@@ -55,6 +55,7 @@ set(HEADERS
     StyleTest.h
     TabWidgetTest.h
     TextEditModelTest.h
+    TouchGestureTest.h
     WidgetJsonTest.h
     WidgetOptionsTest.h)
 set(PRIVATE_HEADERS)
@@ -116,6 +117,7 @@ set(SOURCE
     StyleTest.cpp
     TabWidgetTest.cpp
     TextEditModelTest.cpp
+    TouchGestureTest.cpp
     WidgetJsonTest.cpp
     WidgetOptionsTest.cpp)
 

@@ -519,7 +519,9 @@ namespace ftk
             p.contextMenu.reset();
         }
 
-        if (p.inside)
+        // Not during a touch gesture: the cursor is where the first finger
+        // touched, and what scrolls under it is not being hovered.
+        if (p.inside && !p.gesture)
         {
             if (!p.mousePress.lock())
             {
@@ -1260,6 +1262,14 @@ namespace ftk
                 p.dragDropData.reset();
                 p.dragDropCursor.reset();
                 setDrawUpdate();
+            }
+
+            // Nothing is hovered while fingers are on the screen: the first
+            // finger's hover would otherwise stay lit under the gesture.
+            if (auto hover = p.hover.lock())
+            {
+                p.hover.reset();
+                hover->mouseLeaveEvent();
             }
 
             // The widget under the fingers that accepts the start of the

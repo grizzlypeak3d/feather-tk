@@ -146,6 +146,12 @@ namespace ftk
             int pressed = -1;
             int click = -1;
             std::chrono::steady_clock::time_point clickTime;
+
+            // The selection before the press, which selects: a press that
+            // is cancelled puts it back.
+            int currentPrev = -1;
+            int anchorPrev = -1;
+            std::set<int> selectionPrev;
         };
         MouseData mouse;
     };
@@ -713,6 +719,9 @@ namespace ftk
         }
         if (p.mouse.hover != -1)
         {
+            p.mouse.currentPrev = p.current->get();
+            p.mouse.anchorPrev = p.anchor;
+            p.mouse.selectionPrev = p.selection;
             if (p.multiple &&
                 (static_cast<int>(KeyModifier::Shift) & event.modifiers))
             {
@@ -739,7 +748,17 @@ namespace ftk
         const Box2I& g = getGeometry();
         if (p.mouse.pressed != -1)
         {
-            if (!event.cancel && contains(getRect(p.mouse.pressed), event.pos - g.min))
+            if (event.cancel)
+            {
+                // A touch gesture took the press: the first finger was not
+                // choosing anything.
+                p.anchor = p.mouse.anchorPrev;
+                _selectionUpdate(
+                    p.mouse.selectionPrev,
+                    p.current->setIfChanged(p.mouse.currentPrev));
+                p.mouse.hover = -1;
+            }
+            else if (contains(getRect(p.mouse.pressed), event.pos - g.min))
             {
                 const auto now = std::chrono::steady_clock::now();
                 const std::chrono::duration<float> diff = now - p.mouse.clickTime;

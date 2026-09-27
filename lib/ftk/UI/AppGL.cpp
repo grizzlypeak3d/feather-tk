@@ -8,6 +8,7 @@
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Init.h>
 #include <ftk/UI/Settings.h>
+#include <ftk/UI/TouchGesture.h>
 #include <ftk/UI/Util.h>
 #include <ftk/UI/WidgetDump.h>
 #include <ftk/UI/Window.h>
@@ -131,15 +132,11 @@ namespace ftk
         std::map<std::shared_ptr<IWindow>, V2I> mousePos;
         std::vector<std::string> dropFiles;
 
-        // The fingers down on a touch screen, in the order they came down,
-        // at positions normalized to the window. Two of them are a gesture;
-        // one alone is left to SDL, which makes it the mouse.
-        std::vector<std::pair<uint64_t, V2F> > fingers;
-        bool gesture = false;
-        std::weak_ptr<IWindow> gestureWindow;
-        V2F gestureCenter;
-        float gestureDistance = 0.F;
-        bool gestureMouseBlock = false;
+        // The fingers on a touch screen. Two of them are a gesture; one
+        // alone is left to SDL, which makes it the mouse. The window is the
+        // one the first finger touched.
+        TouchGestureRecognizer touch;
+        std::weak_ptr<IWindow> touchWindow;
 
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
@@ -1223,10 +1220,10 @@ namespace ftk
 #endif // __EMSCRIPTEN__
                 return p.activeWindow.lock();
             };
-            // A gesture follows the first two fingers down. The mouse SDL
-            // makes of the first finger is blocked from the start of a
-            // gesture until every finger is lifted: it would otherwise
-            // drag whatever the first finger touched along with the pinch.
+            // A finger on a touch screen, at a position normalized to the
+            // window, to the recognizer in pixels. The gestures it makes are
+            // taken after the events, so that fingers moving together move
+            // as one.
             enum class FingerEvent { Down, Motion, Up };
             const auto finger = [&](
                 FingerEvent type,
@@ -1234,85 +1231,27 @@ namespace ftk
                 const V2F& pos,
                 uint32_t windowID)
             {
-                auto i = std::find_if(
-                    p.fingers.begin(),
-                    p.fingers.end(),
-                    [id](const std::pair<uint64_t, V2F>& value)
-                    {
-                        return value.first == id;
-                    });
-                switch (type)
-                {
-                case FingerEvent::Down:
-                    if (i == p.fingers.end())
-                    {
-                        p.fingers.push_back(std::make_pair(id, pos));
-                    }
-                    break;
-                case FingerEvent::Motion:
-                    if (i != p.fingers.end())
-                    {
-                        i->second = pos;
-                    }
-                    break;
-                case FingerEvent::Up:
-                    if (i != p.fingers.end())
-                    {
-                        p.fingers.erase(i);
-                    }
-                    break;
-                }
-
-                auto window = p.gestureWindow.lock();
+                auto window = p.touchWindow.lock();
                 if (!window)
                 {
                     window = mouseWindow(windowID);
-                }
-                if (p.fingers.size() >= 2 && window)
-                {
-                    const Size2I& size = window->getBufferSize();
-                    const V2F a(
-                        p.fingers[0].second.x * size.w,
-                        p.fingers[0].second.y * size.h);
-                    const V2F b(
-                        p.fingers[1].second.x * size.w,
-                        p.fingers[1].second.y * size.h);
-                    const V2F center((a.x + b.x) / 2.F, (a.y + b.y) / 2.F);
-                    const float distance = length(b - a);
-                    const V2I centerI(std::round(center.x), std::round(center.y));
-                    if (!p.gesture)
-                    {
-                        p.gesture = true;
-                        p.gestureWindow = window;
-                        p.gestureMouseBlock = true;
-                        window->_gesture(centerI, V2F(), 1.F);
-                    }
-                    else if (FingerEvent::Motion == type)
-                    {
-                        // A finger coming or going only moves the baseline,
-                        // so a third finger or a lifted one does not jump.
-                        window->_gesture(
-                            centerI,
-                            center - p.gestureCenter,
-                            p.gestureDistance > 0.F && distance > 0.F ?
-                            (distance / p.gestureDistance) :
-                            1.F);
-                    }
-                    p.gestureCenter = center;
-                    p.gestureDistance = distance;
-                }
-                else if (p.gesture)
-                {
-                    p.gesture = false;
-                    p.gestureWindow.reset();
+                    p.touchWindow = window;
                     if (window)
                     {
-                        window->_gestureEnd();
+                        // Past the threshold a gesture is a pan or a pinch.
+                        p.touch.setThreshold(12.F * window->getDisplayScale());
                     }
                 }
-                if (p.fingers.empty())
+                if (window)
                 {
-                    p.gestureMouseBlock = false;
+                    const Size2I& size = window->getBufferSize();
+                    const V2F posPixels(pos.x * size.w, pos.y * size.h);
+                    switch (type)
+                    {
+                    case FingerEvent::Down: p.touch.fingerDown(id, posPixels); break;
+                    case FingerEvent::Motion: p.touch.fingerMove(id, posPixels); break;
+                    case FingerEvent::Up: p.touch.fingerUp(id); break;
+                    }
                 }
             };
 
@@ -1509,7 +1448,7 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_MOTION:
 #endif // FTK_SDL2
-                    if (p.gestureMouseBlock)
+                    if (p.touch.isMouseBlocked())
                     {
                         break;
                     }
@@ -1529,7 +1468,7 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
 #endif // FTK_SDL2
-                    if (p.gestureMouseBlock)
+                    if (p.touch.isMouseBlocked())
                     {
                         break;
                     }
@@ -1548,7 +1487,7 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 case SDL_EVENT_MOUSE_BUTTON_UP:
 #endif // FTK_SDL2
-                    if (p.gestureMouseBlock)
+                    if (p.touch.isMouseBlocked())
                     {
                         // The gesture let go of the press when it started.
                         p.mouseButtonWindow.reset();
@@ -1855,6 +1794,28 @@ namespace ftk
                 }
             }
             p.polling = false;
+
+            // The touch gestures, now that every finger has moved.
+            if (auto window = p.touchWindow.lock())
+            {
+                for (const auto& gesture : p.touch.takeGestures())
+                {
+                    switch (gesture.type)
+                    {
+                    case TouchGestureType::Begin:
+                    case TouchGestureType::Update:
+                        window->_gesture(gesture.pos, gesture.pan, gesture.zoom);
+                        break;
+                    case TouchGestureType::End:
+                        window->_gestureEnd();
+                        break;
+                    }
+                }
+                if (!p.touch.isMouseBlocked() && !p.touch.isTouching())
+                {
+                    p.touchWindow.reset();
+                }
+            }
 
             tick();
         }

@@ -55,6 +55,11 @@ namespace imageview
                     auto view = ImageView::create(context, app, doc);
                     auto scrollWidget = ScrollWidget::create(context);
                     scrollWidget->setBorder(false);
+                    // No scroll bars: they come and go as the zoom passes
+                    // the size of the window, and each time the view moves
+                    // over by half a scroll bar. The wheel and two fingers
+                    // pan it.
+                    scrollWidget->setScrollBarsVisible(false);
                     scrollWidget->setWidget(view);
                     _tabWidget->addTab(doc->getName(), scrollWidget, doc->getTooltip());
                     view->takeKeyFocus();

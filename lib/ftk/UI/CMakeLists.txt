@@ -110,6 +110,7 @@ set(HEADERS
     ToolBar.h
     ToolButton.h
     Tooltip.h
+    TouchGesture.h
     Util.h
     WidgetDump.h
     WidgetJson.h
@@ -244,6 +245,7 @@ set(SOURCE
     ToolBar.cpp
     ToolButton.cpp
     Tooltip.cpp
+    TouchGesture.cpp
     Util.cpp
     WidgetDump.cpp
     WidgetJson.cpp
