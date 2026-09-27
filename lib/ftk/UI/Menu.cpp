@@ -21,6 +21,7 @@ namespace ftk
         std::map<std::shared_ptr<MenuButton>, std::shared_ptr<Menu> > buttonToSubMenu;
         std::shared_ptr<VerticalLayout> layout;
         std::function<void(const std::shared_ptr<Action>&)> currentCallback;
+        std::function<void(int)> neighborCallback;
         std::shared_ptr<Action> announced;
         V2I tickCursorPos;
     };
@@ -411,6 +412,40 @@ namespace ftk
         {
             switch (event.key)
             {
+            case Key::Left:
+                // A sub menu goes back to the menu it belongs to; a menu
+                // of a menu bar goes to the one on its left.
+                event.accept = true;
+                if (p.parentMenu.lock())
+                {
+                    close();
+                }
+                else
+                {
+                    _neighbor(-1);
+                }
+                break;
+            case Key::Right:
+            {
+                // Into the current item's sub menu, or on to the menu on
+                // the right.
+                event.accept = true;
+                takeKeyFocus();
+                const auto i = p.current ?
+                    p.buttonToSubMenu.find(p.current) :
+                    p.buttonToSubMenu.end();
+                if (i != p.buttonToSubMenu.end() &&
+                    p.current->isEnabled() &&
+                    !i->second->isEmpty())
+                {
+                    i->second->open(getWindow(), p.current->getGeometry());
+                }
+                else
+                {
+                    _neighbor(1);
+                }
+                break;
+            }
             case Key::Return:
                 event.accept = true;
                 takeKeyFocus();
@@ -510,6 +545,11 @@ namespace ftk
         }
     }
 
+    void Menu::setNeighborCallback(const std::function<void(int)>& value)
+    {
+        _p->neighborCallback = value;
+    }
+
     std::shared_ptr<Action> Menu::_getAction(
         const std::shared_ptr<MenuButton>& button) const
     {
@@ -585,6 +625,21 @@ namespace ftk
             }
         }
         return out;
+    }
+
+    void Menu::_neighbor(int value)
+    {
+        FTK_P();
+        // Held alive: the move closes this menu.
+        auto self = shared_from_this();
+        if (p.neighborCallback)
+        {
+            p.neighborCallback(value);
+        }
+        else if (auto parentMenu = p.parentMenu.lock())
+        {
+            parentMenu->_neighbor(value);
+        }
     }
 
     void Menu::_accept()

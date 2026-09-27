@@ -70,6 +70,7 @@ namespace ftk
                     "Action 3",
                     [&action3] { action3 = true; }));
                 menuBar->addMenu("Menu 1", menu);
+                auto menu1 = menu;
                 app->tick();
 
                 menu = Menu::create(_context);
@@ -85,6 +86,8 @@ namespace ftk
                     [&action5](bool value) { action5 = value; }));
                 menuBar->addMenu("Menu 2", menu);
                 app->tick();
+
+                std::shared_ptr<Menu> radio;
 
                 // A shortcut has to do what a click does. IButton::_click()
                 // runs the clicked callback and then, if the button is
@@ -112,6 +115,7 @@ namespace ftk
                     group->setCheckedCallback(
                         [&checkedCount](int, bool) { ++checkedCount; });
                     menuBar->addMenu("Radio", radioMenu);
+                    radio = radioMenu;
                     app->tick();
 
                     FTK_CHECK(radio1->isCheckable());
@@ -139,6 +143,64 @@ namespace ftk
                 FTK_CHECK(action5);
                 menuBar->shortcut(Key::_5, static_cast<int>(KeyModifier::Control));
                 FTK_CHECK(!action5);
+
+                // With a menu open, the left and right arrows move to the
+                // menus beside it, around the ends; right goes into a sub
+                // menu, and left comes back out of it.
+                {
+                    window->layout(Size2I(1280, 960));
+                    app->tick();
+                    menuBar->takeKeyFocus();
+                    window->keyPress(Key::Return);
+                    app->tick();
+                    FTK_CHECK(menu1->isOpen());
+
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    FTK_CHECK(!menu1->isOpen());
+                    FTK_CHECK(menu->isOpen());
+
+                    window->keyPress(Key::Left);
+                    app->tick();
+                    FTK_CHECK(menu1->isOpen());
+                    FTK_CHECK(!menu->isOpen());
+
+                    window->keyPress(Key::Left);
+                    app->tick();
+                    FTK_CHECK(!menu1->isOpen());
+                    FTK_CHECK(radio->isOpen());
+
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    FTK_CHECK(!radio->isOpen());
+                    FTK_CHECK(menu1->isOpen());
+
+                    // Down past the disabled item to the sub menu.
+                    window->keyPress(Key::Down);
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    FTK_CHECK(menu1->isOpen());
+                    FTK_CHECK(subMenu->isOpen());
+
+                    window->keyPress(Key::Left);
+                    app->tick();
+                    FTK_CHECK(menu1->isOpen());
+                    FTK_CHECK(!subMenu->isOpen());
+
+                    // Right on an item of the sub menu goes on to the
+                    // next menu of the bar.
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    FTK_CHECK(subMenu->isOpen());
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    FTK_CHECK(!subMenu->isOpen());
+                    FTK_CHECK(!menu1->isOpen());
+                    FTK_CHECK(menu->isOpen());
+
+                    menu->close();
+                    app->tick();
+                }
 
                 app->setDisplayScale(2.F);
                 app->tick();

@@ -6,6 +6,8 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/RowLayout.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     struct MenuBar::Private
@@ -54,6 +56,22 @@ namespace ftk
         FTK_P();
         p.menus.push_back(menu);
         menu->setCurrentCallback(p.currentCallback);
+        // The left and right arrows move to the menus beside this one,
+        // around the ends. The index is looked up when the key is pressed,
+        // like the buttons' below.
+        auto neighborWeak = std::weak_ptr<Menu>(menu);
+        menu->setNeighborCallback(
+            [this, neighborWeak](int value)
+            {
+                FTK_P();
+                const auto i = std::find(p.menus.begin(), p.menus.end(), neighborWeak.lock());
+                const int size = static_cast<int>(p.menus.size());
+                if (i != p.menus.end() && size > 1)
+                {
+                    const int index = static_cast<int>(i - p.menus.begin());
+                    _setCurrent(((index + value) % size + size) % size);
+                }
+            });
         if (auto context = getContext())
         {
             auto button = MenuBarButton::create(context, text, p.layout);

@@ -82,6 +82,13 @@ namespace ftk
         FTK_UI_API void setCurrentCallback(
             const std::function<void(const std::shared_ptr<Action>&)>&);
 
+        //! Set a callback for moving to the menu beside this one, -1 for
+        //! the one on the left and 1 for the one on the right, when the
+        //! left and right arrow keys have nothing to do in the menu itself.
+        //! A menu bar sets it on its menus; a sub menu passes the move to
+        //! the menu it belongs to.
+        FTK_UI_API void setNeighborCallback(const std::function<void(int)>&);
+
         //! Bring the position overload into scope; the override below
         //! would otherwise hide it.
         using IMenuPopup::open;
@@ -106,6 +113,7 @@ namespace ftk
         std::vector<std::shared_ptr<MenuButton> > _getEnabled() const;
 
         void _accept();
+        void _neighbor(int);
 
         FTK_PRIVATE();
     };

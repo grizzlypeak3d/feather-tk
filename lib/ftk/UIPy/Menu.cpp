@@ -66,6 +66,10 @@ namespace ftk
                     &Menu::setCurrentCallback,
                     nb::arg("callback"))
                 .def(
+                    "setNeighborCallback",
+                    &Menu::setNeighborCallback,
+                    nb::arg("callback"))
+                .def(
                     "addAction",
                     // Self as a shared_ptr: the menu wires the action's
                     // button through shared_from_this().
