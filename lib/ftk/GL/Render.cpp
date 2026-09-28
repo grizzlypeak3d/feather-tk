@@ -290,6 +290,13 @@ namespace ftk
                     size.w,
                     size.h);
             }
+            else
+            {
+                // Nothing: an empty clip clips everything. Skipping the call
+                // instead left the previous scissor in place, and a draw
+                // meant to be hidden showed inside someone else's.
+                glScissor(0, 0, 0, 0);
+            }
         }
 
         M44F Render::getTransform() const
