@@ -161,6 +161,18 @@ namespace ftk
             FTK_CHECK(2 == clicks);
             clicks = 0;
 
+            // A touch gesture leaves nothing hovered, until the mouse moves:
+            // the cursor is where a finger was.
+            window->hover(c);
+            app->tick();
+            FTK_CHECK(hovered);
+            window->gesture(c, V2F());
+            app->tick();
+            FTK_CHECK(!hovered);
+            window->hover(c);
+            app->tick();
+            FTK_CHECK(hovered);
+
             app->setDisplayScale(2.F);
             app->tick();
             app->setDisplayScale(1.F);

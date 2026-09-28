@@ -79,6 +79,10 @@ namespace ftk
         bool gesture = false;
         std::weak_ptr<IWidget> gestureWidget;
 
+        // Nothing is hovered from a touch gesture until the mouse moves:
+        // the cursor is where a finger last was, not a pointer.
+        bool hoverSuspended = false;
+
         // Keep the context menu alive; Menu::close() unparents itself and
         // then keeps running, so the window's child list must not be the
         // only owner. Released on the tick after it closes.
@@ -519,9 +523,10 @@ namespace ftk
             p.contextMenu.reset();
         }
 
-        // Not during a touch gesture: the cursor is where the first finger
-        // touched, and what scrolls under it is not being hovered.
-        if (p.inside && !p.gesture)
+        // Not after a touch gesture, until the mouse moves: the cursor is
+        // where a finger touched, and what scrolls under it, or is there
+        // when the fingers lift, is not being hovered.
+        if (p.inside && !p.hoverSuspended)
         {
             if (!p.mousePress.lock())
             {
@@ -985,6 +990,7 @@ namespace ftk
 
         p.cursorPosPrev = p.cursorPos;
         p.cursorPos = pos;
+        p.hoverSuspended = false;
 
         // The button doing the dragging travels with the move, so a widget
         // does not have to remember it from the press.
@@ -1264,8 +1270,10 @@ namespace ftk
                 setDrawUpdate();
             }
 
-            // Nothing is hovered while fingers are on the screen: the first
-            // finger's hover would otherwise stay lit under the gesture.
+            // Nothing is hovered while fingers are on the screen, or after,
+            // until the mouse moves: the first finger's hover would
+            // otherwise stay lit under the gesture.
+            p.hoverSuspended = true;
             if (auto hover = p.hover.lock())
             {
                 p.hover.reset();
