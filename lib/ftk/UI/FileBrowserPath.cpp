@@ -43,11 +43,11 @@ namespace ftk
 
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
-        p.layout->setSpacingRole(SizeRole::SpacingSmall);
+        p.layout->setSpacingRole(SizeRole::SpacingLarge);
         p.layout->setVAlign(VAlign::Center);
 
         auto editToolBar = ToolBar::create(context, Orientation::Horizontal, p.layout);
-        editToolBar->setGrouped(true);
+        editToolBar->setSpacingRole(SizeRole::None);
         p.editableButton = ToolButton::create(context);
         editToolBar->addWidget(p.editableButton);
         p.editableButton->setCheckable(true);
@@ -57,7 +57,7 @@ namespace ftk
         p.stackLayout = StackLayout::create(context, p.layout);
         p.stackLayout->setHStretch(Stretch::Expanding);
 
-        // The pieces of the path as one group, like the buttons beside it.
+        // The pieces of the path as one control, which is what they are.
         p.buttonsLayout = ToolBar::create(context);
         p.buttonsLayout->setGrouped(true);
 
