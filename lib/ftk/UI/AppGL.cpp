@@ -535,6 +535,12 @@ namespace ftk
         return _p->defaultDisplayScale;
     }
 
+    float App::getAutoDisplayScale() const
+    {
+        FTK_P();
+        return p.windowDisplayScale > 0.F ? p.windowDisplayScale : p.defaultDisplayScale;
+    }
+
     float App::getDisplayScale() const
     {
         return _p->displayScale->get();

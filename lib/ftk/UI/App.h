@@ -176,6 +176,10 @@ namespace ftk
         ///@{
 
         FTK_UI_API float getDefaultDisplayScale() const;
+
+        //! Get the display scale that setDisplayScale(0) gives: the window's
+        //! once there is one, else the display's.
+        FTK_UI_API float getAutoDisplayScale() const;
         FTK_UI_API float getDisplayScale() const;
         FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
         //! Set the display scale. Zero asks for the display's scale,
