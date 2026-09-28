@@ -195,20 +195,22 @@ namespace ftk
         vLayout->setSpacingRole(SizeRole::SpacingSmall);
         vLayout->setMarginRole(SizeRole::MarginSmall);
         vLayout->setVStretch(Stretch::Expanding);
-        // Groups of buttons set apart by space, like an application's tool
-        // bars: the buttons of a group touch.
+        // Groups of buttons with a divider between them, like an
+        // application's tool bars: the buttons of a group touch.
         auto hLayout = HorizontalLayout::create(context, vLayout);
-        hLayout->setSpacingRole(SizeRole::SpacingLarge);
+        hLayout->setSpacingRole(SizeRole::SpacingSmall);
         hLayout->setVAlign(VAlign::Center);
         auto panelToolBar = ToolBar::create(context, Orientation::Horizontal, hLayout);
         panelToolBar->setSpacingRole(SizeRole::None);
         panelToolBar->addWidget(p.panelButton);
+        Divider::create(context, Orientation::Horizontal, hLayout);
         auto navToolBar = ToolBar::create(context, Orientation::Horizontal, hLayout);
         navToolBar->setSpacingRole(SizeRole::None);
         navToolBar->addWidget(p.upButton);
         navToolBar->addWidget(p.backButton);
         navToolBar->addWidget(p.forwardButton);
         navToolBar->addWidget(p.reloadButton);
+        Divider::create(context, Orientation::Horizontal, hLayout);
         p.pathWidget->setParent(hLayout);
         p.splitter = Splitter::create(context, Orientation::Horizontal, vLayout);
         p.splitter->setSplit(.2F);

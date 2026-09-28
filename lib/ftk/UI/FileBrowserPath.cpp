@@ -43,7 +43,8 @@ namespace ftk
 
         p.layout = HorizontalLayout::create(context);
         _setWidget(p.layout);
-        p.layout->setSpacingRole(SizeRole::SpacingLarge);
+        // The edit button goes with the path it edits.
+        p.layout->setSpacingRole(SizeRole::SpacingSmall);
         p.layout->setVAlign(VAlign::Center);
 
         auto editToolBar = ToolBar::create(context, Orientation::Horizontal, p.layout);

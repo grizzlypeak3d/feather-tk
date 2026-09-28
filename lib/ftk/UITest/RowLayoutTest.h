@@ -27,6 +27,7 @@ namespace ftk
             void run() override;
 
         private:
+            void _dividers();
             void _test(
                 const std::shared_ptr<Context>&,
                 const std::shared_ptr<App>&,

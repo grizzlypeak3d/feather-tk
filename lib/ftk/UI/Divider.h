@@ -38,6 +38,12 @@ namespace ftk
     private:
         FTK_PRIVATE();
     };
+
+    //! Show each divider among a widget's children only between visible
+    //! children, and one between any two: a divider beside a group that
+    //! is hidden would stand at the end of the row, or next to another.
+    //! Call it when the children's visibility changes.
+    FTK_UI_API void updateDividers(const std::shared_ptr<IWidget>&);
         
     ///@}
 }

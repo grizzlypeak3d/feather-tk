@@ -3,6 +3,7 @@
 
 #include <ftk/UITest/RowLayoutTest.h>
 
+#include <ftk/UI/Divider.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/Spacer.h>
 
@@ -58,6 +59,59 @@ namespace ftk
                 layout->setParent(nullptr);
                 layout.reset();
             }
+            _dividers();
+        }
+
+        void RowLayoutTest::_dividers()
+        {
+            // Groups with a divider between each: a divider shows only with
+            // a visible group on each side, and one between any two.
+            auto layout = HorizontalLayout::create(_context);
+            std::vector<std::shared_ptr<IWidget> > groups;
+            std::vector<std::shared_ptr<Divider> > dividers;
+            for (int i = 0; i < 4; ++i)
+            {
+                if (i > 0)
+                {
+                    dividers.push_back(Divider::create(_context, Orientation::Horizontal, layout));
+                }
+                groups.push_back(Label::create(_context, "Group", layout));
+            }
+            const auto visible = [&dividers]
+            {
+                std::vector<bool> out;
+                for (const auto& divider : dividers)
+                {
+                    out.push_back(divider->isVisible(false));
+                }
+                return out;
+            };
+
+            updateDividers(layout);
+            FTK_CHECK(std::vector<bool>({ true, true, true }) == visible());
+
+            // The first group hidden: nothing to divide it from.
+            groups[0]->hide();
+            updateDividers(layout);
+            FTK_CHECK(std::vector<bool>({ false, true, true }) == visible());
+
+            // A middle group hidden: one divider between its neighbors.
+            groups[0]->show();
+            groups[2]->hide();
+            updateDividers(layout);
+            FTK_CHECK(std::vector<bool>({ true, true, false }) == visible());
+
+            // The last group hidden.
+            groups[2]->show();
+            groups[3]->hide();
+            updateDividers(layout);
+            FTK_CHECK(std::vector<bool>({ true, true, false }) == visible());
+
+            // One group left: no dividers.
+            groups[0]->hide();
+            groups[1]->hide();
+            updateDividers(layout);
+            FTK_CHECK(std::vector<bool>({ false, false, false }) == visible());
         }
 
         void RowLayoutTest::_test(

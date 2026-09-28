@@ -77,4 +77,30 @@ namespace ftk
                 event.style->getSizeRole(SizeRole::Border, event.displayScale);
         }
     }
+
+    void updateDividers(const std::shared_ptr<IWidget>& parent)
+    {
+        std::shared_ptr<IWidget> pending;
+        bool before = false;
+        for (const auto& child : parent->getChildren())
+        {
+            if (std::dynamic_pointer_cast<Divider>(child))
+            {
+                child->setVisible(false);
+                if (before && !pending)
+                {
+                    pending = child;
+                }
+            }
+            else if (child->isVisible(false))
+            {
+                if (pending)
+                {
+                    pending->setVisible(true);
+                    pending.reset();
+                }
+                before = true;
+            }
+        }
+    }
 }

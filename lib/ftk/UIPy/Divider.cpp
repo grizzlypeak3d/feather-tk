@@ -29,6 +29,8 @@ namespace ftk
                     nb::arg("context"),
                     nb::arg("orientation"),
                     nb::arg("parent") = nullptr);
+
+            m.def("updateDividers", &updateDividers, nb::arg("parent"));
         }
     }
 }
