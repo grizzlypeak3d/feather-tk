@@ -20,8 +20,6 @@ namespace ftk
         std::function<void(int)> deltaCallback;
         int modifiers = 0;
         std::function<void(bool)> activeCallback;
-        ColorRole buttonRole = ColorRole::None;
-        std::array<bool, 4> roundedCorners = { true, true, true, true };
 
         struct SizeData
         {
@@ -103,21 +101,6 @@ namespace ftk
         }
     }
 
-    bool ShuttleWidget::isSegment() const
-    {
-        return true;
-    }
-
-    void ShuttleWidget::setSegment(ColorRole background, const std::array<bool, 4>& value)
-    {
-        FTK_P();
-        if (background == p.buttonRole && value == p.roundedCorners)
-            return;
-        p.buttonRole = background;
-        p.roundedCorners = value;
-        setDrawUpdate();
-    }
-
     void ShuttleWidget::sizeHintEvent(const SizeHintEvent& event)
     {
         FTK_P();
@@ -150,21 +133,7 @@ namespace ftk
         FTK_P();
 
         const Box2I& g = getGeometry();
-        const int r = p.size.cornerRadius;
-        const TriMesh2F mesh = rect(
-            g,
-            {
-                p.roundedCorners[0] ? r : 0,
-                p.roundedCorners[1] ? r : 0,
-                p.roundedCorners[2] ? r : 0,
-                p.roundedCorners[3] ? r : 0
-            });
-        if (p.buttonRole != ColorRole::None)
-        {
-            event.render->drawMesh(
-                mesh,
-                event.style->getColorRole(p.buttonRole));
-        }
+        const TriMesh2F mesh = rect(g, p.size.cornerRadius);
         if (_isMousePressed())
         {
             event.render->drawMesh(

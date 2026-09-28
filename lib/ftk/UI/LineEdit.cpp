@@ -34,7 +34,6 @@ namespace ftk
         // Square: a well to type in, set apart from the rounded buttons.
         // Only a corner at the end of a group is rounded, to finish the
         // group's shape.
-        std::array<bool, 4> roundedCorners = { false, false, false, false };
 
         std::weak_ptr<Menu> contextMenu;
         bool contextMenuFocus = false;
@@ -57,7 +56,6 @@ namespace ftk
             int margin = 0;
             int border = 0;
             int keyFocus = 0;
-            int cornerRadius = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             Size2I textSize;
@@ -383,23 +381,6 @@ namespace ftk
         }
     }
 
-    bool LineEdit::isSegment() const
-    {
-        return true;
-    }
-
-    void LineEdit::setSegment(ColorRole, const std::array<bool, 4>& value)
-    {
-        // The corners only: a field keeps its own well in a run of buttons,
-        // so that it still reads as something to type into.
-        FTK_P();
-        if (value == p.roundedCorners)
-            return;
-        p.roundedCorners = value;
-        p.draw.reset();
-        setDrawUpdate();
-    }
-
     void LineEdit::sizeHintEvent(const SizeHintEvent& event)
     {
         IMouseWidget::sizeHintEvent(event);
@@ -410,7 +391,6 @@ namespace ftk
             p.size.margin = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
-            p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             const auto& text = p.model->getText();
@@ -451,17 +431,9 @@ namespace ftk
             p.draw->g = _getAlignGeometry();
             p.draw->g2 = _getMarginGeometry();
             p.draw->g3 = _getTextGeometry();
-            const int r = p.size.cornerRadius;
-            const std::array<int, 4> radii =
-            {
-                p.roundedCorners[0] ? r : 0,
-                p.roundedCorners[1] ? r : 0,
-                p.roundedCorners[2] ? r : 0,
-                p.roundedCorners[3] ? r : 0
-            };
-            p.draw->bgMesh = rect(p.draw->g, radii);
-            p.draw->border = border(p.draw->g, p.size.border, radii);
-            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus, radii);
+            p.draw->bgMesh = rect(p.draw->g);
+            p.draw->border = border(p.draw->g, p.size.border);
+            p.draw->keyFocus = border(p.draw->g, p.size.keyFocus);
         }
 
         const bool enabled = isEnabled();
