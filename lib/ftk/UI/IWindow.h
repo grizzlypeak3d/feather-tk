@@ -284,6 +284,12 @@ namespace ftk
         //! Set the window close callback.
         FTK_UI_API void setCloseCallback(const std::function<void(void)>&);
 
+        //! Set a function called once the window has entered or left full
+        //! screen. On macOS the change animates, and setFullScreen() is only
+        //! its start: what is drawn during the animation is a snapshot of the
+        //! window stretched to the screen.
+        FTK_UI_API void setFullScreenCallback(const std::function<void(bool)>&);
+
         //! Get the window information.
         FTK_UI_API virtual std::vector<std::pair<std::string, std::string> > getWindowInfo() const;
 
@@ -307,6 +313,9 @@ namespace ftk
         //! show or hide acts on stale state and feeds back -- hiding the
         //! application on macOS turned into an endless shown/hidden loop.
         FTK_UI_API void _setVisibleFromEvent(bool);
+
+        //! The platform reported the window entered or left full screen.
+        FTK_UI_API void _fullScreenFromEvent(bool);
 
         virtual void _update(
             const std::shared_ptr<FontSystem>&,

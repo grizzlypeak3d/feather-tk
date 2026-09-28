@@ -1581,6 +1581,14 @@ namespace ftk
                         window->close();
                     }
                     break;
+                case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+                case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->_fullScreenFromEvent(
+                            SDL_EVENT_WINDOW_ENTER_FULLSCREEN == event.type);
+                    }
+                    break;
 #endif // FTK_SDL2
 
 #if defined(FTK_SDL2)

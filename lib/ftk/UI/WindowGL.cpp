@@ -207,6 +207,11 @@ namespace ftk
     {
         IWindow::setFullScreen(value);
         _p->window->setFullScreen(value);
+#if defined(FTK_SDL2)
+        // SDL2 does not say when the change is done; it is as done as it
+        // will be told.
+        _fullScreenFromEvent(value);
+#endif // FTK_SDL2
     }
 
     void Window::setFloatOnTop(bool value)

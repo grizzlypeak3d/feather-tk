@@ -59,6 +59,7 @@ namespace ftk
         std::shared_ptr<Observable<WindowBufferType> > bufferType;
         std::shared_ptr<Observable<float> > displayScale;
         std::function<void(void)> closeCallback;
+        std::function<void(bool)> fullScreenCallback;
 
         bool inside = false;
         V2I cursorPos;
@@ -439,6 +440,11 @@ namespace ftk
         _p->closeCallback = value;
     }
 
+    void IWindow::setFullScreenCallback(const std::function<void(bool)>& value)
+    {
+        _p->fullScreenCallback = value;
+    }
+
     std::vector<std::pair<std::string, std::string> > IWindow::getWindowInfo() const
     {
         return {};
@@ -503,6 +509,15 @@ namespace ftk
     void IWindow::_setVisibleFromEvent(bool value)
     {
         IWindow::setVisible(value);
+    }
+
+    void IWindow::_fullScreenFromEvent(bool value)
+    {
+        FTK_P();
+        if (p.fullScreenCallback)
+        {
+            p.fullScreenCallback(value);
+        }
     }
 
     void IWindow::childAddEvent(const ChildAddEvent& event)

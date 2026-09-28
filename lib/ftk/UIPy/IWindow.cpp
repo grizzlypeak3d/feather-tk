@@ -120,7 +120,8 @@ namespace ftk
                 .def("setIcon", &IWindow::setIcon)
                 .def("screenshot", &IWindow::screenshot)
                 .def("close", &IWindow::close)
-                .def("setCloseCallback", &IWindow::setCloseCallback);
+                .def("setCloseCallback", &IWindow::setCloseCallback)
+                .def("setFullScreenCallback", &IWindow::setFullScreenCallback);
         }
     }
 }
