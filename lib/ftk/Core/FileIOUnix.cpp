@@ -588,6 +588,19 @@ namespace ftk
 #endif // __linux__
     }
 
+    void release(const void* p, size_t size)
+    {
+        if (!p || 0 == size)
+            return;
+        // The whole pages the range touches: a page shared with the next
+        // frame is only unmapped, not discarded, and reading it again faults
+        // it back in from the file cache.
+        static const uintptr_t pageSize = static_cast<uintptr_t>(sysconf(_SC_PAGESIZE));
+        const uintptr_t start = reinterpret_cast<uintptr_t>(p) & ~(pageSize - 1);
+        const uintptr_t end = reinterpret_cast<uintptr_t>(p) + size;
+        madvise(reinterpret_cast<void*>(start), end - start, MADV_DONTNEED);
+    }
+
     void truncateFile(const std::filesystem::path& path, size_t size)
     {
         if (::truncate(fromFileSystem(path).c_str(), size) != 0)

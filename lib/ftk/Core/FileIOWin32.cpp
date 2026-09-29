@@ -622,6 +622,12 @@ namespace ftk
         }
     }
 
+    void release(const void*, size_t)
+    {
+        // Windows trims a process's mapped pages from its working set on
+        // its own when memory runs low.
+    }
+
     void truncateFile(const std::filesystem::path& path, size_t size)
     {
         HANDLE h = INVALID_HANDLE_VALUE;

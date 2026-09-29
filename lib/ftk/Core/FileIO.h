@@ -72,6 +72,12 @@ namespace ftk
         std::string path;
         size_t offset = 0;
 
+        //! Whether the memory is a read-only mapping of the file, which
+        //! release() may unmap: reading it again faults it back in from
+        //! the file. Memory the caller holds is not, and releasing it would
+        //! lose it.
+        bool mapped = false;
+
         bool operator == (const MemFile&) const = default;
     };
 
@@ -240,6 +246,17 @@ namespace ftk
     //! the faults are synchronous and contend with each other when several
     //! threads read from one mapping.
     FTK_CORE_API void prefetch(const void*, size_t);
+
+    //! Tell the operating system a range of a memory mapped file is no longer
+    //! needed by this process. Only for a read-only mapping of a file (see
+    //! MemFile::mapped): other memory, a buffer on the heap, is discarded.
+    //!
+    //! The pages stay in the file cache, and reading the range again faults
+    //! them back in, but they are no longer mapped here. A mapped page that
+    //! has been read counts as in use, and memory reclaim passes over it; a
+    //! large file read through a mapping then crowds out the process's own
+    //! memory, which is swapped out in its place.
+    FTK_CORE_API void release(const void*, size_t);
 
     //! Read the contents from a file.
     FTK_CORE_API std::string read(const std::shared_ptr<FileIO>&);
