@@ -7,7 +7,9 @@
 #include <ftk/Core/Memory.h>
 #include <ftk/Core/Path.h>
 
+#include <algorithm>
 #include <atomic>
+#include <cstdint>
 #include <filesystem>
 
 #include <sys/mman.h>
@@ -553,10 +555,37 @@ namespace ftk
 
     void prefetch(const void* p, size_t size)
     {
-        if (p && size > 0)
+        if (!p || 0 == size)
+            return;
+#if defined(__linux__)
+        // From the start of the page: madvise() fails on an address that is
+        // not page aligned, and data inside a file -- a frame inside a
+        // bundle above all -- rarely starts on a page. The prefetch failed
+        // for nearly every frame, and with read ahead off for the bundle
+        // each frame came in as thousands of synchronous four kilobyte
+        // reads: a 7 GB/s drive read about 200 MB/s with the cores idle.
+        //
+        // And a window at a time: Linux reads no more than about its read
+        // ahead window for each request, 128 KB unless the device says
+        // otherwise, so a frame asked for in one request comes in only at
+        // its start.
+        static const uintptr_t pageSize = static_cast<uintptr_t>(sysconf(_SC_PAGESIZE));
+        const uintptr_t start = reinterpret_cast<uintptr_t>(p) & ~(pageSize - 1);
+        const uintptr_t end = reinterpret_cast<uintptr_t>(p) + size;
+        const uintptr_t chunk = 128 * 1024;
+        for (uintptr_t i = start; i < end; i += chunk)
         {
-            madvise(const_cast<void*>(p), size, MADV_WILLNEED);
+            madvise(
+                reinterpret_cast<void*>(i),
+                std::min(chunk, end - i),
+                MADV_WILLNEED);
         }
+#else // __linux__
+        // Left as it was on macOS, where the kernel's own read ahead keeps
+        // up with the bundle; an aligned prefetch there made no difference
+        // that stood out from the run to run noise.
+        madvise(const_cast<void*>(p), size, MADV_WILLNEED);
+#endif // __linux__
     }
 
     void truncateFile(const std::filesystem::path& path, size_t size)
