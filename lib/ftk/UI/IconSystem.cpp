@@ -55,7 +55,10 @@ namespace ftk
             float displayScale = 1.F;
             std::promise<std::shared_ptr<Image> > promise;
         };
-        const size_t requestTimeout = 5;
+        // How long the thread waits for a request before it looks again. A
+        // request wakes it at once; five milliseconds woke it two hundred
+        // times a second with nothing to do.
+        const size_t requestTimeout = 100;
 
         // The display scale is converted to an int for caching.
         const int displayScaleConvert = 100;
@@ -154,7 +157,7 @@ namespace ftk
                             std::chrono::milliseconds(p.requestTimeout),
                             [this]
                             {
-                                return !_p->mutex.requests.empty();
+                                return !_p->thread.running || !_p->mutex.requests.empty();
                             }))
                         {
                             for (
@@ -216,7 +219,13 @@ namespace ftk
     IconSystem::~IconSystem()
     {
         FTK_P();
-        p.thread.running = false;
+        // Under the lock and then woken, so that a thread waiting for a
+        // request stops now rather than when its wait times out.
+        {
+            std::unique_lock<std::mutex> lock(p.mutex.mutex);
+            p.thread.running = false;
+        }
+        p.thread.cv.notify_one();
         if (p.thread.thread.joinable())
         {
             p.thread.thread.join();
