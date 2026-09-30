@@ -622,10 +622,22 @@ namespace ftk
         }
     }
 
-    void release(const void*, size_t)
+    void release(const void* p, size_t size)
     {
-        // Windows trims a process's mapped pages from its working set on
-        // its own when memory runs low.
+        // Windows does trim a process's mapped pages from its working set
+        // when memory runs low, but only once it is low: a bundle of 4K
+        // frames played through added a couple of gigabytes of mapped pages
+        // a second, and with the cache's own tens of gigabytes the machine
+        // ran out and stopped responding before it trimmed.
+        //
+        // Unlocking pages that are not locked takes them out of the working
+        // set; that it fails with ERROR_NOT_LOCKED is expected. Pages of a
+        // file mapping go to the standby list, still the file's cache and
+        // counted as available, and reading them again maps them back.
+        if (p && size > 0)
+        {
+            VirtualUnlock(const_cast<void*>(p), size);
+        }
     }
 
     void truncateFile(const std::filesystem::path& path, size_t size)
