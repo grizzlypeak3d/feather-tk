@@ -113,16 +113,8 @@ namespace ftk
         out[ColorRole::Checked] = Color4F(.56F, .36F, .15F);
         out[ColorRole::KeyFocus] = Color4F(.8F, .6F, .3F);
         out[ColorRole::Overlay] = Color4F(0.F, 0.F, 0.F, .5F);
-        // Warm, and lighter than the menus and headers: a tooltip is the
-        // same rounded shape as a menu, and the color says it is only
-        // information. The classic yellow would glare here.
-        out[ColorRole::TooltipWindow] = Color4F(.3F, .28F, .22F);
+        out[ColorRole::TooltipWindow] = Color4F(.3F, .3F, .3F);
         out[ColorRole::TooltipText] = Color4F(.95F, .95F, .95F);
-        // The arrow glyphs -- combo boxes, popup buttons -- draw over the
-        // button color, so they are dark in both of the stock themes. A
-        // role rather than the icon file's own color, so that a style
-        // that wants them light -- an overlay of playback controls -- can
-        // say so.
         out[ColorRole::Arrow] = Color4F(0.F, 0.F, 0.F);
 
         out[ColorRole::Red]     = Color4F(.835F, .369F, 0.F);    // Vermillion
