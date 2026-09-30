@@ -253,6 +253,31 @@ namespace ftk
         //! Get the total number of bytes currently used.
         FTK_CORE_API static size_t getTotalByteCount();
 
+        //! \name Buffer Pool
+        //! Image data freed is kept and handed out again to an image of the
+        //! same size, which saves unmapping it and faulting in new pages.
+        //! It is only kept while the images alive and the data kept stay
+        //! within the maximum, so the kept data is room the live images have
+        //! given up rather than memory on top of theirs. Only large images
+        //! are kept. The maximum is zero, which keeps nothing, until it is
+        //! set.
+        ///@{
+
+        //! Set the maximum bytes of live images and kept data. Lowering it
+        //! frees kept data to fit.
+        FTK_CORE_API static void setBufferPoolMax(size_t);
+
+        //! Get the maximum bytes of live images and kept data.
+        FTK_CORE_API static size_t getBufferPoolMax();
+
+        //! Get the number of bytes kept.
+        FTK_CORE_API static size_t getBufferPoolByteCount();
+
+        //! Free the kept data.
+        FTK_CORE_API static void clearBufferPool();
+
+        ///@}
+
     private:
         ImageInfo _info;
         ImageTags _tags;

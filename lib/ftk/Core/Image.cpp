@@ -10,7 +10,10 @@
 #include <atomic>
 #include <array>
 #include <cstring>
+#include <map>
+#include <mutex>
 #include <sstream>
+#include <vector>
 
 namespace ftk
 {
@@ -219,6 +222,99 @@ namespace ftk
         // Sixteen was the value before, and a build with a checked heap
         // caught a write thirty-two bytes past the end of it.
         constexpr size_t dataPadding = 64;
+
+        // Image data kept for reuse. Freeing a large buffer unmaps it, and
+        // allocating one maps fresh pages that fault in on first write; both
+        // wait on the process's memory map, which every other thread faulting
+        // is waiting on too. A buffer kept and handed out again does neither.
+        //
+        // A player seeking through 4K EXRs freed its whole cache at once, 42 MB
+        // at a time, and filled it again with new buffers: the cache thread
+        // spent most of a second freeing, and faulting in the new frames was
+        // most of the time the reader took for each.
+        //
+        // Only kept while the images that are alive and the buffers kept stay
+        // within the maximum: the kept buffers are the room the live ones have
+        // just given up, not memory on top of it. Buffers are only handed out
+        // again for the same size, so when the sizes change -- another file,
+        // another resolution -- the new images take the room and the old
+        // buffers are no longer kept.
+        struct BufferPool
+        {
+            std::mutex mutex;
+            std::map<size_t, std::vector<uint8_t*> > buffers;
+            size_t byteCount = 0;
+            size_t maxByteCount = 0;
+        };
+
+        // Only buffers this big: small images are cheap to allocate.
+        constexpr size_t bufferPoolMin = 1024 * 1024;
+
+        BufferPool& getBufferPool()
+        {
+            // Never destroyed, so an image outliving the static objects still
+            // has a pool to go back to.
+            static BufferPool* pool = new BufferPool;
+            return *pool;
+        }
+
+        // Free kept buffers until the images alive and the buffers kept fit
+        // within the maximum. Called with the pool locked.
+        void trimBufferPool(BufferPool& pool)
+        {
+            auto i = pool.buffers.begin();
+            while (i != pool.buffers.end() &&
+                totalByteCount + pool.byteCount > pool.maxByteCount)
+            {
+                while (!i->second.empty() &&
+                    totalByteCount + pool.byteCount > pool.maxByteCount)
+                {
+                    delete[] i->second.back();
+                    i->second.pop_back();
+                    pool.byteCount -= i->first;
+                }
+                i = i->second.empty() ? pool.buffers.erase(i) : std::next(i);
+            }
+        }
+
+        uint8_t* acquireBuffer(size_t size)
+        {
+            if (size >= bufferPoolMin)
+            {
+                auto& pool = getBufferPool();
+                std::unique_lock<std::mutex> lock(pool.mutex);
+                const auto i = pool.buffers.find(size);
+                if (i != pool.buffers.end() && !i->second.empty())
+                {
+                    uint8_t* out = i->second.back();
+                    i->second.pop_back();
+                    pool.byteCount -= size;
+                    return out;
+                }
+
+                // None this size: the kept ones are another size, and make
+                // room for this one, which counts as alive already.
+                trimBufferPool(pool);
+            }
+            return new uint8_t[size];
+        }
+
+        // Called with the image no longer counted as alive.
+        void releaseBuffer(uint8_t* data, size_t size)
+        {
+            if (size >= bufferPoolMin)
+            {
+                auto& pool = getBufferPool();
+                std::unique_lock<std::mutex> lock(pool.mutex);
+                if (totalByteCount + pool.byteCount + size <= pool.maxByteCount)
+                {
+                    pool.buffers[size].push_back(data);
+                    pool.byteCount += size;
+                    return;
+                }
+            }
+            delete[] data;
+        }
     }
 
     Image::Image(const ImageInfo& info, uint8_t* externalData) :
@@ -235,19 +331,19 @@ namespace ftk
         }
         else
         {
-            _data = new uint8_t[_byteCount + dataPadding];
+            _data = acquireBuffer(_byteCount + dataPadding);
         }
     }
 
     Image::~Image()
     {
-        if (!_externalData)
-        {
-            delete[] _data;
-        }
-
         --objectCount;
         totalByteCount -= _byteCount;
+
+        if (!_externalData)
+        {
+            releaseBuffer(_data, _byteCount + dataPadding);
+        }
     }
 
     std::shared_ptr<Image> Image::create(const ImageInfo& info)
@@ -288,6 +384,43 @@ namespace ftk
     size_t Image::getTotalByteCount()
     {
         return totalByteCount;
+    }
+
+    void Image::setBufferPoolMax(size_t value)
+    {
+        auto& pool = getBufferPool();
+        std::unique_lock<std::mutex> lock(pool.mutex);
+        pool.maxByteCount = value;
+        trimBufferPool(pool);
+    }
+
+    size_t Image::getBufferPoolMax()
+    {
+        auto& pool = getBufferPool();
+        std::unique_lock<std::mutex> lock(pool.mutex);
+        return pool.maxByteCount;
+    }
+
+    size_t Image::getBufferPoolByteCount()
+    {
+        auto& pool = getBufferPool();
+        std::unique_lock<std::mutex> lock(pool.mutex);
+        return pool.byteCount;
+    }
+
+    void Image::clearBufferPool()
+    {
+        auto& pool = getBufferPool();
+        std::unique_lock<std::mutex> lock(pool.mutex);
+        for (auto& i : pool.buffers)
+        {
+            for (auto* data : i.second)
+            {
+                delete[] data;
+            }
+        }
+        pool.buffers.clear();
+        pool.byteCount = 0;
     }
 
     void to_json(nlohmann::json& json, const ImageMirror& in)

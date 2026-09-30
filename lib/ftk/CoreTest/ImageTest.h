@@ -27,6 +27,7 @@ namespace ftk
             void _info();
             void _members();
             void _functions();
+            void _bufferPool();
         };
     }
 }

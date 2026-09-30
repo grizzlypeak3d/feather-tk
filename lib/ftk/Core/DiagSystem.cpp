@@ -47,6 +47,10 @@ namespace ftk
             [] { return Image::getTotalByteCount() / megabyte; });
 
         addSampler(
+            "ftk Memory/Image buffer pool: {0}MB",
+            [] { return Image::getBufferPoolByteCount() / megabyte; });
+
+        addSampler(
             "ftk Objects/Images: {0}",
             [] { return Image::getObjectCount(); });
 
