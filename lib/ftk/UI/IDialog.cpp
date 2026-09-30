@@ -229,6 +229,12 @@ namespace ftk
         {
             size.w = std::max(size.w, p.titleLabel->getSizeHint().w);
         }
+        // Never larger than the window it opens in, whatever the content
+        // asks for: content taller than that -- a long document in a scroll
+        // widget -- is given the room there is and scrolls, rather than
+        // running off the window with its buttons out of reach.
+        size.w = std::min(size.w, gc.w());
+        size.h = std::min(size.h, gc.h() - titleH);
 
         const Box2I geom(
             g.x() + g.w() / 2 - (size.w + inset * 2) / 2,
