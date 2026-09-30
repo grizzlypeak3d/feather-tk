@@ -32,8 +32,13 @@
 #include <sys/sysinfo.h>
 #endif // __APPLE__
 #include <sys/utsname.h>
+#include <sys/wait.h>
+#include <cstring>
 #include <pwd.h>
+#include <spawn.h>
 #include <unistd.h>
+
+extern char** environ;
 
 namespace ftk
 {
@@ -244,12 +249,47 @@ namespace ftk
             value.size(),
             kCFStringEncodingASCII,
             NULL);
+        // NULL for a string that is not a URL, which CFRelease would crash
+        // on.
+        if (!url)
+        {
+            throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
+        }
         LSOpenCFURLRef(url, 0);
         CFRelease(url);
+#elif defined(__EMSCRIPTEN__)
+        // A browser has no xdg-open, and system() could never run one:
+        // window.open() would be the way. Not done yet, so this says so, as
+        // it always did.
+        throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
 #else // __APPLE__
-        std::stringstream ss;
-        ss << "xdg-open" << " " << value;
-        if (system(ss.str().c_str()) != 0)
+        // xdg-open itself, with the URL as its one argument, rather than a
+        // command line handed to a shell: unquoted there, a space split the
+        // URL in two, "&" ran the start of it in the background and dropped
+        // the rest -- a mail link's body -- and "?" or "*" could match file
+        // names. Nothing is parsed now, so every URL arrives as it was.
+        const char* argv[] = { "xdg-open", value.c_str(), nullptr };
+        pid_t pid = 0;
+        const int result = posix_spawnp(
+            &pid,
+            "xdg-open",
+            nullptr,
+            nullptr,
+            const_cast<char* const*>(argv),
+            environ);
+        if (result != 0)
+        {
+            throw std::runtime_error(Format("Cannot open URL: {0}: {1}").
+                arg(value).
+                arg(std::strerror(result)));
+        }
+        // Waited for, as system() did: xdg-open hands the URL to the desktop
+        // and returns, and waiting is what keeps it from being left a
+        // zombie.
+        int status = 0;
+        if (waitpid(pid, &status, 0) < 0 ||
+            !WIFEXITED(status) ||
+            WEXITSTATUS(status) != 0)
         {
             throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
         }
