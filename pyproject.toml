@@ -68,16 +68,19 @@ test-command = "python {project}/tests/run-python-tests.py && python {project}/t
 test-environment = { FTK_TESTS_NO_GL = "1" }
 
 [tool.cibuildwheel.linux]
-# What SDL3 needs at build time for X11 and Wayland; it loads the libraries
-# themselves from the system at run time. patchelf is for
-# etc/Python/relocate.py. The images are AlmaLinux 8, which
+# What SDL3 needs at build time for X11, Wayland and audio; it loads the
+# libraries themselves from the system at run time. Without the audio ones
+# SDL is built with no way to play sound, and says there is no audio device.
+# patchelf is for etc/Python/relocate.py. The images are AlmaLinux 8, which
 # has no libdecor, so the Wayland windows are decorated by the compositor or
-# not at all.
+# not at all, and whose PipeWire is older than SDL builds against, so on a
+# PipeWire system the sound goes through its PulseAudio server.
 before-all = """
 dnf install -y \
     libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel \
     mesa-libGL-devel mesa-libEGL-devel \
     wayland-devel wayland-protocols-devel libxkbcommon-devel \
+    alsa-lib-devel pulseaudio-libs-devel \
     patchelf
 """
 
