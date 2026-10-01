@@ -71,17 +71,34 @@ test-environment = { FTK_TESTS_NO_GL = "1" }
 # What SDL3 needs at build time for X11, Wayland and audio; it loads the
 # libraries themselves from the system at run time. Without the audio ones
 # SDL is built with no way to play sound, and says there is no audio device.
-# patchelf is for etc/Python/relocate.py. The images are AlmaLinux 8, which
-# has no libdecor, so the Wayland windows are decorated by the compositor or
-# not at all, and whose PipeWire is older than SDL builds against, so on a
-# PipeWire system the sound goes through its PulseAudio server.
+# patchelf is for etc/Python/relocate.py.
+#
+# The images are AlmaLinux 8, whose PipeWire is older than SDL builds against,
+# so on a PipeWire system the sound goes through its PulseAudio server. It has
+# no libdecor either, which SDL draws the window decorations with where the
+# compositor leaves them to the application, as GNOME does: without it the
+# windows there have no title bar or border. So libdecor is built here, for
+# its headers. It is not in the wheel: SDL loads the system's, and treats what
+# is newer than libdecor 0.1 as optional. cairo and pango are for libdecor's
+# own plugin, which its build requires.
 before-all = """
+set -e
 dnf install -y \
     libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel \
     mesa-libGL-devel mesa-libEGL-devel \
     wayland-devel wayland-protocols-devel libxkbcommon-devel \
     alsa-lib-devel pulseaudio-libs-devel \
+    cairo-devel pango-devel \
     patchelf
+/opt/python/cp312-cp312/bin/python -m pip install meson ninja
+export PATH=/opt/python/cp312-cp312/bin:$PATH
+curl --fail --location --retry 3 --output /tmp/libdecor.tar.gz \
+    https://gitlab.freedesktop.org/libdecor/libdecor/-/archive/0.2.2/libdecor-0.2.2.tar.gz
+tar -xzf /tmp/libdecor.tar.gz -C /tmp
+meson setup /tmp/libdecor-build /tmp/libdecor-0.2.2 \
+    --prefix=/usr --libdir=lib64 --buildtype=release \
+    -Ddemo=false -Ddbus=disabled -Dgtk=disabled
+ninja -C /tmp/libdecor-build install
 """
 
 [tool.cibuildwheel.windows]
