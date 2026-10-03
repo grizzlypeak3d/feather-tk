@@ -18,6 +18,7 @@
 #endif // FTK_SDL2
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <stdexcept>
 
