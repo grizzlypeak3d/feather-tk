@@ -3,9 +3,7 @@
 
 #pragma once
 
-#if defined(FTK_API_GL_4_1)
+// One loader for OpenGL and OpenGL ES: the functions and constants of both,
+// filled in for whichever the context is. See gl::getAPI() in Init.h for
+// which that is; a function the API in use lacks is a null pointer.
 #include <ftk/glad/gl.h>
-#elif defined(FTK_API_GLES_3)
-#include <ftk/glad/glad.h>
-#endif // FTK_API_GL_4_1
-

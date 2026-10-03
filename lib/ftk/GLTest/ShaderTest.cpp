@@ -43,10 +43,8 @@ namespace ftk
 
         namespace
         {
-#if defined(FTK_API_GL_4_1)
+            // No version line: Shader adds the header for the API in use.
             std::string vertexSource = 
-                "#version 410\n"
-                "\n"
                 "in vec3 vPos;\n"
                 "\n"
                 "uniform int i;\n"
@@ -67,8 +65,6 @@ namespace ftk
                 "    gl_Position = vec4(vPos, 1.0);\n"
                 "}\n";
             std::string fragmentSource =
-                "#version 410\n"
-                "\n"
                 "out vec4 outColor;\n"
                 "\n"
                 "void main()\n"
@@ -76,41 +72,6 @@ namespace ftk
                 "\n"
                 "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
                 "}\n";
-#elif defined(FTK_API_GLES_3)
-            std::string vertexSource =
-                "#version 300 es\n"
-                "precision mediump float;\n"
-                "\n"
-                "in vec3 vPos;\n"
-                "\n"
-                "uniform int i;\n"
-                "uniform float f;\n"
-                "uniform vec2 v2;\n"
-                "uniform vec3 v3;\n"
-                "uniform vec4 v4;\n"
-                "uniform mat3 m3;\n"
-                "uniform mat4 m4;\n"
-                "uniform vec4 c;\n"
-                "uniform int ai[4];\n"
-                "uniform float af[4];\n"
-                "uniform vec3 av3[4];\n"
-                "uniform vec4 av4[4];\n"
-                "\n"
-                "void main()\n"
-                "{\n"
-                "    gl_Position = vec4(vPos, 1.0);\n"
-                "}\n";
-            std::string fragmentSource =
-                "#version 300 es\n"
-                "precision mediump float;\n"
-                "out vec4 outColor;\n"
-                "\n"
-                "void main()\n"
-                "{\n"
-                "\n"
-                "    outColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-                "}\n";
-#endif // FTK_API_GL_4_1
         }
                
         void ShaderTest::run()
@@ -119,8 +80,8 @@ namespace ftk
                 auto window = createWindow(_context);
 
                 auto shader = Shader::create(vertexSource, fragmentSource);
-                FTK_CHECK(vertexSource == shader->getVertexSource());
-                FTK_CHECK(fragmentSource == shader->getFragmentSource());
+                FTK_CHECK(getShaderHeader() + vertexSource == shader->getVertexSource());
+                FTK_CHECK(getShaderHeader() + fragmentSource == shader->getFragmentSource());
                 FTK_CHECK(shader->getProgram());
                 shader->bind();
                 shader->setUniform("i", 1);

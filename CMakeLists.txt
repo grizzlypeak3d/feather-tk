@@ -37,7 +37,11 @@ endif()
 #-------------------------------------------------------------------------------
 # Options
 
-set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_3)")
+# The API a program asks for first. Which one it gets is decided when it
+# runs: where the one it asks for cannot be had it takes the other, and the
+# FTK_GL_API environment variable asks for one by name. GL_4_1_Debug is
+# OpenGL 4.1 with every call checked.
+set(ftk_API "GL_4_1" CACHE STRING "Preferred graphics API (GL_4_1, GL_4_1_Debug, GLES_3)")
 # The build runs ftk-resource to embed the resources, so a cross build --
 # Emscripten, say -- cannot use the one it is compiling. Point this at a
 # native build's executable instead.
@@ -177,8 +181,15 @@ find_package(lunasvg REQUIRED)
 if ("${ftk_API}" STREQUAL "GL_4_1" OR
     "${ftk_API}" STREQUAL "GL_4_1_Debug" OR
     "${ftk_API}" STREQUAL "GLES_3")
-    set(ftk_GLAD_DIR ${PROJECT_SOURCE_DIR}/deps/glad_${ftk_API})
-    add_subdirectory(deps/glad_${ftk_API})
+    # One loader for OpenGL and OpenGL ES, filled in for whichever the
+    # context is.
+    if("${ftk_API}" STREQUAL "GL_4_1_Debug")
+        set(ftk_GLAD_DIR ${PROJECT_SOURCE_DIR}/deps/glad_Debug)
+        add_subdirectory(deps/glad_Debug)
+    else()
+        set(ftk_GLAD_DIR ${PROJECT_SOURCE_DIR}/deps/glad)
+        add_subdirectory(deps/glad)
+    endif()
     if(EMSCRIPTEN)
         # SDL and GL come from Emscripten itself: the SDL port supplies the
         # headers and the implementation, and the GL calls land on WebGL.

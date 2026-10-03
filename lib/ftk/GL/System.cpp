@@ -4,6 +4,7 @@
 #include <ftk/GL/System.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/Shader.h>
@@ -133,6 +134,41 @@ namespace ftk
                     out = toFileSystem(info.dli_fname);
                 }
 #endif // _WIN32
+                return out;
+            }
+        }
+
+        namespace
+        {
+            // Whether a context of an API can be made: tried with a window
+            // nobody sees.
+            bool hasAPI(API api)
+            {
+                bool out = false;
+                SDL_GL_ResetAttributes();
+                setContextAttributes(api);
+                if (SDL_Window* sdlWindow = SDL_CreateWindow(
+                    "",
+#if defined(FTK_SDL2)
+                    SDL_WINDOWPOS_UNDEFINED,
+                    SDL_WINDOWPOS_UNDEFINED,
+#endif // FTK_SDL2
+                    16,
+                    16,
+                    SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN))
+                {
+                    if (SDL_GLContext sdlGLContext = SDL_GL_CreateContext(sdlWindow))
+                    {
+                        out = true;
+#if defined(FTK_SDL2)
+                        SDL_GL_DeleteContext(sdlGLContext);
+#elif defined(FTK_SDL3)
+                        SDL_GL_DestroyContext(sdlGLContext);
+#endif // FTK_SDL2
+                    }
+                    SDL_DestroyWindow(sdlWindow);
+                }
+                SDL_GL_ResetAttributes();
                 return out;
             }
         }
@@ -326,6 +362,37 @@ namespace ftk
                 logSystem->print(
                     "ftk::gl::System",
                     Format("Video driver: {0}").arg(getVideoDriver()));
+            }
+
+            // Which graphics API this run uses: the first of those to try
+            // that a context can be made for. Decided here, before there is
+            // a window, since every context is then of that API and a good
+            // deal is chosen by it -- the shaders, the texture formats, the
+            // defaults of the buffers.
+            const std::vector<API> apis = getAPIs();
+            API api = apis.front();
+            if (apis.size() > 1)
+            {
+                for (const API i : apis)
+                {
+                    if (hasAPI(i))
+                    {
+                        api = i;
+                        break;
+                    }
+                }
+            }
+            setAPI(api);
+
+            // The attributes are set before the library is loaded as well as
+            // before each window: on X11 which library that is, GLX or EGL,
+            // goes by the profile asked for.
+            setContextAttributes(api);
+            if (logSystem)
+            {
+                logSystem->print(
+                    "ftk::gl::System",
+                    Format("Graphics API: {0}").arg(getLabel(api)));
             }
 #if defined(FTK_SDL2)
             if (SDL_GL_LoadLibrary(NULL) < 0)

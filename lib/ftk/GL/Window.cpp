@@ -154,21 +154,7 @@ namespace ftk
             SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
             const bool doubleBuffer = options & static_cast<int>(WindowOptions::DoubleBuffer);
             SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffer);
-#if defined(FTK_API_GL_4_1)
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-            const int glProfile =
-#if defined(__APPLE__)
-                SDL_GL_CONTEXT_PROFILE_CORE;
-#else // __APPLE__
-                SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
-#endif // __APPLE__
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, glProfile);
-#elif defined(FTK_API_GLES_3)
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-#endif // FTK_API_GL_4_1
+            setContextAttributes(getAPI());
             uint32_t sdlWindowFlags =
                 SDL_WINDOW_OPENGL |
                 SDL_WINDOW_RESIZABLE;
@@ -316,11 +302,7 @@ namespace ftk
             }
             //! \todo Shouldn't window creation fail if we didn't get the
             //! requested OpenGL version?
-#if defined(FTK_API_GL_4_1)
-            if (glVersionMajor < 4)
-#elif defined(FTK_API_GLES_3)
-            if (glVersionMajor < 3)
-#endif // FTK_API_GL_4_1
+            if (glVersionMajor < (isGLES() ? 3 : 4))
             {
                 throw std::runtime_error(Format("Unsupported OpenGL version: {0}").
                     arg(glVersionMajor));
