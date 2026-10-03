@@ -62,7 +62,8 @@ writing custom widgets straightforward.
   on exit.
 - **Widgets from JSON** — layouts loaded from data, with behavior attached in code by
   id; a live preview example reloads a layout as the file is edited.
-- **OpenGL rendering** — OpenGL 4.1 and OpenGL ES 3 backends.
+- **OpenGL rendering** — OpenGL 4.1 and OpenGL ES 3 backends in one build, chosen when
+  the program starts.
 - **HiDPI** — display scale awareness throughout; all size roles scale correctly on
   high-density displays and multi-monitor setups.
 - **Python bindings** — the C++ API from Python, installed with
