@@ -13,10 +13,9 @@
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/System.h>
 #include <ftk/GL/Window.h>
-#if defined(FTK_API_GLES_3)
+#include <ftk/GL/Init.h>
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/Shader.h>
-#endif // FTK_API_GLES_3
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
@@ -45,13 +44,14 @@ namespace ftk
 
         std::shared_ptr<gl::OffscreenBuffer> buffer;
         std::shared_ptr<IRender> render;
-#if defined(FTK_API_GLES_3)
+        // What the buffer is drawn to the window with on OpenGL ES, which
+        // is asked to copy one frame buffer to another less readily than
+        // OpenGL is.
         std::shared_ptr<gl::Shader> shader;
         std::shared_ptr<gl::VBO> vbo;
         std::shared_ptr<gl::VAO> vao;
         Size2I vboSize;
         size_t vboTriangles = 0;
-#endif // FTK_API_GLES_3
     };
 
     void Window::_init(
@@ -214,6 +214,36 @@ namespace ftk
 #endif // FTK_SDL2
     }
 
+    V2I Window::getPos() const
+    {
+        return _p->window->getPos();
+    }
+
+    void Window::setPos(const V2I& value)
+    {
+        _p->window->setPos(value);
+    }
+
+    bool Window::isMaximized() const
+    {
+        return _p->window->isMaximized();
+    }
+
+    void Window::setMaximized(bool value)
+    {
+        _p->window->setMaximized(value);
+    }
+
+    Box2I Window::getNormalGeometry() const
+    {
+        return _p->window->getNormalGeometry();
+    }
+
+    void Window::_geometryFromEvent(bool maximized)
+    {
+        _p->window->geometryChanged(maximized);
+    }
+
     void Window::setFloatOnTop(bool value)
     {
         IWindow::setFloatOnTop(value);
@@ -296,9 +326,10 @@ namespace ftk
                 p.window->makeCurrent();
                 gl::OffscreenBufferBinding bufferBinding(p.buffer);
                 glPixelStorei(GL_PACK_ALIGNMENT, 1);
-#if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_PACK_SWAP_BYTES, 0);
-#endif // FTK_API_GL_4_1
+                if (!gl::isGLES())
+                {
+                    glPixelStorei(GL_PACK_SWAP_BYTES, 0);
+                }
                 glReadPixels(
                     rect2.x(),
                     rect2.y(),
@@ -425,8 +456,8 @@ namespace ftk
                 p.render->end();
             }
 
-#if defined(FTK_API_GL_4_1)
-            if (p.buffer)
+            const bool gles = gl::isGLES();
+            if (p.buffer && !gles)
             {
                 glBindFramebuffer(
                     GL_READ_FRAMEBUFFER,
@@ -443,8 +474,7 @@ namespace ftk
                     GL_COLOR_BUFFER_BIT,
                     GL_LINEAR);
             }
-#elif defined(FTK_API_GLES_3)
-            if (p.buffer && !p.shader)
+            if (p.buffer && gles && !p.shader)
             {
                 try
                 {
@@ -490,7 +520,7 @@ namespace ftk
                     }
                 }
             }
-            if (p.buffer && p.shader)
+            if (p.buffer && gles && p.shader)
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 glDisable(GL_BLEND);
@@ -535,7 +565,6 @@ namespace ftk
                 p.vao->bind();
                 p.vao->draw(GL_TRIANGLES, 0, p.vboTriangles * 3);
             }
-#endif // FTK_API_GL_4_1
 
             // Presenting to the windowing system, which an offscreen window
             // has nothing to present to. The swap interval is 1, so this waits

@@ -1484,6 +1484,16 @@ namespace ftk
                                 SDL_GL_GetDrawableSize(sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
                                 window->_setSize(windowSize, frameBufferSize);
                             }
+                            window->_geometryFromEvent();
+                        }
+                        break;
+                    case SDL_WINDOWEVENT_MOVED:
+                    case SDL_WINDOWEVENT_MAXIMIZED:
+                    case SDL_WINDOWEVENT_RESTORED:
+                        if (auto window = _getWindow(event.window.windowID))
+                        {
+                            window->_geometryFromEvent(
+                                SDL_WINDOWEVENT_MAXIMIZED == event.window.event);
                         }
                         break;
                     case SDL_WINDOWEVENT_ENTER:
@@ -1560,6 +1570,16 @@ namespace ftk
                     if (auto window = _getWindow(event.window.windowID))
                     {
                         _windowResized(window, event.window.windowID);
+                        window->_geometryFromEvent();
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_MOVED:
+                case SDL_EVENT_WINDOW_MAXIMIZED:
+                case SDL_EVENT_WINDOW_RESTORED:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->_geometryFromEvent(
+                            SDL_EVENT_WINDOW_MAXIMIZED == event.type);
                     }
                     break;
                 case SDL_EVENT_WINDOW_MOUSE_ENTER:

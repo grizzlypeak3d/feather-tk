@@ -25,6 +25,7 @@
 #endif // __EMSCRIPTEN__
 
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 #include <vector>
 
@@ -124,6 +125,11 @@ namespace ftk
             std::vector<std::shared_ptr<Image> > icons;
             bool fullScreen = false;
             Size2I restoreSize;
+            // The geometry when neither maximized nor full screen, what it
+            // was before it was last noted, and when that was.
+            Box2I normalGeometry;
+            Box2I normalGeometryPrev;
+            std::chrono::steady_clock::time_point normalGeometryTime;
             bool floatOnTop = false;
             bool textInput = false;
         };
@@ -148,21 +154,7 @@ namespace ftk
             SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
             const bool doubleBuffer = options & static_cast<int>(WindowOptions::DoubleBuffer);
             SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffer);
-#if defined(FTK_API_GL_4_1)
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-            const int glProfile =
-#if defined(__APPLE__)
-                SDL_GL_CONTEXT_PROFILE_CORE;
-#else // __APPLE__
-                SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
-#endif // __APPLE__
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, glProfile);
-#elif defined(FTK_API_GLES_3)
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-#endif // FTK_API_GL_4_1
+            setContextAttributes(getAPI());
             uint32_t sdlWindowFlags =
                 SDL_WINDOW_OPENGL |
                 SDL_WINDOW_RESIZABLE;
@@ -310,11 +302,7 @@ namespace ftk
             }
             //! \todo Shouldn't window creation fail if we didn't get the
             //! requested OpenGL version?
-#if defined(FTK_API_GL_4_1)
-            if (glVersionMajor < 4)
-#elif defined(FTK_API_GLES_3)
-            if (glVersionMajor < 3)
-#endif // FTK_API_GL_4_1
+            if (glVersionMajor < (isGLES() ? 3 : 4))
             {
                 throw std::runtime_error(Format("Unsupported OpenGL version: {0}").
                     arg(glVersionMajor));
@@ -357,6 +345,9 @@ namespace ftk
 #if !defined(__EMSCRIPTEN__)
             fitToDisplay(p.sdlWindow);
 #endif // __EMSCRIPTEN__
+            geometryChanged();
+            p.normalGeometryPrev = p.normalGeometry;
+            p.normalGeometryTime = std::chrono::steady_clock::time_point();
         }
         
         Window::~Window()
@@ -434,6 +425,87 @@ namespace ftk
 #if !defined(__EMSCRIPTEN__)
             fitToDisplay(_p->sdlWindow);
 #endif // __EMSCRIPTEN__
+            geometryChanged();
+        }
+
+        V2I Window::getPos() const
+        {
+            V2I out;
+            SDL_GetWindowPosition(_p->sdlWindow, &out.x, &out.y);
+            return out;
+        }
+
+        void Window::setPos(const V2I& value)
+        {
+            SDL_SetWindowPosition(_p->sdlWindow, value.x, value.y);
+#if !defined(__EMSCRIPTEN__)
+            fitToDisplay(_p->sdlWindow);
+#endif // __EMSCRIPTEN__
+            geometryChanged();
+        }
+
+        bool Window::isMaximized() const
+        {
+            return SDL_GetWindowFlags(_p->sdlWindow) & SDL_WINDOW_MAXIMIZED;
+        }
+
+        void Window::setMaximized(bool value)
+        {
+            if (value)
+            {
+                SDL_MaximizeWindow(_p->sdlWindow);
+            }
+            else if (isMaximized())
+            {
+                SDL_RestoreWindow(_p->sdlWindow);
+            }
+        }
+
+        Box2I Window::getNormalGeometry() const
+        {
+            return _p->normalGeometry;
+        }
+
+        void Window::geometryChanged(bool maximized)
+        {
+            FTK_P();
+            if (maximized)
+            {
+                // A platform can say the window has been resized before it
+                // says it has been maximized, and the maximized size is then
+                // noted as the normal one. A normal size noted a moment
+                // before the window is maximized is that: put back what it
+                // was.
+                const auto now = std::chrono::steady_clock::now();
+                if (now - p.normalGeometryTime < std::chrono::milliseconds(500) &&
+                    p.normalGeometry.size() != p.normalGeometryPrev.size())
+                {
+                    p.normalGeometry = p.normalGeometryPrev;
+                }
+                return;
+            }
+            V2I pos;
+            Size2I size;
+            SDL_GetWindowPosition(p.sdlWindow, &pos.x, &pos.y);
+            SDL_GetWindowSize(p.sdlWindow, &size.w, &size.h);
+            const Box2I geometry(pos, size);
+            const auto flags = SDL_GetWindowFlags(p.sdlWindow);
+            if (p.fullScreen ||
+                (flags & SDL_WINDOW_FULLSCREEN) ||
+                (flags & SDL_WINDOW_MINIMIZED))
+            {
+                return;
+            }
+            if (flags & SDL_WINDOW_MAXIMIZED)
+            {
+                return;
+            }
+            if (geometry != p.normalGeometry)
+            {
+                p.normalGeometryPrev = p.normalGeometry;
+                p.normalGeometry = geometry;
+                p.normalGeometryTime = std::chrono::steady_clock::now();
+            }
         }
 
         Size2I Window::getSize() const

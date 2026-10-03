@@ -9,6 +9,8 @@
 #include <ftk/UI/Menu.h>
 #include <ftk/UI/Tooltip.h>
 
+#include <ftk/GL/Init.h>
+
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
@@ -40,6 +42,11 @@ namespace ftk
         "U8",
         "F16",
         "F32");
+
+    WindowBufferType getWindowBufferTypeDefault()
+    {
+        return gl::isGLES() ? WindowBufferType::U8 : WindowBufferType::F16;
+    }
 
     FTK_ENUM_IMPL(
         CursorShape,
@@ -123,7 +130,7 @@ namespace ftk
         p.title = title;
         p.fullScreen = Observable<bool>::create(false);
         p.floatOnTop = Observable<bool>::create(false);
-        p.bufferType = Observable<WindowBufferType>::create(windowBufferTypeDefault);
+        p.bufferType = Observable<WindowBufferType>::create(getWindowBufferTypeDefault());
         p.displayScale = Observable<float>::create(1.F);
 
         setBackgroundRole(ColorRole::Window);
@@ -510,6 +517,9 @@ namespace ftk
     {
         IWindow::setVisible(value);
     }
+
+    void IWindow::_geometryFromEvent(bool)
+    {}
 
     void IWindow::_fullScreenFromEvent(bool value)
     {

@@ -32,13 +32,9 @@ namespace ftk
         //! Texture cache byte count.
         size_t textureCacheByteCount = megabyte * 100;
 
-        //! Glyph texture atlas size.
-        int glyphAtlasSize =
-#if defined(FTK_API_GLES_3)
-            2048;
-#else // FTK_API_GLES_3
-            4096;
-#endif // FTK_API_GLES_3
+        //! Glyph texture atlas size. Zero is the renderer's own choice:
+        //! smaller where the graphics API is the more constrained one.
+        int glyphAtlasSize = 0;
 
         //! Enable logging.
         bool log = true;

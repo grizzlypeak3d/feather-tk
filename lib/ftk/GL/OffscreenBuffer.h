@@ -15,17 +15,14 @@ namespace ftk
         //! \name Offscreen Buffers
         ///@{
         
-        //! Default offscreen color buffer. Eight bit on OpenGL ES, where a
+        //! Get the default offscreen color buffer, for the API in use: 32
+        //! bit floating point on OpenGL. Eight bit on OpenGL ES, where a
         //! floating point buffer can only be read back as floating point:
         //! whatever reads a buffer made with the default, an export in the
         //! output's own pixel type say, can count on reading it as bytes.
         //! A floating point buffer asked for by name is made where the
         //! driver can render to it; see getRenderableType().
-#if defined(FTK_API_GLES_3)
-        const TextureType offscreenColorDefault = TextureType::RGBA_U8;
-#else // FTK_API_GLES_3
-        const TextureType offscreenColorDefault = TextureType::RGBA_F32;
-#endif // FTK_API_GLES_3
+        FTK_GL_API TextureType getOffscreenColorDefault();
 
         //! Get the texture type an offscreen buffer is made with, for the
         //! type asked for. OpenGL renders to all of them; OpenGL ES 3.0 to
@@ -110,7 +107,7 @@ namespace ftk
             //! Create a new offscreen buffer.
             FTK_GL_API static std::shared_ptr<OffscreenBuffer> create(
                 const Size2I&,
-                TextureType = offscreenColorDefault,
+                TextureType = getOffscreenColorDefault(),
                 const OffscreenBufferOptions& = OffscreenBufferOptions());
 
             //! Get the offscreen buffer information.
@@ -160,7 +157,7 @@ namespace ftk
         FTK_GL_API bool doCreate(
             const std::shared_ptr<OffscreenBuffer>&,
             const Size2I&,
-            TextureType = offscreenColorDefault,
+            TextureType = getOffscreenColorDefault(),
             const OffscreenBufferOptions & = OffscreenBufferOptions());
 
         //! Offscreen buffer binding.

@@ -26,12 +26,9 @@ namespace ftk
     };
     FTK_ENUM(FTK_UI_API, WindowBufferType);
 
-    //! Default window buffer type.
-#if defined(FTK_API_GL_4_1)
-    const WindowBufferType windowBufferTypeDefault = WindowBufferType::F16;
-#elif defined(FTK_API_GLES_3)
-    const WindowBufferType windowBufferTypeDefault = WindowBufferType::U8;
-#endif // FTK_API_GL_4_1
+    //! Get the default window buffer type, for the graphics API in use:
+    //! half float on OpenGL and eight bit on OpenGL ES.
+    FTK_UI_API WindowBufferType getWindowBufferTypeDefault();
 
     //! Mouse cursor shapes.
     enum class FTK_UI_API_TYPE CursorShape
@@ -316,6 +313,11 @@ namespace ftk
 
         //! The platform reported the window entered or left full screen.
         FTK_UI_API void _fullScreenFromEvent(bool);
+
+        //! The platform reported the window moved, resized, maximized or
+        //! restored; "maximized" for when it reported it maximized. The
+        //! default does nothing.
+        FTK_UI_API virtual void _geometryFromEvent(bool maximized = false);
 
         virtual void _update(
             const std::shared_ptr<FontSystem>&,

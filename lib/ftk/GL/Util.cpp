@@ -4,6 +4,7 @@
 #include <ftk/GL/Util.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 
 #include <ftk/Core/String.h>
 
@@ -63,11 +64,10 @@ namespace ftk
 
         unsigned int getReadPixelsFormat(ImageType value)
         {
-            const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> gl =
             {
                 GL_NONE,
 
-#if defined(FTK_API_GL_4_1)
                 GL_RED,
                 GL_RED,
                 GL_RED,
@@ -92,56 +92,54 @@ namespace ftk
                 GL_RGBA,
                 GL_RGBA,
                 GL_RGBA,
-#elif defined(FTK_API_GLES_3)
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_RGB,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-
-                GL_RGBA,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-#endif // FTK_API_GL_4_1
 
                 GL_NONE
             };
-            return data[static_cast<std::size_t>(value)];
+            static const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> gles =
+            {
+                GL_NONE,
+
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_RGB,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_RGBA,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_NONE
+            };
+            return (isGLES() ? gles : gl)[static_cast<std::size_t>(value)];
         }
 
         unsigned int getReadPixelsType(ImageType value)
         {
-            const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> data =
+            static const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> gl =
             {
                 GL_NONE,
 
                 GL_UNSIGNED_BYTE,
-#if defined(FTK_API_GL_4_1)
                 GL_UNSIGNED_SHORT,
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT,
-#elif defined(FTK_API_GLES_3)
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-#endif // FTK_API_GL_4_1
 
                 GL_NONE,
                 GL_NONE,
@@ -150,36 +148,52 @@ namespace ftk
                 GL_NONE,
 
                 GL_UNSIGNED_BYTE,
-#if defined(FTK_API_GL_4_1)
                 GL_UNSIGNED_INT_10_10_10_2,
                 GL_UNSIGNED_SHORT,
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT,
-#elif defined(FTK_API_GLES_3)
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-#endif // FTK_API_GL_4_1
 
                 GL_UNSIGNED_BYTE,
-#if defined(FTK_API_GL_4_1)
                 GL_UNSIGNED_SHORT,
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT,
-#elif defined(FTK_API_GLES_3)
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-#endif // FTK_API_GL_4_1
 
                 GL_NONE
             };
-            return data[static_cast<std::size_t>(value)];
+            static const std::array<GLenum, static_cast<std::size_t>(ImageType::Count)> gles =
+            {
+                GL_NONE,
+
+                GL_UNSIGNED_BYTE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_UNSIGNED_BYTE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_UNSIGNED_BYTE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+
+                GL_NONE
+            };
+            return (isGLES() ? gles : gl)[static_cast<std::size_t>(value)];
         }
 
         void setAlphaBlend(AlphaBlend alphaBlend)
@@ -260,9 +274,7 @@ namespace ftk
             GLboolean depthMask = GL_TRUE;
             GLboolean cullFace = GL_FALSE;
             GLboolean scissorTest = GL_FALSE;
-#if defined(FTK_API_GL_4_1)
             GLboolean programPointSize = GL_FALSE;
-#endif // FTK_API_GL_4_1
         };
 
         StateSave::StateSave() :
@@ -278,9 +290,10 @@ namespace ftk
             glGetBooleanv(GL_DEPTH_WRITEMASK, &p.depthMask);
             glGetBooleanv(GL_CULL_FACE, &p.cullFace);
             glGetBooleanv(GL_SCISSOR_TEST, &p.scissorTest);
-#if defined(FTK_API_GL_4_1)
-            glGetBooleanv(GL_PROGRAM_POINT_SIZE, &p.programPointSize);
-#endif // FTK_API_GL_4_1
+            if (!isGLES())
+            {
+                glGetBooleanv(GL_PROGRAM_POINT_SIZE, &p.programPointSize);
+            }
         }
 
         StateSave::~StateSave()
@@ -296,9 +309,10 @@ namespace ftk
             glDepthMask(p.depthMask);
             setEnabled(GL_CULL_FACE, p.cullFace);
             setEnabled(GL_SCISSOR_TEST, p.scissorTest);
-#if defined(FTK_API_GL_4_1)
-            setEnabled(GL_PROGRAM_POINT_SIZE, p.programPointSize);
-#endif // FTK_API_GL_4_1
+            if (!isGLES())
+            {
+                setEnabled(GL_PROGRAM_POINT_SIZE, p.programPointSize);
+            }
         }
 
         std::string getErrorLabel(unsigned int value)

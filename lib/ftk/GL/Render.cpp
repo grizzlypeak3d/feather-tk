@@ -3,6 +3,8 @@
 
 #include <ftk/GL/RenderPrivate.h>
 
+#include <ftk/GL/Init.h>
+
 #include <atomic>
 
 #include <ftk/Core/Context.h>
@@ -80,12 +82,15 @@ namespace ftk
             p.texturePool.setMax(options.texturePoolByteCount);
             p.textureCache.setMax(options.textureCacheByteCount);
 
+            const int glyphAtlasSize = options.glyphAtlasSize > 0 ?
+                options.glyphAtlasSize :
+                (isGLES() ? 2048 : 4096);
             if (!p.glyphAtlas ||
-                (p.glyphAtlas && options.glyphAtlasSize != p.glyphAtlas->getSize()))
+                (p.glyphAtlas && glyphAtlasSize != p.glyphAtlas->getSize()))
             {
                 const ImageType imageType = ImageType::L_U8;
                 p.glyphAtlas = TextureAtlas::create(
-                    options.glyphAtlasSize,
+                    glyphAtlasSize,
                     imageType,
                     ImageFilter::Linear);
             }

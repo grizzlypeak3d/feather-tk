@@ -39,6 +39,7 @@ else()
     target_compile_definitions(ftkGL PUBLIC FTK_GL_STATIC)
 endif()
 
+# The API asked for first; see gl::getAPI() for the one in use.
 if(${ftk_API} STREQUAL "GL_4_1_Debug")
     target_compile_definitions(ftkGL PUBLIC FTK_API_GL_4_1)
 else()
@@ -61,15 +62,14 @@ target_include_directories(ftkGL
 # second table that nobody fills.
 target_sources(ftkGL PRIVATE ${ftk_GLAD_SOURCE})
 
-# glad's own export macros, the same shape as FTK_UI_API and the rest: the
-# EXPORT pair is public so a consumer's headers declare the pointers dllimport,
-# and the BUILD half is private so this library declares them dllexport. Two
-# spellings because the GLES loader is an older generation of the generator.
-# Nothing to say for a static build, where they are ordinary symbols.
+# glad's own export macros, the same shape as FTK_UI_API and the rest:
+# EXPORT is public so a consumer's headers declare the pointers dllimport,
+# and BUILD is private so this library declares them dllexport. Nothing to
+# say for a static build, where they are ordinary symbols.
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(ftkGL
-        PUBLIC GLAD_API_CALL_EXPORT GLAD_GLAPI_EXPORT
-        PRIVATE GLAD_API_CALL_EXPORT_BUILD GLAD_GLAPI_EXPORT_BUILD)
+        PUBLIC GLAD_API_CALL_EXPORT
+        PRIVATE GLAD_API_CALL_EXPORT_BUILD)
 endif()
 
 target_link_libraries(ftkGL PUBLIC ftkCore)

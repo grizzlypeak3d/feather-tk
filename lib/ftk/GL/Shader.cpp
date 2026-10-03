@@ -4,6 +4,7 @@
 #include <ftk/GL/Shader.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Format.h>
@@ -143,19 +144,16 @@ namespace ftk
 
         std::string getShaderHeader()
         {
-#if defined(FTK_API_GLES_3)
             // Everything high precision: ES 3.0 guarantees it in fragment
             // shaders, pictures want it, and the samplers otherwise default
             // to low precision there.
-            return
+            return isGLES() ?
                 "#version 300 es\n"
                 "precision highp float;\n"
                 "precision highp int;\n"
                 "precision highp sampler2D;\n"
-                "precision highp sampler3D;\n";
-#else // FTK_API_GLES_3
-            return "#version 410\n";
-#endif // FTK_API_GLES_3
+                "precision highp sampler3D;\n" :
+                "#version 410\n";
         }
 
         namespace

@@ -86,6 +86,34 @@ namespace ftk
             //! Get the frame buffer size in pixels.
             FTK_GL_API Size2I getFrameBufferSize() const;
 
+            //! Get the window position, in screen coordinates. Where the
+            //! platform keeps the position to itself, as Wayland does, it is
+            //! zero.
+            FTK_GL_API V2I getPos() const;
+
+            //! Set the window position. The window is kept on the screen;
+            //! where the platform places the windows itself this does
+            //! nothing.
+            FTK_GL_API void setPos(const V2I&);
+
+            //! Get whether the window is maximized.
+            FTK_GL_API bool isMaximized() const;
+
+            //! Set whether the window is maximized. A hidden window is
+            //! maximized when it is shown.
+            FTK_GL_API void setMaximized(bool);
+
+            //! Get the position and size the window has when it is neither
+            //! maximized nor full screen: what it goes back to, and what to
+            //! remember it by. Remembered by its maximized size, a window
+            //! comes back that size without being maximized.
+            FTK_GL_API Box2I getNormalGeometry() const;
+
+            //! Note the window's position and size, after the platform has
+            //! moved, resized, maximized or restored it; "maximized" for
+            //! when it has said the window was maximized.
+            FTK_GL_API void geometryChanged(bool maximized = false);
+
             //! Get the window minimum size.
             FTK_GL_API Size2I getMinSize() const;
 

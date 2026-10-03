@@ -6,6 +6,7 @@
 #include <ftk/GL/Util.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 #include <ftk/GL/Texture.h>
 
 #include <ftk/Core/Error.h>
@@ -121,9 +122,17 @@ namespace ftk
             }
         }
 
+        TextureType getOffscreenColorDefault()
+        {
+            return isGLES() ? TextureType::RGBA_U8 : TextureType::RGBA_F32;
+        }
+
         TextureType getRenderableType(TextureType type)
         {
-#if defined(FTK_API_GLES_3)
+            if (!isGLES())
+            {
+                return type;
+            }
             const bool f32 = hasExtension("GL_EXT_color_buffer_float");
             const bool f16 = f32 || hasExtension("GL_EXT_color_buffer_half_float");
             const auto renderable = [f16, f32](TextureType value)
@@ -179,9 +188,6 @@ namespace ftk
                 }
             }
             return out;
-#else // FTK_API_GLES_3
-            return type;
-#endif // FTK_API_GLES_3
         }
 
         struct OffscreenBuffer::Private
@@ -219,9 +225,10 @@ namespace ftk
 
             GLenum target = GL_TEXTURE_2D;
 
-#if defined(FTK_API_GL_4_1)
+            // OpenGL ES 3.0 has no multisample textures: the buffer is not
+            // multisampled there.
             size_t samples = 0;
-            switch (p.options.sampling)
+            switch (isGLES() ? OffscreenSampling::None : p.options.sampling)
             {
             case OffscreenSampling::_2:
                 samples = 2;
@@ -241,7 +248,6 @@ namespace ftk
                 break;
             default: break;
             }
-#endif // FTK_API_GL_4_1
 
             // Create the color texture.
             if (p.info.type != TextureType::None)
@@ -252,9 +258,8 @@ namespace ftk
                     throw std::runtime_error(getErrorLabel(Error::ColorTexture));
                 }
                 glBindTexture(target, p.colorID);
-                switch (p.options.sampling)
+                switch (isGLES() ? OffscreenSampling::None : p.options.sampling)
                 {
-#if defined(FTK_API_GL_4_1)
                 case OffscreenSampling::_2:
                 case OffscreenSampling::_4:
                 case OffscreenSampling::_8:
@@ -267,7 +272,6 @@ namespace ftk
                         p.info.size.h,
                         false);
                     break;
-#endif // FTK_API_GL_4_1
                 default:
                     glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                     glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -297,20 +301,23 @@ namespace ftk
                     throw std::runtime_error(getErrorLabel(Error::RenderBuffer));
                 }
                 glBindRenderbuffer(GL_RENDERBUFFER, p.depthStencilID);
-#if defined(FTK_API_GL_4_1)
-                glRenderbufferStorageMultisample(
-                    GL_RENDERBUFFER,
-                    static_cast<GLsizei>(samples),
-                    getBufferInternalFormat(p.options.depth, p.options.stencil),
-                    p.info.size.w,
-                    p.info.size.h);
-#elif defined(FTK_API_GLES_3)
-                glRenderbufferStorage(
-                    GL_RENDERBUFFER,
-                    getBufferInternalFormat(p.options.depth, p.options.stencil),
-                    p.info.size.w,
-                    p.info.size.h);
-#endif // FTK_API_GL_4_1
+                if (!isGLES())
+                {
+                    glRenderbufferStorageMultisample(
+                        GL_RENDERBUFFER,
+                        static_cast<GLsizei>(samples),
+                        getBufferInternalFormat(p.options.depth, p.options.stencil),
+                        p.info.size.w,
+                        p.info.size.h);
+                }
+                else
+                {
+                    glRenderbufferStorage(
+                        GL_RENDERBUFFER,
+                        getBufferInternalFormat(p.options.depth, p.options.stencil),
+                        p.info.size.w,
+                        p.info.size.h);
+                }
                 glBindRenderbuffer(GL_RENDERBUFFER, 0);
             }
 

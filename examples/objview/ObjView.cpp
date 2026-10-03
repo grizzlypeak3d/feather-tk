@@ -9,6 +9,7 @@
 #include "SettingsModel.h"
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 #include <ftk/GL/Util.h>
 
 #include <ftk/Core/Error.h>
@@ -427,17 +428,16 @@ namespace objview
             // Create the offscreen buffer.
             const Size2I size = g.size();
             gl::OffscreenBufferOptions offscreenBufferOptions;
-#if defined(FTK_API_GL_4_1)
-            offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
+            if (!gl::isGLES())
+            {
+                offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
+            }
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
-#elif defined(FTK_API_GLES_3)
-            offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
-#endif // FTK_API_GL_4_1
-            if (gl::doCreate(_buffer, size, gl::offscreenColorDefault, offscreenBufferOptions))
+            if (gl::doCreate(_buffer, size, gl::getOffscreenColorDefault(), offscreenBufferOptions))
             {
                 _buffer = gl::OffscreenBuffer::create(
                     size,
-                    gl::offscreenColorDefault,
+                    gl::getOffscreenColorDefault(),
                     offscreenBufferOptions);
             }
 

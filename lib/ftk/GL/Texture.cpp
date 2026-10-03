@@ -4,6 +4,7 @@
 #include <ftk/GL/Texture.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 #include <ftk/GL/Util.h>
 
 #include <ftk/Core/Assert.h>
@@ -121,11 +122,10 @@ namespace ftk
 
         unsigned int getTextureFormat(TextureType value)
         {
-            const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(TextureType::Count)> gl =
             {
                 GL_NONE,
 
-#if defined(FTK_API_GL_4_1)
                 GL_RED,
                 GL_RED,
                 GL_RED,
@@ -150,43 +150,45 @@ namespace ftk
                 GL_RGBA,
                 GL_RGBA,
                 GL_RGBA
-#elif defined(FTK_API_GLES_3)
-                GL_RED,
-                GL_NONE,
-                GL_NONE,
-                GL_RED,
-                GL_RED,
-
-                GL_RG,
-                GL_NONE,
-                GL_NONE,
-                GL_RG,
-                GL_RG,
-
-                GL_RGB,
-                GL_NONE,
-                GL_NONE,
-                GL_NONE,
-                GL_RGB,
-                GL_RGB,
-
-                GL_RGBA,
-                GL_NONE,
-                GL_NONE,
-                GL_RGBA,
-                GL_RGBA
-#endif // FTK_API_GL_4_1
             };
-            return data[static_cast<size_t>(value)];
+            static const std::array<GLenum, static_cast<size_t>(TextureType::Count)> gles =
+            {
+                GL_NONE,
+
+                GL_RED,
+                GL_NONE,
+                GL_NONE,
+                GL_RED,
+                GL_RED,
+
+                GL_RG,
+                GL_NONE,
+                GL_NONE,
+                GL_RG,
+                GL_RG,
+
+                GL_RGB,
+                GL_NONE,
+                GL_NONE,
+                GL_NONE,
+                GL_RGB,
+                GL_RGB,
+
+                GL_RGBA,
+                GL_NONE,
+                GL_NONE,
+                GL_RGBA,
+                GL_RGBA
+            };
+            return (isGLES() ? gles : gl)[static_cast<size_t>(value)];
         }
 
         unsigned int getTextureInternalFormat(TextureType type)
         {
-            const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(TextureType::Count)> gl =
             {
                 GL_NONE,
 
-#if defined(FTK_API_GL_4_1)
                 GL_R8,
                 GL_R16,
                 GL_R32I,
@@ -211,7 +213,11 @@ namespace ftk
                 GL_RGBA32I,
                 GL_RGBA16F,
                 GL_RGBA32F
-#elif defined(FTK_API_GLES_3)
+            };
+            static const std::array<GLenum, static_cast<size_t>(TextureType::Count)> gles =
+            {
+                GL_NONE,
+
                 // ES 3.0 has no 16 bit normalized formats, so the U16
                 // types stay unsupported; the integer formats exist but
                 // nothing here samples them, so they wait for a use.
@@ -239,18 +245,16 @@ namespace ftk
                 GL_NONE,
                 GL_RGBA16F,
                 GL_RGBA32F
-#endif // FTK_API_GL_4_1
             };
-            return data[static_cast<size_t>(type)];
+            return (isGLES() ? gles : gl)[static_cast<size_t>(type)];
         }
 
         unsigned int getTextureType(TextureType value)
         {
-            const std::array<GLenum, static_cast<size_t>(TextureType::Count)> data =
+            static const std::array<GLenum, static_cast<size_t>(TextureType::Count)> gl =
             {
                 GL_NONE,
 
-#if defined(FTK_API_GL_4_1)
                 GL_UNSIGNED_BYTE,
                 GL_UNSIGNED_SHORT,
                 GL_UNSIGNED_INT,
@@ -275,7 +279,11 @@ namespace ftk
                 GL_UNSIGNED_INT,
                 GL_HALF_FLOAT,
                 GL_FLOAT
-#elif defined(FTK_API_GLES_3)
+            };
+            static const std::array<GLenum, static_cast<size_t>(TextureType::Count)> gles =
+            {
+                GL_NONE,
+
                 GL_UNSIGNED_BYTE,
                 GL_NONE,
                 GL_NONE,
@@ -300,9 +308,8 @@ namespace ftk
                 GL_NONE,
                 GL_HALF_FLOAT,
                 GL_FLOAT
-#endif // FTK_API_GL_4_1
             };
-            return data[static_cast<size_t>(value)];
+            return (isGLES() ? gles : gl)[static_cast<size_t>(value)];
         }
 
         TextureInfo::TextureInfo(const Size2I& size, TextureType type) :
@@ -562,9 +569,10 @@ namespace ftk
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
-#if defined(FTK_API_GL_4_1)
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
-#endif // FTK_API_GL_4_1
+                    if (!isGLES())
+                    {
+                        glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
+                    }
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -582,9 +590,10 @@ namespace ftk
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-#if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
-#endif // FTK_API_GL_4_1
+                if (!isGLES())
+                {
+                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                }
                 glTexSubImage2D(
                     GL_TEXTURE_2D,
                     0,
@@ -632,9 +641,10 @@ namespace ftk
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
-#if defined(FTK_API_GL_4_1)
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
-#endif // FTK_API_GL_4_1
+                    if (!isGLES())
+                    {
+                        glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
+                    }
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -652,9 +662,10 @@ namespace ftk
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-#if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
-#endif // FTK_API_GL_4_1
+                if (!isGLES())
+                {
+                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                }
                 glTexSubImage2D(
                     GL_TEXTURE_2D,
                     0,
@@ -701,9 +712,10 @@ namespace ftk
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
-#if defined(FTK_API_GL_4_1)
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
-#endif // FTK_API_GL_4_1
+                    if (!isGLES())
+                    {
+                        glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
+                    }
                     glTexSubImage2D(
                         GL_TEXTURE_2D,
                         0,
@@ -721,9 +733,10 @@ namespace ftk
             {
                 glBindTexture(GL_TEXTURE_2D, p.id);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-#if defined(FTK_API_GL_4_1)
-                glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
-#endif // FTK_API_GL_4_1
+                if (!isGLES())
+                {
+                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                }
                 glTexSubImage2D(
                     GL_TEXTURE_2D,
                     0,

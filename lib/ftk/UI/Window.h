@@ -37,6 +37,24 @@ namespace ftk
         FTK_UI_API void setSize(const Size2I&) override;
         FTK_UI_API void setMinSize(const Size2I&) override;
         FTK_UI_API void setFullScreen(bool) override;
+
+        //! Get the window position, in screen coordinates; zero where the
+        //! platform keeps it to itself.
+        FTK_UI_API V2I getPos() const;
+
+        //! Set the window position. The window is kept on the screen.
+        FTK_UI_API void setPos(const V2I&);
+
+        //! Get whether the window is maximized.
+        FTK_UI_API bool isMaximized() const;
+
+        //! Set whether the window is maximized.
+        FTK_UI_API void setMaximized(bool);
+
+        //! Get the position and size the window has when it is neither
+        //! maximized nor full screen: what to remember it by.
+        FTK_UI_API Box2I getNormalGeometry() const;
+
         FTK_UI_API void setFloatOnTop(bool) override;
         FTK_UI_API void raise() override;
         FTK_UI_API void setCursor(CursorShape) override;
@@ -50,6 +68,8 @@ namespace ftk
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void setVisible(bool) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
+
+        FTK_UI_API void _geometryFromEvent(bool maximized = false) override;
 
     protected:
         FTK_UI_API void _makeCurrent();

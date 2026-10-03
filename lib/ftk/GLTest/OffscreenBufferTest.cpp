@@ -81,36 +81,36 @@ namespace ftk
                 {
                     OffscreenBufferOptions options;
                     options.depth = depth;
-                    testData.push_back({ Size2I(1920, 1080), offscreenColorDefault, options });
+                    testData.push_back({ Size2I(1920, 1080), getOffscreenColorDefault(), options });
                 }
                 {
                     OffscreenBufferOptions options;
                     options.stencil = OffscreenStencil::_8;
-                    testData.push_back({ Size2I(1920, 1080), offscreenColorDefault, options });
+                    testData.push_back({ Size2I(1920, 1080), getOffscreenColorDefault(), options });
                 }
                 {
                     OffscreenBufferOptions options;
                     options.stencil = OffscreenStencil::_8;
                     options.depth = OffscreenDepth::_16;
-                    testData.push_back({ Size2I(1920, 1080), offscreenColorDefault, options });
+                    testData.push_back({ Size2I(1920, 1080), getOffscreenColorDefault(), options });
                 }
                 {
                     OffscreenBufferOptions options;
                     options.stencil = OffscreenStencil::_8;
                     options.depth = OffscreenDepth::_24;
-                    testData.push_back({ Size2I(1920, 1080), offscreenColorDefault, options });
+                    testData.push_back({ Size2I(1920, 1080), getOffscreenColorDefault(), options });
                 }
                 {
                     OffscreenBufferOptions options;
                     options.stencil = OffscreenStencil::_8;
                     options.depth = OffscreenDepth::_32;
-                    testData.push_back({ Size2I(1920, 1080), offscreenColorDefault, options });
+                    testData.push_back({ Size2I(1920, 1080), getOffscreenColorDefault(), options });
                 }
                 for (auto sampling : getOffscreenSamplingEnums())
                 {
                     OffscreenBufferOptions options;
                     options.sampling = sampling;
-                    testData.push_back({ Size2I(1920, 1080), offscreenColorDefault, options });
+                    testData.push_back({ Size2I(1920, 1080), getOffscreenColorDefault(), options });
                 }
                 for (const auto& test : testData)
                 {
@@ -163,9 +163,9 @@ namespace ftk
                 
                 OffscreenBufferOptions options;
                 options.depth = offscreenDepthDefault;
-                create = doCreate(buffer, size, offscreenColorDefault, options);
+                create = doCreate(buffer, size, getOffscreenColorDefault(), options);
                 FTK_CHECK(create);
-                buffer = OffscreenBuffer::create(size, offscreenColorDefault, options);
+                buffer = OffscreenBuffer::create(size, getOffscreenColorDefault(), options);
             }
         }
         

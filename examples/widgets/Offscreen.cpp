@@ -4,6 +4,7 @@
 #include "Offscreen.h"
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Init.h>
 #include <ftk/GL/Mesh.h>
 
 #include <ftk/Core/Format.h>
@@ -49,20 +50,9 @@ namespace widgets
     std::string vertexSource()
     {
         return
-#if defined(FTK_API_GL_4_1)
-            "#version 410\n"
-            "\n"
             "layout(location = 0) in vec3 vPos;\n"
             "layout(location = 1) in vec4 vColor;\n"
             "out vec4 fColor;\n"
-#elif defined(FTK_API_GLES_3)
-            "#version 300 es\n"
-            "precision mediump float;\n"
-            "\n"
-            "in vec3 vPos;\n"
-            "in vec4 vColor;\n"
-            "out vec4 fColor;\n"
-#endif // FTK_API_GL_4_1
             "\n"
             "struct Transform\n"
             "{\n"
@@ -81,9 +71,6 @@ namespace widgets
     std::string meshFragmentSource()
     {
         return
-#if defined(FTK_API_GL_4_1)
-            "#version 410\n"
-            "\n"
             "in vec4 fColor;\n"
             "out vec4 outColor;\n"
             "\n"
@@ -94,21 +81,6 @@ namespace widgets
             "\n"
             "    outColor = fColor * color;\n"
             "}\n";
-#elif defined(FTK_API_GLES_3)
-            "#version 300 es\n"
-            "precision mediump float;\n"
-            "out vec4 outColor;\n"
-            "\n"
-            "in vec4 fColor;\n"
-            "\n"
-            "uniform vec4 color;\n"
-            "\n"
-            "void main()\n"
-            "{\n"
-            "\n"
-            "    outColor = fColor * color;\n"
-            "}\n";
-#endif // FTK_API_GL_4_1
     }
 
     void Offscreen::drawEvent(const Box2I& drawRect, const DrawEvent& event)
@@ -126,17 +98,16 @@ namespace widgets
 
             const Size2I size = g.size();
             gl::OffscreenBufferOptions offscreenBufferOptions;
-#if defined(FTK_API_GL_4_1)
-            offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
+            if (!gl::isGLES())
+            {
+                offscreenBufferOptions.depth = gl::OffscreenDepth::_24;
+            }
             offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
-#elif defined(FTK_API_GLES_3)
-            offscreenBufferOptions.stencil = gl::OffscreenStencil::_8;
-#endif // FTK_API_GL_4_1
-            if (gl::doCreate(_buffer, size, gl::offscreenColorDefault, offscreenBufferOptions))
+            if (gl::doCreate(_buffer, size, gl::getOffscreenColorDefault(), offscreenBufferOptions))
             {
                 _buffer = gl::OffscreenBuffer::create(
                     size,
-                    gl::offscreenColorDefault,
+                    gl::getOffscreenColorDefault(),
                     offscreenBufferOptions);
             }
 

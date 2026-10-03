@@ -13,7 +13,8 @@ class RenderOptionsTest(unittest.TestCase):
         self.assertEqual(o.clearColor, ftk.Color4F(0, 0, 0, 0))
         self.assertTrue(o.texturePoolByteCount > 0)
         self.assertTrue(o.textureCacheByteCount > 0)
-        self.assertTrue(o.glyphAtlasSize > 0)
+        # Zero leaves the size to the renderer, which goes by the graphics API.
+        self.assertEqual(o.glyphAtlasSize, 0)
         self.assertTrue(o.log)
         self.assertEqual(o, ftk.RenderOptions())
         o.clear = False
