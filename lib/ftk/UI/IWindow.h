@@ -317,6 +317,11 @@ namespace ftk
         //! The platform reported the window entered or left full screen.
         FTK_UI_API void _fullScreenFromEvent(bool);
 
+        //! The platform reported the window moved, resized, maximized or
+        //! restored; "maximized" for when it reported it maximized. The
+        //! default does nothing.
+        FTK_UI_API virtual void _geometryFromEvent(bool maximized = false);
+
         virtual void _update(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,

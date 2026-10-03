@@ -214,6 +214,36 @@ namespace ftk
 #endif // FTK_SDL2
     }
 
+    V2I Window::getPos() const
+    {
+        return _p->window->getPos();
+    }
+
+    void Window::setPos(const V2I& value)
+    {
+        _p->window->setPos(value);
+    }
+
+    bool Window::isMaximized() const
+    {
+        return _p->window->isMaximized();
+    }
+
+    void Window::setMaximized(bool value)
+    {
+        _p->window->setMaximized(value);
+    }
+
+    Box2I Window::getNormalGeometry() const
+    {
+        return _p->window->getNormalGeometry();
+    }
+
+    void Window::_geometryFromEvent(bool maximized)
+    {
+        _p->window->geometryChanged(maximized);
+    }
+
     void Window::setFloatOnTop(bool value)
     {
         IWindow::setFloatOnTop(value);

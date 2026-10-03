@@ -511,6 +511,9 @@ namespace ftk
         IWindow::setVisible(value);
     }
 
+    void IWindow::_geometryFromEvent(bool)
+    {}
+
     void IWindow::_fullScreenFromEvent(bool value)
     {
         FTK_P();

@@ -60,6 +60,56 @@ namespace ftk
                 window->swap();
                 window->clearCurrent();
             }
+            {
+                // The geometry a window is remembered by: its position and
+                // size when it is neither maximized nor full screen.
+                // Maximizing and going full screen leave it as it was, where
+                // remembering the window by the size it has then brought it
+                // back filling the screen without being maximized.
+                const Size2I size(640, 480);
+                auto window = Window::create(
+                    _context,
+                    "WindowTest",
+                    size,
+                    static_cast<int>(WindowOptions::DoubleBuffer));
+                FTK_CHECK(window->getNormalGeometry().size() == window->getSize());
+                FTK_CHECK(window->getNormalGeometry().min == window->getPos());
+
+                // Not every platform lets a window be placed: Wayland keeps
+                // the position to itself.
+                const V2I pos = window->getPos() + V2I(20, 30);
+                window->setPos(pos);
+                const bool placed = window->getPos() == pos;
+                _print(Format("Window placed: {0}").arg(placed));
+                if (placed)
+                {
+                    FTK_CHECK(window->getNormalGeometry().min == pos);
+                }
+                const Size2I size2(512, 400);
+                window->setSize(size2);
+                FTK_CHECK(window->getNormalGeometry().size() == window->getSize());
+                const Box2I normal = window->getNormalGeometry();
+
+                window->setMaximized(true);
+                window->geometryChanged();
+                _print(Format("Maximized: {0}").arg(window->isMaximized()));
+                FTK_CHECK(window->getNormalGeometry() == normal);
+                window->setMaximized(false);
+                window->geometryChanged();
+                FTK_CHECK(window->getNormalGeometry() == normal);
+
+                window->setFullScreen(true);
+                window->geometryChanged();
+                FTK_CHECK(window->getNormalGeometry() == normal);
+                window->setFullScreen(false);
+
+                // A size noted the moment before the platform says the
+                // window was maximized is the maximized size, noted early.
+                window->setSize(Size2I(600, 500));
+                FTK_CHECK(window->getNormalGeometry().size() == window->getSize());
+                window->geometryChanged(true);
+                FTK_CHECK(window->getNormalGeometry().size() == normal.size());
+            }
         }
     }
 }
