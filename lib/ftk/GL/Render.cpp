@@ -130,6 +130,14 @@ namespace ftk
                     vertexSource(),
                     imageFragmentSource());
             }
+            // The same program again, for images in more than one plane;
+            // see _getImageShader().
+            if (!p.shaders["imagePlanes"])
+            {
+                p.shaders["imagePlanes"] = Shader::create(
+                    vertexSource(),
+                    imageFragmentSource());
+            }
 
             if (!p.vbos["line"])
             {
@@ -559,6 +567,39 @@ namespace ftk
                 }
                 break;
             }
+        }
+
+        const std::shared_ptr<Shader>& Render::_getImageShader(
+            const std::string& name,
+            const ImageInfo& info)
+        {
+            FTK_P();
+            // Two programs from one source: one for images in a single
+            // texture, one for those in planes. The source branches on the
+            // image type, so one program would do -- but then its samplers
+            // move between one texture unit and three as a movie's frame and
+            // an icon are drawn in turn, and a driver that builds what the
+            // samplers are bound to into the compiled shader compiles it
+            // again each time. Apple's driver for AMD graphics does: on a
+            // 2013 Mac Pro that was two compiles a frame, and a 1080p movie
+            // at twenty frames a second where two 2.7K image sequences side
+            // by side played at speed. With a program each, a program's
+            // samplers never move.
+            switch (info.type)
+            {
+            case ImageType::YUV_420P_U8:
+            case ImageType::YUV_422P_U8:
+            case ImageType::YUV_444P_U8:
+            case ImageType::YUV_420P_U16:
+            case ImageType::YUV_422P_U16:
+            case ImageType::YUV_444P_U16:
+            case ImageType::RGB_F16_P:
+            case ImageType::YUV_420SP_U8:
+            case ImageType::YUV_420SP_U16:
+                return p.shaders[name + "Planes"];
+            default: break;
+            }
+            return p.shaders[name];
         }
 
         void Render::_setActiveTextures(

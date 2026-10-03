@@ -694,12 +694,15 @@ namespace ftk
             if (outW == inW && outH == inH)
                 return false;
 
-            if (!p.shaders["imageScaleX"])
+            for (const std::string name : { "imageScaleX", "imageScaleXPlanes" })
             {
-                p.shaders["imageScaleX"] = Shader::create(
-                    vertexSource(), imageScaleXFragmentSource());
-                p.shaders["imageScaleX"]->bind();
-                p.shaders["imageScaleX"]->setUniform("transform.mvp", p.transform);
+                if (!p.shaders[name])
+                {
+                    p.shaders[name] = Shader::create(
+                        vertexSource(), imageScaleXFragmentSource());
+                    p.shaders[name]->bind();
+                    p.shaders[name]->setUniform("transform.mvp", p.transform);
+                }
             }
             if (!p.shaders["imageScaleY"])
             {
@@ -731,7 +734,7 @@ namespace ftk
                     -1.F,
                     1.F));
 
-                auto& shader = p.shaders["imageScaleX"];
+                auto& shader = _getImageShader("imageScaleX", info);
                 shader->bind();
                 shader->setUniform("imageType", static_cast<int>(info.type));
                 shader->setUniform("channelCount", getChannelCount(info.type));
@@ -861,13 +864,14 @@ namespace ftk
                 return;
             }
 
-            p.shaders["image"]->bind();
-            _setActiveTextures(p.shaders["image"], info, textures);
-            p.shaders["image"]->setUniform("color", color);
-            p.shaders["image"]->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
-            p.shaders["image"]->setUniform("imageType", static_cast<int>(info.type));
-            p.shaders["image"]->setUniform("channelCount", getChannelCount(info.type));
-            p.shaders["image"]->setUniform("channelDisplay", static_cast<int>(imageOptions.channelDisplay));
+            auto& shader = _getImageShader("image", info);
+            shader->bind();
+            _setActiveTextures(shader, info, textures);
+            shader->setUniform("color", color);
+            shader->setUniform("opaque", AlphaBlend::None == imageOptions.alphaBlend);
+            shader->setUniform("imageType", static_cast<int>(info.type));
+            shader->setUniform("channelCount", getChannelCount(info.type));
+            shader->setUniform("channelDisplay", static_cast<int>(imageOptions.channelDisplay));
             VideoLevels videoLevels = info.videoLevels;
             switch (imageOptions.videoLevels)
             {
@@ -879,10 +883,10 @@ namespace ftk
                 break;
             default: break;
             }
-            p.shaders["image"]->setUniform("videoLevels", static_cast<int>(videoLevels));
-            p.shaders["image"]->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
-            p.shaders["image"]->setUniform("mirrorX", info.layout.mirror.x);
-            p.shaders["image"]->setUniform("mirrorY", info.layout.mirror.y);
+            shader->setUniform("videoLevels", static_cast<int>(videoLevels));
+            shader->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
+            shader->setUniform("mirrorX", info.layout.mirror.x);
+            shader->setUniform("mirrorY", info.layout.mirror.y);
 
             if (imageOptions.alphaBlend != AlphaBlend::None)
             {
