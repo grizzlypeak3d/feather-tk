@@ -95,6 +95,10 @@ namespace ftk
         {
             p.gpuSystem = context->getSystem<gpu::System>();
             windowOptions = static_cast<int>(gl::WindowOptions::NoContext);
+            if ("vulkan" == p.gpuSystem->getDriver())
+            {
+                windowOptions |= static_cast<int>(gl::WindowOptions::Vulkan);
+            }
         }
 #endif // FTK_GPU
         p.window = gl::Window::create(
@@ -730,8 +734,13 @@ namespace ftk
         if (!p.gpuBuffer)
             return;
 
-        auto render = std::static_pointer_cast<gpu::Render>(p.render);
-        render->setTarget(p.gpuBuffer);
+        // The window's renderer may be one built on the GPU renderer; the
+        // target is said to the one that draws.
+        auto gpuRender = gpu::getRender(p.render);
+        if (!gpuRender)
+            return;
+        gpuRender->setTarget(p.gpuBuffer);
+        const auto& render = p.render;
         render->begin(bufferSize);
         const Box2I drawRect(V2I(), bufferSize);
         render->setClipRectEnabled(false);

@@ -35,7 +35,10 @@ namespace ftk
             MakeCurrent  = 4,
             //! No OpenGL context: the window is drawn to with something
             //! else, and making it current or swapping it does nothing.
-            NoContext    = 8
+            NoContext    = 8,
+            //! A window Vulkan can make a surface for, which SDL wants
+            //! said when the window is made.
+            Vulkan       = 16
         };
 
         //! OpenGL window.

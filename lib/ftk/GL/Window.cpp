@@ -165,6 +165,10 @@ namespace ftk
             sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 #elif defined(FTK_SDL3)
             sdlWindowFlags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
+            if (options & static_cast<int>(WindowOptions::Vulkan))
+            {
+                sdlWindowFlags |= SDL_WINDOW_VULKAN;
+            }
 #endif // FTK_SDL2
             if (options & static_cast<int>(WindowOptions::Visible))
             {

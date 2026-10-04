@@ -30,29 +30,6 @@ namespace ftk
                 }
                 return out;
             }
-
-            SDL_GPUShader* createShader(
-                SDL_GPUDevice* device,
-                const std::string& source,
-                const char* entryPoint,
-                SDL_GPUShaderStage stage,
-                Uint32 samplers)
-            {
-                SDL_GPUShaderCreateInfo info = {};
-                info.code = reinterpret_cast<const Uint8*>(source.c_str());
-                info.code_size = source.size() + 1;
-                info.entrypoint = entryPoint;
-                info.format = SDL_GPU_SHADERFORMAT_MSL;
-                info.stage = stage;
-                info.num_samplers = samplers;
-                info.num_uniform_buffers = 1;
-                SDL_GPUShader* out = SDL_CreateGPUShader(device, &info);
-                if (!out)
-                {
-                    throw std::runtime_error(Format("Cannot compile shader: {0}").arg(SDL_GetError()));
-                }
-                return out;
-            }
         }
 
         void Render::Private::beginPass()
@@ -122,43 +99,54 @@ namespace ftk
             {
                 return i->second;
             }
-            if (!(SDL_GetGPUShaderFormats(device) & SDL_GPU_SHADERFORMAT_MSL))
-            {
-                throw std::runtime_error(Format(
-                    "The GPU renderer has no shaders for the \"{0}\" driver yet").
-                    arg(SDL_GetGPUDeviceDriver(device)));
-            }
             Shader shader;
-            std::string vertex = vertexSourceMSL();
-            std::string fragment;
-            Uint32 samplers = 0;
+            ShaderSource vertex = vertexSource();
+            ShaderSource fragment;
+            size_t samplers = 0;
             if ("mesh" == name)
             {
-                fragment = meshFragmentSourceMSL();
+                fragment = meshFragmentSource();
             }
             else if ("colorMesh" == name)
             {
-                vertex = colorMeshVertexSourceMSL();
-                fragment = colorMeshFragmentSourceMSL();
+                vertex = colorMeshVertexSource();
+                fragment = colorMeshFragmentSource();
                 shader.vertexType = VertexType::Color;
             }
             else if ("texture" == name)
             {
-                fragment = textureFragmentSourceMSL();
+                fragment = textureFragmentSource();
                 samplers = 1;
             }
             else if ("text" == name)
             {
-                fragment = textFragmentSourceMSL();
+                fragment = textFragmentSource();
                 samplers = 1;
             }
             else if ("image" == name)
             {
-                fragment = imageFragmentSourceMSL();
+                fragment = imageFragmentSource();
                 samplers = 3;
             }
-            shader.vertex = createShader(device, vertex, "vertexMain", SDL_GPU_SHADERSTAGE_VERTEX, 0);
-            shader.fragment = createShader(device, fragment, "fragmentMain", SDL_GPU_SHADERSTAGE_FRAGMENT, samplers);
+            else if (const auto j = customShaders.find(name); j != customShaders.end())
+            {
+                fragment = j->second.fragmentSource;
+                samplers = j->second.samplers;
+            }
+            else
+            {
+                throw std::runtime_error(Format("No shader named \"{0}\"").arg(name));
+            }
+            shader.vertex = createShader(device, vertex, ShaderStage::Vertex, 0, 1);
+            try
+            {
+                shader.fragment = createShader(device, fragment, ShaderStage::Fragment, samplers, 1);
+            }
+            catch (const std::exception&)
+            {
+                SDL_ReleaseGPUShader(device, shader.vertex);
+                throw;
+            }
             shaders[name] = shader;
             return shaders[name];
         }
@@ -227,6 +215,12 @@ namespace ftk
                 b.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
                 b.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
                 b.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+                break;
+            case Blend::PremultipliedAddAlpha:
+                b.src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
+                b.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+                b.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
+                b.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
                 break;
             }
 
@@ -306,7 +300,7 @@ namespace ftk
             std::memcpy(c.data.data() + offset, vertices, byteCount);
             c.used += byteCount;
 
-            SDL_BindGPUGraphicsPipeline(pass, getPipeline(shader, blend));
+            SDL_BindGPUGraphicsPipeline(pass, getPipeline(shader, blendEnabled ? blend : Blend::None));
             SDL_GPUBufferBinding binding = {};
             binding.buffer = c.buffer;
             binding.offset = static_cast<Uint32>(offset);
@@ -323,7 +317,10 @@ namespace ftk
                 }
             }
             SDL_PushGPUVertexUniformData(cmd, 0, mvp, sizeof(mvp));
-            SDL_PushGPUFragmentUniformData(cmd, 0, uniforms, static_cast<Uint32>(uniformsByteCount));
+            if (uniforms && uniformsByteCount > 0)
+            {
+                SDL_PushGPUFragmentUniformData(cmd, 0, uniforms, static_cast<Uint32>(uniformsByteCount));
+            }
             if (textureCount > 0)
             {
                 SDL_BindGPUFragmentSamplers(pass, 0, textures, static_cast<Uint32>(textureCount));
@@ -388,6 +385,9 @@ namespace ftk
             samplerInfo.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
             samplerInfo.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
             p.sampler = SDL_CreateGPUSampler(p.device, &samplerInfo);
+            samplerInfo.min_filter = SDL_GPU_FILTER_NEAREST;
+            samplerInfo.mag_filter = SDL_GPU_FILTER_NEAREST;
+            p.samplerNearest = SDL_CreateGPUSampler(p.device, &samplerInfo);
         }
 
         Render::Render() :
@@ -422,6 +422,10 @@ namespace ftk
                 {
                     SDL_ReleaseGPUSampler(p.device, p.sampler);
                 }
+                if (p.samplerNearest)
+                {
+                    SDL_ReleaseGPUSampler(p.device, p.samplerNearest);
+                }
             }
         }
 
@@ -438,6 +442,158 @@ namespace ftk
         void Render::setTarget(const std::shared_ptr<OffscreenBuffer>& value)
         {
             _p->target = value;
+        }
+
+        IGPURender::~IGPURender()
+        {}
+
+        std::shared_ptr<Render> getRender(const std::shared_ptr<IRender>& value)
+        {
+            auto gpuRender = std::dynamic_pointer_cast<IGPURender>(value);
+            return gpuRender ? gpuRender->getGPURender() : nullptr;
+        }
+
+        std::shared_ptr<Render> Render::getGPURender()
+        {
+            return std::dynamic_pointer_cast<Render>(shared_from_this());
+        }
+
+        const std::shared_ptr<System>& Render::getSystem() const
+        {
+            return _p->system;
+        }
+
+        void Render::pushTarget(
+            const std::shared_ptr<OffscreenBuffer>& value,
+            bool clear,
+            const Color4F& color)
+        {
+            FTK_P();
+            // One pass draws into one target, so the pass under way ends
+            // here and another is started when the target comes back.
+            p.endPass();
+            Private::TargetState state;
+            state.target = p.target;
+            state.viewport = p.viewport;
+            state.clipRectEnabled = p.clipRectEnabled;
+            state.clearPending = p.clearPending;
+            state.clearColor = p.clearColor;
+            p.targets.push_back(state);
+            p.target = value;
+            p.viewport = Box2I(V2I(), value ? value->getSize() : Size2I());
+            p.clipRectEnabled = false;
+            p.clearPending = clear;
+            p.clearColor = color;
+        }
+
+        void Render::popTarget()
+        {
+            FTK_P();
+            if (p.targets.empty())
+                return;
+            // A buffer that was to be cleared and was never drawn into is
+            // still cleared.
+            if (p.clearPending)
+            {
+                p.beginPass();
+            }
+            p.endPass();
+            const Private::TargetState& state = p.targets.back();
+            p.target = state.target;
+            p.viewport = state.viewport;
+            p.clipRectEnabled = state.clipRectEnabled;
+            p.clearPending = state.clearPending;
+            p.clearColor = state.clearColor;
+            p.targets.pop_back();
+        }
+
+        const std::shared_ptr<OffscreenBuffer>& Render::getTarget() const
+        {
+            return _p->target;
+        }
+
+        void Render::setShader(
+            const std::string& name,
+            const ShaderSource& fragmentSource,
+            size_t samplers)
+        {
+            FTK_P();
+            removeShader(name);
+            Private::CustomShader shader;
+            shader.fragmentSource = fragmentSource;
+            shader.samplers = samplers;
+            p.customShaders[name] = shader;
+        }
+
+        bool Render::hasShader(const std::string& name) const
+        {
+            FTK_P();
+            return p.customShaders.find(name) != p.customShaders.end();
+        }
+
+        void Render::removeShader(const std::string& name)
+        {
+            FTK_P();
+            p.customShaders.erase(name);
+            auto i = p.pipelines.begin();
+            while (i != p.pipelines.end())
+            {
+                if (std::get<0>(i->first) == name)
+                {
+                    SDL_ReleaseGPUGraphicsPipeline(p.device, i->second);
+                    i = p.pipelines.erase(i);
+                }
+                else
+                {
+                    ++i;
+                }
+            }
+            if (const auto j = p.shaders.find(name); j != p.shaders.end())
+            {
+                SDL_ReleaseGPUShader(p.device, j->second.vertex);
+                SDL_ReleaseGPUShader(p.device, j->second.fragment);
+                p.shaders.erase(j);
+            }
+        }
+
+        void Render::drawShader(
+            const std::string& name,
+            Blend blend,
+            const TriMesh2F& mesh,
+            const M44F& transform,
+            const void* uniforms,
+            size_t uniformsByteCount,
+            const std::vector<TextureBinding>& textures)
+        {
+            FTK_P();
+            if (mesh.triangles.empty())
+                return;
+            std::vector<SDL_GPUTextureSamplerBinding> bindings(textures.size());
+            for (size_t i = 0; i < textures.size(); ++i)
+            {
+                bindings[i].texture = textures[i].texture;
+                bindings[i].sampler = textures[i].sampler;
+            }
+            p.drawUV(
+                name,
+                blend,
+                mesh,
+                transform,
+                uniforms,
+                uniformsByteCount,
+                bindings.data(),
+                bindings.size());
+        }
+
+        SDL_GPUSampler* Render::getSampler(ImageFilter value) const
+        {
+            FTK_P();
+            return ImageFilter::Nearest == value ? p.samplerNearest : p.sampler;
+        }
+
+        void Render::setBlendEnabled(bool value)
+        {
+            _p->blendEnabled = value;
         }
 
         void Render::begin(
@@ -481,6 +637,7 @@ namespace ftk
             p.clearPending = options.clear;
             p.clearColor = options.clearColor;
             p.clipRectEnabled = false;
+            p.blendEnabled = true;
 
             setViewport(Box2I(0, 0, size.w, size.h));
             setTransform(ortho(
@@ -495,6 +652,10 @@ namespace ftk
         void Render::end()
         {
             FTK_P();
+            while (!p.targets.empty())
+            {
+                popTarget();
+            }
             if (p.cmd)
             {
                 // A frame that cleared and drew nothing still clears.

@@ -4,6 +4,7 @@
 #include <ftk/GPU/System.h>
 
 #include <ftk/GPU/Render.h>
+#include <ftk/GPU/Shader.h>
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
@@ -74,6 +75,11 @@ namespace ftk
                     throw std::runtime_error(Format("Cannot create a GPU device: {0}").arg(SDL_GetError()));
                 }
                 _log(Format("GPU driver: {0}").arg(SDL_GetGPUDeviceDriver(p.device)));
+                _log(Format("GLSL compiler: {0}{1}").
+                    arg(hasGLSLCompiler() ? "glslang" : "none").
+                    arg(hasGLSLCompiler() && validateGLSL() ?
+                        ", checking every shader's GLSL as it is made" :
+                        ""));
             }
             return p.device;
         }
@@ -86,6 +92,11 @@ namespace ftk
         const std::shared_ptr<IRenderFactory>& System::getRenderFactory() const
         {
             return _p->renderFactory;
+        }
+
+        void System::setRenderFactory(const std::shared_ptr<IRenderFactory>& value)
+        {
+            _p->renderFactory = value;
         }
 
         unsigned int System::addTexture(SDL_GPUTexture* value)

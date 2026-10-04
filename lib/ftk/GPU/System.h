@@ -43,6 +43,9 @@ namespace ftk
             //! Get the render factory.
             FTK_GPU_API const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
 
+            //! Set the render factory.
+            FTK_GPU_API void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
+
             //! \name Texture IDs
             //! IRender::drawTexture() takes a number, which is what OpenGL
             //! calls a texture. These give a texture one.

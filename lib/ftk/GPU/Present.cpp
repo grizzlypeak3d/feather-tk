@@ -3,6 +3,8 @@
 
 #include <ftk/GPU/Present.h>
 
+#include <ftk/GPU/Shader.h>
+
 #include <ftk/GPU/System.h>
 
 #include <ftk/Core/Format.h>
@@ -103,6 +105,79 @@ namespace ftk
                 "    }\n"
                 "    c.a = 1.0;\n"
                 "    return c;\n"
+                "}\n";
+
+            const std::string vertexSourceGLSL =
+                "#version 450\n"
+                "\n"
+                "layout(location = 0) out vec2 fTexture;\n"
+                "\n"
+                "// One triangle that covers the target.\n"
+                "void main()\n"
+                "{\n"
+                "    vec2 p = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);\n"
+                "    gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);\n"
+                "    fTexture = vec2(p.x, 1.0 - p.y);\n"
+                "}\n";
+
+            const std::string fragmentSourceGLSL =
+                "#version 450\n"
+                "\n"
+                "layout(location = 0) in vec2 fTexture;\n"
+                "layout(location = 0) out vec4 outColor;\n"
+                "\n"
+                "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                "\n"
+                "layout(set = 3, binding = 0) uniform Uniforms\n"
+                "{\n"
+                "    int composition;\n"
+                "    float sdrWhiteLevel;\n"
+                "} u;\n"
+                "\n"
+                "const int Composition_SDR = 0;\n"
+                "const int Composition_HDRExtendedLinear = 1;\n"
+                "const int Composition_HDR10 = 2;\n"
+                "\n"
+                "// The sRGB curve, carried on past one and mirrored below zero.\n"
+                "vec3 toLinear(vec3 v)\n"
+                "{\n"
+                "    vec3 a = abs(v);\n"
+                "    vec3 lo = a / 12.92;\n"
+                "    vec3 hi = pow((a + 0.055) / 1.055, vec3(2.4));\n"
+                "    return sign(v) * mix(hi, lo, lessThanEqual(a, vec3(0.04045)));\n"
+                "}\n"
+                "\n"
+                "// SMPTE ST 2084, from nits.\n"
+                "vec3 toPQ(vec3 nits)\n"
+                "{\n"
+                "    const float m1 = 0.1593017578125;\n"
+                "    const float m2 = 78.84375;\n"
+                "    const float c1 = 0.8359375;\n"
+                "    const float c2 = 18.8515625;\n"
+                "    const float c3 = 18.6875;\n"
+                "    vec3 y = pow(clamp(nits / 10000.0, 0.0, 1.0), vec3(m1));\n"
+                "    return pow((c1 + c2 * y) / (1.0 + c3 * y), vec3(m2));\n"
+                "}\n"
+                "\n"
+                "void main()\n"
+                "{\n"
+                "    vec4 c = texture(s0, fTexture);\n"
+                "    if (Composition_HDRExtendedLinear == u.composition)\n"
+                "    {\n"
+                "        c.rgb = toLinear(c.rgb) * u.sdrWhiteLevel;\n"
+                "    }\n"
+                "    else if (Composition_HDR10 == u.composition)\n"
+                "    {\n"
+                "        // Rec. 709 primaries to Rec. 2020, by row.\n"
+                "        vec3 l = max(toLinear(c.rgb), 0.0);\n"
+                "        vec3 r2020 = vec3(\n"
+                "            dot(l, vec3(0.627404, 0.329283, 0.043313)),\n"
+                "            dot(l, vec3(0.069097, 0.919540, 0.011362)),\n"
+                "            dot(l, vec3(0.016391, 0.088013, 0.895595)));\n"
+                "        c.rgb = toPQ(r2020 * u.sdrWhiteLevel * 80.0);\n"
+                "    }\n"
+                "    c.a = 1.0;\n"
+                "    outColor = c;\n"
                 "}\n";
 
             struct Uniforms
@@ -231,30 +306,18 @@ namespace ftk
             SDL_GPUDevice* device = p.system->getDevice();
             if (!p.vertex)
             {
-                if (!(SDL_GetGPUShaderFormats(device) & SDL_GPU_SHADERFORMAT_MSL))
-                {
-                    throw std::runtime_error(Format(
-                        "The GPU renderer has no shaders for the \"{0}\" driver yet").
-                        arg(SDL_GetGPUDeviceDriver(device)));
-                }
-                SDL_GPUShaderCreateInfo info = {};
-                info.format = SDL_GPU_SHADERFORMAT_MSL;
-                info.code = reinterpret_cast<const Uint8*>(vertexSource.c_str());
-                info.code_size = vertexSource.size() + 1;
-                info.entrypoint = "vertexMain";
-                info.stage = SDL_GPU_SHADERSTAGE_VERTEX;
-                p.vertex = SDL_CreateGPUShader(device, &info);
-                info.code = reinterpret_cast<const Uint8*>(fragmentSource.c_str());
-                info.code_size = fragmentSource.size() + 1;
-                info.entrypoint = "fragmentMain";
-                info.stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
-                info.num_samplers = 1;
-                info.num_uniform_buffers = 1;
-                p.fragment = SDL_CreateGPUShader(device, &info);
-                if (!p.vertex || !p.fragment)
-                {
-                    throw std::runtime_error(Format("Cannot compile shader: {0}").arg(SDL_GetError()));
-                }
+                p.vertex = createShader(
+                    device,
+                    { vertexSource, vertexSourceGLSL },
+                    ShaderStage::Vertex,
+                    0,
+                    0);
+                p.fragment = createShader(
+                    device,
+                    { fragmentSource, fragmentSourceGLSL },
+                    ShaderStage::Fragment,
+                    1,
+                    1);
                 SDL_GPUSamplerCreateInfo samplerInfo = {};
                 samplerInfo.min_filter = SDL_GPU_FILTER_LINEAR;
                 samplerInfo.mag_filter = SDL_GPU_FILTER_LINEAR;

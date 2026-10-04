@@ -10,6 +10,7 @@
 #include <ftk/GPU/OffscreenBuffer.h>
 #include <ftk/GPU/Present.h>
 #include <ftk/GPU/Render.h>
+#include <ftk/GPU/Shader.h>
 #include <ftk/GPU/System.h>
 
 #include <ftk/GL/GL.h>
@@ -305,7 +306,8 @@ namespace
     int compare(
         const std::shared_ptr<Context>& context,
         const std::filesystem::path& a,
-        const std::filesystem::path& b)
+        const std::filesystem::path& b,
+        const std::filesystem::path& diff)
     {
         auto io = context->getSystem<ImageIO>();
         const auto imageA = io->read(a)->read();
@@ -320,6 +322,8 @@ namespace
         size_t far = 0;
         int max = 0;
         const size_t count = imageA->getByteCount();
+        auto diffImage = Image::create(imageA->getInfo());
+        const int channels = getChannelCount(imageA->getType());
         for (size_t i = 0; i < count; ++i)
         {
             const int d = std::abs(
@@ -328,6 +332,16 @@ namespace
             max = std::max(max, d);
             differing += d > 2;
             far += d > 32;
+            diffImage->getData()[i] = 4 == channels && 3 == (i % 4) ?
+                255 :
+                static_cast<uint8_t>(std::min(255, d * 8));
+        }
+        if (!diff.empty())
+        {
+            if (auto writer = io->write(diff, diffImage->getInfo()))
+            {
+                writer->write(diffImage);
+            }
         }
         std::cout << a.filename().string() << ": " << imageA->getInfo().size <<
             ", max " << max <<
@@ -438,7 +452,8 @@ namespace
             "ftk-gpu-test",
             320,
             240,
-            SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+            SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY |
+                ("vulkan" == system->getDriver() ? SDL_WINDOW_VULKAN : 0));
         if (!window || !SDL_ClaimWindowForGPUDevice(device, window))
         {
             std::cout << "Swapchain: " << SDL_GetError() << std::endl;
@@ -490,6 +505,44 @@ namespace
     }
 }
 
+namespace
+{
+    // The GLSL compiler, where there is one: that it compiles what is
+    // right and says so of what is wrong. The renderer's own shaders are
+    // compiled as they are made when FTK_GPU_VALIDATE is set.
+    bool glsl()
+    {
+        if (!gpu::hasGLSLCompiler())
+        {
+            std::cout << "GLSL: no compiler in this build" << std::endl;
+            return true;
+        }
+        const std::string good =
+            "#version 450\n"
+            "layout(location = 0) out vec4 outColor;\n"
+            "void main() { outColor = vec4(1.0); }\n";
+        const std::string bad =
+            "#version 450\n"
+            "layout(location = 0) out vec4 outColor;\n"
+            "void main() { outColor = nothing; }\n";
+        bool out = !gpu::compileGLSL(good, gpu::ShaderStage::Fragment).empty();
+        bool threw = false;
+        try
+        {
+            gpu::compileGLSL(bad, gpu::ShaderStage::Fragment);
+        }
+        catch (const std::exception&)
+        {
+            threw = true;
+        }
+        out &= threw;
+        std::cout << "GLSL: compiler " << (out ? "works" : "does not work") <<
+            (gpu::validateGLSL() ? ", and every shader made here is compiled with it" : "") <<
+            std::endl;
+        return out;
+    }
+}
+
 int main(int argc, char** argv)
 {
     int r = 1;
@@ -497,7 +550,7 @@ int main(int argc, char** argv)
     {
         if (argc > 3 && std::string(argv[1]) == "-compare")
         {
-            return compare(Context::create(), argv[2], argv[3]);
+            return compare(Context::create(), argv[2], argv[3], argc > 4 ? argv[4] : "");
         }
         const std::filesystem::path dir = argc > 1 ? argv[1] : ".";
         auto context = Context::create();
@@ -576,6 +629,7 @@ int main(int argc, char** argv)
             gpuImage = buffer->read();
         }
         const bool presentOK =
+            glsl() &&
             present(context->getSystem<gpu::System>()) &&
             swapchain(context->getSystem<gpu::System>());
 

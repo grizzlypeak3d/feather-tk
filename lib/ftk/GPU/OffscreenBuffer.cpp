@@ -183,6 +183,51 @@ namespace ftk
             return out;
         }
 
+        Color4F OffscreenBuffer::getPixel(const V2I& pos) const
+        {
+            FTK_P();
+            Color4F out;
+            if (pos.x < 0 || pos.y < 0 || pos.x >= p.size.w || pos.y >= p.size.h)
+            {
+                return out;
+            }
+            // The one pixel, drawn into a float texture of its own: nothing
+            // else has to be read back, and what comes back is floats
+            // whatever the buffer holds.
+            SDL_GPUDevice* device = p.system->getDevice();
+            SDL_GPUTextureCreateInfo info = {};
+            info.type = SDL_GPU_TEXTURETYPE_2D;
+            info.format = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT;
+            info.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+            info.width = 1;
+            info.height = 1;
+            info.layer_count_or_depth = 1;
+            info.num_levels = 1;
+            SDL_GPUTexture* tmp = SDL_CreateGPUTexture(device, &info);
+            if (!tmp)
+            {
+                return out;
+            }
+            SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
+            SDL_GPUBlitInfo blit = {};
+            blit.source.texture = p.texture;
+            blit.source.x = pos.x;
+            blit.source.y = pos.y;
+            blit.source.w = 1;
+            blit.source.h = 1;
+            blit.destination.texture = tmp;
+            blit.destination.w = 1;
+            blit.destination.h = 1;
+            blit.load_op = SDL_GPU_LOADOP_DONT_CARE;
+            blit.filter = SDL_GPU_FILTER_NEAREST;
+            SDL_BlitGPUTexture(cmd, &blit);
+            const auto image = download(device, cmd, tmp, Size2I(1, 1), ImageType::RGBA_F32);
+            SDL_ReleaseGPUTexture(device, tmp);
+            const float* data = reinterpret_cast<const float*>(image->getData());
+            out = Color4F(data[0], data[1], data[2], data[3]);
+            return out;
+        }
+
         namespace
         {
             std::shared_ptr<Image> download(

@@ -5,6 +5,7 @@
 
 #include <ftk/GPU/Export.h>
 
+#include <ftk/Core/Color.h>
 #include <ftk/Core/Image.h>
 
 struct SDL_GPUSampler;
@@ -68,6 +69,10 @@ namespace ftk
             //! Read the buffer back as eight bits a channel, whatever it
             //! holds: what a screenshot is.
             FTK_GPU_API std::shared_ptr<Image> readU8() const;
+
+            //! Read one pixel back, counted from the top left, as it is:
+            //! values past one and below zero are kept.
+            FTK_GPU_API Color4F getPixel(const V2I&) const;
 
         private:
             FTK_PRIVATE();

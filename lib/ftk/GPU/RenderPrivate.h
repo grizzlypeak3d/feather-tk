@@ -24,8 +24,6 @@ namespace ftk
     namespace gpu
     {
         //! \name Shaders
-        //! Metal Shading Language, which Metal compiles from source. Vulkan
-        //! takes SPIR-V, which these are yet to be written for.
         ///@{
 
         std::string vertexSourceMSL();
@@ -36,18 +34,15 @@ namespace ftk
         std::string textFragmentSourceMSL();
         std::string imageFragmentSourceMSL();
 
-        ///@}
+        ShaderSource vertexSource();
+        ShaderSource colorMeshVertexSource();
+        ShaderSource meshFragmentSource();
+        ShaderSource colorMeshFragmentSource();
+        ShaderSource textureFragmentSource();
+        ShaderSource textFragmentSource();
+        ShaderSource imageFragmentSource();
 
-        //! How what is drawn is put over what is there.
-        enum class Blend
-        {
-            //! glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA): the alpha
-            //! goes the way the color does.
-            Default,
-            None,
-            Straight,
-            Premultiplied
-        };
+        ///@}
 
         //! What a vertex holds besides its position.
         enum class VertexType
@@ -119,10 +114,20 @@ namespace ftk
             M44F transform;
 
             std::shared_ptr<OffscreenBuffer> target;
+            struct TargetState
+            {
+                std::shared_ptr<OffscreenBuffer> target;
+                Box2I viewport;
+                bool clipRectEnabled = false;
+                bool clearPending = false;
+                Color4F clearColor;
+            };
+            std::vector<TargetState> targets;
             SDL_GPUCommandBuffer* cmd = nullptr;
             SDL_GPURenderPass* pass = nullptr;
             bool clearPending = false;
             Color4F clearColor;
+            bool blendEnabled = true;
 
             struct Shader
             {
@@ -131,6 +136,12 @@ namespace ftk
                 VertexType vertexType = VertexType::UV;
             };
             std::map<std::string, Shader> shaders;
+            struct CustomShader
+            {
+                ShaderSource fragmentSource;
+                size_t samplers = 0;
+            };
+            std::map<std::string, CustomShader> customShaders;
             std::map<std::tuple<std::string, Blend, BufferType>, SDL_GPUGraphicsPipeline*> pipelines;
 
             // The frame's vertices, in buffers of a fixed size so that one
@@ -146,6 +157,7 @@ namespace ftk
             size_t chunk = 0;
 
             SDL_GPUSampler* sampler = nullptr;
+            SDL_GPUSampler* samplerNearest = nullptr;
 
             std::shared_ptr<Texture> glyphTexture;
             std::shared_ptr<BoxPack> glyphPack;

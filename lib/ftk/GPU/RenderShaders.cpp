@@ -411,5 +411,263 @@ namespace ftk
                 "    return outColor;\n"
                 "}\n";
         }
+
+        namespace
+        {
+            const std::string fragmentHeaderGLSL =
+                "#version 450\n"
+                "\n"
+                "layout(location = 0) in vec2 fTexture;\n"
+                "layout(location = 0) out vec4 outColor;\n"
+                "\n";
+
+            std::string vertexSourceGLSL()
+            {
+                return
+                    "#version 450\n"
+                    "\n"
+                    "layout(location = 0) in vec2 vPos;\n"
+                    "layout(location = 1) in vec2 vTexture;\n"
+                    "layout(location = 0) out vec2 fTexture;\n"
+                    "\n"
+                    "layout(set = 1, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    mat4 mvp;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    gl_Position = u.mvp * vec4(vPos, 0.0, 1.0);\n"
+                    "    fTexture = vTexture;\n"
+                    "}\n";
+            }
+
+            std::string colorMeshVertexSourceGLSL()
+            {
+                return
+                    "#version 450\n"
+                    "\n"
+                    "layout(location = 0) in vec2 vPos;\n"
+                    "layout(location = 1) in vec4 vColor;\n"
+                    "layout(location = 0) out vec4 fColor;\n"
+                    "\n"
+                    "layout(set = 1, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    mat4 mvp;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    gl_Position = u.mvp * vec4(vPos, 0.0, 1.0);\n"
+                    "    fColor = vColor;\n"
+                    "}\n";
+            }
+
+            std::string meshFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL +
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 color;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    outColor = u.color;\n"
+                    "}\n";
+            }
+
+            std::string colorMeshFragmentSourceGLSL()
+            {
+                return
+                    "#version 450\n"
+                    "\n"
+                    "layout(location = 0) in vec4 fColor;\n"
+                    "layout(location = 0) out vec4 outColor;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 color;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    outColor = fColor * u.color;\n"
+                    "}\n";
+            }
+
+            std::string textureFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL +
+                    "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 color;\n"
+                    "    int opaque;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    outColor = texture(s0, fTexture) * u.color;\n"
+                    "    if (u.opaque != 0)\n"
+                    "    {\n"
+                    "        outColor.a = 1.0;\n"
+                    "    }\n"
+                    "}\n";
+            }
+
+            std::string textFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL +
+                    "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 color;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    outColor.rgb = u.color.rgb;\n"
+                    "    float coverage = texture(s0, fTexture).r * u.color.a;\n"
+                    "    float gamma = 1.3;\n"
+                    "    outColor.a = pow(coverage, 1.0 / gamma);\n"
+                    "}\n";
+            }
+
+            // What the Metal source declares "constant int" and takes
+            // textures and samplers apart for, here: "const int", and a
+            // sampler that is both.
+            std::string toGLSL(std::string value)
+            {
+                const auto replace = [&value](const std::string& a, const std::string& b)
+                {
+                    size_t i = 0;
+                    while ((i = value.find(a, i)) != std::string::npos)
+                    {
+                        value.replace(i, a.size(), b);
+                        i += b.size();
+                    }
+                };
+                replace("constant int", "const int");
+                replace("float4", "vec4");
+                replace("float3", "vec3");
+                replace("float2", "vec2");
+                replace("t0.sample(s0, uv)", "texture(s0, uv)");
+                replace("t1.sample(s1, uv)", "texture(s1, uv)");
+                replace("t2.sample(s2, uv)", "texture(s2, uv)");
+                replace(
+                    "    texture2d<float> t0,\n"
+                    "    texture2d<float> t1,\n"
+                    "    texture2d<float> t2,\n"
+                    "    sampler s0,\n"
+                    "    sampler s1,\n"
+                    "    sampler s2)",
+                    "    sampler2D s0,\n"
+                    "    sampler2D s1,\n"
+                    "    sampler2D s2)");
+                return value;
+            }
+
+            std::string imageFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL +
+                    toGLSL(imageType) +
+                    toGLSL(sampleTexture) +
+                    "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                    "layout(set = 2, binding = 1) uniform sampler2D s1;\n"
+                    "layout(set = 2, binding = 2) uniform sampler2D s2;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 color;\n"
+                    "    vec4 yuvCoefficients;\n"
+                    "    int opaque;\n"
+                    "    int imageType;\n"
+                    "    int channelCount;\n"
+                    "    int channelDisplay;\n"
+                    "    int videoLevels;\n"
+                    "    int mirrorX;\n"
+                    "    int mirrorY;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    vec2 t = fTexture;\n"
+                    "    if (1 == u.mirrorX)\n"
+                    "    {\n"
+                    "        t.x = 1.0 - t.x;\n"
+                    "    }\n"
+                    "    if (0 == u.mirrorY)\n"
+                    "    {\n"
+                    "        t.y = 1.0 - t.y;\n"
+                    "    }\n"
+                    "    outColor = sampleTexture(\n"
+                    "        t,\n"
+                    "        u.imageType,\n"
+                    "        u.channelCount,\n"
+                    "        u.videoLevels,\n"
+                    "        u.yuvCoefficients,\n"
+                    "        s0, s1, s2) *\n"
+                    "        u.color;\n"
+                    "    if (u.opaque != 0)\n"
+                    "    {\n"
+                    "        outColor.a = 1.0;\n"
+                    "    }\n"
+                    "    if (ChannelDisplay_Red == u.channelDisplay)\n"
+                    "    {\n"
+                    "        outColor.g = outColor.b = outColor.r;\n"
+                    "    }\n"
+                    "    else if (ChannelDisplay_Green == u.channelDisplay)\n"
+                    "    {\n"
+                    "        outColor.r = outColor.b = outColor.g;\n"
+                    "    }\n"
+                    "    else if (ChannelDisplay_Blue == u.channelDisplay)\n"
+                    "    {\n"
+                    "        outColor.r = outColor.g = outColor.b;\n"
+                    "    }\n"
+                    "    else if (ChannelDisplay_Alpha == u.channelDisplay)\n"
+                    "    {\n"
+                    "        outColor.r = outColor.g = outColor.b = outColor.a;\n"
+                    "    }\n"
+                    "}\n";
+            }
+        }
+
+        ShaderSource vertexSource()
+        {
+            return { vertexSourceMSL(), vertexSourceGLSL() };
+        }
+
+        ShaderSource colorMeshVertexSource()
+        {
+            return { colorMeshVertexSourceMSL(), colorMeshVertexSourceGLSL() };
+        }
+
+        ShaderSource meshFragmentSource()
+        {
+            return { meshFragmentSourceMSL(), meshFragmentSourceGLSL() };
+        }
+
+        ShaderSource colorMeshFragmentSource()
+        {
+            return { colorMeshFragmentSourceMSL(), colorMeshFragmentSourceGLSL() };
+        }
+
+        ShaderSource textureFragmentSource()
+        {
+            return { textureFragmentSourceMSL(), textureFragmentSourceGLSL() };
+        }
+
+        ShaderSource textFragmentSource()
+        {
+            return { textFragmentSourceMSL(), textFragmentSourceGLSL() };
+        }
+
+        ShaderSource imageFragmentSource()
+        {
+            return { imageFragmentSourceMSL(), imageFragmentSourceGLSL() };
+        }
     }
 }
