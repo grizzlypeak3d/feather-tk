@@ -486,6 +486,14 @@ namespace
             std::cout << "Swapchain: " << SDL_GetError() << std::endl;
             return false;
         }
+        const bool shown = !(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN);
+        if (shown)
+        {
+            if (const SDL_DisplayMode* mode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(window)))
+            {
+                std::cout << "Display: " << mode->refresh_rate << " frames a second" << std::endl;
+            }
+        }
         const Size2I size(320, 240);
         auto source = gpu::OffscreenBuffer::create(system, size, gpu::BufferType::RGBA_F16);
         auto render = gpu::Render::create(system, nullptr, nullptr);
@@ -520,10 +528,42 @@ namespace
             }
             SDL_SubmitGPUCommandBuffer(cmd);
             SDL_WaitForGPUIdle(device);
+
+            // Whether presenting waits for the display: more frames, timed.
+            // Only a window that is shown is kept to the display's pace.
+            double rate = 0.0;
+            if (acquired && shown)
+            {
+                const int frames = 60;
+                const auto t0 = std::chrono::steady_clock::now();
+                for (int i = 0; i < frames; ++i)
+                {
+                    cmd = SDL_AcquireGPUCommandBuffer(device);
+                    texture = nullptr;
+                    if (SDL_WaitAndAcquireGPUSwapchainTexture(cmd, window, &texture, &w, &h) && texture)
+                    {
+                        presenter->draw(
+                            cmd,
+                            source->getTexture(),
+                            texture,
+                            static_cast<int>(SDL_GetGPUSwapchainTextureFormat(device, window)),
+                            got);
+                    }
+                    SDL_SubmitGPUCommandBuffer(cmd);
+                }
+                const std::chrono::duration<double> seconds = std::chrono::steady_clock::now() - t0;
+                rate = frames / seconds.count();
+            }
+
             std::cout << "Swapchain " << gpu::getLabel(composition) << ": " <<
                 (got == composition ? "supported" : "not supported") << ", " <<
                 (acquired ? "presented" : "no texture to present to") <<
-                " (" << w << "x" << h << ")" << std::endl;
+                " (" << w << "x" << h << ")";
+            if (rate > 0.0)
+            {
+                std::cout << ", " << rate << " frames a second";
+            }
+            std::cout << std::endl;
             out &= got != composition || acquired;
         }
         SDL_ReleaseWindowFromGPUDevice(device, window);
