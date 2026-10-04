@@ -153,7 +153,12 @@ namespace ftk
             SDL_DestroyCursor(i.second);
 #endif // FTK_SDL2
         }
-        p.window->makeCurrent();
+        // There is no window when making one failed: the application
+        // already holds this one by then, and lets go of it like any other.
+        if (p.window)
+        {
+            p.window->makeCurrent();
+        }
         p.render.reset();
         p.buffer.reset();
     }
