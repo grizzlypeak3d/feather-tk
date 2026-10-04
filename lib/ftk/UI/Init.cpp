@@ -10,6 +10,9 @@
 #include <ftk/UI/IconSystem.h>
 
 #include <ftk/GL/Init.h>
+#if defined(FTK_GPU)
+#include <ftk/GPU/System.h>
+#endif // FTK_GPU
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
@@ -19,6 +22,9 @@ namespace ftk
     void uiInit(const std::shared_ptr<Context>& context)
     {
         gl::init(context);
+#if defined(FTK_GPU)
+        gpu::init(context);
+#endif // FTK_GPU
 
         auto diagSystem = context->getSystem<DiagSystem>();
         diagSystem->addSampler(

@@ -68,6 +68,9 @@ else()
     set(ftk_SDL2 OFF CACHE BOOL "Enable support for SDL2")
     set(ftk_SDL3 ON CACHE BOOL "Enable support for SDL3")
 endif()
+# A spike: a renderer on SDL's GPU API (Metal, Vulkan) beside the OpenGL one.
+# It wants SDL3 built with a GPU driver, which the SuperBuild's is.
+set(ftk_GPU OFF CACHE BOOL "Enable the SDL GPU renderer (experimental)")
 set(ftk_nfd_DEFAULT OFF)
 if(WIN32 OR APPLE)
     set(ftk_nfd_DEFAULT ON)

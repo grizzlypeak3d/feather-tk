@@ -81,6 +81,11 @@ namespace ftk
             const std::shared_ptr<Style>&) override;
 
     private:
+        void _updateGPU(
+            const std::shared_ptr<FontSystem>&,
+            const std::shared_ptr<IconSystem>&,
+            const std::shared_ptr<Style>&);
+
         friend class App;
 
         FTK_PRIVATE();

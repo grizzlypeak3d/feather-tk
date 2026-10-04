@@ -1,4 +1,7 @@
 add_subdirectory(ftk-test)
+if(ftk_GPU AND ftk_SDL3)
+    add_subdirectory(ftk-gpu-test)
+endif()
 
 if(ftk_PYTHON)
     # Through the runner rather than "-m unittest" directly: built shared, the

@@ -151,13 +151,16 @@ namespace ftk
             // context it defaults to.
             context->getSystem<System>()->init();
 
-            SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-            const bool doubleBuffer = options & static_cast<int>(WindowOptions::DoubleBuffer);
-            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffer);
-            setContextAttributes(getAPI());
-            uint32_t sdlWindowFlags =
-                SDL_WINDOW_OPENGL |
-                SDL_WINDOW_RESIZABLE;
+            const bool noContext = options & static_cast<int>(WindowOptions::NoContext);
+            uint32_t sdlWindowFlags = SDL_WINDOW_RESIZABLE;
+            if (!noContext)
+            {
+                SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+                const bool doubleBuffer = options & static_cast<int>(WindowOptions::DoubleBuffer);
+                SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffer);
+                setContextAttributes(getAPI());
+                sdlWindowFlags |= SDL_WINDOW_OPENGL;
+            }
 #if defined(FTK_SDL2)
             sdlWindowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
 #elif defined(FTK_SDL3)
@@ -251,61 +254,65 @@ namespace ftk
                 });
 #endif // __EMSCRIPTEN__
 
-            p.sdlGLContext = SDL_GL_CreateContext(p.sdlWindow);
-            if (!p.sdlGLContext)
+            if (!noContext)
             {
-                throw std::runtime_error(Format("Cannot create OpenGL context: {0}").
-                    arg(SDL_GetError()));
-            }
+                p.sdlGLContext = SDL_GL_CreateContext(p.sdlWindow);
+                if (!p.sdlGLContext)
+                {
+                    throw std::runtime_error(Format("Cannot create OpenGL context: {0}").
+                        arg(SDL_GetError()));
+                }
 #if !defined(__EMSCRIPTEN__)
-            // The browser paces frames itself, and asking SDL to set a
-            // swap interval before the main loop exists only produces a
-            // warning.
-            if (options & static_cast<int>(WindowOptions::DoubleBuffer))
-            {
-                SDL_GL_SetSwapInterval(1);
-            }
+                // The browser paces frames itself, and asking SDL to set a
+                // swap interval before the main loop exists only produces a
+                // warning.
+                if (options & static_cast<int>(WindowOptions::DoubleBuffer))
+                {
+                    SDL_GL_SetSwapInterval(1);
+                }
 #endif // __EMSCRIPTEN__
 
-            initGLAD();
+                initGLAD();
 #if defined(FTK_API_GL_4_1_Debug)
-            GLint flags = 0;
-            glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-            if (flags & static_cast<GLint>(GL_CONTEXT_FLAG_DEBUG_BIT))
-            {
-                glEnable(GL_DEBUG_OUTPUT);
-                glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-                glDebugMessageCallback(glDebugOutput, nullptr);
-                glDebugMessageControl(
-                    static_cast<GLenum>(GL_DONT_CARE),
-                    static_cast<GLenum>(GL_DONT_CARE),
-                    static_cast<GLenum>(GL_DONT_CARE),
-                    0,
-                    nullptr,
-                    GL_TRUE);
-            }
+                GLint flags = 0;
+                glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+                if (flags & static_cast<GLint>(GL_CONTEXT_FLAG_DEBUG_BIT))
+                {
+                    glEnable(GL_DEBUG_OUTPUT);
+                    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+                    glDebugMessageCallback(glDebugOutput, nullptr);
+                    glDebugMessageControl(
+                        static_cast<GLenum>(GL_DONT_CARE),
+                        static_cast<GLenum>(GL_DONT_CARE),
+                        static_cast<GLenum>(GL_DONT_CARE),
+                        0,
+                        nullptr,
+                        GL_TRUE);
+                }
 #endif // FTK_API_GL_4_1_Debug
 
-            int glVersionMajor = 0;
-            if (const GLubyte* glString = glGetString(GL_VENDOR))
-            {
-                p.glInfo.vendor = std::string((const char*)glString);
-            }
-            if (const GLubyte* glString = glGetString(GL_RENDERER))
-            {
-                p.glInfo.renderer = std::string((const char*)glString);
-            }
-            if (const GLubyte* glString = glGetString(GL_VERSION))
-            {
-                p.glInfo.version = std::string((const char*)glString);
-                glVersionMajor = getMajorVersion(p.glInfo.version);
-            }
-            //! \todo Shouldn't window creation fail if we didn't get the
-            //! requested OpenGL version?
-            if (glVersionMajor < (isGLES() ? 3 : 4))
-            {
-                throw std::runtime_error(Format("Unsupported OpenGL version: {0}").
-                    arg(glVersionMajor));
+                int glVersionMajor = 0;
+                if (const GLubyte* glString = glGetString(GL_VENDOR))
+                {
+                    p.glInfo.vendor = std::string((const char*)glString);
+                }
+                if (const GLubyte* glString = glGetString(GL_RENDERER))
+                {
+                    p.glInfo.renderer = std::string((const char*)glString);
+                }
+                if (const GLubyte* glString = glGetString(GL_VERSION))
+                {
+                    p.glInfo.version = std::string((const char*)glString);
+                    glVersionMajor = getMajorVersion(p.glInfo.version);
+                }
+                //! \todo Shouldn't window creation fail if we didn't get the
+                //! requested OpenGL version?
+                if (glVersionMajor < (isGLES() ? 3 : 4))
+                {
+                    throw std::runtime_error(Format("Unsupported OpenGL version: {0}").
+                        arg(glVersionMajor));
+                }
+
             }
 
             if (auto logSystem = p.logSystem.lock())
@@ -611,6 +618,8 @@ namespace ftk
         void Window::makeCurrent()
         {
             FTK_P();
+            if (!p.sdlGLContext)
+                return;
 #if defined(FTK_SDL2)
             if (SDL_GL_MakeCurrent(p.sdlWindow, p.sdlGLContext) < 0)
 #elif defined(FTK_SDL3)
@@ -630,6 +639,8 @@ namespace ftk
         void Window::clearCurrent()
         {
             FTK_P();
+            if (!p.sdlGLContext)
+                return;
 #if defined(FTK_SDL2)
             if (SDL_GL_MakeCurrent(p.sdlWindow, nullptr) < 0)
 #elif defined(FTK_SDL3)
@@ -771,12 +782,20 @@ namespace ftk
 
         void Window::swap()
         {
-            SDL_GL_SwapWindow(_p->sdlWindow);
+            if (_p->sdlGLContext)
+            {
+                SDL_GL_SwapWindow(_p->sdlWindow);
+            }
         }
 
         const GLInfo& Window::getGLInfo() const
         {
             return _p->glInfo;
+        }
+
+        SDL_Window* Window::getSDLWindow() const
+        {
+            return _p->sdlWindow;
         }
     }
 }

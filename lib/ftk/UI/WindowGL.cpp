@@ -17,6 +17,13 @@
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/Shader.h>
 
+#if defined(FTK_GPU)
+#include <ftk/GPU/OffscreenBuffer.h>
+#include <ftk/GPU/Present.h>
+#include <ftk/GPU/Render.h>
+#include <ftk/GPU/System.h>
+#endif // FTK_GPU
+
 #include <ftk/Core/Context.h>
 #include <ftk/Core/DiagSystem.h>
 
@@ -26,7 +33,11 @@
 #include <SDL3/SDL.h>
 #endif // FTK_SDL2
 
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <map>
+#include <stdexcept>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/FontSystem.h>
@@ -52,6 +63,18 @@ namespace ftk
         std::shared_ptr<gl::VAO> vao;
         Size2I vboSize;
         size_t vboTriangles = 0;
+
+#if defined(FTK_GPU)
+        // Drawn with SDL's GPU API instead: the window has no OpenGL
+        // context, and what the renderer draws into is copied to the
+        // window's swapchain.
+        bool gpu = false;
+        std::shared_ptr<gpu::System> gpuSystem;
+        std::shared_ptr<gpu::OffscreenBuffer> gpuBuffer;
+        bool gpuClaimed = false;
+        std::shared_ptr<gpu::Present> gpuPresent;
+        gpu::Composition gpuComposition = gpu::Composition::SDR;
+#endif // FTK_GPU
     };
 
     void Window::_init(
@@ -65,11 +88,48 @@ namespace ftk
 
         p.context = context;
 
+        int windowOptions = static_cast<int>(gl::WindowOptions::DoubleBuffer);
+#if defined(FTK_GPU)
+        p.gpu = gpu::isEnabled();
+        if (p.gpu)
+        {
+            p.gpuSystem = context->getSystem<gpu::System>();
+            windowOptions = static_cast<int>(gl::WindowOptions::NoContext);
+        }
+#endif // FTK_GPU
         p.window = gl::Window::create(
             context,
             title,
             size,
-            static_cast<int>(gl::WindowOptions::DoubleBuffer));
+            windowOptions);
+#if defined(FTK_GPU)
+        if (p.gpu)
+        {
+            SDL_GPUDevice* device = p.gpuSystem->getDevice();
+            p.gpuClaimed = SDL_ClaimWindowForGPUDevice(device, p.window->getSDLWindow());
+            if (!p.gpuClaimed)
+            {
+                throw std::runtime_error(Format("Cannot claim window: {0}").arg(SDL_GetError()));
+            }
+            p.gpuPresent = gpu::Present::create(p.gpuSystem);
+            p.gpuComposition = gpu::setComposition(
+                p.gpuSystem,
+                p.window->getSDLWindow(),
+                gpu::getCompositionRequest());
+            const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
+            context->getSystem<LogSystem>()->print(
+                "ftk::Window",
+                Format(
+                    "Drawing with the GPU renderer: {0}\n"
+                    "    * Swapchain: {1}\n"
+                    "    * SDR white level: {2}\n"
+                    "    * HDR headroom: {3}").
+                arg(p.gpuSystem->getDriver()).
+                arg(gpu::getLabel(p.gpuComposition)).
+                arg(SDL_GetFloatProperty(props, SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT, 1.F)).
+                arg(SDL_GetFloatProperty(props, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.F)));
+        }
+#endif // FTK_GPU
 
         // Now that the platform window exists it can say what display
         // scale it really has; _addWindow ran before it existed and could
@@ -88,9 +148,20 @@ namespace ftk
             _setSize(initialSize, initialBufferSize);
         }
 
-        p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(
-            context->getLogSystem(),
-            context->getSystem<FontSystem>());
+#if defined(FTK_GPU)
+        if (p.gpu)
+        {
+            p.render = p.gpuSystem->getRenderFactory()->createRender(
+                context->getLogSystem(),
+                context->getSystem<FontSystem>());
+        }
+#endif // FTK_GPU
+        if (!p.render)
+        {
+            p.render = context->getSystem<gl::System>()->getRenderFactory()->createRender(
+                context->getLogSystem(),
+                context->getSystem<FontSystem>());
+        }
 
         auto diagSystem = context->getSystem<DiagSystem>();
         std::weak_ptr<Window> windowWeak(std::dynamic_pointer_cast<Window>(shared_from_this()));
@@ -156,6 +227,14 @@ namespace ftk
         p.window->makeCurrent();
         p.render.reset();
         p.buffer.reset();
+#if defined(FTK_GPU)
+        p.gpuBuffer.reset();
+        p.gpuPresent.reset();
+        if (p.gpuClaimed)
+        {
+            SDL_ReleaseWindowFromGPUDevice(p.gpuSystem->getDevice(), p.window->getSDLWindow());
+        }
+#endif // FTK_GPU
     }
 
     std::shared_ptr<Window> Window::create(
@@ -313,6 +392,38 @@ namespace ftk
     {
         FTK_P();
         std::shared_ptr<Image> out;
+#if defined(FTK_GPU)
+        if (p.gpuBuffer)
+        {
+            // Read whole, and handed over the way OpenGL reads: the bottom
+            // row first, and the rectangle counted from the bottom.
+            const auto image = p.gpuBuffer->readU8();
+            Box2I rect2 = rect;
+            if (!rect.isValid())
+            {
+                rect2 = Box2I(V2I(), image->getSize());
+            }
+            if (rect2.isValid())
+            {
+                out = Image::create(rect2.w(), rect2.h(), ImageType::RGBA_U8);
+                const int h = image->getHeight();
+                const size_t srcRow = static_cast<size_t>(image->getWidth()) * 4;
+                const size_t dstRow = static_cast<size_t>(rect2.w()) * 4;
+                for (int y = 0; y < rect2.h(); ++y)
+                {
+                    const int srcY = h - 1 - (rect2.y() + y);
+                    if (srcY >= 0 && srcY < h)
+                    {
+                        std::memcpy(
+                            out->getData() + y * dstRow,
+                            image->getData() + srcY * srcRow + static_cast<size_t>(rect2.x()) * 4,
+                            dstRow);
+                    }
+                }
+            }
+            return out;
+        }
+#endif // FTK_GPU
         if (p.buffer)
         {
             Box2I rect2 = rect;
@@ -347,6 +458,13 @@ namespace ftk
     {
         FTK_P();
         std::vector<std::pair<std::string, std::string> > out;
+#if defined(FTK_GPU)
+        if (p.gpu)
+        {
+            out.push_back(std::make_pair("GPU driver", p.gpuSystem->getDriver()));
+            return out;
+        }
+#endif // FTK_GPU
         const auto& glInfo = p.window->getGLInfo();
         out.push_back(std::make_pair("GL vendor", glInfo.vendor));
         out.push_back(std::make_pair("GL renderer", glInfo.renderer));
@@ -424,6 +542,16 @@ namespace ftk
     {
         IWindow::_update(fontSystem, iconSystem, style);
         FTK_P();
+#if defined(FTK_GPU)
+        if (p.gpu)
+        {
+            if (_hasDrawUpdate(shared_from_this()))
+            {
+                _updateGPU(fontSystem, iconSystem, style);
+            }
+            return;
+        }
+#endif // FTK_GPU
         if (_hasDrawUpdate(shared_from_this()))
         {
             p.window->makeCurrent();
@@ -576,6 +704,100 @@ namespace ftk
             }
         }
     }
+
+#if defined(FTK_GPU)
+    void Window::_updateGPU(
+        const std::shared_ptr<FontSystem>& fontSystem,
+        const std::shared_ptr<IconSystem>& iconSystem,
+        const std::shared_ptr<Style>& style)
+    {
+        FTK_P();
+        const Size2I& bufferSize = getBufferSize();
+        gpu::BufferType bufferType = gpu::BufferType::RGBA_U8;
+        switch (getBufferType())
+        {
+        case WindowBufferType::F16: bufferType = gpu::BufferType::RGBA_F16; break;
+        case WindowBufferType::F32: bufferType = gpu::BufferType::RGBA_F32; break;
+        default: break;
+        }
+        if (bufferSize.isValid() &&
+            (!p.gpuBuffer ||
+                p.gpuBuffer->getSize() != bufferSize ||
+                p.gpuBuffer->getType() != bufferType))
+        {
+            p.gpuBuffer = gpu::OffscreenBuffer::create(p.gpuSystem, bufferSize, bufferType);
+        }
+        if (!p.gpuBuffer)
+            return;
+
+        auto render = std::static_pointer_cast<gpu::Render>(p.render);
+        render->setTarget(p.gpuBuffer);
+        render->begin(bufferSize);
+        const Box2I drawRect(V2I(), bufferSize);
+        render->setClipRectEnabled(false);
+        render->setClipRect(drawRect);
+        DrawEvent drawEvent(
+            fontSystem,
+            iconSystem,
+            getDisplayScale(),
+            style,
+            p.render);
+        _drawEventRecursive(
+            shared_from_this(),
+            drawRect,
+            drawEvent);
+        render->setClipRectEnabled(false);
+        if (std::getenv("FTK_GPU_HDR_TEST"))
+        {
+            // Something to look at on an HDR display: patches at one, two,
+            // four and eight times the user interface's white. Display
+            // encoded, as everything drawn here is.
+            const float h = 40.F * getDisplayScale();
+            float x = 0.F;
+            for (const float linear : { 1.F, 2.F, 4.F, 8.F })
+            {
+                const float v = 1.055F * std::pow(linear, 1.F / 2.4F) - .055F;
+                render->drawRect(Box2F(x, 0.F, h * 2.F, h), Color4F(v, v, v));
+                x += h * 2.F;
+            }
+        }
+        render->end();
+
+        // To the window, which an offscreen one does not have. The
+        // swapchain's texture is the window's for this frame only, and
+        // submitting the command buffer is what presents it.
+        if (!isOffscreen())
+        {
+            SDL_GPUDevice* device = p.gpuSystem->getDevice();
+            SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
+            SDL_GPUTexture* swapchain = nullptr;
+            Uint32 w = 0;
+            Uint32 h = 0;
+            if (cmd &&
+                SDL_WaitAndAcquireGPUSwapchainTexture(cmd, p.window->getSDLWindow(), &swapchain, &w, &h) &&
+                swapchain)
+            {
+                // The white level moves with the display the window is on
+                // and with its brightness, so it is asked for each frame.
+                SDL_Window* sdlWindow = p.window->getSDLWindow();
+                p.gpuPresent->draw(
+                    cmd,
+                    p.gpuBuffer->getTexture(),
+                    swapchain,
+                    static_cast<int>(SDL_GetGPUSwapchainTextureFormat(device, sdlWindow)),
+                    p.gpuComposition,
+                    SDL_GetFloatProperty(
+                        SDL_GetWindowProperties(sdlWindow),
+                        SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT,
+                        1.F));
+            }
+            if (cmd)
+            {
+                SDL_SubmitGPUCommandBuffer(cmd);
+            }
+        }
+    }
+#endif // FTK_GPU
 
     void Window::_makeCurrent()
     {

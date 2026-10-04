@@ -7,6 +7,10 @@
 
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/Shader.h>
+#if defined(FTK_GPU)
+#include <ftk/GPU/OffscreenBuffer.h>
+#include <ftk/GPU/Render.h>
+#endif // FTK_GPU
 
 #include <ftk/Core/Timer.h>
 
@@ -40,5 +44,11 @@ namespace widgets
         bool _doRender = true;
         std::shared_ptr<ftk::gl::Shader> _shader;
         std::shared_ptr<ftk::gl::OffscreenBuffer> _buffer;
+#if defined(FTK_GPU)
+        void _drawGPU(const ftk::DrawEvent&);
+
+        std::shared_ptr<ftk::gpu::OffscreenBuffer> _gpuBuffer;
+        std::shared_ptr<ftk::gpu::Render> _gpuRender;
+#endif // FTK_GPU
     };
 }

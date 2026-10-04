@@ -32,8 +32,12 @@ set(SDL3_ARGS
     -DSDL_RENDER_D3D=OFF
     -DSDL_RENDER_METAL=OFF
     -DSDL_VIVANTE=OFF
-    -DSDL_VULKAN=OFF
-    -DSDL_METAL=OFF
+    # Vulkan and Metal are for SDL's GPU API, which the GPU renderer draws
+    # with: Metal on macOS and Vulkan elsewhere. SDL loads the Vulkan
+    # library when a device is asked for, so nothing new is linked.
+    -DSDL_VULKAN=ON
+    -DSDL_METAL=ON
+    -DSDL_GPU=ON
     -DSDL_KMSDRM=OFF
     -DSDL_RENDER=OFF
     -DSDL_JOYSTICK=OFF

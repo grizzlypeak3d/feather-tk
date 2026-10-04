@@ -7,6 +7,8 @@
 #include <ftk/Core/Box.h>
 #include <ftk/Core/Image.h>
 
+struct SDL_Window;
+
 namespace ftk
 {
     class Context;
@@ -30,7 +32,10 @@ namespace ftk
             None         = 0,
             Visible      = 1,
             DoubleBuffer = 2,
-            MakeCurrent  = 4
+            MakeCurrent  = 4,
+            //! No OpenGL context: the window is drawn to with something
+            //! else, and making it current or swapping it does nothing.
+            NoContext    = 8
         };
 
         //! OpenGL window.
@@ -174,6 +179,9 @@ namespace ftk
 
             //! Get the OpenGL information.
             FTK_GL_API const GLInfo& getGLInfo() const;
+
+            //! Get the platform window.
+            FTK_GL_API SDL_Window* getSDLWindow() const;
 
         private:
             FTK_PRIVATE();

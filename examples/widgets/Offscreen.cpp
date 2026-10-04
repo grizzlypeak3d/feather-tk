@@ -6,6 +6,12 @@
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Init.h>
 #include <ftk/GL/Mesh.h>
+#if defined(FTK_GPU)
+#include <ftk/GPU/System.h>
+#endif // FTK_GPU
+
+#include <ftk/Core/Context.h>
+#include <ftk/Core/FontSystem.h>
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Matrix.h>
@@ -86,6 +92,13 @@ namespace widgets
     void Offscreen::drawEvent(const Box2I& drawRect, const DrawEvent& event)
     {
         IWidget::drawEvent(drawRect, event);
+#if defined(FTK_GPU)
+        if (gpu::isEnabled())
+        {
+            _drawGPU(event);
+            return;
+        }
+#endif // FTK_GPU
         const Box2I& g = getGeometry();
         try
         {
@@ -183,4 +196,72 @@ namespace widgets
             event.render->drawTexture(id, g);
         }
     }
+
+#if defined(FTK_GPU)
+    // The same picture with the GPU renderer. There is no frame buffer to
+    // bind and no state to put back: the buffer has a renderer of its own,
+    // which is done -- and its commands sent -- before the window's
+    // renderer, the one in the event, sends the draw that shows it.
+    void Offscreen::_drawGPU(const DrawEvent& event)
+    {
+        const Box2I& g = getGeometry();
+        const Size2I size = g.size();
+        auto context = getContext();
+        if (!context || !size.isValid())
+            return;
+        try
+        {
+            auto system = context->getSystem<gpu::System>();
+            if (!_gpuBuffer || _gpuBuffer->getSize() != size)
+            {
+                _gpuBuffer = gpu::OffscreenBuffer::create(system, size, gpu::BufferType::RGBA_F16);
+                _doRender = true;
+            }
+            if (!_gpuRender)
+            {
+                _gpuRender = gpu::Render::create(
+                    system,
+                    context->getLogSystem(),
+                    context->getSystem<FontSystem>());
+            }
+            if (_doRender)
+            {
+                _doRender = false;
+
+                RenderOptions options;
+                options.clearColor = Color4F(0.F, 0.F, 0.F);
+                _gpuRender->setTarget(_gpuBuffer);
+                _gpuRender->begin(size, options);
+
+                const M44F vm =
+                    translate(V3F(0.F, 0.F, -10.F)) *
+                    rotateZ(_rotation);
+                const M44F pm = perspective(60.F, aspectRatio(size), .1F, 10000.F);
+                _gpuRender->setTransform(pm * vm);
+
+                TriMesh2F mesh;
+                mesh.v.push_back(V2F(-5.F, -5.F));
+                mesh.v.push_back(V2F(5.F, -5.F));
+                mesh.v.push_back(V2F(5.F, 5.F));
+                mesh.v.push_back(V2F(-5.F, 5.F));
+                mesh.c.push_back(V4F(1.F, 0.F, 0.F, 1.F));
+                mesh.c.push_back(V4F(0.F, 1.F, 0.F, 1.F));
+                mesh.c.push_back(V4F(0.F, 0.F, 1.F, 1.F));
+                mesh.c.push_back(V4F(1.F, 1.F, 1.F, 1.F));
+                mesh.triangles.push_back({ Vertex2(1, 0, 1), Vertex2(2, 0, 2), Vertex2(3, 0, 3) });
+                mesh.triangles.push_back({ Vertex2(3, 0, 3), Vertex2(4, 0, 4), Vertex2(1, 0, 1) });
+                _gpuRender->drawColorMesh(mesh);
+                _gpuRender->end();
+            }
+        }
+        catch (const std::exception& e)
+        {
+            context->log("OffscreenWidget", e.what(), LogType::Error);
+        }
+        if (_gpuBuffer)
+        {
+            event.render->drawTexture(_gpuBuffer->getID(), g);
+        }
+    }
+#endif // FTK_GPU
 }
