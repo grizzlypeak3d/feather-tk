@@ -574,6 +574,164 @@ namespace
 
 namespace
 {
+    // A buffer read back as each type of image a file is written from, in
+    // each layout: what OpenGL's glReadPixels gives the writers. The buffer
+    // is one color with a row of another along the top, an odd width so
+    // that aligned rows are padded.
+    bool readback(const std::shared_ptr<gpu::System>& system)
+    {
+        const Size2I size(5, 3);
+        const float color[4] = { .25F, .5F, .75F, 1.F };
+        const float top[4] = { 1.F, 0.F, .5F, 1.F };
+        auto buffer = gpu::OffscreenBuffer::create(system, size, gpu::BufferType::RGBA_F32);
+        auto render = gpu::Render::create(system, nullptr, nullptr);
+        render->setTarget(buffer);
+        RenderOptions options;
+        options.clearColor = Color4F(color[0], color[1], color[2], color[3]);
+        render->begin(size, options);
+        render->drawRect(Box2F(0, 0, size.w, 1), Color4F(top[0], top[1], top[2], top[3]));
+        render->end();
+
+        const auto fromHalf = [](uint16_t value)
+        {
+            const int exponent = (value >> 10) & 0x1F;
+            const int mantissa = value & 0x3FF;
+            float out = 0.F;
+            if (exponent > 0)
+            {
+                out = std::ldexp(1.F + mantissa / 1024.F, exponent - 15);
+            }
+            return (value & 0x8000) ? -out : out;
+        };
+
+        bool out = true;
+        int count = 0;
+        for (const ImageType type :
+            {
+                ImageType::L_U8, ImageType::L_U16, ImageType::L_F16, ImageType::L_F32,
+                ImageType::RGB_U8, ImageType::RGB_U10, ImageType::RGB_U16,
+                ImageType::RGB_F16, ImageType::RGB_F32,
+                ImageType::RGBA_U8, ImageType::RGBA_U16, ImageType::RGBA_F16, ImageType::RGBA_F32
+            })
+        {
+            for (const bool mirrorY : { true, false })
+            {
+                for (const int alignment : { 1, 4 })
+                {
+                    for (const Endian endian : { getEndian(), opposite(getEndian()) })
+                    {
+                        ImageInfo info(size, type);
+                        info.layout.mirror.y = mirrorY;
+                        info.layout.alignment = alignment;
+                        info.layout.endian = endian;
+                        const auto image = buffer->read(info);
+                        ++count;
+                        const size_t stride = image->getByteCount() / size.h;
+                        const int channels = getChannelCount(type);
+                        const size_t componentSize = getBitDepth(type) / 8;
+                        float max = 0.F;
+                        for (int y = 0; y < size.h; ++y)
+                        {
+                            // Which row of the picture this row of the
+                            // image is, counted from the top.
+                            const int row = mirrorY ? y : (size.h - 1 - y);
+                            const float* expected = 0 == row ? top : color;
+                            for (int x = 0; x < size.w; ++x)
+                            {
+                                const uint8_t* data = image->getData() + y * stride;
+                                float values[4] = { 0.F, 0.F, 0.F, 1.F };
+                                if (ImageType::RGB_U10 == type)
+                                {
+                                    uint32_t word = 0;
+                                    std::memcpy(&word, data + x * 4, 4);
+                                    if (endian != getEndian())
+                                    {
+                                        swapEndian(&word, 1, 4);
+                                    }
+                                    values[0] = ((word >> 22) & 0x3FF) / 1023.F;
+                                    values[1] = ((word >> 12) & 0x3FF) / 1023.F;
+                                    values[2] = ((word >> 2) & 0x3FF) / 1023.F;
+                                }
+                                else
+                                {
+                                    for (int c = 0; c < channels; ++c)
+                                    {
+                                        uint8_t bytes[4] = { 0, 0, 0, 0 };
+                                        std::memcpy(
+                                            bytes,
+                                            data + (x * channels + c) * componentSize,
+                                            componentSize);
+                                        if (endian != getEndian() && componentSize > 1)
+                                        {
+                                            swapEndian(bytes, 1, componentSize);
+                                        }
+                                        switch (type)
+                                        {
+                                        case ImageType::L_U8:
+                                        case ImageType::RGB_U8:
+                                        case ImageType::RGBA_U8:
+                                            values[c] = bytes[0] / 255.F;
+                                            break;
+                                        case ImageType::L_U16:
+                                        case ImageType::RGB_U16:
+                                        case ImageType::RGBA_U16:
+                                        {
+                                            uint16_t v = 0;
+                                            std::memcpy(&v, bytes, 2);
+                                            values[c] = v / 65535.F;
+                                            break;
+                                        }
+                                        case ImageType::L_F16:
+                                        case ImageType::RGB_F16:
+                                        case ImageType::RGBA_F16:
+                                        {
+                                            uint16_t v = 0;
+                                            std::memcpy(&v, bytes, 2);
+                                            values[c] = fromHalf(v);
+                                            break;
+                                        }
+                                        default:
+                                            std::memcpy(&values[c], bytes, 4);
+                                            break;
+                                        }
+                                    }
+                                }
+                                // One channel is the red one, and there is
+                                // no alpha to look at in three.
+                                const int compare = 1 == channels ? 1 : (ImageType::RGB_U10 == type ? 3 : channels);
+                                for (int c = 0; c < compare; ++c)
+                                {
+                                    max = std::max(max, std::fabs(values[c] - expected[c]));
+                                }
+                            }
+                        }
+                        // A step of the type, for the ones that have steps.
+                        const float tolerance =
+                            8 == getBitDepth(type) ? (1.F / 255.F) :
+                            (ImageType::RGB_U10 == type ? (1.F / 1023.F) : .0001F);
+                        if (max > tolerance)
+                        {
+                            std::cout << "Readback " << type <<
+                                (mirrorY ? ", top row first" : ", bottom row first") <<
+                                ", alignment " << alignment <<
+                                (endian != getEndian() ? ", bytes swapped" : "") <<
+                                ": off by " << max << std::endl;
+                            out = false;
+                        }
+                    }
+                }
+            }
+        }
+        // And what cannot be read back says so.
+        const bool refused = !gpu::OffscreenBuffer::canRead(ImageType::YUV_420P_U8);
+        out &= refused;
+        std::cout << "Readback: " << count << " types and layouts, " << (out ? "as drawn" : "not as drawn") << std::endl;
+        return out;
+    }
+}
+
+namespace
+{
     // The GLSL compiler, where there is one: that it compiles what is
     // right and says so of what is wrong. The renderer's own shaders are
     // compiled as they are made when FTK_GPU_VALIDATE is set.
@@ -697,6 +855,7 @@ int main(int argc, char** argv)
         }
         const bool presentOK =
             glsl() &&
+            readback(context->getSystem<gpu::System>()) &&
             present(context->getSystem<gpu::System>()) &&
             swapchain(context->getSystem<gpu::System>());
 

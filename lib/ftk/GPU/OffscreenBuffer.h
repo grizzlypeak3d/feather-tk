@@ -70,6 +70,16 @@ namespace ftk
             //! holds: what a screenshot is.
             FTK_GPU_API std::shared_ptr<Image> readU8() const;
 
+            //! Get whether the buffer can be read back as a type of image.
+            FTK_GPU_API static bool canRead(ImageType);
+
+            //! Read the buffer back as an image of a given type and layout,
+            //! whatever it holds: what is written to a file. The types are
+            //! the ones OpenGL reads pixels as, and the layout is kept to:
+            //! which row is first, how rows are aligned, and the byte
+            //! order. One channel is the red one.
+            FTK_GPU_API std::shared_ptr<Image> read(const ImageInfo&) const;
+
             //! Get the number of buffers that exist.
             FTK_GPU_API static size_t getObjectCount();
 

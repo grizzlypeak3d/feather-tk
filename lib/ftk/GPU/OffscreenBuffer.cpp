@@ -6,6 +6,7 @@
 #include <ftk/GPU/System.h>
 
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Memory.h>
 
 #include <SDL3/SDL.h>
 
@@ -206,6 +207,172 @@ namespace ftk
             SDL_BlitGPUTexture(cmd, &blit);
             auto out = download(device, cmd, tmp, p.size, ImageType::RGBA_U8);
             SDL_ReleaseGPUTexture(device, tmp);
+            return out;
+        }
+
+        namespace
+        {
+            // What a type of image is read back through: a texture format
+            // with the same components, of one channel or of four, since
+            // there are none of three.
+            struct ReadFormat
+            {
+                SDL_GPUTextureFormat format = SDL_GPU_TEXTUREFORMAT_INVALID;
+                ImageType type = ImageType::None;
+            };
+
+            ReadFormat getReadFormat(ImageType value)
+            {
+                ReadFormat out;
+                switch (value)
+                {
+                case ImageType::L_U8:
+                    out = { SDL_GPU_TEXTUREFORMAT_R8_UNORM, ImageType::L_U8 };
+                    break;
+                case ImageType::L_U16:
+                    out = { SDL_GPU_TEXTUREFORMAT_R16_UNORM, ImageType::L_U16 };
+                    break;
+                case ImageType::L_F16:
+                    out = { SDL_GPU_TEXTUREFORMAT_R16_FLOAT, ImageType::L_F16 };
+                    break;
+                case ImageType::L_F32:
+                    out = { SDL_GPU_TEXTUREFORMAT_R32_FLOAT, ImageType::L_F32 };
+                    break;
+                case ImageType::RGB_U8:
+                case ImageType::RGBA_U8:
+                    out = { SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM, ImageType::RGBA_U8 };
+                    break;
+                case ImageType::RGB_U10:
+                case ImageType::RGB_U16:
+                case ImageType::RGBA_U16:
+                    out = { SDL_GPU_TEXTUREFORMAT_R16G16B16A16_UNORM, ImageType::RGBA_U16 };
+                    break;
+                case ImageType::RGB_F16:
+                case ImageType::RGBA_F16:
+                    out = { SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT, ImageType::RGBA_F16 };
+                    break;
+                case ImageType::RGB_F32:
+                case ImageType::RGBA_F32:
+                    out = { SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT, ImageType::RGBA_F32 };
+                    break;
+                default: break;
+                }
+                return out;
+            }
+        }
+
+        bool OffscreenBuffer::canRead(ImageType value)
+        {
+            return getReadFormat(value).format != SDL_GPU_TEXTUREFORMAT_INVALID;
+        }
+
+        std::shared_ptr<Image> OffscreenBuffer::read(const ImageInfo& info) const
+        {
+            FTK_P();
+            const ReadFormat readFormat = getReadFormat(info.type);
+            if (SDL_GPU_TEXTUREFORMAT_INVALID == readFormat.format || info.size != p.size)
+            {
+                throw std::runtime_error(Format("Cannot read the buffer as: {0}").arg(getLabel(info)));
+            }
+
+            // Converted where it is, by drawing it into the components
+            // wanted, unless it holds them already.
+            std::shared_ptr<Image> tmp;
+            SDL_GPUDevice* device = p.system->getDevice();
+            if (getFormat(p.type) == readFormat.format)
+            {
+                tmp = read();
+            }
+            else
+            {
+                SDL_GPUTextureCreateInfo textureInfo = {};
+                textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
+                textureInfo.format = readFormat.format;
+                textureInfo.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+                textureInfo.width = p.size.w;
+                textureInfo.height = p.size.h;
+                textureInfo.layer_count_or_depth = 1;
+                textureInfo.num_levels = 1;
+                SDL_GPUTexture* texture = SDL_GPUTextureSupportsFormat(
+                    device,
+                    textureInfo.format,
+                    textureInfo.type,
+                    textureInfo.usage) ?
+                    SDL_CreateGPUTexture(device, &textureInfo) :
+                    nullptr;
+                if (!texture)
+                {
+                    throw std::runtime_error(Format("Cannot read the buffer as: {0}").arg(getLabel(info)));
+                }
+                SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
+                SDL_GPUBlitInfo blit = {};
+                blit.source.texture = p.texture;
+                blit.source.w = p.size.w;
+                blit.source.h = p.size.h;
+                blit.destination.texture = texture;
+                blit.destination.w = p.size.w;
+                blit.destination.h = p.size.h;
+                blit.load_op = SDL_GPU_LOADOP_DONT_CARE;
+                blit.filter = SDL_GPU_FILTER_NEAREST;
+                SDL_BlitGPUTexture(cmd, &blit);
+                tmp = download(device, cmd, texture, p.size, readFormat.type);
+                SDL_ReleaseGPUTexture(device, texture);
+            }
+
+            // Into the layout asked for. What was read has its top row
+            // first, rows that are not padded, and this machine's byte
+            // order.
+            auto out = Image::create(info);
+            const size_t w = static_cast<size_t>(p.size.w);
+            const size_t h = static_cast<size_t>(p.size.h);
+            const size_t componentSize = static_cast<size_t>(getBitDepth(readFormat.type)) / 8;
+            const size_t tmpChannels = static_cast<size_t>(getChannelCount(readFormat.type));
+            const size_t tmpStride = w * tmpChannels * componentSize;
+            const size_t outStride = out->getByteCount() / h;
+            const bool swap = info.layout.endian != getEndian();
+            for (size_t y = 0; y < h; ++y)
+            {
+                const uint8_t* in = tmp->getData() + y * tmpStride;
+                uint8_t* o = out->getData() + (info.layout.mirror.y ? y : (h - 1 - y)) * outStride;
+                size_t swapSize = componentSize;
+                size_t swapCount = 0;
+                if (ImageType::RGB_U10 == info.type)
+                {
+                    // Ten bits of each in a word, red highest, as OpenGL's
+                    // GL_UNSIGNED_INT_10_10_10_2 has them.
+                    const uint16_t* in16 = reinterpret_cast<const uint16_t*>(in);
+                    uint32_t* o32 = reinterpret_cast<uint32_t*>(o);
+                    for (size_t x = 0; x < w; ++x, in16 += 4)
+                    {
+                        o32[x] =
+                            (static_cast<uint32_t>(in16[0] >> 6) << 22) |
+                            (static_cast<uint32_t>(in16[1] >> 6) << 12) |
+                            (static_cast<uint32_t>(in16[2] >> 6) << 2) |
+                            static_cast<uint32_t>(in16[3] >> 14);
+                    }
+                    swapSize = 4;
+                    swapCount = w;
+                }
+                else if (getChannelCount(info.type) == static_cast<int>(tmpChannels))
+                {
+                    std::memcpy(o, in, tmpStride);
+                    swapCount = w * tmpChannels;
+                }
+                else
+                {
+                    // Three channels of the four.
+                    const size_t pixelSize = 3 * componentSize;
+                    for (size_t x = 0; x < w; ++x)
+                    {
+                        std::memcpy(o + x * pixelSize, in + x * 4 * componentSize, pixelSize);
+                    }
+                    swapCount = w * 3;
+                }
+                if (swap && swapSize > 1)
+                {
+                    swapEndian(o, swapCount, swapSize);
+                }
+            }
             return out;
         }
 
