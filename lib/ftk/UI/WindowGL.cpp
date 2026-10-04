@@ -74,6 +74,9 @@ namespace ftk
         bool gpuClaimed = false;
         std::shared_ptr<gpu::Present> gpuPresent;
         gpu::Composition gpuComposition = gpu::Composition::SDR;
+        // Whether the swapchain follows the display, which it does unless
+        // one was asked for by name.
+        bool gpuCompositionAuto = true;
 #endif // FTK_GPU
     };
 
@@ -116,10 +119,13 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot claim window: {0}").arg(SDL_GetError()));
             }
             p.gpuPresent = gpu::Present::create(p.gpuSystem);
+            p.gpuCompositionAuto = !gpu::hasCompositionRequest();
             p.gpuComposition = gpu::setComposition(
                 p.gpuSystem,
                 p.window->getSDLWindow(),
-                gpu::getCompositionRequest());
+                p.gpuCompositionAuto ?
+                    gpu::getComposition(p.window->getSDLWindow()) :
+                    gpu::getCompositionRequest());
             const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
             context->getSystem<LogSystem>()->print(
                 "ftk::Window",
@@ -228,13 +234,18 @@ namespace ftk
             SDL_DestroyCursor(i.second);
 #endif // FTK_SDL2
         }
-        p.window->makeCurrent();
+        // There is no window when making one failed: the application
+        // already holds this one by then, and lets go of it like any other.
+        if (p.window)
+        {
+            p.window->makeCurrent();
+        }
         p.render.reset();
         p.buffer.reset();
 #if defined(FTK_GPU)
         p.gpuBuffer.reset();
         p.gpuPresent.reset();
-        if (p.gpuClaimed)
+        if (p.gpuClaimed && p.window)
         {
             SDL_ReleaseWindowFromGPUDevice(p.gpuSystem->getDevice(), p.window->getSDLWindow());
         }
@@ -455,6 +466,28 @@ namespace ftk
                     out->getData());
             }
         }
+        return out;
+    }
+
+    WindowHDR Window::getHDR() const
+    {
+        FTK_P();
+        WindowHDR out;
+#if defined(FTK_GPU)
+        if (p.gpu && p.gpuComposition != gpu::Composition::SDR)
+        {
+            const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
+            out.enabled = true;
+            out.headroom = SDL_GetFloatProperty(props, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.F);
+#if !defined(__APPLE__)
+            // In units of eighty nits, which is what one is in scRGB. On
+            // macOS one is the white of the display, whatever that is set
+            // to, and the system keeps its luminance to itself.
+            out.whiteNits =
+                SDL_GetFloatProperty(props, SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT, 1.F) * 80.F;
+#endif // __APPLE__
+        }
+#endif // FTK_GPU
         return out;
     }
 
@@ -716,6 +749,27 @@ namespace ftk
         const std::shared_ptr<Style>& style)
     {
         FTK_P();
+        // The swapchain follows the display: a window moved to an HDR
+        // display, or a display whose HDR is turned on, is given an HDR
+        // swapchain, and back again.
+        if (p.gpuCompositionAuto && !isOffscreen())
+        {
+            const gpu::Composition composition = gpu::getComposition(p.window->getSDLWindow());
+            if (composition != p.gpuComposition)
+            {
+                p.gpuComposition = gpu::setComposition(
+                    p.gpuSystem,
+                    p.window->getSDLWindow(),
+                    composition);
+                if (auto context = p.context.lock())
+                {
+                    context->getSystem<LogSystem>()->print(
+                        "ftk::Window",
+                        Format("Swapchain: {0}").arg(gpu::getLabel(p.gpuComposition)));
+                }
+            }
+        }
+
         const Size2I& bufferSize = getBufferSize();
         gpu::BufferType bufferType = gpu::BufferType::RGBA_U8;
         switch (getBufferType())

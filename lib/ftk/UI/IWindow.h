@@ -30,6 +30,25 @@ namespace ftk
     //! half float on OpenGL and eight bit on OpenGL ES.
     FTK_UI_API WindowBufferType getWindowBufferTypeDefault();
 
+    //! High dynamic range, as a window has it.
+    //!
+    //! Everything drawn is display encoded with one as white, and where
+    //! the window is HDR what is drawn above one is brighter than white
+    //! by the same curve: twice the light is not twice the number. See
+    //! gpu::Present.
+    struct FTK_UI_API_TYPE WindowHDR
+    {
+        //! Whether values above one are shown brighter than white.
+        bool enabled = false;
+        //! How many times brighter than white can be shown.
+        float headroom = 1.F;
+        //! The luminance of white, in nits; zero where the system does not
+        //! say, as macOS does not.
+        float whiteNits = 0.F;
+
+        bool operator == (const WindowHDR&) const = default;
+    };
+
     //! Mouse cursor shapes.
     enum class FTK_UI_API_TYPE CursorShape
     {
@@ -286,6 +305,11 @@ namespace ftk
         //! its start: what is drawn during the animation is a snapshot of the
         //! window stretched to the screen.
         FTK_UI_API void setFullScreenCallback(const std::function<void(bool)>&);
+
+        //! Get what the window can show past the white of the user
+        //! interface: whether what is drawn above one is shown brighter
+        //! than white, by how much, and what white is where that is known.
+        FTK_UI_API virtual WindowHDR getHDR() const;
 
         //! Get the window information.
         FTK_UI_API virtual std::vector<std::pair<std::string, std::string> > getWindowInfo() const;

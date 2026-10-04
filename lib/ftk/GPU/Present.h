@@ -40,8 +40,17 @@ namespace ftk
         FTK_GPU_API std::string getLabel(Composition);
 
         //! Get the composition asked for with the FTK_GPU_SWAPCHAIN
-        //! environment variable: "sdr", "hdr" or "hdr10".
+        //! environment variable: "sdr", "hdr" or "hdr10". Without it the
+        //! swapchain follows the display; see getComposition().
         FTK_GPU_API Composition getCompositionRequest();
+
+        //! Get whether a composition was asked for with FTK_GPU_SWAPCHAIN.
+        FTK_GPU_API bool hasCompositionRequest();
+
+        //! Get the composition that suits the display a window is on:
+        //! extended linear where the display is showing HDR, and SDR where
+        //! it is not.
+        FTK_GPU_API Composition getComposition(SDL_Window*);
 
         //! Set a window's swapchain to a composition, or the nearest to it
         //! the window supports. Returns what it was set to.

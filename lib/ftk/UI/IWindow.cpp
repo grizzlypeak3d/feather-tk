@@ -452,6 +452,11 @@ namespace ftk
         _p->fullScreenCallback = value;
     }
 
+    WindowHDR IWindow::getHDR() const
+    {
+        return WindowHDR();
+    }
+
     std::vector<std::pair<std::string, std::string> > IWindow::getWindowInfo() const
     {
         return {};

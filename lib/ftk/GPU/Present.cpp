@@ -96,11 +96,13 @@ namespace ftk
                 "    else if (Composition_HDR10 == u.composition)\n"
                 "    {\n"
                 "        // Rec. 709 primaries to Rec. 2020, by row.\n"
-                "        float3 l = max(toLinear(c.rgb), 0.0);\n"
-                "        float3 r2020 = float3(\n"
+                "        // Negative values are colors outside Rec. 709, which\n"
+                "        // Rec. 2020 may well hold: they are kept until then.\n"
+                "        float3 l = toLinear(c.rgb);\n"
+                "        float3 r2020 = max(float3(\n"
                 "            dot(l, float3(0.627404, 0.329283, 0.043313)),\n"
                 "            dot(l, float3(0.069097, 0.919540, 0.011362)),\n"
-                "            dot(l, float3(0.016391, 0.088013, 0.895595)));\n"
+                "            dot(l, float3(0.016391, 0.088013, 0.895595))), 0.0);\n"
                 "        c.rgb = toPQ(r2020 * u.sdrWhiteLevel * 80.0);\n"
                 "    }\n"
                 "    c.a = 1.0;\n"
@@ -169,11 +171,13 @@ namespace ftk
                 "    else if (Composition_HDR10 == u.composition)\n"
                 "    {\n"
                 "        // Rec. 709 primaries to Rec. 2020, by row.\n"
-                "        vec3 l = max(toLinear(c.rgb), 0.0);\n"
-                "        vec3 r2020 = vec3(\n"
+                "        // Negative values are colors outside Rec. 709, which\n"
+                "        // Rec. 2020 may well hold: they are kept until then.\n"
+                "        vec3 l = toLinear(c.rgb);\n"
+                "        vec3 r2020 = max(vec3(\n"
                 "            dot(l, vec3(0.627404, 0.329283, 0.043313)),\n"
                 "            dot(l, vec3(0.069097, 0.919540, 0.011362)),\n"
-                "            dot(l, vec3(0.016391, 0.088013, 0.895595)));\n"
+                "            dot(l, vec3(0.016391, 0.088013, 0.895595))), 0.0);\n"
                 "        c.rgb = toPQ(r2020 * u.sdrWhiteLevel * 80.0);\n"
                 "    }\n"
                 "    c.a = 1.0;\n"
@@ -228,6 +232,20 @@ namespace ftk
                 }
             }
             return out;
+        }
+
+        bool hasCompositionRequest()
+        {
+            return std::getenv("FTK_GPU_SWAPCHAIN") != nullptr;
+        }
+
+        Composition getComposition(SDL_Window* window)
+        {
+            const bool hdr = SDL_GetBooleanProperty(
+                SDL_GetWindowProperties(window),
+                SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN,
+                false);
+            return hdr ? Composition::HDRExtendedLinear : Composition::SDR;
         }
 
         Composition setComposition(
