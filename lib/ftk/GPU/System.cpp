@@ -12,12 +12,14 @@
 #include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
+#include <ftk/Core/String.h>
 
 #include <SDL3/SDL.h>
 
 #include <cstdlib>
 #include <map>
 #include <stdexcept>
+#include <vector>
 
 namespace ftk
 {
@@ -118,6 +120,46 @@ namespace ftk
                     arg(hasGLSLCompiler() && validateGLSL() ?
                         ", checking every shader's GLSL as it is made" :
                         ""));
+
+                // The formats the textures are made in, some of which
+                // Vulkan leaves to the driver. Nothing falls back from one
+                // that is missing, so a texture that cannot be made is
+                // explained here.
+                struct TextureFormat
+                {
+                    SDL_GPUTextureFormat format;
+                    std::string name;
+                };
+                std::vector<std::string> missing;
+                for (const TextureFormat& i :
+                    {
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R8_UNORM, "R8" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R8G8_UNORM, "RG8" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM, "RGBA8" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R16_UNORM, "R16" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R16G16_UNORM, "RG16" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R16G16B16A16_UNORM, "RGBA16" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R16_FLOAT, "R16F" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R16G16_FLOAT, "RG16F" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT, "RGBA16F" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R32_FLOAT, "R32F" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R32G32_FLOAT, "RG32F" },
+                        TextureFormat{ SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT, "RGBA32F" }
+                    })
+                {
+                    if (!SDL_GPUTextureSupportsFormat(
+                        p.device,
+                        i.format,
+                        SDL_GPU_TEXTURETYPE_2D,
+                        SDL_GPU_TEXTUREUSAGE_SAMPLER))
+                    {
+                        missing.push_back(i.name);
+                    }
+                }
+                _log(
+                    Format("Texture formats: {0}").
+                        arg(missing.empty() ? "all supported" : "not supported: " + join(missing, ", ")),
+                    missing.empty() ? LogType::Message : LogType::Warning);
             }
             return p.device;
         }
