@@ -584,6 +584,9 @@ namespace
         const float color[4] = { .25F, .5F, .75F, 1.F };
         const float top[4] = { 1.F, 0.F, .5F, 1.F };
         auto buffer = gpu::OffscreenBuffer::create(system, size, gpu::BufferType::RGBA_F32);
+        // What a renderer holds for its vertices is counted while it has
+        // them and not after it has gone, which the diagnostics read.
+        const size_t vertexByteCount = gpu::Render::getVertexByteCount();
         auto render = gpu::Render::create(system, nullptr, nullptr);
         render->setTarget(buffer);
         RenderOptions options;
@@ -591,6 +594,14 @@ namespace
         render->begin(size, options);
         render->drawRect(Box2F(0, 0, size.w, 1), Color4F(top[0], top[1], top[2], top[3]));
         render->end();
+        const bool counted = gpu::Render::getVertexByteCount() > vertexByteCount;
+        render.reset();
+        const bool uncounted = gpu::Render::getVertexByteCount() == vertexByteCount;
+        if (!counted || !uncounted)
+        {
+            std::cout << "Vertices: " << gpu::Render::getVertexByteCount() <<
+                " bytes counted after a renderer has gone, " << vertexByteCount << " before" << std::endl;
+        }
 
         const auto fromHalf = [](uint16_t value)
         {
@@ -604,7 +615,7 @@ namespace
             return (value & 0x8000) ? -out : out;
         };
 
-        bool out = true;
+        bool out = counted && uncounted;
         int count = 0;
         for (const ImageType type :
             {

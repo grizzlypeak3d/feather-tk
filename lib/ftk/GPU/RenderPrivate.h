@@ -251,7 +251,7 @@ namespace ftk
                 Blend,
                 const void* vertices,
                 size_t vertexCount,
-                size_t vertexByteCount,
+                size_t vertexSize,
                 const M44F& transform,
                 const void* uniforms,
                 size_t uniformsByteCount,

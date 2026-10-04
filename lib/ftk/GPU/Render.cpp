@@ -277,7 +277,7 @@ namespace ftk
             Blend blend,
             const void* vertices,
             size_t vertexCount,
-            size_t vertexByteCount,
+            size_t vertexSize,
             const M44F& transform,
             const void* uniforms,
             size_t uniformsByteCount,
@@ -294,7 +294,7 @@ namespace ftk
                 return;
 
             // Somewhere to put the vertices.
-            const size_t byteCount = vertexCount * vertexByteCount;
+            const size_t byteCount = vertexCount * vertexSize;
             while (chunk < chunks.size() &&
                 chunks[chunk].used + byteCount > chunks[chunk].data.size())
             {
