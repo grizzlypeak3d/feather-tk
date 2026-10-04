@@ -239,13 +239,34 @@ namespace ftk
             return std::getenv("FTK_GPU_SWAPCHAIN") != nullptr;
         }
 
-        Composition getComposition(SDL_Window* window)
+        Composition getComposition(
+            const std::shared_ptr<System>& system,
+            SDL_Window* window)
         {
+            Composition out = Composition::SDR;
             const bool hdr = SDL_GetBooleanProperty(
                 SDL_GetWindowProperties(window),
                 SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN,
                 false);
-            return hdr ? Composition::HDRExtendedLinear : Composition::SDR;
+            if (hdr)
+            {
+                // Only what the window can have: asking for another is
+                // answered with SDR, and would be asked again every frame.
+                SDL_GPUDevice* device = system->getDevice();
+                for (const auto composition :
+                    {
+                        Composition::HDRExtendedLinear,
+                        Composition::HDR10
+                    })
+                {
+                    if (SDL_WindowSupportsGPUSwapchainComposition(device, window, getSDL(composition)))
+                    {
+                        out = composition;
+                        break;
+                    }
+                }
+            }
+            return out;
         }
 
         Composition setComposition(
@@ -265,6 +286,24 @@ namespace ftk
                 out = Composition::SDR;
             }
             return out;
+        }
+
+        float getSDRWhiteLevel(SDL_Window* window, Composition composition)
+        {
+            // A PQ surface on Wayland has its white where ITU-R BT.2408
+            // puts it, at 203 nits, and the compositor takes that to the
+            // white of everything else on the display. SDL says one of
+            // every window there, which is 80 nits: right for scRGB, and
+            // dim for this.
+            const char* driver = SDL_GetCurrentVideoDriver();
+            if (Composition::HDR10 == composition && driver && std::string(driver) == "wayland")
+            {
+                return 203.F / 80.F;
+            }
+            return SDL_GetFloatProperty(
+                SDL_GetWindowProperties(window),
+                SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT,
+                1.F);
         }
 
         struct Present::Private

@@ -47,10 +47,13 @@ namespace ftk
         //! Get whether a composition was asked for with FTK_GPU_SWAPCHAIN.
         FTK_GPU_API bool hasCompositionRequest();
 
-        //! Get the composition that suits the display a window is on:
-        //! extended linear where the display is showing HDR, and SDR where
-        //! it is not.
-        FTK_GPU_API Composition getComposition(SDL_Window*);
+        //! Get the composition that suits the display a window is on: HDR
+        //! where the display is showing HDR, and SDR where it is not.
+        //! Extended linear is taken where the window can have it and HDR10
+        //! where it cannot, which is Vulkan on Wayland.
+        FTK_GPU_API Composition getComposition(
+            const std::shared_ptr<System>&,
+            SDL_Window*);
 
         //! Set a window's swapchain to a composition, or the nearest to it
         //! the window supports. Returns what it was set to.
@@ -58,6 +61,10 @@ namespace ftk
             const std::shared_ptr<System>&,
             SDL_Window*,
             Composition);
+
+        //! Get where SDR white is in a window's swapchain, as a multiple of
+        //! 80 nits.
+        FTK_GPU_API float getSDRWhiteLevel(SDL_Window*, Composition);
 
         //! Draws what a renderer drew into what a window shows.
         //!

@@ -461,19 +461,26 @@ namespace
 
 namespace
 {
-    // The same, into a real swapchain of each kind: a window that is never
-    // shown. Nothing can be read back from one, so this is whether it can
-    // be done at all, with the API's validation watching.
+    // The same, into a real swapchain of each kind. Nothing can be read
+    // back from one, so this is whether it can be done at all, with the
+    // API's validation watching. The window is never shown where that can
+    // be done: SDL's Vulkan driver has no swapchain texture for a hidden
+    // window, so there it is shown, for a moment.
+    //
+    // Which kinds there are is the desktop's to say: a kind it does not
+    // offer is reported and is not a failure, and one it offers has to be
+    // presented to.
     bool swapchain(const std::shared_ptr<gpu::System>& system)
     {
         bool out = true;
         SDL_GPUDevice* device = system->getDevice();
+        const bool vulkan = "vulkan" == system->getDriver();
         SDL_Window* window = SDL_CreateWindow(
             "ftk-gpu-test",
             320,
             240,
-            SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY |
-                ("vulkan" == system->getDriver() ? SDL_WINDOW_VULKAN : 0));
+            SDL_WINDOW_HIGH_PIXEL_DENSITY |
+                (vulkan ? SDL_WINDOW_VULKAN : SDL_WINDOW_HIDDEN));
         if (!window || !SDL_ClaimWindowForGPUDevice(device, window))
         {
             std::cout << "Swapchain: " << SDL_GetError() << std::endl;
@@ -517,7 +524,7 @@ namespace
                 (got == composition ? "supported" : "not supported") << ", " <<
                 (acquired ? "presented" : "no texture to present to") <<
                 " (" << w << "x" << h << ")" << std::endl;
-            out &= got == composition && acquired;
+            out &= got != composition || acquired;
         }
         SDL_ReleaseWindowFromGPUDevice(device, window);
         SDL_DestroyWindow(window);

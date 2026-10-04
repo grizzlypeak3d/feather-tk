@@ -124,7 +124,7 @@ namespace ftk
                 p.gpuSystem,
                 p.window->getSDLWindow(),
                 p.gpuCompositionAuto ?
-                    gpu::getComposition(p.window->getSDLWindow()) :
+                    gpu::getComposition(p.gpuSystem, p.window->getSDLWindow()) :
                     gpu::getCompositionRequest());
             const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
             context->getSystem<LogSystem>()->print(
@@ -136,7 +136,7 @@ namespace ftk
                     "    * HDR headroom: {3}").
                 arg(p.gpuSystem->getDriver()).
                 arg(gpu::getLabel(p.gpuComposition)).
-                arg(SDL_GetFloatProperty(props, SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT, 1.F)).
+                arg(gpu::getSDRWhiteLevel(p.window->getSDLWindow(), p.gpuComposition)).
                 arg(SDL_GetFloatProperty(props, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.F)));
         }
 #endif // FTK_GPU
@@ -484,7 +484,7 @@ namespace ftk
             // macOS one is the white of the display, whatever that is set
             // to, and the system keeps its luminance to itself.
             out.whiteNits =
-                SDL_GetFloatProperty(props, SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT, 1.F) * 80.F;
+                gpu::getSDRWhiteLevel(p.window->getSDLWindow(), p.gpuComposition) * 80.F;
 #endif // __APPLE__
         }
 #endif // FTK_GPU
@@ -754,7 +754,9 @@ namespace ftk
         // swapchain, and back again.
         if (p.gpuCompositionAuto && !isOffscreen())
         {
-            const gpu::Composition composition = gpu::getComposition(p.window->getSDLWindow());
+            const gpu::Composition composition = gpu::getComposition(
+                p.gpuSystem,
+                p.window->getSDLWindow());
             if (composition != p.gpuComposition)
             {
                 p.gpuComposition = gpu::setComposition(
@@ -849,10 +851,7 @@ namespace ftk
                     swapchain,
                     static_cast<int>(SDL_GetGPUSwapchainTextureFormat(device, sdlWindow)),
                     p.gpuComposition,
-                    SDL_GetFloatProperty(
-                        SDL_GetWindowProperties(sdlWindow),
-                        SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT,
-                        1.F));
+                    gpu::getSDRWhiteLevel(sdlWindow, p.gpuComposition));
             }
             if (cmd)
             {
