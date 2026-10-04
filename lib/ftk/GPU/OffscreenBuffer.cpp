@@ -9,6 +9,7 @@
 
 #include <SDL3/SDL.h>
 
+#include <atomic>
 #include <cstring>
 #include <stdexcept>
 
@@ -45,6 +46,17 @@ namespace ftk
             }
         }
 
+        namespace
+        {
+            std::atomic<size_t> objectCount = 0;
+            std::atomic<size_t> totalByteCount = 0;
+
+            size_t getByteCount(const Size2I& size, BufferType type)
+            {
+                return ImageInfo(size, getImageType(type)).getByteCount();
+            }
+        }
+
         struct OffscreenBuffer::Private
         {
             std::shared_ptr<System> system;
@@ -77,6 +89,8 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot create an offscreen buffer: {0}").arg(SDL_GetError()));
             }
             p.id = system->addTexture(p.texture);
+            ++objectCount;
+            totalByteCount += getByteCount(p.size, p.type);
         }
 
         OffscreenBuffer::OffscreenBuffer() :
@@ -88,6 +102,8 @@ namespace ftk
             FTK_P();
             if (p.system && p.texture)
             {
+                --objectCount;
+                totalByteCount -= getByteCount(p.size, p.type);
                 p.system->removeTexture(p.id);
                 SDL_ReleaseGPUTexture(p.system->getDevice(), p.texture);
             }
@@ -101,6 +117,16 @@ namespace ftk
             auto out = std::shared_ptr<OffscreenBuffer>(new OffscreenBuffer);
             out->_init(system, size, type);
             return out;
+        }
+
+        size_t OffscreenBuffer::getObjectCount()
+        {
+            return objectCount;
+        }
+
+        size_t OffscreenBuffer::getTotalByteCount()
+        {
+            return totalByteCount;
         }
 
         const Size2I& OffscreenBuffer::getSize() const

@@ -70,6 +70,12 @@ namespace ftk
             //! holds: what a screenshot is.
             FTK_GPU_API std::shared_ptr<Image> readU8() const;
 
+            //! Get the number of buffers that exist.
+            FTK_GPU_API static size_t getObjectCount();
+
+            //! Get the bytes the buffers that exist take.
+            FTK_GPU_API static size_t getTotalByteCount();
+
             //! Read one pixel back, counted from the top left, as it is:
             //! values past one and below zero are kept.
             FTK_GPU_API Color4F getPixel(const V2I&) const;

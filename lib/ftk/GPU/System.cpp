@@ -3,10 +3,13 @@
 
 #include <ftk/GPU/System.h>
 
+#include <ftk/GPU/OffscreenBuffer.h>
 #include <ftk/GPU/Render.h>
 #include <ftk/GPU/Shader.h>
+#include <ftk/GPU/Texture.h>
 
 #include <ftk/Core/Context.h>
+#include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 
@@ -31,7 +34,42 @@ namespace ftk
         System::System(const std::shared_ptr<Context>& context) :
             ISystem(context, "ftk::gpu::System"),
             _p(new Private)
-        {}
+        {
+            // What the OpenGL system reports of its own, for this renderer.
+            // All zero while the windows are drawn with OpenGL.
+            auto diagSystem = context->getSystem<DiagSystem>();
+            diagSystem->addSampler(
+                "ftk GPU Memory/Buffers: {0}MB",
+                [] { return OffscreenBuffer::getTotalByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "ftk GPU Memory/Vertices: {0}MB",
+                [] { return Render::getVertexByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "ftk GPU Memory/Textures: {0}MB",
+                [] { return Texture::getTotalByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "ftk GPU Memory/Texture cache: {0}MB",
+                [] { return Render::getTextureCacheByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "ftk GPU Memory/Texture pool: {0}MB",
+                [] { return Render::getTexturePoolByteCount() / megabyte; });
+
+            diagSystem->addSampler(
+                "ftk GPU Objects/Buffers: {0}",
+                [] { return OffscreenBuffer::getObjectCount(); });
+            diagSystem->addSampler(
+                "ftk GPU Objects/Shaders: {0}",
+                [] { return Render::getShaderCount(); });
+            diagSystem->addSampler(
+                "ftk GPU Objects/Textures: {0}",
+                [] { return Texture::getObjectCount(); });
+            diagSystem->addSampler(
+                "ftk GPU Objects/Texture cache: {0}",
+                [] { return Render::getTextureCacheCount(); });
+            diagSystem->addSampler(
+                "ftk GPU Objects/Texture pool: {0}",
+                [] { return Render::getTexturePoolCount(); });
+        }
 
         System::~System()
         {

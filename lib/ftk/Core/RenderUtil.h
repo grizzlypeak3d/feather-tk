@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Export.h>
 #include <ftk/Core/Box.h>
+#include <ftk/Core/Image.h>
 #include <ftk/Core/Util.h>
 
 #include <memory>
@@ -78,5 +79,12 @@ namespace ftk
         FTK_PRIVATE();
     };
         
+    //! Get the table a separable resample of one axis is weighed with: for
+    //! each output pixel, the source coordinate and weight of every tap,
+    //! as an ImageType::LA_F32 image with a column for each output pixel
+    //! and a row for each tap. Reducing is weighed with a Lanczos kernel
+    //! and enlarging with Mitchell-Netravali.
+    FTK_CORE_API std::shared_ptr<Image> getScaleContrib(int in, int out, int& taps);
+
     ///@}
 }

@@ -15,6 +15,7 @@
 
 #include <array>
 #include <chrono>
+#include <list>
 #include <map>
 #include <tuple>
 #include <unordered_map>
@@ -33,6 +34,9 @@ namespace ftk
         std::string textureFragmentSourceMSL();
         std::string textFragmentSourceMSL();
         std::string imageFragmentSourceMSL();
+        std::string textureScaleFragmentSourceMSL();
+        std::string imageScaleXFragmentSourceMSL();
+        std::string imageScaleYFragmentSourceMSL();
 
         ShaderSource vertexSource();
         ShaderSource colorMeshVertexSource();
@@ -41,6 +45,9 @@ namespace ftk
         ShaderSource textureFragmentSource();
         ShaderSource textFragmentSource();
         ShaderSource imageFragmentSource();
+        ShaderSource textureScaleFragmentSource();
+        ShaderSource imageScaleXFragmentSource();
+        ShaderSource imageScaleYFragmentSource();
 
         ///@}
 
@@ -97,6 +104,33 @@ namespace ftk
             int32_t mirrorX = 0;
             int32_t mirrorY = 0;
             int32_t pad = 0;
+        };
+
+        struct TextureScaleUniforms
+        {
+            int32_t scaleTaps = 0;
+            int32_t scaleVertical = 0;
+            int32_t pad[2] = { 0, 0 };
+        };
+
+        struct ImageScaleXUniforms
+        {
+            float yuvCoefficients[4];
+            int32_t imageType = 0;
+            int32_t channelCount = 0;
+            int32_t videoLevels = 0;
+            int32_t mirrorX = 0;
+            int32_t scaleTaps = 0;
+            int32_t pad[3] = { 0, 0, 0 };
+        };
+
+        struct ImageScaleYUniforms
+        {
+            float color[4];
+            int32_t opaque = 0;
+            int32_t channelDisplay = 0;
+            int32_t mirrorY = 0;
+            int32_t scaleTaps = 0;
         };
 
         ///@}
@@ -171,6 +205,32 @@ namespace ftk
             LRUCache<
                 std::shared_ptr<Image>,
                 std::vector<std::shared_ptr<Texture> > > textureCache;
+
+            // The two pass resample: the tables, which depend only on the
+            // two sizes, and the intermediates the first pass writes. Kept
+            // by size, a few of each; see the OpenGL renderer.
+            struct ScaleTable
+            {
+                std::shared_ptr<Texture> texture;
+                int in = 0;
+                int out = 0;
+                int taps = 0;
+            };
+            std::list<ScaleTable> scaleTables;
+            std::list<std::shared_ptr<OffscreenBuffer> > scaleBuffers;
+
+            const ScaleTable& scaleTable(int in, int out);
+            std::shared_ptr<OffscreenBuffer> scaleBuffer(const Size2I&);
+
+            // What this renderer last added to the totals, to take back.
+            struct CacheTotals
+            {
+                size_t cacheByteCount = 0;
+                size_t cacheCount = 0;
+                size_t poolByteCount = 0;
+                size_t poolCount = 0;
+            };
+            CacheTotals cacheTotals;
 
             std::vector<VertexUV> verticesUV;
             std::vector<VertexColor> verticesColor;

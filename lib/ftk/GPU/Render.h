@@ -186,6 +186,11 @@ namespace ftk
                 const TriMesh2F&,
                 const Color4F& = Color4F(1.F, 1.F, 1.F, 1.F),
                 const V2F& pos = V2F()) override;
+            FTK_GPU_API void drawTextureScaled(
+                unsigned int,
+                const Size2I& sourceSize,
+                const Box2I& rect,
+                bool mirrorV = true) override;
             FTK_GPU_API void drawTexture(
                 unsigned int,
                 const Box2I&,
@@ -211,12 +216,31 @@ namespace ftk
                 const ImageOptions& = ImageOptions()) override;
             FTK_GPU_API RenderDiag getDiag() const override;
 
+            //! \name Diagnostics
+            //! Summed over the renderers that exist.
+            ///@{
+
+            FTK_GPU_API static size_t getShaderCount();
+            FTK_GPU_API static size_t getVertexByteCount();
+            FTK_GPU_API static size_t getTextureCacheByteCount();
+            FTK_GPU_API static size_t getTextureCacheCount();
+            FTK_GPU_API static size_t getTexturePoolByteCount();
+            FTK_GPU_API static size_t getTexturePoolCount();
+
+            ///@}
+
         private:
             std::vector<std::shared_ptr<Texture> > _getTextures(
                 const ImageInfo&,
                 const ImageFilters&);
             void _copyTextures(
                 const std::shared_ptr<Image>&,
+                const std::vector<std::shared_ptr<Texture> >&);
+            bool _drawImageScaled(
+                const std::shared_ptr<Image>&,
+                const TriMesh2F&,
+                const Color4F&,
+                const ImageOptions&,
                 const std::vector<std::shared_ptr<Texture> >&);
 
             FTK_PRIVATE();

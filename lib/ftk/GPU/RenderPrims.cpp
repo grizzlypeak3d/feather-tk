@@ -3,6 +3,8 @@
 
 #include <ftk/GPU/RenderPrivate.h>
 
+#include <ftk/Core/RenderUtil.h>
+
 #include <cstring>
 #include <sstream>
 
@@ -205,6 +207,243 @@ namespace ftk
             }
         }
 
+        namespace
+        {
+            // Enough for a comparison of a few pictures at one zoom; a zoom
+            // walks through sizes, so this is bounded rather than kept.
+            const size_t scaleTableMax = 8;
+            const size_t scaleBufferMax = 4;
+
+            M44F bufferTransform(const Size2I& size)
+            {
+                return ortho(
+                    0.F,
+                    static_cast<float>(size.w),
+                    static_cast<float>(size.h),
+                    0.F,
+                    -1.F,
+                    1.F);
+            }
+        }
+
+        const Render::Private::ScaleTable& Render::Private::scaleTable(int in, int out)
+        {
+            for (auto i = scaleTables.begin(); i != scaleTables.end(); ++i)
+            {
+                if (i->in == in && i->out == out)
+                {
+                    scaleTables.splice(scaleTables.begin(), scaleTables, i);
+                    return scaleTables.front();
+                }
+            }
+            ScaleTable table;
+            table.in = in;
+            table.out = out;
+            const auto data = getScaleContrib(in, out, table.taps);
+            TextureOptions options;
+            options.filters.minify = ImageFilter::Nearest;
+            options.filters.magnify = ImageFilter::Nearest;
+            table.texture = Texture::create(system, data->getInfo(), options);
+            table.texture->copy(data);
+            scaleTables.push_front(table);
+            while (scaleTables.size() > scaleTableMax)
+            {
+                scaleTables.pop_back();
+            }
+            return scaleTables.front();
+        }
+
+        std::shared_ptr<OffscreenBuffer> Render::Private::scaleBuffer(const Size2I& size)
+        {
+            for (auto i = scaleBuffers.begin(); i != scaleBuffers.end(); ++i)
+            {
+                if (*i && (*i)->getSize() == size)
+                {
+                    scaleBuffers.splice(scaleBuffers.begin(), scaleBuffers, i);
+                    return scaleBuffers.front();
+                }
+            }
+            auto out = OffscreenBuffer::create(system, size, BufferType::RGBA_F16);
+            scaleBuffers.push_front(out);
+            while (scaleBuffers.size() > scaleBufferMax)
+            {
+                scaleBuffers.pop_back();
+            }
+            return out;
+        }
+
+        void Render::drawTextureScaled(
+            unsigned int id,
+            const Size2I& sourceSize,
+            const Box2I& rect,
+            bool mirrorV)
+        {
+            FTK_P();
+            const Size2I destSize = rect.size();
+            SDL_GPUTexture* texture = p.system->getTexture(id);
+            if (!texture ||
+                !sourceSize.isValid() ||
+                !destSize.isValid() ||
+                (destSize.w >= sourceSize.w && destSize.h >= sourceSize.h))
+            {
+                drawTexture(id, rect, mirrorV);
+                return;
+            }
+            // Copies, since making the second table may let go of the first.
+            const Private::ScaleTable x = p.scaleTable(sourceSize.w, destSize.w);
+            const Private::ScaleTable y = p.scaleTable(sourceSize.h, destSize.h);
+
+            // Across first, into an intermediate that is already narrowed
+            // but still full height.
+            const Size2I tmpSize(destSize.w, sourceSize.h);
+            const auto tmp = p.scaleBuffer(tmpSize);
+            {
+                pushTarget(tmp);
+                TextureScaleUniforms uniforms;
+                uniforms.scaleTaps = x.taps;
+                uniforms.scaleVertical = 0;
+                const SDL_GPUTextureSamplerBinding bindings[2] =
+                {
+                    { texture, p.samplerNearest },
+                    { x.texture->getTexture(), x.texture->getSampler() }
+                };
+                p.drawUV(
+                    "textureScale",
+                    Blend::None,
+                    mesh(Box2F(0.F, 0.F, tmpSize.w, tmpSize.h)),
+                    bufferTransform(tmpSize),
+                    &uniforms,
+                    sizeof(uniforms),
+                    bindings,
+                    2);
+                popTarget();
+            }
+
+            // Then down, over the destination.
+            TextureScaleUniforms uniforms;
+            uniforms.scaleTaps = y.taps;
+            uniforms.scaleVertical = 1;
+            const SDL_GPUTextureSamplerBinding bindings[2] =
+            {
+                { tmp->getTexture(), p.samplerNearest },
+                { y.texture->getTexture(), y.texture->getSampler() }
+            };
+            p.drawUV(
+                "textureScale",
+                Blend::Default,
+                mesh(Box2F(rect.min.x, rect.min.y, rect.w(), rect.h())),
+                p.transform,
+                &uniforms,
+                sizeof(uniforms),
+                bindings,
+                2);
+        }
+
+        bool Render::_drawImageScaled(
+            const std::shared_ptr<Image>& image,
+            const TriMesh2F& mesh,
+            const Color4F& color,
+            const ImageOptions& imageOptions,
+            const std::vector<std::shared_ptr<Texture> >& textures)
+        {
+            FTK_P();
+            const auto& info = image->getInfo();
+
+            // The destination this covers. Only an axis aligned rectangle
+            // can be resampled one axis at a time.
+            if (mesh.v.size() != 4 || mesh.triangles.size() != 2)
+                return false;
+            float minX = mesh.v[0].x, maxX = mesh.v[0].x;
+            float minY = mesh.v[0].y, maxY = mesh.v[0].y;
+            for (const auto& v : mesh.v)
+            {
+                minX = std::min(minX, v.x); maxX = std::max(maxX, v.x);
+                minY = std::min(minY, v.y); maxY = std::max(maxY, v.y);
+            }
+            const int outW = static_cast<int>(std::round(maxX - minX));
+            const int outH = static_cast<int>(std::round(maxY - minY));
+            const int inW = info.size.w;
+            const int inH = info.size.h;
+            if (outW < 1 || outH < 1 || inW < 1 || inH < 1)
+                return false;
+            // A draw at the picture's own size has nothing to resample.
+            if (outW == inW && outH == inH)
+                return false;
+
+            const Private::ScaleTable x = p.scaleTable(inW, outW);
+            const Private::ScaleTable y = p.scaleTable(inH, outH);
+            const Size2I tmpSize(outW, inH);
+            const auto tmp = p.scaleBuffer(tmpSize);
+
+            // Pass one, across, into the intermediate.
+            {
+                pushTarget(tmp);
+                ImageScaleXUniforms uniforms;
+                const V4F yuvCoefficients = getYUVCoefficients(info.yuvCoefficients);
+                uniforms.yuvCoefficients[0] = yuvCoefficients.x;
+                uniforms.yuvCoefficients[1] = yuvCoefficients.y;
+                uniforms.yuvCoefficients[2] = yuvCoefficients.z;
+                uniforms.yuvCoefficients[3] = yuvCoefficients.w;
+                uniforms.imageType = static_cast<int32_t>(info.type);
+                uniforms.channelCount = getChannelCount(info.type);
+                VideoLevels videoLevels = info.videoLevels;
+                switch (imageOptions.videoLevels)
+                {
+                case InputVideoLevels::FullRange: videoLevels = VideoLevels::FullRange; break;
+                case InputVideoLevels::LegalRange: videoLevels = VideoLevels::LegalRange; break;
+                default: break;
+                }
+                uniforms.videoLevels = static_cast<int32_t>(videoLevels);
+                uniforms.mirrorX = info.layout.mirror.x;
+                uniforms.scaleTaps = x.taps;
+                SDL_GPUTextureSamplerBinding bindings[4] = {};
+                for (size_t i = 0; i < 3; ++i)
+                {
+                    const auto& texture = textures[i < textures.size() ? i : 0];
+                    bindings[i].texture = texture->getTexture();
+                    bindings[i].sampler = texture->getSampler();
+                }
+                bindings[3].texture = x.texture->getTexture();
+                bindings[3].sampler = x.texture->getSampler();
+                p.drawUV(
+                    "imageScaleX",
+                    Blend::None,
+                    ftk::mesh(Box2F(0.F, 0.F, tmpSize.w, tmpSize.h)),
+                    bufferTransform(tmpSize),
+                    &uniforms,
+                    sizeof(uniforms),
+                    bindings,
+                    4);
+                popTarget();
+            }
+
+            // Pass two, down, over the destination.
+            ImageScaleYUniforms uniforms;
+            uniforms.color[0] = color.r;
+            uniforms.color[1] = color.g;
+            uniforms.color[2] = color.b;
+            uniforms.color[3] = color.a;
+            uniforms.opaque = AlphaBlend::None == imageOptions.alphaBlend;
+            uniforms.channelDisplay = static_cast<int32_t>(imageOptions.channelDisplay);
+            uniforms.mirrorY = info.layout.mirror.y;
+            uniforms.scaleTaps = y.taps;
+            const SDL_GPUTextureSamplerBinding bindings[2] =
+            {
+                { tmp->getTexture(), p.samplerNearest },
+                { y.texture->getTexture(), y.texture->getSampler() }
+            };
+            p.drawUV(
+                "imageScaleY",
+                getBlend(imageOptions.alphaBlend),
+                ftk::mesh(Box2F(minX, minY, maxX - minX, maxY - minY)),
+                p.transform,
+                &uniforms,
+                sizeof(uniforms),
+                bindings,
+                2);
+            return true;
+        }
+
         void Render::drawText(
             const std::vector<std::shared_ptr<Glyph> >& glyphs,
             const FontMetrics& fontMetrics,
@@ -391,15 +630,15 @@ namespace ftk
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
             options.filters = imageFilters;
-            // The two pass resample is not here yet; see the OpenGL
-            // renderer's drawImage().
+            // The two pass path weighs the texels itself, so it wants them as
+            // they are rather than blended in pairs first.
             if (ImageFilter::HighQuality == options.filters.minify)
             {
-                options.filters.minify = ImageFilter::Linear;
+                options.filters.minify = ImageFilter::Nearest;
             }
             if (ImageFilter::HighQuality == options.filters.magnify)
             {
-                options.filters.magnify = ImageFilter::Linear;
+                options.filters.magnify = ImageFilter::Nearest;
             }
             const int w = info.size.w;
             const int h = info.size.h;
@@ -500,6 +739,12 @@ namespace ftk
             if (textures.empty())
                 return;
             p.diag.textures += textures.size();
+
+            if (ImageFilter::HighQuality == imageOptions.imageFilters.minify &&
+                _drawImageScaled(image, mesh, color, imageOptions, textures))
+            {
+                return;
+            }
 
             ImageUniforms uniforms;
             uniforms.color[0] = color.r;

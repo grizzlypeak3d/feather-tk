@@ -9,6 +9,7 @@
 
 #include <SDL3/SDL.h>
 
+#include <atomic>
 #include <cstring>
 #include <stdexcept>
 
@@ -64,6 +65,22 @@ namespace ftk
             }
         }
 
+        namespace
+        {
+            std::atomic<size_t> objectCount = 0;
+            std::atomic<size_t> totalByteCount = 0;
+
+            // What a texture takes on the GPU, where three channels are
+            // kept as four.
+            size_t getGPUByteCount(const ImageInfo& info)
+            {
+                const int channels = getChannelCount(info.type);
+                return static_cast<size_t>(info.size.w) * info.size.h *
+                    (3 == channels ? 4 : channels) *
+                    getChannelByteCount(info.type);
+            }
+        }
+
         bool isTextureSupported(ImageType value)
         {
             return getFormat(value) != SDL_GPU_TEXTUREFORMAT_INVALID;
@@ -75,6 +92,7 @@ namespace ftk
             ImageInfo info;
             SDL_GPUTexture* texture = nullptr;
             SDL_GPUSampler* sampler = nullptr;
+            bool counted = false;
         };
 
         void Texture::_init(
@@ -126,6 +144,9 @@ namespace ftk
             {
                 throw std::runtime_error(Format("Cannot create a sampler: {0}").arg(SDL_GetError()));
             }
+            ++objectCount;
+            totalByteCount += getGPUByteCount(p.info);
+            p.counted = true;
         }
 
         Texture::Texture() :
@@ -135,6 +156,11 @@ namespace ftk
         Texture::~Texture()
         {
             FTK_P();
+            if (p.counted)
+            {
+                --objectCount;
+                totalByteCount -= getGPUByteCount(p.info);
+            }
             if (p.system)
             {
                 SDL_GPUDevice* device = p.system->getDevice();
@@ -157,6 +183,16 @@ namespace ftk
             auto out = std::shared_ptr<Texture>(new Texture);
             out->_init(system, info, options);
             return out;
+        }
+
+        size_t Texture::getObjectCount()
+        {
+            return objectCount;
+        }
+
+        size_t Texture::getTotalByteCount()
+        {
+            return totalByteCount;
         }
 
         const ImageInfo& Texture::getInfo() const

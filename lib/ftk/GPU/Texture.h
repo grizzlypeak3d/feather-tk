@@ -76,6 +76,12 @@ namespace ftk
             //! Copy an image to part of the texture, keeping the rest.
             FTK_GPU_API void copy(const std::shared_ptr<Image>&, int x, int y);
 
+            //! Get the number of textures that exist.
+            FTK_GPU_API static size_t getObjectCount();
+
+            //! Get the bytes the textures that exist take, on the GPU.
+            FTK_GPU_API static size_t getTotalByteCount();
+
         private:
             void _copy(const uint8_t*, const ImageInfo&, int x, int y, bool cycle);
 

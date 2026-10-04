@@ -414,6 +414,196 @@ namespace ftk
 
         namespace
         {
+            // One tap of a separable resample; see getScaleContrib().
+            const std::string scaleTap =
+                "float2 scaleTap(texture2d<float> contrib, sampler cs, float outCoord, int tap, int taps)\n"
+                "{\n"
+                "    float t = taps > 1 ?\n"
+                "        (float(tap) / float(taps - 1)) :\n"
+                "        0.0;\n"
+                "    return contrib.sample(cs, float2(outCoord, t)).rg;\n"
+                "}\n"
+                "\n";
+
+            const std::string channelDisplaySwizzle =
+                "    if (u.opaque != 0)\n"
+                "    {\n"
+                "        outColor.a = 1.0;\n"
+                "    }\n"
+                "    if (ChannelDisplay_Red == u.channelDisplay)\n"
+                "    {\n"
+                "        outColor.g = outColor.b = outColor.r;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Green == u.channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.b = outColor.g;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Blue == u.channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.g = outColor.b;\n"
+                "    }\n"
+                "    else if (ChannelDisplay_Alpha == u.channelDisplay)\n"
+                "    {\n"
+                "        outColor.r = outColor.g = outColor.b = outColor.a;\n"
+                "    }\n";
+        }
+
+        std::string textureScaleFragmentSourceMSL()
+        {
+            // One axis of a separable resample over an ordinary texture.
+            // Used for both passes; which axis is a uniform.
+            return header + fragmentIn + scaleTap +
+                "struct Uniforms\n"
+                "{\n"
+                "    int scaleTaps;\n"
+                "    int scaleVertical;\n"
+                "};\n"
+                "\n"
+                "fragment float4 fragmentMain(\n"
+                "    VertexOut in [[stage_in]],\n"
+                "    constant Uniforms& u [[buffer(0)]],\n"
+                "    texture2d<float> t0 [[texture(0)]],\n"
+                "    texture2d<float> t1 [[texture(1)]],\n"
+                "    sampler s0 [[sampler(0)]],\n"
+                "    sampler s1 [[sampler(1)]])\n"
+                "{\n"
+                "    float4 c = float4(0.0);\n"
+                "    float4 lo = float4(1.0e38);\n"
+                "    float4 hi = float4(-1.0e38);\n"
+                "    bool range = false;\n"
+                "    float outCoord = u.scaleVertical != 0 ? in.uv.y : in.uv.x;\n"
+                "    for (int i = 0; i < u.scaleTaps; ++i)\n"
+                "    {\n"
+                "        float2 tap = scaleTap(t1, s1, outCoord, i, u.scaleTaps);\n"
+                "        float2 t = u.scaleVertical != 0 ?\n"
+                "            float2(in.uv.x, tap.x) :\n"
+                "            float2(tap.x, in.uv.y);\n"
+                "        float4 texel = t0.sample(s0, t);\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
+                "    }\n"
+                "    // Held to the range of the texels the kernel weighs up; see\n"
+                "    // the OpenGL renderer.\n"
+                "    return range ? clamp(c, lo, hi) : c;\n"
+                "}\n";
+        }
+
+        std::string imageScaleXFragmentSourceMSL()
+        {
+            // Pass one: resample across, and convert the picture to RGBA on
+            // the way.
+            return header + fragmentIn + imageType + sampleTexture + scaleTap +
+                "struct Uniforms\n"
+                "{\n"
+                "    float4 yuvCoefficients;\n"
+                "    int imageType;\n"
+                "    int channelCount;\n"
+                "    int videoLevels;\n"
+                "    int mirrorX;\n"
+                "    int scaleTaps;\n"
+                "};\n"
+                "\n"
+                "fragment float4 fragmentMain(\n"
+                "    VertexOut in [[stage_in]],\n"
+                "    constant Uniforms& u [[buffer(0)]],\n"
+                "    texture2d<float> t0 [[texture(0)]],\n"
+                "    texture2d<float> t1 [[texture(1)]],\n"
+                "    texture2d<float> t2 [[texture(2)]],\n"
+                "    texture2d<float> t3 [[texture(3)]],\n"
+                "    sampler s0 [[sampler(0)]],\n"
+                "    sampler s1 [[sampler(1)]],\n"
+                "    sampler s2 [[sampler(2)]],\n"
+                "    sampler s3 [[sampler(3)]])\n"
+                "{\n"
+                "    float4 c = float4(0.0);\n"
+                "    float4 lo = float4(1.0e38);\n"
+                "    float4 hi = float4(-1.0e38);\n"
+                "    bool range = false;\n"
+                "    for (int i = 0; i < u.scaleTaps; ++i)\n"
+                "    {\n"
+                "        float2 tap = scaleTap(t3, s3, in.uv.x, i, u.scaleTaps);\n"
+                "        float2 t = float2(tap.x, in.uv.y);\n"
+                "        if (1 == u.mirrorX)\n"
+                "        {\n"
+                "            t.x = 1.0 - t.x;\n"
+                "        }\n"
+                "        float4 texel = sampleTexture(\n"
+                "            t,\n"
+                "            u.imageType,\n"
+                "            u.channelCount,\n"
+                "            u.videoLevels,\n"
+                "            u.yuvCoefficients,\n"
+                "            t0, t1, t2, s0, s1, s2);\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
+                "    }\n"
+                "    return range ? clamp(c, lo, hi) : c;\n"
+                "}\n";
+        }
+
+        std::string imageScaleYFragmentSourceMSL()
+        {
+            // Pass two: resample down, and apply what the image options say
+            // about the finished pixel. The first pass keeps the image's
+            // rows as they are in memory, so this turns them over as the
+            // image shader does.
+            return header + fragmentIn + imageType + scaleTap +
+                "struct Uniforms\n"
+                "{\n"
+                "    float4 color;\n"
+                "    int opaque;\n"
+                "    int channelDisplay;\n"
+                "    int mirrorY;\n"
+                "    int scaleTaps;\n"
+                "};\n"
+                "\n"
+                "fragment float4 fragmentMain(\n"
+                "    VertexOut in [[stage_in]],\n"
+                "    constant Uniforms& u [[buffer(0)]],\n"
+                "    texture2d<float> t0 [[texture(0)]],\n"
+                "    texture2d<float> t1 [[texture(1)]],\n"
+                "    sampler s0 [[sampler(0)]],\n"
+                "    sampler s1 [[sampler(1)]])\n"
+                "{\n"
+                "    float4 c = float4(0.0);\n"
+                "    float4 lo = float4(1.0e38);\n"
+                "    float4 hi = float4(-1.0e38);\n"
+                "    bool range = false;\n"
+                "    for (int i = 0; i < u.scaleTaps; ++i)\n"
+                "    {\n"
+                "        float2 tap = scaleTap(t1, s1, in.uv.y, i, u.scaleTaps);\n"
+                "        float y = tap.x;\n"
+                "        if (0 == u.mirrorY)\n"
+                "        {\n"
+                "            y = 1.0 - y;\n"
+                "        }\n"
+                "        float4 texel = t0.sample(s0, float2(in.uv.x, y));\n"
+                "        c += tap.y * texel;\n"
+                "        if (tap.y > 0.0)\n"
+                "        {\n"
+                "            lo = min(lo, texel);\n"
+                "            hi = max(hi, texel);\n"
+                "            range = true;\n"
+                "        }\n"
+                "    }\n"
+                "    float4 outColor = (range ? clamp(c, lo, hi) : c) * u.color;\n" +
+                channelDisplaySwizzle +
+                "    return outColor;\n"
+                "}\n";
+        }
+
+        namespace
+        {
             const std::string fragmentHeaderGLSL =
                 "#version 450\n"
                 "\n"
@@ -633,6 +823,171 @@ namespace ftk
                     "    }\n"
                     "}\n";
             }
+        }
+
+        namespace
+        {
+            const std::string scaleTapGLSL =
+                "vec2 scaleTap(sampler2D contrib, float outCoord, int tap, int taps)\n"
+                "{\n"
+                "    float t = taps > 1 ?\n"
+                "        (float(tap) / float(taps - 1)) :\n"
+                "        0.0;\n"
+                "    return texture(contrib, vec2(outCoord, t)).rg;\n"
+                "}\n"
+                "\n";
+
+            std::string textureScaleFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL + scaleTapGLSL +
+                    "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                    "layout(set = 2, binding = 1) uniform sampler2D s1;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    int scaleTaps;\n"
+                    "    int scaleVertical;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    vec4 c = vec4(0.0);\n"
+                    "    vec4 lo = vec4(1.0e38);\n"
+                    "    vec4 hi = vec4(-1.0e38);\n"
+                    "    bool range = false;\n"
+                    "    float outCoord = u.scaleVertical != 0 ? fTexture.y : fTexture.x;\n"
+                    "    for (int i = 0; i < u.scaleTaps; ++i)\n"
+                    "    {\n"
+                    "        vec2 tap = scaleTap(s1, outCoord, i, u.scaleTaps);\n"
+                    "        vec2 t = u.scaleVertical != 0 ?\n"
+                    "            vec2(fTexture.x, tap.x) :\n"
+                    "            vec2(tap.x, fTexture.y);\n"
+                    "        vec4 texel = texture(s0, t);\n"
+                    "        c += tap.y * texel;\n"
+                    "        if (tap.y > 0.0)\n"
+                    "        {\n"
+                    "            lo = min(lo, texel);\n"
+                    "            hi = max(hi, texel);\n"
+                    "            range = true;\n"
+                    "        }\n"
+                    "    }\n"
+                    "    outColor = range ? clamp(c, lo, hi) : c;\n"
+                    "}\n";
+            }
+
+            std::string imageScaleXFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL +
+                    toGLSL(imageType) +
+                    toGLSL(sampleTexture) +
+                    scaleTapGLSL +
+                    "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                    "layout(set = 2, binding = 1) uniform sampler2D s1;\n"
+                    "layout(set = 2, binding = 2) uniform sampler2D s2;\n"
+                    "layout(set = 2, binding = 3) uniform sampler2D s3;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 yuvCoefficients;\n"
+                    "    int imageType;\n"
+                    "    int channelCount;\n"
+                    "    int videoLevels;\n"
+                    "    int mirrorX;\n"
+                    "    int scaleTaps;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    vec4 c = vec4(0.0);\n"
+                    "    vec4 lo = vec4(1.0e38);\n"
+                    "    vec4 hi = vec4(-1.0e38);\n"
+                    "    bool range = false;\n"
+                    "    for (int i = 0; i < u.scaleTaps; ++i)\n"
+                    "    {\n"
+                    "        vec2 tap = scaleTap(s3, fTexture.x, i, u.scaleTaps);\n"
+                    "        vec2 t = vec2(tap.x, fTexture.y);\n"
+                    "        if (1 == u.mirrorX)\n"
+                    "        {\n"
+                    "            t.x = 1.0 - t.x;\n"
+                    "        }\n"
+                    "        vec4 texel = sampleTexture(\n"
+                    "            t,\n"
+                    "            u.imageType,\n"
+                    "            u.channelCount,\n"
+                    "            u.videoLevels,\n"
+                    "            u.yuvCoefficients,\n"
+                    "            s0, s1, s2);\n"
+                    "        c += tap.y * texel;\n"
+                    "        if (tap.y > 0.0)\n"
+                    "        {\n"
+                    "            lo = min(lo, texel);\n"
+                    "            hi = max(hi, texel);\n"
+                    "            range = true;\n"
+                    "        }\n"
+                    "    }\n"
+                    "    outColor = range ? clamp(c, lo, hi) : c;\n"
+                    "}\n";
+            }
+
+            std::string imageScaleYFragmentSourceGLSL()
+            {
+                return fragmentHeaderGLSL +
+                    toGLSL(imageType) +
+                    scaleTapGLSL +
+                    "layout(set = 2, binding = 0) uniform sampler2D s0;\n"
+                    "layout(set = 2, binding = 1) uniform sampler2D s1;\n"
+                    "\n"
+                    "layout(set = 3, binding = 0) uniform Uniforms\n"
+                    "{\n"
+                    "    vec4 color;\n"
+                    "    int opaque;\n"
+                    "    int channelDisplay;\n"
+                    "    int mirrorY;\n"
+                    "    int scaleTaps;\n"
+                    "} u;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    vec4 c = vec4(0.0);\n"
+                    "    vec4 lo = vec4(1.0e38);\n"
+                    "    vec4 hi = vec4(-1.0e38);\n"
+                    "    bool range = false;\n"
+                    "    for (int i = 0; i < u.scaleTaps; ++i)\n"
+                    "    {\n"
+                    "        vec2 tap = scaleTap(s1, fTexture.y, i, u.scaleTaps);\n"
+                    "        float y = tap.x;\n"
+                    "        if (0 == u.mirrorY)\n"
+                    "        {\n"
+                    "            y = 1.0 - y;\n"
+                    "        }\n"
+                    "        vec4 texel = texture(s0, vec2(fTexture.x, y));\n"
+                    "        c += tap.y * texel;\n"
+                    "        if (tap.y > 0.0)\n"
+                    "        {\n"
+                    "            lo = min(lo, texel);\n"
+                    "            hi = max(hi, texel);\n"
+                    "            range = true;\n"
+                    "        }\n"
+                    "    }\n"
+                    "    outColor = (range ? clamp(c, lo, hi) : c) * u.color;\n" +
+                    channelDisplaySwizzle +
+                    "}\n";
+            }
+        }
+
+        ShaderSource textureScaleFragmentSource()
+        {
+            return { textureScaleFragmentSourceMSL(), textureScaleFragmentSourceGLSL() };
+        }
+
+        ShaderSource imageScaleXFragmentSource()
+        {
+            return { imageScaleXFragmentSourceMSL(), imageScaleXFragmentSourceGLSL() };
+        }
+
+        ShaderSource imageScaleYFragmentSource()
+        {
+            return { imageScaleYFragmentSourceMSL(), imageScaleYFragmentSourceGLSL() };
         }
 
         ShaderSource vertexSource()

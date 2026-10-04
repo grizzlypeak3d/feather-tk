@@ -167,6 +167,8 @@ namespace
         std::shared_ptr<Image> poolB;
         std::shared_ptr<Image> video;
         std::shared_ptr<Image> planes;
+        std::shared_ptr<Image> large;
+        std::shared_ptr<Image> largeVideo;
     };
 
     Scene createScene(const std::shared_ptr<FontSystem>& fontSystem)
@@ -201,6 +203,8 @@ namespace
         out.poolB = gradient(96, 64, ImageType::RGB_U8, 1.F);
         out.video = yuv(96, 64);
         out.planes = planes(96, 64);
+        out.large = gradient(640, 400, ImageType::RGBA_U8, .25F);
+        out.largeVideo = yuv(640, 400);
         return out;
     }
 
@@ -277,6 +281,13 @@ namespace
         render->drawImage(scene.video, Box2F(442, 340, 96, 64), Color4F(1.F, 1.F, 1.F), red);
 
         render->drawImage(scene.planes, Box2F(442, 410, 96, 64));
+
+        // Reduced with the two pass resample, which is two more shaders
+        // and a buffer in between.
+        ImageOptions reduced;
+        reduced.imageFilters.minify = ImageFilter::HighQuality;
+        render->drawImage(scene.large, Box2F(560, 410, 100, 62), Color4F(1.F, 1.F, 1.F), reduced);
+        render->drawImage(scene.largeVideo, Box2F(670, 410, 100, 62), Color4F(1.F, 1.F, 1.F), reduced);
 
         // Clipping.
         render->setClipRectEnabled(true);
@@ -369,6 +380,15 @@ namespace
         render->begin(size, options);
         render->end();
 
+        // One pixel read back, which is what the color picker reads.
+        const Color4F pixel = source->getPixel(V2I(8, 8));
+        const bool pixelOK =
+            std::fabs(pixel.r - in[0]) < .001F &&
+            std::fabs(pixel.g - in[1]) < .001F &&
+            std::fabs(pixel.b - in[2]) < .001F;
+        std::cout << "Pixel: " << pixel.r << " " << pixel.g << " " << pixel.b <<
+            ", expected " << in[0] << " " << in[1] << " " << in[2] << std::endl;
+
         const auto toLinear = [](float v)
         {
             return v <= .04045F ? v / 12.92F : std::pow((v + .055F) / 1.055F, 2.4F);
@@ -391,7 +411,7 @@ namespace
             { .016391F, .088013F, .895595F }
         };
 
-        bool out = true;
+        bool out = pixelOK;
         auto presenter = gpu::Present::create(system);
         for (const auto composition :
             {

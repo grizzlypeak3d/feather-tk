@@ -7,6 +7,7 @@
 #include <ftk/Core/LogSystem.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cstring>
 #include <stdexcept>
 
@@ -17,6 +18,13 @@ namespace ftk
         namespace
         {
             const size_t chunkByteCount = 1024 * 1024;
+
+            std::atomic<size_t> shaderCount = 0;
+            std::atomic<size_t> vertexByteCount = 0;
+            std::atomic<size_t> textureCacheByteCount = 0;
+            std::atomic<size_t> textureCacheCount = 0;
+            std::atomic<size_t> texturePoolByteCount = 0;
+            std::atomic<size_t> texturePoolCount = 0;
 
             SDL_GPUTextureFormat getFormat(BufferType value)
             {
@@ -128,6 +136,21 @@ namespace ftk
                 fragment = imageFragmentSource();
                 samplers = 3;
             }
+            else if ("textureScale" == name)
+            {
+                fragment = textureScaleFragmentSource();
+                samplers = 2;
+            }
+            else if ("imageScaleX" == name)
+            {
+                fragment = imageScaleXFragmentSource();
+                samplers = 4;
+            }
+            else if ("imageScaleY" == name)
+            {
+                fragment = imageScaleYFragmentSource();
+                samplers = 2;
+            }
             else if (const auto j = customShaders.find(name); j != customShaders.end())
             {
                 fragment = j->second.fragmentSource;
@@ -147,6 +170,7 @@ namespace ftk
                 SDL_ReleaseGPUShader(device, shader.vertex);
                 throw;
             }
+            shaderCount += 2;
             shaders[name] = shader;
             return shaders[name];
         }
@@ -292,6 +316,7 @@ namespace ftk
                 {
                     throw std::runtime_error(Format("Cannot create a vertex buffer: {0}").arg(SDL_GetError()));
                 }
+                vertexByteCount += c.data.size();
                 chunks.push_back(c);
                 chunk = chunks.size() - 1;
             }
@@ -412,12 +437,18 @@ namespace ftk
                 {
                     SDL_ReleaseGPUShader(p.device, i.second.vertex);
                     SDL_ReleaseGPUShader(p.device, i.second.fragment);
+                    shaderCount -= 2;
                 }
                 for (const auto& i : p.chunks)
                 {
                     SDL_ReleaseGPUBuffer(p.device, i.buffer);
                     SDL_ReleaseGPUTransferBuffer(p.device, i.transfer);
+                    vertexByteCount -= i.data.size();
                 }
+                textureCacheByteCount -= p.cacheTotals.cacheByteCount;
+                textureCacheCount -= p.cacheTotals.cacheCount;
+                texturePoolByteCount -= p.cacheTotals.poolByteCount;
+                texturePoolCount -= p.cacheTotals.poolCount;
                 if (p.sampler)
                 {
                     SDL_ReleaseGPUSampler(p.device, p.sampler);
@@ -552,6 +583,7 @@ namespace ftk
             {
                 SDL_ReleaseGPUShader(p.device, j->second.vertex);
                 SDL_ReleaseGPUShader(p.device, j->second.fragment);
+                shaderCount -= 2;
                 p.shaders.erase(j);
             }
         }
@@ -702,6 +734,18 @@ namespace ftk
                 p.cmd = nullptr;
             }
 
+            {
+                const auto apply = [](std::atomic<size_t>& total, size_t& previous, size_t current)
+                {
+                    total += current - previous;
+                    previous = current;
+                };
+                apply(textureCacheByteCount, p.cacheTotals.cacheByteCount, p.textureCache.getSize());
+                apply(textureCacheCount, p.cacheTotals.cacheCount, p.textureCache.getCount());
+                apply(texturePoolByteCount, p.cacheTotals.poolByteCount, p.texturePool.getSize());
+                apply(texturePoolCount, p.cacheTotals.poolCount, p.texturePool.getCount());
+            }
+
             const auto now = std::chrono::steady_clock::now();
             const auto diff = std::chrono::duration_cast<std::chrono::microseconds>(
                 now - p.startTime);
@@ -792,6 +836,36 @@ namespace ftk
         RenderDiag Render::getDiag() const
         {
             return _p->diag;
+        }
+
+        size_t Render::getShaderCount()
+        {
+            return shaderCount;
+        }
+
+        size_t Render::getVertexByteCount()
+        {
+            return vertexByteCount;
+        }
+
+        size_t Render::getTextureCacheByteCount()
+        {
+            return textureCacheByteCount;
+        }
+
+        size_t Render::getTextureCacheCount()
+        {
+            return textureCacheCount;
+        }
+
+        size_t Render::getTexturePoolByteCount()
+        {
+            return texturePoolByteCount;
+        }
+
+        size_t Render::getTexturePoolCount()
+        {
+            return texturePoolCount;
         }
 
         RenderFactory::RenderFactory(const std::shared_ptr<System>& system) :
