@@ -17,6 +17,7 @@
 #include <chrono>
 #include <list>
 #include <map>
+#include <set>
 #include <tuple>
 #include <unordered_map>
 
@@ -158,10 +159,47 @@ namespace ftk
             };
             std::vector<TargetState> targets;
             SDL_GPUCommandBuffer* cmd = nullptr;
-            SDL_GPURenderPass* pass = nullptr;
             bool clearPending = false;
             Color4F clearColor;
             bool blendEnabled = true;
+
+            // A pass is kept, not written, until it ends: what it draws,
+            // and the textures made ready for it. It is then written into
+            // the frame's command buffer after what it draws with, the
+            // vertices and those textures, so that the one command buffer
+            // holds both in the order they are needed. Sent in command
+            // buffers of their own ahead of the one that drew with them,
+            // they depended on the driver finishing one before starting
+            // the next, which the Raspberry Pi's does not.
+            struct DrawCmd
+            {
+                SDL_GPUGraphicsPipeline* pipeline = nullptr;
+                size_t chunk = 0;
+                size_t offset = 0;
+                size_t vertexCount = 0;
+                SDL_GPUViewport viewport = {};
+                SDL_Rect scissor = { 0, 0, 0, 0 };
+                float mvp[16];
+                size_t uniformsOffset = 0;
+                size_t uniformsByteCount = 0;
+                size_t texturesOffset = 0;
+                size_t textureCount = 0;
+            };
+            struct PassState
+            {
+                bool open = false;
+                std::shared_ptr<OffscreenBuffer> target;
+                bool clear = false;
+                Color4F clearColor;
+                std::vector<DrawCmd> draws;
+                std::vector<uint8_t> uniforms;
+                std::vector<SDL_GPUTextureSamplerBinding> textures;
+                //! The textures the draws read, to know when one of them is
+                //! about to be given other contents.
+                std::set<SDL_GPUTexture*> drawTextures;
+            };
+            PassState pass;
+            std::vector<Texture::Upload> uploads;
 
             struct Shader
             {
@@ -186,6 +224,8 @@ namespace ftk
                 SDL_GPUTransferBuffer* transfer = nullptr;
                 std::vector<uint8_t> data;
                 size_t used = 0;
+                //! How much of what is used has been sent, this frame.
+                size_t sent = 0;
             };
             std::vector<Chunk> chunks;
             size_t chunk = 0;
@@ -243,7 +283,9 @@ namespace ftk
 
             void beginPass();
             void endPass();
-            void applyState();
+            void flush();
+            void discard();
+            void upload(const Texture::Upload&);
             const Shader& getShader(const std::string&);
             SDL_GPUGraphicsPipeline* getPipeline(const std::string&, Blend);
             void draw(

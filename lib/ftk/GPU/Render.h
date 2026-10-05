@@ -72,10 +72,10 @@ namespace ftk
         //!
         //! Where the OpenGL renderer draws as it is called, this one cannot:
         //! the API draws inside a render pass and copies data outside of
-        //! one. So the draws are recorded into a command buffer as they are
-        //! made, the vertices are gathered and sent once the frame is
-        //! known, and textures are sent in command buffers of their own,
-        //! each submitted ahead of the frame's.
+        //! one. So what a pass draws is kept until the pass ends, and is
+        //! then written into the frame's command buffer after the vertices
+        //! and the textures it draws with. A frame is one command buffer,
+        //! submitted when it ends.
         class FTK_GPU_API_TYPE Render : public IRender, public IGPURender
         {
         protected:

@@ -44,62 +44,159 @@ namespace ftk
 
         void Render::Private::beginPass()
         {
-            if (pass || !cmd || !target)
+            if (pass.open || !cmd || !target)
                 return;
-            SDL_GPUColorTargetInfo color = {};
-            color.texture = target->getTexture();
-            color.load_op = clearPending ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
-            color.store_op = SDL_GPU_STOREOP_STORE;
-            color.clear_color.r = clearColor.r;
-            color.clear_color.g = clearColor.g;
-            color.clear_color.b = clearColor.b;
-            color.clear_color.a = clearColor.a;
-            pass = SDL_BeginGPURenderPass(cmd, &color, 1, nullptr);
+            // Nothing is written yet: see PassState.
+            pass.open = true;
+            pass.target = target;
+            pass.clear = clearPending;
+            pass.clearColor = clearColor;
             clearPending = false;
-            applyState();
         }
 
         void Render::Private::endPass()
         {
-            if (pass)
+            if (pass.open)
             {
-                SDL_EndGPURenderPass(pass);
-                pass = nullptr;
+                flush();
             }
         }
 
-        void Render::Private::applyState()
+        void Render::Private::flush()
         {
-            if (!pass || !target)
+            if (!cmd)
                 return;
-            // Both from the top left, which is where the user interface
-            // counts from too: nothing to turn over, as OpenGL has.
-            SDL_GPUViewport v = {};
-            v.x = static_cast<float>(viewport.x());
-            v.y = static_cast<float>(viewport.y());
-            v.w = static_cast<float>(viewport.w());
-            v.h = static_cast<float>(viewport.h());
-            v.min_depth = 0.F;
-            v.max_depth = 1.F;
-            SDL_SetGPUViewport(pass, &v);
 
-            // Held inside the target: a scissor that leaves it is an error
-            // to Metal rather than something it clips.
-            const Size2I& targetSize = target->getSize();
-            Box2I scissor(0, 0, targetSize.w, targetSize.h);
-            if (clipRectEnabled)
+            // What the pass draws with, first: the vertices it added to the
+            // frame's, and the textures made ready since the last pass.
+            bool copy = !uploads.empty();
+            for (const auto& i : chunks)
             {
-                scissor = intersect(scissor, clipRect);
+                copy |= i.used > i.sent;
             }
-            SDL_Rect r = { 0, 0, 0, 0 };
-            if (scissor.isValid())
+            if (copy)
             {
-                r.x = scissor.x();
-                r.y = scissor.y();
-                r.w = scissor.w();
-                r.h = scissor.h();
+                SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(cmd);
+                for (auto& i : chunks)
+                {
+                    if (i.used > i.sent)
+                    {
+                        // Only what was added, where it goes. The transfer
+                        // buffer is cycled, so the rest of it is not what
+                        // was there before, and is not sent.
+                        uint8_t* data = static_cast<uint8_t*>(
+                            SDL_MapGPUTransferBuffer(device, i.transfer, true));
+                        std::memcpy(data + i.sent, i.data.data() + i.sent, i.used - i.sent);
+                        SDL_UnmapGPUTransferBuffer(device, i.transfer);
+                        SDL_GPUTransferBufferLocation source = {};
+                        source.transfer_buffer = i.transfer;
+                        source.offset = static_cast<Uint32>(i.sent);
+                        SDL_GPUBufferRegion destination = {};
+                        destination.buffer = i.buffer;
+                        destination.offset = static_cast<Uint32>(i.sent);
+                        destination.size = static_cast<Uint32>(i.used - i.sent);
+                        // Cycled the first time in a frame, so that a frame
+                        // still being drawn keeps the buffer it was given,
+                        // and not after: the frame's earlier passes are
+                        // written, and read the one this adds to.
+                        SDL_UploadToGPUBuffer(copyPass, &source, &destination, 0 == i.sent);
+                        i.sent = i.used;
+                    }
+                }
+                for (const auto& i : uploads)
+                {
+                    Texture::send(device, copyPass, i);
+                }
+                uploads.clear();
+                SDL_EndGPUCopyPass(copyPass);
             }
-            SDL_SetGPUScissor(pass, &r);
+
+            // And then the pass.
+            if (pass.open && pass.target)
+            {
+                SDL_GPUColorTargetInfo color = {};
+                color.texture = pass.target->getTexture();
+                color.load_op = pass.clear ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
+                color.store_op = SDL_GPU_STOREOP_STORE;
+                color.clear_color.r = pass.clearColor.r;
+                color.clear_color.g = pass.clearColor.g;
+                color.clear_color.b = pass.clearColor.b;
+                color.clear_color.a = pass.clearColor.a;
+                SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmd, &color, 1, nullptr);
+                for (const auto& i : pass.draws)
+                {
+                    SDL_SetGPUViewport(renderPass, &i.viewport);
+                    SDL_SetGPUScissor(renderPass, &i.scissor);
+                    SDL_BindGPUGraphicsPipeline(renderPass, i.pipeline);
+                    SDL_GPUBufferBinding binding = {};
+                    binding.buffer = chunks[i.chunk].buffer;
+                    binding.offset = static_cast<Uint32>(i.offset);
+                    SDL_BindGPUVertexBuffers(renderPass, 0, &binding, 1);
+                    SDL_PushGPUVertexUniformData(cmd, 0, i.mvp, sizeof(i.mvp));
+                    if (i.uniformsByteCount > 0)
+                    {
+                        SDL_PushGPUFragmentUniformData(
+                            cmd,
+                            0,
+                            pass.uniforms.data() + i.uniformsOffset,
+                            static_cast<Uint32>(i.uniformsByteCount));
+                    }
+                    if (i.textureCount > 0)
+                    {
+                        SDL_BindGPUFragmentSamplers(
+                            renderPass,
+                            0,
+                            pass.textures.data() + i.texturesOffset,
+                            static_cast<Uint32>(i.textureCount));
+                    }
+                    SDL_DrawGPUPrimitives(renderPass, static_cast<Uint32>(i.vertexCount), 1, 0, 0);
+                }
+                SDL_EndGPURenderPass(renderPass);
+            }
+            pass.open = false;
+            pass.target.reset();
+            pass.draws.clear();
+            pass.uniforms.clear();
+            pass.textures.clear();
+            pass.drawTextures.clear();
+        }
+
+        void Render::Private::discard()
+        {
+            // What was kept and will not be written: a frame that was not
+            // ended.
+            for (const auto& i : uploads)
+            {
+                Texture::discard(device, i);
+            }
+            uploads.clear();
+            pass = PassState();
+        }
+
+        void Render::Private::upload(const Texture::Upload& value)
+        {
+            if (!value.transfer)
+                return;
+            if (!cmd)
+            {
+                // Not in a frame: nothing is waiting on it, and it is sent
+                // by itself.
+                SDL_GPUCommandBuffer* uploadCmd = SDL_AcquireGPUCommandBuffer(device);
+                SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmd);
+                Texture::send(device, copyPass, value);
+                SDL_EndGPUCopyPass(copyPass);
+                SDL_SubmitGPUCommandBuffer(uploadCmd);
+                return;
+            }
+            // A texture given other contents while a draw that is kept
+            // reads it: every copy kept is sent before the draws kept are
+            // written, so the draw would see these. What is kept is
+            // written first, and the pass carries on after.
+            if (value.whole && pass.drawTextures.find(value.texture) != pass.drawTextures.end())
+            {
+                endPass();
+            }
+            uploads.push_back(value);
         }
 
         const Render::Private::Shader& Render::Private::getShader(const std::string& name)
@@ -296,7 +393,7 @@ namespace ftk
             if (clipRectEnabled && !clipRect.isValid())
                 return;
             beginPass();
-            if (!pass)
+            if (!pass.open)
                 return;
 
             // Somewhere to put the vertices.
@@ -331,32 +428,65 @@ namespace ftk
             std::memcpy(c.data.data() + offset, vertices, byteCount);
             c.used += byteCount;
 
-            SDL_BindGPUGraphicsPipeline(pass, getPipeline(shader, blendEnabled ? blend : Blend::None));
-            SDL_GPUBufferBinding binding = {};
-            binding.buffer = c.buffer;
-            binding.offset = static_cast<Uint32>(offset);
-            SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
+            // Kept, with the state it is drawn in, until the pass ends.
+            DrawCmd draw;
+            draw.pipeline = getPipeline(shader, blendEnabled ? blend : Blend::None);
+            draw.chunk = chunk;
+            draw.offset = offset;
+            draw.vertexCount = vertexCount;
+
+            // Both from the top left, which is where the user interface
+            // counts from too: nothing to turn over, as OpenGL has.
+            draw.viewport.x = static_cast<float>(viewport.x());
+            draw.viewport.y = static_cast<float>(viewport.y());
+            draw.viewport.w = static_cast<float>(viewport.w());
+            draw.viewport.h = static_cast<float>(viewport.h());
+            draw.viewport.min_depth = 0.F;
+            draw.viewport.max_depth = 1.F;
+
+            // Held inside the target: a scissor that leaves it is an error
+            // to Metal rather than something it clips.
+            const Size2I& targetSize = target->getSize();
+            Box2I scissor(0, 0, targetSize.w, targetSize.h);
+            if (clipRectEnabled)
+            {
+                scissor = intersect(scissor, clipRect);
+            }
+            if (scissor.isValid())
+            {
+                draw.scissor.x = scissor.x();
+                draw.scissor.y = scissor.y();
+                draw.scissor.w = scissor.w();
+                draw.scissor.h = scissor.h();
+            }
 
             // Column by column, which is how the shader reads a matrix and
             // not how this one is kept.
-            float mvp[16];
             for (int row = 0; row < 4; ++row)
             {
                 for (int column = 0; column < 4; ++column)
                 {
-                    mvp[column * 4 + row] = transform.get(row, column);
+                    draw.mvp[column * 4 + row] = transform.get(row, column);
                 }
             }
-            SDL_PushGPUVertexUniformData(cmd, 0, mvp, sizeof(mvp));
             if (uniforms && uniformsByteCount > 0)
             {
-                SDL_PushGPUFragmentUniformData(cmd, 0, uniforms, static_cast<Uint32>(uniformsByteCount));
+                draw.uniformsOffset = pass.uniforms.size();
+                draw.uniformsByteCount = uniformsByteCount;
+                const uint8_t* bytes = static_cast<const uint8_t*>(uniforms);
+                pass.uniforms.insert(pass.uniforms.end(), bytes, bytes + uniformsByteCount);
             }
             if (textureCount > 0)
             {
-                SDL_BindGPUFragmentSamplers(pass, 0, textures, static_cast<Uint32>(textureCount));
+                draw.texturesOffset = pass.textures.size();
+                draw.textureCount = textureCount;
+                pass.textures.insert(pass.textures.end(), textures, textures + textureCount);
+                for (size_t i = 0; i < textureCount; ++i)
+                {
+                    pass.drawTextures.insert(textures[i].texture);
+                }
             }
-            SDL_DrawGPUPrimitives(pass, static_cast<Uint32>(vertexCount), 1, 0, 0);
+            pass.draws.push_back(draw);
         }
 
         void Render::Private::drawUV(
@@ -430,7 +560,7 @@ namespace ftk
             FTK_P();
             if (p.device)
             {
-                p.endPass();
+                p.discard();
                 if (p.cmd)
                 {
                     SDL_CancelGPUCommandBuffer(p.cmd);
@@ -708,11 +838,12 @@ namespace ftk
             {
                 throw std::runtime_error(Format("Cannot acquire a command buffer: {0}").arg(SDL_GetError()));
             }
-            p.pass = nullptr;
+            p.discard();
             p.chunk = 0;
             for (auto& i : p.chunks)
             {
                 i.used = 0;
+                i.sent = 0;
             }
             p.clearPending = options.clear;
             p.clearColor = options.clearColor;
@@ -745,46 +876,18 @@ namespace ftk
                 }
                 p.endPass();
 
-                // The vertices, in a command buffer submitted ahead of the
-                // one that draws them.
-                bool upload = false;
-                for (const auto& i : p.chunks)
-                {
-                    upload |= i.used > 0;
-                }
-                if (upload)
-                {
-                    SDL_GPUCommandBuffer* uploadCmd = SDL_AcquireGPUCommandBuffer(p.device);
-                    SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmd);
-                    for (auto& i : p.chunks)
-                    {
-                        if (i.used > 0)
-                        {
-                            void* data = SDL_MapGPUTransferBuffer(p.device, i.transfer, true);
-                            std::memcpy(data, i.data.data(), i.used);
-                            SDL_UnmapGPUTransferBuffer(p.device, i.transfer);
-                            SDL_GPUTransferBufferLocation source = {};
-                            source.transfer_buffer = i.transfer;
-                            SDL_GPUBufferRegion destination = {};
-                            destination.buffer = i.buffer;
-                            destination.size = static_cast<Uint32>(i.used);
-                            // Not cycled: the draws already name this
-                            // buffer, and a cycle would hand them the old
-                            // one.
-                            SDL_UploadToGPUBuffer(copyPass, &source, &destination, false);
-                        }
-                    }
-                    SDL_EndGPUCopyPass(copyPass);
-                    SDL_SubmitGPUCommandBuffer(uploadCmd);
-                }
+                // Textures made ready after the last pass was written.
+                p.flush();
 
-                // What is drawn reads what was sent in command buffers
-                // submitted before this one: the vertices just above, and
-                // the textures. That the one is done before the other
-                // starts is the driver's to see to. FTK_GPU_SERIALIZE waits
-                // here until everything sent is done, which is how to find
-                // out whether a driver does: drawing that is wrong without
-                // it and right with it is that.
+                // Everything a frame draws with is in its own command
+                // buffer, ahead of what draws with it. What is sent apart
+                // from a frame -- a texture copied by itself -- is in a
+                // command buffer submitted before this one, and that the
+                // one is done before the other starts is the driver's to
+                // see to. FTK_GPU_SERIALIZE waits here until everything
+                // sent is done, which is how to find out whether a driver
+                // does: drawing that is wrong without it and right with it
+                // is that.
                 static const bool serialize = getEnvFlag("FTK_GPU_SERIALIZE");
                 if (serialize)
                 {
@@ -846,9 +949,7 @@ namespace ftk
 
         void Render::setViewport(const Box2I& value)
         {
-            FTK_P();
-            p.viewport = value;
-            p.applyState();
+            _p->viewport = value;
         }
 
         void Render::clearViewport(const Color4F& value)
@@ -867,9 +968,7 @@ namespace ftk
 
         void Render::setClipRectEnabled(bool value)
         {
-            FTK_P();
-            p.clipRectEnabled = value;
-            p.applyState();
+            _p->clipRectEnabled = value;
         }
 
         Box2I Render::getClipRect() const
@@ -879,9 +978,7 @@ namespace ftk
 
         void Render::setClipRect(const Box2I& value)
         {
-            FTK_P();
-            p.clipRect = value;
-            p.applyState();
+            _p->clipRect = value;
         }
 
         M44F Render::getTransform() const

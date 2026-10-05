@@ -244,7 +244,7 @@ namespace ftk
             options.filters.minify = ImageFilter::Nearest;
             options.filters.magnify = ImageFilter::Nearest;
             table.texture = Texture::create(system, data->getInfo(), options);
-            table.texture->copy(data);
+            upload(table.texture->prepare(data));
             scaleTables.push_front(table);
             while (scaleTables.size() > scaleTableMax)
             {
@@ -495,7 +495,7 @@ namespace ftk
                                 glyph->image->getData() + y * srcRow,
                                 w);
                         }
-                        p.glyphTexture->copy(tmp, node->box.min.x, node->box.min.y);
+                        p.upload(p.glyphTexture->prepare(tmp, node->box.min.x, node->box.min.y));
                     }
                 }
                 if (node)
@@ -693,7 +693,7 @@ namespace ftk
                 for (const auto& texture : textures)
                 {
                     const ImageInfo& planeInfo = texture->getInfo();
-                    texture->copy(data, planeInfo);
+                    _p->upload(texture->prepare(data, planeInfo));
                     data += planeInfo.getByteCount();
                 }
                 break;
@@ -701,7 +701,7 @@ namespace ftk
             default:
                 if (1 == textures.size())
                 {
-                    textures[0]->copy(image);
+                    _p->upload(textures[0]->prepare(image));
                 }
                 break;
             }

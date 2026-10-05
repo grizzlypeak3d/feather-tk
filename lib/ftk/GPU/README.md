@@ -78,10 +78,16 @@ starts SDL's video subsystem and `initGL()` does the rest.
 
 ## How it differs from the OpenGL renderer
 
-- Draws are recorded into a command buffer. Vertices are gathered and sent
-  when the frame ends, in a command buffer submitted first; textures are sent
-  in command buffers of their own. A texture reused within a frame is
-  "cycled", so that an earlier draw keeps what it was given.
+- What a pass draws is kept until the pass ends, and is then written into
+  the frame's command buffer after what it draws with: the vertices the pass
+  added, and the textures made ready for it. A frame is one command buffer,
+  with each pass's copies ahead of the pass. They used to go in command
+  buffers of their own, submitted ahead of the one that drew with them,
+  which relied on the driver finishing one before starting the next; the
+  Raspberry Pi's did not, and drew with the vertices of the frame before.
+- A texture given other contents while a draw that is kept reads it ends the
+  pass there, so that the draw is written with what it was given, and the
+  texture is "cycled", so that it keeps it.
 - There is no bound frame buffer. `pushTarget()` and `popTarget()` draw into
   another buffer for a while; each ends a render pass.
 - A buffer's first row is the top one. `drawTexture()` takes its "mirror"
@@ -147,7 +153,7 @@ set. What is brighter than the display goes is left to the display.
 | `FTK_GPU_NO_UNORM16=1` | Say the device has no sixteen bit normalized textures. |
 | `FTK_GPU_NO_FLOAT_FILTER=1` | Say the device does not filter thirty-two bit float textures. |
 | `FTK_GPU_SOFTWARE=1` | Take a device that draws on the CPU. |
-| `FTK_GPU_SERIALIZE=1` | Wait for the vertices and textures sent to the device before submitting what draws with them. For finding out whether a driver orders the two itself; it costs the frame the wait. |
+| `FTK_GPU_SERIALIZE=1` | Wait for everything sent to the device before submitting a frame. A frame carries what it draws with, so this is for what is sent apart from one, and for finding out whether drawing that is wrong is the order a driver does things in; it costs the frame the wait. |
 | `SDL_GPU_DRIVER=vulkan` | SDL's own: which driver. |
 
 The ones that turn something on are off when unset, empty or `0`.
@@ -200,10 +206,7 @@ ones, which read zero while this renderer draws.
 | Vulkan, Mesa V3DV | Raspberry Pi 5 (V3D 7.1), Linux on X11 | by eye and by log; see below |
 
 Each has every texture format. The Raspberry Pi's does not filter float
-textures, and what it draws is now and then wrong in a picture that is
-playing: a frame with a piece of the picture where the picture should be.
-That is not understood yet; `FTK_GPU_SERIALIZE=1` is for finding out whether
-it is the order the driver does things in.
+textures.
 
 With `FTK_GPU_DEBUG=1` Vulkan's validation has
 one thing to say, once, when a three dimensional texture is made:

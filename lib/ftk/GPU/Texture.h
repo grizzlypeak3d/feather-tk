@@ -8,9 +8,11 @@
 #include <ftk/Core/Image.h>
 #include <ftk/Core/RenderOptions.h>
 
+struct SDL_GPUCopyPass;
 struct SDL_GPUDevice;
 struct SDL_GPUSampler;
 struct SDL_GPUTexture;
+struct SDL_GPUTransferBuffer;
 
 namespace ftk
 {
@@ -77,6 +79,11 @@ namespace ftk
             //! not kept, which lets a texture that an earlier draw of this
             //! frame is waiting on be given new contents without changing
             //! what that draw sees.
+            //!
+            //! The copies are sent in a command buffer of their own, now.
+            //! A renderer that is drawing a frame sends its own instead,
+            //! with prepare() and send(), in the command buffer that draws
+            //! with them.
             FTK_GPU_API void copy(const std::shared_ptr<Image>&);
 
             //! Copy image data to the whole texture.
@@ -85,6 +92,37 @@ namespace ftk
             //! Copy an image to part of the texture, keeping the rest.
             FTK_GPU_API void copy(const std::shared_ptr<Image>&, int x, int y);
 
+            //! A copy that has been made ready and not yet sent: the data,
+            //! laid out as the texture keeps it, and where it goes.
+            struct Upload
+            {
+                SDL_GPUTransferBuffer* transfer = nullptr;
+                SDL_GPUTexture* texture = nullptr;
+                int x = 0;
+                int y = 0;
+                int w = 0;
+                int h = 0;
+                //! The whole texture, whose old contents are not kept.
+                bool whole = false;
+            };
+
+            //! Make a copy of an image to the whole texture ready. Nothing
+            //! is made where the image is not one the texture can hold.
+            FTK_GPU_API Upload prepare(const std::shared_ptr<Image>&);
+
+            //! Make a copy of image data to the whole texture ready.
+            FTK_GPU_API Upload prepare(const uint8_t*, const ImageInfo&);
+
+            //! Make a copy of an image to part of the texture ready.
+            FTK_GPU_API Upload prepare(const std::shared_ptr<Image>&, int x, int y);
+
+            //! Send a copy that was made ready, in a copy pass, and let go
+            //! of its data.
+            FTK_GPU_API static void send(SDL_GPUDevice*, SDL_GPUCopyPass*, const Upload&);
+
+            //! Let go of a copy that was made ready and will not be sent.
+            FTK_GPU_API static void discard(SDL_GPUDevice*, const Upload&);
+
             //! Get the number of textures that exist.
             FTK_GPU_API static size_t getObjectCount();
 
@@ -92,7 +130,8 @@ namespace ftk
             FTK_GPU_API static size_t getTotalByteCount();
 
         private:
-            void _copy(const uint8_t*, const ImageInfo&, int x, int y, bool cycle);
+            Upload _prepare(const uint8_t*, const ImageInfo&, int x, int y, bool whole);
+            void _copy(const Upload&);
 
             FTK_PRIVATE();
         };

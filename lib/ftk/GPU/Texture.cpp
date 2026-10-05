@@ -315,25 +315,81 @@ namespace ftk
 
         void Texture::copy(const std::shared_ptr<Image>& image)
         {
-            _copy(image->getData(), image->getInfo(), 0, 0, true);
+            _copy(prepare(image));
         }
 
         void Texture::copy(const uint8_t* data, const ImageInfo& info)
         {
-            _copy(data, info, 0, 0, true);
+            _copy(prepare(data, info));
         }
 
         void Texture::copy(const std::shared_ptr<Image>& image, int x, int y)
         {
-            _copy(image->getData(), image->getInfo(), x, y, false);
+            _copy(prepare(image, x, y));
         }
 
-        void Texture::_copy(const uint8_t* data, const ImageInfo& info, int x, int y, bool cycle)
+        Texture::Upload Texture::prepare(const std::shared_ptr<Image>& image)
+        {
+            return _prepare(image->getData(), image->getInfo(), 0, 0, true);
+        }
+
+        Texture::Upload Texture::prepare(const uint8_t* data, const ImageInfo& info)
+        {
+            return _prepare(data, info, 0, 0, true);
+        }
+
+        Texture::Upload Texture::prepare(const std::shared_ptr<Image>& image, int x, int y)
+        {
+            return _prepare(image->getData(), image->getInfo(), x, y, false);
+        }
+
+        void Texture::send(SDL_GPUDevice* device, SDL_GPUCopyPass* pass, const Upload& value)
+        {
+            if (!value.transfer)
+                return;
+            SDL_GPUTextureTransferInfo source = {};
+            source.transfer_buffer = value.transfer;
+            SDL_GPUTextureRegion region = {};
+            region.texture = value.texture;
+            region.x = value.x;
+            region.y = value.y;
+            region.w = value.w;
+            region.h = value.h;
+            region.d = 1;
+            // A whole texture is cycled: one that a draw already written
+            // is waiting on keeps what that draw was given.
+            SDL_UploadToGPUTexture(pass, &source, &region, value.whole);
+            SDL_ReleaseGPUTransferBuffer(device, value.transfer);
+        }
+
+        void Texture::discard(SDL_GPUDevice* device, const Upload& value)
+        {
+            if (value.transfer)
+            {
+                SDL_ReleaseGPUTransferBuffer(device, value.transfer);
+            }
+        }
+
+        void Texture::_copy(const Upload& value)
+        {
+            if (!value.transfer)
+                return;
+            // A command buffer of its own, submitted now.
+            SDL_GPUDevice* device = _p->system->getDevice();
+            SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
+            SDL_GPUCopyPass* pass = SDL_BeginGPUCopyPass(cmd);
+            send(device, pass, value);
+            SDL_EndGPUCopyPass(pass);
+            SDL_SubmitGPUCommandBuffer(cmd);
+        }
+
+        Texture::Upload Texture::_prepare(const uint8_t* data, const ImageInfo& info, int x, int y, bool whole)
         {
             FTK_P();
+            Upload out;
             if (!info.isValid() || getFormat(info.type) != getFormat(p.info.type))
             {
-                return;
+                return out;
             }
             SDL_GPUDevice* device = p.system->getDevice();
 
@@ -406,23 +462,14 @@ namespace ftk
             }
             SDL_UnmapGPUTransferBuffer(device, transfer);
 
-            // A command buffer of its own, submitted now: what a renderer
-            // is drawing is submitted when it ends, so this arrives first.
-            SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
-            SDL_GPUCopyPass* pass = SDL_BeginGPUCopyPass(cmd);
-            SDL_GPUTextureTransferInfo source = {};
-            source.transfer_buffer = transfer;
-            SDL_GPUTextureRegion region = {};
-            region.texture = p.texture;
-            region.x = x;
-            region.y = y;
-            region.w = w;
-            region.h = h;
-            region.d = 1;
-            SDL_UploadToGPUTexture(pass, &source, &region, cycle);
-            SDL_EndGPUCopyPass(pass);
-            SDL_SubmitGPUCommandBuffer(cmd);
-            SDL_ReleaseGPUTransferBuffer(device, transfer);
+            out.transfer = transfer;
+            out.texture = p.texture;
+            out.x = x;
+            out.y = y;
+            out.w = w;
+            out.h = h;
+            out.whole = whole;
+            return out;
         }
     }
 }
