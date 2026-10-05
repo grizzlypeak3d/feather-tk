@@ -229,6 +229,9 @@ namespace ftk
             //! Thirty-two bit float, kept as half float: see
             //! hasFloatFilter().
             bool halfFloat = false;
+            //! The transfer buffer the copies go through; see prepare().
+            SDL_GPUTransferBuffer* transfer = nullptr;
+            size_t transferByteCount = 0;
         };
 
         void Texture::_init(
@@ -318,6 +321,10 @@ namespace ftk
                 {
                     SDL_ReleaseGPUTexture(device, p.texture);
                 }
+                if (p.transfer)
+                {
+                    SDL_ReleaseGPUTransferBuffer(device, p.transfer);
+                }
             }
         }
 
@@ -402,12 +409,15 @@ namespace ftk
             // A whole texture is cycled: one that a draw already written
             // is waiting on keeps what that draw was given.
             SDL_UploadToGPUTexture(pass, &source, &region, value.whole);
-            SDL_ReleaseGPUTransferBuffer(device, value.transfer);
+            if (value.owned)
+            {
+                SDL_ReleaseGPUTransferBuffer(device, value.transfer);
+            }
         }
 
         void Texture::discard(SDL_GPUDevice* device, const Upload& value)
         {
-            if (value.transfer)
+            if (value.transfer && value.owned)
             {
                 SDL_ReleaseGPUTransferBuffer(device, value.transfer);
             }
@@ -449,15 +459,54 @@ namespace ftk
                 (p.halfFloat ? sizeof(uint16_t) : channelBytes);
             const size_t dstRow = w * dstPixel;
 
-            SDL_GPUTransferBufferCreateInfo transferInfo = {};
-            transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
-            transferInfo.size = static_cast<Uint32>(dstRow * h);
-            SDL_GPUTransferBuffer* transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
-            if (!transfer)
+            // A copy of the whole texture goes through the texture's own
+            // transfer buffer, made the first time and again where a copy
+            // wants a larger one; the one before is let go of, which the
+            // device does once it is done with it. It is mapped cycled: a
+            // copy the device has not finished with keeps its memory. Two
+            // copies of the whole texture made ready in one pass, with
+            // nothing drawn between, would share the memory; a renderer
+            // draws with a texture as it is made ready, and so ends the
+            // pass before the next.
+            //
+            // A copy of a part, as the glyph atlas makes several of in a
+            // pass, has a buffer of its own, let go of once it is sent.
+            const size_t byteCount = dstRow * h;
+            SDL_GPUTransferBuffer* transfer = nullptr;
+            if (whole)
             {
-                throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
+                if (!p.transfer || byteCount > p.transferByteCount)
+                {
+                    if (p.transfer)
+                    {
+                        SDL_ReleaseGPUTransferBuffer(device, p.transfer);
+                        p.transfer = nullptr;
+                    }
+                    SDL_GPUTransferBufferCreateInfo transferInfo = {};
+                    transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+                    transferInfo.size = static_cast<Uint32>(byteCount);
+                    p.transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+                    if (!p.transfer)
+                    {
+                        throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
+                    }
+                    p.transferByteCount = byteCount;
+                }
+                transfer = p.transfer;
             }
-            uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(device, transfer, false));
+            else
+            {
+                SDL_GPUTransferBufferCreateInfo transferInfo = {};
+                transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+                transferInfo.size = static_cast<Uint32>(byteCount);
+                transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+                if (!transfer)
+                {
+                    throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
+                }
+                out.owned = true;
+            }
+            uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(device, transfer, true));
             if (p.half)
             {
                 // Each value as the half float it is kept as, and one for a

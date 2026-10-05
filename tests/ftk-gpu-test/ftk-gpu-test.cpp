@@ -591,6 +591,56 @@ namespace
         return out;
     }
 
+    // More images in one pass than the texture cache holds: each has to
+    // come out as itself. A draw is kept until the pass is written, and
+    // the cache lets go of a texture as soon as another needs the room, so
+    // the pass has to hold what its draws refer to.
+    bool eviction(const std::shared_ptr<gpu::System>& system)
+    {
+        const int count = 16;
+        const int cell = 8;
+        auto buffer = gpu::OffscreenBuffer::create(system, Size2I(count * cell, cell), gpu::BufferType::RGBA_U8);
+        auto render = gpu::Render::create(system, nullptr, nullptr);
+        render->setTarget(buffer);
+        RenderOptions options;
+        // Room for one of them.
+        options.textureCacheByteCount = cell * cell * 4;
+        options.texturePoolByteCount = cell * cell * 4;
+        render->begin(buffer->getSize(), options);
+        for (int i = 0; i < count; ++i)
+        {
+            auto image = Image::create(cell, cell, ImageType::RGBA_U8);
+            const uint8_t value = static_cast<uint8_t>(i * 16);
+            uint8_t* data = image->getData();
+            for (size_t j = 0; j < image->getByteCount(); j += 4)
+            {
+                data[j] = value;
+                data[j + 1] = 255 - value;
+                data[j + 2] = 128;
+                data[j + 3] = 255;
+            }
+            ImageOptions imageOptions;
+            // Half through the cache and half through the pool.
+            imageOptions.cache = 0 == i % 2;
+            render->drawImage(image, Box2F(i * cell, 0, cell, cell), Color4F(1.F, 1.F, 1.F), imageOptions);
+        }
+        render->end();
+        bool out = true;
+        for (int i = 0; i < count; ++i)
+        {
+            const Color4F color = buffer->getPixel(V2I(i * cell + cell / 2, cell / 2));
+            const int r = static_cast<int>(color.r * 255.F + .5F);
+            const int g = static_cast<int>(color.g * 255.F + .5F);
+            if (std::abs(r - i * 16) > 1 || std::abs(g - (255 - i * 16)) > 1)
+            {
+                std::cout << "Image " << i << " came out as " << r << " " << g << std::endl;
+                out = false;
+            }
+        }
+        std::cout << "Images past the cache: " << (out ? "each as itself" : "wrong") << std::endl;
+        return out;
+    }
+
     // A buffer read back as each type of image a file is written from, in
     // each layout: what OpenGL's glReadPixels gives the writers. The buffer
     // is one color with a row of another along the top, an odd width so
@@ -884,6 +934,7 @@ int main(int argc, char** argv)
         const bool presentOK =
             glsl() &&
             invalid(context->getSystem<gpu::System>()) &&
+            eviction(context->getSystem<gpu::System>()) &&
             readback(context->getSystem<gpu::System>()) &&
             present(context->getSystem<gpu::System>()) &&
             swapchain(context->getSystem<gpu::System>());

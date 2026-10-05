@@ -111,10 +111,22 @@ namespace ftk
                 int h = 0;
                 //! The whole texture, whose old contents are not kept.
                 bool whole = false;
+                //! Whether the transfer buffer is this copy's own, let go
+                //! of once sent, rather than the texture's, which is kept
+                //! for the next copy of the whole texture.
+                bool owned = false;
             };
 
             //! Make a copy of an image to the whole texture ready. Nothing
             //! is made where the image is not one the texture can hold.
+            //!
+            //! The data goes through a transfer buffer the texture keeps
+            //! from one copy to the next, rather than one made each time:
+            //! a picture playing sent three planes a frame, each through a
+            //! buffer made and let go of for it. A copy the device has not
+            //! finished with keeps the memory it was given; the next is
+            //! given other memory. Draw with the texture before making the
+            //! next copy ready.
             FTK_GPU_API Upload prepare(const std::shared_ptr<Image>&);
 
             //! Make a copy of image data to the whole texture ready.

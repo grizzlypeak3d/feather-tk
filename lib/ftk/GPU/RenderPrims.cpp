@@ -292,11 +292,14 @@ namespace ftk
             // Copies, since making the second table may let go of the first.
             const Private::ScaleTable x = p.scaleTable(sourceSize.w, destSize.w);
             const Private::ScaleTable y = p.scaleTable(sourceSize.h, destSize.h);
+            p.keep(x.texture);
+            p.keep(y.texture);
 
             // Across first, into an intermediate that is already narrowed
             // but still full height.
             const Size2I tmpSize(destSize.w, sourceSize.h);
             const auto tmp = p.scaleBuffer(tmpSize);
+            p.keep(tmp);
             {
                 pushTarget(tmp);
                 TextureScaleUniforms uniforms;
@@ -372,8 +375,11 @@ namespace ftk
 
             const Private::ScaleTable x = p.scaleTable(inW, outW);
             const Private::ScaleTable y = p.scaleTable(inH, outH);
+            p.keep(x.texture);
+            p.keep(y.texture);
             const Size2I tmpSize(outW, inH);
             const auto tmp = p.scaleBuffer(tmpSize);
+            p.keep(tmp);
 
             // Pass one, across, into the intermediate.
             {
@@ -676,6 +682,7 @@ namespace ftk
             const std::vector<std::shared_ptr<Texture> >& textures)
         {
             const auto& info = image->getInfo();
+            _p->willUpload(textures);
             switch (info.type)
             {
             case ImageType::YUV_420P_U8:
@@ -739,6 +746,10 @@ namespace ftk
             if (textures.empty())
                 return;
             p.diag.textures += textures.size();
+            for (const auto& i : textures)
+            {
+                p.keep(i);
+            }
 
             if (ImageFilter::HighQuality == imageOptions.imageFilters.minify &&
                 _drawImageScaled(image, mesh, color, imageOptions, textures))

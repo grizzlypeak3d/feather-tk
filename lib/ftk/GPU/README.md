@@ -88,6 +88,13 @@ starts SDL's video subsystem and `initGL()` does the rest.
 - A texture given other contents while a draw that is kept reads it ends the
   pass there, so that the draw is written with what it was given, and the
   texture is "cycled", so that it keeps it.
+- A texture keeps the transfer buffer a copy of the whole of it goes
+  through, from one copy to the next: a picture playing sends its planes
+  every frame. Its memory is cycled too, for a copy the device is still
+  reading. A copy of a part, as the glyph atlas makes several of in a pass,
+  has a buffer of its own.
+- What a pass draws with is kept alive until the pass is written: a texture
+  the cache lets go of before then would otherwise be gone when the draw is.
 - There is no bound frame buffer. `pushTarget()` and `popTarget()` draw into
   another buffer for a while; each ends a render pass.
 - A buffer's first row is the top one. `drawTexture()` takes its "mirror"

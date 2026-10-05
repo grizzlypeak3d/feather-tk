@@ -159,6 +159,8 @@ namespace ftk
             pass.uniforms.clear();
             pass.textures.clear();
             pass.drawTextures.clear();
+            pass.keepTextures.clear();
+            pass.keepBuffers.clear();
         }
 
         void Render::Private::discard()
@@ -171,6 +173,43 @@ namespace ftk
             }
             uploads.clear();
             pass = PassState();
+        }
+
+        void Render::Private::keep(const std::shared_ptr<Texture>& value)
+        {
+            if (cmd && value)
+            {
+                pass.keepTextures.push_back(value);
+            }
+        }
+
+        void Render::Private::keep(const std::shared_ptr<OffscreenBuffer>& value)
+        {
+            if (cmd && value)
+            {
+                pass.keepBuffers.push_back(value);
+            }
+        }
+
+        void Render::Private::willUpload(const std::vector<std::shared_ptr<Texture> >& textures)
+        {
+            // A texture given other contents while a draw that is kept
+            // reads it: every copy kept is sent before the draws kept are
+            // written, so the draw would see these. What is kept is
+            // written first, and the pass carries on after. This is asked
+            // before the copy is made ready, since making it ready writes
+            // the texture's transfer buffer, and the copy kept has to be
+            // written out of it first.
+            if (!cmd)
+                return;
+            for (const auto& texture : textures)
+            {
+                if (pass.drawTextures.find(texture->getTexture()) != pass.drawTextures.end())
+                {
+                    endPass();
+                    break;
+                }
+            }
         }
 
         void Render::Private::upload(const Texture::Upload& value)
@@ -187,14 +226,6 @@ namespace ftk
                 SDL_EndGPUCopyPass(copyPass);
                 SDL_SubmitGPUCommandBuffer(uploadCmd);
                 return;
-            }
-            // A texture given other contents while a draw that is kept
-            // reads it: every copy kept is sent before the draws kept are
-            // written, so the draw would see these. What is kept is
-            // written first, and the pass carries on after.
-            if (value.whole && pass.drawTextures.find(value.texture) != pass.drawTextures.end())
-            {
-                endPass();
             }
             uploads.push_back(value);
         }

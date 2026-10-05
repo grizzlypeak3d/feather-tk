@@ -197,6 +197,13 @@ namespace ftk
                 //! The textures the draws read, to know when one of them is
                 //! about to be given other contents.
                 std::set<SDL_GPUTexture*> drawTextures;
+                //! What the draws and the copies that are kept refer to,
+                //! held until they are written: a texture the cache or the
+                //! pool let go of before then would be gone when the draw
+                //! was written with it. Once written, the API holds what it
+                //! needs itself.
+                std::vector<std::shared_ptr<Texture> > keepTextures;
+                std::vector<std::shared_ptr<OffscreenBuffer> > keepBuffers;
             };
             PassState pass;
             std::vector<Texture::Upload> uploads;
@@ -285,7 +292,10 @@ namespace ftk
             void endPass();
             void flush();
             void discard();
+            void willUpload(const std::vector<std::shared_ptr<Texture> >&);
             void upload(const Texture::Upload&);
+            void keep(const std::shared_ptr<Texture>&);
+            void keep(const std::shared_ptr<OffscreenBuffer>&);
             const Shader& getShader(const std::string&);
             SDL_GPUGraphicsPipeline* getPipeline(const std::string&, Blend);
             void draw(
