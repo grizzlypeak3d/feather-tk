@@ -135,6 +135,20 @@ namespace ftk
                 {
                     throw std::runtime_error(Format("Cannot create a GPU device: {0}").arg(SDL_GetError()));
                 }
+                // A device that takes SPIR-V and a build with nothing to
+                // make it with: glslang was not found when this was built.
+                // Said now, while there is another renderer to draw with,
+                // rather than by the first shader.
+                if (!(SDL_GetGPUShaderFormats(p.device) & SDL_GPU_SHADERFORMAT_MSL) &&
+                    !hasGLSLCompiler())
+                {
+                    const std::string driver = SDL_GetGPUDeviceDriver(p.device);
+                    SDL_DestroyGPUDevice(p.device);
+                    p.device = nullptr;
+                    throw std::runtime_error(
+                        Format("This build has no shader compiler for {0}: it was built without glslang").
+                            arg(driver));
+                }
                 // The driver, and which device and system driver where
                 // they are told: a machine with two cards, or a report of
                 // something that only one driver does, is no use without.
