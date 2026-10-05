@@ -30,13 +30,19 @@ namespace ftk
             //! Set the render factory.
             FTK_GL_API void setRenderFactory(const std::shared_ptr<IRenderFactory>&);
 
-            //! Start SDL's video subsystem and load OpenGL. Not done on
-            //! creation, so that an application can read its command line
-            //! first and print its help without a display; the application
-            //! calls this once it knows it is going to run, a window calls
-            //! it before it is made, and after the first time it does
-            //! nothing.
+            //! Start SDL's video subsystem. Not done on creation, so that
+            //! an application can read its command line first and print its
+            //! help without a display; the application calls this once it
+            //! knows it is going to run, a window calls it before it is
+            //! made, and after the first time it does nothing.
             FTK_GL_API void init();
+
+            //! Choose the graphics API and load OpenGL, starting the video
+            //! subsystem first if nothing has. Apart from init(), since
+            //! another renderer may be the one that draws: the application
+            //! calls this where OpenGL does, a window calls it before it
+            //! makes a context, and after the first time it does nothing.
+            FTK_GL_API void initGL();
 
             //! Get the name of the video driver SDL chose (e.g., "x11",
             //! "wayland", "cocoa", "windows").

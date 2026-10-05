@@ -148,10 +148,17 @@ namespace ftk
 
             // Before the attributes: SDL 3 refuses them until the video
             // subsystem is up, and the window would then get whatever
-            // context it defaults to.
-            context->getSystem<System>()->init();
-
+            // context it defaults to. OpenGL is loaded only for a window
+            // that has a context: one without is drawn by another renderer.
             const bool noContext = options & static_cast<int>(WindowOptions::NoContext);
+            if (noContext)
+            {
+                context->getSystem<System>()->init();
+            }
+            else
+            {
+                context->getSystem<System>()->initGL();
+            }
             uint32_t sdlWindowFlags = SDL_WINDOW_RESIZABLE;
             if (!noContext)
             {
@@ -329,23 +336,28 @@ namespace ftk
 #elif defined(FTK_SDL3)
                 SDL_GetWindowSizeInPixels(p.sdlWindow, &frameBufferSize.w, &frameBufferSize.h);
 #endif // FTK_SDL2
-                logSystem->print(
-                    "ftk::gl::Window",
-                    Format(
-                        "New window: {0}\n"
-                        "    * Requested size: {1}\n"
-                        "    * Actual size: {2}\n"
-                        "    * Framebuffer size: {3}\n"
-                        "    * OpenGL vendor: {4}\n"
-                        "    * OpenGL renderer: {5}\n"
-                        "    * OpenGL version: {6}").
+                std::string message = Format(
+                    "New window: {0}\n"
+                    "    * Requested size: {1}\n"
+                    "    * Actual size: {2}\n"
+                    "    * Framebuffer size: {3}").
                     arg(this).
                     arg(size).
                     arg(actualSize).
-                    arg(frameBufferSize).
-                    arg(p.glInfo.vendor).
-                    arg(p.glInfo.renderer).
-                    arg(p.glInfo.version));
+                    arg(frameBufferSize);
+                // A window without a context has nothing to say of OpenGL.
+                if (!noContext)
+                {
+                    message += Format(
+                        "\n"
+                        "    * OpenGL vendor: {0}\n"
+                        "    * OpenGL renderer: {1}\n"
+                        "    * OpenGL version: {2}").
+                        arg(p.glInfo.vendor).
+                        arg(p.glInfo.renderer).
+                        arg(p.glInfo.version);
+                }
+                logSystem->print("ftk::gl::Window", message);
             }
 
             if (!(options & static_cast<int>(WindowOptions::MakeCurrent)))

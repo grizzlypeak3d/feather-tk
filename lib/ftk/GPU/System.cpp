@@ -171,6 +171,34 @@ namespace ftk
             return SDL_GetGPUDeviceDriver(getDevice());
         }
 
+        std::vector<std::pair<std::string, std::string> > System::getInfo()
+        {
+            std::vector<std::pair<std::string, std::string> > out;
+            SDL_GPUDevice* device = getDevice();
+            out.push_back(std::make_pair("GPU driver", SDL_GetGPUDeviceDriver(device)));
+            // Told or not as the driver pleases, and in no form to rely on.
+            const SDL_PropertiesID props = SDL_GetGPUDeviceProperties(device);
+            const auto add = [&out, props](const std::string& label, const char* name)
+            {
+                const char* value = SDL_GetStringProperty(props, name, nullptr);
+                if (value && value[0])
+                {
+                    out.push_back(std::make_pair(label, value));
+                }
+            };
+            add("GPU device", SDL_PROP_GPU_DEVICE_NAME_STRING);
+            add("GPU system driver", SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING);
+            // The longer of the two versions where there is one: it says
+            // the same and more.
+            const char* info = SDL_GetStringProperty(props, SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING, nullptr);
+            add(
+                "GPU system driver version",
+                info && info[0] ?
+                    SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING :
+                    SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING);
+            return out;
+        }
+
         const std::shared_ptr<IRenderFactory>& System::getRenderFactory() const
         {
             return _p->renderFactory;
@@ -204,6 +232,7 @@ namespace ftk
 
         namespace
         {
+            bool started = false;
             bool enabled = false;
         }
 
@@ -216,22 +245,34 @@ namespace ftk
         {
             if (!context->getSystem<System>())
             {
-                auto system = System::create(context);
-                context->addSystem(system);
+                context->addSystem(System::create(context));
+                // Another context is another run, as far as what draws
+                // goes: a test makes one after another.
+                started = false;
+                enabled = false;
+            }
+        }
 
-                // Whether the windows are drawn with this renderer: they
-                // are unless the OpenGL one is asked for by name, and only
-                // where there is a device to draw with. Finding that out
-                // is making one, which is done here rather than by the
-                // first window, so that what cannot be had is known while
-                // there is still another renderer to choose.
+        bool start(const std::shared_ptr<Context>& context)
+        {
+            init(context);
+            if (!started)
+            {
+                started = true;
+
+                // The windows are drawn with this renderer unless the
+                // OpenGL one is asked for by name, and only where there is
+                // a device to draw with. Finding that out is making one,
+                // which is done here rather than by the first window, so
+                // that what cannot be had is known while there is still
+                // another renderer to choose.
                 const char* env = std::getenv("FTK_RENDER");
                 const std::string render = env ? env : "";
                 if (render != "gl")
                 {
                     try
                     {
-                        system->getDevice();
+                        context->getSystem<System>()->getDevice();
                         enabled = true;
                     }
                     catch (const std::exception& e)
@@ -245,6 +286,7 @@ namespace ftk
                     }
                 }
             }
+            return enabled;
         }
     }
 }

@@ -7,6 +7,10 @@
 
 #include <ftk/Core/ISystem.h>
 
+#include <string>
+#include <utility>
+#include <vector>
+
 struct SDL_GPUDevice;
 struct SDL_GPUTexture;
 
@@ -40,6 +44,11 @@ namespace ftk
             //! "vulkan").
             FTK_GPU_API std::string getDriver();
 
+            //! Get what the device says of itself, for a report: the
+            //! driver SDL draws through, and the name and the system's
+            //! driver where they are told.
+            FTK_GPU_API std::vector<std::pair<std::string, std::string> > getInfo();
+
             //! Get the render factory.
             FTK_GPU_API const std::shared_ptr<IRenderFactory>& getRenderFactory() const;
 
@@ -65,13 +74,24 @@ namespace ftk
         //! the OpenGL one. They are where it is built, on this branch,
         //! unless the FTK_RENDER environment variable says "gl".
         //!
-        //! It is decided when the library is initialized, and is false
-        //! before then: the renderer is used only where a device can be
-        //! made for it. Where none can, on a machine with no driver for
-        //! Vulkan say, that is logged and the OpenGL renderer draws.
+        //! It is decided by start(), and is false before then.
         FTK_GPU_API bool isEnabled();
 
-        //! Initialize the library.
+        //! Initialize the library. Nothing is started: see start().
         FTK_GPU_API void init(const std::shared_ptr<Context>&);
+
+        //! Decide whether windows are drawn with this renderer, and get
+        //! what was decided. The renderer is used only where a device can
+        //! be made for it, and finding that out is making one: where none
+        //! can, on a machine with no driver for Vulkan say, that is logged
+        //! and the OpenGL renderer draws.
+        //!
+        //! Apart from init(), as the OpenGL system's is: making a device
+        //! starts SDL's video subsystem, which wants a display, and an
+        //! application that only prints its help has no use for either.
+        //! An application calls this once it knows it is going to run,
+        //! before its first window, and after the first time it does
+        //! nothing.
+        FTK_GPU_API bool start(const std::shared_ptr<Context>&);
     }
 }

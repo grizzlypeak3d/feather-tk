@@ -178,6 +178,7 @@ namespace ftk
             std::weak_ptr<LogSystem> logSystem;
             std::shared_ptr<IRenderFactory> renderFactory;
             bool init = false;
+            bool initGL = false;
         };
         
         System::System(const std::shared_ptr<Context>& context) :
@@ -363,6 +364,23 @@ namespace ftk
                     "ftk::gl::System",
                     Format("Video driver: {0}").arg(getVideoDriver()));
             }
+#if defined(FTK_SDL2)
+            SDL_LogSetOutputFunction(logOutput, this);
+#elif defined(FTK_SDL3)
+            SDL_SetLogOutputFunction(logOutput, this);
+#endif // FTK_SDL2
+        }
+
+        void System::initGL()
+        {
+            FTK_P();
+            if (p.initGL)
+            {
+                return;
+            }
+            p.initGL = true;
+            init();
+            auto logSystem = p.logSystem.lock();
 
             // Which graphics API this run uses: the first of those to try
             // that a context can be made for. Decided here, before there is
@@ -403,11 +421,6 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot initialize OpenGL: {0}").
                     arg(SDL_GetError()));
             }
-#if defined(FTK_SDL2)
-            SDL_LogSetOutputFunction(logOutput, this);
-#elif defined(FTK_SDL3)
-            SDL_SetLogOutputFunction(logOutput, this);
-#endif // FTK_SDL2
         }
 
         std::string System::getVideoDriver() const

@@ -19,6 +19,9 @@
 #include <ftk/GL/System.h>
 #include <ftk/GL/Shader.h>
 #include <ftk/GL/Texture.h>
+#if defined(FTK_GPU)
+#include <ftk/GPU/System.h>
+#endif // FTK_GPU
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
@@ -264,7 +267,17 @@ namespace ftk
         const bool video = !hasCmdLineHelp();
         if (video)
         {
-            context->getSystem<gl::System>()->init();
+            // The video subsystem first, with what is set before it
+            // starts, and then the renderer: OpenGL is chosen and loaded
+            // only where it is the one that draws.
+            auto glSystem = context->getSystem<gl::System>();
+            glSystem->init();
+#if defined(FTK_GPU)
+            if (!gpu::start(context))
+#endif // FTK_GPU
+            {
+                glSystem->initGL();
+            }
         }
 
         // Writing a screenshot is the whole of such a run, so there is nothing

@@ -21,6 +21,8 @@ namespace ftk
 {
     void uiInit(const std::shared_ptr<Context>& context)
     {
+        // Neither is started here: an application starts the video
+        // subsystem and chooses the renderer once it knows it will run.
         gl::init(context);
 #if defined(FTK_GPU)
         gpu::init(context);

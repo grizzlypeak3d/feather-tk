@@ -498,8 +498,7 @@ namespace ftk
 #if defined(FTK_GPU)
         if (p.gpu)
         {
-            out.push_back(std::make_pair("GPU driver", p.gpuSystem->getDriver()));
-            return out;
+            return p.gpuSystem->getInfo();
         }
 #endif // FTK_GPU
         const auto& glInfo = p.window->getGLInfo();
