@@ -58,6 +58,12 @@ else()
     set(ftk_STUBGEN ${NB_DIR}/stubgen.py)
 endif()
 set(ftk_PYTHON_STUB ${ftk_PYTHON_PACKAGE_DIR}/_feather_tk.pyi)
+# The GPU renderer's library as well, where it is built: the UI library
+# loads it, and the module could not be imported without it being found.
+set(ftk_STUB_GPU_DIRS)
+if(TARGET ftkGPU)
+    list(APPEND ftk_STUB_GPU_DIRS --dll-dir $<TARGET_FILE_DIR:ftkGPU>)
+endif()
 add_custom_command(
     OUTPUT ${ftk_PYTHON_STUB}
     COMMAND ${Python_EXECUTABLE}
@@ -65,6 +71,7 @@ add_custom_command(
         --dll-dir $<TARGET_FILE_DIR:ftkCore>
         --dll-dir $<TARGET_FILE_DIR:ftkGL>
         --dll-dir $<TARGET_FILE_DIR:ftkUI>
+        ${ftk_STUB_GPU_DIRS}
         --dll-dir ${CMAKE_INSTALL_PREFIX}/bin
         # SDL, FreeType, libpng and zlib: from the prefix a source build
         # installs them to, or the one a wheel build builds them into,
