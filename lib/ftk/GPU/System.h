@@ -62,8 +62,13 @@ namespace ftk
         };
 
         //! Get whether windows are drawn with this renderer rather than
-        //! the OpenGL one. Asked for by name while this is a spike: the
-        //! FTK_RENDER environment variable set to "gpu".
+        //! the OpenGL one. They are where it is built, on this branch,
+        //! unless the FTK_RENDER environment variable says "gl".
+        //!
+        //! It is decided when the library is initialized, and is false
+        //! before then: the renderer is used only where a device can be
+        //! made for it. Where none can, on a machine with no driver for
+        //! Vulkan say, that is logged and the OpenGL renderer draws.
         FTK_GPU_API bool isEnabled();
 
         //! Initialize the library.

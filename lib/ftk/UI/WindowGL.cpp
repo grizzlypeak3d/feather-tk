@@ -863,11 +863,20 @@ namespace ftk
 
     void Window::_makeCurrent()
     {
-        _p->window->makeCurrent();
+        // There is no window when making one failed, and a window that is
+        // let go of then still gets here: an application's makes its
+        // context current to take down what it drew with.
+        if (_p->window)
+        {
+            _p->window->makeCurrent();
+        }
     }
 
     void Window::_clearCurrent()
     {
-        _p->window->clearCurrent();
+        if (_p->window)
+        {
+            _p->window->clearCurrent();
+        }
     }
 }

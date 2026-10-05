@@ -122,9 +122,10 @@ namespace ftk
                         ""));
 
                 // The formats the textures are made in, some of which
-                // Vulkan leaves to the driver. Nothing falls back from one
-                // that is missing, so a texture that cannot be made is
-                // explained here.
+                // Vulkan leaves to the driver. Sixteen bit normalized ones
+                // are kept as half float where they are missing; nothing
+                // falls back from any other, so a texture that cannot be
+                // made is explained here.
                 struct TextureFormat
                 {
                     SDL_GPUTextureFormat format;
@@ -157,8 +158,9 @@ namespace ftk
                     }
                 }
                 _log(
-                    Format("Texture formats: {0}").
-                        arg(missing.empty() ? "all supported" : "not supported: " + join(missing, ", ")),
+                    Format("Texture formats: {0}{1}").
+                        arg(missing.empty() ? "all supported" : "not supported: " + join(missing, ", ")).
+                        arg(hasUNorm16(p.device) ? "" : "; sixteen bit normalized are kept as half float"),
                     missing.empty() ? LogType::Message : LogType::Warning);
             }
             return p.device;
@@ -200,21 +202,48 @@ namespace ftk
             return i != p.textures.end() ? i->second : nullptr;
         }
 
+        namespace
+        {
+            bool enabled = false;
+        }
+
         bool isEnabled()
         {
-            static const bool out = []
-            {
-                const char* env = std::getenv("FTK_RENDER");
-                return env && std::string(env) == "gpu";
-            }();
-            return out;
+            return enabled;
         }
 
         void init(const std::shared_ptr<Context>& context)
         {
             if (!context->getSystem<System>())
             {
-                context->addSystem(System::create(context));
+                auto system = System::create(context);
+                context->addSystem(system);
+
+                // Whether the windows are drawn with this renderer: they
+                // are unless the OpenGL one is asked for by name, and only
+                // where there is a device to draw with. Finding that out
+                // is making one, which is done here rather than by the
+                // first window, so that what cannot be had is known while
+                // there is still another renderer to choose.
+                const char* env = std::getenv("FTK_RENDER");
+                const std::string render = env ? env : "";
+                if (render != "gl")
+                {
+                    try
+                    {
+                        system->getDevice();
+                        enabled = true;
+                    }
+                    catch (const std::exception& e)
+                    {
+                        context->getSystem<LogSystem>()->print(
+                            "ftk::gpu::System",
+                            Format("Drawing with OpenGL instead: {0}").arg(e.what()),
+                            // An error where this renderer was asked for,
+                            // and not where it was only tried first.
+                            "gpu" == render ? LogType::Error : LogType::Warning);
+                    }
+                }
             }
         }
     }
