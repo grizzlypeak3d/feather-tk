@@ -23,8 +23,9 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/local.cmake")
 endif()
 
 set(ftk_API "GL_4_1" CACHE STRING "Graphics API")
-set(ftk_SDL2 ON CACHE BOOL "Build SDL2")
-set(ftk_SDL3 OFF CACHE BOOL "Build SDL3")
+# Which SDL is not said here: SDL3 is the default, and that is the build's
+# to say, with SDL2 where there is nothing else, which is the web. A
+# configuration that wants SDL2 says so before it gets here.
 set(ftk_nfd OFF CACHE BOOL "Build NFD")
 set(ftk_PYTHON OFF CACHE BOOL "Build support for Python")
 set(ftk_TESTS ON CACHE BOOL "Build tests")
