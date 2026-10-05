@@ -27,9 +27,9 @@ set(ftk_API "GL_4_1" CACHE STRING "Graphics API")
 # to say, with SDL2 where there is nothing else, which is the web. A
 # configuration that wants SDL2 says so before it gets here.
 #
-# The renderer on SDL's GPU API, built beside the OpenGL one on this branch
-# wherever it can be: it is SDL3's, and it is not for OpenGL ES, which is
-# for where there is nothing else to draw with.
+# The renderer on SDL's GPU API, built beside the OpenGL one wherever it
+# can be, and drawing where it is chosen: it is SDL3's, and it is not for
+# OpenGL ES, which is for where there is nothing else to draw with.
 if(ftk_SDL2 OR ftk_API MATCHES "^GLES")
     set(ftk_GPU OFF CACHE BOOL "Enable the SDL GPU renderer")
 else()
