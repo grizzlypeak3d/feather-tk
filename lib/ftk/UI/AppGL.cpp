@@ -573,6 +573,7 @@ namespace ftk
         // only available per window. The command line still wins, and so
         // does a scale the application set: a saved 1.5 was being replaced
         // by the window's 1 at every launch on Linux.
+        const bool changed = value > 0.F && value != p.windowDisplayScale;
         if (value > 0.F)
         {
             p.windowDisplayScale = value;
@@ -588,15 +589,42 @@ namespace ftk
                 Format("Display scale from the window: {0}").arg(value));
             _displayScaleUpdate(value);
         }
+        else if (changed && !p.displayScaleAuto && value != p.displayScale->get())
+        {
+            // Said once, so that a log has both: what the desktop would
+            // have had, and what is drawn with.
+            auto logSystem = _context->getSystem<LogSystem>();
+            logSystem->print(
+                "ftk::App",
+                Format("Display scale from the window: {0}, not used: {1} is set").
+                    arg(value).
+                    arg(p.displayScale->get()));
+        }
     }
 
     void App::setDisplayScale(float value)
     {
         FTK_P();
-        p.displayScaleAuto = value <= 0.F;
-        _displayScaleUpdate(p.displayScaleAuto ?
+        const bool displayScaleAuto = value <= 0.F;
+        const float displayScale = displayScaleAuto ?
             (p.windowDisplayScale > 0.F ? p.windowDisplayScale : p.defaultDisplayScale) :
-            value);
+            value;
+        // The display's scale and the window's are logged as they are
+        // found; this is the one in effect where it was set instead, which
+        // a log would otherwise not say. Only as it changes: an application
+        // sets it again with every change to its settings.
+        if (displayScaleAuto != p.displayScaleAuto ||
+            (!displayScaleAuto && displayScale != p.displayScale->get()))
+        {
+            auto logSystem = _context->getSystem<LogSystem>();
+            logSystem->print(
+                "ftk::App",
+                displayScaleAuto ?
+                    Format("Display scale: {0}, from the display or the window").arg(displayScale) :
+                    Format("Display scale set: {0}").arg(displayScale));
+        }
+        p.displayScaleAuto = displayScaleAuto;
+        _displayScaleUpdate(displayScale);
     }
 
     void App::_displayScaleUpdate(float value)
