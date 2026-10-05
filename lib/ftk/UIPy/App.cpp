@@ -88,6 +88,9 @@ namespace ftk
             FTK_ENUM_PY(m, ColorStyle);
             FTK_ENUM_BIND(m, ColorStyle);
 
+            FTK_ENUM_PY(m, Renderer);
+            FTK_ENUM_BIND(m, Renderer);
+
             nb::class_<ColorControls>(m, "ColorControls")
                 .def(nb::init<>())
                 .def_rw("brightness", &ColorControls::brightness)
@@ -184,6 +187,7 @@ namespace ftk
                 .def_prop_ro("iconSystem", &App::getIconSystem)
                 .def_prop_ro("style", &App::getStyle)
                 .def_prop_rw("colorStyle", &App::getColorStyle, &App::setColorStyle)
+                .def_prop_rw("renderer", &App::getRenderer, &App::setRenderer)
                 .def_prop_ro("observeColorStyle", &App::observeColorStyle)
                 .def_prop_ro("defaultDisplayScale", &App::getDefaultDisplayScale)
                 .def_prop_ro("autoDisplayScale", &App::getAutoDisplayScale)
