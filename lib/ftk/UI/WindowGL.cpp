@@ -77,6 +77,10 @@ namespace ftk
         // Whether the swapchain follows the display, which it does unless
         // one was asked for by name.
         bool gpuCompositionAuto = true;
+        //! What was last said of the swapchain in the log, to say when
+        //! it changes: a window dragged to another display.
+        float gpuWhiteLevel = 0.F;
+        float gpuHeadroom = 0.F;
 #endif // FTK_GPU
     };
 
@@ -127,6 +131,8 @@ namespace ftk
                     gpu::getComposition(p.gpuSystem, p.window->getSDLWindow()) :
                     gpu::getCompositionRequest());
             const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
+            p.gpuWhiteLevel = gpu::getSDRWhiteLevel(p.window->getSDLWindow(), p.gpuComposition);
+            p.gpuHeadroom = SDL_GetFloatProperty(props, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.F);
             context->getSystem<LogSystem>()->print(
                 "ftk::Window",
                 Format(
@@ -136,8 +142,8 @@ namespace ftk
                     "    * HDR headroom: {3}").
                 arg(p.gpuSystem->getDriver()).
                 arg(gpu::getLabel(p.gpuComposition)).
-                arg(gpu::getSDRWhiteLevel(p.window->getSDLWindow(), p.gpuComposition)).
-                arg(SDL_GetFloatProperty(props, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.F)));
+                arg(p.gpuWhiteLevel).
+                arg(p.gpuHeadroom));
         }
 #endif // FTK_GPU
 
@@ -756,17 +762,38 @@ namespace ftk
             const gpu::Composition composition = gpu::getComposition(
                 p.gpuSystem,
                 p.window->getSDLWindow());
+            bool changed = false;
             if (composition != p.gpuComposition)
             {
                 p.gpuComposition = gpu::setComposition(
                     p.gpuSystem,
                     p.window->getSDLWindow(),
                     composition);
+                changed = true;
+            }
+            // Said as well when what white is or how far above it the
+            // display goes changes, which the swapchain's kind does not
+            // show: two HDR displays with different headroom, say.
+            const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
+            const float whiteLevel = gpu::getSDRWhiteLevel(p.window->getSDLWindow(), p.gpuComposition);
+            const float headroom = SDL_GetFloatProperty(props, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.F);
+            if (std::abs(whiteLevel - p.gpuWhiteLevel) > .01F ||
+                std::abs(headroom - p.gpuHeadroom) > .01F)
+            {
+                p.gpuWhiteLevel = whiteLevel;
+                p.gpuHeadroom = headroom;
+                changed = true;
+            }
+            if (changed)
+            {
                 if (auto context = p.context.lock())
                 {
                     context->getSystem<LogSystem>()->print(
                         "ftk::Window",
-                        Format("Swapchain: {0}").arg(gpu::getLabel(p.gpuComposition)));
+                        Format("Swapchain: {0}, SDR white level: {1}, HDR headroom: {2}").
+                            arg(gpu::getLabel(p.gpuComposition)).
+                            arg(p.gpuWhiteLevel).
+                            arg(p.gpuHeadroom));
                 }
             }
         }
