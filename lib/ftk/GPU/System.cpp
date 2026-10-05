@@ -219,15 +219,15 @@ namespace ftk
                 auto system = System::create(context);
                 context->addSystem(system);
 
-                // Whether the windows are drawn with this renderer: asked
-                // for by name, and only where there is a device to draw
-                // with. Finding that out is making one, which is done here
-                // rather than by the first window, so that what cannot be
-                // had is known while there is still another renderer to
-                // choose.
+                // Whether the windows are drawn with this renderer: they
+                // are unless the OpenGL one is asked for by name, and only
+                // where there is a device to draw with. Finding that out
+                // is making one, which is done here rather than by the
+                // first window, so that what cannot be had is known while
+                // there is still another renderer to choose.
                 const char* env = std::getenv("FTK_RENDER");
                 const std::string render = env ? env : "";
-                if ("gpu" == render)
+                if (render != "gl")
                 {
                     try
                     {
@@ -239,7 +239,9 @@ namespace ftk
                         context->getSystem<LogSystem>()->print(
                             "ftk::gpu::System",
                             Format("Drawing with OpenGL instead: {0}").arg(e.what()),
-                            LogType::Error);
+                            // An error where this renderer was asked for,
+                            // and not where it was only tried first.
+                            "gpu" == render ? LogType::Error : LogType::Warning);
                     }
                 }
             }
