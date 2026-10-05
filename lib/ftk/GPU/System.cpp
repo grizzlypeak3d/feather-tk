@@ -202,21 +202,46 @@ namespace ftk
             return i != p.textures.end() ? i->second : nullptr;
         }
 
+        namespace
+        {
+            bool enabled = false;
+        }
+
         bool isEnabled()
         {
-            static const bool out = []
-            {
-                const char* env = std::getenv("FTK_RENDER");
-                return env && std::string(env) == "gpu";
-            }();
-            return out;
+            return enabled;
         }
 
         void init(const std::shared_ptr<Context>& context)
         {
             if (!context->getSystem<System>())
             {
-                context->addSystem(System::create(context));
+                auto system = System::create(context);
+                context->addSystem(system);
+
+                // Whether the windows are drawn with this renderer: asked
+                // for by name, and only where there is a device to draw
+                // with. Finding that out is making one, which is done here
+                // rather than by the first window, so that what cannot be
+                // had is known while there is still another renderer to
+                // choose.
+                const char* env = std::getenv("FTK_RENDER");
+                const std::string render = env ? env : "";
+                if ("gpu" == render)
+                {
+                    try
+                    {
+                        system->getDevice();
+                        enabled = true;
+                    }
+                    catch (const std::exception& e)
+                    {
+                        context->getSystem<LogSystem>()->print(
+                            "ftk::gpu::System",
+                            Format("Drawing with OpenGL instead: {0}").arg(e.what()),
+                            LogType::Error);
+                    }
+                }
             }
         }
     }
