@@ -778,6 +778,19 @@ namespace ftk
                     SDL_SubmitGPUCommandBuffer(uploadCmd);
                 }
 
+                // What is drawn reads what was sent in command buffers
+                // submitted before this one: the vertices just above, and
+                // the textures. That the one is done before the other
+                // starts is the driver's to see to. FTK_GPU_SERIALIZE waits
+                // here until everything sent is done, which is how to find
+                // out whether a driver does: drawing that is wrong without
+                // it and right with it is that.
+                static const bool serialize = std::getenv("FTK_GPU_SERIALIZE") != nullptr;
+                if (serialize)
+                {
+                    SDL_WaitForGPUIdle(p.device);
+                }
+
                 SDL_SubmitGPUCommandBuffer(p.cmd);
                 p.cmd = nullptr;
             }
