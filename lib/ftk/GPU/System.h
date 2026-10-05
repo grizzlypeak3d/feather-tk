@@ -71,17 +71,22 @@ namespace ftk
         };
 
         //! Get whether windows are drawn with this renderer rather than
-        //! the OpenGL one. They are where it is built, on this branch,
-        //! unless the FTK_RENDER environment variable says "gl".
+        //! the OpenGL one. They are only where it is asked for: by an
+        //! application's setting or command line, or by the FTK_RENDER
+        //! environment variable saying "gpu".
         //!
         //! It is decided by start(), and is false before then.
         FTK_GPU_API bool isEnabled();
 
+        //! Get whether the FTK_RENDER environment variable asks for this
+        //! renderer, for a program with no setting of its own to ask.
+        FTK_GPU_API bool isRequested();
+
         //! Initialize the library. Nothing is started: see start().
         FTK_GPU_API void init(const std::shared_ptr<Context>&);
 
-        //! Decide whether windows are drawn with this renderer, and get
-        //! what was decided. The renderer is used only where a device can
+        //! Start this renderer, for a program that was asked to draw with
+        //! it, and get whether it draws. It does only where a device can
         //! be made for it, and finding that out is making one: where none
         //! can, on a machine with no driver for Vulkan say, that is logged
         //! and the OpenGL renderer draws.

@@ -280,6 +280,12 @@ namespace ftk
             }
         }
 
+        bool isRequested()
+        {
+            const char* env = std::getenv("FTK_RENDER");
+            return env && std::string("gpu") == env;
+        }
+
         bool start(const std::shared_ptr<Context>& context)
         {
             init(context);
@@ -287,40 +293,34 @@ namespace ftk
             {
                 started = true;
 
-                // The windows are drawn with this renderer unless the
-                // OpenGL one is asked for by name, and only where there is
-                // a device to draw with. Finding that out is making one,
-                // which is done here rather than by the first window, so
-                // that what cannot be had is known while there is still
-                // another renderer to choose.
-                const char* env = std::getenv("FTK_RENDER");
-                const std::string render = env ? env : "";
-                if (render != "gl")
+                // This renderer draws only where there is a device to draw
+                // with. Finding that out is making one, which is done here
+                // rather than by the first window, so that what cannot be
+                // had is known while there is still another renderer to
+                // choose.
+                try
                 {
-                    try
-                    {
-                        auto system = context->getSystem<System>();
-                        system->getDevice();
-                        enabled = true;
-                        // Beside the texture formats the device says it
-                        // has: what it says nothing of, and is tried.
-                        context->getSystem<LogSystem>()->print(
-                            "ftk::gpu::System",
-                            Format("Float texture filtering: {0}").
-                                arg(hasFloatFilter(system) ?
-                                    "supported" :
-                                    "not supported: tables and float pictures are read to the nearest"),
-                            hasFloatFilter(system) ? LogType::Message : LogType::Warning);
-                    }
-                    catch (const std::exception& e)
-                    {
-                        context->getSystem<LogSystem>()->print(
-                            "ftk::gpu::System",
-                            Format("Drawing with OpenGL instead: {0}").arg(e.what()),
-                            // An error where this renderer was asked for,
-                            // and not where it was only tried first.
-                            "gpu" == render ? LogType::Error : LogType::Warning);
-                    }
+                    auto system = context->getSystem<System>();
+                    system->getDevice();
+                    enabled = true;
+                    // Beside the texture formats the device says it has:
+                    // what it says nothing of, and is tried.
+                    context->getSystem<LogSystem>()->print(
+                        "ftk::gpu::System",
+                        Format("Float texture filtering: {0}").
+                            arg(hasFloatFilter(system) ?
+                                "supported" :
+                                "not supported: tables and float pictures are read to the nearest"),
+                        hasFloatFilter(system) ? LogType::Message : LogType::Warning);
+                }
+                catch (const std::exception& e)
+                {
+                    // A warning: it was asked for and is not had, and
+                    // what draws instead is whole.
+                    context->getSystem<LogSystem>()->print(
+                        "ftk::gpu::System",
+                        Format("Drawing with OpenGL instead: {0}").arg(e.what()),
+                        LogType::Warning);
                 }
             }
             return enabled;

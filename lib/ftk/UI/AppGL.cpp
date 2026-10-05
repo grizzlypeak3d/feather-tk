@@ -66,8 +66,8 @@ namespace ftk
 
     FTK_ENUM_IMPL(
         Renderer,
-        "Auto",
-        "OpenGL");
+        "OpenGL",
+        "GPU");
 
     std::vector<float> getDisplayScales()
     {
@@ -98,6 +98,7 @@ namespace ftk
             std::shared_ptr<CmdLineFlag> offscreen;
             std::shared_ptr<CmdLineOption<float> > displayScale;
             std::shared_ptr<CmdLineOption<ColorStyle> > colorStyle;
+            std::shared_ptr<CmdLineOption<Renderer> > renderer;
             std::shared_ptr<CmdLineOption<std::string> > settingsFile;
             std::shared_ptr<CmdLineOption<std::string> > logFile;
             std::shared_ptr<CmdLineFlag> resetSettings;
@@ -124,7 +125,7 @@ namespace ftk
         std::shared_ptr<IconSystem> iconSystem;
         std::shared_ptr<Style> style;
         std::shared_ptr<Observable<ColorStyle> > colorStyle;
-        Renderer renderer = Renderer::Auto;
+        Renderer renderer = Renderer::OpenGL;
         float defaultDisplayScale = 1.F;
         // The display scale is automatic until the application sets a
         // positive one; the window's correction applies only while it is.
@@ -208,6 +209,18 @@ namespace ftk
             std::optional<ColorStyle>(),
             quotes(getColorStyleLabels()));
         cmdLineOptionsTmp.push_back(p.cmdLine.colorStyle);
+        // In every build, with or without the GPU renderer, so that the
+        // help is the same wherever it is printed; where there is none
+        // OpenGL draws whatever is asked.
+        p.cmdLine.renderer = CmdLineOption<Renderer>::create(
+            { "-renderer" },
+            "Set what the windows are drawn with, for this run: OpenGL, "
+            "or the GPU renderer, which is Metal or Vulkan. The setting "
+            "is not changed.",
+            "Graphics",
+            std::optional<Renderer>(),
+            quotes(getRendererLabels()));
+        cmdLineOptionsTmp.push_back(p.cmdLine.renderer);
         p.cmdLine.screenshot = CmdLineOption<std::string>::create(
             { "-screenshot" },
             "Write a screenshot of the window to this file and then exit.",
@@ -361,18 +374,29 @@ namespace ftk
             // only where it is the one that draws.
             auto glSystem = context->getSystem<gl::System>();
             glSystem->init();
+            // OpenGL unless the other is asked for: by the command line,
+            // and otherwise the environment, and otherwise the setting.
+            Renderer renderer = p.renderer;
+            if (const char* env = std::getenv("FTK_RENDER"))
+            {
+                renderer = std::string("gpu") == env ? Renderer::GPU : Renderer::OpenGL;
+            }
+            if (p.cmdLine.renderer->hasValue())
+            {
+                renderer = p.cmdLine.renderer->getValue();
+            }
             bool gpu = false;
+            if (Renderer::GPU == renderer)
+            {
 #if defined(FTK_GPU)
-            // The environment is asked first, and gpu::start() reads it.
-            if (std::getenv("FTK_RENDER") || Renderer::OpenGL != p.renderer)
-            {
                 gpu = gpu::start(context);
-            }
-            else
-            {
-                logSystem->print("ftk::App", "Drawing with OpenGL: it is the renderer set");
-            }
+#else // FTK_GPU
+                logSystem->print(
+                    "ftk::App",
+                    "Drawing with OpenGL instead: the GPU renderer is not in this build",
+                    LogType::Warning);
 #endif // FTK_GPU
+            }
             if (!gpu)
             {
                 glSystem->initGL();

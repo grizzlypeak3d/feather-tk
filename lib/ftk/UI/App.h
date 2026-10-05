@@ -53,13 +53,13 @@ namespace ftk
     //! What an application's windows are drawn with.
     enum class FTK_UI_API_TYPE Renderer
     {
-        //! The GPU renderer where it is built and a device can be made
-        //! for it, and OpenGL otherwise.
-        Auto,
         OpenGL,
+        //! The GPU renderer, Metal or Vulkan, where it is built and a
+        //! device can be made for it, and OpenGL otherwise.
+        GPU,
 
         Count,
-        First = Auto
+        First = OpenGL
     };
     FTK_ENUM(FTK_UI_API, Renderer);
 
@@ -188,15 +188,17 @@ namespace ftk
         //! \name Renderer
         ///@{
 
-        //! Get the renderer that is asked for. What draws is said by
-        //! gpu::isEnabled(): this is what was asked, and where the GPU
-        //! renderer cannot draw OpenGL does whatever was asked.
+        //! Get the renderer that is set, which is OpenGL unless the other
+        //! is asked for. What draws is said by gpu::isEnabled(): this is
+        //! what is kept with the settings, and where the GPU renderer
+        //! cannot draw OpenGL does whatever was asked.
         FTK_UI_API Renderer getRenderer() const;
 
-        //! Set the renderer to ask for. It is chosen as the application
-        //! starts, before there is a window, so this is for the next time
-        //! it does; it is kept with the settings. The FTK_RENDER
-        //! environment variable is asked first.
+        //! Set the renderer. It is chosen as the application starts,
+        //! before there is a window, so this is for the next time it
+        //! does; it is kept with the settings. The command line is asked
+        //! first and then the FTK_RENDER environment variable, so there
+        //! is a way back from a renderer that cannot draw the settings.
         FTK_UI_API void setRenderer(Renderer);
 
         ///@}
