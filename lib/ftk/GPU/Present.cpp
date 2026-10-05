@@ -398,6 +398,8 @@ namespace ftk
                 info.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
                 info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
                 info.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_NONE;
+                // See Render: the device has no depth clamping.
+                info.rasterizer_state.enable_depth_clip = true;
                 info.target_info.color_target_descriptions = &target;
                 info.target_info.num_color_targets = 1;
                 pipeline = SDL_CreateGPUGraphicsPipeline(device, &info);

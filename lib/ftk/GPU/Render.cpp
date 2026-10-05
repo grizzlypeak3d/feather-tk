@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstdlib>
 #include <cstring>
+#include <map>
 #include <stdexcept>
 
 namespace ftk
@@ -261,6 +263,10 @@ namespace ftk
             // which way a mesh winds decides whether it is drawn at all.
             info.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_BACK;
             info.rasterizer_state.front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
+            // The other is depth clamping, which the device is not asked
+            // for; see System::getDevice(). Everything is drawn at depth
+            // zero, so neither does anything.
+            info.rasterizer_state.enable_depth_clip = true;
             info.target_info.color_target_descriptions = &targetDesc;
             info.target_info.num_color_targets = 1;
             SDL_GPUGraphicsPipeline* out = SDL_CreateGPUGraphicsPipeline(device, &info);
@@ -482,6 +488,48 @@ namespace ftk
         {
             auto gpuRender = std::dynamic_pointer_cast<IGPURender>(value);
             return gpuRender ? gpuRender->getGPURender() : nullptr;
+        }
+
+        bool hasFloatFilter(const std::shared_ptr<System>& system)
+        {
+            static const bool no = std::getenv("FTK_GPU_NO_FLOAT_FILTER") != nullptr;
+            if (no)
+            {
+                return false;
+            }
+            static std::map<SDL_GPUDevice*, bool> devices;
+            SDL_GPUDevice* device = system->getDevice();
+            const auto i = devices.find(device);
+            if (i != devices.end())
+            {
+                return i->second;
+            }
+            bool out = false;
+            try
+            {
+                // Two texels, zero and one, drawn into one pixel: half of
+                // each where the device filters, and one of them where it
+                // does not.
+                auto image = Image::create(2, 1, ImageType::L_F32);
+                const float values[] = { 0.F, 1.F };
+                std::memcpy(image->getData(), values, sizeof(values));
+                auto buffer = OffscreenBuffer::create(system, Size2I(1, 1), BufferType::RGBA_U8);
+                auto render = Render::create(system, nullptr, nullptr);
+                render->setTarget(buffer);
+                ImageOptions options;
+                options.imageFilters.minify = ImageFilter::Linear;
+                options.imageFilters.magnify = ImageFilter::Linear;
+                options.cache = false;
+                render->begin(Size2I(1, 1));
+                render->drawImage(image, Box2F(0.F, 0.F, 1.F, 1.F), Color4F(1.F, 1.F, 1.F), options);
+                render->end();
+                const float value = buffer->getPixel(V2I(0, 0)).r;
+                out = value > .4F && value < .6F;
+            }
+            catch (const std::exception&)
+            {}
+            devices[device] = out;
+            return out;
         }
 
         std::shared_ptr<Render> Render::getGPURender()

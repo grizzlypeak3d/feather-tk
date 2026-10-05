@@ -106,10 +106,31 @@ namespace ftk
                 // Validation is asked for by name: it is what says a call
                 // was wrong, and it is not free.
                 const bool debug = std::getenv("FTK_GPU_DEBUG") != nullptr;
-                p.device = SDL_CreateGPUDevice(
-                    SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_SPIRV,
-                    debug,
-                    nullptr);
+                const SDL_PropertiesID props = SDL_CreateProperties();
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, debug);
+                // What SDL asks of a Vulkan device unless told otherwise,
+                // and nothing here uses: a device without one of them, a
+                // small one, would be refused for it. Without depth
+                // clamping every pipeline has to clip by depth instead,
+                // which they are made to.
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_CLIP_DISTANCE_BOOLEAN, false);
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_DEPTH_CLAMPING_BOOLEAN, false);
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_INDIRECT_DRAW_FIRST_INSTANCE_BOOLEAN, false);
+                SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_ANISOTROPY_BOOLEAN, false);
+                // Not a device that draws on the CPU, which Vulkan offers
+                // where Mesa's is installed and there is no other: it is
+                // slow, and the OpenGL renderer is there to draw instead,
+                // perhaps with a GPU that has no driver for Vulkan.
+                // FTK_GPU_SOFTWARE takes one all the same, to test on a
+                // machine without a GPU.
+                SDL_SetBooleanProperty(
+                    props,
+                    SDL_PROP_GPU_DEVICE_CREATE_VULKAN_REQUIRE_HARDWARE_ACCELERATION_BOOLEAN,
+                    std::getenv("FTK_GPU_SOFTWARE") == nullptr);
+                p.device = SDL_CreateGPUDeviceWithProperties(props);
+                SDL_DestroyProperties(props);
                 if (!p.device)
                 {
                     throw std::runtime_error(Format("Cannot create a GPU device: {0}").arg(SDL_GetError()));
@@ -278,8 +299,18 @@ namespace ftk
                 {
                     try
                     {
-                        context->getSystem<System>()->getDevice();
+                        auto system = context->getSystem<System>();
+                        system->getDevice();
                         enabled = true;
+                        // Beside the texture formats the device says it
+                        // has: what it says nothing of, and is tried.
+                        context->getSystem<LogSystem>()->print(
+                            "ftk::gpu::System",
+                            Format("Float texture filtering: {0}").
+                                arg(hasFloatFilter(system) ?
+                                    "supported" :
+                                    "not supported: tables and float pictures are read to the nearest"),
+                            hasFloatFilter(system) ? LogType::Message : LogType::Warning);
                     }
                     catch (const std::exception& e)
                     {
