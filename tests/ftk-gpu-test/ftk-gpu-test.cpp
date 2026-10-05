@@ -574,6 +574,23 @@ namespace
 
 namespace
 {
+    // A buffer with no size is refused as the OpenGL one is, rather than
+    // left to the device: with FTK_GPU_DEBUG that is an assertion.
+    bool invalid(const std::shared_ptr<gpu::System>& system)
+    {
+        bool out = false;
+        try
+        {
+            gpu::OffscreenBuffer::create(system, Size2I(0, 0));
+        }
+        catch (const std::exception&)
+        {
+            out = true;
+        }
+        std::cout << "Buffer without a size: " << (out ? "refused" : "not refused") << std::endl;
+        return out;
+    }
+
     // A buffer read back as each type of image a file is written from, in
     // each layout: what OpenGL's glReadPixels gives the writers. The buffer
     // is one color with a row of another along the top, an odd width so
@@ -866,6 +883,7 @@ int main(int argc, char** argv)
         }
         const bool presentOK =
             glsl() &&
+            invalid(context->getSystem<gpu::System>()) &&
             readback(context->getSystem<gpu::System>()) &&
             present(context->getSystem<gpu::System>()) &&
             swapchain(context->getSystem<gpu::System>());
