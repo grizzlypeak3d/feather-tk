@@ -10,8 +10,10 @@
 #include <SDL3/SDL.h>
 
 #include <atomic>
+#include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include <vector>
 
 namespace ftk
 {
@@ -67,6 +69,100 @@ namespace ftk
 
         namespace
         {
+            // Sixteen bit normalized textures are the ones Vulkan leaves to
+            // the driver. Where there are none they are kept as half float,
+            // which every driver has and filters: the shaders read the same
+            // values, to the eleven bits or so a half has near one, where
+            // sixteen bit integers have sixteen.
+            SDL_GPUTextureFormat getHalfFormat(SDL_GPUTextureFormat value)
+            {
+                SDL_GPUTextureFormat out = SDL_GPU_TEXTUREFORMAT_INVALID;
+                switch (value)
+                {
+                case SDL_GPU_TEXTUREFORMAT_R16_UNORM: out = SDL_GPU_TEXTUREFORMAT_R16_FLOAT; break;
+                case SDL_GPU_TEXTUREFORMAT_R16G16_UNORM: out = SDL_GPU_TEXTUREFORMAT_R16G16_FLOAT; break;
+                case SDL_GPU_TEXTUREFORMAT_R16G16B16A16_UNORM: out = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT; break;
+                default: break;
+                }
+                return out;
+            }
+
+            // A value from zero to one as a half float, to the nearest.
+            uint16_t toHalf(float value)
+            {
+                if (value <= 0.F)
+                {
+                    return 0;
+                }
+                uint32_t bits = 0;
+                std::memcpy(&bits, &value, 4);
+                const int exponent = static_cast<int>((bits >> 23) & 0xFF) - 127 + 15;
+                uint32_t mantissa = bits & 0x7FFFFF;
+                if (exponent <= 0)
+                {
+                    // Too small to be normal in a half.
+                    if (exponent < -10)
+                    {
+                        return 0;
+                    }
+                    mantissa |= 0x800000;
+                    const int shift = 14 - exponent;
+                    uint32_t out = mantissa >> shift;
+                    if ((mantissa >> (shift - 1)) & 1)
+                    {
+                        ++out;
+                    }
+                    return static_cast<uint16_t>(out);
+                }
+                uint32_t out = (static_cast<uint32_t>(exponent) << 10) | (mantissa >> 13);
+                if (mantissa & 0x1000)
+                {
+                    // A carry out of the mantissa is the next exponent.
+                    ++out;
+                }
+                return static_cast<uint16_t>(out);
+            }
+
+            // Every sixteen bit value as the half float it is kept as.
+            const std::vector<uint16_t>& getHalfTable()
+            {
+                static const std::vector<uint16_t> table = []
+                {
+                    std::vector<uint16_t> out(65536);
+                    for (size_t i = 0; i < out.size(); ++i)
+                    {
+                        out[i] = toHalf(i / 65535.F);
+                    }
+                    return out;
+                }();
+                return table;
+            }
+        }
+
+        bool hasUNorm16(SDL_GPUDevice* device)
+        {
+            // Asked for by name to try what a driver without them gets.
+            static const bool no = std::getenv("FTK_GPU_NO_UNORM16") != nullptr;
+            return !no &&
+                SDL_GPUTextureSupportsFormat(
+                    device,
+                    SDL_GPU_TEXTUREFORMAT_R16_UNORM,
+                    SDL_GPU_TEXTURETYPE_2D,
+                    SDL_GPU_TEXTUREUSAGE_SAMPLER) &&
+                SDL_GPUTextureSupportsFormat(
+                    device,
+                    SDL_GPU_TEXTUREFORMAT_R16G16_UNORM,
+                    SDL_GPU_TEXTURETYPE_2D,
+                    SDL_GPU_TEXTUREUSAGE_SAMPLER) &&
+                SDL_GPUTextureSupportsFormat(
+                    device,
+                    SDL_GPU_TEXTUREFORMAT_R16G16B16A16_UNORM,
+                    SDL_GPU_TEXTURETYPE_2D,
+                    SDL_GPU_TEXTUREUSAGE_SAMPLER);
+        }
+
+        namespace
+        {
             std::atomic<size_t> objectCount = 0;
             std::atomic<size_t> totalByteCount = 0;
 
@@ -93,6 +189,8 @@ namespace ftk
             SDL_GPUTexture* texture = nullptr;
             SDL_GPUSampler* sampler = nullptr;
             bool counted = false;
+            //! Sixteen bit normalized, kept as half float: see hasUNorm16().
+            bool half = false;
         };
 
         void Texture::_init(
@@ -105,10 +203,15 @@ namespace ftk
             p.info = info;
             SDL_GPUDevice* device = system->getDevice();
 
-            const SDL_GPUTextureFormat format = getFormat(info.type);
+            SDL_GPUTextureFormat format = getFormat(info.type);
             if (SDL_GPU_TEXTUREFORMAT_INVALID == format || !info.isValid())
             {
                 throw std::runtime_error(Format("Cannot create a texture: {0}").arg(getLabel(info)));
+            }
+            if (getHalfFormat(format) != SDL_GPU_TEXTUREFORMAT_INVALID && !hasUNorm16(device))
+            {
+                format = getHalfFormat(format);
+                p.half = true;
             }
             SDL_GPUTextureCreateInfo textureInfo = {};
             textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
@@ -254,7 +357,30 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
             }
             uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(device, transfer, false));
-            if (3 == channels)
+            if (p.half)
+            {
+                // Each value as the half float it is kept as, and one for a
+                // fourth channel that was not there.
+                const std::vector<uint16_t>& table = getHalfTable();
+                const size_t dstChannels = 3 == channels ? 4 : channels;
+                for (int row = 0; row < h; ++row)
+                {
+                    const uint16_t* s = reinterpret_cast<const uint16_t*>(data + row * srcRow);
+                    uint16_t* d = reinterpret_cast<uint16_t*>(dst + row * dstRow);
+                    for (int i = 0; i < w; ++i, s += channels, d += dstChannels)
+                    {
+                        for (int c = 0; c < channels; ++c)
+                        {
+                            d[c] = table[s[c]];
+                        }
+                        if (3 == channels)
+                        {
+                            d[3] = 0x3C00;
+                        }
+                    }
+                }
+            }
+            else if (3 == channels)
             {
                 for (int row = 0; row < h; ++row)
                 {

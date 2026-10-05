@@ -65,6 +65,15 @@ namespace ftk
             BufferType type = BufferType::RGBA_U8;
             SDL_GPUTexture* texture = nullptr;
             unsigned int id = 0;
+
+            // What read(const ImageInfo&) converts into and reads back
+            // through, kept from one read to the next: an export reads
+            // every frame the same way, and making these each time was a
+            // good part of what a read cost.
+            SDL_GPUTexture* readTexture = nullptr;
+            SDL_GPUTextureFormat readTextureFormat = SDL_GPU_TEXTUREFORMAT_INVALID;
+            SDL_GPUTransferBuffer* readTransfer = nullptr;
+            size_t readTransferByteCount = 0;
         };
 
         void OffscreenBuffer::_init(
@@ -107,6 +116,14 @@ namespace ftk
                 totalByteCount -= getByteCount(p.size, p.type);
                 p.system->removeTexture(p.id);
                 SDL_ReleaseGPUTexture(p.system->getDevice(), p.texture);
+            }
+            if (p.system && p.readTexture)
+            {
+                SDL_ReleaseGPUTexture(p.system->getDevice(), p.readTexture);
+            }
+            if (p.system && p.readTransfer)
+            {
+                SDL_ReleaseGPUTransferBuffer(p.system->getDevice(), p.readTransfer);
             }
         }
 
@@ -277,62 +294,103 @@ namespace ftk
 
             // Converted where it is, by drawing it into the components
             // wanted, unless it holds them already.
-            std::shared_ptr<Image> tmp;
             SDL_GPUDevice* device = p.system->getDevice();
-            if (getFormat(p.type) == readFormat.format)
+            SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
+            SDL_GPUTexture* texture = p.texture;
+            if (getFormat(p.type) != readFormat.format)
             {
-                tmp = read();
-            }
-            else
-            {
-                SDL_GPUTextureCreateInfo textureInfo = {};
-                textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
-                textureInfo.format = readFormat.format;
-                textureInfo.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
-                textureInfo.width = p.size.w;
-                textureInfo.height = p.size.h;
-                textureInfo.layer_count_or_depth = 1;
-                textureInfo.num_levels = 1;
-                SDL_GPUTexture* texture = SDL_GPUTextureSupportsFormat(
-                    device,
-                    textureInfo.format,
-                    textureInfo.type,
-                    textureInfo.usage) ?
-                    SDL_CreateGPUTexture(device, &textureInfo) :
-                    nullptr;
-                if (!texture)
+                if (p.readTexture && p.readTextureFormat != readFormat.format)
                 {
+                    SDL_ReleaseGPUTexture(device, p.readTexture);
+                    p.readTexture = nullptr;
+                }
+                if (!p.readTexture)
+                {
+                    SDL_GPUTextureCreateInfo textureInfo = {};
+                    textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
+                    textureInfo.format = readFormat.format;
+                    textureInfo.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+                    textureInfo.width = p.size.w;
+                    textureInfo.height = p.size.h;
+                    textureInfo.layer_count_or_depth = 1;
+                    textureInfo.num_levels = 1;
+                    p.readTexture = SDL_GPUTextureSupportsFormat(
+                        device,
+                        textureInfo.format,
+                        textureInfo.type,
+                        textureInfo.usage) ?
+                        SDL_CreateGPUTexture(device, &textureInfo) :
+                        nullptr;
+                    p.readTextureFormat = readFormat.format;
+                }
+                if (!p.readTexture)
+                {
+                    SDL_CancelGPUCommandBuffer(cmd);
                     throw std::runtime_error(Format("Cannot read the buffer as: {0}").arg(getLabel(info)));
                 }
-                SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
                 SDL_GPUBlitInfo blit = {};
                 blit.source.texture = p.texture;
                 blit.source.w = p.size.w;
                 blit.source.h = p.size.h;
-                blit.destination.texture = texture;
+                blit.destination.texture = p.readTexture;
                 blit.destination.w = p.size.w;
                 blit.destination.h = p.size.h;
                 blit.load_op = SDL_GPU_LOADOP_DONT_CARE;
                 blit.filter = SDL_GPU_FILTER_NEAREST;
                 SDL_BlitGPUTexture(cmd, &blit);
-                tmp = download(device, cmd, texture, p.size, readFormat.type);
-                SDL_ReleaseGPUTexture(device, texture);
+                texture = p.readTexture;
             }
 
-            // Into the layout asked for. What was read has its top row
-            // first, rows that are not padded, and this machine's byte
-            // order.
-            auto out = Image::create(info);
             const size_t w = static_cast<size_t>(p.size.w);
             const size_t h = static_cast<size_t>(p.size.h);
             const size_t componentSize = static_cast<size_t>(getBitDepth(readFormat.type)) / 8;
-            const size_t tmpChannels = static_cast<size_t>(getChannelCount(readFormat.type));
-            const size_t tmpStride = w * tmpChannels * componentSize;
+            const size_t readChannels = static_cast<size_t>(getChannelCount(readFormat.type));
+            const size_t readStride = w * readChannels * componentSize;
+            const size_t readByteCount = readStride * h;
+            if (p.readTransfer && p.readTransferByteCount != readByteCount)
+            {
+                SDL_ReleaseGPUTransferBuffer(device, p.readTransfer);
+                p.readTransfer = nullptr;
+            }
+            if (!p.readTransfer)
+            {
+                SDL_GPUTransferBufferCreateInfo transferInfo = {};
+                transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
+                transferInfo.size = static_cast<Uint32>(readByteCount);
+                p.readTransfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+                p.readTransferByteCount = readByteCount;
+            }
+            if (!p.readTransfer)
+            {
+                SDL_CancelGPUCommandBuffer(cmd);
+                throw std::runtime_error(Format("Cannot read the buffer as: {0}").arg(getLabel(info)));
+            }
+            SDL_GPUCopyPass* pass = SDL_BeginGPUCopyPass(cmd);
+            SDL_GPUTextureRegion region = {};
+            region.texture = texture;
+            region.w = p.size.w;
+            region.h = p.size.h;
+            region.d = 1;
+            SDL_GPUTextureTransferInfo destination = {};
+            destination.transfer_buffer = p.readTransfer;
+            SDL_DownloadFromGPUTexture(pass, &region, &destination);
+            SDL_EndGPUCopyPass(pass);
+            SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(cmd);
+            SDL_WaitForGPUFences(device, true, &fence, 1);
+            SDL_ReleaseGPUFence(device, fence);
+
+            // Into the layout asked for, straight from what was read back,
+            // which has its top row first, rows that are not padded, and
+            // this machine's byte order.
+            auto out = Image::create(info);
+            const uint8_t* read = static_cast<const uint8_t*>(
+                SDL_MapGPUTransferBuffer(device, p.readTransfer, false));
             const size_t outStride = out->getByteCount() / h;
             const bool swap = info.layout.endian != getEndian();
+            const bool same = getChannelCount(info.type) == static_cast<int>(readChannels);
             for (size_t y = 0; y < h; ++y)
             {
-                const uint8_t* in = tmp->getData() + y * tmpStride;
+                const uint8_t* in = read + y * readStride;
                 uint8_t* o = out->getData() + (info.layout.mirror.y ? y : (h - 1 - y)) * outStride;
                 size_t swapSize = componentSize;
                 size_t swapCount = 0;
@@ -353,18 +411,51 @@ namespace ftk
                     swapSize = 4;
                     swapCount = w;
                 }
-                else if (getChannelCount(info.type) == static_cast<int>(tmpChannels))
+                else if (same)
                 {
-                    std::memcpy(o, in, tmpStride);
-                    swapCount = w * tmpChannels;
+                    std::memcpy(o, in, readStride);
+                    swapCount = w * readChannels;
                 }
                 else
                 {
-                    // Three channels of the four.
-                    const size_t pixelSize = 3 * componentSize;
-                    for (size_t x = 0; x < w; ++x)
+                    // Three channels of the four, a component at a time
+                    // for the sizes there are: a copy of each pixel was
+                    // most of what a frame took to lay out.
+                    switch (componentSize)
                     {
-                        std::memcpy(o + x * pixelSize, in + x * 4 * componentSize, pixelSize);
+                    case 1:
+                        for (size_t x = 0; x < w; ++x, in += 4, o += 3)
+                        {
+                            o[0] = in[0];
+                            o[1] = in[1];
+                            o[2] = in[2];
+                        }
+                        o -= w * 3;
+                        break;
+                    case 2:
+                    {
+                        const uint16_t* in16 = reinterpret_cast<const uint16_t*>(in);
+                        uint16_t* o16 = reinterpret_cast<uint16_t*>(o);
+                        for (size_t x = 0; x < w; ++x, in16 += 4, o16 += 3)
+                        {
+                            o16[0] = in16[0];
+                            o16[1] = in16[1];
+                            o16[2] = in16[2];
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        const uint32_t* in32 = reinterpret_cast<const uint32_t*>(in);
+                        uint32_t* o32 = reinterpret_cast<uint32_t*>(o);
+                        for (size_t x = 0; x < w; ++x, in32 += 4, o32 += 3)
+                        {
+                            o32[0] = in32[0];
+                            o32[1] = in32[1];
+                            o32[2] = in32[2];
+                        }
+                        break;
+                    }
                     }
                     swapCount = w * 3;
                 }
@@ -373,6 +464,7 @@ namespace ftk
                     swapEndian(o, swapCount, swapSize);
                 }
             }
+            SDL_UnmapGPUTransferBuffer(device, p.readTransfer);
             return out;
         }
 

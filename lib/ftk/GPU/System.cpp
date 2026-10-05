@@ -122,9 +122,10 @@ namespace ftk
                         ""));
 
                 // The formats the textures are made in, some of which
-                // Vulkan leaves to the driver. Nothing falls back from one
-                // that is missing, so a texture that cannot be made is
-                // explained here.
+                // Vulkan leaves to the driver. Sixteen bit normalized ones
+                // are kept as half float where they are missing; nothing
+                // falls back from any other, so a texture that cannot be
+                // made is explained here.
                 struct TextureFormat
                 {
                     SDL_GPUTextureFormat format;
@@ -157,8 +158,9 @@ namespace ftk
                     }
                 }
                 _log(
-                    Format("Texture formats: {0}").
-                        arg(missing.empty() ? "all supported" : "not supported: " + join(missing, ", ")),
+                    Format("Texture formats: {0}{1}").
+                        arg(missing.empty() ? "all supported" : "not supported: " + join(missing, ", ")).
+                        arg(hasUNorm16(p.device) ? "" : "; sixteen bit normalized are kept as half float"),
                     missing.empty() ? LogType::Message : LogType::Warning);
             }
             return p.device;

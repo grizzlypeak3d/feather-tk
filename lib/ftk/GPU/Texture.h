@@ -8,6 +8,7 @@
 #include <ftk/Core/Image.h>
 #include <ftk/Core/RenderOptions.h>
 
+struct SDL_GPUDevice;
 struct SDL_GPUSampler;
 struct SDL_GPUTexture;
 
@@ -21,6 +22,14 @@ namespace ftk
         //! in planes are drawn from a texture for each plane, so they are
         //! not asked about here.
         FTK_GPU_API bool isTextureSupported(ImageType);
+
+        //! Get whether a device has sixteen bit normalized textures, which
+        //! Vulkan leaves to the driver. Where there are none a texture of
+        //! sixteen bit integers is kept as half float instead: every driver
+        //! has those, and what is drawn is the same to the eleven bits or
+        //! so a half holds near one. FTK_GPU_NO_UNORM16 says there are
+        //! none, to try it.
+        FTK_GPU_API bool hasUNorm16(SDL_GPUDevice*);
 
         //! Texture options.
         struct FTK_GPU_API_TYPE TextureOptions
