@@ -114,7 +114,13 @@ namespace ftk
                 {
                     throw std::runtime_error(Format("Cannot create a GPU device: {0}").arg(SDL_GetError()));
                 }
-                _log(Format("GPU driver: {0}").arg(SDL_GetGPUDeviceDriver(p.device)));
+                // The driver, and which device and system driver where
+                // they are told: a machine with two cards, or a report of
+                // something that only one driver does, is no use without.
+                for (const auto& i : getInfo())
+                {
+                    _log(Format("{0}: {1}").arg(i.first).arg(i.second));
+                }
                 _log(Format("GLSL compiler: {0}{1}").
                     arg(hasGLSLCompiler() ? "glslang" : "none").
                     arg(hasGLSLCompiler() && validateGLSL() ?
