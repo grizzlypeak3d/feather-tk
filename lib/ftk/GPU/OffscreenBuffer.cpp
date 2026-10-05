@@ -76,6 +76,10 @@ namespace ftk
             p.system = system;
             p.size = size;
             p.type = type;
+            if (!size.isValid())
+            {
+                throw std::runtime_error("Invalid offscreen buffer");
+            }
             SDL_GPUTextureCreateInfo info = {};
             info.type = SDL_GPU_TEXTURETYPE_2D;
             info.format = getFormat(type);
