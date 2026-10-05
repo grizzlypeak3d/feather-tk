@@ -811,7 +811,7 @@ namespace ftk
             drawRect,
             drawEvent);
         render->setClipRectEnabled(false);
-        if (std::getenv("FTK_GPU_HDR_TEST"))
+        if (gpu::getEnvFlag("FTK_GPU_HDR_TEST"))
         {
             // Something to look at on an HDR display: patches at one, two,
             // four and eight times the user interface's white. Display

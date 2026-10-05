@@ -150,6 +150,8 @@ set. What is brighter than the display goes is left to the display.
 | `FTK_GPU_SERIALIZE=1` | Wait for the vertices and textures sent to the device before submitting what draws with them. For finding out whether a driver orders the two itself; it costs the frame the wait. |
 | `SDL_GPU_DRIVER=vulkan` | SDL's own: which driver. |
 
+The ones that turn something on are off when unset, empty or `0`.
+
 With `-log`, look for `GPU driver:`, `GPU device:`, `GLSL compiler:`,
 `Texture formats:`, `Float texture filtering:` and `Swapchain:`.
 

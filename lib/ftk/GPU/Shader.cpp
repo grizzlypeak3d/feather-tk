@@ -3,6 +3,8 @@
 
 #include <ftk/GPU/Shader.h>
 
+#include <ftk/GPU/System.h>
+
 #include <ftk/Core/Format.h>
 
 #include <SDL3/SDL.h>
@@ -68,7 +70,7 @@ namespace ftk
 
         bool validateGLSL()
         {
-            static const bool out = std::getenv("FTK_GPU_VALIDATE") != nullptr;
+            static const bool out = getEnvFlag("FTK_GPU_VALIDATE");
             return out;
         }
 

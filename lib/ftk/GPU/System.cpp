@@ -105,7 +105,7 @@ namespace ftk
                 // The shaders are written for these; see RenderShaders.cpp.
                 // Validation is asked for by name: it is what says a call
                 // was wrong, and it is not free.
-                const bool debug = std::getenv("FTK_GPU_DEBUG") != nullptr;
+                const bool debug = getEnvFlag("FTK_GPU_DEBUG");
                 const SDL_PropertiesID props = SDL_CreateProperties();
                 SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
                 SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
@@ -128,7 +128,7 @@ namespace ftk
                 SDL_SetBooleanProperty(
                     props,
                     SDL_PROP_GPU_DEVICE_CREATE_VULKAN_REQUIRE_HARDWARE_ACCELERATION_BOOLEAN,
-                    std::getenv("FTK_GPU_SOFTWARE") == nullptr);
+                    !getEnvFlag("FTK_GPU_SOFTWARE"));
                 p.device = SDL_CreateGPUDeviceWithProperties(props);
                 SDL_DestroyProperties(props);
                 if (!p.device)
@@ -269,6 +269,12 @@ namespace ftk
             FTK_P();
             const auto i = p.textures.find(value);
             return i != p.textures.end() ? i->second : nullptr;
+        }
+
+        bool getEnvFlag(const char* name)
+        {
+            const char* env = std::getenv(name);
+            return env && env[0] && std::string("0") != env;
         }
 
         namespace

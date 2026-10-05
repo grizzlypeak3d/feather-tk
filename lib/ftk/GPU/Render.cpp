@@ -492,7 +492,7 @@ namespace ftk
 
         bool hasFloatFilter(const std::shared_ptr<System>& system)
         {
-            static const bool no = std::getenv("FTK_GPU_NO_FLOAT_FILTER") != nullptr;
+            static const bool no = getEnvFlag("FTK_GPU_NO_FLOAT_FILTER");
             if (no)
             {
                 return false;
@@ -785,7 +785,7 @@ namespace ftk
                 // here until everything sent is done, which is how to find
                 // out whether a driver does: drawing that is wrong without
                 // it and right with it is that.
-                static const bool serialize = std::getenv("FTK_GPU_SERIALIZE") != nullptr;
+                static const bool serialize = getEnvFlag("FTK_GPU_SERIALIZE");
                 if (serialize)
                 {
                     SDL_WaitForGPUIdle(p.device);

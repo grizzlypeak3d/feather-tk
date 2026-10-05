@@ -142,7 +142,7 @@ namespace ftk
         bool hasUNorm16(SDL_GPUDevice* device)
         {
             // Asked for by name to try what a driver without them gets.
-            static const bool no = std::getenv("FTK_GPU_NO_UNORM16") != nullptr;
+            static const bool no = getEnvFlag("FTK_GPU_NO_UNORM16");
             return !no &&
                 SDL_GPUTextureSupportsFormat(
                     device,

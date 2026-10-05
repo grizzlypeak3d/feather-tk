@@ -70,6 +70,11 @@ namespace ftk
             FTK_PRIVATE();
         };
 
+        //! Get whether an environment variable that turns something on is
+        //! set to do so: set, and not to nothing or to "0". "FTK_GPU_X=0"
+        //! is then off, as it reads, rather than on for being there.
+        FTK_GPU_API bool getEnvFlag(const char* name);
+
         //! Get whether windows are drawn with this renderer rather than
         //! the OpenGL one. They are only where it is asked for: by an
         //! application's setting or command line, or by the FTK_RENDER
