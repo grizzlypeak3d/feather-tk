@@ -109,9 +109,13 @@ Vulkan leaves some formats to the driver.
   `FTK_GPU_NO_UNORM16=1` says there are none, to try it.
 - Filtering of thirty-two bit float textures, which a lookup table kept in
   one relies on: SDL has no way to ask, so it is tried, by drawing two texels
-  into one pixel. `hasFloatFilter()`; `FTK_GPU_NO_FLOAT_FILTER=1` says it
-  cannot. **Nothing falls back from it yet**: such a device reads the nearest
-  entry.
+  into one pixel. Where a device does not, as the Raspberry Pi's does not, a
+  texture of thirty-two bit floats is kept as half float too: a float
+  picture, and the tables OpenColorIO and a LUT are read from, which come out
+  within one of 255 of what they are in floats. `hasFloatFilter()`;
+  `FTK_GPU_NO_FLOAT_FILTER=1` says it cannot, to try it. A buffer drawn into
+  is not changed: one of thirty-two bit floats is what it was asked to be,
+  and is read to the nearest where it is drawn at another size.
 
 The log's `Texture formats:` and `Float texture filtering:` lines say what a
 device lacks.
@@ -206,7 +210,7 @@ ones, which read zero while this renderer draws.
 | Vulkan, Mesa V3DV | Raspberry Pi 5 (V3D 7.1), Linux on X11 | by eye and by log; see below |
 
 Each has every texture format. The Raspberry Pi's does not filter float
-textures.
+textures, which are kept as half float there.
 
 With `FTK_GPU_DEBUG=1` Vulkan's validation has
 one thing to say, once, when a three dimensional texture is made:
@@ -215,7 +219,6 @@ SDL's driver makes. It is SDL's.
 
 ## Not done
 
-- A fallback for a device that does not filter float textures.
 - Choosing the device where there are two: SDL takes the best kind it finds,
   and has nothing to choose with beyond preferring low power.
 - Direct3D 12, which SDL also has, and which would want a third shader

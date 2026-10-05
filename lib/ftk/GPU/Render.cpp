@@ -635,6 +635,10 @@ namespace ftk
                 return i->second;
             }
             bool out = false;
+            // Finding out draws a float texture, and a float texture asks
+            // this as it is made: it is told yes until there is an answer,
+            // so that what is tried is the thing asked about.
+            devices[device] = true;
             try
             {
                 // Two texels, zero and one, drawn into one pixel: half of

@@ -3,11 +3,14 @@
 
 #include <ftk/GPU/Texture.h>
 
+#include <ftk/GPU/Render.h>
 #include <ftk/GPU/System.h>
 
 #include <ftk/Core/Format.h>
 
 #include <SDL3/SDL.h>
+
+#include <algorithm>
 
 #include <atomic>
 #include <cstdlib>
@@ -87,23 +90,46 @@ namespace ftk
                 return out;
             }
 
-            // A value from zero to one as a half float, to the nearest.
+            // The half float thirty-two bit float formats are kept as
+            // where a device does not filter them; see hasFloatFilter().
+            SDL_GPUTextureFormat getHalfFloatFormat(SDL_GPUTextureFormat value)
+            {
+                SDL_GPUTextureFormat out = SDL_GPU_TEXTUREFORMAT_INVALID;
+                switch (value)
+                {
+                case SDL_GPU_TEXTUREFORMAT_R32_FLOAT: out = SDL_GPU_TEXTUREFORMAT_R16_FLOAT; break;
+                case SDL_GPU_TEXTUREFORMAT_R32G32_FLOAT: out = SDL_GPU_TEXTUREFORMAT_R16G16_FLOAT; break;
+                case SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT: out = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT; break;
+                default: break;
+                }
+                return out;
+            }
+
+            // A float as a half float, to the nearest.
             uint16_t toHalf(float value)
             {
-                if (value <= 0.F)
-                {
-                    return 0;
-                }
                 uint32_t bits = 0;
                 std::memcpy(&bits, &value, 4);
-                const int exponent = static_cast<int>((bits >> 23) & 0xFF) - 127 + 15;
+                const uint16_t sign = static_cast<uint16_t>((bits >> 16) & 0x8000);
+                const uint32_t exponentBits = (bits >> 23) & 0xFF;
                 uint32_t mantissa = bits & 0x7FFFFF;
+                if (0xFF == exponentBits)
+                {
+                    // Infinity, and what is not a number.
+                    return sign | (mantissa ? 0x7E00 : 0x7C00);
+                }
+                const int exponent = static_cast<int>(exponentBits) - 127 + 15;
+                if (exponent >= 31)
+                {
+                    // Too large: the largest there is, not infinity.
+                    return sign | 0x7BFF;
+                }
                 if (exponent <= 0)
                 {
                     // Too small to be normal in a half.
                     if (exponent < -10)
                     {
-                        return 0;
+                        return sign;
                     }
                     mantissa |= 0x800000;
                     const int shift = 14 - exponent;
@@ -112,15 +138,16 @@ namespace ftk
                     {
                         ++out;
                     }
-                    return static_cast<uint16_t>(out);
+                    return sign | static_cast<uint16_t>(out);
                 }
                 uint32_t out = (static_cast<uint32_t>(exponent) << 10) | (mantissa >> 13);
                 if (mantissa & 0x1000)
                 {
-                    // A carry out of the mantissa is the next exponent.
-                    ++out;
+                    // A carry out of the mantissa is the next exponent,
+                    // and out of the last exponent would be infinity.
+                    out = std::min(out + 1, static_cast<uint32_t>(0x7BFF));
                 }
-                return static_cast<uint16_t>(out);
+                return sign | static_cast<uint16_t>(out);
             }
 
             // Every sixteen bit value as the half float it is kept as.
@@ -136,6 +163,14 @@ namespace ftk
                     return out;
                 }();
                 return table;
+            }
+        }
+
+        void floatToHalf(const float* in, uint16_t* out, size_t count)
+        {
+            for (size_t i = 0; i < count; ++i)
+            {
+                out[i] = toHalf(in[i]);
             }
         }
 
@@ -191,6 +226,9 @@ namespace ftk
             bool counted = false;
             //! Sixteen bit normalized, kept as half float: see hasUNorm16().
             bool half = false;
+            //! Thirty-two bit float, kept as half float: see
+            //! hasFloatFilter().
+            bool halfFloat = false;
         };
 
         void Texture::_init(
@@ -212,6 +250,11 @@ namespace ftk
             {
                 format = getHalfFormat(format);
                 p.half = true;
+            }
+            else if (getHalfFloatFormat(format) != SDL_GPU_TEXTUREFORMAT_INVALID && !hasFloatFilter(system))
+            {
+                format = getHalfFloatFormat(format);
+                p.halfFloat = true;
             }
             SDL_GPUTextureCreateInfo textureInfo = {};
             textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
@@ -401,7 +444,9 @@ namespace ftk
             const size_t channelBytes = getChannelByteCount(info.type);
             const size_t srcPixel = channels * channelBytes;
             const size_t srcRow = info.getByteCount() / h;
-            const size_t dstPixel = (3 == channels ? 4 : channels) * channelBytes;
+            const size_t dstPixel =
+                (3 == channels ? 4 : channels) *
+                (p.halfFloat ? sizeof(uint16_t) : channelBytes);
             const size_t dstRow = w * dstPixel;
 
             SDL_GPUTransferBufferCreateInfo transferInfo = {};
@@ -429,6 +474,25 @@ namespace ftk
                         {
                             d[c] = table[s[c]];
                         }
+                        if (3 == channels)
+                        {
+                            d[3] = 0x3C00;
+                        }
+                    }
+                }
+            }
+            else if (p.halfFloat)
+            {
+                // Each float as the half float it is kept as, and one for
+                // a fourth channel that was not there.
+                const size_t dstChannels = 3 == channels ? 4 : channels;
+                for (int row = 0; row < h; ++row)
+                {
+                    const float* s = reinterpret_cast<const float*>(data + row * srcRow);
+                    uint16_t* d = reinterpret_cast<uint16_t*>(dst + row * dstRow);
+                    for (int i = 0; i < w; ++i, s += channels, d += dstChannels)
+                    {
+                        floatToHalf(s, d, channels);
                         if (3 == channels)
                         {
                             d[3] = 0x3C00;

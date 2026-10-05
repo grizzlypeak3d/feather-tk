@@ -33,6 +33,13 @@ namespace ftk
         //! none, to try it.
         FTK_GPU_API bool hasUNorm16(SDL_GPUDevice*);
 
+        //! Make half floats of floats, each to the nearest: what a texture
+        //! of thirty-two bit floats is kept as where a device does not
+        //! filter those, which Vulkan also leaves to the driver. See
+        //! hasFloatFilter(). A value too large for a half is the largest a
+        //! half holds, rather than infinity.
+        FTK_GPU_API void floatToHalf(const float*, uint16_t*, size_t count);
+
         //! Texture options.
         struct FTK_GPU_API_TYPE TextureOptions
         {

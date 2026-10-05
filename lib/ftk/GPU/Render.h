@@ -62,10 +62,12 @@ namespace ftk
         //! Get whether a device filters thirty-two bit float textures: a
         //! lookup table kept in one is read between its entries, and a
         //! device that cannot reads the nearest instead, which shows as
-        //! steps. Vulkan leaves it to the driver and SDL has no way to
-        //! ask, so it is found out by drawing: once for a device, and
-        //! false where that cannot be done. FTK_GPU_NO_FLOAT_FILTER says
-        //! it cannot, to try what such a device gets.
+        //! steps. Where it cannot, a texture of them is kept as half float,
+        //! which every device filters. Vulkan leaves it to the driver and
+        //! SDL has no way to ask, so it is found out by drawing: once for a
+        //! device, and false where that cannot be done.
+        //! FTK_GPU_NO_FLOAT_FILTER says it cannot, to try what such a
+        //! device gets.
         FTK_GPU_API bool hasFloatFilter(const std::shared_ptr<System>&);
 
         //! GPU renderer.

@@ -330,8 +330,7 @@ namespace ftk
                         Format("Float texture filtering: {0}").
                             arg(hasFloatFilter(system) ?
                                 "supported" :
-                                "not supported: tables and float pictures are read to the nearest"),
-                        hasFloatFilter(system) ? LogType::Message : LogType::Warning);
+                                "not supported, float textures are kept as half float"));
                 }
                 catch (const std::exception& e)
                 {
