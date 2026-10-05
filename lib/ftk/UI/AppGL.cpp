@@ -64,6 +64,11 @@ namespace ftk
         "Dark",
         "Light");
 
+    FTK_ENUM_IMPL(
+        Renderer,
+        "Auto",
+        "OpenGL");
+
     std::vector<float> getDisplayScales()
     {
         std::vector<float> out =
@@ -119,6 +124,7 @@ namespace ftk
         std::shared_ptr<IconSystem> iconSystem;
         std::shared_ptr<Style> style;
         std::shared_ptr<Observable<ColorStyle> > colorStyle;
+        Renderer renderer = Renderer::Auto;
         float defaultDisplayScale = 1.F;
         // The display scale is automatic until the application sets a
         // positive one; the window's correction applies only while it is.
@@ -265,20 +271,6 @@ namespace ftk
         // returns, so the video subsystem is not started for it: that wants
         // a display, and a shell over ssh has none to give.
         const bool video = !hasCmdLineHelp();
-        if (video)
-        {
-            // The video subsystem first, with what is set before it
-            // starts, and then the renderer: OpenGL is chosen and loaded
-            // only where it is the one that draws.
-            auto glSystem = context->getSystem<gl::System>();
-            glSystem->init();
-#if defined(FTK_GPU)
-            if (!gpu::start(context))
-#endif // FTK_GPU
-            {
-                glSystem->initGL();
-            }
-        }
 
         // Writing a screenshot is the whole of such a run, so there is nothing
         // for a window on screen to be good for; see IWindow::setOffscreen().
@@ -351,6 +343,41 @@ namespace ftk
 
         auto logSystem = _context->getSystem<LogSystem>();
         logSystem->print("ftk::App", "Create app...");
+
+        // After the settings, which say which renderer is asked for, and
+        // the log file, which is where this is looked for.
+        if (p.settings)
+        {
+            std::string renderer;
+            if (p.settings->get("/Renderer", renderer))
+            {
+                from_string(renderer, p.renderer);
+            }
+        }
+        if (video)
+        {
+            // The video subsystem first, with what is set before it
+            // starts, and then the renderer: OpenGL is chosen and loaded
+            // only where it is the one that draws.
+            auto glSystem = context->getSystem<gl::System>();
+            glSystem->init();
+            bool gpu = false;
+#if defined(FTK_GPU)
+            // The environment is asked first, and gpu::start() reads it.
+            if (std::getenv("FTK_RENDER") || Renderer::OpenGL != p.renderer)
+            {
+                gpu = gpu::start(context);
+            }
+            else
+            {
+                logSystem->print("ftk::App", "Drawing with OpenGL: it is the renderer set");
+            }
+#endif // FTK_GPU
+            if (!gpu)
+            {
+                glSystem->initGL();
+            }
+        }
 
         p.fontSystem = context->getSystem<FontSystem>();
         p.iconSystem = context->getSystem<IconSystem>();
@@ -517,6 +544,23 @@ namespace ftk
     const std::shared_ptr<Style>& App::getStyle() const
     {
         return _p->style;
+    }
+
+    Renderer App::getRenderer() const
+    {
+        return _p->renderer;
+    }
+
+    void App::setRenderer(Renderer value)
+    {
+        FTK_P();
+        if (value == p.renderer)
+            return;
+        p.renderer = value;
+        if (p.settings)
+        {
+            p.settings->set("/Renderer", to_string(value));
+        }
     }
 
     ColorStyle App::getColorStyle() const

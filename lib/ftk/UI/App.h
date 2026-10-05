@@ -50,6 +50,19 @@ namespace ftk
     };
     FTK_ENUM(FTK_UI_API, ColorStyle);
 
+    //! What an application's windows are drawn with.
+    enum class FTK_UI_API_TYPE Renderer
+    {
+        //! The GPU renderer where it is built and a device can be made
+        //! for it, and OpenGL otherwise.
+        Auto,
+        OpenGL,
+
+        Count,
+        First = Auto
+    };
+    FTK_ENUM(FTK_UI_API, Renderer);
+
     //! Get display scales.
     FTK_UI_API std::vector<float> getDisplayScales();
 
@@ -169,6 +182,22 @@ namespace ftk
         FTK_UI_API void setColorStyle(ColorStyle);
 
         FTK_UI_API const std::shared_ptr<CmdLineOption<ColorStyle> >& getColorStyleCmdLineOption() const;
+
+        ///@}
+
+        //! \name Renderer
+        ///@{
+
+        //! Get the renderer that is asked for. What draws is said by
+        //! gpu::isEnabled(): this is what was asked, and where the GPU
+        //! renderer cannot draw OpenGL does whatever was asked.
+        FTK_UI_API Renderer getRenderer() const;
+
+        //! Set the renderer to ask for. It is chosen as the application
+        //! starts, before there is a window, so this is for the next time
+        //! it does; it is kept with the settings. The FTK_RENDER
+        //! environment variable is asked first.
+        FTK_UI_API void setRenderer(Renderer);
 
         ///@}
 
