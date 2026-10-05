@@ -18,6 +18,16 @@ set(LEGAL
     LICENSE_SDL2.txt
     LICENSE_zlib.txt)
 
+# glslang compiles the GPU renderer's shaders for Vulkan, and is in a build
+# only where that renderer is and it was found: the same question
+# lib/ftk/GPU asks, so that it is listed where it is linked and nowhere else.
+if(ftk_GPU AND ftk_SDL3)
+    find_package(glslang CONFIG QUIET)
+    if(glslang_FOUND)
+        list(APPEND LEGAL LICENSE_glslang.txt)
+    endif()
+endif()
+
 # Installed beside the package, which is where a project that finds feather-tk
 # as a package reads them from (ftk_LEGAL_DIR in ftkConfig.cmake). The
 # project's own license is LICENSE.txt at the top of the repository, installed
