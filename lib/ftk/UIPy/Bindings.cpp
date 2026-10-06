@@ -68,6 +68,7 @@ namespace ftk
                 nb::arg("id"),
                 "Find a widget by the id it was given in the JSON.");
 
+            gl(m);
             style(m);
             event(m);
             widgetOptions(m);
