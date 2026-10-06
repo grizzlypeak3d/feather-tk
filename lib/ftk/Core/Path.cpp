@@ -941,15 +941,20 @@ namespace ftk
             const auto abs = std::filesystem::absolute(
                 toFileSystem(path.get()));
             const auto parent = abs.parent_path();
-            if (std::filesystem::exists(parent))
+            // A directory that cannot be listed (permissions, a sandbox
+            // that granted the one file) has no sequence to find.
+            std::error_code ec;
+            if (std::filesystem::exists(parent, ec))
             {
-                for (const auto& i : std::filesystem::directory_iterator(parent))
+                for (std::filesystem::directory_iterator i(parent, ec), end;
+                    !ec && i != end;
+                    i.increment(ec))
                 {
-                    if (std::filesystem::is_directory(i.path()))
+                    if (std::filesystem::is_directory(i->path(), ec))
                     {
                         continue;
                     }
-                    const Path entry(fromFileSystem(i.path()), pathOptions);
+                    const Path entry(fromFileSystem(i->path()), pathOptions);
                     if (path.seq(entry) && entry.getFrames().has_value())
                     {
                         frames.push_back(entry.getFrames().value().min());
@@ -970,13 +975,17 @@ namespace ftk
             // Find matching sequence files.
             const auto abs = std::filesystem::absolute(toFileSystem(out.get()));
             const auto parent = abs.parent_path();
-            if (std::filesystem::exists(parent))
+            // A directory that cannot be listed leaves the one file.
+            std::error_code ec;
+            if (std::filesystem::exists(parent, ec))
             {
                 bool init = true;
-                for (const auto& i : std::filesystem::directory_iterator(parent))
+                for (std::filesystem::directory_iterator i(parent, ec), end;
+                    !ec && i != end;
+                    i.increment(ec))
                 {
-                    const Path entry(fromFileSystem(i.path()), pathOptions);
-                    const bool isDir = std::filesystem::is_directory(i.path());
+                    const Path entry(fromFileSystem(i->path()), pathOptions);
+                    const bool isDir = std::filesystem::is_directory(i->path(), ec);
                     if (init && !isDir)
                     {
                         if (out.seq(entry))
