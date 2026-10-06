@@ -88,7 +88,9 @@ namespace ftk
                     },
                     nb::arg("context"),
                     nb::arg("app"),
-                    nb::arg("size") = Size2I(1280, 960))
+                    nb::arg("size") = Size2I(1280, 960),
+                    // The context outlives the window; see Window.
+                    nb::keep_alive<1, 2>())
                 .def_prop_rw(
                     "menuBar",
                     &MainWindow::getMenuBar,
