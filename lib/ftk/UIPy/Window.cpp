@@ -83,7 +83,13 @@ namespace ftk
                     nb::arg("context"),
                     nb::arg("app"),
                     nb::arg("name"),
-                    nb::arg("size") = Size2I(1280, 960))
+                    nb::arg("size") = Size2I(1280, 960),
+                    // The context outlives the window. A script's globals
+                    // go in the order they were made, context first, and
+                    // the window's OpenGL objects are deleted as it goes:
+                    // with the context gone, SDL has unloaded the driver
+                    // they are deleted through.
+                    nb::keep_alive<1, 2>())
                 .def_prop_rw("pos", &Window::getPos, &Window::setPos)
                 .def_prop_rw("maximized", &Window::isMaximized, &Window::setMaximized)
                 .def_prop_ro("normalGeometry", &Window::getNormalGeometry);
