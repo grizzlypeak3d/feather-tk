@@ -957,19 +957,6 @@ int main(int argc, char** argv)
             far += d > 32;
             diffImage->getData()[i] = 3 == (i % 4) ? 255 : static_cast<uint8_t>(std::min(255, d * 16));
         }
-        if (std::getenv("FTK_GPU_TEST_PROBE"))
-        {
-            // A row through the title, to see how the two differ.
-            const int y = 30;
-            for (int x = 20; x < 60; ++x)
-            {
-                const uint8_t* a = glImage->getData() + (static_cast<size_t>(y) * size.w + x) * 4;
-                const uint8_t* b = gpuImage->getData() + (static_cast<size_t>(y) * size.w + x) * 4;
-                std::cout << x << ": " <<
-                    int(a[0]) << " " << int(a[1]) << " " << int(a[2]) << " " << int(a[3]) << " | " <<
-                    int(b[0]) << " " << int(b[1]) << " " << int(b[2]) << " " << int(b[3]) << std::endl;
-            }
-        }
         // The writer takes the first row for the top one unless the image
         // says otherwise, and these were compared with it there.
         auto gpuTop = Image::create(info, gpuImage->getData());

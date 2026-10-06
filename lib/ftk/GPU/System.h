@@ -20,8 +20,8 @@ namespace ftk
 
     //! Rendering with SDL's GPU API: Metal on macOS, Vulkan elsewhere.
     //!
-    //! A spike. This draws what the OpenGL renderer draws, through the same
-    //! IRender, so that the two can be put side by side.
+    //! This draws what the OpenGL renderer draws, through the same IRender,
+    //! and is what draws when an application asks for it; see README.md.
     namespace gpu
     {
         //! GPU system.

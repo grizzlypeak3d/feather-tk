@@ -273,8 +273,8 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot create a texture: {0}").arg(SDL_GetError()));
             }
 
-            // The two pass resample weighs texels itself, as it does in the
-            // OpenGL renderer; here it is drawn as nearest for now.
+            // Nearest or linear: the two pass resample weighs texels itself,
+            // and asks for nearest, as in the OpenGL renderer.
             const auto filter = [](ImageFilter value)
             {
                 return ImageFilter::Linear == value ?
