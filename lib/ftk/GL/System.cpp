@@ -16,23 +16,14 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/OS.h>
 #include <ftk/Core/Path.h>
-
-#if defined(_WIN32)
-#include <windows.h>
-#else // _WIN32
-#include <dlfcn.h>
-#include <unistd.h>
-#endif // _WIN32
 
 #if defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
 #include <objc/message.h>
 #include <objc/runtime.h>
 #endif // __APPLE__
-
-#include <ctime>
-#include <filesystem>
 
 #if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
@@ -106,36 +97,6 @@ namespace ftk
                     }
                 }
             }
-
-            // The file this code was loaded from: the shared library, or
-            // the executable in a static build.
-            std::filesystem::path libraryPath()
-            {
-                std::filesystem::path out;
-#if defined(_WIN32)
-                HMODULE module = nullptr;
-                if (GetModuleHandleExW(
-                    GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                    GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                    reinterpret_cast<LPCWSTR>(&libraryPath),
-                    &module))
-                {
-                    wchar_t buf[MAX_PATH];
-                    if (GetModuleFileNameW(module, buf, MAX_PATH))
-                    {
-                        out = std::filesystem::path(buf);
-                    }
-                }
-#else // _WIN32
-                Dl_info info;
-                if (dladdr(reinterpret_cast<void*>(&libraryPath), &info) &&
-                    info.dli_fname)
-                {
-                    out = toFileSystem(info.dli_fname);
-                }
-#endif // _WIN32
-                return out;
-            }
         }
 
         namespace
@@ -190,34 +151,11 @@ namespace ftk
             auto logSystem = context->getLogSystem();
             p.logSystem = logSystem;
 
-            // Which build of the library is actually running. A run that
-            // is testing an edit made after this time is testing a stale
-            // build or install.
-            const std::filesystem::path path = libraryPath();
-            if (!path.empty())
+            // Which build of the library is actually running.
+            const std::string libraryInfo = getLibraryInfo(reinterpret_cast<const void*>(&System::create));
+            if (!libraryInfo.empty())
             {
-                std::error_code ec;
-                const auto fileTime = std::filesystem::last_write_time(path, ec);
-                std::string modified;
-                if (!ec)
-                {
-                    const auto systemTime =
-                        std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-                            fileTime -
-                            std::filesystem::file_time_type::clock::now() +
-                            std::chrono::system_clock::now());
-                    const std::time_t t = std::chrono::system_clock::to_time_t(systemTime);
-                    char buf[32];
-                    if (std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&t)))
-                    {
-                        modified = buf;
-                    }
-                }
-                logSystem->print(
-                    "ftk::gl::System",
-                    Format("Library: \"{0}\", modified {1}").
-                        arg(fromFileSystem(path)).
-                        arg(modified));
+                logSystem->print("ftk::gl::System", libraryInfo);
             }
 
             // Create default render factory.

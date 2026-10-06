@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Memory.h>
+#include <ftk/Core/Path.h>
 
 #if defined(__APPLE__)
 #include <mach-o/dyld.h>
@@ -35,6 +36,7 @@
 #include <sys/wait.h>
 #include <cstring>
 #include <pwd.h>
+#include <dlfcn.h>
 #include <spawn.h>
 #include <unistd.h>
 
@@ -294,5 +296,16 @@ namespace ftk
             throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
         }
 #endif // __APPLE__
+    }
+
+    std::filesystem::path getLibraryPath(const void* address)
+    {
+        std::filesystem::path out;
+        Dl_info info;
+        if (dladdr(address, &info) && info.dli_fname)
+        {
+            out = toFileSystem(info.dli_fname);
+        }
+        return out;
     }
 }

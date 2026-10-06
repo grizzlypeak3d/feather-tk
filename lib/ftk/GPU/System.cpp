@@ -12,6 +12,7 @@
 #include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
+#include <ftk/Core/OS.h>
 #include <ftk/Core/String.h>
 
 #include <SDL3/SDL.h>
@@ -37,6 +38,15 @@ namespace ftk
             ISystem(context, "ftk::gpu::System"),
             _p(new Private)
         {
+            // Which build of the library is actually running: the OpenGL
+            // system says the same of its own, and the two can come from
+            // different places, the build tree and an install.
+            const std::string libraryInfo = getLibraryInfo(reinterpret_cast<const void*>(&System::create));
+            if (!libraryInfo.empty())
+            {
+                context->getLogSystem()->print("ftk::gpu::System", libraryInfo);
+            }
+
             // What the OpenGL system reports of its own, for this renderer.
             // All zero while the windows are drawn with OpenGL.
             auto diagSystem = context->getSystem<DiagSystem>();

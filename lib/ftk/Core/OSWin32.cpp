@@ -237,4 +237,23 @@ namespace ftk
     {
         ShellExecute(0, 0, value.c_str(), 0, 0, SW_SHOW);
     }
+
+    std::filesystem::path getLibraryPath(const void* address)
+    {
+        std::filesystem::path out;
+        HMODULE module = nullptr;
+        if (GetModuleHandleExW(
+            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(address),
+            &module))
+        {
+            wchar_t buf[MAX_PATH];
+            if (GetModuleFileNameW(module, buf, MAX_PATH))
+            {
+                out = std::filesystem::path(buf);
+            }
+        }
+        return out;
+    }
 }

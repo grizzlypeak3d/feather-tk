@@ -79,6 +79,17 @@ namespace ftk
     //! installed beside it from.
     FTK_CORE_API std::filesystem::path getExePath();
 
+    //! Get the file the code at an address was loaded from: a shared
+    //! library, or the executable in a static build. Pass the address of a
+    //! function in the library.
+    FTK_CORE_API std::filesystem::path getLibraryPath(const void* address);
+
+    //! Get a line for the log saying which build of a library is running:
+    //! the file the code at the address came from, and when it was written.
+    //! A run that is testing an edit made after that time is testing a
+    //! stale build or install. Empty where the file is not known.
+    FTK_CORE_API std::string getLibraryInfo(const void* address);
+
     FTK_CORE_API void openURL(const std::string&);
 
     ///@}
