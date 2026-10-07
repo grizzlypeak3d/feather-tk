@@ -12,8 +12,11 @@
 #include <ftk/Core/Error.h>
 #include <ftk/Core/String.h>
 
+#include <algorithm>
 #include <array>
 #include <atomic>
+#include <limits>
+#include <vector>
 #include <sstream>
 #include <cmath>
 
@@ -456,8 +459,58 @@ namespace ftk
             glBindFramebuffer(GL_FRAMEBUFFER, _p->id);
         }
 
+        namespace
+        {
+            bool isFloat(ImageType type)
+            {
+                switch (type)
+                {
+                case ImageType::L_F16:
+                case ImageType::L_F32:
+                case ImageType::LA_F16:
+                case ImageType::LA_F32:
+                case ImageType::RGB_F16:
+                case ImageType::RGB_F32:
+                case ImageType::RGBA_F16:
+                case ImageType::RGBA_F32:
+                    return true;
+                default: break;
+                }
+                return false;
+            }
+
+            //! Convert floating point RGBA rows to a fixed point type,
+            //! clamped and scaled, the way a desktop driver does when a
+            //! float buffer is read as eight or sixteen bits.
+            template<typename T>
+            void convertRows(
+                const float* src,
+                const std::shared_ptr<Image>& out,
+                const int channels,
+                const size_t rowBytes)
+            {
+                const ImageInfo& info = out->getInfo();
+                const float scale = static_cast<float>(std::numeric_limits<T>::max());
+                for (int y = 0; y < info.size.h; ++y)
+                {
+                    T* d = reinterpret_cast<T*>(out->getData() + y * rowBytes);
+                    for (int x = 0; x < info.size.w; ++x, src += 4, d += channels)
+                    {
+                        // One channel is luminance, two are luminance and
+                        // alpha; three and four take the channels in order.
+                        for (int c = 0; c < channels; ++c)
+                        {
+                            const int sc = (2 == channels && 1 == c) ? 3 : c;
+                            d[c] = static_cast<T>(std::clamp(src[sc], 0.F, 1.F) * scale + .5F);
+                        }
+                    }
+                }
+            }
+        }
+
         std::shared_ptr<Image> OffscreenBuffer::read(const ImageInfo& info)
         {
+            FTK_P();
             std::shared_ptr<Image> out;
             const unsigned int format = getReadPixelsFormat(info.type);
             const unsigned int type = getReadPixelsType(info.type);
@@ -468,6 +521,30 @@ namespace ftk
             out = Image::create(info);
             OffscreenBufferBinding binding(shared_from_this());
             glPixelStorei(GL_PACK_ALIGNMENT, info.layout.alignment);
+            if (isGLES() &&
+                isFloat(getImageType(p.info.type)) &&
+                !isFloat(info.type) &&
+                (8 == getBitDepth(info.type) || 16 == getBitDepth(info.type)))
+            {
+                // OpenGL ES reads a floating point buffer only as floats
+                // (a desktop driver converts), so read what is there and
+                // convert here.
+                std::vector<float> rgba(
+                    static_cast<size_t>(info.size.w) * info.size.h * 4);
+                glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                glReadPixels(0, 0, info.size.w, info.size.h, GL_RGBA, GL_FLOAT, rgba.data());
+                const int channels = getChannelCount(info.type);
+                const size_t rowBytes = out->getByteCount() / info.size.h;
+                if (8 == getBitDepth(info.type))
+                {
+                    convertRows<uint8_t>(rgba.data(), out, channels, rowBytes);
+                }
+                else
+                {
+                    convertRows<uint16_t>(rgba.data(), out, channels, rowBytes);
+                }
+                return out;
+            }
             if (!isGLES())
             {
                 glPixelStorei(GL_PACK_SWAP_BYTES, info.layout.endian != getEndian());

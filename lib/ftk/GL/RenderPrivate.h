@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
+#pragma once
+
 #include <ftk/GL/Render.h>
 
 #include <ftk/GL/GL.h>
