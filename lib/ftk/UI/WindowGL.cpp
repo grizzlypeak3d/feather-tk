@@ -582,13 +582,21 @@ namespace ftk
         }
     }
 
+    // There is no window when making one failed, and a destructor that
+    // releases its OpenGL objects reaches here on the way out all the same.
     void Window::_makeCurrent()
     {
-        _p->window->makeCurrent();
+        if (_p->window)
+        {
+            _p->window->makeCurrent();
+        }
     }
 
     void Window::_clearCurrent()
     {
-        _p->window->clearCurrent();
+        if (_p->window)
+        {
+            _p->window->clearCurrent();
+        }
     }
 }
