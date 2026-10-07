@@ -154,6 +154,7 @@ namespace ftk
 
         private:
             bool _isCompatible(const ImageInfo&) const;
+            bool _copy(const uint8_t*, const ImageInfo&, int x, int y);
 
             FTK_PRIVATE();
         };
