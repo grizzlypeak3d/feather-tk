@@ -712,6 +712,20 @@ namespace ftk
         _p->failed = true;
     }
 
+    void Capture::_noteLogErrors()
+    {
+        FTK_P();
+        // Pick up what was logged this tick as well.
+        if (auto context = p.context.lock())
+        {
+            context->getLogSystem()->tick();
+        }
+        for (const auto& error : p.logErrors)
+        {
+            _note("logged error: " + error);
+        }
+    }
+
     std::optional<V2I> Capture::_aim(
         const std::string& verb,
         const nlohmann::json& v)
@@ -874,6 +888,7 @@ namespace ftk
                 arg(p.expectMedia ?
                     _waitingFor() :
                     std::string("the shot to become ready")));
+            _noteLogErrors();
             _finish(false);
             return;
         }
@@ -892,6 +907,7 @@ namespace ftk
                 {
                     _note(Format("cannot read the media: {0}").
                         arg(error));
+                    _noteLogErrors();
                     _finish(false);
                     return;
                 }
@@ -961,14 +977,10 @@ namespace ftk
             }
             if (p.strict)
             {
-                // Pick up what was logged this tick as well.
-                if (auto context = p.context.lock())
+                _noteLogErrors();
+                if (!p.logErrors.empty())
                 {
-                    context->getLogSystem()->tick();
-                }
-                for (const auto& error : p.logErrors)
-                {
-                    _fail("logged error: " + error);
+                    p.failed = true;
                 }
             }
             if (p.failed)
