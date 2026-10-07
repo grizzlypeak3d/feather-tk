@@ -13,6 +13,7 @@
 #include <ftk/Core/String.h>
 
 #include <array>
+#include <vector>
 #include <atomic>
 #include <cstring>
 #include <stdexcept>
@@ -424,7 +425,35 @@ namespace ftk
             ImageInfo imageInfo;
             GLuint pbo = 0;
             GLuint id = 0;
+            //! Whether three channel images are widened to four as they are
+            //! copied in, and the buffer that holds them where there is no
+            //! pixel buffer.
+            bool widen = false;
+            std::vector<uint8_t> wide;
         };
+
+        namespace
+        {
+            //! The type a three channel image is uploaded as: four channels.
+            //! The GPU keeps three as four anyway, and a driver given three
+            //! widens them itself, on the CPU, in passes of its own on every
+            //! upload -- on macOS a 6K RGB sequence played at 15 frames a
+            //! second where the same frames as RGBA played at 24. Widening
+            //! in the copy made anyway costs nothing more.
+            TextureType getUploadType(TextureType value)
+            {
+                TextureType out = value;
+                switch (value)
+                {
+                case TextureType::RGB_U8: out = TextureType::RGBA_U8; break;
+                case TextureType::RGB_U16: out = TextureType::RGBA_U16; break;
+                case TextureType::RGB_F16: out = TextureType::RGBA_F16; break;
+                case TextureType::RGB_F32: out = TextureType::RGBA_F32; break;
+                default: break;
+                }
+                return out;
+            }
+        }
 
         Texture::Texture(
             const ImageInfo& imageInfo,
@@ -434,7 +463,8 @@ namespace ftk
             FTK_P();
 
             p.info.size = imageInfo.size;
-            p.info.type = getTextureType(imageInfo.type);
+            p.info.type = getUploadType(getTextureType(imageInfo.type));
+            p.widen = p.info.type != getTextureType(imageInfo.type);
             p.imageInfo = imageInfo;
 
             ++objectCount;
@@ -538,83 +568,151 @@ namespace ftk
 
         bool Texture::copy(const std::shared_ptr<Image>& data)
         {
-            const UploadUnit uploadUnit;
-            FTK_P();
-            const auto& info = data->getInfo();
-            if (!_isCompatible(info))
-                return false;
-            if (p.pbo)
-            {
-                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
-                // Ask for a new allocation before mapping. The buffer the
-                // last upload was given is one the driver may still be
-                // reading, and mapping that one waits for it to finish;
-                // a fresh one has no reader to wait for, and the old one is
-                // freed once the upload that used it is done.
-                glBufferData(
-                    GL_PIXEL_UNPACK_BUFFER,
-                    p.info.getByteCount(),
-                    NULL,
-                    GL_STREAM_DRAW);
-                if (void* buffer = glMapBufferRange(
-                    GL_PIXEL_UNPACK_BUFFER,
-                    0,
-                    p.info.getByteCount(),
-                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT))
-                {
-                    memcpy(
-                        buffer,
-                        data->getData(),
-                        data->getByteCount());
-                    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-                    glBindTexture(GL_TEXTURE_2D, p.id);
-                    glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
-                    if (!isGLES())
-                    {
-                        glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
-                    }
-                    glTexSubImage2D(
-                        GL_TEXTURE_2D,
-                        0,
-                        0,
-                        0,
-                        info.size.w,
-                        info.size.h,
-                        getTextureFormat(p.info.type),
-                        getTextureType(p.info.type),
-                        NULL);
-                }
-                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-            }
-            else
-            {
-                glBindTexture(GL_TEXTURE_2D, p.id);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-                if (!isGLES())
-                {
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
-                }
-                glTexSubImage2D(
-                    GL_TEXTURE_2D,
-                    0,
-                    0,
-                    0,
-                    info.size.w,
-                    info.size.h,
-                    getTextureFormat(getTextureType(info.type)),
-                    getTextureType(getTextureType(info.type)),
-                    data->getData());
-            }
-            return true;
+            return _copy(data->getData(), data->getInfo(), 0, 0);
         }
 
         bool Texture::copy(const std::shared_ptr<Image>& data, int x, int y)
         {
+            return _copy(data->getData(), data->getInfo(), x, y);
+        }
+
+        bool Texture::copy(const uint8_t* data, const ImageInfo& info)
+        {
+            return _copy(data, info, 0, 0);
+        }
+
+        namespace
+        {
+            //! Widen a row of three channels to four, the fourth opaque.
+            void widenRow(ImageType type, const uint8_t* src, uint8_t* dst, int w)
+            {
+                switch (type)
+                {
+                case ImageType::RGB_U8:
+                {
+                    // Whole pixels at a time: a 32 bit write per pixel is
+                    // what lets this run at the speed of a copy.
+                    uint32_t* d = reinterpret_cast<uint32_t*>(dst);
+                    for (int i = 0; i < w; ++i, src += 3)
+                    {
+                        d[i] =
+                            static_cast<uint32_t>(src[0]) |
+                            static_cast<uint32_t>(src[1]) << 8 |
+                            static_cast<uint32_t>(src[2]) << 16 |
+                            0xFF000000u;
+                    }
+                    break;
+                }
+                case ImageType::RGB_U16:
+                case ImageType::RGB_F16:
+                {
+                    const uint16_t* s = reinterpret_cast<const uint16_t*>(src);
+                    uint16_t* d = reinterpret_cast<uint16_t*>(dst);
+                    const uint16_t one = ImageType::RGB_U16 == type ? 0xFFFF : 0x3C00;
+                    for (int i = 0; i < w; ++i, s += 3, d += 4)
+                    {
+                        d[0] = s[0];
+                        d[1] = s[1];
+                        d[2] = s[2];
+                        d[3] = one;
+                    }
+                    break;
+                }
+                case ImageType::RGB_F32:
+                {
+                    const float* s = reinterpret_cast<const float*>(src);
+                    float* d = reinterpret_cast<float*>(dst);
+                    for (int i = 0; i < w; ++i, s += 3, d += 4)
+                    {
+                        d[0] = s[0];
+                        d[1] = s[1];
+                        d[2] = s[2];
+                        d[3] = 1.F;
+                    }
+                    break;
+                }
+                default: break;
+                }
+            }
+        }
+
+        bool Texture::_copy(const uint8_t* data, const ImageInfo& info, int x, int y)
+        {
             const UploadUnit uploadUnit;
             FTK_P();
-            const auto& info = data->getInfo();
             if (!_isCompatible(info))
                 return false;
+
+            if (p.widen)
+            {
+                // Three channels made four on the way into the pixel buffer,
+                // or into a buffer of our own where there is none: one pass
+                // over the image, in the copy that was made anyway.
+                const int w = info.size.w;
+                const int h = info.size.h;
+                const size_t srcRow = h > 0 ? info.getByteCount() / h : 0;
+                size_t channelBytes = 1;
+                switch (info.type)
+                {
+                case ImageType::RGB_U16:
+                case ImageType::RGB_F16: channelBytes = 2; break;
+                case ImageType::RGB_F32: channelBytes = 4; break;
+                default: break;
+                }
+                const size_t wideRow = static_cast<size_t>(w) * 4 * channelBytes;
+                const size_t wideBytes = wideRow * h;
+                uint8_t* dst = nullptr;
+                if (p.pbo)
+                {
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
+                    // A new allocation before mapping, as below.
+                    glBufferData(GL_PIXEL_UNPACK_BUFFER, wideBytes, NULL, GL_STREAM_DRAW);
+                    dst = static_cast<uint8_t*>(glMapBufferRange(
+                        GL_PIXEL_UNPACK_BUFFER,
+                        0,
+                        wideBytes,
+                        GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
+                }
+                else
+                {
+                    p.wide.resize(wideBytes);
+                    dst = p.wide.data();
+                }
+                if (dst)
+                {
+                    for (int row = 0; row < h; ++row)
+                    {
+                        widenRow(info.type, data + row * srcRow, dst + row * wideRow, w);
+                    }
+                    if (p.pbo)
+                    {
+                        glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+                    }
+                    glBindTexture(GL_TEXTURE_2D, p.id);
+                    // The widened rows are packed.
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                    if (!isGLES())
+                    {
+                        glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
+                    }
+                    glTexSubImage2D(
+                        GL_TEXTURE_2D,
+                        0,
+                        x,
+                        y,
+                        w,
+                        h,
+                        getTextureFormat(p.info.type),
+                        getTextureType(p.info.type),
+                        p.pbo ? NULL : dst);
+                }
+                if (p.pbo)
+                {
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+                }
+                return true;
+            }
+
             if (p.pbo)
             {
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
@@ -634,10 +732,7 @@ namespace ftk
                     p.info.getByteCount(),
                     GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT))
                 {
-                    memcpy(
-                        buffer,
-                        data->getData(),
-                        data->getByteCount());
+                    memcpy(buffer, data, info.getByteCount());
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
                     glBindTexture(GL_TEXTURE_2D, p.id);
                     glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
@@ -671,77 +766,6 @@ namespace ftk
                     0,
                     x,
                     y,
-                    info.size.w,
-                    info.size.h,
-                    getTextureFormat(getTextureType(info.type)),
-                    getTextureType(getTextureType(info.type)),
-                    data->getData());
-            }
-            return true;
-        }
-
-        bool Texture::copy(const uint8_t* data, const ImageInfo& info)
-        {
-            const UploadUnit uploadUnit;
-            FTK_P();
-            if (!_isCompatible(info))
-                return false;
-            if (p.pbo)
-            {
-                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, p.pbo);
-                // Ask for a new allocation before mapping. The buffer the
-                // last upload was given is one the driver may still be
-                // reading, and mapping that one waits for it to finish;
-                // a fresh one has no reader to wait for, and the old one is
-                // freed once the upload that used it is done.
-                glBufferData(
-                    GL_PIXEL_UNPACK_BUFFER,
-                    p.info.getByteCount(),
-                    NULL,
-                    GL_STREAM_DRAW);
-                if (void* buffer = glMapBufferRange(
-                    GL_PIXEL_UNPACK_BUFFER,
-                    0,
-                    p.info.getByteCount(),
-                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT))
-                {
-                    memcpy(
-                        buffer,
-                        data,
-                        info.getByteCount());
-                    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-                    glBindTexture(GL_TEXTURE_2D, p.id);
-                    glPixelStorei(GL_UNPACK_ALIGNMENT, p.imageInfo.layout.alignment);
-                    if (!isGLES())
-                    {
-                        glPixelStorei(GL_UNPACK_SWAP_BYTES, p.imageInfo.layout.endian != getEndian());
-                    }
-                    glTexSubImage2D(
-                        GL_TEXTURE_2D,
-                        0,
-                        0,
-                        0,
-                        info.size.w,
-                        info.size.h,
-                        getTextureFormat(p.info.type),
-                        getTextureType(p.info.type),
-                        NULL);
-                }
-                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-            }
-            else
-            {
-                glBindTexture(GL_TEXTURE_2D, p.id);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, info.layout.alignment);
-                if (!isGLES())
-                {
-                    glPixelStorei(GL_UNPACK_SWAP_BYTES, info.layout.endian != getEndian());
-                }
-                glTexSubImage2D(
-                    GL_TEXTURE_2D,
-                    0,
-                    0,
-                    0,
                     info.size.w,
                     info.size.h,
                     getTextureFormat(getTextureType(info.type)),
