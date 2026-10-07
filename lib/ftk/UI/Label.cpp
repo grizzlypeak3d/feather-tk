@@ -87,6 +87,72 @@ namespace ftk
             }
             return out;
         }
+
+        //! The text with line breaks added between words, so that no line
+        //! is wider than the width unless it is a single word. The breaks
+        //! already in the text are kept. Measured in the font, as above.
+        std::string wrapToWidth(
+            const std::shared_ptr<FontSystem>& fontSystem,
+            const std::string& text,
+            const FontInfo& fontInfo,
+            int width)
+        {
+            std::string out;
+            size_t lineBegin = 0;
+            while (lineBegin <= text.size())
+            {
+                size_t lineEnd = text.find('\n', lineBegin);
+                if (std::string::npos == lineEnd)
+                {
+                    lineEnd = text.size();
+                }
+                const std::string paragraph = text.substr(lineBegin, lineEnd - lineBegin);
+
+                std::string line;
+                size_t i = 0;
+                while (i < paragraph.size())
+                {
+                    // A word and the spaces before it.
+                    size_t wordBegin = paragraph.find_first_not_of(' ', i);
+                    if (std::string::npos == wordBegin)
+                    {
+                        break;
+                    }
+                    size_t wordEnd = paragraph.find(' ', wordBegin);
+                    if (std::string::npos == wordEnd)
+                    {
+                        wordEnd = paragraph.size();
+                    }
+                    const std::string word = paragraph.substr(wordBegin, wordEnd - wordBegin);
+                    const std::string spaces = paragraph.substr(i, wordBegin - i);
+                    if (line.empty())
+                    {
+                        // Indentation is kept; a word starts its line
+                        // however wide it is.
+                        line = spaces + word;
+                    }
+                    else if (fontSystem->getSize(line + spaces + word, fontInfo).w <= width)
+                    {
+                        line += spaces + word;
+                    }
+                    else
+                    {
+                        out += line + '\n';
+                        line = word;
+                    }
+                    i = wordEnd;
+                }
+                out += line;
+
+                if (lineEnd >= text.size())
+                {
+                    break;
+                }
+                out += '\n';
+                lineBegin = lineEnd + 1;
+            }
+            return out;
+        }
     }
 
     struct Label::Private
@@ -101,6 +167,7 @@ namespace ftk
         bool clipText = false;
         bool elide = false;
         ElideMode elideMode = ElideMode::Right;
+        int wrap = 0;
 
         struct SizeData
         {
@@ -111,6 +178,8 @@ namespace ftk
             FontMetrics fontMetrics;
             Size2I textSize;
             Size2I sizeHint;
+            // The text as drawn: with the line breaks wrapping added.
+            std::string text;
         };
         SizeData size;
 
@@ -347,6 +416,23 @@ namespace ftk
         setDrawUpdate();
     }
 
+    int Label::getWrap() const
+    {
+        return _p->wrap;
+    }
+
+    void Label::setWrap(int value)
+    {
+        FTK_P();
+        const int tmp = std::max(value, 0);
+        if (tmp == p.wrap)
+            return;
+        p.wrap = tmp;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     Size2I Label::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -381,7 +467,26 @@ namespace ftk
             p.size.vMargin = event.style->getSizeRole(p.vMarginRole, event.displayScale);
             p.size.fontInfo = event.style->getFont(p.font, p.fontSize, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
-            p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
+            p.size.text = p.text;
+            if (p.wrap > 0 && !p.elide)
+            {
+                // That many characters as wide as they come in ordinary
+                // text, rather than a number of pixels, so the width
+                // follows the font and the display scale. A sentence is
+                // measured for it: any one letter is wider or narrower
+                // than text is on average, spaces included.
+                const std::string sample =
+                    "the quick brown fox jumps over the lazy dog ";
+                const int wrapWidth =
+                    event.fontSystem->getSize(sample, p.size.fontInfo).w *
+                    p.wrap / static_cast<int>(sample.size());
+                p.size.text = wrapToWidth(
+                    event.fontSystem,
+                    p.text,
+                    p.size.fontInfo,
+                    wrapWidth);
+            }
+            p.size.textSize = event.fontSystem->getSize(p.size.text, p.size.fontInfo);
 
             Size2I size = p.size.textSize;
             if (p.elide)
@@ -429,7 +534,7 @@ namespace ftk
                         p.size.fontInfo,
                         p.draw->g2.w(),
                         p.elideMode) :
-                    p.text;
+                    p.size.text;
                 p.draw->glyphs = event.fontSystem->getGlyphs(text, p.size.fontInfo);
             }
         }

@@ -49,6 +49,7 @@ namespace ftk
                 .def_prop_rw("font", &Label::getFont, &Label::setFont)
                 .def_prop_rw("fontSize", &Label::getFontSize, &Label::setFontSize)
                 .def_prop_rw("textAlign", &Label::getTextAlign, &Label::setTextAlign)
+                .def_prop_rw("wrap", &Label::getWrap, &Label::setWrap)
                 .def_prop_ro("elide", &Label::getElide)
                 .def_prop_ro("elideMode", &Label::getElideMode)
                 .def(

@@ -96,6 +96,26 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(label->getSizeHint().w >= textWidth / 4);
 
+                // Wrapping: narrower and taller, and back again.
+                label->setText("one two three four five six seven eight nine ten eleven twelve");
+                app->tick();
+                const Size2I unwrapped = label->getSizeHint();
+                label->setWrap(20);
+                label->setWrap(20);
+                FTK_CHECK(20 == label->getWrap());
+                app->tick();
+                FTK_CHECK(label->getSizeHint().w < unwrapped.w);
+                FTK_CHECK(label->getSizeHint().h > unwrapped.h);
+                // A word longer than the width is left whole, and a line
+                // break in the text is kept.
+                label->setText("supercalifragilisticexpialidocious\nb");
+                app->tick();
+                label->setWrap(-1);
+                FTK_CHECK(0 == label->getWrap());
+                label->setText("one two three four five six seven eight nine ten eleven twelve");
+                app->tick();
+                FTK_CHECK(label->getSizeHint() == unwrapped);
+
                 label->setEnabled(false);
                 app->tick();
                 label->setEnabled(true);
