@@ -37,6 +37,24 @@ namespace ftk
             std::filesystem::remove(path);
             std::filesystem::remove(bad);
 
+            // An object written over an object merges into it: what another
+            // writer keeps under the key stays, what the object brings
+            // wins.
+            {
+                auto settings = Settings::create(_context, path);
+                settings->set("/Group/Recent", nlohmann::json::array({ "a", "b" }));
+                settings->set("/Group", nlohmann::json({ { "Author", "me" }, { "Recent", nlohmann::json::array({ "c" }) } }));
+                settings->set("/Group", nlohmann::json({ { "Author", "you" } }));
+                nlohmann::json json;
+                FTK_CHECK(settings->get("/Group", json));
+                FTK_CHECK("you" == json.value("Author", ""));
+                FTK_CHECK(json.contains("Recent") && 1 == json.at("Recent").size());
+                // Anything else replaces.
+                settings->set("/Group", 3);
+                int i = 0;
+                FTK_CHECK(settings->get("/Group", i) && 3 == i);
+            }
+
             // A value round-trips through the file, and the file it is
             // written through is gone.
             {

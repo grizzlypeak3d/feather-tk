@@ -316,7 +316,20 @@ namespace ftk
     {
         try
         {
-            _p->settings[nlohmann::json::json_pointer(key)] = value;
+            // An object written over an object merges into it, so what
+            // another writer keeps under the same key survives: a group
+            // written whole to "/Review" took the list at "/Review/Recent"
+            // with it on every exit. A key a group no longer writes is left
+            // as it was, which a reader ignores.
+            auto& current = _p->settings[nlohmann::json::json_pointer(key)];
+            if (current.is_object() && value.is_object())
+            {
+                current.update(value);
+            }
+            else
+            {
+                current = value;
+            }
         }
         catch (const std::exception&)
         {}
