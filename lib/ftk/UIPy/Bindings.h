@@ -44,7 +44,6 @@ namespace ftk
         void fileBrowser(nanobind::module_&);
         void fileBrowserWidgets(nanobind::module_&);
         void fileEdit(nanobind::module_&);
-        void gl(nanobind::module_&);
         void floatEdit(nanobind::module_&);
         void floatEditShuttle(nanobind::module_&);
         void floatEditSlider(nanobind::module_&);

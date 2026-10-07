@@ -38,7 +38,6 @@ set(SOURCE
     FloatSlider.cpp
     FlowLayout.cpp
     FileEdit.cpp
-    GL.cpp
     FormLayout.cpp
     GraphWidget.cpp
     GridLayout.cpp
