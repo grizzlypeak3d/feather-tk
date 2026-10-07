@@ -6,11 +6,13 @@
 #include <ftk/UI/Export.h>
 
 #include <ftk/Core/Util.h>
+#include <ftk/Core/Vector.h>
 
 #include <nlohmann/json.hpp>
 
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace ftk
@@ -22,10 +24,20 @@ namespace ftk
     //!
     //! A JSON manifest lists "shots", each with an id, optional window
     //! setup, and a list of setup steps to apply before the capture --
-    //! clicks, key presses, typed text, scrolling, dragging, hovering, tab
-    //! selection, and waits. The steps aim at widgets by their screenshot
-    //! tag (see ScreenshotTag.h). The capture writes a PNG and a JSON
-    //! sidecar recording the tagged widgets' geometry and text.
+    //! clicks, presses and releases, key presses, typed text, scrolling,
+    //! dragging, hovering, tooltips, tab selection, waits, and "expect"
+    //! assertions about a widget's state. The steps aim at widgets by
+    //! their screenshot tag (see ScreenshotTag.h). The capture writes a
+    //! PNG and a JSON sidecar recording the tagged widgets' geometry and
+    //! text.
+    //!
+    //! A shot fails -- succeeded() is false, so the process exits with an
+    //! error -- when a step cannot do what it says (an unknown step, a tag
+    //! with no visible widget, an unknown key) or an expectation does not
+    //! hold; with { "strict": true } an error written to the log fails it
+    //! too. The outputs are still written so a failure can be looked at.
+    //! This is what makes a manifest a test as well as a screenshot: a
+    //! scripted session that must end with its expectations met.
     //!
     //! One shot per process, requested with the -captureShot option (see
     //! App). Capture is driven from a timer running inside the normal event
@@ -130,9 +142,18 @@ namespace ftk
         //! Console diagnostics so failures are not silent.
         FTK_UI_API void _note(const std::string&) const;
 
+        //! Note a problem and fail the shot. The capture still completes
+        //! and writes its outputs, so the failure can be looked at.
+        FTK_UI_API void _fail(const std::string&);
+
         ///@}
 
     private:
+        //! Where a step aims: a screenshot tag, whose visible widget's
+        //! center is used, or a position in framebuffer pixels. Fails the
+        //! shot when the tag has no visible widget.
+        std::optional<V2I> _aim(const std::string& verb, const nlohmann::json&);
+        void _expect(const nlohmann::json& step);
         void _onTick();
         void _applyRest(const nlohmann::json& setup);
         void _finish(bool ok);

@@ -161,6 +161,17 @@ namespace ftk
             FTK_CHECK(2 == clicks);
             clicks = 0;
 
+            // A button acts on the release, so a press held by press()
+            // has not clicked yet; the moves in between go to it as a
+            // drag, and release() is what clicks.
+            window->press(c);
+            FTK_CHECK(0 == clicks);
+            window->hover(V2I(c.x + 1, c.y));
+            FTK_CHECK(0 == clicks);
+            window->release(V2I(c.x + 1, c.y));
+            FTK_CHECK(1 == clicks);
+            clicks = 0;
+
             // A touch gesture leaves nothing hovered, until the mouse moves:
             // the cursor is where a finger was.
             window->hover(c);
