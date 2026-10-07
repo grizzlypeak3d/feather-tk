@@ -3,11 +3,14 @@
 
 #include <ftk/GLTest/OffscreenBufferTest.h>
 
+#include <ftk/GL/GL.h>
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/Window.h>
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
+
+#include <cmath>
 
 using namespace ftk::gl;
 
@@ -47,6 +50,7 @@ namespace ftk
             _members();
             _functions();
             _operators();
+            _read();
         }
         
         void OffscreenBufferTest::_enums()
@@ -177,6 +181,41 @@ namespace ftk
             b.depth = offscreenDepthDefault;
             FTK_CHECK(a != b);
         }
+
+        void OffscreenBufferTest::_read()
+        {
+            auto window = createWindow(_context);
+            auto buffer = OffscreenBuffer::create(Size2I(4, 4), TextureType::RGBA_F32);
+            {
+                // A color past one, as a float buffer holds it.
+                OffscreenBufferBinding binding(buffer);
+                glClearColor(.25F, .5F, 1.5F, 1.F);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
+            // A pixel comes back as it is, from any corner.
+            const Color4F pixel = buffer->getPixel(V2I(3, 0));
+            FTK_CHECK(std::abs(pixel.r - .25F) < .001F);
+            FTK_CHECK(std::abs(pixel.g - .5F) < .001F);
+            FTK_CHECK(std::abs(pixel.b - 1.5F) < .001F);
+            FTK_CHECK(std::abs(pixel.a - 1.F) < .001F);
+            // Read as eight bits, it is clamped and scaled, every row alike.
+            FTK_CHECK(OffscreenBuffer::canRead(ImageType::RGBA_U8));
+            auto image = buffer->read(ImageInfo(Size2I(4, 4), ImageType::RGBA_U8));
+            FTK_CHECK(image.get());
+            if (image)
+            {
+                const uint8_t* d = image->getData();
+                for (int i = 0; i < 4 * 4; ++i)
+                {
+                    FTK_CHECK(std::abs(static_cast<int>(d[i * 4 + 0]) - 64) <= 1);
+                    FTK_CHECK(std::abs(static_cast<int>(d[i * 4 + 1]) - 128) <= 1);
+                    FTK_CHECK(255 == d[i * 4 + 2]);
+                    FTK_CHECK(255 == d[i * 4 + 3]);
+                }
+            }
+            // A type that cannot be read gives nothing.
+            FTK_CHECK(!OffscreenBuffer::canRead(ImageType::YUV_420P_U8));
+            FTK_CHECK(!buffer->read(ImageInfo(Size2I(4, 4), ImageType::YUV_420P_U8)));
+        }
     }
 }
-

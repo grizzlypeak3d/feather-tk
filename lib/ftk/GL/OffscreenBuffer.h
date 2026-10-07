@@ -137,6 +137,21 @@ namespace ftk
             //! Bind the offscreen buffer.
             FTK_GL_API void bind();
 
+            //! Read the buffer back as an image of a given type and layout,
+            //! whatever it holds: what is written to a file. The types are
+            //! the ones glReadPixels can give, and the layout is kept to:
+            //! how rows are aligned and the byte order. The first row is
+            //! the bottom one, as OpenGL has it, which the image says of
+            //! itself. Nothing comes back for a type that cannot be read.
+            FTK_GL_API std::shared_ptr<Image> read(const ImageInfo&);
+
+            //! Get whether the buffer can be read back as a type of image.
+            FTK_GL_API static bool canRead(ImageType);
+
+            //! Read one pixel back, counted from the top left, as it is:
+            //! values past one and below zero are kept.
+            FTK_GL_API Color4F getPixel(const V2I&);
+
             //! Get the number of objects currenty instantiated.
             FTK_GL_API static size_t getObjectCount();
 

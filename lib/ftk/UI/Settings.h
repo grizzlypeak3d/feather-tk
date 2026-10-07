@@ -69,6 +69,9 @@ namespace ftk
         //! \name Set Values
         ///@{
 
+        //! Set a value. An object set over an object is merged into it,
+        //! key by key, so a value another writer keeps under the same key
+        //! is not taken with it.
         FTK_UI_API void set(const std::string& key, const nlohmann::json&);
 
         FTK_UI_API void set(const std::string& key, bool);

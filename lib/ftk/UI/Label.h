@@ -14,8 +14,6 @@ namespace ftk
     ///@{
         
     //! Text label.
-    //! 
-    //! \todo Add text wrapping.
     class FTK_UI_API_TYPE Label : public IWidget
     {
     protected:
@@ -115,6 +113,19 @@ namespace ftk
         //! its font rather than counted in characters, and a character is
         //! never split.
         FTK_UI_API void setElide(bool, ElideMode = ElideMode::Right);
+
+        //! Get the width the text is wrapped to, in characters.
+        FTK_UI_API int getWrap() const;
+
+        //! Set a width to wrap the text to, in characters; zero, the
+        //! default, does not wrap. Lines are broken between words where
+        //! they would pass the width, which is that many characters of
+        //! average width in the label's font, so a paragraph can be written
+        //! as one string and keeps its shape in another font or at another
+        //! display scale. A line break in the text is kept, and a word
+        //! longer than the width is left whole. The label's size is the
+        //! size of the wrapped text. Not for use with eliding.
+        FTK_UI_API void setWrap(int);
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;

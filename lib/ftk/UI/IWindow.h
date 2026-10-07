@@ -232,6 +232,21 @@ namespace ftk
             MouseButton = MouseButton::Left,
             int modifiers = 0);
 
+        //! Move the cursor there and press a button, leaving it held: the
+        //! hover() calls that follow reach the pressed widget as a drag,
+        //! and release() ends it. This is how a drag is looked at while it
+        //! is in progress, which drag() cannot show.
+        FTK_UI_API void press(
+            const V2I&,
+            MouseButton = MouseButton::Left,
+            int modifiers = 0);
+
+        //! Move the cursor there and release the button held by press().
+        FTK_UI_API void release(
+            const V2I&,
+            MouseButton = MouseButton::Left,
+            int modifiers = 0);
+
         //! Press at the first point, move through the rest, release.
         //!
         //! Moved in steps between the points rather than jumped, because a

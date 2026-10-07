@@ -15,6 +15,7 @@
 #include <array>
 #include <atomic>
 #include <sstream>
+#include <cmath>
 
 namespace ftk
 {
@@ -453,6 +454,67 @@ namespace ftk
         void OffscreenBuffer::bind()
         {
             glBindFramebuffer(GL_FRAMEBUFFER, _p->id);
+        }
+
+        std::shared_ptr<Image> OffscreenBuffer::read(const ImageInfo& info)
+        {
+            std::shared_ptr<Image> out;
+            const unsigned int format = getReadPixelsFormat(info.type);
+            const unsigned int type = getReadPixelsType(info.type);
+            if (GL_NONE == format || GL_NONE == type || !info.isValid())
+            {
+                return out;
+            }
+            out = Image::create(info);
+            OffscreenBufferBinding binding(shared_from_this());
+            glPixelStorei(GL_PACK_ALIGNMENT, info.layout.alignment);
+            if (!isGLES())
+            {
+                glPixelStorei(GL_PACK_SWAP_BYTES, info.layout.endian != getEndian());
+            }
+            glReadPixels(
+                0,
+                0,
+                info.size.w,
+                info.size.h,
+                format,
+                type,
+                out->getData());
+            return out;
+        }
+
+        bool OffscreenBuffer::canRead(ImageType type)
+        {
+            return GL_NONE != getReadPixelsFormat(type) && GL_NONE != getReadPixelsType(type);
+        }
+
+        Color4F OffscreenBuffer::getPixel(const V2I& pos)
+        {
+            FTK_P();
+            Color4F out;
+            float sample[4] = { 0.F, 0.F, 0.F, 0.F };
+            OffscreenBufferBinding binding(shared_from_this());
+            glPixelStorei(GL_PACK_ALIGNMENT, 1);
+            if (!isGLES())
+            {
+                // What the buffer holds, not clamped to one on the way out.
+                glClampColor(GL_CLAMP_READ_COLOR, GL_FALSE);
+            }
+            // OpenGL counts rows from the bottom.
+            glReadPixels(
+                pos.x,
+                p.info.size.h - 1 - pos.y,
+                1,
+                1,
+                GL_RGBA,
+                GL_FLOAT,
+                sample);
+            auto finite = [](float v) { return std::isnan(v) || std::isinf(v) ? 0.F : v; };
+            out.r = finite(sample[0]);
+            out.g = finite(sample[1]);
+            out.b = finite(sample[2]);
+            out.a = finite(sample[3]);
+            return out;
         }
 
         size_t OffscreenBuffer::getObjectCount()

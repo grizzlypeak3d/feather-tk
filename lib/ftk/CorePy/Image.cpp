@@ -60,6 +60,8 @@ namespace ftk
                 .value("YUV_420SP_U8", ImageType::YUV_420SP_U8)
                 .value("YUV_420SP_U16", ImageType::YUV_420SP_U16);
             FTK_ENUM_BIND(m, ImageType);
+            // A viewport's color buffer is observed as one.
+            observable<ImageType>(m, "ImageType");
 
             m.def("getChannelCount", &getChannelCount);
             m.def("getBitDepth", &getBitDepth);

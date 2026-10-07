@@ -11,8 +11,11 @@
 #include <ftk/UI/LineEdit.h>
 #include <ftk/UI/ScreenshotTag.h>
 #include <ftk/UI/TabWidget.h>
+#include <ftk/UI/Tooltip.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
+#include <ftk/Core/LogSystem.h>
+#include <ftk/Core/ObservableList.h>
 #include <ftk/Core/Path.h>
 #include <ftk/Core/String.h>
 #include <ftk/Core/Timer.h>
@@ -51,7 +54,9 @@ namespace ftk
         //! label itself, so this looks down the tree and joins what it
         //! finds: the point is to make what is on screen readable from the
         //! sidecar instead of by cropping the image and looking at it.
-        std::string widgetText(const std::shared_ptr<IWidget>& widget)
+        std::string widgetText(
+            const std::shared_ptr<IWidget>& widget,
+            bool buttonState = true)
         {
             std::vector<std::string> out;
             // Only what is on screen. A hidden child still has its text,
@@ -90,7 +95,7 @@ namespace ftk
                 {
                     s = button->getIcon();
                 }
-                if (button->isCheckable())
+                if (buttonState && button->isCheckable())
                 {
                     s += button->isChecked() ? " [checked]" : " [unchecked]";
                 }
@@ -100,7 +105,7 @@ namespace ftk
             {
                 for (const auto& child : widget->getChildren())
                 {
-                    const std::string s = widgetText(child);
+                    const std::string s = widgetText(child, buttonState);
                     if (!s.empty())
                     {
                         out.push_back(s);
@@ -129,6 +134,24 @@ namespace ftk
             for (const auto& child : widget->getChildren())
             {
                 if (auto found = findTabWidget(child, tab))
+                    return found;
+            }
+            return nullptr;
+        }
+
+        //! Find a tagged widget whether or not it is visible, for the
+        //! expectations: "not visible" is something a shot can assert.
+        std::shared_ptr<IWidget> findTagged(
+            const std::shared_ptr<IWidget>& widget,
+            const std::string& tag)
+        {
+            if (!widget)
+                return nullptr;
+            if (getScreenshotTag(widget) == tag)
+                return widget;
+            for (const auto& child : widget->getChildren())
+            {
+                if (auto found = findTagged(child, tag))
                     return found;
             }
             return nullptr;
@@ -173,8 +196,17 @@ namespace ftk
         std::vector<nlohmann::json> lateSteps;  // applied after first settle
         size_t lateNext = 0;                   // next late step to apply
         int waitTicks = 0;                     // from the "wait" step
+        bool cursorPlaced = false; // a step has moved the cursor; see "key"
         bool done = false;
+        bool failed = false;   // a step or expectation failed; see _fail()
         bool success = false;
+
+        // With { "strict": true } an error written to the log fails the
+        // shot: a scripted session is then checked for what it does not
+        // show as well as for what it does.
+        bool strict = false;
+        std::vector<std::string> logErrors;
+        std::shared_ptr<ListObserver<LogItem> > logObserver;
     };
 
     void Capture::_init(
@@ -260,6 +292,20 @@ namespace ftk
                 ticks = settleTicks;
             p.settleTicksShot = ticks;
         }
+
+        p.strict = p.shot.value("strict", false);
+        p.logObserver = ListObserver<LogItem>::create(
+            context->getLogSystem()->observeLogItems(),
+            [this](const std::vector<LogItem>& items)
+            {
+                for (const auto& item : items)
+                {
+                    if (LogType::Error == item.type)
+                    {
+                        _p->logErrors.push_back(item.prefix + ": " + item.message);
+                    }
+                }
+            });
 
         if (app->getWindows().empty())
         {
@@ -356,6 +402,10 @@ namespace ftk
             step.contains("scroll") ||
             step.contains("drag") ||
             step.contains("hover") ||
+            step.contains("press") ||
+            step.contains("release") ||
+            step.contains("tooltip") ||
+            step.contains("expect") ||
             step.contains("key") ||
             step.contains("tab") ||
             step.contains("wait");
@@ -390,7 +440,7 @@ namespace ftk
             }
             else
             {
-                _note(Format("tab not found: \"{0}\"").arg(name));
+                _fail(Format("tab not found: \"{0}\"").arg(name));
             }
         }
         else if (step.contains("wait"))
@@ -420,33 +470,7 @@ namespace ftk
                 delta.x = step.at("delta")[0].get<float>();
                 delta.y = step.at("delta")[1].get<float>();
             }
-            std::optional<V2I> pos;
-            if (v.is_array() && v.size() >= 2)
-            {
-                pos = V2I(v[0].get<int>(), v[1].get<int>());
-            }
-            else if (v.is_string() && window)
-            {
-                std::vector<std::shared_ptr<IWidget> > tagged;
-                collect(window, tagged);
-                for (const auto& w : tagged)
-                {
-                    if (getScreenshotTag(w) == v.get<std::string>())
-                    {
-                        const Box2I g = w->getGeometry();
-                        pos = V2I(
-                            g.x() + g.w() / 2,
-                            g.y() + g.h() / 2);
-                        break;
-                    }
-                }
-                if (!pos.has_value())
-                {
-                    _note(
-                        "scroll: no visible widget tagged \"" +
-                        v.get<std::string>() + "\"");
-                }
-            }
+            const std::optional<V2I> pos = _aim("scroll", v);
             if (pos.has_value() && window)
             {
                 window->scroll(pos.value(), delta, modifiers);
@@ -464,7 +488,10 @@ namespace ftk
             // { "click": [160, 90], "modifier": "Ctrl" }. This goes through
             // the window the way a real click does -- including the mouse
             // bindings, so an action needs the modifier it is bound to.
-            // Deferred by _applyRest so the widget under it is laid out.
+            // { "click": "Files.Thumbnail", "count": 2 } double clicks:
+            // the clicks follow each other at once, inside any widget's
+            // double click time. Deferred by _applyRest so the widget
+            // under it is laid out.
             const auto& v = step.at("click");
             const int modifiers = parseModifiers(step);
             MouseButton button = MouseButton::Left;
@@ -473,37 +500,70 @@ namespace ftk
                 from_string(
                     step.at("button").get<std::string>(), button);
             }
-            std::optional<V2I> pos;
-            if (v.is_array() && v.size() >= 2)
-            {
-                pos = V2I(v[0].get<int>(), v[1].get<int>());
-            }
-            else if (v.is_string() && window)
-            {
-                std::vector<std::shared_ptr<IWidget> > tagged;
-                collect(window, tagged);
-                for (const auto& w : tagged)
-                {
-                    if (getScreenshotTag(w) == v.get<std::string>())
-                    {
-                        const Box2I g = w->getGeometry();
-                        pos = V2I(
-                            g.x() + g.w() / 2,
-                            g.y() + g.h() / 2);
-                        break;
-                    }
-                }
-                if (!pos.has_value())
-                {
-                    _note(
-                        "click: no visible widget tagged \"" +
-                        v.get<std::string>() + "\"");
-                }
-            }
+            const int count = std::max(1, step.value("count", 1));
+            const std::optional<V2I> pos = _aim("click", v);
             if (pos.has_value() && window)
             {
-                window->click(pos.value(), button, modifiers);
+                for (int i = 0; i < count; ++i)
+                {
+                    window->click(pos.value(), button, modifiers);
+                }
             }
+        }
+        else if (step.contains("press") || step.contains("release"))
+        {
+            // Press a button and leave it held, or release it, aimed the
+            // way "click" is aimed. Between the two, "hover" steps move
+            // the pressed widget as a drag -- so this is how a drag is
+            // captured while it is in progress, which "drag" cannot show.
+            // e.g. { "press": "Playback.FrameShuttle" },
+            // { "hover": [400, 500] }, { "release": [400, 500] }.
+            // Deferred by _applyRest like "click".
+            const bool press = step.contains("press");
+            const auto& v = step.at(press ? "press" : "release");
+            const int modifiers = parseModifiers(step);
+            MouseButton button = MouseButton::Left;
+            if (step.contains("button"))
+            {
+                from_string(
+                    step.at("button").get<std::string>(), button);
+            }
+            const std::optional<V2I> pos = _aim(press ? "press" : "release", v);
+            if (pos.has_value() && window)
+            {
+                if (press)
+                {
+                    window->press(pos.value(), button, modifiers);
+                }
+                else
+                {
+                    window->release(pos.value(), button, modifiers);
+                }
+            }
+        }
+        else if (step.contains("tooltip"))
+        {
+            // Hover and wait for the tooltip, aimed the way "click" is
+            // aimed, e.g. { "tooltip": "Review.Pen" }. Tooltips are off
+            // for a capture (see begin()), so this turns them on, and
+            // holds the next step and the capture until the tooltip
+            // timeout has passed.
+            const auto& v = step.at("tooltip");
+            const std::optional<V2I> pos = _aim("tooltip", v);
+            if (pos.has_value() && window)
+            {
+                app->setTooltipsEnabled(true);
+                window->hover(pos.value());
+                p.waitTicks = static_cast<int>(
+                    (tooltipTimeout.count() + 200) / tickInterval.count());
+            }
+        }
+        else if (step.contains("expect"))
+        {
+            // Assert the state of a tagged widget; a mismatch fails the
+            // shot. Deferred like "click" so the widget is laid out and
+            // the step before this one has taken effect.
+            _expect(step);
         }
         else if (step.contains("hover"))
         {
@@ -514,33 +574,7 @@ namespace ftk
             // { "hover": "Files.CompareMode" },
             // { "hover": [160, 90] }.
             const auto& v = step.at("hover");
-            std::optional<V2I> pos;
-            if (v.is_array() && v.size() >= 2)
-            {
-                pos = V2I(v[0].get<int>(), v[1].get<int>());
-            }
-            else if (v.is_string() && window)
-            {
-                std::vector<std::shared_ptr<IWidget> > tagged;
-                collect(window, tagged);
-                for (const auto& w : tagged)
-                {
-                    if (getScreenshotTag(w) == v.get<std::string>())
-                    {
-                        const Box2I g = w->getGeometry();
-                        pos = V2I(
-                            g.x() + g.w() / 2,
-                            g.y() + g.h() / 2);
-                        break;
-                    }
-                }
-                if (!pos.has_value())
-                {
-                    _note(
-                        "hover: no visible widget tagged \"" +
-                        v.get<std::string>() + "\"");
-                }
-            }
+            const std::optional<V2I> pos = _aim("hover", v);
             if (pos.has_value() && window)
             {
                 window->hover(pos.value());
@@ -561,43 +595,24 @@ namespace ftk
             bool pathOK = v.is_array() && window;
             if (pathOK)
             {
-                std::vector<std::shared_ptr<IWidget> > tagged;
-                collect(window, tagged);
                 for (const auto& entry : v)
                 {
-                    if (entry.is_array() && entry.size() >= 2)
+                    const std::optional<V2I> pos = _aim("drag", entry);
+                    if (pos.has_value())
                     {
-                        path.push_back(V2I(
-                            entry[0].get<int>(),
-                            entry[1].get<int>()));
+                        path.push_back(pos.value());
                     }
-                    else if (entry.is_string())
+                    else
                     {
-                        bool found = false;
-                        for (const auto& w : tagged)
-                        {
-                            if (getScreenshotTag(w) ==
-                                entry.get<std::string>())
-                            {
-                                const Box2I g = w->getGeometry();
-                                path.push_back(V2I(
-                                    g.x() + g.w() / 2,
-                                    g.y() + g.h() / 2));
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found)
-                        {
-                            pathOK = false;
-                            _note(
-                                "drag: no visible widget tagged \"" +
-                                entry.get<std::string>() + "\"");
-                        }
+                        pathOK = false;
                     }
                 }
             }
-            if (pathOK && path.size() >= 2)
+            if (pathOK && path.size() < 2)
+            {
+                _fail("drag: needs at least two points");
+            }
+            else if (pathOK)
             {
                 window->drag(path, modifiers);
             }
@@ -625,12 +640,24 @@ namespace ftk
             {
                 if (window)
                 {
+                    // A key goes to the focused widget, failing that to
+                    // the widgets under the cursor. A capture's cursor
+                    // starts at the window's origin, where the menu bar
+                    // takes the arrow keys; a user's cursor is somewhere
+                    // in the window, so put it at the center unless a
+                    // step has placed it.
+                    if (!p.cursorPlaced)
+                    {
+                        const Box2I g = window->getGeometry();
+                        window->hover(V2I(g.x() + g.w() / 2, g.y() + g.h() / 2));
+                        p.cursorPlaced = true;
+                    }
                     window->keyPress(key, parseModifiers(step));
                 }
             }
             else
             {
-                _note(
+                _fail(
                     "key: unknown key \"" +
                     step.at("key").get<std::string>() + "\"");
             }
@@ -677,6 +704,162 @@ namespace ftk
         FTK_P();
         std::cerr << p.appName << " capture [" << p.shotId << "]: " <<
             msg << std::endl;
+    }
+
+    void Capture::_fail(const std::string& msg)
+    {
+        _note(msg);
+        _p->failed = true;
+    }
+
+    std::optional<V2I> Capture::_aim(
+        const std::string& verb,
+        const nlohmann::json& v)
+    {
+        // A position in framebuffer pixels depends on the display scale,
+        // so a shot that must run the same everywhere aims by tag: the
+        // widget's center, or [tag, fx, fy], a point at those fractions
+        // of its geometry -- a third of the way across the viewport, say.
+        std::optional<V2I> out;
+        std::string tag;
+        V2F fraction(.5F, .5F);
+        if (v.is_array() && v.size() >= 2 && v[0].is_number())
+        {
+            out = V2I(v[0].get<int>(), v[1].get<int>());
+        }
+        else if (v.is_array() && v.size() >= 3 && v[0].is_string())
+        {
+            tag = v[0].get<std::string>();
+            fraction = V2F(v[1].get<float>(), v[2].get<float>());
+        }
+        else if (v.is_string())
+        {
+            tag = v.get<std::string>();
+        }
+        else
+        {
+            _fail(verb + ": not a tag or a position: " + v.dump());
+        }
+        if (!tag.empty())
+        {
+            std::shared_ptr<IWindow> window;
+            if (auto app = _p->app.lock())
+            {
+                if (!app->getWindows().empty())
+                    window = app->getWindows().front();
+            }
+            std::vector<std::shared_ptr<IWidget> > tagged;
+            collect(window, tagged);
+            for (const auto& w : tagged)
+            {
+                if (getScreenshotTag(w) == tag)
+                {
+                    const Box2I g = w->getGeometry();
+                    out = V2I(
+                        g.x() + static_cast<int>(g.w() * fraction.x),
+                        g.y() + static_cast<int>(g.h() * fraction.y));
+                    break;
+                }
+            }
+            if (!out.has_value())
+            {
+                _fail(verb + ": no visible widget tagged \"" + tag + "\"");
+            }
+        }
+        if (out.has_value())
+        {
+            _p->cursorPlaced = true;
+        }
+        return out;
+    }
+
+    void Capture::_expect(const nlohmann::json& step)
+    {
+        // { "expect": "Review.Pen", "checked": true } -- a checkable
+        // button's state; "enabled" and "visible" are any widget's; "text"
+        // is what the widget shows, exactly (a label's or a line edit's
+        // text, a combo box's current item, a button's label or icon, or
+        // for a container what its children show joined with spaces);
+        // "contains" matches a part of it. Several may be given at once.
+        // A tag with no widget at all counts as not visible, since the
+        // widget a tool creates on demand does not exist before the tool
+        // is opened; any other expectation of it fails.
+        const auto& v = step.at("expect");
+        if (!v.is_string())
+        {
+            _fail("expect: not a tag: " + v.dump());
+            return;
+        }
+        const std::string tag = v.get<std::string>();
+        std::shared_ptr<IWidget> widget;
+        if (auto app = _p->app.lock())
+        {
+            if (!app->getWindows().empty())
+                widget = findTagged(app->getWindows().front(), tag);
+        }
+        const std::string prefix = "expect " + tag + ": ";
+        if (step.contains("visible"))
+        {
+            const bool expected = step.at("visible").get<bool>();
+            const bool actual = widget && widget->isVisible(true);
+            if (expected != actual)
+            {
+                _fail(prefix + (actual ? "visible" : "not visible"));
+            }
+        }
+        bool checked = false;
+        for (const auto& key : { "checked", "enabled", "text", "contains" })
+        {
+            checked = checked || step.contains(key);
+        }
+        if (!checked)
+        {
+            return;
+        }
+        if (!widget)
+        {
+            _fail(prefix + "no widget with that tag");
+            return;
+        }
+        if (step.contains("checked"))
+        {
+            const bool expected = step.at("checked").get<bool>();
+            if (auto button = std::dynamic_pointer_cast<IButton>(widget))
+            {
+                if (button->isChecked() != expected)
+                {
+                    _fail(prefix + (button->isChecked() ? "checked" : "not checked"));
+                }
+            }
+            else
+            {
+                _fail(prefix + "not a button");
+            }
+        }
+        if (step.contains("enabled"))
+        {
+            const bool expected = step.at("enabled").get<bool>();
+            const bool actual = widget->isEnabled(true);
+            if (expected != actual)
+            {
+                _fail(prefix + (actual ? "enabled" : "not enabled"));
+            }
+        }
+        if (step.contains("text") || step.contains("contains"))
+        {
+            const std::string actual = widgetText(widget, false);
+            if (step.contains("text") &&
+                actual != step.at("text").get<std::string>())
+            {
+                _fail(prefix + "text is \"" + actual + "\"");
+            }
+            if (step.contains("contains") &&
+                actual.find(step.at("contains").get<std::string>()) ==
+                    std::string::npos)
+            {
+                _fail(prefix + "text is \"" + actual + "\"");
+            }
+        }
     }
 
     void Capture::_onTick()
@@ -749,7 +932,7 @@ namespace ftk
                     const nlohmann::json step = p.lateSteps[p.lateNext++];
                     if (!_applyStep(step))
                     {
-                        _note("unknown step: " + step.dump());
+                        _fail("unknown step: " + step.dump());
                     }
                     p.settleLeft = std::max(p.settleTicksShot, p.waitTicks);
                     p.waitTicks = 0;
@@ -776,7 +959,23 @@ namespace ftk
                 _writeMetadata(json);
                 _note(Format("captured {0}").arg(fromFileSystem(png)));
             }
-            _finish(ok);
+            if (p.strict)
+            {
+                // Pick up what was logged this tick as well.
+                if (auto context = p.context.lock())
+                {
+                    context->getLogSystem()->tick();
+                }
+                for (const auto& error : p.logErrors)
+                {
+                    _fail("logged error: " + error);
+                }
+            }
+            if (p.failed)
+            {
+                _note("failed");
+            }
+            _finish(ok && !p.failed);
         }
     }
 
@@ -802,7 +1001,7 @@ namespace ftk
             }
             if (!_applyStep(step))
             {
-                _note("unknown step: " + step.dump());
+                _fail("unknown step: " + step.dump());
             }
         }
     }

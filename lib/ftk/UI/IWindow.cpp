@@ -956,6 +956,20 @@ namespace ftk
         _mouseButton(button, false, modifiers);
     }
 
+    void IWindow::press(const V2I& pos, MouseButton button, int modifiers)
+    {
+        _p->inside = true;
+        _cursorPos(pos);
+        _mouseButton(button, true, modifiers);
+    }
+
+    void IWindow::release(const V2I& pos, MouseButton button, int modifiers)
+    {
+        _p->inside = true;
+        _cursorPos(pos);
+        _mouseButton(button, false, modifiers);
+    }
+
     void IWindow::drag(
         const std::vector<V2I>& path,
         int modifiers,
