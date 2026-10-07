@@ -50,23 +50,10 @@ namespace ftk
                 return out;
             }
 
-            // The bytes of a channel, and what a fourth channel that was
-            // not there is given: one, in the channel's own type.
+            // The bytes of a channel.
             size_t getChannelByteCount(ImageType value)
             {
                 return getBitDepth(value) / 8;
-            }
-
-            void opaque(ImageType type, uint8_t* p)
-            {
-                switch (type)
-                {
-                case ImageType::RGB_U8: p[0] = 255; break;
-                case ImageType::RGB_U16: { const uint16_t v = 65535; std::memcpy(p, &v, 2); break; }
-                case ImageType::RGB_F16: { const uint16_t v = 0x3C00; std::memcpy(p, &v, 2); break; }
-                case ImageType::RGB_F32: { const float v = 1.F; std::memcpy(p, &v, 4); break; }
-                default: break;
-                }
             }
         }
 
@@ -452,7 +439,6 @@ namespace ftk
             const int h = info.size.h;
             const int channels = getChannelCount(info.type);
             const size_t channelBytes = getChannelByteCount(info.type);
-            const size_t srcPixel = channels * channelBytes;
             const size_t srcRow = info.getByteCount() / h;
             const size_t dstPixel =
                 (3 == channels ? 4 : channels) *
@@ -551,15 +537,12 @@ namespace ftk
             }
             else if (3 == channels)
             {
+                // A pixel at a time rather than a byte at a time: the loop
+                // that copied three bytes and wrote a fourth ran a 6K frame
+                // at a third of the speed of a copy.
                 for (int row = 0; row < h; ++row)
                 {
-                    const uint8_t* s = data + row * srcRow;
-                    uint8_t* d = dst + row * dstRow;
-                    for (int i = 0; i < w; ++i, s += srcPixel, d += dstPixel)
-                    {
-                        std::memcpy(d, s, srcPixel);
-                        opaque(info.type, d + srcPixel);
-                    }
+                    widenRGB(info.type, data + row * srcRow, dst + row * dstRow, w);
                 }
             }
             else if (srcRow == dstRow)

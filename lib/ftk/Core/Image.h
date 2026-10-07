@@ -286,6 +286,12 @@ namespace ftk
         bool      _externalData = false;
     };
 
+    //! Widen a row of a three channel image to four channels, the fourth
+    //! opaque: what a GPU keeps RGB as, done once in the copy made anyway
+    //! rather than by a driver in a pass of its own. For RGB_U8, RGB_U16,
+    //! RGB_F16 and RGB_F32; any other type is left alone.
+    FTK_CORE_API void widenRGB(ImageType, const uint8_t* src, uint8_t* dst, int width);
+
     FTK_CORE_API void to_json(nlohmann::json&, const ImageMirror&);
 
     FTK_CORE_API void from_json(const nlohmann::json&, ImageMirror&);

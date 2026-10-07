@@ -581,61 +581,6 @@ namespace ftk
             return _copy(data, info, 0, 0);
         }
 
-        namespace
-        {
-            //! Widen a row of three channels to four, the fourth opaque.
-            void widenRow(ImageType type, const uint8_t* src, uint8_t* dst, int w)
-            {
-                switch (type)
-                {
-                case ImageType::RGB_U8:
-                {
-                    // Whole pixels at a time: a 32 bit write per pixel is
-                    // what lets this run at the speed of a copy.
-                    uint32_t* d = reinterpret_cast<uint32_t*>(dst);
-                    for (int i = 0; i < w; ++i, src += 3)
-                    {
-                        d[i] =
-                            static_cast<uint32_t>(src[0]) |
-                            static_cast<uint32_t>(src[1]) << 8 |
-                            static_cast<uint32_t>(src[2]) << 16 |
-                            0xFF000000u;
-                    }
-                    break;
-                }
-                case ImageType::RGB_U16:
-                case ImageType::RGB_F16:
-                {
-                    const uint16_t* s = reinterpret_cast<const uint16_t*>(src);
-                    uint16_t* d = reinterpret_cast<uint16_t*>(dst);
-                    const uint16_t one = ImageType::RGB_U16 == type ? 0xFFFF : 0x3C00;
-                    for (int i = 0; i < w; ++i, s += 3, d += 4)
-                    {
-                        d[0] = s[0];
-                        d[1] = s[1];
-                        d[2] = s[2];
-                        d[3] = one;
-                    }
-                    break;
-                }
-                case ImageType::RGB_F32:
-                {
-                    const float* s = reinterpret_cast<const float*>(src);
-                    float* d = reinterpret_cast<float*>(dst);
-                    for (int i = 0; i < w; ++i, s += 3, d += 4)
-                    {
-                        d[0] = s[0];
-                        d[1] = s[1];
-                        d[2] = s[2];
-                        d[3] = 1.F;
-                    }
-                    break;
-                }
-                default: break;
-                }
-            }
-        }
-
         bool Texture::_copy(const uint8_t* data, const ImageInfo& info, int x, int y)
         {
             const UploadUnit uploadUnit;
@@ -682,7 +627,7 @@ namespace ftk
                 {
                     for (int row = 0; row < h; ++row)
                     {
-                        widenRow(info.type, data + row * srcRow, dst + row * wideRow, w);
+                        widenRGB(info.type, data + row * srcRow, dst + row * wideRow, w);
                     }
                     if (p.pbo)
                     {
