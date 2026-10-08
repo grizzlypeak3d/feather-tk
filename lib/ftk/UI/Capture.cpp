@@ -10,6 +10,7 @@
 #include <ftk/UI/Label.h>
 #include <ftk/UI/LineEdit.h>
 #include <ftk/UI/ScreenshotTag.h>
+#include <ftk/UI/TabBar.h>
 #include <ftk/UI/TabWidget.h>
 #include <ftk/UI/Tooltip.h>
 #include <ftk/Core/Context.h>
@@ -434,9 +435,40 @@ namespace ftk
             }
             if (tabWidget)
             {
-                const auto& tabs = tabWidget->getTabs();
-                const auto i = std::find(tabs.begin(), tabs.end(), name);
-                tabWidget->setCurrent(i - tabs.begin());
+                // Through a click on the tab's button, the way a person
+                // selects it, so that whatever the application does when
+                // a tab is chosen happens too: selecting it directly only
+                // shows the page. The direct way is the fallback, for a tab
+                // bar that is not laid out.
+                std::shared_ptr<IButton> button;
+                std::function<void(const std::shared_ptr<IWidget>&)> find =
+                    [&find, &button, &name](const std::shared_ptr<IWidget>& widget)
+                    {
+                        if (button)
+                            return;
+                        if (auto i = std::dynamic_pointer_cast<IButton>(widget);
+                            i && i->getText() == name)
+                        {
+                            button = i;
+                            return;
+                        }
+                        for (const auto& child : widget->getChildren())
+                        {
+                            find(child);
+                        }
+                    };
+                find(tabWidget->getTabBar());
+                const Box2I g = button ? button->getGeometry() : Box2I();
+                if (button && button->isVisible(true) && g.isValid())
+                {
+                    window->click(V2I(g.x() + g.w() / 2, g.y() + g.h() / 2));
+                }
+                else
+                {
+                    const auto& tabs = tabWidget->getTabs();
+                    const auto i = std::find(tabs.begin(), tabs.end(), name);
+                    tabWidget->setCurrent(i - tabs.begin());
+                }
             }
             else
             {
@@ -882,7 +914,10 @@ namespace ftk
         if (p.done)
             return;
         ++p.ticks;
-        if (p.ticks > timeoutTicks + (p.settleTicksShot - settleTicks))
+        // The budget grows with the steps a shot has, each of which is
+        // given a settle: a long scripted session is not a slow one.
+        if (p.ticks > timeoutTicks + (p.settleTicksShot - settleTicks) +
+            static_cast<int>(p.lateSteps.size()) * p.settleTicksShot)
         {
             _note(Format("timed out waiting for {0}").
                 arg(p.expectMedia ?
