@@ -35,7 +35,8 @@ namespace ftk
     //! error -- when a step cannot do what it says (an unknown step, a tag
     //! with no visible widget, an unknown key) or an expectation does not
     //! hold; with { "strict": true } an error written to the log fails it
-    //! too. The outputs are still written so a failure can be looked at.
+    //! too. The outputs are still written so a failure can be looked at,
+    //! and a shot that times out reports what was logged while it waited.
     //! This is what makes a manifest a test as well as a screenshot: a
     //! scripted session that must end with its expectations met.
     //!
@@ -153,6 +154,9 @@ namespace ftk
         //! center is used, or a position in framebuffer pixels. Fails the
         //! shot when the tag has no visible widget.
         std::optional<V2I> _aim(const std::string& verb, const nlohmann::json&);
+        //! The errors written to the log so far, which is what explains a
+        //! shot that times out or whose media cannot be read.
+        void _noteLogErrors();
         void _expect(const nlohmann::json& step);
         void _onTick();
         void _applyRest(const nlohmann::json& setup);

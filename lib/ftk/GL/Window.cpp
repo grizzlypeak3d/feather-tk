@@ -167,7 +167,10 @@ namespace ftk
             uint32_t sdlWindowFlags = SDL_WINDOW_RESIZABLE;
             if (!noContext)
             {
-                SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+                // No demand for a hardware accelerated visual: a virtual
+                // machine, a remote desktop or a test runner has only Mesa's
+                // software renderer, and the newer Mesa marks its visuals as
+                // not accelerated, so asking found none at all.
                 const bool doubleBuffer = options & static_cast<int>(WindowOptions::DoubleBuffer);
                 SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffer);
                 setContextAttributes(getAPI());

@@ -327,17 +327,41 @@ namespace ftk
             // defaults of the buffers.
             const std::vector<API> apis = getAPIs();
             API api = apis.front();
-            if (apis.size() > 1)
+            auto probe = [&apis, &api]
             {
                 for (const API i : apis)
                 {
                     if (hasAPI(i))
                     {
                         api = i;
-                        break;
+                        return true;
                     }
                 }
+                return false;
+            };
+            bool found = apis.size() > 1 ? probe() : hasAPI(api);
+#if defined(SDL_HINT_VIDEO_FORCE_EGL)
+            if (!found && "x11" == getVideoDriver())
+            {
+                // SDL reaches OpenGL on X11 through GLX, and its choice of
+                // a GLX visual can come up empty where the server's visuals
+                // are fine: Mesa 26 under Xvfb lists 30 bit configurations
+                // that have no visual ahead of the rest, and SDL takes the
+                // first. The same windows can be had through EGL, which SDL
+                // uses when asked, so when nothing can be made through GLX,
+                // ask, and try again.
+                SDL_SetHint(SDL_HINT_VIDEO_FORCE_EGL, "1");
+                found = probe();
+                if (logSystem)
+                {
+                    logSystem->print(
+                        "ftk::gl::System",
+                        found ?
+                            "OpenGL through EGL: no context could be made through GLX" :
+                            "No OpenGL context could be made through GLX or EGL");
+                }
             }
+#endif // SDL_HINT_VIDEO_FORCE_EGL
             setAPI(api);
 
             // The attributes are set before the library is loaded as well as
