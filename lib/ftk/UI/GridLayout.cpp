@@ -21,6 +21,7 @@ namespace ftk
     struct GridLayout::Private
     {
         std::map<std::shared_ptr<IWidget>, GridPos> gridPos;
+        std::map<int, int> columnMinWidth;
         ColorRole rowBackgroundRole = ColorRole::None;
         SizeRole marginRole = SizeRole::None;
         SizeRole hSpacingRole = SizeRole::Spacing;
@@ -179,6 +180,31 @@ namespace ftk
         p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
+    }
+
+    int GridLayout::getColumnMinWidth(int column) const
+    {
+        FTK_P();
+        const auto i = p.columnMinWidth.find(column);
+        return i != p.columnMinWidth.end() ? i->second : 0;
+    }
+
+    void GridLayout::setColumnMinWidth(int column, int value)
+    {
+        FTK_P();
+        const int tmp = std::max(value, 0);
+        if (tmp == getColumnMinWidth(column))
+            return;
+        if (tmp > 0)
+        {
+            p.columnMinWidth[column] = tmp;
+        }
+        else
+        {
+            p.columnMinWidth.erase(column);
+        }
+        // Nothing is flagged: the sizes are worked out when they are asked
+        // for, and this is set while they are being asked for.
     }
 
     void GridLayout::clear()
@@ -478,6 +504,13 @@ namespace ftk
                 columns[i.second.column] = std::max(
                     columns[i.second.column],
                     sizeHint.w);
+            }
+        }
+        for (const auto& i : columnMinWidth)
+        {
+            if (i.first >= 0 && i.first < static_cast<int>(columns.size()))
+            {
+                columns[i.first] = std::max(columns[i.first], i.second);
             }
         }
     }

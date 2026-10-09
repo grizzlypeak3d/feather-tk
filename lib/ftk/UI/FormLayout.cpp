@@ -7,13 +7,46 @@
 #include <ftk/UI/Label.h>
 #include <ftk/UI/Spacer.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     struct FormLayout::Private
     {
         std::vector<std::pair<std::shared_ptr<Label>, std::shared_ptr<IWidget> > > widgets;
         std::shared_ptr<GridLayout> layout;
+        std::shared_ptr<FormGroup> group;
     };
+
+    FormGroup::FormGroup()
+    {}
+
+    FormGroup::~FormGroup()
+    {}
+
+    std::shared_ptr<FormGroup> FormGroup::create()
+    {
+        return std::shared_ptr<FormGroup>(new FormGroup);
+    }
+
+    int FormGroup::_getLabelWidth(const SizeHintEvent& event)
+    {
+        int out = 0;
+        auto i = _forms.begin();
+        while (i != _forms.end())
+        {
+            if (auto form = i->lock())
+            {
+                out = std::max(out, form->_getLabelWidth(event));
+                ++i;
+            }
+            else
+            {
+                i = _forms.erase(i);
+            }
+        }
+        return out;
+    }
 
     void FormLayout::_init(
         const std::shared_ptr<Context>& context,
@@ -204,8 +237,72 @@ namespace ftk
         }
         return index;
     }
-    
-    
 
-    
+    const std::shared_ptr<FormGroup>& FormLayout::getGroup() const
+    {
+        return _p->group;
+    }
+
+    void FormLayout::setGroup(const std::shared_ptr<FormGroup>& value)
+    {
+        FTK_P();
+        if (value == p.group)
+            return;
+        if (p.group)
+        {
+            auto& forms = p.group->_forms;
+            forms.erase(
+                std::remove_if(
+                    forms.begin(),
+                    forms.end(),
+                    [this](const std::weak_ptr<FormLayout>& i)
+                    {
+                        auto form = i.lock();
+                        return !form || form.get() == this;
+                    }),
+                forms.end());
+        }
+        p.group = value;
+        if (p.group)
+        {
+            p.group->_forms.push_back(
+                std::dynamic_pointer_cast<FormLayout>(shared_from_this()));
+        }
+        else
+        {
+            p.layout->setColumnMinWidth(0, 0);
+        }
+        setSizeUpdate();
+    }
+
+    void FormLayout::sizeHintEvent(const SizeHintEvent& event)
+    {
+        IContainer::sizeHintEvent(event);
+        FTK_P();
+        if (p.group)
+        {
+            // The whole of the group's answer, at once: it does not wait
+            // for the other forms to be sized, so this form is laid out at
+            // the shared width the first time, wherever it comes among
+            // them.
+            p.layout->setColumnMinWidth(0, p.group->_getLabelWidth(event));
+        }
+    }
+
+    int FormLayout::_getLabelWidth(const SizeHintEvent& event)
+    {
+        FTK_P();
+        int out = 0;
+        for (const auto& i : p.widgets)
+        {
+            // Hidden rows do not count, as in a form of its own. A label is
+            // sized here if it has not been yet, by its own measure.
+            if (i.first && i.first->isVisible(false))
+            {
+                i.first->sizeHintEvent(event);
+                out = std::max(out, i.first->getSizeHint().w);
+            }
+        }
+        return out;
+    }
 }
