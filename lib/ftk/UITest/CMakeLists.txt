@@ -54,6 +54,7 @@ set(HEADERS
     StackLayoutTest.h
     StyleTest.h
     TabWidgetTest.h
+    TableWidgetTest.h
     TextEditModelTest.h
     TouchGestureTest.h
     WidgetJsonTest.h
@@ -116,6 +117,7 @@ set(SOURCE
     StackLayoutTest.cpp
     StyleTest.cpp
     TabWidgetTest.cpp
+    TableWidgetTest.cpp
     TextEditModelTest.cpp
     TouchGestureTest.cpp
     WidgetJsonTest.cpp

@@ -108,6 +108,7 @@ namespace ftk
         void sysLogModel(nanobind::module_&);
         void tabBar(nanobind::module_&);
         void tabWidget(nanobind::module_&);
+        void tableWidget(nanobind::module_&);
         void textEdit(nanobind::module_&);
         void textEditModel(nanobind::module_&);
         void toolBar(nanobind::module_&);

@@ -169,6 +169,7 @@ namespace ftk
             sysLogModel(m);
             tabBar(m);
             tabWidget(m);
+            tableWidget(m);
             textEditModel(m);
             textEdit(m);
             toolBar(m);

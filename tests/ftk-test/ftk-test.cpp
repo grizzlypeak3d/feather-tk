@@ -61,6 +61,7 @@
 #include <ftk/UITest/StyleTest.h>
 #include <ftk/UITest/WidgetJsonTest.h>
 #include <ftk/UITest/TabWidgetTest.h>
+#include <ftk/UITest/TableWidgetTest.h>
 #include <ftk/UITest/TextEditModelTest.h>
 #include <ftk/UITest/TouchGestureTest.h>
 #include <ftk/UITest/WidgetOptionsTest.h>
@@ -267,6 +268,7 @@ namespace ftk
                 p.tests.push_back(ui_test::StyleTest::create(context));
                 p.tests.push_back(ui_test::WidgetJsonTest::create(context));
                 p.tests.push_back(ui_test::TabWidgetTest::create(context));
+                p.tests.push_back(ui_test::TableWidgetTest::create(context));
                 p.tests.push_back(ui_test::TextEditModelTest::create(context));
                 p.tests.push_back(ui_test::TouchGestureTest::create(context));
                 p.tests.push_back(ui_test::WidgetOptionsTest::create(context));

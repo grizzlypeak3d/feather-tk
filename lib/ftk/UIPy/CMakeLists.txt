@@ -99,6 +99,7 @@ set(SOURCE
     Style.cpp
     TabBar.cpp
     TabWidget.cpp
+    TableWidget.cpp
     TextEdit.cpp
     TextEditModel.cpp
     ToolBar.cpp
