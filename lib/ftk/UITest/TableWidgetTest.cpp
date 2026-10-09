@@ -4,6 +4,7 @@
 #include <ftk/UITest/TableWidgetTest.h>
 
 #include <ftk/UI/App.h>
+#include <ftk/UI/Label.h>
 #include <ftk/UI/LineEdit.h>
 #include <ftk/UI/TableWidget.h>
 #include <ftk/UI/Window.h>
@@ -190,6 +191,18 @@ namespace ftk
                 table->takeKeyFocus();
                 app->tick();
                 FTK_CHECK(!table->getEditor());
+
+                // An editor is closed by a return key it does not take.
+                auto label = Label::create(_context, "Editor");
+                label->setAcceptsKeyFocus(true);
+                table->openEditor(TableIndex(2, 2), label);
+                label->takeKeyFocus();
+                app->tick();
+                FTK_CHECK(table->getEditor());
+                window->keyPress(Key::Return);
+                app->tick();
+                FTK_CHECK(!table->getEditor());
+                FTK_CHECK(table->hasKeyFocus());
 
                 // An editor is not opened over a cell that cannot be
                 // edited, and is closed when its row is hidden.

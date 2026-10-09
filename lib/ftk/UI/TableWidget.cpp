@@ -618,7 +618,18 @@ namespace ftk
     void TableWidget::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
-        if (0 == event.modifiers && hasKeyFocus())
+        if (p.editor)
+        {
+            // A key the editor did not take: return and escape leave the
+            // cell as it was.
+            if (0 == event.modifiers &&
+                (Key::Return == event.key || Key::Escape == event.key))
+            {
+                event.accept = true;
+                closeEditor();
+            }
+        }
+        else if (0 == event.modifiers && hasKeyFocus())
         {
             switch (event.key)
             {

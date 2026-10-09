@@ -136,7 +136,8 @@ namespace ftk
         FTK_UI_API const TableIndex& getEditorIndex() const;
 
         //! Open an editor widget over a cell. The editor should take the
-        //! key focus; it is closed when the key focus leaves it.
+        //! key focus; it is closed when the key focus leaves it, or when
+        //! it leaves a press of the return or escape key unaccepted.
         FTK_UI_API void openEditor(const TableIndex&, const std::shared_ptr<IWidget>&);
 
         //! Close the editor widget. The editor is removed on the next
