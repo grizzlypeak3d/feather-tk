@@ -50,6 +50,16 @@ namespace ftk
         //! Get the odd rows background role.
         FTK_UI_API void setRowBackgroundRole(ColorRole);
 
+        //! Get the background role of one row.
+        FTK_UI_API ColorRole getRowBackgroundRole(int row) const;
+
+        //! Set a background role for one row, drawn across the width of
+        //! the layout, margins included, in place of the alternating
+        //! background: for a row
+        //! that is a heading over the rows below it. None, the default,
+        //! leaves the row as the others are.
+        FTK_UI_API void setRowBackgroundRole(int row, ColorRole);
+
         //! Get the margin role.
         FTK_UI_API SizeRole getMarginRole() const;
 

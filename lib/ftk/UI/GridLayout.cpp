@@ -23,6 +23,7 @@ namespace ftk
         std::map<std::shared_ptr<IWidget>, GridPos> gridPos;
         std::map<int, int> columnMinWidth;
         ColorRole rowBackgroundRole = ColorRole::None;
+        std::map<int, ColorRole> rowBackgroundRoles;
         SizeRole marginRole = SizeRole::None;
         SizeRole hSpacingRole = SizeRole::Spacing;
         SizeRole vSpacingRole = SizeRole::Spacing;
@@ -182,6 +183,29 @@ namespace ftk
         setDrawUpdate();
     }
 
+    ColorRole GridLayout::getRowBackgroundRole(int row) const
+    {
+        FTK_P();
+        const auto i = p.rowBackgroundRoles.find(row);
+        return i != p.rowBackgroundRoles.end() ? i->second : ColorRole::None;
+    }
+
+    void GridLayout::setRowBackgroundRole(int row, ColorRole value)
+    {
+        FTK_P();
+        if (value == getRowBackgroundRole(row))
+            return;
+        if (value != ColorRole::None)
+        {
+            p.rowBackgroundRoles[row] = value;
+        }
+        else
+        {
+            p.rowBackgroundRoles.erase(row);
+        }
+        setDrawUpdate();
+    }
+
     int GridLayout::getColumnMinWidth(int column) const
     {
         FTK_P();
@@ -209,6 +233,7 @@ namespace ftk
 
     void GridLayout::clear()
     {
+        _p->rowBackgroundRoles.clear();
         auto children = getChildren();
         for (auto child : children)
         {
@@ -434,7 +459,7 @@ namespace ftk
     {
         IWidget::drawEvent(drawRect, event);
         FTK_P();
-        if (p.rowBackgroundRole != ColorRole::None)
+        if (p.rowBackgroundRole != ColorRole::None || !p.rowBackgroundRoles.empty())
         {
             const Box2I g = margin(getGeometry(), -p.size.margin);
             int y = g.min.y;
@@ -445,7 +470,18 @@ namespace ftk
             {
                 if (p.geom.rowsVisible[i])
                 {
-                    if (row % 2 == 1)
+                    // A row's own background, which reaches through the
+                    // margin to the edges of the layout, or else the
+                    // alternating one.
+                    const auto j = p.rowBackgroundRoles.find(static_cast<int>(i));
+                    if (j != p.rowBackgroundRoles.end())
+                    {
+                        const Box2I& g2 = getGeometry();
+                        event.render->drawRect(
+                            Box2I(g2.min.x, y, g2.w(), p.geom.rowSizes[i]),
+                            event.style->getColorRole(j->second));
+                    }
+                    else if (row % 2 == 1 && p.rowBackgroundRole != ColorRole::None)
                     {
                         event.render->drawRect(
                             Box2I(g.min.x, y, g.w(), p.geom.rowSizes[i]),

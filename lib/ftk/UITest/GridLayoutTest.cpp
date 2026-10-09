@@ -68,6 +68,15 @@ namespace ftk
                 spacer2->setParent(nullptr);
                 app->tick();
 
+                // A row with a background of its own.
+                FTK_CHECK(ColorRole::None == layout->getRowBackgroundRole(0));
+                layout->setRowBackgroundRole(0, ColorRole::Button);
+                layout->setRowBackgroundRole(0, ColorRole::Button);
+                FTK_CHECK(ColorRole::Button == layout->getRowBackgroundRole(0));
+                app->tick();
+                layout->setRowBackgroundRole(0, ColorRole::None);
+                FTK_CHECK(ColorRole::None == layout->getRowBackgroundRole(0));
+
                 // A column is no narrower than its minimum width.
                 const int w = layout->getSizeHint().w;
                 FTK_CHECK(0 == layout->getColumnMinWidth(0));
