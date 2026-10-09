@@ -305,4 +305,20 @@ namespace ftk
         }
         return out;
     }
+
+    void setFormGroup(
+        const std::shared_ptr<IWidget>& widget,
+        const std::shared_ptr<FormGroup>& group)
+    {
+        if (!widget)
+            return;
+        if (auto form = std::dynamic_pointer_cast<FormLayout>(widget))
+        {
+            form->setGroup(group);
+        }
+        for (const auto& child : widget->getChildren())
+        {
+            setFormGroup(child, group);
+        }
+    }
 }

@@ -123,5 +123,12 @@ namespace ftk
         FTK_PRIVATE();
     };
 
+    //! Put every form layout among a widget and its descendants into a
+    //! group: for a panel assembled from widgets that each hold a form of
+    //! their own. Forms added to them afterwards are not included.
+    FTK_UI_API void setFormGroup(
+        const std::shared_ptr<IWidget>&,
+        const std::shared_ptr<FormGroup>&);
+
     ///@}
 }

@@ -127,6 +127,16 @@ namespace ftk
                 FTK_CHECK(widget0->getGeometry().min.x < shared);
                 FTK_CHECK(shared == widget1->getGeometry().min.x);
 
+                // Every form under a widget, at once.
+                form0->setGroup(nullptr);
+                form1->setGroup(nullptr);
+                setFormGroup(layout, group);
+                FTK_CHECK(group == form0->getGroup());
+                FTK_CHECK(group == form1->getGroup());
+                app->tick();
+                FTK_CHECK(shared == widget0->getGeometry().min.x);
+                FTK_CHECK(shared == widget1->getGeometry().min.x);
+
                 // A form that is gone is forgotten.
                 form0->setGroup(group);
                 form1->setParent(nullptr);

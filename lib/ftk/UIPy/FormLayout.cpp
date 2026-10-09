@@ -26,6 +26,12 @@ namespace ftk
             nb::class_<FormGroup>(m, "FormGroup")
                 .def(nb::new_(&FormGroup::create));
 
+            m.def(
+                "setFormGroup",
+                &setFormGroup,
+                nb::arg("widget"),
+                nb::arg("group").none());
+
             nb::class_<FormLayout, IContainer>(m, "FormLayout")
                 .def(
                     nb::new_(&FormLayout::create),
