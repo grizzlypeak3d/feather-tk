@@ -76,6 +76,10 @@ namespace ftk
                 table->setMarginRole(SizeRole::Margin);
                 table->setMarginRole(SizeRole::Margin);
                 FTK_CHECK(SizeRole::Margin == table->getMarginRole());
+                FTK_CHECK(!table->hasColumnLines());
+                table->setColumnLines(true);
+                table->setColumnLines(true);
+                FTK_CHECK(table->hasColumnLines());
                 table->setHeadingRole(ColorRole::Header);
                 table->setHeadingRole(ColorRole::Header);
                 FTK_CHECK(ColorRole::Header == table->getHeadingRole());

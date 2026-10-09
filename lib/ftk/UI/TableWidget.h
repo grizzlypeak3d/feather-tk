@@ -26,7 +26,7 @@ namespace ftk
         //! current, and calls the table's callback when it is clicked.
         bool editable = false;
 
-        //! Background color role.
+        //! Background color role, drawn as a tint.
         ColorRole colorRole = ColorRole::None;
 
         bool operator == (const TableCell&) const = default;
@@ -42,8 +42,8 @@ namespace ftk
 
         std::vector<TableCell> cells;
 
-        //! A heading row is drawn in bold over a band that reaches the
-        //! edges of the table, with space above it.
+        //! A heading row is drawn in bold over a band the width of the
+        //! table, with space above it.
         bool heading = false;
 
         bool visible = true;
@@ -151,9 +151,14 @@ namespace ftk
         //! Get the margin role.
         FTK_UI_API SizeRole getMarginRole() const;
 
-        //! Set the margin role. The bands of the heading rows reach
-        //! through the margin.
+        //! Set the margin role.
         FTK_UI_API void setMarginRole(SizeRole);
+
+        //! Get whether lines are drawn between the columns.
+        FTK_UI_API bool hasColumnLines() const;
+
+        //! Set whether lines are drawn between the columns.
+        FTK_UI_API void setColumnLines(bool);
 
         //! Get the color role of the heading rows.
         FTK_UI_API ColorRole getHeadingRole() const;

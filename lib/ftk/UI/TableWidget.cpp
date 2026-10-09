@@ -48,6 +48,7 @@ namespace ftk
         bool editorClose = false;
         SizeRole marginRole = SizeRole::None;
         ColorRole headingRole = ColorRole::Base;
+        bool columnLines = false;
 
         struct SizeData
         {
@@ -57,6 +58,7 @@ namespace ftk
             int keyFocus = 0;
             int pad = 0;
             int headingSpace = 0;
+            int border = 0;
             FontInfo fontInfo;
             FontMetrics fontMetrics;
             FontInfo headingFontInfo;
@@ -270,6 +272,20 @@ namespace ftk
         setDrawUpdate();
     }
 
+    bool TableWidget::hasColumnLines() const
+    {
+        return _p->columnLines;
+    }
+
+    void TableWidget::setColumnLines(bool value)
+    {
+        FTK_P();
+        if (value == p.columnLines)
+            return;
+        p.columnLines = value;
+        setDrawUpdate();
+    }
+
     ColorRole TableWidget::getHeadingRole() const
     {
         return _p->headingRole;
@@ -352,6 +368,7 @@ namespace ftk
             p.size.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
             p.size.pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
             p.size.headingSpace = event.style->getSizeRole(SizeRole::Spacing, event.displayScale);
+            p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
             p.size.fontInfo = event.style->getFont(FontType::Regular, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.headingFontInfo = event.style->getFont(FontType::Bold, event.displayScale);
@@ -431,7 +448,7 @@ namespace ftk
             p.draw->glyphs.resize(p.rows.size());
         }
 
-        const Box2I& g = getGeometry();
+        const Box2I g = margin(getGeometry(), -p.size.margin);
         const int textOffset = p.size.cellMargin + p.size.keyFocus;
         const bool keyFocus = hasKeyFocus();
         for (size_t i = 0; i < p.rows.size() && i < p.geom.rowY.size(); ++i)
@@ -460,11 +477,19 @@ namespace ftk
                     p.geom.columnW[j],
                     p.size.rowHeight);
 
-                if (cell.colorRole != ColorRole::None)
+                if (p.columnLines && !row.heading && j > 0)
                 {
                     event.render->drawRect(
+                        Box2I(cellRect.min.x, cellRect.min.y, p.size.border, cellRect.h()),
+                        event.style->getColorRole(ColorRole::Border));
+                }
+                if (cell.colorRole != ColorRole::None)
+                {
+                    Color4F color = event.style->getColorRole(cell.colorRole);
+                    color.a *= .4F;
+                    event.render->drawRect(
                         margin(cellRect, -p.size.keyFocus),
-                        event.style->getColorRole(cell.colorRole));
+                        color);
                 }
                 if (index == p.hover && !p.editor)
                 {
