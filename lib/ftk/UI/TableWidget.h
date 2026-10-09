@@ -42,8 +42,8 @@ namespace ftk
 
         std::vector<TableCell> cells;
 
-        //! A heading row is drawn in bold over a band the width of the
-        //! table, with space above it.
+        //! A heading row is drawn in bold with space above it, and over a
+        //! band the width of the table, with a line beneath it, or both.
         bool heading = false;
 
         bool visible = true;
@@ -163,8 +163,16 @@ namespace ftk
         //! Get the color role of the heading rows.
         FTK_UI_API ColorRole getHeadingRole() const;
 
-        //! Set the color role of the heading rows.
+        //! Set the color role of the heading rows. With no color role,
+        //! and nothing to edit in the first column, the text of the
+        //! first column starts at the edge of the table.
         FTK_UI_API void setHeadingRole(ColorRole);
+
+        //! Get whether a line is drawn beneath the heading rows.
+        FTK_UI_API bool hasHeadingLine() const;
+
+        //! Set whether a line is drawn beneath the heading rows.
+        FTK_UI_API void setHeadingLine(bool);
 
         ///@}
 

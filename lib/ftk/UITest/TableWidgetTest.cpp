@@ -80,6 +80,12 @@ namespace ftk
                 table->setColumnLines(true);
                 table->setColumnLines(true);
                 FTK_CHECK(table->hasColumnLines());
+                FTK_CHECK(!table->hasHeadingLine());
+                table->setHeadingLine(true);
+                table->setHeadingLine(true);
+                FTK_CHECK(table->hasHeadingLine());
+                table->setHeadingRole(ColorRole::None);
+                app->tick();
                 table->setHeadingRole(ColorRole::Header);
                 table->setHeadingRole(ColorRole::Header);
                 FTK_CHECK(ColorRole::Header == table->getHeadingRole());

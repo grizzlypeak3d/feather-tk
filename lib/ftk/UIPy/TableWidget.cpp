@@ -83,6 +83,7 @@ namespace ftk
                 .def("closeEditor", &TableWidget::closeEditor)
                 .def_prop_rw("marginRole", &TableWidget::getMarginRole, &TableWidget::setMarginRole)
                 .def_prop_rw("columnLines", &TableWidget::hasColumnLines, &TableWidget::setColumnLines)
+                .def_prop_rw("headingLine", &TableWidget::hasHeadingLine, &TableWidget::setHeadingLine)
                 .def_prop_rw("headingRole", &TableWidget::getHeadingRole, &TableWidget::setHeadingRole);
         }
     }

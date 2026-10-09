@@ -48,6 +48,7 @@ namespace ftk
         bool editorClose = false;
         SizeRole marginRole = SizeRole::None;
         ColorRole headingRole = ColorRole::Base;
+        bool headingLine = false;
         bool columnLines = false;
 
         struct SizeData
@@ -64,6 +65,7 @@ namespace ftk
             FontInfo headingFontInfo;
             FontMetrics headingFontMetrics;
             int rowHeight = 0;
+            bool flush = false;
             std::vector<int> columnWidths;
             Size2I sizeHint;
         };
@@ -297,6 +299,23 @@ namespace ftk
         if (value == p.headingRole)
             return;
         p.headingRole = value;
+        p.size.init = true;
+        p.geom.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
+    bool TableWidget::hasHeadingLine() const
+    {
+        return _p->headingLine;
+    }
+
+    void TableWidget::setHeadingLine(bool value)
+    {
+        FTK_P();
+        if (value == p.headingLine)
+            return;
+        p.headingLine = value;
         setDrawUpdate();
     }
 
@@ -384,10 +403,21 @@ namespace ftk
             // A column is as wide as its widest cell, hidden rows
             // included so that the columns stay put while rows are
             // filtered. The text of a heading can run across columns.
+            //
+            // The text of a cell is inset to leave room for what is drawn
+            // around it. With no band behind the headings and nothing to
+            // edit in the first column, nothing is drawn there, and its
+            // text starts at the edge of the table to line up with what
+            // is above and below the table.
             p.size.columnWidths.assign(p.columnCount, 0);
+            p.size.flush = ColorRole::None == p.headingRole;
             int headingWidth = 0;
             for (const auto& row : p.rows)
             {
+                if (!row.cells.empty() && row.cells.front().editable)
+                {
+                    p.size.flush = false;
+                }
                 for (size_t i = 0; i < row.cells.size(); ++i)
                 {
                     const auto& text = row.cells[i].text;
@@ -408,10 +438,11 @@ namespace ftk
                 }
             }
             p.size.sizeHint = Size2I();
-            for (auto& i : p.size.columnWidths)
+            for (size_t i = 0; i < p.size.columnWidths.size(); ++i)
             {
-                i += (cellMargin + p.size.pad) * 2;
-                p.size.sizeHint.w += i;
+                p.size.columnWidths[i] +=
+                    (cellMargin + p.size.pad) * (0 == i && p.size.flush ? 1 : 2);
+                p.size.sizeHint.w += p.size.columnWidths[i];
             }
             p.size.sizeHint.w = std::max(
                 p.size.sizeHint.w,
@@ -464,6 +495,16 @@ namespace ftk
                     rowRect,
                     event.style->getColorRole(p.headingRole));
             }
+            if (row.heading && p.headingLine)
+            {
+                event.render->drawRect(
+                    Box2I(
+                        rowRect.min.x,
+                        rowRect.max.y + 1 - p.size.border,
+                        rowRect.w(),
+                        p.size.border),
+                    event.style->getColorRole(ColorRole::Border));
+            }
 
             auto& glyphs = p.draw->glyphs[i];
             glyphs.resize(row.cells.size());
@@ -515,7 +556,8 @@ namespace ftk
                     event.render->drawText(
                         glyphs[j],
                         row.heading ? p.size.headingFontMetrics : p.size.fontMetrics,
-                        V2I(cellRect.min.x + textOffset + p.size.pad,
+                        V2I(cellRect.min.x +
+                            (0 == j && p.size.flush ? 0 : (textOffset + p.size.pad)),
                             cellRect.min.y + textOffset),
                         event.style->getColorRole(ColorRole::Text));
                 }
