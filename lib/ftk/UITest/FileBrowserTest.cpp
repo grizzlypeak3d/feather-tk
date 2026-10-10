@@ -197,6 +197,47 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(4 == itemCount);
 
+                // A list of files in place of the directory: in the order
+                // given, whatever extension the model has chosen, and
+                // searched by the whole path. A file that is not there is
+                // still listed.
+                model->setExtGroup("Movies");
+                FTK_CHECK(!view->hasPaths());
+                const std::vector<Path> paths =
+                {
+                    Path(fromFileSystem(path / "delta.txt")),
+                    Path(fromFileSystem(path / "alpha.png")),
+                    Path(fromFileSystem(path / "missing.exr"))
+                };
+                view->setPaths(paths);
+                view->setPaths(paths);
+                FTK_CHECK(view->hasPaths());
+                FTK_CHECK(paths == view->getPaths());
+                app->tick();
+                FTK_CHECK(3 == itemCount);
+                window->keyPress(Key::Tab);
+                view->takeKeyFocus();
+                window->keyPress(Key::Home);
+                app->tick();
+                FTK_CHECK(1 == view->getSelection().size());
+                if (!view->getSelection().empty())
+                {
+                    FTK_CHECK(paths[0] == view->getSelection().front());
+                }
+                view->setSearch("ALPHA");
+                app->tick();
+                FTK_CHECK(1 == itemCount);
+                view->setSearch("ftkFileBrowserExtGroupsTest");
+                app->tick();
+                FTK_CHECK(3 == itemCount);
+                view->setSearch(std::string());
+                view->clearPaths();
+                view->clearPaths();
+                FTK_CHECK(!view->hasPaths());
+                app->tick();
+                FTK_CHECK(1 == itemCount);
+                model->setExtGroup(std::string());
+
                 std::filesystem::remove_all(path);
             }
         }

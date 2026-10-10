@@ -14,6 +14,7 @@ namespace ftk
         std::shared_ptr<ToolButton> button;
 
         std::function<void(const std::string&)> callback;
+        std::function<void(void)> returnCallback;
 
         int keyFocus = 0;
     };
@@ -41,6 +42,18 @@ namespace ftk
                 if (_p->callback)
                 {
                     _p->callback(value);
+                }
+            });
+
+        // The return key only: leaving the field is not asking for
+        // anything.
+        p.lineEdit->setCallbackOnFocusLost(false);
+        p.lineEdit->setCallback(
+            [this](const std::string&)
+            {
+                if (_p->returnCallback)
+                {
+                    _p->returnCallback();
                 }
             });
 
@@ -86,6 +99,16 @@ namespace ftk
     void SearchBox::setCallback(const std::function<void(const std::string&)>& value)
     {
         _p->callback = value;
+    }
+
+    void SearchBox::setReturnCallback(const std::function<void(void)>& value)
+    {
+        _p->returnCallback = value;
+    }
+
+    void SearchBox::takeKeyFocus()
+    {
+        _p->lineEdit->takeKeyFocus();
     }
 
     Size2I SearchBox::getSizeHint() const

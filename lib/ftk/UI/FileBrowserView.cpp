@@ -8,6 +8,7 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
+#include <ftk/Core/RenderUtil.h>
 #include <ftk/Core/String.h>
 
 #include <algorithm>
@@ -38,6 +39,13 @@ namespace ftk
 
             std::vector<std::string> text;
             std::vector<Size2I> textSizes;
+
+            // A second line under the name: the directory of a file that
+            // is listed apart from it. It does not widen the row; it is
+            // cut off where the row ends.
+            std::string detail;
+            Size2I detailSize;
+
             Size2I size;
         };
 
@@ -89,6 +97,15 @@ namespace ftk
         FileBrowserOptions options;
         std::string search;
         std::vector<DirEntry> dirEntries;
+
+        // The files shown in place of a directory, and what the file
+        // system said about each. Asked once, when the list is set: the
+        // list is rebuilt on every search key, and a file on a volume
+        // that has gone away is slow to say so.
+        bool hasPaths = false;
+        std::vector<Path> paths;
+        std::vector<DirEntry> pathEntries;
+
         std::shared_ptr<Observable<int> > current;
         std::shared_ptr<Observable<size_t> > itemCount;
 
@@ -259,6 +276,61 @@ namespace ftk
         _directoryUpdate();
     }
 
+    bool FileBrowserView::hasPaths() const
+    {
+        return _p->hasPaths;
+    }
+
+    const std::vector<Path>& FileBrowserView::getPaths() const
+    {
+        return _p->paths;
+    }
+
+    void FileBrowserView::setPaths(const std::vector<Path>& value)
+    {
+        FTK_P();
+        if (p.hasPaths && value == p.paths)
+            return;
+        p.hasPaths = true;
+        p.paths = value;
+        p.pathEntries.clear();
+        for (const auto& path : p.paths)
+        {
+            DirEntry entry;
+            entry.path = path;
+            // A sequence is measured by its first frame, which is the
+            // file that is there.
+            const std::filesystem::path file = std::filesystem::u8path(
+                path.isSeq() && path.getFrames().has_value() ?
+                    path.getFrame(path.getFrames()->min(), true) :
+                    path.get());
+            std::error_code ec;
+            entry.size = std::filesystem::file_size(file, ec);
+            if (ec)
+            {
+                entry.size = 0;
+            }
+            entry.time = std::filesystem::last_write_time(file, ec);
+            p.pathEntries.push_back(entry);
+        }
+        _clearCurrent();
+        p.noThumbnail.clear();
+        _directoryUpdate();
+    }
+
+    void FileBrowserView::clearPaths()
+    {
+        FTK_P();
+        if (!p.hasPaths)
+            return;
+        p.hasPaths = false;
+        p.paths.clear();
+        p.pathEntries.clear();
+        _clearCurrent();
+        p.noThumbnail.clear();
+        _directoryUpdate();
+    }
+
     void FileBrowserView::setCallback(
         const std::function<void(const std::vector<Path>&)>& value)
     {
@@ -323,6 +395,11 @@ namespace ftk
     std::shared_ptr<IObservable<int> > FileBrowserView::observeCurrent() const
     {
         return _p->current;
+    }
+
+    void FileBrowserView::setCurrent(int value)
+    {
+        _setCurrent(value);
     }
 
     std::shared_ptr<IObservable<size_t> > FileBrowserView::observeItemCount() const
@@ -480,6 +557,9 @@ namespace ftk
                     item.textSizes.push_back(
                         event.fontSystem->getSize(text, p.size.fontInfo));
                 }
+                item.detailSize = !item.detail.empty() ?
+                    event.fontSystem->getSize(item.detail, p.size.fontInfo) :
+                    Size2I();
             }
         }
 
@@ -505,7 +585,9 @@ namespace ftk
                 item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
                 item.size.h = std::max(
                     item.size.h,
-                    std::max(textSize.h + p.size.margin * 2, item.imageSize.h) + p.size.keyFocus * 2);
+                    std::max(
+                        textSize.h + item.detailSize.h + p.size.margin * 2,
+                        item.imageSize.h) + p.size.keyFocus * 2);
             }
             p.size.sizeHint.w = std::max(p.size.sizeHint.w, item.size.w);
             p.size.sizeHint.h += item.size.h;
@@ -629,11 +711,31 @@ namespace ftk
                 for (int j = 0; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
                 {
                     const auto glyphs = event.fontSystem->getGlyphs(item.text[j], p.size.fontInfo);
+                    // The name moves up to make room for the line under it.
+                    const int textY =
+                        y + item.size.h / 2 - item.textSizes[j].h / 2 -
+                        (0 == j ? item.detailSize.h / 2 : 0);
                     event.render->drawText(
                         glyphs,
                         p.size.fontMetrics,
-                        V2I(x + p.size.pad + p.size.margin, y + item.size.h / 2 - item.textSizes[j].h / 2),
+                        V2I(x + p.size.pad + p.size.margin, textY),
                         event.style->getColorRole(ColorRole::Text, isEnabled()));
+                    if (0 == j && !item.detail.empty())
+                    {
+                        // Dimmed, and cut off before the columns on the
+                        // right.
+                        const ClipRectEnabledState clipRectEnabledState(event.render);
+                        const ClipRectState clipRectState(event.render);
+                        event.render->setClipRectEnabled(true);
+                        event.render->setClipRect(intersect(
+                            Box2I(x, y, g.max.x - rightColumnsSize - x, item.size.h),
+                            drawRect));
+                        event.render->drawText(
+                            event.fontSystem->getGlyphs(item.detail, p.size.fontInfo),
+                            p.size.fontMetrics,
+                            V2I(x + p.size.pad + p.size.margin, textY + item.textSizes[j].h),
+                            event.style->getColorRole(ColorRole::Text, false));
+                    }
                     if (0 == j)
                     {
                         x = g.max.x - rightColumnsSize;
@@ -947,6 +1049,17 @@ namespace ftk
             }
         }
 
+        if (p.hasPaths)
+        {
+            for (const auto& entry : p.pathEntries)
+            {
+                if (p.search.empty() ||
+                    contains(entry.path.get(), p.search, CaseCompare::Insensitive))
+                {
+                    p.dirEntries.push_back(entry);
+                }
+            }
+        }
         const auto& options = p.model->getOptions();
         auto dirListOptions = options.dirList;
         dirListOptions.filter = p.search;
@@ -975,7 +1088,10 @@ namespace ftk
             // lists everything.
             dirListOptions.filterExt = p.model->getExtsFilter();
         }
-        p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+        if (!p.hasPaths)
+        {
+            p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+        }
         p.itemCount->setIfChanged(p.dirEntries.size());
 
         // Columns are aligned by padding them to a common width, so the frame
@@ -1014,8 +1130,13 @@ namespace ftk
                     }
                 }
 
-                // File name.
+                // File name, and the directory of a file listed apart
+                // from it.
                 item.text.push_back(dirEntry.path.getFileName());
+                if (p.hasPaths)
+                {
+                    item.detail = dirEntry.path.getDir();
+                }
 
                 // Frame range.
                 if (dirEntry.path.isSeq())
