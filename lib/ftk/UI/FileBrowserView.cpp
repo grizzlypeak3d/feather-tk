@@ -243,6 +243,9 @@ namespace ftk
                     {
                         item.thumbnailImage.reset();
                     }
+                    // The icons are a size for each layout.
+                    p.directoryImage.reset();
+                    p.fileImage.reset();
                 }
                 p.options = value;
                 _directoryUpdate();
@@ -550,13 +553,16 @@ namespace ftk
             }
             p.size.init = true;
         }
+        // Three times the size as tiles: an icon the size of a line of
+        // text is lost in the room a tile gives it.
+        const float iconScale = event.displayScale * (_isTiles() ? 3.F : 1.F);
         if (!p.directoryImage)
         {
-            p.directoryImage = event.iconSystem->get("Directory", event.displayScale);
+            p.directoryImage = event.iconSystem->get("Directory", iconScale);
         }
         if (!p.fileImage)
         {
-            p.fileImage = event.iconSystem->get("File", event.displayScale);
+            p.fileImage = event.iconSystem->get("File", iconScale);
         }
 
         if (p.size.init)
