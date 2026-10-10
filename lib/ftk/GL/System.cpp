@@ -339,6 +339,11 @@ namespace ftk
             // mouse is over but takes a second click to press it.
             SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 #endif // SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH
+#if defined(SDL_HINT_MAC_PRESS_AND_HOLD)
+            // A held key repeats in a text field. Since 3.4 SDL has macOS
+            // open the accents menu instead, which stops the repeat.
+            SDL_SetHint(SDL_HINT_MAC_PRESS_AND_HOLD, "0");
+#endif // SDL_HINT_MAC_PRESS_AND_HOLD
 #if defined(FTK_SDL2)
             SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
 #if defined(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT)
