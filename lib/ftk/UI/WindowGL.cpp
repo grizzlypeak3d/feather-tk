@@ -480,7 +480,13 @@ namespace ftk
         FTK_P();
         WindowHDR out;
 #if defined(FTK_GPU)
-        if (p.gpu && p.gpuComposition != gpu::Composition::SDR)
+        // The composition alone does not say: an SDR display can have the
+        // float surface too, for more than eight bits (see gpu::getComposition).
+        if (p.gpu && p.gpuComposition != gpu::Composition::SDR &&
+            SDL_GetBooleanProperty(
+                SDL_GetWindowProperties(p.window->getSDLWindow()),
+                SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN,
+                false))
         {
             const SDL_PropertiesID props = SDL_GetWindowProperties(p.window->getSDLWindow());
             out.enabled = true;
@@ -626,8 +632,12 @@ namespace ftk
                 p.render->end();
             }
 
+            // The desktop blits the buffer to the window, which is the
+            // fastest way there is; OpenGL ES has no blit between formats,
+            // and dithering needs a shader on both.
             const bool gles = gl::isGLES();
-            if (p.buffer && !gles)
+            const bool shader = gles || getDither();
+            if (p.buffer && !shader)
             {
                 glBindFramebuffer(
                     GL_READ_FRAMEBUFFER,
@@ -644,7 +654,7 @@ namespace ftk
                     GL_COLOR_BUFFER_BIT,
                     GL_LINEAR);
             }
-            if (p.buffer && gles && !p.shader)
+            if (p.buffer && shader && !p.shader)
             {
                 try
                 {
@@ -672,10 +682,29 @@ namespace ftk
                         "in vec2 fTexture;\n"
                         "\n"
                         "uniform sampler2D textureSampler;\n"
+                        "uniform int dither;\n"
+                        "\n"
+                        "// The 8x8 Bayer matrix, as a threshold in [0, 1).\n"
+                        "float bayer8(vec2 p)\n"
+                        "{\n"
+                        "    int x = int(p.x) & 7;\n"
+                        "    int y = int(p.y) & 7;\n"
+                        "    int a = x ^ y;\n"
+                        "    int v = ((a & 1) << 5) | ((y & 1) << 4) | ((a & 2) << 2) |\n"
+                        "        ((y & 2) << 1) | ((a & 4) >> 1) | ((y & 4) >> 2);\n"
+                        "    return (float(v) + 0.5) / 64.0;\n"
+                        "}\n"
                         "\n"
                         "void main()\n"
                         "{\n"
                         "    outColor = texture(textureSampler, fTexture);\n"
+                        "    if (dither != 0)\n"
+                        "    {\n"
+                        "        // Less than one eight bit step, either way, in\n"
+                        "        // a fixed pattern: the rounding to eight bits\n"
+                        "        // then lands on each side in proportion.\n"
+                        "        outColor.rgb += vec3((bayer8(gl_FragCoord.xy) - 0.5) / 255.0);\n"
+                        "    }\n"
                         "}\n";
                     p.shader = gl::Shader::create(vertexSource, fragmentSource);
                 }
@@ -690,7 +719,7 @@ namespace ftk
                     }
                 }
             }
-            if (p.buffer && gles && p.shader)
+            if (p.buffer && shader && p.shader)
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 glDisable(GL_BLEND);
@@ -711,6 +740,7 @@ namespace ftk
                         -1.F,
                         1.F));
                 p.shader->setUniform("textureSampler", 0);
+                p.shader->setUniform("dither", getDither() ? 1 : 0);
 
                 glActiveTexture(static_cast<GLenum>(GL_TEXTURE0));
                 glBindTexture(GL_TEXTURE_2D, p.buffer->getColorID());
@@ -790,8 +820,9 @@ namespace ftk
                 {
                     context->getSystem<LogSystem>()->print(
                         "ftk::Window",
-                        Format("Swapchain: {0}, SDR white level: {1}, HDR headroom: {2}").
+                        Format("Swapchain: {0}, HDR: {1}, SDR white level: {2}, HDR headroom: {3}").
                             arg(gpu::getLabel(p.gpuComposition)).
+                            arg(getHDR().enabled ? "yes" : "no").
                             arg(p.gpuWhiteLevel).
                             arg(p.gpuHeadroom));
                 }
@@ -877,7 +908,8 @@ namespace ftk
                     swapchain,
                     static_cast<int>(SDL_GetGPUSwapchainTextureFormat(device, sdlWindow)),
                     p.gpuComposition,
-                    gpu::getSDRWhiteLevel(sdlWindow, p.gpuComposition));
+                    gpu::getSDRWhiteLevel(sdlWindow, p.gpuComposition),
+                    getDither());
             }
             if (cmd)
             {

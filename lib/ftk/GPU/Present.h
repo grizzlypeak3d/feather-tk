@@ -96,7 +96,8 @@ namespace ftk
                 SDL_GPUTexture* destination,
                 int destinationFormat,
                 Composition,
-                float sdrWhiteLevel = 1.F);
+                float sdrWhiteLevel = 1.F,
+                bool dither = false);
 
         private:
             FTK_PRIVATE();

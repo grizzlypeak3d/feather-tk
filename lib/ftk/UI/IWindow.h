@@ -137,6 +137,15 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IObservable<WindowBufferType> > observeBufferType() const;
         FTK_UI_API void setBufferType(WindowBufferType);
 
+        //! Dithering of what is shown, where the window's surface is eight
+        //! bit: a little noise below a step, in a fixed pattern, so that a
+        //! gradient drawn with more precision does not band. Only what is
+        //! shown: a screenshot or a buffer read is of the picture before
+        //! it. Off by default, since it changes what is shown.
+        FTK_UI_API bool getDither() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeDither() const;
+        FTK_UI_API void setDither(bool);
+
         ///@}
 
         //! Display Scale

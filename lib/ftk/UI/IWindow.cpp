@@ -64,6 +64,7 @@ namespace ftk
         std::shared_ptr<Observable<bool> > fullScreen;
         std::shared_ptr<Observable<bool> > floatOnTop;
         std::shared_ptr<Observable<WindowBufferType> > bufferType;
+        std::shared_ptr<Observable<bool> > dither;
         std::shared_ptr<Observable<float> > displayScale;
         std::function<void(void)> closeCallback;
         std::function<void(bool)> fullScreenCallback;
@@ -131,6 +132,7 @@ namespace ftk
         p.fullScreen = Observable<bool>::create(false);
         p.floatOnTop = Observable<bool>::create(false);
         p.bufferType = Observable<WindowBufferType>::create(getWindowBufferTypeDefault());
+        p.dither = Observable<bool>::create(false);
         p.displayScale = Observable<float>::create(1.F);
 
         setBackgroundRole(ColorRole::Window);
@@ -239,6 +241,24 @@ namespace ftk
     void IWindow::setBufferType(WindowBufferType value)
     {
         if (_p->bufferType->setIfChanged(value))
+        {
+            setDrawUpdate();
+        }
+    }
+
+    bool IWindow::getDither() const
+    {
+        return _p->dither->get();
+    }
+
+    std::shared_ptr<IObservable<bool> > IWindow::observeDither() const
+    {
+        return _p->dither;
+    }
+
+    void IWindow::setDither(bool value)
+    {
+        if (_p->dither->setIfChanged(value))
         {
             setDrawUpdate();
         }

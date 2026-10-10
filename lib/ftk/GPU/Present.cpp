@@ -55,6 +55,7 @@ namespace ftk
                 "{\n"
                 "    int composition;\n"
                 "    float sdrWhiteLevel;\n"
+                "    int dither;\n"
                 "};\n"
                 "\n"
                 "constant int Composition_SDR = 0;\n"
@@ -68,6 +69,17 @@ namespace ftk
                 "    float3 lo = a / 12.92;\n"
                 "    float3 hi = pow((a + 0.055) / 1.055, float3(2.4));\n"
                 "    return sign(v) * select(hi, lo, a <= float3(0.04045));\n"
+                "}\n"
+                "\n"
+                "// The 8x8 Bayer matrix, as a threshold in [0, 1).\n"
+                "float bayer8(float2 p)\n"
+                "{\n"
+                "    int x = int(p.x) & 7;\n"
+                "    int y = int(p.y) & 7;\n"
+                "    int a = x ^ y;\n"
+                "    int v = ((a & 1) << 5) | ((y & 1) << 4) | ((a & 2) << 2) |\n"
+                "        ((y & 2) << 1) | ((a & 4) >> 1) | ((y & 4) >> 2);\n"
+                "    return (float(v) + 0.5) / 64.0;\n"
                 "}\n"
                 "\n"
                 "// SMPTE ST 2084, from nits.\n"
@@ -105,6 +117,13 @@ namespace ftk
                 "            dot(l, float3(0.016391, 0.088013, 0.895595))), 0.0);\n"
                 "        c.rgb = toPQ(r2020 * u.sdrWhiteLevel * 80.0);\n"
                 "    }\n"
+                "    else if (u.dither != 0)\n"
+                "    {\n"
+                "        // An eight bit surface: less than one step, either way,\n"
+                "        // in a fixed pattern, so the rounding to eight bits lands\n"
+                "        // on each side in proportion.\n"
+                "        c.rgb += float3((bayer8(in.position.xy) - 0.5) / 255.0);\n"
+                "    }\n"
                 "    c.a = 1.0;\n"
                 "    return c;\n"
                 "}\n";
@@ -134,6 +153,7 @@ namespace ftk
                 "{\n"
                 "    int composition;\n"
                 "    float sdrWhiteLevel;\n"
+                "    int dither;\n"
                 "} u;\n"
                 "\n"
                 "const int Composition_SDR = 0;\n"
@@ -147,6 +167,17 @@ namespace ftk
                 "    vec3 lo = a / 12.92;\n"
                 "    vec3 hi = pow((a + 0.055) / 1.055, vec3(2.4));\n"
                 "    return sign(v) * mix(hi, lo, lessThanEqual(a, vec3(0.04045)));\n"
+                "}\n"
+                "\n"
+                "// The 8x8 Bayer matrix, as a threshold in [0, 1).\n"
+                "float bayer8(vec2 p)\n"
+                "{\n"
+                "    int x = int(p.x) & 7;\n"
+                "    int y = int(p.y) & 7;\n"
+                "    int a = x ^ y;\n"
+                "    int v = ((a & 1) << 5) | ((y & 1) << 4) | ((a & 2) << 2) |\n"
+                "        ((y & 2) << 1) | ((a & 4) >> 1) | ((y & 4) >> 2);\n"
+                "    return (float(v) + 0.5) / 64.0;\n"
                 "}\n"
                 "\n"
                 "// SMPTE ST 2084, from nits.\n"
@@ -180,6 +211,13 @@ namespace ftk
                 "            dot(l, vec3(0.016391, 0.088013, 0.895595))), 0.0);\n"
                 "        c.rgb = toPQ(r2020 * u.sdrWhiteLevel * 80.0);\n"
                 "    }\n"
+                "    else if (u.dither != 0)\n"
+                "    {\n"
+                "        // An eight bit surface: less than one step, either way,\n"
+                "        // in a fixed pattern, so the rounding to eight bits lands\n"
+                "        // on each side in proportion.\n"
+                "        c.rgb += vec3((bayer8(gl_FragCoord.xy) - 0.5) / 255.0);\n"
+                "    }\n"
                 "    c.a = 1.0;\n"
                 "    outColor = c;\n"
                 "}\n";
@@ -188,7 +226,8 @@ namespace ftk
             {
                 int32_t composition = 0;
                 float sdrWhiteLevel = 1.F;
-                int32_t pad[2] = { 0, 0 };
+                int32_t dither = 0;
+                int32_t pad = 0;
             };
 
             SDL_GPUSwapchainComposition getSDL(Composition value)
@@ -222,6 +261,8 @@ namespace ftk
             if (const char* env = std::getenv("FTK_GPU_SWAPCHAIN"))
             {
                 const std::string s(env);
+                // "sdr" is the eight bit surface, which otherwise is not
+                // chosen where the float one can be had.
                 if ("hdr" == s)
                 {
                     out = Composition::HDRExtendedLinear;
@@ -244,6 +285,7 @@ namespace ftk
             SDL_Window* window)
         {
             Composition out = Composition::SDR;
+            SDL_GPUDevice* device = system->getDevice();
             const bool hdr = SDL_GetBooleanProperty(
                 SDL_GetWindowProperties(window),
                 SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN,
@@ -252,7 +294,6 @@ namespace ftk
             {
                 // Only what the window can have: asking for another is
                 // answered with SDR, and would be asked again every frame.
-                SDL_GPUDevice* device = system->getDevice();
                 for (const auto composition :
                     {
                         Composition::HDRExtendedLinear,
@@ -266,6 +307,22 @@ namespace ftk
                     }
                 }
             }
+#if defined(__APPLE__) || defined(_WIN32)
+            else
+            {
+                // Not HDR, but more than eight bits: the float surface is
+                // had on an SDR display too, where the system composites it
+                // at the display's own precision, ten bits on a panel that
+                // has them. An SDR picture in it is the same picture, with
+                // white at one; see Present. Not on Linux, where the float
+                // surface is the desktop's HDR one and nothing else.
+                if (SDL_WindowSupportsGPUSwapchainComposition(
+                    device, window, getSDL(Composition::HDRExtendedLinear)))
+                {
+                    out = Composition::HDRExtendedLinear;
+                }
+            }
+#endif // __APPLE__ || _WIN32
             return out;
         }
 
@@ -357,7 +414,8 @@ namespace ftk
             SDL_GPUTexture* destination,
             int destinationFormat,
             Composition composition,
-            float sdrWhiteLevel)
+            float sdrWhiteLevel,
+            bool dither)
         {
             FTK_P();
             SDL_GPUDevice* device = p.system->getDevice();
@@ -419,6 +477,7 @@ namespace ftk
             Uniforms uniforms;
             uniforms.composition = static_cast<int32_t>(composition);
             uniforms.sdrWhiteLevel = sdrWhiteLevel;
+            uniforms.dither = dither ? 1 : 0;
             SDL_PushGPUFragmentUniformData(cmd, 0, &uniforms, sizeof(uniforms));
             SDL_GPUTextureSamplerBinding binding = {};
             binding.texture = source;

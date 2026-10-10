@@ -441,7 +441,8 @@ namespace
                 destination->getTexture(),
                 static_cast<int>(SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT),
                 composition,
-                sdrWhiteLevel);
+                sdrWhiteLevel,
+                false);
             SDL_SubmitGPUCommandBuffer(cmd);
             const auto image = destination->read();
             const float* p = reinterpret_cast<const float*>(image->getData()) + (8 * 16 + 8) * 4;
@@ -454,6 +455,51 @@ namespace
                 p[0] << " " << p[1] << " " << p[2] << ", expected " <<
                 expected[0] << " " << expected[1] << " " << expected[2] << std::endl;
             out &= max < .001F;
+        }
+
+        // Dithering into an eight bit surface: a value halfway between two
+        // steps comes out as one of them everywhere without it, and as both
+        // of them, in proportion, with it.
+        {
+            const float half = 128.5F / 255.F;
+            auto halfSource = gpu::OffscreenBuffer::create(system, size, gpu::BufferType::RGBA_F32);
+            render->setTarget(halfSource);
+            RenderOptions halfOptions;
+            halfOptions.clearColor = Color4F(half, half, half, 1.F);
+            render->begin(size, halfOptions);
+            render->end();
+            for (const bool dither : { false, true })
+            {
+                auto destination = gpu::OffscreenBuffer::create(system, size, gpu::BufferType::RGBA_U8);
+                SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(system->getDevice());
+                presenter->draw(
+                    cmd,
+                    halfSource->getTexture(),
+                    destination->getTexture(),
+                    static_cast<int>(SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM),
+                    gpu::Composition::SDR,
+                    1.F,
+                    dither);
+                SDL_SubmitGPUCommandBuffer(cmd);
+                const auto image = destination->read();
+                size_t low = 0;
+                size_t high = 0;
+                size_t other = 0;
+                for (int i = 0; i < size.w * size.h; ++i)
+                {
+                    const uint8_t v = image->getData()[i * 4];
+                    if (128 == v) ++low;
+                    else if (129 == v) ++high;
+                    else ++other;
+                }
+                std::cout << "Dither " << (dither ? "on" : "off") << ": " <<
+                    low << " low, " << high << " high, " << other << " other" << std::endl;
+                const size_t count = size.w * size.h;
+                const bool ok = dither ?
+                    (0 == other && low >= count / 4 && high >= count / 4) :
+                    (0 == other && (0 == low || 0 == high));
+                out &= ok;
+            }
         }
         return out;
     }
