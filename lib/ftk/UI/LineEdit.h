@@ -119,6 +119,13 @@ namespace ftk
         FTK_UI_API ColorRole getWellRole() const;
         FTK_UI_API void setWellRole(ColorRole);
 
+        //! Get the room kept clear at the right of the text.
+        FTK_UI_API int getRightInset() const;
+
+        //! Set the room, in pixels, kept clear at the right of the text,
+        //! for a widget placed over that end of the field.
+        FTK_UI_API void setRightInset(int);
+
         ///@}
 
         FTK_UI_API Size2I getSizeHint() const override;
