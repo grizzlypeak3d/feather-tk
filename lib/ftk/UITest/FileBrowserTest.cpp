@@ -231,6 +231,58 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(3 == itemCount);
                 view->setSearch(std::string());
+
+                // As tiles the files are side by side, and the left and
+                // right arrows move between them.
+                window->layout(Size2I(1280, 960));
+                app->tick();
+                const Box2I listRect0 = view->getRect(0);
+                const Box2I listRect1 = view->getRect(1);
+                FTK_CHECK(listRect1.min.y > listRect0.min.y);
+                FTK_CHECK(listRect1.min.x == listRect0.min.x);
+                {
+                    FileBrowserOptions tilesOptions = model->getOptions();
+                    tilesOptions.layout = FileBrowserLayout::Tiles;
+                    model->setOptions(tilesOptions);
+                    window->layout(Size2I(1280, 960));
+                    app->tick();
+                    app->tick();
+                    FTK_CHECK(3 == itemCount);
+                    const Box2I tileRect0 = view->getRect(0);
+                    const Box2I tileRect1 = view->getRect(1);
+                    FTK_CHECK(tileRect1.min.y == tileRect0.min.y);
+                    FTK_CHECK(tileRect1.min.x > tileRect0.max.x - 1);
+                    FTK_CHECK(view->getSizeHint().h >= tileRect0.h());
+                    view->takeKeyFocus();
+                    view->setCurrent(0);
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    if (!view->getSelection().empty())
+                    {
+                        FTK_CHECK(paths[1] == view->getSelection().front());
+                    }
+                    window->keyPress(Key::Left);
+                    window->keyPress(Key::Left);
+                    app->tick();
+                    if (!view->getSelection().empty())
+                    {
+                        FTK_CHECK(paths[0] == view->getSelection().front());
+                    }
+                    tilesOptions.layout = FileBrowserLayout::List;
+                    model->setOptions(tilesOptions);
+                    app->tick();
+                }
+                FTK_CHECK(FileBrowserLayout::Tiles ==
+                    [] {
+                        FileBrowserOptions a;
+                        a.layout = FileBrowserLayout::Tiles;
+                        nlohmann::json json;
+                        to_json(json, a);
+                        FileBrowserOptions b;
+                        from_json(json, b);
+                        return b.layout;
+                    }());
+
                 view->clearPaths();
                 view->clearPaths();
                 FTK_CHECK(!view->hasPaths());

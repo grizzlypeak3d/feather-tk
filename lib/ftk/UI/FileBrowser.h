@@ -51,6 +51,22 @@ namespace ftk
     };
     FTK_ENUM(FTK_UI_API, FileBrowserThumbnails);
 
+    //! File browser layout: how the files are arranged.
+    enum class FTK_UI_API_TYPE FileBrowserLayout
+    {
+        //! A row for each file, with its name and details beside a
+        //! thumbnail.
+        List,
+
+        //! A grid of larger thumbnails with the names under them, for
+        //! finding a file by its picture.
+        Tiles,
+
+        Count,
+        First = List
+    };
+    FTK_ENUM(FTK_UI_API, FileBrowserLayout);
+
     //! Get the height of a thumbnail, from the style's size for one.
     FTK_UI_API int getThumbnailHeight(FileBrowserThumbnails, int sizeRole);
 
@@ -59,6 +75,7 @@ namespace ftk
     {
         DirListOptions              dirList;
         FileBrowserThumbnails       thumbnails   = FileBrowserThumbnails::Medium;
+        FileBrowserLayout           layout       = FileBrowserLayout::List;
         bool                        panel        = true;
         bool                        pathEditable = false;
         std::map<std::string, bool> bellows =

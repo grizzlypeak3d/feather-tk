@@ -256,6 +256,7 @@ namespace ftk
         FTK_UI_API Box2I getRect(int) const;
 
         FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;
         FTK_UI_API void tickEvent(bool, bool, const TickEvent&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
@@ -271,6 +272,8 @@ namespace ftk
 
     private:
         int _getItem(const V2I&) const;
+        bool _isTiles() const;
+        void _layoutUpdate();
         void _directoryUpdate();
         void _cancelThumbnails();
         void _setCurrent(int);
