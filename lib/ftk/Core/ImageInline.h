@@ -93,4 +93,9 @@ namespace ftk
     {
         return _data;
     }
+
+    inline uintptr_t Image::getTextureHandle() const
+    {
+        return _textureHandle;
+    }
 }

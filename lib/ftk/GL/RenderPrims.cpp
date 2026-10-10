@@ -840,7 +840,29 @@ namespace ftk
                 return;
 
             std::vector<std::shared_ptr<Texture> > textures;
-            if (!imageOptions.cache)
+            if (const uintptr_t handle = image->getTextureHandle())
+            {
+                // The pixels are a texture already, and are drawn where
+                // they are. One texture: an imported frame is RGBA whatever
+                // the decoder produced.
+                if (!p.textureCache.get(image, textures))
+                {
+                    TextureOptions options;
+                    options.filters = imageOptions.imageFilters;
+                    if (ImageFilter::HighQuality == options.filters.minify)
+                    {
+                        options.filters.minify = ImageFilter::Nearest;
+                    }
+                    if (ImageFilter::HighQuality == options.filters.magnify)
+                    {
+                        options.filters.magnify = ImageFilter::Nearest;
+                    }
+                    textures.push_back(Texture::wrap(
+                        info, static_cast<unsigned int>(handle), options));
+                    p.textureCache.add(image, textures, image->getByteCount());
+                }
+            }
+            else if (!imageOptions.cache)
             {
                 const std::string texturePoolKey = getTexturePoolKey(info);
                 if (!p.texturePool.get(texturePoolKey, textures))

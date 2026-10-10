@@ -103,6 +103,10 @@ namespace ftk
             Texture(
                 const ImageInfo&,
                 const TextureOptions&);
+            Texture(
+                const ImageInfo&,
+                unsigned int id,
+                const TextureOptions&);
 
         public:
             FTK_GL_API ~Texture();
@@ -110,6 +114,15 @@ namespace ftk
             //! Create a new texture.
             FTK_GL_API static std::shared_ptr<Texture> create(
                 const ImageInfo&,
+                const TextureOptions& = TextureOptions());
+
+            //! Wrap a texture made elsewhere, such as a video frame the
+            //! browser imported: this draws it but does not own it, so
+            //! the texture outlives the wrapper. The filters are set on it;
+            //! copying into it does nothing.
+            FTK_GL_API static std::shared_ptr<Texture> wrap(
+                const ImageInfo&,
+                unsigned int id,
                 const TextureOptions& = TextureOptions());
 
             //! Get the texture information.

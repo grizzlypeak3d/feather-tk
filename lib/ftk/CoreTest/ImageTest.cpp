@@ -100,6 +100,30 @@ namespace ftk
                 const std::shared_ptr<const Image> image2 = image;
                 FTK_CHECK(image2->getData());
             }
+            {
+                // Pixels on the GPU: no data, the nominal byte count, and
+                // the release runs once, when the image goes.
+                const ImageInfo info(Size2I(1920, 1080), ImageType::RGBA_U8);
+                const size_t totalByteCount = Image::getTotalByteCount();
+                uintptr_t released = 0;
+                auto image = Image::create(
+                    info,
+                    42,
+                    [&released](uintptr_t handle) { released = handle; });
+                FTK_CHECK(image->isValid());
+                FTK_CHECK(42 == image->getTextureHandle());
+                FTK_CHECK(!image->getData());
+                FTK_CHECK(1920 * 1080 * 4 == image->getByteCount());
+                FTK_CHECK(totalByteCount == Image::getTotalByteCount());
+                image->zero();
+                FTK_CHECK(0 == released);
+                image.reset();
+                FTK_CHECK(42 == released);
+            }
+            {
+                auto image = Image::create(1920, 1080, ImageType::RGB_U8);
+                FTK_CHECK(0 == image->getTextureHandle());
+            }
         }
         
         void ImageTest::_functions()

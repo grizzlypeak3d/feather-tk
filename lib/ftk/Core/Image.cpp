@@ -335,14 +335,38 @@ namespace ftk
         }
     }
 
+    Image::Image(
+        const ImageInfo& info,
+        uintptr_t textureHandle,
+        const std::function<void(uintptr_t)>& release) :
+        _info(info),
+        _byteCount(info.getByteCount()),
+        _externalData(true),
+        _textureHandle(textureHandle),
+        _release(release)
+    {
+        // The total is of memory, which these pixels are not in.
+        ++objectCount;
+    }
+
     Image::~Image()
     {
         --objectCount;
-        totalByteCount -= _byteCount;
 
-        if (!_externalData)
+        if (_textureHandle)
         {
-            releaseBuffer(_data, _byteCount + dataPadding);
+            if (_release)
+            {
+                _release(_textureHandle);
+            }
+        }
+        else
+        {
+            totalByteCount -= _byteCount;
+            if (!_externalData)
+            {
+                releaseBuffer(_data, _byteCount + dataPadding);
+            }
         }
     }
 
@@ -366,6 +390,14 @@ namespace ftk
         return std::shared_ptr<Image>(new Image(ImageInfo(w, h, type)));
     }
 
+    std::shared_ptr<Image> Image::create(
+        const ImageInfo& info,
+        uintptr_t textureHandle,
+        const std::function<void(uintptr_t)>& release)
+    {
+        return std::shared_ptr<Image>(new Image(info, textureHandle, release));
+    }
+
     void Image::setTags(const ImageTags& tags)
     {
         _tags = tags;
@@ -373,7 +405,10 @@ namespace ftk
 
     void Image::zero()
     {
-        memset(_data, 0, _byteCount);
+        if (_data)
+        {
+            memset(_data, 0, _byteCount);
+        }
     }
 
     size_t Image::getObjectCount()
