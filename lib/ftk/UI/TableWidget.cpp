@@ -41,7 +41,6 @@ namespace ftk
         std::vector<bool> columnStretch;
         TableIndex current;
         TableIndex hover;
-        int hoverRow = -1;
         std::function<void(const TableIndex&)> callback;
         std::shared_ptr<IWidget> editor;
         TableIndex editorIndex;
@@ -136,7 +135,6 @@ namespace ftk
             p.current = TableIndex();
         }
         p.hover = TableIndex();
-        p.hoverRow = -1;
         if (p.editor && !_isEditable(p.editorIndex))
         {
             _editorRemove();
@@ -508,15 +506,6 @@ namespace ftk
                     event.style->getColorRole(ColorRole::Border));
             }
 
-            // The row under the mouse is tinted, to follow a name across
-            // to its cells without lines between the rows.
-            if (static_cast<int>(i) == p.hoverRow && !row.heading)
-            {
-                Color4F color = event.style->getColorRole(ColorRole::Hover);
-                color.a *= .5F;
-                event.render->drawRect(rowRect, color);
-            }
-
             auto& glyphs = p.draw->glyphs[i];
             glyphs.resize(row.cells.size());
             for (size_t j = 0; j < row.cells.size(); ++j)
@@ -580,10 +569,9 @@ namespace ftk
     {
         IMouseWidget::mouseLeaveEvent();
         FTK_P();
-        if (p.hover.isValid() || p.hoverRow >= 0)
+        if (p.hover.isValid())
         {
             p.hover = TableIndex();
-            p.hoverRow = -1;
             setDrawUpdate();
         }
     }
@@ -593,21 +581,9 @@ namespace ftk
         IMouseWidget::mouseMoveEvent(event);
         FTK_P();
         const TableIndex hover = _getCell(event.pos);
-        int hoverRow = -1;
-        for (size_t i = 0; i < p.rows.size() && i < p.geom.rowY.size(); ++i)
-        {
-            if (p.rows[i].visible &&
-                event.pos.y >= p.geom.rowY[i] &&
-                event.pos.y < p.geom.rowY[i] + p.size.rowHeight)
-            {
-                hoverRow = static_cast<int>(i);
-                break;
-            }
-        }
-        if (hover != p.hover || hoverRow != p.hoverRow)
+        if (hover != p.hover)
         {
             p.hover = hover;
-            p.hoverRow = hoverRow;
             setDrawUpdate();
         }
     }
