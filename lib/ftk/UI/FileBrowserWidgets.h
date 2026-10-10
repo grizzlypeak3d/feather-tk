@@ -205,6 +205,7 @@ namespace ftk
         //! files, say. They are shown in the order given, each with the
         //! directory it is in, and the search filter matches against the
         //! whole path. The extensions chosen in the model do not apply.
+        //! A directory in the list is given to the callback like a file.
         FTK_UI_API void setPaths(const std::vector<Path>&);
 
         //! Go back to showing the model's directory.

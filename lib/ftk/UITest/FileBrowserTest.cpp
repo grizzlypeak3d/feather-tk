@@ -207,14 +207,35 @@ namespace ftk
                 {
                     Path(fromFileSystem(path / "delta.txt")),
                     Path(fromFileSystem(path / "alpha.png")),
-                    Path(fromFileSystem(path / "missing.exr"))
+                    Path(fromFileSystem(path / "missing.exr")),
+                    Path(fromFileSystem(path))
                 };
                 view->setPaths(paths);
                 view->setPaths(paths);
                 FTK_CHECK(view->hasPaths());
                 FTK_CHECK(paths == view->getPaths());
                 app->tick();
-                FTK_CHECK(3 == itemCount);
+                FTK_CHECK(4 == itemCount);
+
+                // A directory in the list is handed to the callback.
+                {
+                    std::vector<Path> opened;
+                    view->setCallback(
+                        [&opened](const std::vector<Path>& value)
+                        {
+                            opened = value;
+                        });
+                    view->takeKeyFocus();
+                    view->setCurrent(3);
+                    window->keyPress(Key::Return);
+                    app->tick();
+                    FTK_CHECK(1 == opened.size());
+                    if (!opened.empty())
+                    {
+                        FTK_CHECK(paths[3] == opened.front());
+                    }
+                    view->setCallback(nullptr);
+                }
                 window->keyPress(Key::Tab);
                 view->takeKeyFocus();
                 window->keyPress(Key::Home);
@@ -229,7 +250,7 @@ namespace ftk
                 FTK_CHECK(1 == itemCount);
                 view->setSearch("ftkFileBrowserExtGroupsTest");
                 app->tick();
-                FTK_CHECK(3 == itemCount);
+                FTK_CHECK(4 == itemCount);
                 view->setSearch(std::string());
 
                 // As tiles the files are side by side, and the left and
@@ -247,7 +268,7 @@ namespace ftk
                     window->layout(Size2I(1280, 960));
                     app->tick();
                     app->tick();
-                    FTK_CHECK(3 == itemCount);
+                    FTK_CHECK(4 == itemCount);
                     const Box2I tileRect0 = view->getRect(0);
                     const Box2I tileRect1 = view->getRect(1);
                     FTK_CHECK(tileRect1.min.y == tileRect0.min.y);

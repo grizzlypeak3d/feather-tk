@@ -321,11 +321,12 @@ namespace ftk
             entry.path = path;
             // A sequence is measured by its first frame, which is the
             // file that is there.
-            const std::filesystem::path file = std::filesystem::u8path(
+            const std::filesystem::path file = toFileSystem(
                 path.isSeq() && path.getFrames().has_value() ?
                     path.getFrame(path.getFrames()->min(), true) :
                     path.get());
             std::error_code ec;
+            entry.isDir = std::filesystem::is_directory(file, ec);
             entry.size = std::filesystem::file_size(file, ec);
             if (ec)
             {
@@ -1338,6 +1339,19 @@ namespace ftk
                 if (p.hasPaths)
                 {
                     item.detail = dirEntry.path.getDir();
+                    if (item.text.back().empty())
+                    {
+                        // A directory given with its separator on the end
+                        // has no file name: it is named by its last part,
+                        // and is in what comes before that.
+                        std::filesystem::path tmp = toFileSystem(dirEntry.path.get());
+                        if (!tmp.has_filename())
+                        {
+                            tmp = tmp.parent_path();
+                        }
+                        item.text.back() = fromFileSystem(tmp.filename());
+                        item.detail = fromFileSystem(tmp.parent_path());
+                    }
                 }
 
                 // Frame range.
@@ -1499,7 +1513,10 @@ namespace ftk
             {
             case FileBrowserMode::Open:
             case FileBrowserMode::Save:
-                if (!dirEntry.isDir && p.callback)
+                // A directory in a list of files is one of the things
+                // listed, to be handed back like a file; in a directory it
+                // is somewhere to go.
+                if ((!dirEntry.isDir || p.hasPaths) && p.callback)
                 {
                     // Everything selected when this is one of them, which is
                     // what opening from a selection means; on its own it is
