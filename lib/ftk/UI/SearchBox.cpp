@@ -15,6 +15,7 @@ namespace ftk
 
         std::function<void(const std::string&)> callback;
         std::function<void(void)> returnCallback;
+        std::function<void(void)> escapeCallback;
 
         int keyFocus = 0;
     };
@@ -54,6 +55,31 @@ namespace ftk
                 if (_p->returnCallback)
                 {
                     _p->returnCallback();
+                }
+            });
+
+        // Escape clears the search first, and only then does what it
+        // would have done.
+        p.lineEdit->setEscapeCallback(
+            [this]
+            {
+                FTK_P();
+                if (!p.lineEdit->getText().empty())
+                {
+                    p.lineEdit->clearText();
+                    _widgetUpdate();
+                    if (p.callback)
+                    {
+                        p.callback(std::string());
+                    }
+                }
+                else if (p.escapeCallback)
+                {
+                    p.escapeCallback();
+                }
+                else
+                {
+                    p.lineEdit->releaseKeyFocus();
                 }
             });
 
@@ -104,6 +130,11 @@ namespace ftk
     void SearchBox::setReturnCallback(const std::function<void(void)>& value)
     {
         _p->returnCallback = value;
+    }
+
+    void SearchBox::setEscapeCallback(const std::function<void(void)>& value)
+    {
+        _p->escapeCallback = value;
     }
 
     void SearchBox::takeKeyFocus()

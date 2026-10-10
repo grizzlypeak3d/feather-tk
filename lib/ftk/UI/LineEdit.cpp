@@ -28,6 +28,7 @@ namespace ftk
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = std::string(20, '#');
         std::function<void(bool)> focusCallback;
+        std::function<void(void)> escapeCallback;
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
         ColorRole wellRole = ColorRole::Well;
@@ -221,6 +222,11 @@ namespace ftk
     void LineEdit::setFocusCallback(const std::function<void(bool)>& value)
     {
         _p->focusCallback = value;
+    }
+
+    void LineEdit::setEscapeCallback(const std::function<void(void)>& value)
+    {
+        _p->escapeCallback = value;
     }
 
     bool LineEdit::isReadOnly() const
@@ -660,7 +666,14 @@ namespace ftk
                 break;
             case Key::Escape:
                 event.accept = true;
-                releaseKeyFocus();
+                if (p.escapeCallback)
+                {
+                    p.escapeCallback();
+                }
+                else
+                {
+                    releaseKeyFocus();
+                }
                 break;
             default:
                 event.accept = p.model->key(event.key, event.modifiers);

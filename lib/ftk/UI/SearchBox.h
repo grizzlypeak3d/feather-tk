@@ -43,6 +43,12 @@ namespace ftk
         //! what was found, say.
         FTK_UI_API void setReturnCallback(const std::function<void(void)>&);
 
+        //! Set the callback for the escape key when there is nothing to
+        //! search for: to close whatever the search box is in, say. With
+        //! text in the box the escape key clears it; without this
+        //! callback and without text, it lets go of the key focus.
+        FTK_UI_API void setEscapeCallback(const std::function<void(void)>&);
+
         //! The key focus goes to the text.
         FTK_UI_API void takeKeyFocus() override;
 

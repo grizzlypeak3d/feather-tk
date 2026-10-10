@@ -74,6 +74,11 @@ namespace ftk
         //! Set the focus callback.
         FTK_UI_API void setFocusCallback(const std::function<void(bool)>&);
 
+        //! Set a callback for the escape key, called in place of letting
+        //! go of the key focus: for a field whose owner has something
+        //! better to do with it, such as closing.
+        FTK_UI_API void setEscapeCallback(const std::function<void(void)>&);
+
         FTK_UI_API bool isReadOnly() const;
         FTK_UI_API void setReadOnly(bool);
 
