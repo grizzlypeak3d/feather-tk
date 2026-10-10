@@ -812,41 +812,70 @@ namespace ftk
 
         const Box2I g = margin(getGeometry(), -p.size.margin);
 
-        // The columns that stretch share the width the others leave,
-        // equally if that fits what is in them, and otherwise each has
-        // its own width and a share of what is spare.
-        int stretch = 0;
+        // The columns that stretch share the width the others leave. The
+        // spare width goes to the narrowest of them first, so that they
+        // are the same width as soon as there is room for it, and none
+        // is narrower than what is in it. The widths are found as a
+        // level the narrow columns are raised to; a rule that switched
+        // between two ways of sharing made the columns jump as the table
+        // was resized.
         int width = 0;
         int stretchWidth = 0;
-        int stretchMax = 0;
+        int stretchMin = 0;
+        int last = -1;
         for (int i = 0; i < p.columnCount; ++i)
         {
             width += p.size.columnWidths[i];
             if (getColumnStretch(i))
             {
-                ++stretch;
                 stretchWidth += p.size.columnWidths[i];
-                stretchMax = std::max(stretchMax, p.size.columnWidths[i]);
+                stretchMin = last < 0 ?
+                    p.size.columnWidths[i] :
+                    std::min(stretchMin, p.size.columnWidths[i]);
+                last = i;
             }
         }
         const int spare = std::max(0, g.w() - width);
-        const bool equal = stretch > 0 && (stretchWidth + spare) / stretch >= stretchMax;
+        const int total = stretchWidth + spare;
+        const auto filled = [&p, this](int level)
+            {
+                int out = 0;
+                for (int i = 0; i < p.columnCount; ++i)
+                {
+                    if (getColumnStretch(i))
+                    {
+                        out += std::max(p.size.columnWidths[i], level);
+                    }
+                }
+                return out;
+            };
+        int level = stretchMin;
+        for (int high = stretchMin + spare; level < high; )
+        {
+            const int mid = level + (high - level + 1) / 2;
+            if (filled(mid) <= total)
+            {
+                level = mid;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
         p.geom.columnX.resize(p.columnCount);
         p.geom.columnW.resize(p.columnCount);
         int x = g.min.x;
-        int count = 0;
         for (int i = 0; i < p.columnCount; ++i)
         {
             int w = p.size.columnWidths[i];
-            if (stretch > 0 && getColumnStretch(i))
+            if (getColumnStretch(i))
             {
-                // Whole pixels, with the remainder going to the last.
-                ++count;
-                const int total = equal ? (stretchWidth + spare) : spare;
-                const int share = count < stretch ?
-                    total / stretch :
-                    total - (total / stretch) * (stretch - 1);
-                w = equal ? share : (w + share);
+                w = std::max(w, level);
+                if (i == last)
+                {
+                    // The pixels that do not divide go to the last.
+                    w += total - filled(level);
+                }
             }
             p.geom.columnX[i] = x;
             p.geom.columnW[i] = w;

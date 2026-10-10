@@ -112,6 +112,22 @@ namespace ftk
                 FTK_CHECK(h1.min.y > r2.min.y + r2.h());
                 FTK_CHECK(!table->getCellRect(TableIndex(9, 0)).isValid());
 
+                // The columns do not jump as the table is resized: a pixel
+                // of width moves a column edge by no more than that.
+                {
+                    Box2I prev = table->getCellRect(TableIndex(1, 2));
+                    for (int w = 1279; w > 100; --w)
+                    {
+                        window->layout(Size2I(w, 960));
+                        app->tick();
+                        const Box2I cell = table->getCellRect(TableIndex(1, 2));
+                        FTK_CHECK(std::abs(cell.min.x - prev.min.x) <= 1);
+                        prev = cell;
+                    }
+                    window->layout(Size2I(1280, 960));
+                    app->tick();
+                }
+
                 // Only an editable cell can be current.
                 table->setCurrent(TableIndex(1, 0));
                 FTK_CHECK(!table->getCurrent().isValid());
