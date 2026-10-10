@@ -208,7 +208,7 @@ namespace ftk
                     Path(fromFileSystem(path / "delta.txt")),
                     Path(fromFileSystem(path / "alpha.png")),
                     Path(fromFileSystem(path / "missing.exr")),
-                    Path(fromFileSystem(path))
+                    Path(appendSeparator(fromFileSystem(path)))
                 };
                 view->setPaths(paths);
                 view->setPaths(paths);

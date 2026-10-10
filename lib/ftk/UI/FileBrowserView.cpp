@@ -107,10 +107,11 @@ namespace ftk
         std::string search;
         std::vector<DirEntry> dirEntries;
 
-        // The files shown in place of a directory, and what the file
-        // system said about each. Asked once, when the list is set: the
-        // list is rebuilt on every search key, and a file on a volume
-        // that has gone away is slow to say so.
+        // The files shown in place of a directory. Nothing is asked of
+        // the file system about them: a recent file on a network share
+        // that has gone to sleep hangs whoever asks, so a directory is
+        // one given with its separator on the end, and the sizes are not
+        // shown.
         bool hasPaths = false;
         std::vector<Path> paths;
         std::vector<DirEntry> pathEntries;
@@ -322,20 +323,8 @@ namespace ftk
         {
             DirEntry entry;
             entry.path = path;
-            // A sequence is measured by its first frame, which is the
-            // file that is there.
-            const std::filesystem::path file = toFileSystem(
-                path.isSeq() && path.getFrames().has_value() ?
-                    path.getFrame(path.getFrames()->min(), true) :
-                    path.get());
-            std::error_code ec;
-            entry.isDir = std::filesystem::is_directory(file, ec);
-            entry.size = std::filesystem::file_size(file, ec);
-            if (ec)
-            {
-                entry.size = 0;
-            }
-            entry.time = std::filesystem::last_write_time(file, ec);
+            const std::string& name = path.get();
+            entry.isDir = !name.empty() && ('/' == name.back() || '\\' == name.back());
             p.pathEntries.push_back(entry);
         }
         _clearCurrent();
@@ -1373,7 +1362,7 @@ namespace ftk
                     std::string());
 
                 // File size.
-                if (!dirEntry.isDir)
+                if (!dirEntry.isDir && !p.hasPaths)
                 {
                     std::string text;
                     if (dirEntry.size < megabyte)

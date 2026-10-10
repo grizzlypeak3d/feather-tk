@@ -145,4 +145,23 @@ namespace ftk
         }
         p.recent->setIfChanged(recent);
     }
+
+    void RecentFilesModel::removeRecent(const Path& value)
+    {
+        FTK_P();
+        // As it was added, or with the separator a directory was given.
+        const Path abs = absolutePath(value);
+        const Path dir(appendSeparator(abs.get()));
+        auto recent = p.recent->get();
+        recent.erase(
+            std::remove_if(
+                recent.begin(),
+                recent.end(),
+                [&abs, &dir](const Path& other)
+                {
+                    return other == abs || other == dir;
+                }),
+            recent.end());
+        p.recent->setIfChanged(recent);
+    }
 }

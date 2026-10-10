@@ -101,6 +101,17 @@ namespace ftk
                 const std::filesystem::path dir =
                     std::filesystem::current_path();
                 model->addRecent(Path(fromFileSystem(dir)));
+                {
+                    const size_t size = model->getRecent().size();
+                    model->addRecent(Path("removed.exr"));
+                    FTK_CHECK(size + 1 == model->getRecent().size());
+                    model->removeRecent(Path("removed.exr"));
+                    model->removeRecent(Path("removed.exr"));
+                    FTK_CHECK(size == model->getRecent().size());
+                    model->removeRecent(Path(fromFileSystem(dir)));
+                    FTK_CHECK(size - 1 == model->getRecent().size());
+                    model->addRecent(Path(fromFileSystem(dir)));
+                }
                 FTK_CHECK(1 == model->getRecent().size());
                 FTK_CHECK(model->getRecent()[0].getFileName().empty());
             }

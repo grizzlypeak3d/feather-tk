@@ -61,7 +61,8 @@ namespace ftk
                         model.setRecent(paths);
                     })
                 .def_prop_ro("observeRecent", &RecentFilesModel::observeRecent)
-                .def("addRecent", &RecentFilesModel::addRecent);
+                .def("addRecent", &RecentFilesModel::addRecent)
+                .def("removeRecent", &RecentFilesModel::removeRecent);
         }
     }
 }
