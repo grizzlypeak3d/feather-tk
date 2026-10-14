@@ -233,6 +233,12 @@ namespace ftk
         return out;
     }
 
+    void setCurrentThreadName(const std::string& value)
+    {
+        const std::wstring wide(value.begin(), value.end());
+        SetThreadDescription(GetCurrentThread(), wide.c_str());
+    }
+
     void openURL(const std::string& value)
     {
         ShellExecute(0, 0, value.c_str(), 0, 0, SW_SHOW);

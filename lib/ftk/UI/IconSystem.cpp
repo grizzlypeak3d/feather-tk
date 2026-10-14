@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
+#include <ftk/Core/OS.h>
 #include <ftk/UI/IconSystem.h>
 
 #include <ftk/Core/ImageIO.h>
@@ -147,6 +148,7 @@ namespace ftk
             [this]
             {
                 FTK_P();
+                setCurrentThreadName("ftk:icons");
                 while (p.thread.running)
                 {
                     std::list<std::shared_ptr<Private::Request> > requests;

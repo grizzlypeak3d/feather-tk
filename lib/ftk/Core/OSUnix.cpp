@@ -21,6 +21,10 @@
 #include <cstdlib>
 #include <fstream>
 #include <langinfo.h>
+#include <pthread.h>
+#if defined(__FreeBSD__)
+#include <pthread_np.h>
+#endif // __FreeBSD__
 #include <sstream>
 #include <thread>
 #include <vector>
@@ -243,6 +247,17 @@ namespace ftk
             }
         }
         return out;
+    }
+
+    void setCurrentThreadName(const std::string& value)
+    {
+#if defined(__APPLE__)
+        pthread_setname_np(value.c_str());
+#elif defined(__FreeBSD__)
+        pthread_set_name_np(pthread_self(), value.c_str());
+#else // __APPLE__
+        pthread_setname_np(pthread_self(), value.substr(0, 15).c_str());
+#endif // __APPLE__
     }
 
     void openURL(const std::string& value)

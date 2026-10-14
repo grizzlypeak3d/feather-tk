@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
+#include <ftk/Core/OS.h>
 #include <ftk/UI/DrivesModel.h>
 
 #include <ftk/Core/Path.h>
@@ -53,6 +54,7 @@ namespace ftk
             [this]
             {
                 FTK_P();
+                setCurrentThreadName("ftk:drives");
                 while (p.running)
                 {
                     const auto drives = getDrives();

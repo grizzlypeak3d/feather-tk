@@ -2,6 +2,7 @@
 // Copyright Contributors to the tlRender project.
 
 #include <ftk/Core/FileLogSystem.h>
+#include <ftk/Core/OS.h>
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FileIO.h>
@@ -89,6 +90,7 @@ namespace ftk
             [this]
             {
                 FTK_P();
+                setCurrentThreadName("ftk:log");
 
                 // Writing the log must not be able to take the application
                 // down with it. The file can be locked or replaced underneath

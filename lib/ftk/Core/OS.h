@@ -92,5 +92,9 @@ namespace ftk
 
     FTK_CORE_API void openURL(const std::string&);
 
+    //! Name the calling thread, for profilers and debuggers. Linux keeps
+    //! fifteen characters of it.
+    FTK_CORE_API void setCurrentThreadName(const std::string&);
+
     ///@}
 }
