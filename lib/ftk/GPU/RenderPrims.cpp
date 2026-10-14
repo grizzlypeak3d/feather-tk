@@ -3,6 +3,10 @@
 
 #include <ftk/GPU/RenderPrivate.h>
 
+#if defined(__APPLE__)
+#include <CoreVideo/CoreVideo.h>
+#endif // __APPLE__
+
 #include <ftk/Core/RenderUtil.h>
 
 #include <cstring>
@@ -628,6 +632,53 @@ namespace ftk
             }
         }
 
+        std::vector<std::shared_ptr<Texture> > Render::_getHandleTextures(
+            const std::shared_ptr<Image>& image,
+            const ImageFilters& filters)
+        {
+            FTK_P();
+            std::vector<std::shared_ptr<Texture> > out;
+#if defined(__APPLE__)
+            // The handle is a CVPixelBufferRef holding an 8-bit NV12 frame
+            // (the reader checks); the luma plane is a one channel texture
+            // and the interleaved chroma a two channel one, both over the
+            // buffer's surface. SDL picks the plane from the format.
+            CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>(image->getTextureHandle());
+            const OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
+            if (format != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange &&
+                format != kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
+            {
+                return out;
+            }
+            const auto& info = image->getInfo();
+            TextureOptions options;
+            options.filters = filters;
+            if (ImageFilter::HighQuality == options.filters.minify)
+            {
+                options.filters.minify = ImageFilter::Nearest;
+            }
+            if (ImageFilter::HighQuality == options.filters.magnify)
+            {
+                options.filters.magnify = ImageFilter::Nearest;
+            }
+            const SDL_PropertiesID props = SDL_CreateProperties();
+            SDL_SetPointerProperty(props, "SDL.gpu.texture.create.pixelbuffer", pixelBuffer);
+            try
+            {
+                out.push_back(Texture::create(
+                    p.system, ImageInfo(info.size.w, info.size.h, ImageType::L_U8), options, props));
+                out.push_back(Texture::create(
+                    p.system, ImageInfo(info.size.w / 2, info.size.h / 2, ImageType::LA_U8), options, props));
+            }
+            catch (const std::exception&)
+            {
+                out.clear();
+            }
+            SDL_DestroyProperties(props);
+#endif // __APPLE__
+            return out;
+        }
+
         std::vector<std::shared_ptr<Texture> > Render::_getTextures(
             const ImageInfo& info,
             const ImageFilters& imageFilters)
@@ -727,7 +778,26 @@ namespace ftk
                 return;
 
             std::vector<std::shared_ptr<Texture> > textures;
-            if (!imageOptions.cache)
+            if (const uintptr_t handle = image->getTextureHandle())
+            {
+                // The pixels are the GPU's already: on Apple platforms a
+                // decoded frame's pixel buffer, which textures are made
+                // over without a copy. Elsewhere the handle is another
+                // renderer's, and there is nothing here to draw it with.
+                auto i = p.handleTextures.find(handle);
+                if (i != p.handleTextures.end() && i->second.image.lock() == image)
+                {
+                    textures = i->second.textures;
+                }
+                else
+                {
+                    textures = _getHandleTextures(image, imageOptions.imageFilters);
+                    if (textures.empty())
+                        return;
+                    p.handleTextures[handle] = { image, textures };
+                }
+            }
+            else if (!imageOptions.cache)
             {
                 const std::string texturePoolKey = getTexturePoolKey(info);
                 if (!p.texturePool.get(texturePoolKey, textures))

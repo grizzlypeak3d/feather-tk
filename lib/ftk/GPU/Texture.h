@@ -5,6 +5,8 @@
 
 #include <ftk/GPU/Export.h>
 
+#include <SDL3/SDL_properties.h>
+
 #include <ftk/Core/Image.h>
 #include <ftk/Core/RenderOptions.h>
 
@@ -60,7 +62,8 @@ namespace ftk
             void _init(
                 const std::shared_ptr<System>&,
                 const ImageInfo&,
-                const TextureOptions&);
+                const TextureOptions&,
+                SDL_PropertiesID);
 
             Texture();
 
@@ -72,6 +75,15 @@ namespace ftk
                 const std::shared_ptr<System>&,
                 const ImageInfo&,
                 const TextureOptions& = TextureOptions());
+
+            //! Create a new texture with properties for SDL's creation:
+            //! a texture over something the driver already has, such as a
+            //! decoded frame's pixel buffer on Metal, is asked for there.
+            FTK_GPU_API static std::shared_ptr<Texture> create(
+                const std::shared_ptr<System>&,
+                const ImageInfo&,
+                const TextureOptions&,
+                SDL_PropertiesID);
 
             //! Get the image information.
             FTK_GPU_API const ImageInfo& getInfo() const;

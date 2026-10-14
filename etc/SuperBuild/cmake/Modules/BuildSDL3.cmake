@@ -1,4 +1,5 @@
 include(ExternalProject)
+find_package(Git REQUIRED)
 
 set(SDL3_GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git")
 set(SDL3_GIT_TAG "release-3.4.16")
@@ -52,10 +53,19 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
+# One patch, from upstream pull request #14157 (open): the Metal GPU
+# driver makes a texture over an existing CVPixelBuffer's surface, which
+# is how a frame the hardware decoded is drawn without a copy. Drop it
+# when a release carries the change.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
     GIT_REPOSITORY ${SDL3_GIT_REPOSITORY}
     GIT_TAG ${SDL3_GIT_TAG}
+    PATCH_COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/pixelbuffer.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})

@@ -51,6 +51,12 @@ elseif(NOT APPLE)
     message(WARNING "ftkGPU: glslang was not found, so there are no shaders for Vulkan")
 endif()
 
+if(APPLE)
+    # The textures made over a decoded frame's pixel buffer; see
+    # RenderPrims.cpp.
+    target_link_libraries(ftkGPU PRIVATE "-framework CoreVideo")
+endif()
+
 set_target_properties(ftkGPU PROPERTIES FOLDER lib)
 set_target_properties(ftkGPU PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

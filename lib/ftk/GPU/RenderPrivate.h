@@ -253,6 +253,19 @@ namespace ftk
                 std::shared_ptr<Image>,
                 std::vector<std::shared_ptr<Texture> > > textureCache;
 
+            // The textures made over a texture handle, by the handle and
+            // for as long as the image lives: not a cache that keeps the
+            // image, which would keep the pixels it stands for past the
+            // player's cache. Pruned at the end of each frame. The image
+            // is checked as well as the handle, since a handle is reused
+            // once its image is gone.
+            struct HandleTextures
+            {
+                std::weak_ptr<Image> image;
+                std::vector<std::shared_ptr<Texture> > textures;
+            };
+            std::map<uintptr_t, HandleTextures> handleTextures;
+
             // The two pass resample: the tables, which depend only on the
             // two sizes, and the intermediates the first pass writes. Kept
             // by size, a few of each; see the OpenGL renderer.

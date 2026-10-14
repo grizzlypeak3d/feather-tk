@@ -241,6 +241,9 @@ namespace ftk
             ///@}
 
         private:
+            std::vector<std::shared_ptr<Texture> > _getHandleTextures(
+                const std::shared_ptr<Image>&,
+                const ImageFilters&);
             std::vector<std::shared_ptr<Texture> > _getTextures(
                 const ImageInfo&,
                 const ImageFilters&);

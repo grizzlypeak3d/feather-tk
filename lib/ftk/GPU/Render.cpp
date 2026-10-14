@@ -902,6 +902,18 @@ namespace ftk
             {
                 popTarget();
             }
+            // The textures over handles whose images are gone.
+            for (auto i = p.handleTextures.begin(); i != p.handleTextures.end();)
+            {
+                if (i->second.image.expired())
+                {
+                    i = p.handleTextures.erase(i);
+                }
+                else
+                {
+                    ++i;
+                }
+            }
             if (p.cmd)
             {
                 // A frame that cleared and drew nothing still clears.

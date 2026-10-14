@@ -224,7 +224,8 @@ namespace ftk
         void Texture::_init(
             const std::shared_ptr<System>& system,
             const ImageInfo& info,
-            const TextureOptions& options)
+            const TextureOptions& options,
+            SDL_PropertiesID props)
         {
             FTK_P();
             p.system = system;
@@ -254,6 +255,7 @@ namespace ftk
             textureInfo.height = info.size.h;
             textureInfo.layer_count_or_depth = 1;
             textureInfo.num_levels = 1;
+            textureInfo.props = props;
             p.texture = SDL_CreateGPUTexture(device, &textureInfo);
             if (!p.texture)
             {
@@ -321,7 +323,18 @@ namespace ftk
             const TextureOptions& options)
         {
             auto out = std::shared_ptr<Texture>(new Texture);
-            out->_init(system, info, options);
+            out->_init(system, info, options, 0);
+            return out;
+        }
+
+        std::shared_ptr<Texture> Texture::create(
+            const std::shared_ptr<System>& system,
+            const ImageInfo& info,
+            const TextureOptions& options,
+            SDL_PropertiesID props)
+        {
+            auto out = std::shared_ptr<Texture>(new Texture);
+            out->_init(system, info, options, props);
             return out;
         }
 

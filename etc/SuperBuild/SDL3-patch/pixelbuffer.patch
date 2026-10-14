@@ -1,0 +1,69 @@
+diff --git a/include/SDL3/SDL_gpu.h b/include/SDL3/SDL_gpu.h
+index 2236cb79a..2624ac752 100644
+--- a/include/SDL3/SDL_gpu.h
++++ b/include/SDL3/SDL_gpu.h
+@@ -2850,6 +2850,7 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL SDL_CreateGPUTexture(
+ #define SDL_PROP_GPU_TEXTURE_CREATE_D3D12_CLEAR_DEPTH_FLOAT     "SDL.gpu.texture.create.d3d12.clear.depth"
+ #define SDL_PROP_GPU_TEXTURE_CREATE_D3D12_CLEAR_STENCIL_NUMBER  "SDL.gpu.texture.create.d3d12.clear.stencil"
+ #define SDL_PROP_GPU_TEXTURE_CREATE_NAME_STRING                 "SDL.gpu.texture.create.name"
++#define SDL_PROP_GPU_TEXTURE_CREATE_PIXELBUFFER_POINTER             "SDL.gpu.texture.create.pixelbuffer"
+ 
+ /**
+  * Creates a buffer object to be used in graphics or compute workflows.
+diff --git a/src/gpu/metal/SDL_gpu_metal.m b/src/gpu/metal/SDL_gpu_metal.m
+index 3a02f8fd3..7b10dce02 100644
+--- a/src/gpu/metal/SDL_gpu_metal.m
++++ b/src/gpu/metal/SDL_gpu_metal.m
+@@ -25,6 +25,7 @@
+ 
+ #include <Metal/Metal.h>
+ #include <QuartzCore/CoreAnimation.h>
++#include <CoreVideo/CoreVideo.h>
+ 
+ #include "../SDL_sysgpu.h"
+ 
+@@ -1431,6 +1432,31 @@ static void METAL_PopDebugGroup(
+     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+     id<MTLTexture> texture;
+     MetalTexture *metalTexture;
++    CVPixelBufferRef pixelbuffer = nil;
++    IOSurfaceRef surface = nil;
++    NSUInteger plane = 0;
++
++    // A texture over an existing pixel buffer's surface, no copy: a plane
++    // of a biplanar buffer is chosen by the texture format asked for.
++    pixelbuffer = SDL_GetPointerProperty(createinfo->props, SDL_PROP_GPU_TEXTURE_CREATE_PIXELBUFFER_POINTER, nil);
++    if (pixelbuffer) {
++        surface = CVPixelBufferGetIOSurface(pixelbuffer);
++        if (!surface) {
++            SET_STRING_ERROR_AND_RETURN("CVPixelBufferGetIOSurface() failed", NULL);
++        }
++        switch (CVPixelBufferGetPixelFormatType(pixelbuffer)) {
++        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
++        case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
++            plane = (createinfo->format == SDL_GPU_TEXTUREFORMAT_R8G8_UNORM) ? 1 : 0;
++            break;
++        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
++        case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange:
++            plane = (createinfo->format == SDL_GPU_TEXTUREFORMAT_R16G16_UNORM) ? 1 : 0;
++            break;
++        default:
++            break;
++        }
++    }
+ 
+     textureDescriptor.textureType = SDLToMetal_TextureType(createinfo->type, createinfo->sample_count > SDL_GPU_SAMPLECOUNT_1);
+     textureDescriptor.pixelFormat = SDLToMetal_TextureFormat(createinfo->format);
+@@ -1472,7 +1498,11 @@ static void METAL_PopDebugGroup(
+         textureDescriptor.usage |= MTLTextureUsageShaderWrite;
+     }
+ 
+-    texture = [renderer->device newTextureWithDescriptor:textureDescriptor];
++    if (surface) {
++        texture = [renderer->device newTextureWithDescriptor:textureDescriptor iosurface:surface plane:plane];
++    } else {
++        texture = [renderer->device newTextureWithDescriptor:textureDescriptor];
++    }
+     if (texture == NULL) {
+         SDL_LogError(SDL_LOG_CATEGORY_GPU, "Failed to create MTLTexture!");
+         return NULL;
