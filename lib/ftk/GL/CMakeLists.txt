@@ -77,7 +77,9 @@ if(APPLE)
     # For the defaults registered before SDL starts; see System.cpp.
     target_link_libraries(ftkGL PRIVATE "-framework Foundation")
 endif()
-if(NOT EMSCRIPTEN)
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    target_link_libraries(ftkGL PRIVATE "-framework OpenGLES")
+elseif(NOT EMSCRIPTEN)
     target_link_libraries(ftkGL PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
 endif()
 # Public because this is not the only library that calls SDL: the UI does,

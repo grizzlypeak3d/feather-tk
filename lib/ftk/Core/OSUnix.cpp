@@ -8,10 +8,13 @@
 #include <ftk/Core/Path.h>
 
 #if defined(__APPLE__)
+#include <TargetConditionals.h>
 #include <mach-o/dyld.h>
-#include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CFBundle.h>
 #include <CoreServices/CoreServices.h>
+#if TARGET_OS_OSX
+#include <ApplicationServices/ApplicationServices.h>
+#endif // TARGET_OS_OSX
 #endif // __APPLE__
 
 #include <clocale>
@@ -244,7 +247,12 @@ namespace ftk
 
     void openURL(const std::string& value)
     {
-#if defined(__APPLE__)
+#if defined(__APPLE__) && !TARGET_OS_OSX
+        // Launch Services is macOS only; iOS opens URLs through
+        // UIApplication, from the main thread, which is the application's
+        // business rather than this library's.
+        throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
+#elif defined(__APPLE__)
         CFURLRef url = CFURLCreateWithBytes(
             NULL,
             (UInt8*)value.c_str(),

@@ -216,7 +216,11 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
             "-sMAX_WEBGL_VERSION=2"
             "-sALLOW_MEMORY_GROWTH=1")
     else()
-        find_package(OpenGL REQUIRED)
+        # iOS has OpenGL ES as a framework, which the GL library names
+        # itself; the module here knows only the desktop one.
+        if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+            find_package(OpenGL REQUIRED)
+        endif()
         if(ftk_SDL2)
             find_package(SDL2 REQUIRED)
         elseif(ftk_SDL3)
