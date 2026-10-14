@@ -105,6 +105,7 @@ set(HEADERS
     SysLogModel.h
     TabBar.h
     TabWidget.h
+    TableWidget.h
     TextEdit.h
     TextEditModel.h
     ToolBar.h
@@ -239,6 +240,7 @@ set(SOURCE
     TabBar.cpp
     TabBarButton.cpp
     TabWidget.cpp
+    TableWidget.cpp
     TextEdit.cpp
     TextEditModel.cpp
     TextEditWidget.cpp

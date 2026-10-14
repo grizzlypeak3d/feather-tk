@@ -5,11 +5,15 @@
 
 #include <ftk/GL/OffscreenBuffer.h>
 #include <ftk/GL/Render.h>
+#include <ftk/GL/Texture.h>
 #include <ftk/GL/Window.h>
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FontSystem.h>
+
+#include <array>
+#include <cstring>
 
 using namespace ftk::gl;
 
@@ -194,7 +198,73 @@ namespace ftk
 
                 render->end();
             }
+            {
+                // An image whose pixels are a texture draws where it is:
+                // a two row texture, green under red, lands in the buffer
+                // as it is, and flipped when the image says it is top down.
+                auto window = createWindow(_context);
+                const Size2I size(16, 16);
+                auto buffer = OffscreenBuffer::create(size);
+                OffscreenBufferBinding bufferBinding(buffer);
+                auto render = Render::create(logSystem, fontSystem);
+
+                const ImageInfo info(2, 2, ImageType::RGBA_U8);
+                auto pixels = Image::create(info);
+                const uint8_t rows[2][4] = { { 0, 255, 0, 255 }, { 255, 0, 0, 255 } };
+                for (int y = 0; y < 2; ++y)
+                {
+                    for (int x = 0; x < 2; ++x)
+                    {
+                        memcpy(pixels->getData() + (y * 2 + x) * 4, rows[y], 4);
+                    }
+                }
+                auto texture = Texture::create(info);
+                texture->copy(pixels);
+
+                size_t released = 0;
+                const auto draw = [&](bool mirrorY)
+                {
+                    ImageInfo imageInfo = info;
+                    imageInfo.layout.mirror.y = mirrorY;
+                    auto image = Image::create(
+                        imageInfo,
+                        texture->getID(),
+                        [&released](uintptr_t) { ++released; });
+                    render->begin(size);
+                    render->clearViewport(Color4F(0.F, 0.F, 0.F, 1.F));
+                    ImageOptions imageOptions;
+                    imageOptions.imageFilters.minify = ImageFilter::Nearest;
+                    imageOptions.imageFilters.magnify = ImageFilter::Nearest;
+                    render->drawImage(
+                        image,
+                        Box2F(0.F, 0.F, 16.F, 16.F),
+                        Color4F(1.F, 1.F, 1.F, 1.F),
+                        imageOptions);
+                    render->end();
+                    auto out = buffer->read(ImageInfo(size, ImageType::RGBA_U8));
+                    const uint8_t* d = out->getData();
+                    const auto at = [d](int x, int y)
+                    {
+                        const uint8_t* q = d + (y * 16 + x) * 4;
+                        return std::array<uint8_t, 3>{ q[0], q[1], q[2] };
+                    };
+                    return std::make_pair(at(8, 2), at(8, 13));
+                };
+                const auto plain = draw(false);
+                const auto flipped = draw(true);
+                FTK_CHECK(plain.first != plain.second);
+                FTK_CHECK(plain.first == flipped.second);
+                FTK_CHECK(plain.second == flipped.first);
+                const std::array<uint8_t, 3> green{ 0, 255, 0 };
+                const std::array<uint8_t, 3> red{ 255, 0, 0 };
+                FTK_CHECK(plain.first == green || plain.first == red);
+                // The draws' texture cache entries hold the images; the
+                // renderer going releases them, and the texture is still
+                // the owner's.
+                render.reset();
+                FTK_CHECK(2 == released);
+                FTK_CHECK(texture->copy(pixels));
+            }
         }
     }
 }
-

@@ -90,6 +90,14 @@ namespace ftk
 
                 // Selecting all on focus, the way the numeric edits do.
                 edit->setText("Test");
+                FTK_CHECK(0 == edit->getRightInset());
+                edit->setRightInset(20);
+                edit->setRightInset(20);
+                FTK_CHECK(20 == edit->getRightInset());
+                app->tick();
+                edit->setRightInset(-1);
+                FTK_CHECK(0 == edit->getRightInset());
+
                 edit->setSelectAllOnFocus(true);
                 FTK_CHECK(edit->hasSelectAllOnFocus());
                 edit->takeKeyFocus();

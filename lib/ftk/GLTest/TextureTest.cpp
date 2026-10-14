@@ -114,6 +114,30 @@ namespace ftk
         {
             {
                 auto window = createWindow(_context);
+
+                // A wrapped texture draws another's name and leaves it
+                // alone: the name is still the owner's after the wrapper
+                // goes, and a copy into the wrapper does nothing.
+                const ImageInfo info(1920, 1080, ImageType::RGBA_U8);
+                auto texture = Texture::create(info);
+                const size_t objectCount = Texture::getObjectCount();
+                {
+                    auto wrapped = Texture::wrap(info, texture->getID());
+                    FTK_CHECK(texture->getID() == wrapped->getID());
+                    FTK_CHECK(info == wrapped->getImageInfo());
+                    FTK_CHECK(objectCount + 1 == Texture::getObjectCount());
+                    FTK_CHECK(!wrapped->copy(Image::create(info)));
+                    wrapped->bind();
+                }
+                FTK_CHECK(objectCount == Texture::getObjectCount());
+                FTK_CHECK(texture->copy(Image::create(info)));
+                try
+                {
+                    Texture::wrap(info, 0);
+                    FTK_CHECK(false);
+                }
+                catch (const std::exception&)
+                {}
             }
         }
         

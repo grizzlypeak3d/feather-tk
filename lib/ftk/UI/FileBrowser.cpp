@@ -27,6 +27,11 @@ namespace ftk
         "Medium",
         "Large");
 
+    FTK_ENUM_IMPL(
+        FileBrowserLayout,
+        "List",
+        "Tiles");
+
     int getThumbnailHeight(FileBrowserThumbnails value, int sizeRole)
     {
         // The style says how large a thumbnail is, and this says how much of
@@ -147,6 +152,7 @@ namespace ftk
     {
         json["DirList"] = value.dirList;
         json["Thumbnails"] = to_string(value.thumbnails);
+        json["Layout"] = to_string(value.layout);
         json["Panel"] = value.panel;
         json["PathEditable"] = value.pathEditable;
         for (const auto& i : value.bellows)
@@ -159,6 +165,10 @@ namespace ftk
     {
         json.at("DirList").get_to(value.dirList);
         from_string(json.at("Thumbnails").get<std::string>(), value.thumbnails);
+        if (json.contains("Layout"))
+        {
+            from_string(json.at("Layout").get<std::string>(), value.layout);
+        }
         json.at("Panel").get_to(value.panel);
         json.at("PathEditable").get_to(value.pathEditable);
         for (auto i = json.at("Bellows").begin(); i != json.at("Bellows").end(); ++i)

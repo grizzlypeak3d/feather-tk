@@ -425,6 +425,8 @@ namespace ftk
             ImageInfo imageInfo;
             GLuint pbo = 0;
             GLuint id = 0;
+            //! Whether the texture is deleted with this object.
+            bool owned = true;
             //! Whether three channel images are widened to four as they are
             //! copied in, and the buffer that holds them where there is no
             //! pixel buffer.
@@ -506,6 +508,36 @@ namespace ftk
                 NULL);
         }
 
+        Texture::Texture(
+            const ImageInfo& imageInfo,
+            unsigned int id,
+            const TextureOptions& options) :
+            _p(new Private)
+        {
+            FTK_P();
+
+            p.info.size = imageInfo.size;
+            p.info.type = getTextureType(imageInfo.type);
+            p.imageInfo = imageInfo;
+            p.id = id;
+            p.owned = false;
+
+            if (!p.info.isValid() || !id)
+            {
+                throw std::runtime_error("Invalid texture");
+            }
+
+            ++objectCount;
+            totalByteCount += p.info.getByteCount();
+
+            const UploadUnit uploadUnit;
+            glBindTexture(GL_TEXTURE_2D, p.id);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getTextureFilter(options.filters.minify));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getTextureFilter(options.filters.magnify));
+        }
+
         Texture::~Texture()
         {
             FTK_P();
@@ -514,11 +546,11 @@ namespace ftk
                 glDeleteBuffers(1, &p.pbo);
                 p.pbo = 0;
             }
-            if (p.id)
+            if (p.id && p.owned)
             {
                 glDeleteTextures(1, &p.id);
-                p.id = 0;
             }
+            p.id = 0;
 
             --objectCount;
             totalByteCount -= p.info.getByteCount();
@@ -529,6 +561,14 @@ namespace ftk
             const TextureOptions& options)
         {
             return std::shared_ptr<Texture>(new Texture(info, options));
+        }
+
+        std::shared_ptr<Texture> Texture::wrap(
+            const ImageInfo& info,
+            unsigned int id,
+            const TextureOptions& options)
+        {
+            return std::shared_ptr<Texture>(new Texture(info, id, options));
         }
 
         const TextureInfo& Texture::getInfo() const
@@ -585,7 +625,7 @@ namespace ftk
         {
             const UploadUnit uploadUnit;
             FTK_P();
-            if (!_isCompatible(info))
+            if (!data || !p.owned || !_isCompatible(info))
                 return false;
 
             if (p.widen)

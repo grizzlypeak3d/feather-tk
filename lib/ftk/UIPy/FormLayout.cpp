@@ -23,6 +23,15 @@ namespace ftk
     {
         void formLayout(nb::module_& m)
         {
+            nb::class_<FormGroup>(m, "FormGroup")
+                .def(nb::new_(&FormGroup::create));
+
+            m.def(
+                "setFormGroup",
+                &setFormGroup,
+                nb::arg("widget"),
+                nb::arg("group").none());
+
             nb::class_<FormLayout, IContainer>(m, "FormLayout")
                 .def(
                     nb::new_(&FormLayout::create),
@@ -37,7 +46,12 @@ namespace ftk
                 .def_prop_rw("marginRole", &FormLayout::getMarginRole, &FormLayout::setMarginRole)
                 .def_prop_rw("spacingRole", &FormLayout::getSpacingRole, &FormLayout::setSpacingRole)
                 .def("addSpacer", nb::overload_cast<>(&FormLayout::addSpacer))
-                .def("addSpacer", nb::overload_cast<SizeRole>(&FormLayout::addSpacer));
+                .def("addSpacer", nb::overload_cast<SizeRole>(&FormLayout::addSpacer))
+                .def_prop_rw(
+                    "group",
+                    &FormLayout::getGroup,
+                    &FormLayout::setGroup,
+                    nb::for_setter(nb::arg("value").none()));
         }
     }
 }

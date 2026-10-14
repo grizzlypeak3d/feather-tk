@@ -50,6 +50,16 @@ namespace ftk
         //! Get the odd rows background role.
         FTK_UI_API void setRowBackgroundRole(ColorRole);
 
+        //! Get the background role of one row.
+        FTK_UI_API ColorRole getRowBackgroundRole(int row) const;
+
+        //! Set a background role for one row, drawn across the width of
+        //! the layout, margins included, in place of the alternating
+        //! background: for a row
+        //! that is a heading over the rows below it. None, the default,
+        //! leaves the row as the others are.
+        FTK_UI_API void setRowBackgroundRole(int row, ColorRole);
+
         //! Get the margin role.
         FTK_UI_API SizeRole getMarginRole() const;
 
@@ -67,6 +77,14 @@ namespace ftk
         FTK_UI_API void setSpacingRole(SizeRole horizontal, SizeRole vertical);
 
         //! Remove all children from the layout.
+        //! Get the minimum width of a column, in pixels.
+        FTK_UI_API int getColumnMinWidth(int column) const;
+
+        //! Set a minimum width for a column, in pixels: the column is as
+        //! wide as its widest widget and no narrower than this. Zero, the
+        //! default, is no minimum.
+        FTK_UI_API void setColumnMinWidth(int column, int);
+
         FTK_UI_API void clear();
 
         FTK_UI_API Size2I getSizeHint() const override;

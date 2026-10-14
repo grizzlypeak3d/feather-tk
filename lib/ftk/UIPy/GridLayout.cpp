@@ -37,7 +37,18 @@ namespace ftk
                     nb::arg("child"),
                     nb::arg("row"),
                     nb::arg("column"))
-                .def_prop_rw("rowBackgroundRole", &GridLayout::getRowBackgroundRole, &GridLayout::setRowBackgroundRole)
+                .def_prop_rw("rowBackgroundRole",
+                    nb::overload_cast<>(&GridLayout::getRowBackgroundRole, nb::const_),
+                    nb::overload_cast<ColorRole>(&GridLayout::setRowBackgroundRole))
+                .def(
+                    "getRowBackgroundRole",
+                    nb::overload_cast<int>(&GridLayout::getRowBackgroundRole, nb::const_),
+                    nb::arg("row"))
+                .def(
+                    "setRowBackgroundRole",
+                    nb::overload_cast<int, ColorRole>(&GridLayout::setRowBackgroundRole),
+                    nb::arg("row"),
+                    nb::arg("role"))
                 .def_prop_rw("marginRole", &GridLayout::getMarginRole, &GridLayout::setMarginRole)
                 .def_prop_rw("spacingRole",
                     &GridLayout::getSpacingRole,

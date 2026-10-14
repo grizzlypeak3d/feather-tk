@@ -30,7 +30,9 @@ namespace ftk
                     nb::arg("context"),
                     nb::arg("parent") = nullptr)
                 .def_prop_rw("text", &SearchBox::getText, &SearchBox::setText)
-                .def("setCallback", &SearchBox::setCallback);
+                .def("setCallback", &SearchBox::setCallback)
+                .def("setReturnCallback", &SearchBox::setReturnCallback)
+                .def("setEscapeCallback", &SearchBox::setEscapeCallback);
         }
     }
 }

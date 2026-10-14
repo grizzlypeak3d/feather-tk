@@ -28,9 +28,11 @@ namespace ftk
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = std::string(20, '#');
         std::function<void(bool)> focusCallback;
+        std::function<void(void)> escapeCallback;
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
         ColorRole wellRole = ColorRole::Well;
+        int rightInset = 0;
         // Square: a well to type in, set apart from the rounded buttons.
         // Only a corner at the end of a group is rounded, to finish the
         // group's shape.
@@ -222,6 +224,11 @@ namespace ftk
         _p->focusCallback = value;
     }
 
+    void LineEdit::setEscapeCallback(const std::function<void(void)>& value)
+    {
+        _p->escapeCallback = value;
+    }
+
     bool LineEdit::isReadOnly() const
     {
         return _p->model->isReadOnly();
@@ -292,6 +299,23 @@ namespace ftk
         if (value == p.wellRole)
             return;
         p.wellRole = value;
+        setDrawUpdate();
+    }
+
+    int LineEdit::getRightInset() const
+    {
+        return _p->rightInset;
+    }
+
+    void LineEdit::setRightInset(int value)
+    {
+        FTK_P();
+        const int tmp = std::max(0, value);
+        if (tmp == p.rightInset)
+            return;
+        p.rightInset = tmp;
+        p.textBox = _getTextGeometry();
+        p.draw.reset();
         setDrawUpdate();
     }
 
@@ -642,7 +666,14 @@ namespace ftk
                 break;
             case Key::Escape:
                 event.accept = true;
-                releaseKeyFocus();
+                if (p.escapeCallback)
+                {
+                    p.escapeCallback();
+                }
+                else
+                {
+                    releaseKeyFocus();
+                }
                 break;
             default:
                 event.accept = p.model->key(event.key, event.modifiers);
@@ -797,7 +828,9 @@ namespace ftk
     Box2I LineEdit::_getMarginGeometry() const
     {
         FTK_P();
-        return margin(_getAlignGeometry(), -p.size.keyFocus);
+        Box2I out = margin(_getAlignGeometry(), -p.size.keyFocus);
+        out.max.x = std::max(out.min.x, out.max.x - p.rightInset);
+        return out;
     }
 
     Box2I LineEdit::_getTextGeometry() const

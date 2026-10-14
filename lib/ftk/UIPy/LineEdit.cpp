@@ -55,7 +55,8 @@ namespace ftk
                 .def("selectAll", &LineEdit::selectAll)
                 .def("clearSelection", &LineEdit::clearSelection)
                 .def_prop_rw("font", &LineEdit::getFont, &LineEdit::setFont)
-                .def_prop_rw("borderRole", &LineEdit::getBorderRole, &LineEdit::setBorderRole);
+                .def_prop_rw("borderRole", &LineEdit::getBorderRole, &LineEdit::setBorderRole)
+                .def_prop_rw("rightInset", &LineEdit::getRightInset, &LineEdit::setRightInset);
         }
     }
 }

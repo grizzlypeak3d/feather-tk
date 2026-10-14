@@ -287,6 +287,7 @@ namespace ftk
     struct FileBrowserSettings::Private
     {
         FileBrowserOptions options;
+        std::shared_ptr<ftk::ComboBox> layoutComboBox;
         std::shared_ptr<ftk::ComboBox> thumbnailsComboBox;
         std::shared_ptr<ftk::CheckBox> seqCheckBox;
         std::shared_ptr<ftk::CheckBox> hiddenCheckBox;
@@ -301,6 +302,13 @@ namespace ftk
     {
         IContainer::_init(context, "ftk::FileBrowserSettings", parent);
         FTK_P();
+
+        p.layoutComboBox = ftk::ComboBox::create(
+            context, getFileBrowserLayoutLabels());
+        p.layoutComboBox->setHStretch(ftk::Stretch::Expanding);
+        p.layoutComboBox->setTooltip(
+            "How the files are arranged: a list with their\n"
+            "details, or tiles of larger thumbnails.");
 
         p.thumbnailsComboBox = ftk::ComboBox::create(
             context, getFileBrowserThumbnailsLabels());
@@ -321,9 +329,18 @@ namespace ftk
         _setWidget(p.layout);
         p.layout->setMarginRole(ftk::SizeRole::MarginSmall);
         p.layout->setSpacingRole(ftk::SizeRole::SpacingSmall);
+        p.layout->addRow("Layout:", p.layoutComboBox);
         p.layout->addRow("Thumbnails:", p.thumbnailsComboBox);
         p.layout->addRow("File sequences:", p.seqCheckBox);
         p.layout->addRow("Show hidden:", p.hiddenCheckBox);
+
+        p.layoutComboBox->setIndexCallback(
+            [model](int value)
+            {
+                FileBrowserOptions options = model->getOptions();
+                options.layout = static_cast<FileBrowserLayout>(value);
+                model->setOptions(options);
+            });
 
         p.thumbnailsComboBox->setIndexCallback(
             [model](int value)
@@ -353,6 +370,8 @@ namespace ftk
             model->observeOptions(),
             [this](const FileBrowserOptions& value)
             {
+                _p->layoutComboBox->setCurrentIndex(
+                    static_cast<int>(value.layout));
                 _p->thumbnailsComboBox->setCurrentIndex(
                     static_cast<int>(value.thumbnails));
                 _p->seqCheckBox->setChecked(value.dirList.seq);

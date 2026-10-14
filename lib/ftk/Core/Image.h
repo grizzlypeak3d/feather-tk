@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -192,6 +193,10 @@ namespace ftk
 
     protected:
         Image(const ImageInfo&, uint8_t* externalData = nullptr);
+        Image(
+            const ImageInfo&,
+            uintptr_t textureHandle,
+            const std::function<void(uintptr_t)>& release);
 
     public:
         FTK_CORE_API ~Image();
@@ -207,6 +212,26 @@ namespace ftk
 
         //! Create a new image.
         FTK_CORE_API static std::shared_ptr<Image> create(int w, int h, ImageType);
+
+        //! \name Textures
+        //! An image whose pixels are already on the GPU: a decoder's
+        //! surface, a browser's video frame. What the handle is belongs to
+        //! whoever made it and the renderer that draws it; for the OpenGL
+        //! renderer it is a texture name. There is no data, and the byte
+        //! count is what the pixels would take, so a cache budgets the
+        //! image like any other. The release runs when the image is
+        //! destroyed, on whatever thread that happens.
+        ///@{
+
+        FTK_CORE_API static std::shared_ptr<Image> create(
+            const ImageInfo&,
+            uintptr_t textureHandle,
+            const std::function<void(uintptr_t)>& release);
+
+        //! Get the texture handle, or zero when the pixels are in memory.
+        uintptr_t getTextureHandle() const;
+
+        ///@}
 
         //! Get the image information.
         const ImageInfo& getInfo() const;
@@ -284,6 +309,8 @@ namespace ftk
         size_t    _byteCount    = 0;
         uint8_t*  _data         = nullptr;
         bool      _externalData = false;
+        uintptr_t _textureHandle = 0;
+        std::function<void(uintptr_t)> _release;
     };
 
     //! Widen a row of a three channel image to four channels, the fourth

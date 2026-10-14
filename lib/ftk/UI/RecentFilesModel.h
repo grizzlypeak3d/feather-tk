@@ -59,6 +59,9 @@ namespace ftk
         //! Add a recent file.
         FTK_UI_API void addRecent(const Path&);
 
+        //! Remove a recent file: one that turned out not to open, say.
+        FTK_UI_API void removeRecent(const Path&);
+
     private:
         FTK_PRIVATE();
     };

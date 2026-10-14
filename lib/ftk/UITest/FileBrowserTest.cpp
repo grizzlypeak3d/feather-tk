@@ -197,6 +197,120 @@ namespace ftk
                 app->tick();
                 FTK_CHECK(4 == itemCount);
 
+                // A list of files in place of the directory: in the order
+                // given, whatever extension the model has chosen, and
+                // searched by the whole path. A file that is not there is
+                // still listed.
+                model->setExtGroup("Movies");
+                FTK_CHECK(!view->hasPaths());
+                const std::vector<Path> paths =
+                {
+                    Path(fromFileSystem(path / "delta.txt")),
+                    Path(fromFileSystem(path / "alpha.png")),
+                    Path(fromFileSystem(path / "missing.exr")),
+                    Path(appendSeparator(fromFileSystem(path)))
+                };
+                view->setPaths(paths);
+                view->setPaths(paths);
+                FTK_CHECK(view->hasPaths());
+                FTK_CHECK(paths == view->getPaths());
+                app->tick();
+                FTK_CHECK(4 == itemCount);
+
+                // A directory in the list is handed to the callback.
+                {
+                    std::vector<Path> opened;
+                    view->setCallback(
+                        [&opened](const std::vector<Path>& value)
+                        {
+                            opened = value;
+                        });
+                    view->takeKeyFocus();
+                    view->setCurrent(3);
+                    window->keyPress(Key::Return);
+                    app->tick();
+                    FTK_CHECK(1 == opened.size());
+                    if (!opened.empty())
+                    {
+                        FTK_CHECK(paths[3] == opened.front());
+                    }
+                    view->setCallback(nullptr);
+                }
+                window->keyPress(Key::Tab);
+                view->takeKeyFocus();
+                window->keyPress(Key::Home);
+                app->tick();
+                FTK_CHECK(1 == view->getSelection().size());
+                if (!view->getSelection().empty())
+                {
+                    FTK_CHECK(paths[0] == view->getSelection().front());
+                }
+                view->setSearch("ALPHA");
+                app->tick();
+                FTK_CHECK(1 == itemCount);
+                view->setSearch("ftkFileBrowserExtGroupsTest");
+                app->tick();
+                FTK_CHECK(4 == itemCount);
+                view->setSearch(std::string());
+
+                // As tiles the files are side by side, and the left and
+                // right arrows move between them.
+                window->layout(Size2I(1280, 960));
+                app->tick();
+                const Box2I listRect0 = view->getRect(0);
+                const Box2I listRect1 = view->getRect(1);
+                FTK_CHECK(listRect1.min.y > listRect0.min.y);
+                FTK_CHECK(listRect1.min.x == listRect0.min.x);
+                {
+                    FileBrowserOptions tilesOptions = model->getOptions();
+                    tilesOptions.layout = FileBrowserLayout::Tiles;
+                    model->setOptions(tilesOptions);
+                    window->layout(Size2I(1280, 960));
+                    app->tick();
+                    app->tick();
+                    FTK_CHECK(4 == itemCount);
+                    const Box2I tileRect0 = view->getRect(0);
+                    const Box2I tileRect1 = view->getRect(1);
+                    FTK_CHECK(tileRect1.min.y == tileRect0.min.y);
+                    FTK_CHECK(tileRect1.min.x > tileRect0.max.x - 1);
+                    FTK_CHECK(view->getSizeHint().h >= tileRect0.h());
+                    view->takeKeyFocus();
+                    view->setCurrent(0);
+                    window->keyPress(Key::Right);
+                    app->tick();
+                    if (!view->getSelection().empty())
+                    {
+                        FTK_CHECK(paths[1] == view->getSelection().front());
+                    }
+                    window->keyPress(Key::Left);
+                    window->keyPress(Key::Left);
+                    app->tick();
+                    if (!view->getSelection().empty())
+                    {
+                        FTK_CHECK(paths[0] == view->getSelection().front());
+                    }
+                    tilesOptions.layout = FileBrowserLayout::List;
+                    model->setOptions(tilesOptions);
+                    app->tick();
+                }
+                FTK_CHECK(FileBrowserLayout::Tiles ==
+                    [] {
+                        FileBrowserOptions a;
+                        a.layout = FileBrowserLayout::Tiles;
+                        nlohmann::json json;
+                        to_json(json, a);
+                        FileBrowserOptions b;
+                        from_json(json, b);
+                        return b.layout;
+                    }());
+
+                view->clearPaths();
+                view->clearPaths();
+                FTK_CHECK(!view->hasPaths());
+                app->tick();
+                FTK_CHECK(1 == itemCount);
+                model->setExtGroup(std::string());
+
                 std::filesystem::remove_all(path);
             }
         }

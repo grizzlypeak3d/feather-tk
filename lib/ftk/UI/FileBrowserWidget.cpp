@@ -220,10 +220,19 @@ namespace ftk
         p.fileEdit->setParent(vLayout);
         hLayout = HorizontalLayout::create(context, vLayout);
         hLayout->setSpacingRole(SizeRole::SpacingSmall);
+        // What is shown, how it is ordered, and how many there are: three
+        // groups, with a divider between them and twice the spacing either
+        // side of it.
         p.searchBox->setParent(hLayout);
         p.extsComboBox->setParent(hLayout);
+        hLayout->addSpacer(SizeRole::None);
+        Divider::create(context, Orientation::Horizontal, hLayout);
+        hLayout->addSpacer(SizeRole::None);
         p.sortComboBox->setParent(hLayout);
         p.reverseSortButton->setParent(hLayout);
+        hLayout->addSpacer(SizeRole::None);
+        Divider::create(context, Orientation::Horizontal, hLayout);
+        hLayout->addSpacer(SizeRole::None);
         p.itemCountLabel->setParent(hLayout);
         hLayout->addSpacer(SizeRole::None, Stretch::Expanding);
         p.pinCheckBox->setParent(hLayout);

@@ -84,6 +84,11 @@ namespace ftk
                     nb::arg("parent") = nullptr)
                 .def("reload", &FileBrowserView::reload)
                 .def("setCallback", &FileBrowserView::setCallback)
+                .def("hasPaths", &FileBrowserView::hasPaths)
+                .def("getPaths", &FileBrowserView::getPaths)
+                .def("setPaths", &FileBrowserView::setPaths, nb::arg("paths"))
+                .def("clearPaths", &FileBrowserView::clearPaths)
+                .def("setCurrent", &FileBrowserView::setCurrent, nb::arg("index"))
                 .def("setSelectCallback", &FileBrowserView::setSelectCallback)
                 .def_prop_rw(
                     "multiple",

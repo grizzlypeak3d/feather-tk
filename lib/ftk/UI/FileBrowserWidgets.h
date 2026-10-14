@@ -195,6 +195,24 @@ namespace ftk
         //! Reload the directory.
         FTK_UI_API void reload();
 
+        //! Get whether a list of files is shown in place of a directory.
+        FTK_UI_API bool hasPaths() const;
+
+        //! Get the list of files shown in place of a directory.
+        FTK_UI_API const std::vector<Path>& getPaths() const;
+
+        //! Show a list of files in place of the model's directory: recent
+        //! files, say. They are shown in the order given, each with the
+        //! directory it is in, and the search filter matches against the
+        //! whole path. The extensions chosen in the model do not apply.
+        //! A directory in the list, which is a path ending in a separator,
+        //! is given to the callback like a file. The file system is not
+        //! asked about the files, so their sizes are not shown.
+        FTK_UI_API void setPaths(const std::vector<Path>&);
+
+        //! Go back to showing the model's directory.
+        FTK_UI_API void clearPaths();
+
         //! Set the callback. Carries everything selected, so that opening
         //! one of several chosen files opens the ones chosen.
         FTK_UI_API void setCallback(const std::function<void(const std::vector<Path>&)>&);
@@ -230,6 +248,10 @@ namespace ftk
         //! Observe the current item.
         FTK_UI_API std::shared_ptr<IObservable<int> > observeCurrent() const;
 
+        //! Set the current item, which selects it: for moving into the
+        //! list from a search box, say.
+        FTK_UI_API void setCurrent(int);
+
         //! Observe the number of items shown.
         FTK_UI_API std::shared_ptr<IObservable<size_t> > observeItemCount() const;
 
@@ -237,6 +259,7 @@ namespace ftk
         FTK_UI_API Box2I getRect(int) const;
 
         FTK_UI_API Size2I getSizeHint() const override;
+        FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;
         FTK_UI_API void tickEvent(bool, bool, const TickEvent&) override;
         FTK_UI_API void sizeHintEvent(const SizeHintEvent&) override;
@@ -252,6 +275,8 @@ namespace ftk
 
     private:
         int _getItem(const V2I&) const;
+        bool _isTiles() const;
+        void _layoutUpdate();
         void _directoryUpdate();
         void _cancelThumbnails();
         void _setCurrent(int);

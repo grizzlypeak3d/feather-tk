@@ -8,6 +8,7 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
+#include <ftk/Core/RenderUtil.h>
 #include <ftk/Core/String.h>
 
 #include <algorithm>
@@ -38,7 +39,23 @@ namespace ftk
 
             std::vector<std::string> text;
             std::vector<Size2I> textSizes;
+
+            // A second line under the name: the directory of a file that
+            // is listed apart from it. It does not widen the row; it is
+            // cut off where the row ends.
+            std::string detail;
+            Size2I detailSize;
+
+            // The name as a tile shows it, cut down to the tile's width.
+            std::string tileText;
+            Size2I tileTextSize;
+
             Size2I size;
+
+            // Where the item is, from the view's origin: a row of the list
+            // or a tile of the grid. Everything that asks where an item is
+            // -- drawing, the mouse, scrolling to it -- asks this.
+            Box2I rect;
         };
 
         // As large as the image fits in the box. Thumbnails arrive at the
@@ -89,6 +106,16 @@ namespace ftk
         FileBrowserOptions options;
         std::string search;
         std::vector<DirEntry> dirEntries;
+
+        // The files shown in place of a directory. Nothing is asked of
+        // the file system about them: a recent file on a network share
+        // that has gone to sleep hangs whoever asks, so a directory is
+        // one given with its separator on the end, and the sizes are not
+        // shown.
+        bool hasPaths = false;
+        std::vector<Path> paths;
+        std::vector<DirEntry> pathEntries;
+
         std::shared_ptr<Observable<int> > current;
         std::shared_ptr<Observable<size_t> > itemCount;
 
@@ -137,6 +164,17 @@ namespace ftk
             Size2I thumbnail;
             int imageColumn = 0;
             Size2I sizeHint;
+
+            // The tiles: the room each asks for, how many fit across the
+            // width the view was given, and how tall that makes the grid.
+            // The height is only known once the width is, so it is found
+            // when the geometry is set and the size hint follows it.
+            Size2I tileImage;
+            int tileText = 0;
+            Size2I tile;
+            int columns = 1;
+            int layoutWidth = -1;
+            int layoutHeight = 0;
         };
         SizeData size;
 
@@ -197,7 +235,8 @@ namespace ftk
                 {
                     _clearCurrent();
                 }
-                if (value.thumbnails != p.options.thumbnails)
+                if (value.thumbnails != p.options.thumbnails ||
+                    value.layout != p.options.layout)
                 {
                     // The thumbnails were made for the old size, so they
                     // do not carry over to the new one.
@@ -205,6 +244,9 @@ namespace ftk
                     {
                         item.thumbnailImage.reset();
                     }
+                    // The icons are a size for each layout.
+                    p.directoryImage.reset();
+                    p.fileImage.reset();
                 }
                 p.options = value;
                 _directoryUpdate();
@@ -255,6 +297,50 @@ namespace ftk
         {
             item.thumbnailImage.reset();
         }
+        p.noThumbnail.clear();
+        _directoryUpdate();
+    }
+
+    bool FileBrowserView::hasPaths() const
+    {
+        return _p->hasPaths;
+    }
+
+    const std::vector<Path>& FileBrowserView::getPaths() const
+    {
+        return _p->paths;
+    }
+
+    void FileBrowserView::setPaths(const std::vector<Path>& value)
+    {
+        FTK_P();
+        if (p.hasPaths && value == p.paths)
+            return;
+        p.hasPaths = true;
+        p.paths = value;
+        p.pathEntries.clear();
+        for (const auto& path : p.paths)
+        {
+            DirEntry entry;
+            entry.path = path;
+            const std::string& name = path.get();
+            entry.isDir = !name.empty() && ('/' == name.back() || '\\' == name.back());
+            p.pathEntries.push_back(entry);
+        }
+        _clearCurrent();
+        p.noThumbnail.clear();
+        _directoryUpdate();
+    }
+
+    void FileBrowserView::clearPaths()
+    {
+        FTK_P();
+        if (!p.hasPaths)
+            return;
+        p.hasPaths = false;
+        p.paths.clear();
+        p.pathEntries.clear();
+        _clearCurrent();
         p.noThumbnail.clear();
         _directoryUpdate();
     }
@@ -325,6 +411,11 @@ namespace ftk
         return _p->current;
     }
 
+    void FileBrowserView::setCurrent(int value)
+    {
+        _setCurrent(value);
+    }
+
     std::shared_ptr<IObservable<size_t> > FileBrowserView::observeItemCount() const
     {
         return _p->itemCount;
@@ -333,24 +424,34 @@ namespace ftk
     Box2I FileBrowserView::getRect(int index) const
     {
         FTK_P();
-        int y = 0;
-        int i = 0;
-        for (; i < index && i < static_cast<int>(p.items.size()); ++i)
-        {
-            const FileBrowserItem& item = p.items[i];
-            y += item.size.h;
-        }
-        int h = 0;
-        if (i < static_cast<int>(p.items.size()))
-        {
-            h = p.items[i].size.h;
-        }
-        return Box2I(0, y, getGeometry().w(), h);
+        return index >= 0 && index < static_cast<int>(p.items.size()) ?
+            p.items[index].rect :
+            Box2I(0, 0, getGeometry().w(), 0);
     }
 
     Size2I FileBrowserView::getSizeHint() const
     {
         return _p->size.sizeHint;
+    }
+
+    void FileBrowserView::setGeometry(const Box2I& value)
+    {
+        IMouseWidget::setGeometry(value);
+        FTK_P();
+        if (value.w() != p.size.layoutWidth)
+        {
+            _layoutUpdate();
+            if (_isTiles() && p.size.layoutHeight != p.size.sizeHint.h)
+            {
+                // The height of the grid only becomes knowable here, where
+                // the width is. Ask to be measured again with it; the
+                // second pass agrees, because the width does not depend on
+                // the height.
+                p.size.sizeHint.h = p.size.layoutHeight;
+                setSizeUpdate();
+            }
+            setDrawUpdate();
+        }
     }
 
     void FileBrowserView::styleEvent(const StyleEvent& event)
@@ -441,13 +542,16 @@ namespace ftk
             }
             p.size.init = true;
         }
+        // Three times the size as tiles: an icon the size of a line of
+        // text is lost in the room a tile gives it.
+        const float iconScale = event.displayScale * (_isTiles() ? 3.F : 1.F);
         if (!p.directoryImage)
         {
-            p.directoryImage = event.iconSystem->get("Directory", event.displayScale);
+            p.directoryImage = event.iconSystem->get("Directory", iconScale);
         }
         if (!p.fileImage)
         {
-            p.fileImage = event.iconSystem->get("File", event.displayScale);
+            p.fileImage = event.iconSystem->get("File", iconScale);
         }
 
         if (p.size.init)
@@ -464,11 +568,30 @@ namespace ftk
                 // The largest a thumbnail is allowed to be. A row is only as
                 // wide as its own image, but a panorama is held to this
                 // rather than given the width its aspect asks for.
+                // Twice the size as tiles, where the picture is what the
+                // file is found by.
                 const int h = getThumbnailHeight(
                     p.options.thumbnails,
-                    event.style->getSizeRole(SizeRole::Thumbnail, event.displayScale));
+                    event.style->getSizeRole(SizeRole::Thumbnail, event.displayScale)) *
+                    (_isTiles() ? 2 : 1);
                 p.size.thumbnail = Size2I(h * 16 / 9, h);
             }
+
+            // A tile has room for a thumbnail, or for an icon when there
+            // are none, and for a line of the name under it.
+            p.size.tileImage = p.size.thumbnail;
+            if (p.fileImage &&
+                (!p.thumbnails || FileBrowserThumbnails::Off == p.options.thumbnails))
+            {
+                p.size.tileImage = p.fileImage->getSize();
+            }
+            p.size.tileText = std::max(
+                p.size.tileImage.w,
+                p.size.fontMetrics.lineHeight * 8);
+            p.size.tile = Size2I(
+                p.size.tileText + (p.size.pad + p.size.margin + p.size.keyFocus) * 2,
+                p.size.tileImage.h + p.size.fontMetrics.lineHeight +
+                    p.size.margin * 3 + p.size.keyFocus * 2);
             for (size_t i = 0; i < p.dirEntries.size() && i < p.items.size(); ++i)
             {
                 auto& item = p.items[i];
@@ -479,6 +602,45 @@ namespace ftk
                 {
                     item.textSizes.push_back(
                         event.fontSystem->getSize(text, p.size.fontInfo));
+                }
+                item.detailSize = !item.detail.empty() ?
+                    event.fontSystem->getSize(item.detail, p.size.fontInfo) :
+                    Size2I();
+
+                // The name of a tile is cut from the middle to the width
+                // of the tile, keeping the start and the frame number or
+                // extension at the end.
+                item.tileText.clear();
+                item.tileTextSize = Size2I();
+                if (_isTiles() && !item.text.empty())
+                {
+                    item.tileText = item.text.front();
+                    item.tileTextSize = !item.textSizes.empty() ?
+                        item.textSizes.front() :
+                        Size2I();
+                    size_t low = 1;
+                    size_t high = item.tileText.size();
+                    if (item.tileTextSize.w > p.size.tileText)
+                    {
+                        while (low < high)
+                        {
+                            const size_t mid = low + (high - low + 1) / 2;
+                            if (event.fontSystem->getSize(
+                                    elide(item.text.front(), mid, ElideMode::Middle),
+                                    p.size.fontInfo).w <= p.size.tileText)
+                            {
+                                low = mid;
+                            }
+                            else
+                            {
+                                high = mid - 1;
+                            }
+                        }
+                        item.tileText = elide(item.text.front(), low, ElideMode::Middle);
+                        item.tileTextSize = event.fontSystem->getSize(
+                            item.tileText,
+                            p.size.fontInfo);
+                    }
                 }
             }
         }
@@ -505,10 +667,20 @@ namespace ftk
                 item.size.w += textSize.w + p.size.pad * 2 + p.size.margin * 2 + p.size.keyFocus * 2;
                 item.size.h = std::max(
                     item.size.h,
-                    std::max(textSize.h + p.size.margin * 2, item.imageSize.h) + p.size.keyFocus * 2);
+                    std::max(
+                        textSize.h + item.detailSize.h + p.size.margin * 2,
+                        item.imageSize.h) + p.size.keyFocus * 2);
             }
             p.size.sizeHint.w = std::max(p.size.sizeHint.w, item.size.w);
             p.size.sizeHint.h += item.size.h;
+        }
+
+        _layoutUpdate();
+        if (_isTiles())
+        {
+            // As wide as one tile and no wider, so that the scroll area
+            // gives the view its own width and the tiles wrap to it.
+            p.size.sizeHint = Size2I(p.size.tile.w, p.size.layoutHeight);
         }
     }
 
@@ -561,13 +733,14 @@ namespace ftk
         const Box2I requestRect = margin(drawRect, 0, drawRect.h() / 2);
         const Box2I retainRect = margin(drawRect, 0, drawRect.h() * 4);
         std::set<int> thumbnailRequests;
-        int y = g.min.y;
+        const bool tiles = _isTiles();
         for (size_t i = 0; i < p.items.size(); ++i)
         {
             auto& item = p.items[i];
+            const Box2I rowRect = move(item.rect, g.min);
+            const int y = rowRect.min.y;
             int x = g.min.x + p.size.pad;
-            const Box2I g2(x, y, item.size.w, item.size.h);
-            const Box2I rowRect(g.min.x, y, g.w(), item.size.h);
+            const Box2I g2 = tiles ? rowRect : Box2I(x, y, item.size.w, item.size.h);
 
             if (item.thumbnail && intersects(rowRect, requestRect))
             {
@@ -589,11 +762,21 @@ namespace ftk
 
             if (intersects(g2, drawRect))
             {
-                const Box2I imageRect(
-                    x,
-                    y + item.size.h / 2 - item.imageSize.h / 2,
-                    item.imageSize.w,
-                    item.imageSize.h);
+                // A tile has its image centered over its name; a row has
+                // it at the left with the text beside it.
+                const int tileInset = p.size.margin + p.size.keyFocus;
+                const Box2I imageRect = tiles ?
+                    Box2I(
+                        rowRect.min.x + rowRect.w() / 2 - item.imageSize.w / 2,
+                        rowRect.min.y + tileInset +
+                            p.size.tileImage.h / 2 - item.imageSize.h / 2,
+                        item.imageSize.w,
+                        item.imageSize.h) :
+                    Box2I(
+                        x,
+                        y + item.size.h / 2 - item.imageSize.h / 2,
+                        item.imageSize.w,
+                        item.imageSize.h);
                 if (item.thumbnailImage)
                 {
                     // Not cached: a directory holds more thumbnails than the
@@ -620,6 +803,19 @@ namespace ftk
                             iconSize.h),
                         event.style->getColorRole(ColorRole::Text));
                 }
+                if (tiles)
+                {
+                    if (!item.tileText.empty())
+                    {
+                        event.render->drawText(
+                            event.fontSystem->getGlyphs(item.tileText, p.size.fontInfo),
+                            p.size.fontMetrics,
+                            V2I(rowRect.min.x + rowRect.w() / 2 - item.tileTextSize.w / 2,
+                                rowRect.min.y + tileInset + p.size.tileImage.h + p.size.margin),
+                            event.style->getColorRole(ColorRole::Text, isEnabled()));
+                    }
+                    continue;
+                }
                 x += p.size.imageColumn;
                 int rightColumnsSize = 0;
                 for (int j = 1; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
@@ -629,11 +825,31 @@ namespace ftk
                 for (int j = 0; j < static_cast<int>(item.text.size()) && j < static_cast<int>(item.textSizes.size()); ++j)
                 {
                     const auto glyphs = event.fontSystem->getGlyphs(item.text[j], p.size.fontInfo);
+                    // The name moves up to make room for the line under it.
+                    const int textY =
+                        y + item.size.h / 2 - item.textSizes[j].h / 2 -
+                        (0 == j ? item.detailSize.h / 2 : 0);
                     event.render->drawText(
                         glyphs,
                         p.size.fontMetrics,
-                        V2I(x + p.size.pad + p.size.margin, y + item.size.h / 2 - item.textSizes[j].h / 2),
+                        V2I(x + p.size.pad + p.size.margin, textY),
                         event.style->getColorRole(ColorRole::Text, isEnabled()));
+                    if (0 == j && !item.detail.empty())
+                    {
+                        // Dimmed, and cut off before the columns on the
+                        // right.
+                        const ClipRectEnabledState clipRectEnabledState(event.render);
+                        const ClipRectState clipRectState(event.render);
+                        event.render->setClipRectEnabled(true);
+                        event.render->setClipRect(intersect(
+                            Box2I(x, y, g.max.x - rightColumnsSize - x, item.size.h),
+                            drawRect));
+                        event.render->drawText(
+                            event.fontSystem->getGlyphs(item.detail, p.size.fontInfo),
+                            p.size.fontMetrics,
+                            V2I(x + p.size.pad + p.size.margin, textY + item.textSizes[j].h),
+                            event.style->getColorRole(ColorRole::Text, false));
+                    }
                     if (0 == j)
                     {
                         x = g.max.x - rightColumnsSize;
@@ -644,7 +860,6 @@ namespace ftk
                     }
                 }
             }
-            y += item.size.h;
         }
 
         // Cancel the rows that left the band while their request was still
@@ -798,6 +1013,11 @@ namespace ftk
     void FileBrowserView::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
+        // Up and down move by a row, which is one item in the list and as
+        // many as there are across in the tiles; left and right move
+        // along a row of tiles.
+        const bool tiles = _isTiles();
+        const int rowStep = tiles ? p.size.columns : 1;
         if (p.multiple &&
             static_cast<int>(KeyModifier::Shift) == event.modifiers)
         {
@@ -806,12 +1026,28 @@ namespace ftk
             case Key::Up:
                 event.accept = true;
                 takeKeyFocus();
-                _selectRange(p.current->get() - 1);
+                _selectRange(p.current->get() - rowStep);
                 break;
             case Key::Down:
                 event.accept = true;
                 takeKeyFocus();
-                _selectRange(p.current->get() + 1);
+                _selectRange(p.current->get() + rowStep);
+                break;
+            case Key::Left:
+                if (tiles)
+                {
+                    event.accept = true;
+                    takeKeyFocus();
+                    _selectRange(p.current->get() - 1);
+                }
+                break;
+            case Key::Right:
+                if (tiles)
+                {
+                    event.accept = true;
+                    takeKeyFocus();
+                    _selectRange(p.current->get() + 1);
+                }
                 break;
             case Key::Home:
                 event.accept = true;
@@ -839,7 +1075,27 @@ namespace ftk
                 }
                 else
                 {
+                    // Not past the first row: stepping back a whole row
+                    // from it would jump to the first tile.
+                    _setCurrent(p.current->get() >= rowStep ?
+                        p.current->get() - rowStep :
+                        p.current->get());
+                }
+                break;
+            case Key::Left:
+                if (tiles)
+                {
+                    event.accept = true;
+                    takeKeyFocus();
                     _setCurrent(p.current->get() - 1);
+                }
+                break;
+            case Key::Right:
+                if (tiles)
+                {
+                    event.accept = true;
+                    takeKeyFocus();
+                    _setCurrent(p.current->get() + 1);
                 }
                 break;
             case Key::Down:
@@ -851,7 +1107,11 @@ namespace ftk
                 }
                 else
                 {
-                    _setCurrent(p.current->get() + 1);
+                    // Not past the last row, for the same reason.
+                    _setCurrent(
+                        p.current->get() + rowStep < static_cast<int>(p.dirEntries.size()) ?
+                        p.current->get() + rowStep :
+                        (tiles ? p.current->get() : p.current->get() + 1));
                 }
                 break;
             case Key::Home:
@@ -899,20 +1159,60 @@ namespace ftk
     {
         FTK_P();
         int out = -1;
-        const Box2I& g = getGeometry();
-        int y = 0;
+        const V2I pos = value - getGeometry().min;
         for (size_t i = 0; i < p.items.size(); ++i)
         {
-            const auto& item = p.items[i];
-            const Box2I g2(g.min.x, g.min.y + y, g.w(), item.size.h);
-            if (contains(g2, value))
+            if (contains(p.items[i].rect, pos))
             {
                 out = static_cast<int>(i);
                 break;
             }
-            y += item.size.h;
         }
         return out;
+    }
+
+    bool FileBrowserView::_isTiles() const
+    {
+        return FileBrowserLayout::Tiles == _p->options.layout;
+    }
+
+    void FileBrowserView::_layoutUpdate()
+    {
+        FTK_P();
+        const int w = getGeometry().w();
+        p.size.layoutWidth = w;
+        if (_isTiles())
+        {
+            // As many tiles across as fit, sharing the width between them
+            // so that the grid reaches both sides.
+            p.size.columns = p.size.tile.w > 0 ? std::max(1, w / p.size.tile.w) : 1;
+            const int cellW = std::max(p.size.tile.w, w / p.size.columns);
+            for (size_t i = 0; i < p.items.size(); ++i)
+            {
+                const int column = static_cast<int>(i) % p.size.columns;
+                const int row = static_cast<int>(i) / p.size.columns;
+                p.items[i].rect = Box2I(
+                    column * cellW,
+                    row * p.size.tile.h,
+                    cellW,
+                    p.size.tile.h);
+            }
+            const int rows =
+                (static_cast<int>(p.items.size()) + p.size.columns - 1) /
+                p.size.columns;
+            p.size.layoutHeight = rows * p.size.tile.h;
+        }
+        else
+        {
+            p.size.columns = 1;
+            int y = 0;
+            for (auto& item : p.items)
+            {
+                item.rect = Box2I(0, y, w, item.size.h);
+                y += item.size.h;
+            }
+            p.size.layoutHeight = y;
+        }
     }
 
     void FileBrowserView::_directoryUpdate()
@@ -947,6 +1247,17 @@ namespace ftk
             }
         }
 
+        if (p.hasPaths)
+        {
+            for (const auto& entry : p.pathEntries)
+            {
+                if (p.search.empty() ||
+                    contains(entry.path.get(), p.search, CaseCompare::Insensitive))
+                {
+                    p.dirEntries.push_back(entry);
+                }
+            }
+        }
         const auto& options = p.model->getOptions();
         auto dirListOptions = options.dirList;
         dirListOptions.filter = p.search;
@@ -975,7 +1286,10 @@ namespace ftk
             // lists everything.
             dirListOptions.filterExt = p.model->getExtsFilter();
         }
-        p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+        if (!p.hasPaths)
+        {
+            p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+        }
         p.itemCount->setIfChanged(p.dirEntries.size());
 
         // Columns are aligned by padding them to a common width, so the frame
@@ -1014,8 +1328,26 @@ namespace ftk
                     }
                 }
 
-                // File name.
+                // File name, and the directory of a file listed apart
+                // from it.
                 item.text.push_back(dirEntry.path.getFileName());
+                if (p.hasPaths)
+                {
+                    item.detail = dirEntry.path.getDir();
+                    if (item.text.back().empty())
+                    {
+                        // A directory given with its separator on the end
+                        // has no file name: it is named by its last part,
+                        // and is in what comes before that.
+                        std::filesystem::path tmp = toFileSystem(dirEntry.path.get());
+                        if (!tmp.has_filename())
+                        {
+                            tmp = tmp.parent_path();
+                        }
+                        item.text.back() = fromFileSystem(tmp.filename());
+                        item.detail = fromFileSystem(tmp.parent_path());
+                    }
+                }
 
                 // Frame range.
                 if (dirEntry.path.isSeq())
@@ -1030,7 +1362,7 @@ namespace ftk
                     std::string());
 
                 // File size.
-                if (!dirEntry.isDir)
+                if (!dirEntry.isDir && !p.hasPaths)
                 {
                     std::string text;
                     if (dirEntry.size < megabyte)
@@ -1176,7 +1508,10 @@ namespace ftk
             {
             case FileBrowserMode::Open:
             case FileBrowserMode::Save:
-                if (!dirEntry.isDir && p.callback)
+                // A directory in a list of files is one of the things
+                // listed, to be handed back like a file; in a directory it
+                // is somewhere to go.
+                if ((!dirEntry.isDir || p.hasPaths) && p.callback)
                 {
                     // Everything selected when this is one of them, which is
                     // what opening from a selection means; on its own it is
