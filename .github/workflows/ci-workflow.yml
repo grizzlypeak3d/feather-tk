@@ -14,6 +14,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-linux-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/Linux/sbuild.sh', 'ftk/etc/Linux/setup-gha.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -24,7 +34,25 @@ jobs:
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh ftk/etc/Linux/setup-gha.sh
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux
 
@@ -50,6 +78,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-linux-python-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/Linux/sbuild.sh', 'ftk/etc/Linux/setup-gha.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -60,7 +98,25 @@ jobs:
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh ftk/etc/Linux/setup-gha.sh
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-python
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-python
 
@@ -84,6 +140,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-linux-sdl2-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/Linux/sbuild.sh', 'ftk/etc/Linux/setup-gha.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -94,7 +160,25 @@ jobs:
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh ftk/etc/Linux/setup-gha.sh
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-sdl2
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-sdl2
 
@@ -123,6 +207,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-linux-gles3-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/Linux/sbuild.sh', 'ftk/etc/Linux/setup-gha.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -133,7 +227,25 @@ jobs:
         echo "PYTHONPATH=$PWD/install-Debug/lib:$PYTHONPATH" >> $GITHUB_ENV
         sh ftk/etc/Linux/setup-gha.sh
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-gles3
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/Linux/sbuild.sh ftk Debug ci-linux-gles3
 
@@ -153,6 +265,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/macOS/sbuild.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -164,7 +286,25 @@ jobs:
         cmake --version
         python --version
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/macOS/sbuild.sh ftk Debug ci
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/macOS/sbuild.sh ftk Debug ci
 
@@ -186,6 +326,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/macOS/sbuild.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -197,7 +347,25 @@ jobs:
         cmake --version
         python --version
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/macOS/sbuild.sh ftk Debug ci
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/macOS/sbuild.sh ftk Debug ci
 
@@ -220,6 +388,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-macos-python-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/macOS/sbuild.sh') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -231,7 +409,25 @@ jobs:
         cmake --version
         python --version
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        sh ftk/etc/macOS/sbuild.sh ftk Debug ci-macos-python
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
+      env:
+        SBUILD_STAGES: project
       run: |
         sh ftk/etc/macOS/sbuild.sh ftk Debug ci-macos-python
 
@@ -252,6 +448,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/Windows/sbuild.bat') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -265,8 +471,27 @@ jobs:
         echo PYTHONPATH=%CD%\install-Debug\lib >> %GITHUB_ENV%
         cmake --version
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      shell: cmd
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        ftk\etc\Windows\sbuild.bat ftk Debug ci
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
       shell: cmd
+      env:
+        SBUILD_STAGES: project
       run: |
         ftk\etc\Windows\sbuild.bat ftk Debug ci
 
@@ -291,6 +516,16 @@ jobs:
       with:
         path: ftk
         submodules: recursive
+
+    # The installed dependencies are cached, keyed on what decides
+    # them and this job's config; on a hit their build is skipped.
+    - name: Restore dependencies
+      id: deps
+      uses: actions/cache/restore@v4
+      with:
+        path: install-Debug
+        key: deps-${{ runner.os }}-${{ runner.arch }}-Debug-ci-windows-python-${{ hashFiles('ftk/etc/SuperBuild/**', 'ftk/etc/Config/**', 'ftk/etc/Windows/sbuild.bat') }}
+
     - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
@@ -304,8 +539,27 @@ jobs:
         echo PYTHONPATH=%CD%\install-Debug\lib >> %GITHUB_ENV%
         cmake --version
 
+    - name: Build dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      shell: cmd
+      env:
+        SBUILD_STAGES: deps
+      run: |
+        ftk\etc\Windows\sbuild.bat ftk Debug ci-windows-python
+
+    # Saved before the project is built and installed into the same
+    # directory, so that the cache holds only the dependencies.
+    - name: Save dependencies
+      if: steps.deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: install-Debug
+        key: ${{ steps.deps.outputs.cache-primary-key }}
+
     - name: Build
       shell: cmd
+      env:
+        SBUILD_STAGES: project
       run: |
         ftk\etc\Windows\sbuild.bat ftk Debug ci-windows-python
 

@@ -18,6 +18,11 @@ if [ -z "$CMAKE_BUILD_PARALLEL_LEVEL" ]; then
     export CMAKE_BUILD_PARALLEL_LEVEL
 fi
 
+# SBUILD_STAGES picks the stages: "deps" builds only the dependencies, into
+# install-<type>, and "project" only feather-tk, against dependencies already
+# there. Unset, both. CI caches the dependencies' install directory between
+# the two, which is all the project needs of them.
+if [ "$SBUILD_STAGES" != "project" ]; then
 cmake \
     -S $SOURCE_DIR/etc/SuperBuild \
     -B sb-$BUILD_TYPE \
@@ -26,6 +31,10 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=$PWD/install-$BUILD_TYPE \
     -DCMAKE_PREFIX_PATH=$PWD/install-$BUILD_TYPE
 cmake --build sb-$BUILD_TYPE --config $BUILD_TYPE
+fi
+if [ "$SBUILD_STAGES" = "deps" ]; then
+    exit 0
+fi
 
 cmake \
     -S $SOURCE_DIR \
