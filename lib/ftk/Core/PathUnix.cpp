@@ -8,6 +8,7 @@
 #endif // __APPLE__
 
 #include <cstdlib>
+#include <cstring>
 
 #include <sys/stat.h>
 #include <sys/types.h>

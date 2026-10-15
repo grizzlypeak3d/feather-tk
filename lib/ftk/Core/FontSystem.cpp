@@ -18,6 +18,7 @@
 #include FT_GLYPH_H
 
 #include <algorithm>
+#include <cstring>
 #include <limits>
 #include <ftk_resource/NotoMono-Regular.h>
 #include <ftk_resource/NotoSans-Bold.h>

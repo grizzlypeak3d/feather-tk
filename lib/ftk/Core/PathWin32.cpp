@@ -14,6 +14,7 @@
 #include <Shlobj.h>
 #include <shellapi.h>
 
+#include <cstring>
 #include <string>
 
 namespace ftk

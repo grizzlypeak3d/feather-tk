@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstring>
 #include <iostream>
 #include <vector>
 
