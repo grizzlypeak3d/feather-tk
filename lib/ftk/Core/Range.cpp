@@ -3,6 +3,8 @@
 
 #include <ftk/Core/Range.h>
 
+#include <nlohmann/json.hpp>
+
 namespace ftk
 {
     void to_json(nlohmann::json& json, const RangeI& value)

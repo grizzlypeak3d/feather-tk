@@ -8,6 +8,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
 
+#include <nlohmann/json.hpp>
+
 namespace ftk
 {
     namespace core_test

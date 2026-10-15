@@ -6,6 +6,8 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Box.h>
 
+#include <nlohmann/json.hpp>
+
 #include <sstream>
 
 namespace ftk

@@ -16,6 +16,8 @@
 #include <ftk/Core/Time.h>
 #include <ftk/Core/Path.h>
 
+#include <nlohmann/json.hpp>
+
 #include <fstream>
 
 namespace ftk

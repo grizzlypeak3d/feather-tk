@@ -11,6 +11,8 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
 
+#include <nlohmann/json.hpp>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H

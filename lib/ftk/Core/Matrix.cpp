@@ -3,6 +3,8 @@
 
 #include <ftk/Core/Matrix.h>
 
+#include <nlohmann/json.hpp>
+
 namespace ftk
 {
     void to_json(nlohmann::json& json, const M33F& value)

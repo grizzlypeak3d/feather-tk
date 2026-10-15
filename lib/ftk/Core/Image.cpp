@@ -7,6 +7,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
+#include <nlohmann/json.hpp>
+
 #include <atomic>
 #include <array>
 #include <cstring>

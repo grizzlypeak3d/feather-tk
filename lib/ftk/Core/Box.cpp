@@ -5,6 +5,8 @@
 
 #include <ftk/Core/String.h>
 
+#include <nlohmann/json.hpp>
+
 #include <sstream>
 
 namespace ftk

@@ -6,6 +6,8 @@
 #include <ftk/UI/DrawUtil.h>
 #include <ftk/UI/ScrollWidget.h>
 
+#include <nlohmann/json.hpp>
+
 #include <optional>
 
 namespace ftk

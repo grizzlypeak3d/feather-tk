@@ -6,6 +6,8 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Matrix.h>
 
+#include <nlohmann/json.hpp>
+
 #include <cmath>
 #include <sstream>
 #include <vector>

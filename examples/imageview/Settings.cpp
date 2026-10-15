@@ -3,6 +3,8 @@
 
 #include "Settings.h"
 
+#include <nlohmann/json.hpp>
+
 using namespace ftk;
 
 namespace imageview
