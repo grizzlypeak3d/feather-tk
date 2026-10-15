@@ -69,7 +69,7 @@ namespace ftk
             const std::shared_ptr<App>&,
             const std::string& title);
 
-        IWindow();
+        FTK_UI_API IWindow();
 
     public:
         FTK_UI_API virtual ~IWindow() = 0;
@@ -367,13 +367,17 @@ namespace ftk
         //! default does nothing.
         FTK_UI_API virtual void _geometryFromEvent(bool maximized = false);
 
-        virtual void _update(
+        // Exported, with the constructor and the recursive draw below: a
+        // window outside the library (tlRender's C interface hosts widgets
+        // in one) is built on them, and a DLL only hands out what is
+        // marked.
+        FTK_UI_API virtual void _update(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
             const std::shared_ptr<Style>&);
 
-        bool _hasDrawUpdate(const std::shared_ptr<IWidget>&) const;
-        bool _hasSizeUpdate(const std::shared_ptr<IWidget>&) const;
+        FTK_UI_API bool _hasDrawUpdate(const std::shared_ptr<IWidget>&) const;
+        FTK_UI_API bool _hasSizeUpdate(const std::shared_ptr<IWidget>&) const;
 
         bool _key(Key, bool press, int modifiers);
         void _text(const std::string&);
@@ -386,7 +390,7 @@ namespace ftk
         void _gestureEnd();
         void _drop(const V2I& pos, const std::shared_ptr<IDragDropData>&);
 
-        void _drawEventRecursive(
+        FTK_UI_API void _drawEventRecursive(
             const std::shared_ptr<IWidget>&,
             const Box2I&,
             const DrawEvent&);
