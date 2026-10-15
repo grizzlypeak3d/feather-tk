@@ -756,12 +756,21 @@ namespace ftk
             else if (!imageOptions.cache)
             {
                 const std::string texturePoolKey = getTexturePoolKey(info);
+                bool fresh = false;
                 if (!p.texturePool.get(texturePoolKey, textures))
                 {
                     textures = _getTextures(info, imageOptions.imageFilters);
                     p.texturePool.add(texturePoolKey, textures, image->getByteCount());
+                    fresh = true;
                 }
-                _copyTextures(image, textures);
+                // The same image drawn again is not copied again; see the
+                // GPU renderer.
+                auto& uploaded = p.texturePoolImage[texturePoolKey];
+                if (fresh || uploaded.lock() != image)
+                {
+                    _copyTextures(image, textures);
+                    uploaded = image;
+                }
             }
             else if (!p.textureCache.get(image, textures))
             {

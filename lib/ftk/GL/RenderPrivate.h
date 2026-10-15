@@ -47,6 +47,7 @@ namespace ftk
             LRUCache<
                 std::string,
                 std::vector<std::shared_ptr<Texture> > > texturePool;
+            std::map<std::string, std::weak_ptr<Image> > texturePoolImage;
             LRUCache<
                 std::shared_ptr<Image>,
                 std::vector<std::shared_ptr<Texture> > > textureCache;

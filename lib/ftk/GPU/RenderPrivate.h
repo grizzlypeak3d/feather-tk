@@ -249,6 +249,12 @@ namespace ftk
             LRUCache<
                 std::string,
                 std::vector<std::shared_ptr<Texture> > > texturePool;
+            // The image last copied into each pool entry's textures: the
+            // same image drawn again, as a frame is at the display's rate
+            // against the movie's, is not copied again. A 4K 16-bit frame
+            // is fifty megabytes, and copying it sixty times a second took
+            // most of a core.
+            std::map<std::string, std::weak_ptr<Image> > texturePoolImage;
             LRUCache<
                 std::shared_ptr<Image>,
                 std::vector<std::shared_ptr<Texture> > > textureCache;
