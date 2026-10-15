@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <sstream>
 
 namespace ftk
 {

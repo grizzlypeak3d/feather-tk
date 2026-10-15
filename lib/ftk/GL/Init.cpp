@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
+#include <sstream>
 #include <stdexcept>
 
 namespace ftk

@@ -9,6 +9,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
 #include <atomic>
 #include <array>
 #include <cstring>

@@ -8,6 +8,8 @@
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
+#include <optional>
+
 namespace ftk
 {
     struct LevelsModel::Private
