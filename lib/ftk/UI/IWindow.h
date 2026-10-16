@@ -367,6 +367,13 @@ namespace ftk
         //! default does nothing.
         FTK_UI_API virtual void _geometryFromEvent(bool maximized = false);
 
+        //! Get the part of the buffer the widgets are laid out in: the
+        //! whole of it, unless the system draws over some of the window,
+        //! as a tablet does along its edges. The window is given this as
+        //! its geometry, so a subclass laying its own widgets out to the
+        //! window's geometry keeps clear as well.
+        FTK_UI_API virtual Box2I _getSafeArea(const Box2I&) const;
+
         // Exported, with the constructor and the recursive draw below: a
         // window outside the library (tlRender's C interface hosts widgets
         // in one) is built on them, and a DLL only hands out what is

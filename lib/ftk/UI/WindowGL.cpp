@@ -541,6 +541,42 @@ namespace ftk
         }
     }
 
+    Box2I Window::_getSafeArea(const Box2I& value) const
+    {
+        FTK_P();
+        Box2I out = value;
+#if defined(FTK_SDL3)
+        // What the system draws over the window is kept clear: on a tablet
+        // the status bar along the top, and the home indicator along the
+        // bottom. SDL says where that leaves the window's own area, in the
+        // window's coordinates, which are the pixels scaled by the density.
+        SDL_Rect safe;
+        SDL_Window* sdlWindow = p.window ? p.window->getSDLWindow() : nullptr;
+        if (sdlWindow && SDL_GetWindowSafeArea(sdlWindow, &safe))
+        {
+            int w = 0;
+            int h = 0;
+            int pw = 0;
+            int ph = 0;
+            SDL_GetWindowSize(sdlWindow, &w, &h);
+            SDL_GetWindowSizeInPixels(sdlWindow, &pw, &ph);
+            if (w > 0 && h > 0)
+            {
+                const float sx = pw / static_cast<float>(w);
+                const float sy = ph / static_cast<float>(h);
+                out = intersect(
+                    value,
+                    Box2I(
+                        value.min.x + static_cast<int>(safe.x * sx),
+                        value.min.y + static_cast<int>(safe.y * sy),
+                        static_cast<int>(safe.w * sx),
+                        static_cast<int>(safe.h * sy)));
+            }
+        }
+#endif // FTK_SDL3
+        return out;
+    }
+
     void Window::setVisible(bool value)
     {
         IWindow::setVisible(value);

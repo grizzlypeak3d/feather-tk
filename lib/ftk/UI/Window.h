@@ -67,6 +67,11 @@ namespace ftk
 
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
+
+    protected:
+        FTK_UI_API Box2I _getSafeArea(const Box2I&) const override;
+
+    public:
         FTK_UI_API void setVisible(bool) override;
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
 

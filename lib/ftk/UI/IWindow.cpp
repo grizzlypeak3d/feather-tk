@@ -655,6 +655,11 @@ namespace ftk
     //! setDrawUpdate(), and a missed flag fails silently -- the screen
     //! just stays as it was. The style comparison below sets the flags
     //! itself because the style event only resets the widgets' caches.
+    Box2I IWindow::_getSafeArea(const Box2I& value) const
+    {
+        return value;
+    }
+
     void IWindow::_update(
         const std::shared_ptr<FontSystem>& fontSystem,
         const std::shared_ptr<IconSystem>& iconSystem,
@@ -701,7 +706,7 @@ namespace ftk
                 style);
             _sizeHintEventRecursive(shared_from_this(), sizeHintEvent);
 
-            setGeometry(Box2I(V2I(), getBufferSize()));
+            setGeometry(_getSafeArea(Box2I(V2I(), getBufferSize())));
 
             _clipEventRecursive(
                 shared_from_this(),
