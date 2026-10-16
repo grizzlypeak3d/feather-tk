@@ -341,6 +341,11 @@ namespace ftk
             p.textBox = textBox;
 
             p.draw.reset();
+
+            // Where the text is, told again: an edit focused before it is
+            // laid out, as one in a popup is, has reported nowhere yet,
+            // and a tablet moves the window clear of its keyboard by it.
+            _textInputAreaUpdate();
         }
     }
 
@@ -885,12 +890,18 @@ namespace ftk
         {
             if (auto window = getWindow())
             {
+                // The cursor's column, and the whole of the edit's height:
+                // an input method puts its candidates by the cursor, and a
+                // tablet moves the window so that the box clears its
+                // keyboard, which with the text line alone left the edit's
+                // lower border under it.
                 const Box2I g = _getTextGeometry();
+                const Box2I w = getGeometry();
                 window->setTextInputArea(Box2I(
                     g.min.x - p.scroll + _toPos(p.model->getCursor()),
-                    g.min.y,
+                    w.min.y,
                     p.size.border,
-                    g.h()));
+                    w.h()));
             }
         }
     }
