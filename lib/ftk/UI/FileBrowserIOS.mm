@@ -103,6 +103,10 @@ namespace
 - (void)documentPicker:(UIDocumentPickerViewController*)controller
     didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls
 {
+    // Kept for the length of this: the picker holds its delegate weakly,
+    // and letting go of the one strong reference below freed the object
+    // this is running on.
+    FTKDocumentPickerDelegate* keep = self;
     std::vector<ftk::Path> paths;
     for (NSURL* url in urls)
     {
@@ -110,18 +114,19 @@ namespace
         paths.push_back(ftk::Path(std::string([url fileSystemRepresentation])));
     }
     remember(urls);
-    auto callback = self.callback;
-    self.picker = nil;
-    delegate = nil;
+    const auto callback = keep.callback;
     if (!paths.empty() && callback)
     {
         callback(paths);
     }
+    keep.picker = nil;
+    delegate = nil;
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller
 {
-    self.picker = nil;
+    FTKDocumentPickerDelegate* keep = self;
+    keep.picker = nil;
     delegate = nil;
 }
 
