@@ -415,6 +415,10 @@ namespace ftk
         //! Allow more than one file to be chosen. Only meaningful when
         //! opening; there is one file to save to and one directory to pick.
         bool                  multiple = false;
+        //! The built-in browser, whatever the native setting: for a
+        //! choice the system's dialog cannot offer, such as an image
+        //! sequence as one entry.
+        bool                  builtIn = false;
     };
 
     //! File browser system.

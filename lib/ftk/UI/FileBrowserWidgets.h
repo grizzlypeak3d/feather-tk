@@ -278,6 +278,7 @@ namespace ftk
         bool _isTiles() const;
         void _layoutUpdate();
         void _directoryUpdate();
+        void _itemsUpdate();
         void _cancelThumbnails();
         void _setCurrent(int);
         void _toggleCurrent(int);

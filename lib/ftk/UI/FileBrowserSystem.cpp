@@ -115,7 +115,7 @@ namespace ftk
         const FileBrowserOpenOptions& options)
     {
         FTK_P();
-        bool native = p.native;
+        bool native = p.native && !options.builtIn;
 #if defined(FTK_NFD)
         // Initialized here rather than at startup. On macOS it makes the
         // application object, and SDL only makes an application a regular

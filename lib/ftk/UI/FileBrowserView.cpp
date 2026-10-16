@@ -14,7 +14,9 @@
 #include <algorithm>
 #include <filesystem>
 #include <map>
+#include <mutex>
 #include <optional>
+#include <thread>
 
 namespace ftk
 {
@@ -106,6 +108,21 @@ namespace ftk
         FileBrowserOptions options;
         std::string search;
         std::vector<DirEntry> dirEntries;
+        // The listing under way, on a thread of its own: a directory on a
+        // share is a round trip for every file asked about, and for every
+        // frame of a sequence, which held the whole application while the
+        // list was made. Only the latest request is kept; an older one
+        // finishing writes into a record nothing reads.
+        struct DirListRequest
+        {
+            std::mutex mutex;
+            bool done = false;
+            std::vector<DirEntry> entries;
+        };
+        std::shared_ptr<DirListRequest> dirListRequest;
+        // The thumbnails carried from the rows before a listing to the rows
+        // after it, by path.
+        std::map<std::string, std::shared_ptr<Image> > thumbnailCarry;
 
         // The files shown in place of a directory. Nothing is asked of
         // the file system about them: a recent file on a network share
@@ -471,6 +488,27 @@ namespace ftk
     {
         IMouseWidget::tickEvent(parentsVisible, parentsEnabled, event);
         FTK_P();
+
+        // The listing, once the thread has made it.
+        if (p.dirListRequest)
+        {
+            std::vector<DirEntry> entries;
+            bool done = false;
+            {
+                std::lock_guard<std::mutex> lock(p.dirListRequest->mutex);
+                done = p.dirListRequest->done;
+                if (done)
+                {
+                    entries = std::move(p.dirListRequest->entries);
+                }
+            }
+            if (done)
+            {
+                p.dirListRequest.reset();
+                p.dirEntries = std::move(entries);
+                _itemsUpdate();
+            }
+        }
 
         // Collect the thumbnails that have arrived. Only the rows in view
         // have a request outstanding, so this does not walk a directory of
@@ -1223,12 +1261,12 @@ namespace ftk
         // matched by path -- typing in the search box rebuilds the list on
         // every key, and the rows that survive the filter should not flash
         // empty and load again.
-        std::map<std::string, std::shared_ptr<Image> > thumbnailCarry;
+        p.thumbnailCarry.clear();
         for (size_t i = 0; i < p.items.size() && i < p.dirEntries.size(); ++i)
         {
             if (p.items[i].thumbnailImage)
             {
-                thumbnailCarry[p.dirEntries[i].path.get()] =
+                p.thumbnailCarry[p.dirEntries[i].path.get()] =
                     p.items[i].thumbnailImage;
             }
         }
@@ -1288,8 +1326,27 @@ namespace ftk
         }
         if (!p.hasPaths)
         {
-            p.dirEntries = dirList(p.model->getPath(), dirListOptions);
+            // The list is made on a thread of its own and arrives in the
+            // tick; the rows are empty until it does.
+            auto request = std::make_shared<Private::DirListRequest>();
+            p.dirListRequest = request;
+            const auto path = p.model->getPath();
+            std::thread(
+                [request, path, dirListOptions]
+                {
+                    auto entries = dirList(path, dirListOptions);
+                    std::lock_guard<std::mutex> lock(request->mutex);
+                    request->entries = std::move(entries);
+                    request->done = true;
+                }).detach();
+            p.dirEntries.clear();
         }
+        _itemsUpdate();
+    }
+
+    void FileBrowserView::_itemsUpdate()
+    {
+        FTK_P();
         p.itemCount->setIfChanged(p.dirEntries.size());
 
         // Columns are aligned by padding them to a common width, so the frame
@@ -1321,8 +1378,8 @@ namespace ftk
                         p.noThumbnail.end();
                 if (item.thumbnail)
                 {
-                    const auto j = thumbnailCarry.find(dirEntry.path.get());
-                    if (j != thumbnailCarry.end())
+                    const auto j = p.thumbnailCarry.find(dirEntry.path.get());
+                    if (j != p.thumbnailCarry.end())
                     {
                         item.thumbnailImage = j->second;
                     }
