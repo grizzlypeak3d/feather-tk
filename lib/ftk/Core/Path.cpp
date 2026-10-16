@@ -759,6 +759,14 @@ namespace ftk
         pathOptions.seqMaxDigits = options.seqMaxDigits;
         try
         {
+            // What the entries already know is used: the type comes with
+            // the directory read, and one refresh gives the size and the
+            // date together. Asking by path instead was three questions to
+            // the file system for every file, which on a network share
+            // from a tablet was seconds for a sequence of a few hundred
+            // frames, and the browser listing and the sequence gathering
+            // both go through here.
+            std::error_code ec;
             for (const auto& i : std::filesystem::directory_iterator(dir))
             {
                 const Path path(fromFileSystem(i.path()), pathOptions);
@@ -770,7 +778,7 @@ namespace ftk
                 {
                     keep = false;
                 }
-                const bool isDir = std::filesystem::is_directory(i.path());
+                const bool isDir = i.is_directory(ec);
                 if (keep && !isDir && !options.filterExt.empty())
                 {
                     keep = std::find(
@@ -801,6 +809,11 @@ namespace ftk
 
                 if (keep)
                 {
+                    std::filesystem::directory_entry entry = i;
+                    entry.refresh(ec);
+                    const uintmax_t size = isDir ? 0 : entry.file_size(ec);
+                    const auto time = entry.last_write_time(ec);
+
                     // Check for sequences.
                     bool seq = false;
                     if (!isDir && options.seq && path.testExt(options.seqExts))
@@ -810,10 +823,8 @@ namespace ftk
                             if (j.path.addSeq(path))
                             {
                                 seq = true;
-                                j.size += std::filesystem::file_size(i.path());
-                                j.time = std::max(
-                                    j.time,
-                                    std::filesystem::last_write_time(i.path()));
+                                j.size += size;
+                                j.time = std::max(j.time, time);
                                 break;
                             }
                         }
@@ -822,11 +833,7 @@ namespace ftk
                     if (!seq)
                     {
                         // Add the entry.
-                        out.push_back({
-                            path,
-                            isDir,
-                            isDir ? 0 : std::filesystem::file_size(i.path()),
-                            std::filesystem::last_write_time(i.path()) });
+                        out.push_back({ path, isDir, size, time });
                     }
                 }
             }
@@ -950,7 +957,9 @@ namespace ftk
                     !ec && i != end;
                     i.increment(ec))
                 {
-                    if (std::filesystem::is_directory(i->path(), ec))
+                    // The type the directory read gave, not a question
+                    // per file (see dirList).
+                    if (i->is_directory(ec))
                     {
                         continue;
                     }
@@ -985,7 +994,7 @@ namespace ftk
                     i.increment(ec))
                 {
                     const Path entry(fromFileSystem(i->path()), pathOptions);
-                    const bool isDir = std::filesystem::is_directory(i->path(), ec);
+                    const bool isDir = i->is_directory(ec);
                     if (init && !isDir)
                     {
                         if (out.seq(entry))

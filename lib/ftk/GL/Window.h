@@ -52,12 +52,17 @@ namespace ftk
                 const std::string& title,
                 const Size2I&,
                 int options,
-                const std::shared_ptr<Window>& share);
+                const std::shared_ptr<Window>& share,
+                int screen);
 
         public:
             FTK_GL_API virtual ~Window();
 
             //! Create a new window.
+            //! Create a new window. The screen is an index into the
+            //! displays, or -1 for wherever the system puts a window; on a
+            //! tablet it is the only way to a second display, which decides
+            //! a window's screen as the window is made.
             FTK_GL_API static std::shared_ptr<Window> create(
                 const std::shared_ptr<Context>&,
                 const std::string& title,
@@ -66,7 +71,8 @@ namespace ftk
                     static_cast<int>(WindowOptions::Visible) |
                     static_cast<int>(WindowOptions::DoubleBuffer) |
                     static_cast<int>(WindowOptions::MakeCurrent),
-                const std::shared_ptr<Window>& share = nullptr);
+                const std::shared_ptr<Window>& share = nullptr,
+                int screen = -1);
         
             //! Get the window ID.
             FTK_GL_API uint32_t getID() const;

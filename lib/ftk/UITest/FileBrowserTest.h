@@ -9,6 +9,8 @@
 
 namespace ftk
 {
+    class App;
+    class FileBrowserView;
     class LineEdit;
 
     namespace ui_test
@@ -33,6 +35,11 @@ namespace ftk
             void _extGroups();
             std::shared_ptr<LineEdit> _findLineEdit(const std::shared_ptr<IWidget>&);
             void _click(const std::shared_ptr<IWidget>&, const std::string& text);
+
+            //! Tick until the view's listing, made on a thread, has arrived.
+            static void _listed(
+                const std::shared_ptr<App>&,
+                const std::shared_ptr<FileBrowserView>&);
 
             //! Find the first widget of the given type below this one.
             template<typename T>

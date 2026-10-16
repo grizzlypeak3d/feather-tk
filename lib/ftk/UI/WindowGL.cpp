@@ -88,7 +88,8 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<App>& app,
         const std::string& title,
-        const Size2I& size)
+        const Size2I& size,
+        int screen)
     {
         IWindow::_init(context, app, title);
         FTK_P();
@@ -112,7 +113,9 @@ namespace ftk
             context,
             title,
             size,
-            windowOptions);
+            windowOptions,
+            nullptr,
+            screen);
 #if defined(FTK_GPU)
         if (p.gpu)
         {
@@ -262,10 +265,11 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<App>& app,
         const std::string& title,
-        const Size2I& size)
+        const Size2I& size,
+        int screen)
     {
         auto out = std::shared_ptr<Window>(new Window);
-        out->_init(context, app, title, size);
+        out->_init(context, app, title, size, screen);
         return out;
     }
 

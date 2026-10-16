@@ -53,12 +53,15 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# Two patches. One from upstream pull request #14157 (open): the Metal GPU
-# driver makes a texture over an existing CVPixelBuffer's surface, which
-# is how a frame the hardware decoded is drawn without a copy. Drop it
-# when a release carries the change. The other is ours: on iOS a number
-# input gets the keyboard with the punctuation rather than the decimal
-# pad, which has no minus sign and no colon.
+# Three patches. One from upstream pull request #14157 (open): the Metal
+# GPU driver makes a texture over an existing CVPixelBuffer's surface,
+# which is how a frame the hardware decoded is drawn without a copy. Drop
+# it when a release carries the change. The others are ours, for iOS: a
+# number input gets the keyboard with the punctuation rather than the
+# decimal pad, which has no minus sign and no colon; and a window is made
+# in the scene of the display it is for, since with an external display
+# attached the system has a foreground scene for that too, and taking any
+# foreground scene put the main window on the television.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -73,6 +76,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/keyboard.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/scene.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})

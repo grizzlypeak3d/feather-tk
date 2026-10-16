@@ -3,6 +3,10 @@
 
 #include <ftk/UI/App.h>
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif // __APPLE__
+
 #include <ftk/UI/Capture.h>
 #include <ftk/UI/ClipboardSystem.h>
 #include <ftk/UI/IconSystem.h>
@@ -1333,6 +1337,57 @@ namespace ftk
             this,
             0,
             EM_FALSE);
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
+        // The system owns the loop on iOS as well. SDL starts this program
+        // from a timer of the main run loop, and a loop that never
+        // returned from that timer starved UIKit of its own run loop: with
+        // a second screen attached the application's scene never became
+        // active, and touches went nowhere. The display link calls back
+        // once a frame, SDL's own pump stays out of the way since the run
+        // loop now delivers the events itself, and main() returns, which
+        // SDL allows for: the application keeps itself alive, as on the
+        // web.
+        static std::shared_ptr<App> alive;
+        alive = std::static_pointer_cast<App>(shared_from_this());
+        if (!p.windows.empty())
+        {
+            if (SDL_Window* sdlWindow = SDL_GetWindowFromID(p.windows.front()->getID()))
+            {
+                SDL_SetiOSEventPump(false);
+                SDL_SetiOSAnimationCallback(
+                    sdlWindow,
+                    1,
+                    [](void* app)
+                    {
+                        try
+                        {
+                            // Timed as the desktop loop is: one frame,
+                            // from the start of this iteration to the
+                            // start of the next.
+                            static auto t0 = std::chrono::steady_clock::now();
+                            auto self = static_cast<App*>(app);
+                            self->_runIteration();
+                            const auto t1 = std::chrono::steady_clock::now();
+                            self->_p->tickTimes.push_back(
+                                std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count());
+                            while (self->_p->tickTimes.size() > 10)
+                            {
+                                self->_p->tickTimes.pop_front();
+                            }
+                            t0 = t1;
+                        }
+                        catch (const std::exception& e)
+                        {
+                            printf("Unhandled exception: %s\n", e.what());
+                        }
+                        catch (...)
+                        {
+                            printf("Unhandled exception (unknown)\n");
+                        }
+                    },
+                    this);
+            }
+        }
 #else // __EMSCRIPTEN__
         while (p.running && !p.windows.empty())
         {
@@ -2657,6 +2712,7 @@ namespace ftk
             }
             SDL_free(sdlDisplays);
         }
+        p.monitors->setIfChanged(monitors);
 #endif // FTK_SDL2
 
         std::vector<std::string> lines;

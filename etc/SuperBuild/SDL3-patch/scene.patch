@@ -1,0 +1,24 @@
+diff --git a/src/video/uikit/SDL_uikitwindow.m b/src/video/uikit/SDL_uikitwindow.m
+index 0ee736446..de9ca3877 100644
+--- a/src/video/uikit/SDL_uikitwindow.m
++++ b/src/video/uikit/SDL_uikitwindow.m
+@@ -174,6 +174,19 @@ bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_Properti
+         UIWindow *uiwindow = nil;
+         if (@available(iOS 13.0, tvOS 13.0, *)) {
+             UIWindowScene *scene = (__bridge UIWindowScene *)SDL_GetPointerProperty(create_props, SDL_PROP_WINDOW_CREATE_WINDOWSCENE_POINTER, NULL);
++            if (!scene) {
++                /* The scene on the display the window is for: with an
++                   external display attached, the system has a foreground
++                   scene for it as well, and taking any foreground scene put
++                   the window on the external display. */
++                for (UIScene *candidate in [UIApplication sharedApplication].connectedScenes) {
++                    if ([candidate isKindOfClass:[UIWindowScene class]] &&
++                        ((UIWindowScene *)candidate).screen == data.uiscreen) {
++                        scene = (UIWindowScene *)candidate;
++                        break;
++                    }
++                }
++            }
+             if (!scene) {
+                 scene = UIKit_GetActiveWindowScene();
+             }

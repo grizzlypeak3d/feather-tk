@@ -17,6 +17,7 @@
 #include <ftk/Core/Path.h>
 
 #include <fstream>
+#include <thread>
 
 namespace ftk
 {
@@ -166,7 +167,7 @@ namespace ftk
                     [&itemCount](size_t value) { itemCount = value; });
                 model->setPath(path);
                 view->reload();
-                app->tick();
+                _listed(app, view);
                 FTK_CHECK(4 == itemCount);
 
                 model->setExts({ ".exr", ".mov", ".png" });
@@ -177,16 +178,16 @@ namespace ftk
 
                 // A group filters by all of its extensions.
                 model->setExtGroup("Images");
-                app->tick();
+                _listed(app, view);
                 FTK_CHECK(2 == itemCount);
                 model->setExtGroup("Movies");
-                app->tick();
+                _listed(app, view);
                 FTK_CHECK(1 == itemCount);
 
                 // A group and a single extension are alternatives.
                 model->setExt(".png");
                 FTK_CHECK(model->getExtGroup().empty());
-                app->tick();
+                _listed(app, view);
                 FTK_CHECK(1 == itemCount);
                 model->setExtGroup("Images");
                 FTK_CHECK(model->getExt().empty());
@@ -194,7 +195,7 @@ namespace ftk
                 // A group that is gone is not filtered by.
                 model->setExtGroups({ { "Movies", { ".mov" } } });
                 FTK_CHECK(model->getExtGroup().empty());
-                app->tick();
+                _listed(app, view);
                 FTK_CHECK(4 == itemCount);
 
                 // A list of files in place of the directory: in the order
@@ -307,7 +308,7 @@ namespace ftk
                 view->clearPaths();
                 view->clearPaths();
                 FTK_CHECK(!view->hasPaths());
-                app->tick();
+                _listed(app, view);
                 FTK_CHECK(1 == itemCount);
                 model->setExtGroup(std::string());
 
@@ -356,7 +357,7 @@ namespace ftk
                     _context, FileBrowserMode::Open, model, window);
                 model->setPath(path);
                 view->reload();
-                app->tick();
+                _listed(app, view);
 
                 std::vector<Path> selection;
                 view->setSelectCallback(
@@ -427,7 +428,7 @@ namespace ftk
                         {
                             accepted = value;
                         });
-                    app->tick();
+                    _listed(app, widget->getView());
 
                     auto widgetView = widget->getView();
                     KeyEvent k(Key::Home, 0, V2I());
@@ -491,7 +492,7 @@ namespace ftk
                             accepted = value;
                         });
                     window->setGeometry(Box2I(0, 0, 1280, 960));
-                    app->tick();
+                    _listed(app, widget->getView());
 
                     auto widgetView = widget->getView();
                     auto pos = [widgetView](int index)
@@ -532,7 +533,7 @@ namespace ftk
                             accepted = value;
                         });
                     window->setGeometry(Box2I(0, 0, 1280, 960));
-                    app->tick();
+                    _listed(app, widget->getView());
 
                     auto widgetView = widget->getView();
                     auto pos = [widgetView](int index)
@@ -612,6 +613,10 @@ namespace ftk
                     auto dialogView = std::dynamic_pointer_cast<FileBrowserView>(
                         dialog->getKeyFocus());
                     FTK_CHECK(dialogView);
+                    if (dialogView)
+                    {
+                        _listed(app, dialogView);
+                    }
                     KeyEvent k(Key::Home, 0, V2I());
                     dialogView->keyPressEvent(k);
                     k = KeyEvent(Key::End, static_cast<int>(KeyModifier::Shift), V2I());
@@ -681,6 +686,7 @@ namespace ftk
 
             // Choosing reports the file and takes the window away again.
             auto view = widget->getView();
+            _listed(app, view);
             KeyEvent k(Key::Home, 0, V2I());
             view->keyPressEvent(k);
             _click(browserWindow, "Ok");
@@ -709,6 +715,7 @@ namespace ftk
             // would cover what it was opened from for good.
             FTK_CHECK(widget->isPinVisible());
             view = widget->getView();
+            _listed(app, view);
             k = KeyEvent(Key::Home, 0, V2I());
             view->keyPressEvent(k);
             _click(browserWindow, "Ok");
@@ -850,6 +857,7 @@ namespace ftk
             widget = _find<FileBrowserWidget>(reused);
             FTK_CHECK(widget);
             view = widget->getView();
+            _listed(app, view);
             k = KeyEvent(Key::Home, 0, V2I());
             view->keyPressEvent(k);
             _click(reused, "Ok");
@@ -889,6 +897,7 @@ namespace ftk
                 FTK_CHECK(recentWidget);
                 FTK_CHECK(recentWidget->getRecentFilesModel() == recentDirs);
                 auto recentView = recentWidget->getView();
+                _listed(app, recentView);
                 KeyEvent key(Key::Home, 0, V2I());
                 recentView->keyPressEvent(key);
                 _click(recentWindow, "Ok");
@@ -951,6 +960,18 @@ namespace ftk
             for (const auto& child : widget->getChildren())
             {
                 _click(child, text);
+            }
+        }
+
+        void FileBrowserTest::_listed(
+            const std::shared_ptr<App>& app,
+            const std::shared_ptr<FileBrowserView>& view)
+        {
+            app->tick();
+            while (view->isListing())
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                app->tick();
             }
         }
 

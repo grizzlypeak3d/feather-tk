@@ -16,19 +16,23 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const std::string& title,
-            const Size2I&);
+            const Size2I&,
+            int screen = -1);
 
         FTK_UI_API Window();
 
     public:
         FTK_UI_API virtual ~Window();
 
-        //! Create a new window.
+        //! Create a new window. The screen is an index into the monitors,
+        //! or -1 for wherever the system puts a window; see
+        //! gl::Window::create().
         FTK_UI_API static std::shared_ptr<Window> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<App>&,
             const std::string& title,
-            const Size2I& = Size2I(1280, 960));
+            const Size2I& = Size2I(1280, 960),
+            int screen = -1);
 
         FTK_UI_API uint32_t getID() const override;
         FTK_UI_API float getSystemDisplayScale() const override;

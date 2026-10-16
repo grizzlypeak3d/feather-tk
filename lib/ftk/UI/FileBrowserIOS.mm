@@ -72,22 +72,40 @@ namespace
 
     UIViewController* topViewController()
     {
+        // The picker goes on the device's own screen, where the fingers
+        // are. The connected scenes are an unordered set, and with a
+        // television on the adapter the first one found could be the
+        // secondary window's, which has no way to dismiss the picker.
         UIWindow* window = nil;
+        UIWindow* other = nil;
         for (UIScene* scene in UIApplication.sharedApplication.connectedScenes)
         {
             if ([scene isKindOfClass:[UIWindowScene class]])
             {
                 UIWindowScene* windowScene = (UIWindowScene*)scene;
-                window = windowScene.keyWindow;
-                if (!window)
+                UIWindow* sceneWindow = windowScene.keyWindow;
+                if (!sceneWindow)
                 {
-                    window = windowScene.windows.firstObject;
+                    sceneWindow = windowScene.windows.firstObject;
                 }
-                if (window)
+                if (!sceneWindow)
                 {
+                    continue;
+                }
+                if (windowScene.screen == UIScreen.mainScreen)
+                {
+                    window = sceneWindow;
                     break;
                 }
+                if (!other)
+                {
+                    other = sceneWindow;
+                }
             }
+        }
+        if (!window)
+        {
+            window = other;
         }
         UIViewController* out = window.rootViewController;
         while (out.presentedViewController)
@@ -142,22 +160,38 @@ namespace ftk
         NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
         NSMutableArray* kept = [NSMutableArray array];
         NSMutableSet<NSString*>* seen = [NSMutableSet set];
-        for (NSData* data in [defaults arrayForKey:bookmarksKey])
+        NSArray* list = [defaults arrayForKey:bookmarksKey];
+        for (id item in list)
         {
-            BOOL stale = NO;
-            NSURL* url = [NSURL
-                URLByResolvingBookmarkData:data
-                options:0
-                relativeToURL:nil
-                bookmarkDataIsStale:&stale
-                error:nil];
-            if (!url || [seen containsObject:url.path])
+            // Only what was written: a list from an earlier version, or a
+            // damaged one, is not trusted with a message.
+            if (![item isKindOfClass:[NSData class]])
             {
                 continue;
             }
-            [seen addObject:url.path];
+            NSURL* url = nil;
+            @try
+            {
+                BOOL stale = NO;
+                url = [NSURL
+                    URLByResolvingBookmarkData:(NSData*)item
+                    options:NSURLBookmarkResolutionWithoutUI
+                    relativeToURL:nil
+                    bookmarkDataIsStale:&stale
+                    error:nil];
+            }
+            @catch (NSException*)
+            {
+                url = nil;
+            }
+            NSString* path = url ? url.path : nil;
+            if (!path || [seen containsObject:path])
+            {
+                continue;
+            }
+            [seen addObject:path];
             access(url);
-            [kept addObject:data];
+            [kept addObject:item];
         }
         [defaults setObject:kept forKey:bookmarksKey];
     }

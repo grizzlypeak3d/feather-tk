@@ -335,6 +335,9 @@ namespace ftk
             return;
         p.hasPaths = true;
         p.paths = value;
+        // A directory listing still on its thread would arrive after these
+        // and replace them.
+        p.dirListRequest.reset();
         p.pathEntries.clear();
         for (const auto& path : p.paths)
         {
@@ -438,6 +441,11 @@ namespace ftk
         return _p->itemCount;
     }
 
+    bool FileBrowserView::isListing() const
+    {
+        return _p->dirListRequest.get() != nullptr;
+    }
+
     Box2I FileBrowserView::getRect(int index) const
     {
         FTK_P();
@@ -505,8 +513,11 @@ namespace ftk
             if (done)
             {
                 p.dirListRequest.reset();
-                p.dirEntries = std::move(entries);
-                _itemsUpdate();
+                if (!p.hasPaths)
+                {
+                    p.dirEntries = std::move(entries);
+                    _itemsUpdate();
+                }
             }
         }
 

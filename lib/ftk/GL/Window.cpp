@@ -3,6 +3,10 @@
 
 #include <ftk/GL/Window.h>
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif // __APPLE__
+
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Init.h>
 #include <ftk/GL/System.h>
@@ -145,7 +149,8 @@ namespace ftk
             const std::string& title,
             const Size2I& size,
             int options,
-            const std::shared_ptr<Window>& share) :
+            const std::shared_ptr<Window>& share,
+            int screen) :
             _p(new Private)
         {
             FTK_P();
@@ -226,15 +231,58 @@ namespace ftk
                 }
             }
 #endif // __EMSCRIPTEN__
-            p.sdlWindow = SDL_CreateWindow(
-                title.c_str(),
+#if defined(FTK_SDL3)
+            // On the screen asked for, by a position centered on that
+            // display: SDL takes the display from it, and a tablet makes
+            // the window on that screen.
+            SDL_DisplayID screenID = 0;
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+            // A tablet with a second screen attached put a window that
+            // asked for no screen on the second one, and the tablet's own
+            // screen went dark; asked for, the window goes where it is
+            // asked.
+            if (screen < 0)
+            {
+                screenID = SDL_GetPrimaryDisplay();
+            }
+#endif // TARGET_OS_IPHONE
+            if (screen >= 0)
+            {
+                int count = 0;
+                if (SDL_DisplayID* displays = SDL_GetDisplays(&count))
+                {
+                    if (screen < count)
+                    {
+                        screenID = displays[screen];
+                    }
+                    SDL_free(displays);
+                }
+            }
+            if (screenID)
+            {
+                const SDL_PropertiesID props = SDL_CreateProperties();
+                SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, title.c_str());
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED_DISPLAY(screenID));
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED_DISPLAY(screenID));
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, windowSize.w);
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, windowSize.h);
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, sdlWindowFlags);
+                p.sdlWindow = SDL_CreateWindowWithProperties(props);
+                SDL_DestroyProperties(props);
+            }
+            else
+#endif // FTK_SDL3
+            {
+                p.sdlWindow = SDL_CreateWindow(
+                    title.c_str(),
 #if defined(FTK_SDL2)
-                SDL_WINDOWPOS_UNDEFINED,
-                SDL_WINDOWPOS_UNDEFINED,
+                    SDL_WINDOWPOS_UNDEFINED,
+                    SDL_WINDOWPOS_UNDEFINED,
 #endif // FTK_SDL2
-                windowSize.w,
-                windowSize.h,
-                sdlWindowFlags);
+                    windowSize.w,
+                    windowSize.h,
+                    sdlWindowFlags);
+            }
             if (!p.sdlWindow)
             {
                 throw std::runtime_error(Format("Cannot create window: {0}").
@@ -419,9 +467,10 @@ namespace ftk
             const std::string& title,
             const Size2I& size,
             int options,
-            const std::shared_ptr<Window>& share)
+            const std::shared_ptr<Window>& share,
+            int screen)
         {
-            return std::shared_ptr<Window>(new Window(context, title, size, options, share));
+            return std::shared_ptr<Window>(new Window(context, title, size, options, share, screen));
         }
 
         uint32_t Window::getID() const

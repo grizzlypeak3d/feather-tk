@@ -255,6 +255,10 @@ namespace ftk
         //! Observe the number of items shown.
         FTK_UI_API std::shared_ptr<IObservable<size_t> > observeItemCount() const;
 
+        //! Is a directory listing still on its way from the thread? The
+        //! items are empty until it arrives in a tick.
+        FTK_UI_API bool isListing() const;
+
         //! Get the rectangle of an item.
         FTK_UI_API Box2I getRect(int) const;
 

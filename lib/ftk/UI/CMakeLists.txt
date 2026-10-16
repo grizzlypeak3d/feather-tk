@@ -260,9 +260,12 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
         WindowGL.cpp)
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    # The document picker is the native file dialog there.
+    # The document picker is the native file dialog there. Automatic
+    # reference counting, which the Objective-C++ is written for: without
+    # it the objects kept across calls were released under the code.
     list(APPEND PRIVATE_HEADERS FileBrowserIOSPrivate.h)
     list(APPEND SOURCE FileBrowserIOS.mm)
+    set_source_files_properties(FileBrowserIOS.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
 endif()
 
 add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
