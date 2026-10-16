@@ -1301,6 +1301,35 @@ namespace ftk
         }
     }
 
+    void IWindow::_mouseCancel()
+    {
+        FTK_P();
+        if (auto pressed = p.mousePress.lock())
+        {
+            p.mousePress.reset();
+            if (auto hover = p.dragDropHover.lock())
+            {
+                p.dragDropHover.reset();
+                DragDropEvent event(
+                    p.cursorPos,
+                    p.cursorPosPrev,
+                    p.dragDropData);
+                hover->dragLeaveEvent(event);
+            }
+            else
+            {
+                p.mouseClickEvent.pos = p.cursorPos;
+                p.mouseClickEvent.accept = false;
+                p.mouseClickEvent.cancel = true;
+                pressed->mouseReleaseEvent(p.mouseClickEvent);
+                p.mouseClickEvent.cancel = false;
+            }
+            p.dragDropData.reset();
+            p.dragDropCursor.reset();
+            setDrawUpdate();
+        }
+    }
+
     void IWindow::_gesture(const V2I& pos, const V2F& pan, float zoom)
     {
         FTK_P();
@@ -1311,33 +1340,8 @@ namespace ftk
             _closeTooltip();
 
             // The first finger was the mouse until the second came down,
-            // so whatever it pressed is let go, cancelled rather than
-            // released: a button under it does not click. A drag and drop
-            // in flight is dropped nowhere.
-            if (auto pressed = p.mousePress.lock())
-            {
-                p.mousePress.reset();
-                if (auto hover = p.dragDropHover.lock())
-                {
-                    p.dragDropHover.reset();
-                    DragDropEvent event(
-                        p.cursorPos,
-                        p.cursorPosPrev,
-                        p.dragDropData);
-                    hover->dragLeaveEvent(event);
-                }
-                else
-                {
-                    p.mouseClickEvent.pos = p.cursorPos;
-                    p.mouseClickEvent.accept = false;
-                    p.mouseClickEvent.cancel = true;
-                    pressed->mouseReleaseEvent(p.mouseClickEvent);
-                    p.mouseClickEvent.cancel = false;
-                }
-                p.dragDropData.reset();
-                p.dragDropCursor.reset();
-                setDrawUpdate();
-            }
+            // so whatever it pressed is let go.
+            _mouseCancel();
 
             // Nothing is hovered while fingers are on the screen, or after,
             // until the mouse moves: the first finger's hover would

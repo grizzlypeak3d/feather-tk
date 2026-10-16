@@ -198,6 +198,7 @@ namespace ftk
             _startPos = pos;
             _ready = release;
             _released = release;
+            _moved = false;
             break;
         case State::Holding:
             if (release)
@@ -208,6 +209,7 @@ namespace ftk
             else if (length(pos - _startPos) > _threshold)
             {
                 _ready = true;
+                _moved = true;
             }
             break;
         case State::Passing:
@@ -238,6 +240,11 @@ namespace ftk
         _state = State::Idle;
         _ready = false;
         _released = false;
+    }
+
+    bool TouchMouseDelay::hasMoved() const
+    {
+        return _moved;
     }
 
     bool TouchMouseDelay::isHolding() const

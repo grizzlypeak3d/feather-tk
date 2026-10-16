@@ -402,6 +402,10 @@ namespace ftk
         FTK_UI_API void _cursorEnter(bool enter);
         FTK_UI_API void _cursorPos(const V2I&);
         FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);
+        //! Let go of whatever the mouse pressed, cancelled rather than
+        //! released: a button under it does not click. A drag and drop in
+        //! flight is dropped nowhere.
+        FTK_UI_API void _mouseCancel();
         void _scroll(const V2F&, int modifiers);
         FTK_UI_API void _gesture(const V2I& pos, const V2F& pan, float zoom);
         FTK_UI_API void _gestureEnd();

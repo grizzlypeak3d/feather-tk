@@ -129,6 +129,10 @@ namespace ftk
         //! Whether events are being held.
         FTK_UI_API bool isHolding() const;
 
+        //! Whether the finger has moved past the threshold while the
+        //! events were held: a swipe, rather than a touch that rested.
+        FTK_UI_API bool hasMoved() const;
+
     private:
         enum class State
         {
@@ -144,5 +148,6 @@ namespace ftk
         V2F _startPos;
         bool _ready = false;
         bool _released = false;
+        bool _moved = false;
     };
 }

@@ -8,6 +8,7 @@
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Init.h>
 #include <ftk/UI/Settings.h>
+#include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/TouchGesture.h>
 #include <ftk/UI/Util.h>
 #include <ftk/UI/WidgetDump.h>
@@ -158,6 +159,34 @@ namespace ftk
         std::weak_ptr<IWindow> touchWindow;
         TouchMouseDelay touchMouseDelay;
         std::vector<SDL_Event> touchMouseHeld;
+        // One finger that swipes, before the held mouse would have gone
+        // through, scrolls the scroll widget under it rather than
+        // pressing what is in it, and keeps moving when it lifts, as a
+        // touch screen's lists do. A finger that rests first and then
+        // moves is the mouse, dragging what it pressed.
+        struct TouchScroll
+        {
+            bool active = false;
+            std::weak_ptr<ScrollWidget> widget;
+            V2F pos;
+            V2F velocity;
+            std::chrono::steady_clock::time_point time;
+        };
+        TouchScroll touchScroll;
+        // One finger that rests, without moving, for long enough is the
+        // right button: a context menu where the desktop's right click
+        // would open one.
+        struct TouchPress
+        {
+            bool active = false;
+            bool moved = false;
+            bool longPressed = false;
+            std::weak_ptr<IWindow> window;
+            V2F pos;
+            float threshold = 0.F;
+            std::chrono::steady_clock::time_point time;
+        };
+        TouchPress touchPress;
 
         std::list<int> tickTimes;
         std::shared_ptr<Timer> logTimer;
@@ -1399,6 +1428,11 @@ namespace ftk
                             p.touchMouseHeld.clear();
                             p.touchMouseDelay.drop();
                         }
+                        // A new finger ends a one finger scroll and its
+                        // momentum; the second finger of a gesture takes
+                        // over from here.
+                        p.touchScroll.active = false;
+                        p.touchScroll.velocity = V2F();
                         break;
                     case FingerEvent::Motion: p.touch.fingerMove(id, posPixels); break;
                     case FingerEvent::Up: p.touch.fingerUp(id); break;
@@ -1424,6 +1458,11 @@ namespace ftk
                             event.motion.y * contentScale);
                         window->_cursorPos(pos);
                         p.mousePos[window] = pos;
+                        if (p.touchPress.active &&
+                            length(V2F(pos.x, pos.y) - p.touchPress.pos) > p.touchPress.threshold)
+                        {
+                            p.touchPress.moved = true;
+                        }
                     }
                     break;
 
@@ -1439,6 +1478,20 @@ namespace ftk
                             fromSDLMouseButton(event.button.button),
                             true,
                             fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
+                        if (SDL_TOUCH_MOUSEID == event.button.which &&
+                            SDL_BUTTON_LEFT == event.button.button)
+                        {
+                            const float contentScale = window->getContentScale();
+                            p.touchPress.active = true;
+                            p.touchPress.moved = false;
+                            p.touchPress.longPressed = false;
+                            p.touchPress.window = window;
+                            p.touchPress.pos = V2F(
+                                event.button.x * contentScale,
+                                event.button.y * contentScale);
+                            p.touchPress.threshold = 12.F * window->getDisplayScale();
+                            p.touchPress.time = std::chrono::steady_clock::now();
+                        }
                     }
                     break;
 
@@ -1466,6 +1519,10 @@ namespace ftk
                             false,
                             fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                     }
+                    if (SDL_TOUCH_MOUSEID == event.button.which)
+                    {
+                        p.touchPress.active = false;
+                    }
                     break;
                 }
                 default: break;
@@ -1484,6 +1541,45 @@ namespace ftk
                     mouseDispatch(event);
                 }
             };
+            // The scroll widget under a point that a swipe would scroll:
+            // one that takes scroll events and has more than fits. The
+            // timeline's own turns scroll events off and takes the
+            // fingers itself.
+            const auto touchScrollTarget = [&](
+                const std::shared_ptr<IWindow>& window,
+                const V2F& pos) -> std::shared_ptr<ScrollWidget>
+            {
+                std::shared_ptr<ScrollWidget> out;
+                const auto widgets = window->_getUnderCursor(
+                    IWindow::UnderCursor::Hover,
+                    V2I(pos.x, pos.y));
+                for (const auto& widget : widgets)
+                {
+                    if (auto scroll = std::dynamic_pointer_cast<ScrollWidget>(widget))
+                    {
+                        const ScrollInfo info = scroll->getScrollInfo();
+                        if (scroll->areScrollEventsEnabled() &&
+                            (info.scrollSize.w > info.viewport.w() ||
+                            info.scrollSize.h > info.viewport.h()))
+                        {
+                            out = scroll;
+                            break;
+                        }
+                    }
+                }
+                return out;
+            };
+            const auto touchScrollPan = [&](const V2F& pan)
+            {
+                if (auto scroll = p.touchScroll.widget.lock())
+                {
+                    GestureEvent event(
+                        V2I(p.touchScroll.pos.x, p.touchScroll.pos.y),
+                        pan,
+                        1.F);
+                    scroll->gestureEvent(event);
+                }
+            };
             const auto mouse = [&](const SDL_Event& event)
             {
 #if defined(FTK_SDL2)
@@ -1493,10 +1589,59 @@ namespace ftk
                 const bool motion = SDL_EVENT_MOUSE_MOTION == event.type;
                 const bool release = SDL_EVENT_MOUSE_BUTTON_UP == event.type;
 #endif // FTK_SDL2
+                const bool touchEvent = SDL_TOUCH_MOUSEID ==
+                    (motion ? event.motion.which : event.button.which);
+                if (touchEvent && p.touchScroll.active)
+                {
+                    // The finger is scrolling: its movement goes to the
+                    // widget, and the speed it lifts at carries on.
+                    auto window = mouseWindow(motion ? event.motion.windowID : event.button.windowID);
+                    const float contentScale = window ? window->getContentScale() : 1.F;
+                    const V2F pos(
+                        (motion ? event.motion.x : event.button.x) * contentScale,
+                        (motion ? event.motion.y : event.button.y) * contentScale);
+                    const auto now = std::chrono::steady_clock::now();
+                    const V2F pan = pos - p.touchScroll.pos;
+                    const double dt = std::chrono::duration<double>(now - p.touchScroll.time).count();
+                    if (dt > 0.0)
+                    {
+                        const V2F v(pan.x / dt, pan.y / dt);
+                        p.touchScroll.velocity = p.touchScroll.velocity * .6F + v * .4F;
+                    }
+                    p.touchScroll.pos = pos;
+                    p.touchScroll.time = now;
+                    if (motion)
+                    {
+                        touchScrollPan(pan);
+                    }
+                    else if (release)
+                    {
+                        p.touchScroll.active = false;
+                        if (length(p.touchScroll.velocity) < 50.F)
+                        {
+                            p.touchScroll.velocity = V2F();
+                        }
+                    }
+                    return;
+                }
+                if (touchEvent && p.touchPress.longPressed)
+                {
+                    // The long press became the right button; the rest
+                    // of the touch is nobody's.
+                    if (release)
+                    {
+                        p.touchPress.active = false;
+                        p.touchPress.longPressed = false;
+                        p.mouseButtonWindow.reset();
+                    }
+                    return;
+                }
                 if (p.touch.isMouseBlocked())
                 {
                     // A gesture is under way, which let go of the press
-                    // when it started.
+                    // when it started; a long press is not counted from
+                    // it either.
+                    p.touchPress.active = false;
                     if (release)
                     {
                         p.mouseButtonWindow.reset();
@@ -1522,7 +1667,34 @@ namespace ftk
                         p.touchMouseHeld.push_back(event);
                         if (p.touchMouseDelay.isReady(now))
                         {
-                            touchMouseSend();
+                            // A swipe over a scroll widget scrolls it,
+                            // and the mouse it would have been is dropped.
+                            std::shared_ptr<ScrollWidget> scroll;
+                            if (p.touchMouseDelay.hasMoved() && window && !p.touchMouseHeld.empty())
+                            {
+                                const auto& first = p.touchMouseHeld.front();
+                                const V2F start(
+                                    first.button.x * contentScale,
+                                    first.button.y * contentScale);
+                                scroll = touchScrollTarget(window, start);
+                                if (scroll)
+                                {
+                                    p.touchMouseHeld.clear();
+                                    p.touchMouseDelay.drop();
+                                    p.touchScroll.active = true;
+                                    p.touchScroll.widget = scroll;
+                                    p.touchScroll.pos = start;
+                                    p.touchScroll.velocity = V2F();
+                                    p.touchScroll.time = now;
+                                    const V2F pan = pos - start;
+                                    p.touchScroll.pos = pos;
+                                    touchScrollPan(pan);
+                                }
+                            }
+                            if (!scroll)
+                            {
+                                touchMouseSend();
+                            }
                         }
                         return;
                     }
@@ -1833,7 +2005,15 @@ namespace ftk
                 case SDL_EVENT_PINCH_END:
                     // A touch pad pinch, which has no position of its own:
                     // it zooms around the pointer. The fingers' dragging
-                    // stays the scrolling it already is.
+                    // stays the scrolling it already is. Not with fingers on
+                    // a touch screen, whose pinch the finger events already
+                    // make into a gesture about the fingers: a tablet sends
+                    // this as well, and taking it zoomed a second time about
+                    // a pointer that sits in the corner.
+                    if (p.touch.isTouching())
+                    {
+                        break;
+                    }
                     if (auto window = mouseWindow(event.pinch.windowID))
                     {
                         if (SDL_EVENT_PINCH_END == event.type)
@@ -2045,9 +2225,41 @@ namespace ftk
             p.polling = false;
 
             // The held mouse, once it has waited long enough.
-            if (p.touchMouseDelay.isReady(std::chrono::steady_clock::now()))
+            const auto now = std::chrono::steady_clock::now();
+            if (p.touchMouseDelay.isReady(now))
             {
                 touchMouseSend();
+            }
+
+            // A one finger scroll keeps moving after the finger lifts,
+            // slowing as a list on a touch screen does.
+            if (!p.touchScroll.active && length(p.touchScroll.velocity) > 0.F)
+            {
+                p.active = true;
+                const double dt = std::chrono::duration<double>(now - p.touchScroll.time).count();
+                p.touchScroll.time = now;
+                touchScrollPan(p.touchScroll.velocity * static_cast<float>(dt));
+                p.touchScroll.velocity = p.touchScroll.velocity *
+                    static_cast<float>(std::exp(-dt / .35));
+                if (length(p.touchScroll.velocity) < 20.F || !p.touchScroll.widget.lock())
+                {
+                    p.touchScroll.velocity = V2F();
+                }
+            }
+
+            // A finger that rests for long enough is the right button.
+            if (p.touchPress.active &&
+                !p.touchPress.moved &&
+                !p.touchPress.longPressed &&
+                now - p.touchPress.time >= std::chrono::milliseconds(500))
+            {
+                p.touchPress.longPressed = true;
+                if (auto window = p.touchPress.window.lock())
+                {
+                    window->_mouseCancel();
+                    window->_mouseButton(MouseButton::Right, true, 0);
+                    window->_mouseButton(MouseButton::Right, false, 0);
+                }
             }
 
             // The touch gestures, now that every finger has moved.
