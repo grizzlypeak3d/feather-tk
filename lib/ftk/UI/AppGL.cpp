@@ -54,6 +54,13 @@ namespace ftk
     namespace
     {
         const std::chrono::milliseconds timeout(5);
+        // An iteration that handled no event and drew nothing: the next
+        // sleep is this long rather than the timeout above, so that an
+        // application with nothing to do takes a fifth of the processor it
+        // took polling two hundred times a second, which on a tablet was
+        // a third of a core. Input ends it: the next iteration sees the
+        // event, and the one after is back to the timeout.
+        const std::chrono::milliseconds idleTimeout(20);
 
         //! Set before any application exists; see App::setOffscreenDefault().
         bool offscreenDefault = false;
@@ -134,6 +141,7 @@ namespace ftk
         std::shared_ptr<Observable<float> > displayScale;
         std::shared_ptr<Observable<bool> > tooltipsEnabled;
         std::shared_ptr<Observable<bool> > suspended;
+        bool active = true;
         bool running = true;
         bool polling = false;
         std::shared_ptr<ObservableList<MonitorInfo> > monitors;
@@ -774,6 +782,10 @@ namespace ftk
 
             if (window->isVisible(false))
             {
+                if (window->_hasSizeUpdate(window) || window->_hasDrawUpdate(window))
+                {
+                    p.active = true;
+                }
                 window->_update(p.fontSystem, p.iconSystem, p.style);
             }
         }
@@ -1298,7 +1310,7 @@ namespace ftk
             _runIteration();
 
             auto t1 = std::chrono::steady_clock::now();
-            sleep(timeout, t0, t1);
+            sleep(p.active ? timeout : idleTimeout, t0, t1);
             t1 = std::chrono::steady_clock::now();
             const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
             p.tickTimes.push_back(diff.count());
@@ -1326,6 +1338,7 @@ namespace ftk
     void App::_runIteration()
     {
         FTK_P();
+        p.active = false;
         {
             auto logSystem = _context->getSystem<LogSystem>();
             SDL_Event event;
@@ -1524,6 +1537,7 @@ namespace ftk
 
             while (SDL_PollEvent(&event))
             {
+                p.active = true;
                 //std::cout << "Event: " << fromSDLEvent(event.type) << std::endl;
                 switch (event.type)
                 {
