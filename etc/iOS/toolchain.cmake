@@ -14,6 +14,10 @@ if(NOT IOS_SDK)
 endif()
 set(CMAKE_OSX_SYSROOT ${IOS_SDK} CACHE STRING "")
 set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "")
+# Named as well: CMake leaves it empty for iOS, and a dependency that
+# lowercases it to pick its assembly (libjpeg-turbo) fails on the empty
+# string.
+set(CMAKE_SYSTEM_PROCESSOR arm64)
 if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 17.0 CACHE STRING "")
 endif()
