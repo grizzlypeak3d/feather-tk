@@ -5,6 +5,7 @@
 
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IMouseWidget.h>
+#include <ftk/UI/IWindow.h>
 
 namespace ftk
 {
@@ -81,6 +82,11 @@ namespace ftk
 
         FTK_UI_API bool isReadOnly() const;
         FTK_UI_API void setReadOnly(bool);
+
+        //! Get what the text is: a touch screen's keyboard takes its
+        //! layout from it.
+        FTK_UI_API TextInputType getTextInputType() const;
+        FTK_UI_API void setTextInputType(TextInputType);
 
         ///@}
 

@@ -167,7 +167,9 @@ namespace ftk
             FTK_GL_API bool hasTextInput() const;
 
             //! Set whether the window has text input.
-            FTK_GL_API void setTextInput(bool);
+            //! Start or stop text input. A number asks a touch screen's
+            //! keyboard for its numeric layout.
+            FTK_GL_API void setTextInput(bool, bool number = false);
 
             //! Set the text input area: where an input method places
             //! its candidate window, in framebuffer coordinates.

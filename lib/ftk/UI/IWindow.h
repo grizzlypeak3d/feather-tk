@@ -60,6 +60,13 @@ namespace ftk
     };
     FTK_ENUM(FTK_UI_API, CursorShape);
 
+    //! What a text input takes, for a keyboard that can change its layout.
+    enum class TextInputType
+    {
+        Text,
+        Number
+    };
+
     //! Base class for windows.
     class FTK_UI_API_TYPE IWindow : public IWidget
     {
@@ -179,7 +186,10 @@ namespace ftk
         FTK_UI_API void setKeyFocusVisible(bool);
 
         FTK_UI_API bool hasTextInput() const;
-        FTK_UI_API virtual void setTextInput(bool);
+
+        //! Start or stop text input, saying what the text is: a touch
+        //! screen's keyboard takes its layout from it.
+        FTK_UI_API virtual void setTextInput(bool, TextInputType = TextInputType::Text);
 
         //! Set the text input area: where an input method places its
         //! candidate window, in framebuffer coordinates.

@@ -132,6 +132,7 @@ namespace ftk
             std::chrono::steady_clock::time_point normalGeometryTime;
             bool floatOnTop = false;
             bool textInput = false;
+            bool textInputNumber = false;
             // Whether the swap waits for the display, whether it is waiting
             // now, and when the frame being drawn was started: see swap().
             bool sync = false;
@@ -746,12 +747,13 @@ namespace ftk
             return _p->textInput;
         }
 
-        void Window::setTextInput(bool value)
+        void Window::setTextInput(bool value, bool number)
         {
             FTK_P();
-            if (value == p.textInput)
+            if (value == p.textInput && number == p.textInputNumber)
                 return;
             p.textInput = value;
+            p.textInputNumber = number;
 #if defined(FTK_SDL2)
             // Global in SDL2; there is only one text focus anyway.
             if (value)
@@ -765,7 +767,15 @@ namespace ftk
 #elif defined(FTK_SDL3)
             if (value)
             {
-                SDL_StartTextInput(p.sdlWindow);
+                // Told what the input is: a touch screen's keyboard takes
+                // its layout from it.
+                const SDL_PropertiesID props = SDL_CreateProperties();
+                SDL_SetNumberProperty(
+                    props,
+                    SDL_PROP_TEXTINPUT_TYPE_NUMBER,
+                    number ? SDL_TEXTINPUT_TYPE_NUMBER : SDL_TEXTINPUT_TYPE_TEXT);
+                SDL_StartTextInputWithProperties(p.sdlWindow, props);
+                SDL_DestroyProperties(props);
             }
             else
             {

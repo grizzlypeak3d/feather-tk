@@ -393,10 +393,10 @@ namespace ftk
         }
     }
 
-    void Window::setTextInput(bool value)
+    void Window::setTextInput(bool value, TextInputType type)
     {
-        IWindow::setTextInput(value);
-        _p->window->setTextInput(value);
+        IWindow::setTextInput(value, type);
+        _p->window->setTextInput(value, TextInputType::Number == type);
     }
 
     void Window::setTextInputArea(const Box2I& value)

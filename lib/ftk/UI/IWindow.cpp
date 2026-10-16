@@ -406,7 +406,7 @@ namespace ftk
         return _p->textInput;
     }
 
-    void IWindow::setTextInput(bool value)
+    void IWindow::setTextInput(bool value, TextInputType)
     {
         _p->textInput = value;
     }

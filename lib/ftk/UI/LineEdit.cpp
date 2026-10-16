@@ -29,6 +29,7 @@ namespace ftk
         std::string format = std::string(20, '#');
         std::function<void(bool)> focusCallback;
         std::function<void(void)> escapeCallback;
+        TextInputType textInputType = TextInputType::Text;
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
         ColorRole wellRole = ColorRole::Well;
@@ -232,6 +233,16 @@ namespace ftk
     bool LineEdit::isReadOnly() const
     {
         return _p->model->isReadOnly();
+    }
+
+    TextInputType LineEdit::getTextInputType() const
+    {
+        return _p->textInputType;
+    }
+
+    void LineEdit::setTextInputType(TextInputType value)
+    {
+        _p->textInputType = value;
     }
 
     void LineEdit::setReadOnly(bool value)
@@ -644,7 +655,7 @@ namespace ftk
         }
         if (auto window = getWindow())
         {
-            window->setTextInput(value);
+            window->setTextInput(value, p.textInputType);
         }
         if (p.focusCallback)
         {

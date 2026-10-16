@@ -1,0 +1,16 @@
+diff --git a/src/video/uikit/SDL_uikitviewcontroller.m b/src/video/uikit/SDL_uikitviewcontroller.m
+index e9b48c2e0..bd8b127e5 100644
+--- a/src/video/uikit/SDL_uikitviewcontroller.m
++++ b/src/video/uikit/SDL_uikitviewcontroller.m
+@@ -422,7 +422,10 @@ - (void)setTextFieldProperties:(SDL_PropertiesID) props
+         textField.textContentType = UITextContentTypePassword;
+         break;
+     case SDL_TEXTINPUT_TYPE_NUMBER:
+-        textField.keyboardType = UIKeyboardTypeDecimalPad;
++        /* Numbers with their punctuation rather than the decimal pad: a
++           number field takes a minus sign, and a time a colon, which the
++           pad has no key for. */
++        textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+         textField.textContentType = nil;
+         break;
+     case SDL_TEXTINPUT_TYPE_NUMBER_PASSWORD_HIDDEN:

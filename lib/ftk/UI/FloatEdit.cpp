@@ -39,6 +39,7 @@ namespace ftk
         p.model = model;
 
         p.lineEdit = LineEdit::create(context, shared_from_this());
+        p.lineEdit->setTextInputType(TextInputType::Number);
         p.lineEdit->setSelectAllOnFocus(true);
         p.lineEdit->getModel()->setRegex("[0-9\\-\\.]+");
         p.lineEdit->setFont(FontType::Mono);

@@ -53,10 +53,12 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# One patch, from upstream pull request #14157 (open): the Metal GPU
+# Two patches. One from upstream pull request #14157 (open): the Metal GPU
 # driver makes a texture over an existing CVPixelBuffer's surface, which
 # is how a frame the hardware decoded is drawn without a copy. Drop it
-# when a release carries the change.
+# when a release carries the change. The other is ours: on iOS a number
+# input gets the keyboard with the punctuation rather than the decimal
+# pad, which has no minus sign and no colon.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -66,6 +68,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/pixelbuffer.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/keyboard.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})
