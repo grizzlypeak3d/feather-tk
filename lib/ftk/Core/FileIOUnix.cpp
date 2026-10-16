@@ -5,6 +5,7 @@
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Memory.h>
+#include <ftk/Core/OS.h>
 #include <ftk/Core/Path.h>
 
 #include <algorithm>
@@ -425,24 +426,36 @@ namespace ftk
         p.pos      = 0;
         p.size     = std::filesystem::file_size(path);
         
-        // Memory mapping.
+        // Memory mapping. FTK_NO_MMAP in the environment leaves every file
+        // unmapped, to try the path a file system that cannot map takes.
+        std::string noMMap;
         if (FileRead::MMap == p.readType &&
             FileMode::Read == p.mode &&
-            p.size > 0)
+            p.size > 0 &&
+            !(getEnv("FTK_NO_MMAP", noMMap) && !noMMap.empty()))
         {
             p.mMap = mmap(0, p.size, PROT_READ, MAP_SHARED, p.f, 0);
-            madvise(
-                p.mMap,
-                p.size,
-                FileAccess::Random == access ? MADV_RANDOM : MADV_SEQUENTIAL);
             if (p.mMap == (void*)-1)
             {
-                throw std::runtime_error(
-                    getErrorMessage(ErrorType::MMap, fromFileSystem(path), getErrorString()));
+                // Not every file system maps: a file on an SMB share on
+                // iOS does not. The file is read instead, and a caller
+                // that wanted the memory finds getMemStart() empty.
+                p.readType = FileRead::Normal;
             }
-            p.memStart = reinterpret_cast<const uint8_t*>(p.mMap);
-            p.memEnd   = p.memStart + p.size;
-            p.memP     = p.memStart;
+            else
+            {
+                madvise(
+                    p.mMap,
+                    p.size,
+                    FileAccess::Random == access ? MADV_RANDOM : MADV_SEQUENTIAL);
+                p.memStart = reinterpret_cast<const uint8_t*>(p.mMap);
+                p.memEnd   = p.memStart + p.size;
+                p.memP     = p.memStart;
+            }
+        }
+        else if (FileRead::MMap == p.readType)
+        {
+            p.readType = FileRead::Normal;
         }
     }
 

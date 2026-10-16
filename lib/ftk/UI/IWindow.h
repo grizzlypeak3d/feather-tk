@@ -386,8 +386,8 @@ namespace ftk
         FTK_UI_API void _cursorPos(const V2I&);
         FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);
         void _scroll(const V2F&, int modifiers);
-        void _gesture(const V2I& pos, const V2F& pan, float zoom);
-        void _gestureEnd();
+        FTK_UI_API void _gesture(const V2I& pos, const V2F& pan, float zoom);
+        FTK_UI_API void _gestureEnd();
         void _drop(const V2I& pos, const std::shared_ptr<IDragDropData>&);
 
         FTK_UI_API void _drawEventRecursive(
