@@ -268,6 +268,19 @@ namespace ftk
         //! Observe the monitors.
         FTK_UI_API std::shared_ptr<IObservableList<MonitorInfo> > observeMonitors() const;
 
+        //! \name Suspension
+        ///@{
+
+        //! Get whether the system has put the application in the
+        //! background, or is ending it: a phone or a tablet does that in
+        //! place of a quit, and may not give the application the
+        //! processor again. The settings are saved as it happens; an
+        //! application saves what else it keeps when this becomes true.
+        FTK_UI_API bool isSuspended() const;
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeSuspended() const;
+
+        ///@}
+
         //! Get the windows.
         FTK_UI_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
@@ -293,6 +306,7 @@ namespace ftk
             const std::filesystem::path& outputDir);
 
     private:
+        void _suspend(bool);
         void _runIteration();
         void _screenshotInit(const std::string& fileName);
         void _widgetDumpInit(const std::string& fileName);

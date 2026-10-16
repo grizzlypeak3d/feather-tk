@@ -259,6 +259,11 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
         AppGL.cpp
         WindowGL.cpp)
 endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    # The document picker is the native file dialog there.
+    list(APPEND PRIVATE_HEADERS FileBrowserIOSPrivate.h)
+    list(APPEND SOURCE FileBrowserIOS.mm)
+endif()
 
 add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
 # Private when building, so this library's own API is dllexport here and
@@ -293,6 +298,9 @@ if(ftk_nfd)
     if(APPLE)
         target_link_libraries(ftkUI PUBLIC "-framework UniformTypeIdentifiers")
     endif()
+endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    target_link_libraries(ftkUI PUBLIC "-framework UIKit" "-framework UniformTypeIdentifiers")
 endif()
 
 set_target_properties(ftkUI PROPERTIES FOLDER lib)

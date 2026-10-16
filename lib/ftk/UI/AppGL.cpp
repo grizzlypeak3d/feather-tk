@@ -133,6 +133,7 @@ namespace ftk
         float windowDisplayScale = 0.F;
         std::shared_ptr<Observable<float> > displayScale;
         std::shared_ptr<Observable<bool> > tooltipsEnabled;
+        std::shared_ptr<Observable<bool> > suspended;
         bool running = true;
         bool polling = false;
         std::shared_ptr<ObservableList<MonitorInfo> > monitors;
@@ -456,6 +457,7 @@ namespace ftk
         p.displayScale = Observable<float>::create(p.defaultDisplayScale);
 
         p.tooltipsEnabled = Observable<bool>::create(true);
+        p.suspended = Observable<bool>::create(false);
 
         p.monitors = ObservableList<MonitorInfo>::create();
 
@@ -708,6 +710,16 @@ namespace ftk
     const std::shared_ptr<CmdLineOption<float> >& App::getDisplayScaleCmdLineOption() const
     {
         return _p->cmdLine.displayScale;
+    }
+
+    bool App::isSuspended() const
+    {
+        return _p->suspended->get();
+    }
+
+    std::shared_ptr<IObservable<bool> > App::observeSuspended() const
+    {
+        return _p->suspended;
     }
 
     bool App::areTooltipsEnabled() const
@@ -2147,11 +2159,39 @@ namespace ftk
 
     bool App::_eventWatch(void* userdata, SDL_Event* event)
     {
-        if (SDL_EVENT_WINDOW_RESIZED == event->type)
+        switch (event->type)
         {
+        case SDL_EVENT_WINDOW_RESIZED:
             static_cast<App*>(userdata)->_liveResize(event->window.windowID);
+            break;
+        // The system's word that the application is going away, which
+        // comes here rather than through the queue: on a phone or a
+        // tablet the application may not run again before it is killed,
+        // so what is to be kept is saved now.
+        case SDL_EVENT_WILL_ENTER_BACKGROUND:
+        case SDL_EVENT_TERMINATING:
+            static_cast<App*>(userdata)->_suspend(true);
+            break;
+        case SDL_EVENT_WILL_ENTER_FOREGROUND:
+            static_cast<App*>(userdata)->_suspend(false);
+            break;
+        default: break;
         }
         return true;
+    }
+
+    void App::_suspend(bool value)
+    {
+        FTK_P();
+        if (p.suspended->setIfChanged(value) && value)
+        {
+            // After the observers, which is when an application has
+            // written what it keeps into the settings.
+            if (p.settings)
+            {
+                p.settings->save();
+            }
+        }
     }
 #endif // FTK_SDL3
 

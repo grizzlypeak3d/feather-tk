@@ -14,6 +14,12 @@
 #if defined(FTK_NFD)
 #include <nfd.hpp>
 #endif // FTK_NFD
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if TARGET_OS_IPHONE
+#include "FileBrowserIOSPrivate.h"
+#endif // TARGET_OS_IPHONE
+#endif // __APPLE__
 
 #include <nlohmann/json.hpp>
 
@@ -62,6 +68,9 @@ namespace ftk
         p.model = FileBrowserModel::create(context);
         p.recentDirsModel = RecentFilesModel::create(context);
         p.closeTimer = Timer::create(context);
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+        restoreDocumentAccess();
+#endif // TARGET_OS_IPHONE
     }
 
     FileBrowserSystem::~FileBrowserSystem()
@@ -212,6 +221,23 @@ namespace ftk
                 }
             }
         }
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
+        // The system's document picker, which answers later rather than
+        // here: the application runs on under it. Saving has no picker,
+        // and goes to the built-in browser.
+        if (native && FileBrowserMode::Save != options.mode)
+        {
+            const FileBrowserMode mode = options.mode;
+            openDocumentPicker(
+                options,
+                [this, callback, mode](const std::vector<Path>& paths)
+                {
+                    _addRecentDirs(paths, mode);
+                    callback(paths);
+                });
+            return;
+        }
+        native = false;
 #else  // FTK_NFD
         native = false;
 #endif  // FTK_NFD
@@ -509,6 +535,8 @@ namespace ftk
     bool FileBrowserSystem::isNativeFileDialogAvailable() const
     {
 #if defined(FTK_NFD)
+        return true;
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
         return true;
 #else  // FTK_NFD
         return false;
