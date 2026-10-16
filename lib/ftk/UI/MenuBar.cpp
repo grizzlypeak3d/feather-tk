@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include <chrono>
+
 namespace ftk
 {
     struct MenuBar::Private
@@ -17,6 +19,10 @@ namespace ftk
         std::shared_ptr<HorizontalLayout> layout;
         int current = -1;
         std::function<void(const std::shared_ptr<Action>&)> currentCallback;
+        // When the hover last opened a menu: a press right after it is the
+        // same tap on a touch screen, where the hover and the press arrive
+        // together, and must not close what the hover just opened.
+        std::chrono::steady_clock::time_point hoverOpenTime;
     };
 
     void MenuBar::_init(
@@ -89,7 +95,12 @@ namespace ftk
                     {
                         if (_getOpenMenu() || hasKeyFocus())
                         {
+                            const bool wasOpen = _getOpenMenu() != nullptr;
                             _setCurrent(_getIndex(buttonWeak.lock()));
+                            if (wasOpen)
+                            {
+                                _p->hoverOpenTime = std::chrono::steady_clock::now();
+                            }
                         }
                     }
                 });
@@ -102,7 +113,11 @@ namespace ftk
                     auto menu = _getOpenMenu();
                     if (menu && menu == menuWeak.lock())
                     {
-                        menu->close();
+                        if (std::chrono::steady_clock::now() - p.hoverOpenTime >
+                            std::chrono::milliseconds(300))
+                        {
+                            menu->close();
+                        }
                     }
                     else
                     {
