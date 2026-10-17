@@ -126,6 +126,10 @@ namespace ftk
         //! The held events were dropped: a gesture started.
         FTK_UI_API void drop();
 
+        //! Hold nothing for this touch: it goes straight through, for a
+        //! widget that takes a finger at once (IWidget::isTouchImmediate).
+        FTK_UI_API void pass();
+
         //! Whether events are being held.
         FTK_UI_API bool isHolding() const;
 

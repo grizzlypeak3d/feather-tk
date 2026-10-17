@@ -703,11 +703,13 @@ namespace ftk
     void LineEdit::_textInputStart()
     {
         FTK_P();
+        // Where the edit is, then the keyboard: a tablet works out how far
+        // to lift the window as the keyboard is asked for.
+        _textInputAreaUpdate();
         if (auto window = getWindow())
         {
             window->setTextInput(true, p.textInputType);
         }
-        _textInputAreaUpdate();
     }
 
     void LineEdit::keyPressEvent(KeyEvent& event)

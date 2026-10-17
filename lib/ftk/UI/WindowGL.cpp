@@ -49,6 +49,7 @@ namespace ftk
         std::weak_ptr<Context> context;
 
         std::shared_ptr<gl::Window> window;
+        Box2I textInputArea;
 
         CursorShape cursor = CursorShape::Arrow;
         std::map<CursorShape, SDL_Cursor*> sdlCursors;
@@ -405,7 +406,17 @@ namespace ftk
 
     void Window::setTextInputArea(const Box2I& value)
     {
+        _p->textInputArea = value;
         _p->window->setTextInputArea(value);
+    }
+
+    void Window::_screenKeyboardShown()
+    {
+        FTK_P();
+        if (hasTextInput() && p.textInputArea.isValid())
+        {
+            p.window->setTextInputArea(p.textInputArea);
+        }
     }
 
     void Window::setIcon(const std::shared_ptr<Image>& icon)

@@ -77,6 +77,12 @@ namespace ftk
                 FTK_CHECK(1 == layout->getChildIndex(widget0));
                 FTK_CHECK(2 == layout->getChildIndex(widget1));
 
+                // Whether a finger's press reaches the widget at once.
+                FTK_CHECK(!widget0->isTouchImmediate());
+                widget0->setTouchImmediate(true);
+                FTK_CHECK(widget0->isTouchImmediate());
+                widget0->setTouchImmediate(false);
+
                 layout->moveToFront(widget2);
                 app->tick();
                 FTK_CHECK(0 == layout->getChildIndex(widget0));

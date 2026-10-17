@@ -74,6 +74,8 @@ namespace ftk
         V2I cursorPosPrev;
         bool penDown = false;
         float penPressure = 1.F;
+        bool touch = false;
+        int keyModifiers = 0;
         std::weak_ptr<IWidget> hover;
         std::weak_ptr<IWidget> mousePress;
         MouseClickEvent mouseClickEvent;
@@ -919,6 +921,9 @@ namespace ftk
     void IWindow::setTextInputArea(const Box2I&)
     {}
 
+    void IWindow::_screenKeyboardShown()
+    {}
+
     void IWindow::_textEditing(const std::string& value, int cursor)
     {
         FTK_P();
@@ -1000,13 +1005,17 @@ namespace ftk
     void IWindow::drag(
         const std::vector<V2I>& path,
         int modifiers,
-        bool release)
+        bool release,
+        int holdModifiers)
     {
         if (path.size() < 2)
             return;
         _p->inside = true;
+        _p->keyModifiers = modifiers;
         _cursorPos(path[0]);
         _mouseButton(MouseButton::Left, true, modifiers);
+        // What is held during the moves: a key pressed after the button.
+        _p->keyModifiers = modifiers | holdModifiers;
         const int steps = 8;
         for (size_t leg = 1; leg < path.size(); ++leg)
         {
@@ -1023,6 +1032,7 @@ namespace ftk
         {
             _mouseButton(MouseButton::Left, false, modifiers);
         }
+        _p->keyModifiers = 0;
     }
 
     void IWindow::scroll(const V2I& pos, const V2F& value, int modifiers)
@@ -1062,6 +1072,16 @@ namespace ftk
         p.penPressure = pressure;
     }
 
+    void IWindow::_touch(bool value)
+    {
+        _p->touch = value;
+    }
+
+    void IWindow::_keyModifiers(int value)
+    {
+        _p->keyModifiers = value;
+    }
+
     void IWindow::_cursorPos(const V2I& pos)
     {
         FTK_P();
@@ -1080,6 +1100,8 @@ namespace ftk
             widget ? p.mouseClickEvent.modifiers : 0);
         event.pen = p.penDown;
         event.pressure = p.penDown ? p.penPressure : 1.F;
+        event.touch = p.touch;
+        event.keyModifiers = p.keyModifiers;
         if (widget)
         {
             if (p.dragDropData)
@@ -1176,6 +1198,7 @@ namespace ftk
         p.mouseClickEvent = MouseClickEvent(button, modifiers, p.cursorPos);
         p.mouseClickEvent.pen = p.penDown;
         p.mouseClickEvent.pressure = p.penDown ? p.penPressure : 1.F;
+        p.mouseClickEvent.touch = p.touch;
         if (press)
         {
             if (traceEvents())

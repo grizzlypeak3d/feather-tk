@@ -1512,6 +1512,8 @@ namespace ftk
                         const V2I pos(
                             event.motion.x * contentScale,
                             event.motion.y * contentScale);
+                        window->_touch(SDL_TOUCH_MOUSEID == event.motion.which);
+                        window->_keyModifiers(fromSDLKeyModifier(static_cast<uint16_t>(SDL_GetModState())));
                         window->_cursorPos(pos);
                         p.mousePos[window] = pos;
                         if (p.touchPress.active &&
@@ -1530,6 +1532,7 @@ namespace ftk
                     if (auto window = mouseWindow(event.button.windowID))
                     {
                         p.mouseButtonWindow = window;
+                        window->_touch(SDL_TOUCH_MOUSEID == event.button.which);
                         window->_mouseButton(
                             fromSDLMouseButton(event.button.button),
                             true,
@@ -1570,6 +1573,7 @@ namespace ftk
                     p.mouseButtonWindow.reset();
                     if (window)
                     {
+                        window->_touch(SDL_TOUCH_MOUSEID == event.button.which);
                         window->_mouseButton(
                             fromSDLMouseButton(event.button.button),
                             false,
@@ -1716,6 +1720,39 @@ namespace ftk
                     if (!p.touchMouseDelay.isHolding() && window)
                     {
                         p.touchMouseDelay.setThreshold(12.F * window->getDisplayScale());
+                    }
+                    // A finger landing on a widget that takes it at once,
+                    // one that draws, is not held back: the stroke starts
+                    // where the finger lands, and a second finger cancels
+                    // it as it cancels any press. Nor does a long press
+                    // there become the right button, which would cancel a
+                    // stroke begun slowly.
+                    if (!p.touchMouseDelay.isHolding() &&
+                        !motion &&
+                        !release &&
+                        window)
+                    {
+                        const auto widgets = window->_getUnderCursor(
+                            IWindow::UnderCursor::Hover,
+                            V2I(pos.x, pos.y));
+                        bool immediate = false;
+                        for (auto widget = widgets.empty() ? nullptr : widgets.front();
+                            widget;
+                            widget = widget->getParent())
+                        {
+                            if (widget->isTouchImmediate())
+                            {
+                                immediate = true;
+                                break;
+                            }
+                        }
+                        if (immediate)
+                        {
+                            p.touchMouseDelay.pass();
+                            mouseDispatch(event);
+                            p.touchPress.active = false;
+                            return;
+                        }
                     }
                     const auto now = std::chrono::steady_clock::now();
                     if (p.touchMouseDelay.event(pos, release, now))
@@ -2131,6 +2168,14 @@ namespace ftk
                     }
                     break;
 #elif defined(FTK_SDL3)
+#if defined(SDL_EVENT_SCREEN_KEYBOARD_SHOWN) || SDL_VERSION_ATLEAST(3, 4, 0)
+                case SDL_EVENT_SCREEN_KEYBOARD_SHOWN:
+                    for (const auto& window : p.windows)
+                    {
+                        window->_screenKeyboardShown();
+                    }
+                    break;
+#endif // SDL_EVENT_SCREEN_KEYBOARD_SHOWN
                 case SDL_EVENT_KEY_DOWN:
                     // To the window SDL tagged the event with, which is the
                     // one holding the keyboard. Sending it where the pointer

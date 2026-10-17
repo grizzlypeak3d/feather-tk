@@ -360,6 +360,11 @@ namespace ftk
         }
     }
 
+    void IWidget::setTouchImmediate(bool value)
+    {
+        _touchImmediate = value;
+    }
+
     void IWidget::setAcceptsKeyFocus(bool value)
     {
         _acceptsKeyFocus = value;

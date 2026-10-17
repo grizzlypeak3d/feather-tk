@@ -223,6 +223,14 @@ namespace ftk
         return out;
     }
 
+    void TouchMouseDelay::pass()
+    {
+        _state = State::Passing;
+        _ready = false;
+        _released = false;
+        _moved = false;
+    }
+
     bool TouchMouseDelay::isReady(const std::chrono::steady_clock::time_point& now) const
     {
         return State::Holding == _state && (_ready || now - _start >= _timeout);

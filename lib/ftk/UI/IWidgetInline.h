@@ -131,6 +131,11 @@ namespace ftk
         return _backgroundRole;
     }
 
+    inline bool IWidget::isTouchImmediate() const
+    {
+        return _touchImmediate;
+    }
+
     inline bool IWidget::acceptsKeyFocus() const
     {
         return _acceptsKeyFocus;

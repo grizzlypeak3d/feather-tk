@@ -620,9 +620,20 @@ namespace ftk
             // used, or a position in framebuffer pixels, e.g.
             // { "drag": ["Files.Thumbnail", [160, 300]] },
             // { "drag": [[100, 50], [100, 250]], "modifier": "Ctrl" }.
+            // "hold" is a key pressed after the button, held through the
+            // moves: { "drag": [...], "hold": "Shift" }.
             // Deferred by _applyRest like "click".
             const auto& v = step.at("drag");
             const int modifiers = parseModifiers(step);
+            int holdModifiers = 0;
+            if (step.contains("hold"))
+            {
+                KeyModifier hold = KeyModifier::None;
+                if (from_string(step.at("hold").get<std::string>(), hold))
+                {
+                    holdModifiers = static_cast<int>(hold);
+                }
+            }
             std::vector<V2I> path;
             bool pathOK = v.is_array() && window;
             if (pathOK)
@@ -646,7 +657,7 @@ namespace ftk
             }
             else if (pathOK)
             {
-                window->drag(path, modifiers);
+                window->drag(path, modifiers, true, holdModifiers);
             }
         }
         else if (step.contains("text"))

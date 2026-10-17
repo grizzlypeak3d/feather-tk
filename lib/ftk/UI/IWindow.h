@@ -195,6 +195,11 @@ namespace ftk
         //! candidate window, in framebuffer coordinates.
         FTK_UI_API virtual void setTextInputArea(const Box2I&);
 
+        //! The on-screen keyboard is up: the text area is told again, now
+        //! that the keyboard's height is known, so a tablet lifts the window
+        //! clear of it whatever order the two arrived in.
+        FTK_UI_API virtual void _screenKeyboardShown();
+
         ///@}
 
         //! Tooltips
@@ -277,7 +282,8 @@ namespace ftk
         FTK_UI_API void drag(
             const std::vector<V2I>&,
             int modifiers = 0,
-            bool release = true);
+            bool release = true,
+            int holdModifiers = 0);
 
         //! Move the cursor there and scroll the mouse wheel.
         FTK_UI_API void scroll(
@@ -406,6 +412,10 @@ namespace ftk
         //! mouse events that follow, which are the pen's own since the
         //! system sends a pen's movements as a mouse's.
         FTK_UI_API void _pen(bool down, float pressure);
+        //! Whether the mouse events that follow are a finger's.
+        FTK_UI_API void _touch(bool);
+        //! The keyboard modifiers held now, for the mouse moves that follow.
+        FTK_UI_API void _keyModifiers(int);
         //! Let go of whatever the mouse pressed, cancelled rather than
         //! released: a button under it does not click. A drag and drop in
         //! flight is dropped nowhere.

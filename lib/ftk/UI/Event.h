@@ -137,10 +137,19 @@ namespace ftk
         MouseButton                    button = MouseButton::None;
         int                            modifiers = 0;
 
+        //! The keyboard modifiers held now, which can differ from those
+        //! the button was pressed with: a key pressed during a drag, to
+        //! hold a shape square as it is drawn, is only seen here.
+        int                            keyModifiers = 0;
+
         //! Whether a pen made the event, and how hard it presses, zero to
         //! one. A mouse or a finger is no pen and presses with one.
         bool                           pen = false;
         float                          pressure = 1.F;
+
+        //! Whether a finger on a touch screen made the event: a target
+        //! for a fingertip is bigger than one for a pointer.
+        bool                           touch = false;
 
         bool                           accept = false;
         std::shared_ptr<IDragDropData> dragDropData;
@@ -197,6 +206,8 @@ namespace ftk
         //! MouseMoveEvent.
         bool        pen       = false;
         float       pressure  = 1.F;
+        //! Whether a finger made the event; see MouseMoveEvent.
+        bool        touch     = false;
         bool        accept    = false;
 
         //! The press was taken away before it was released: a touch

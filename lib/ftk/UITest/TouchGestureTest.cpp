@@ -228,6 +228,18 @@ namespace ftk
                 FTK_CHECK(!d.isReady(t0 + seconds(1)));
                 FTK_CHECK(d.event(V2F(10.F, 10.F), false, t0 + seconds(1)));
             }
+
+            // A touch on a widget that takes a finger at once is not held:
+            // all of it goes straight through, and the next touch is held
+            // again.
+            {
+                TouchMouseDelay d;
+                d.pass();
+                FTK_CHECK(!d.isHolding());
+                FTK_CHECK(!d.event(V2F(12.F, 10.F), false, t0 + milliseconds(10)));
+                FTK_CHECK(!d.event(V2F(12.F, 10.F), true, t0 + milliseconds(20)));
+                FTK_CHECK(d.event(V2F(50.F, 50.F), false, t0 + milliseconds(500)));
+            }
         }
     }
 }

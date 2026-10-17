@@ -225,6 +225,16 @@ namespace ftk
         //! Key Focus
         ///@{
 
+        //! Does a finger's press reach this widget at once? The press a
+        //! touch screen makes of a finger is held back briefly, to see
+        //! whether a second finger makes it a gesture; a widget that
+        //! draws wants the stroke from the moment the finger lands, and
+        //! drops it on the cancelled release if a gesture does start.
+        bool isTouchImmediate() const;
+
+        //! Set whether a finger's press reaches this widget at once.
+        FTK_UI_API void setTouchImmediate(bool);
+
         //! Does this widget accept key focus?
         bool acceptsKeyFocus() const;
 
@@ -415,6 +425,7 @@ namespace ftk
         bool _parentsEnabled = true;
 
         bool _acceptsKeyFocus = false;
+        bool _touchImmediate = false;
         bool _keyFocus = false;
         bool _keyFocusAlwaysVisible = false;
 
