@@ -72,6 +72,8 @@ namespace ftk
         bool inside = false;
         V2I cursorPos;
         V2I cursorPosPrev;
+        bool penDown = false;
+        float penPressure = 1.F;
         std::weak_ptr<IWidget> hover;
         std::weak_ptr<IWidget> mousePress;
         MouseClickEvent mouseClickEvent;
@@ -1053,6 +1055,13 @@ namespace ftk
         _textEditing(value, cursor);
     }
 
+    void IWindow::_pen(bool down, float pressure)
+    {
+        FTK_P();
+        p.penDown = down;
+        p.penPressure = pressure;
+    }
+
     void IWindow::_cursorPos(const V2I& pos)
     {
         FTK_P();
@@ -1069,6 +1078,8 @@ namespace ftk
             p.cursorPosPrev,
             widget ? p.mouseClickEvent.button : MouseButton::None,
             widget ? p.mouseClickEvent.modifiers : 0);
+        event.pen = p.penDown;
+        event.pressure = p.penDown ? p.penPressure : 1.F;
         if (widget)
         {
             if (p.dragDropData)
@@ -1163,6 +1174,8 @@ namespace ftk
         }
         _closeTooltip();
         p.mouseClickEvent = MouseClickEvent(button, modifiers, p.cursorPos);
+        p.mouseClickEvent.pen = p.penDown;
+        p.mouseClickEvent.pressure = p.penDown ? p.penPressure : 1.F;
         if (press)
         {
             if (traceEvents())

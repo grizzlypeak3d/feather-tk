@@ -278,6 +278,13 @@ namespace ftk
             // mouse is over but takes a second click to press it.
             SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 #endif // SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH
+#if defined(SDL_HINT_PEN_TOUCH_EVENTS)
+            // A pen is not a finger: its movements are not sent as touches,
+            // which would put a stroke through the touch gestures. It is
+            // sent as the mouse (the default), with its pressure beside;
+            // see App.
+            SDL_SetHint(SDL_HINT_PEN_TOUCH_EVENTS, "0");
+#endif // SDL_HINT_PEN_TOUCH_EVENTS
 #if defined(SDL_HINT_MAC_PRESS_AND_HOLD)
             // A held key repeats in a text field. Since 3.4 SDL has macOS
             // open the accents menu instead, which stops the repeat.

@@ -402,6 +402,10 @@ namespace ftk
         FTK_UI_API void _cursorEnter(bool enter);
         FTK_UI_API void _cursorPos(const V2I&);
         FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);
+        //! The pen on the surface, and how hard it presses: stamped on the
+        //! mouse events that follow, which are the pen's own since the
+        //! system sends a pen's movements as a mouse's.
+        FTK_UI_API void _pen(bool down, float pressure);
         //! Let go of whatever the mouse pressed, cancelled rather than
         //! released: a button under it does not click. A drag and drop in
         //! flight is dropped nowhere.

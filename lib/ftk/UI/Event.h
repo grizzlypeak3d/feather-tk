@@ -137,6 +137,11 @@ namespace ftk
         MouseButton                    button = MouseButton::None;
         int                            modifiers = 0;
 
+        //! Whether a pen made the event, and how hard it presses, zero to
+        //! one. A mouse or a finger is no pen and presses with one.
+        bool                           pen = false;
+        float                          pressure = 1.F;
+
         bool                           accept = false;
         std::shared_ptr<IDragDropData> dragDropData;
         std::shared_ptr<Image>         dragDropCursor;
@@ -188,6 +193,10 @@ namespace ftk
         MouseButton button    = MouseButton::None;
         int         modifiers = 0;
         V2I         pos;
+        //! Whether a pen made the event, and how hard it presses; see
+        //! MouseMoveEvent.
+        bool        pen       = false;
+        float       pressure  = 1.F;
         bool        accept    = false;
 
         //! The press was taken away before it was released: a touch
