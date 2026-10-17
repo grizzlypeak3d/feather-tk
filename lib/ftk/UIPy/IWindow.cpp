@@ -102,7 +102,8 @@ namespace ftk
                     &IWindow::drag,
                     nb::arg("path"),
                     nb::arg("modifiers") = 0,
-                    nb::arg("release") = true)
+                    nb::arg("release") = true,
+                    nb::arg("holdModifiers") = 0)
                 .def(
                     "keyPress",
                     &IWindow::keyPress,
