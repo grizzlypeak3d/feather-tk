@@ -14,6 +14,10 @@
 #include <ftk/Core/RenderUtil.h>
 #include <ftk/Core/String.h>
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif // __APPLE__
+
 #include <optional>
 
 namespace ftk
@@ -30,6 +34,14 @@ namespace ftk
         std::function<void(bool)> focusCallback;
         std::function<void(void)> escapeCallback;
         TextInputType textInputType = TextInputType::Text;
+        // Whether the user asked to type: a tap on the edit, or a key from
+        // a hardware keyboard. On a tablet the text input is the on-screen
+        // keyboard, and focus alone does not bring it up: a popup gives its
+        // first field the focus as it opens, and the volume slider's
+        // field brought the keyboard up over a popup opened to drag the
+        // slider. On the desktop the input is started with the focus, as
+        // typing into a focused field expects.
+        bool textInputRequested = false;
         FontType font = FontType::Regular;
         ColorRole borderRole = ColorRole::Border;
         ColorRole wellRole = ColorRole::Well;
@@ -600,7 +612,17 @@ namespace ftk
         {
             p.cursorStart = _toCursor(event.pos.x - _getTextGeometry().min.x + p.scroll);
             p.model->setCursor(p.cursorStart);
-            takeKeyFocus();
+            p.textInputRequested = true;
+            if (hasKeyFocus())
+            {
+                // Already focused, with the keyboard put away: a tap asks
+                // for it again.
+                _textInputStart();
+            }
+            else
+            {
+                takeKeyFocus();
+            }
         }
     }
 
@@ -653,9 +675,24 @@ namespace ftk
                 p.callback(p.model->getText());
             }
         }
-        if (auto window = getWindow())
+        if (value)
         {
-            window->setTextInput(value, p.textInputType);
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+            if (p.textInputRequested)
+            {
+                _textInputStart();
+            }
+#else // TARGET_OS_IPHONE
+            _textInputStart();
+#endif // TARGET_OS_IPHONE
+        }
+        else
+        {
+            p.textInputRequested = false;
+            if (auto window = getWindow())
+            {
+                window->setTextInput(false, p.textInputType);
+            }
         }
         if (p.focusCallback)
         {
@@ -663,11 +700,30 @@ namespace ftk
         }
     }
 
+    void LineEdit::_textInputStart()
+    {
+        FTK_P();
+        if (auto window = getWindow())
+        {
+            window->setTextInput(true, p.textInputType);
+        }
+        _textInputAreaUpdate();
+    }
+
     void LineEdit::keyPressEvent(KeyEvent& event)
     {
         FTK_P();
         if (hasKeyFocus())
         {
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+            // A hardware keyboard: the first key asks for the input the
+            // focus did not start.
+            if (!p.textInputRequested)
+            {
+                p.textInputRequested = true;
+                _textInputStart();
+            }
+#endif // TARGET_OS_IPHONE
             switch (event.key)
             {
             case Key::Return:

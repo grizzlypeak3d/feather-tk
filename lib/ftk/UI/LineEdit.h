@@ -164,6 +164,7 @@ namespace ftk
         FTK_UI_API void textEditingEvent(TextEditingEvent&) override;
 
     private:
+        void _textInputStart();
         void _textInputAreaUpdate();
         std::shared_ptr<Menu> _createContextMenu();
 
