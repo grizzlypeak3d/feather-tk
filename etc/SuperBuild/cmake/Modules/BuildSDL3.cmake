@@ -46,6 +46,12 @@ set(SDL3_ARGS
     -DSDL_POWER=OFF
     -DSDL_SENSOR=OFF
     -DSDL_DIALOG=OFF
+    # The camera, and the controller HID support, which is of no use
+    # without joysticks: nothing here asks for either, and on iOS they
+    # reference the capture and Bluetooth APIs, which the store wants a
+    # purpose string for even when they are never called.
+    -DSDL_CAMERA=OFF
+    -DSDL_HIDAPI=OFF
     # SDL builds its test programs by default when it is the main project,
     # which it is in this superbuild: testffmpeg finds whatever FFmpeg is in
     # the install prefix and fails against it.
