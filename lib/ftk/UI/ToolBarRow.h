@@ -13,14 +13,14 @@ namespace ftk
     ///@{
 
     //! A row of tool bars, with a divider between each and the next, that
-    //! fits whatever width it is given. When the tool bars do not fit, whole
-    //! tool bars leave the row from its end, right to left, and a button at
-    //! the end opens a menu of their actions. A tool bar is never cut in
-    //! two: a button alone at the edge of a window is a button nobody can
-    //! find. Nor does one leave from the middle, which read as buttons
-    //! vanishing at random; the row shrinks from its end, as text wraps.
-    //! The last tool bar can be kept beside the button regardless, for the
-    //! one a window cannot do without.
+    //! fits whatever width it is given. When the tool bars do not fit, the
+    //! buttons leave the row one at a time from its end, right to left,
+    //! and a button at the end opens a menu of their actions; a tool bar
+    //! whose buttons have all gone goes with its divider. A button is never
+    //! cut in two, nor left half off the edge of the window where nobody
+    //! can find it, and none leaves from the middle: the row shrinks from
+    //! its end, as text wraps. The last tool bar can be kept beside the
+    //! button regardless, for the one a window cannot do without.
     //!
     //! A tool bar that is hidden is not in the row at all, so hiding one
     //! leaves room for the others rather than a gap. Widgets that are not
@@ -55,7 +55,7 @@ namespace ftk
         //! it does not fit on its own.
         FTK_UI_API void setKeepLast(bool);
 
-        //! Get the tool bars that did not fit, left to right.
+        //! Get the tool bars with buttons that did not fit, left to right.
         FTK_UI_API std::vector<std::shared_ptr<ToolBar> > getOverflow() const;
 
         //! Get the margin role.

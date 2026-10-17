@@ -41,15 +41,39 @@ namespace ftk
         //! Add a widget.
         FTK_UI_API void addWidget(const std::shared_ptr<IWidget>&);
 
-        //! Add an action that is not shown as a button of its own, because
-        //! a widget added with addWidget() stands for it: it is listed
-        //! with the others when the tool bar does not fit (see
-        //! ToolBarRow).
+        //! Add an action that the widget added last stands for, rather
+        //! than a button of its own: when the widget does not fit, the
+        //! action is listed in its place (see ToolBarRow).
         FTK_UI_API void addOverflowAction(const std::shared_ptr<Action>&);
 
         //! Get the actions, as buttons and as stood for by widgets, in the
         //! order they were added.
         FTK_UI_API const std::vector<std::shared_ptr<Action> >& getActions() const;
+
+        //! \name Overflow
+        //! For a row that is short of room (ToolBarRow): the widgets at
+        //! the end of the tool bar are hidden, one at a time, and their
+        //! actions are listed instead. A divider left at the end goes
+        //! with what followed it, and is not counted. A widget hidden by
+        //! anyone else is left out of the count.
+        ///@{
+
+        //! Get how many widgets can be hidden: all of them but dividers.
+        FTK_UI_API size_t getOverflowMax() const;
+
+        //! Get the width of the tool bar with the given number hidden.
+        FTK_UI_API int getOverflowWidth(size_t) const;
+
+        //! Get how many are hidden.
+        FTK_UI_API size_t getOverflow() const;
+
+        //! Hide the given number from the end.
+        FTK_UI_API void setOverflow(size_t);
+
+        //! Get the actions of what is hidden, in order.
+        FTK_UI_API std::vector<std::shared_ptr<Action> > getOverflowActions() const;
+
+        ///@}
 
         //! Clear the tool bar.
         FTK_UI_API void clear();

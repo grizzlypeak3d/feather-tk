@@ -4,6 +4,7 @@
 #include <ftk/UI/ToolBar.h>
 
 #include <ftk/UI/Action.h>
+#include <ftk/UI/Divider.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
@@ -18,6 +19,69 @@ namespace ftk
         SizeRole spacingRole = SizeRole::SpacingTool;
         bool grouped = false;
         std::vector<std::shared_ptr<Action> > actions;
+
+        struct Item
+        {
+            std::shared_ptr<IWidget> widget;
+            std::vector<std::shared_ptr<Action> > actions;
+            bool divider = false;
+            bool overflow = false;
+        };
+        std::vector<Item> items;
+        size_t overflow = 0;
+
+        struct SizeData
+        {
+            int margin = 0;
+            int spacing = 0;
+        };
+        SizeData size;
+
+        bool isShown(const Item& item) const
+        {
+            return item.widget->isVisible(false) || item.overflow;
+        }
+
+        std::vector<bool> hidden(size_t count) const
+        {
+            std::vector<bool> out(items.size(), false);
+            size_t dropped = 0;
+            for (size_t i = items.size(); i > 0; --i)
+            {
+                const Item& item = items[i - 1];
+                if (!isShown(item))
+                {
+                    continue;
+                }
+                if (dropped >= count)
+                {
+                    break;
+                }
+                out[i - 1] = true;
+                if (!item.divider)
+                {
+                    ++dropped;
+                }
+            }
+            // A divider with nothing after it goes too.
+            if (count > 0)
+            {
+                for (size_t i = items.size(); i > 0; --i)
+                {
+                    const Item& item = items[i - 1];
+                    if (!isShown(item) || out[i - 1])
+                    {
+                        continue;
+                    }
+                    if (item.divider)
+                    {
+                        out[i - 1] = true;
+                    }
+                    break;
+                }
+            }
+            return out;
+        }
     };
 
     void ToolBar::_init(
@@ -68,13 +132,22 @@ namespace ftk
         {
             out = ToolButton::create(context, action, p.layout);
             p.actions.push_back(action);
+            Private::Item item;
+            item.widget = out;
+            item.actions.push_back(action);
+            p.items.push_back(item);
         }
         return out;
     }
 
     void ToolBar::addOverflowAction(const std::shared_ptr<Action>& action)
     {
-        _p->actions.push_back(action);
+        FTK_P();
+        p.actions.push_back(action);
+        if (!p.items.empty())
+        {
+            p.items.back().actions.push_back(action);
+        }
     }
 
     const std::vector<std::shared_ptr<Action> >& ToolBar::getActions() const
@@ -84,7 +157,85 @@ namespace ftk
 
     void ToolBar::addWidget(const std::shared_ptr<IWidget>& widget)
     {
-        widget->setParent(_p->layout);
+        FTK_P();
+        widget->setParent(p.layout);
+        Private::Item item;
+        item.widget = widget;
+        item.divider = std::dynamic_pointer_cast<Divider>(widget) != nullptr;
+        p.items.push_back(item);
+    }
+
+    size_t ToolBar::getOverflowMax() const
+    {
+        FTK_P();
+        size_t out = 0;
+        for (const auto& item : p.items)
+        {
+            if (p.isShown(item) && !item.divider)
+            {
+                ++out;
+            }
+        }
+        return out;
+    }
+
+    int ToolBar::getOverflowWidth(size_t count) const
+    {
+        FTK_P();
+        const std::vector<bool> hidden = p.hidden(count);
+        int out = 0;
+        size_t n = 0;
+        for (size_t i = 0; i < p.items.size(); ++i)
+        {
+            if (p.isShown(p.items[i]) && !hidden[i])
+            {
+                out += p.items[i].widget->getSizeHint().w;
+                ++n;
+            }
+        }
+        if (n > 1)
+        {
+            out += p.size.spacing * static_cast<int>(n - 1);
+        }
+        return n > 0 ? out + p.size.margin * 2 : 0;
+    }
+
+    size_t ToolBar::getOverflow() const
+    {
+        return _p->overflow;
+    }
+
+    void ToolBar::setOverflow(size_t value)
+    {
+        FTK_P();
+        if (value == p.overflow)
+            return;
+        p.overflow = value;
+        // Only what changes is shown or hidden, so laying out the same
+        // overflow again does not ask for another layout.
+        const std::vector<bool> hidden = p.hidden(value);
+        for (size_t i = 0; i < p.items.size(); ++i)
+        {
+            auto& item = p.items[i];
+            if (hidden[i] != item.overflow)
+            {
+                item.overflow = hidden[i];
+                item.widget->setVisible(!hidden[i]);
+            }
+        }
+    }
+
+    std::vector<std::shared_ptr<Action> > ToolBar::getOverflowActions() const
+    {
+        std::vector<std::shared_ptr<Action> > out;
+        for (const auto& item : _p->items)
+        {
+            if (item.overflow)
+            {
+                out.insert(out.end(), item.actions.begin(), item.actions.end());
+            }
+        }
+        return out;
     }
 
     void ToolBar::clear()
@@ -96,6 +247,8 @@ namespace ftk
             child->setParent(nullptr);
         }
         p.actions.clear();
+        p.items.clear();
+        p.overflow = 0;
     }
 
     SizeRole ToolBar::getMarginRole() const
@@ -183,5 +336,9 @@ namespace ftk
         }
 
         IContainer::sizeHintEvent(event);
+        p.size.margin = event.style->getSizeRole(p.layout->getMarginRole(), event.displayScale);
+        p.size.spacing = event.style->getSizeRole(
+            p.grouped ? SizeRole::None : p.spacingRole,
+            event.displayScale);
     }
 }

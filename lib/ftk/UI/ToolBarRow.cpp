@@ -20,7 +20,7 @@ namespace ftk
         {
             std::shared_ptr<ToolBar> toolBar;
             std::shared_ptr<Divider> divider;
-            bool overflow = false;
+            bool present = true;
         };
     }
 
@@ -104,7 +104,7 @@ namespace ftk
         std::vector<std::shared_ptr<ToolBar> > out;
         for (const auto& group : _p->groups)
         {
-            if (group.overflow)
+            if (group.toolBar->getOverflow() > 0)
             {
                 out.push_back(group.toolBar);
             }
@@ -170,13 +170,15 @@ namespace ftk
             {
                 continue;
             }
+            // The width with every button shown, whatever is hidden now:
+            // what the row would like, not what it settled for.
             const Size2I hint = group.toolBar->getSizeHint();
             if (!first && group.divider)
             {
                 out.w += p.size.spacing * 2 + group.divider->getSizeHint().w;
             }
             first = false;
-            out.w += hint.w;
+            out.w += group.toolBar->getOverflowWidth(0);
             out.h = std::max(out.h, hint.h);
         }
         out.w += p.size.margin * 2;
@@ -190,59 +192,78 @@ namespace ftk
         FTK_P();
         const Box2I g = margin(value, -p.size.margin);
 
-        // What is shown, and how wide each piece is.
+        // The tool bars that are shown, and how many of their buttons can
+        // go. Worked out in full before anything is shown or hidden, so
+        // that laying out the same width again changes nothing.
         std::vector<size_t> shown;
+        std::vector<size_t> max(p.groups.size(), 0);
+        std::vector<size_t> count(p.groups.size(), 0);
         for (size_t i = 0; i < p.groups.size(); ++i)
         {
-            p.groups[i].overflow = false;
-            if (p.groups[i].toolBar->isVisible(false))
+            const auto& toolBar = p.groups[i].toolBar;
+            if (toolBar->isVisible(false) || toolBar->getOverflow() > 0)
             {
-                shown.push_back(i);
+                max[i] = toolBar->getOverflowMax();
+                if (max[i] > 0)
+                {
+                    shown.push_back(i);
+                }
             }
         }
-        const auto dividerWidth = [&p](size_t i)
-        {
-            return p.groups[i].divider ?
-                p.groups[i].divider->getSizeHint().w + p.size.spacing * 2 :
-                0;
-        };
-        const auto widthOf = [&p, &dividerWidth](const std::vector<size_t>& indexes)
+        const auto width = [&p, &shown, &max, &count]
         {
             int out = 0;
-            for (size_t k = 0; k < indexes.size(); ++k)
+            bool first = true;
+            for (size_t i : shown)
             {
-                if (k > 0)
+                if (count[i] >= max[i])
                 {
-                    out += dividerWidth(indexes[k]);
+                    continue;
                 }
-                out += p.groups[indexes[k]].toolBar->getSizeHint().w;
+                if (!first && p.groups[i].divider)
+                {
+                    out += p.groups[i].divider->getSizeHint().w + p.size.spacing * 2;
+                }
+                first = false;
+                out += p.groups[i].toolBar->getOverflowWidth(count[i]);
             }
             return out;
         };
 
-        // Drop whole tool bars until what is left and the button fit, from
-        // the end of the row; the last one, when it is kept, goes only
-        // when it is all that is left.
-        std::vector<size_t> kept = shown;
-        bool overflow = widthOf(kept) > g.w();
+        // Buttons go from the end of the row, one at a time: the last tool
+        // bar's own last, when it is kept.
+        const bool overflow = width() > g.w();
         if (overflow)
         {
-            const int buttonWidth =
-                p.overflowButton->getSizeHint().w + p.size.spacing;
-            while (!kept.empty() && widthOf(kept) + buttonWidth > g.w())
+            const int buttonWidth = p.overflowButton->getSizeHint().w + p.size.spacing;
+            std::vector<size_t> order(shown.rbegin(), shown.rend());
+            if (p.keepLast && order.size() > 1)
             {
-                auto drop = kept.end() - 1;
-                if (p.keepLast && kept.size() > 1)
+                order.push_back(order.front());
+                order.erase(order.begin());
+            }
+            for (size_t i : order)
+            {
+                while (count[i] < max[i] && width() + buttonWidth > g.w())
                 {
-                    drop = kept.end() - 2;
+                    ++count[i];
                 }
-                p.groups[*drop].overflow = true;
-                kept.erase(drop);
+                if (width() + buttonWidth <= g.w())
+                {
+                    break;
+                }
             }
         }
+        for (size_t i = 0; i < p.groups.size(); ++i)
+        {
+            p.groups[i].toolBar->setOverflow(count[i]);
+            p.groups[i].present =
+                std::find(shown.begin(), shown.end(), i) != shown.end() &&
+                count[i] < max[i];
+        }
 
-        // Left to right. What does not fit goes past the end of the row,
-        // where it is clipped.
+        // Left to right. A tool bar with nothing left goes past the end of
+        // the row, where it is clipped, with its divider.
         const auto place = [&g](const std::shared_ptr<IWidget>& widget, int x)
         {
             const Size2I hint = widget->getSizeHint();
@@ -259,14 +280,11 @@ namespace ftk
         int x = g.min.x;
         const int past = value.max.x + 1;
         bool first = true;
-        for (size_t i = 0; i < p.groups.size(); ++i)
+        for (auto& group : p.groups)
         {
-            auto& group = p.groups[i];
-            const bool here =
-                std::find(kept.begin(), kept.end(), i) != kept.end();
             if (group.divider)
             {
-                if (here && !first)
+                if (group.present && !first)
                 {
                     x += p.size.spacing;
                     x += place(group.divider, x);
@@ -277,12 +295,12 @@ namespace ftk
                     place(group.divider, past);
                 }
             }
-            if (here)
+            if (group.present)
             {
                 x += place(group.toolBar, x);
                 first = false;
             }
-            else if (group.toolBar->isVisible(false))
+            else
             {
                 place(group.toolBar, past);
             }
@@ -353,17 +371,13 @@ namespace ftk
         {
             return;
         }
-        // The actions of each tool bar that did not fit, in the order they
+        // The actions of the buttons that did not fit, in the order they
         // sit in the row, a divider between one tool bar and the next.
         p.menu = Menu::create(context);
         bool first = true;
         for (const auto& group : p.groups)
         {
-            if (!group.overflow)
-            {
-                continue;
-            }
-            const auto& actions = group.toolBar->getActions();
+            const auto actions = group.toolBar->getOverflowActions();
             if (actions.empty())
             {
                 continue;
