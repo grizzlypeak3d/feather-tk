@@ -181,6 +181,11 @@ namespace ftk
         //! button hides it again.
         FTK_UI_API bool isKeyFocusVisible() const;
 
+        //! Was the last press a key, rather than a mouse button or a
+        //! finger? A menu opened from the keyboard starts on its first
+        //! item; one opened by a pointer starts on nothing.
+        FTK_UI_API bool isLastPressKey() const;
+
         //! Show or hide the key focus, the way Tab and a mouse press do.
         //! Dialogs set this when they open; see IDialog::open().
         FTK_UI_API void setKeyFocusVisible(bool);

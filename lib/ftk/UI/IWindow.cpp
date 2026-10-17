@@ -107,6 +107,7 @@ namespace ftk
 
         bool tooltipsEnabled = true;
         bool keyFocusVisible = false;
+        bool lastPressKey = false;
         std::shared_ptr<Tooltip> tooltip;
         V2I tooltipPos;
         std::chrono::steady_clock::time_point tooltipTimer;
@@ -389,6 +390,11 @@ namespace ftk
     std::shared_ptr<IWidget> IWindow::getPrevKeyFocus(const std::shared_ptr<IWidget>& value)
     {
         return _stepKeyFocus(_getKeyFocusOrder(), value, true, 1);
+    }
+
+    bool IWindow::isLastPressKey() const
+    {
+        return _p->lastPressKey;
     }
 
     bool IWindow::isKeyFocusVisible() const
@@ -777,6 +783,10 @@ namespace ftk
         int modifiers)
     {
         FTK_P();
+        if (press)
+        {
+            p.lastPressKey = true;
+        }
         // Navigating the focus shows it; see isKeyFocusVisible(). Only
         // Tab reveals: a bare modifier is a statement about the next key,
         // and the operating keys -- arrows, Return -- have effects of
@@ -1209,6 +1219,10 @@ namespace ftk
             }
         }
         _closeTooltip();
+        if (press)
+        {
+            p.lastPressKey = false;
+        }
         p.mouseClickEvent = MouseClickEvent(button, modifiers, p.cursorPos);
         p.mouseClickEvent.pen = p.penDown;
         p.mouseClickEvent.pressure = p.penDown ? p.penPressure : 1.F;

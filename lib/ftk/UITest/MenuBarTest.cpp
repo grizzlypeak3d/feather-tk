@@ -207,6 +207,68 @@ namespace ftk
                 app->setDisplayScale(1.F);
                 app->tick();
 
+                // A menu opened by the mouse or a finger starts on nothing,
+                // and names nothing; the first arrow starts the keyboard on
+                // the first item or the last. Opened from the keyboard, it
+                // starts on the first. The current item is named only while
+                // it is drawn, which is with the key focus.
+                {
+                    auto announceMenu = Menu::create(_context);
+                    auto first = Action::create("First", [] {});
+                    first->setTooltip("The first item");
+                    announceMenu->addAction(first);
+                    auto second = Action::create("Second", [] {});
+                    announceMenu->addAction(second);
+                    std::vector<std::shared_ptr<Action> > announced;
+                    announceMenu->setCurrentCallback(
+                        [&announced](const std::shared_ptr<Action>& value)
+                        {
+                            announced.push_back(value);
+                        });
+                    const auto last = [&announced]
+                    {
+                        return !announced.empty() ? announced.back() : nullptr;
+                    };
+                    const V2I blank(1270, 950);
+
+                    window->click(blank);
+                    FTK_CHECK(!window->isLastPressKey());
+                    announceMenu->open(window, Box2I(100, 100, 20, 20));
+                    app->tick();
+                    FTK_CHECK(!last());
+                    window->keyPress(Key::Down);
+                    app->tick();
+                    FTK_CHECK(last() == first);
+                    window->setKeyFocus(nullptr);
+                    app->tick();
+                    FTK_CHECK(!last());
+                    announceMenu->takeKeyFocus();
+                    app->tick();
+                    FTK_CHECK(last() == first);
+                    announceMenu->close();
+                    app->tick();
+                    FTK_CHECK(!last());
+
+                    window->click(blank);
+                    announceMenu->open(window, Box2I(100, 100, 20, 20));
+                    app->tick();
+                    FTK_CHECK(!last());
+                    window->keyPress(Key::Up);
+                    app->tick();
+                    FTK_CHECK(last() == second);
+                    announceMenu->close();
+                    app->tick();
+
+                    window->keyPress(Key::Tab);
+                    FTK_CHECK(window->isLastPressKey());
+                    announceMenu->open(window, Box2I(100, 100, 20, 20));
+                    app->tick();
+                    FTK_CHECK(last() == first);
+                    announceMenu->close();
+                    app->tick();
+                    FTK_CHECK(!last());
+                }
+
                 menu->clear();
             }
         }

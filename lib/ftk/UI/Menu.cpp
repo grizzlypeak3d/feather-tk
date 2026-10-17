@@ -124,11 +124,6 @@ namespace ftk
                     }
                 });
 
-            if (!p.current && action->isEnabled())
-            {
-                p.current = button;
-                _currentUpdate();
-            }
         }
     }
 
@@ -230,11 +225,6 @@ namespace ftk
                     }
                 });
 
-            if (!p.current)
-            {
-                p.current = button;
-                _currentUpdate();
-            }
         }
         return out;
     }
@@ -339,11 +329,22 @@ namespace ftk
         const Box2I& buttonGeometry)
     {
         FTK_P();
+        // Opened from the keyboard, the menu starts on its first item, the
+        // keyboard's place to start from; opened by the mouse or a finger,
+        // on nothing: a highlight there would say that Return opens what
+        // the pointer never went near, and name it in the status bar. The
+        // first arrow then starts the keyboard on the first item or the
+        // last. Decided at each opening, since closing clears it.
+        const auto enabled = _getEnabled();
+        p.current = window && window->isLastPressKey() && !enabled.empty() ?
+            enabled.front() :
+            nullptr;
+        _currentUpdate();
         IMenuPopup::open(window, buttonGeometry);
-        // Announced rather than waited for: the first item is already
-        // current when the menu opens, so no highlight change is coming
-        // to say it.
-        _announce(_getAction(p.current));
+        // Announced rather than waited for: no highlight change is coming
+        // to say it. Only with the key focus, since the current item is
+        // only drawn with it.
+        _announce(hasKeyFocus() ? _getAction(p.current) : nullptr);
     }
 
     void Menu::close()
@@ -403,6 +404,14 @@ namespace ftk
     {
         IMenuPopup::keyFocusEvent(value);
         _currentUpdate();
+        // The current item is drawn only with the key focus, so it is
+        // announced with it and withdrawn without it. A press outside the
+        // menu takes the focus: a finger on the item that opened a sub
+        // menu hovers it first, which opens the sub menu and gives it the
+        // focus, and then presses it, which takes the focus away again --
+        // and the sub menu's first item stayed named in the status bar,
+        // highlighted nowhere.
+        _announce(value ? _getAction(_p->current) : nullptr);
     }
 
     void Menu::keyPressEvent(KeyEvent& event)
@@ -473,11 +482,12 @@ namespace ftk
                 takeKeyFocus();
                 const auto enabled = _getEnabled();
                 auto i = std::find(enabled.begin(), enabled.end(), p.current);
-                if (i == enabled.end() && !enabled.empty())
+                if (i == enabled.end())
                 {
-                    i = enabled.begin();
+                    // From nothing, the last item.
+                    i = !enabled.empty() ? enabled.end() - 1 : enabled.end();
                 }
-                if (i != enabled.end() && i > enabled.begin())
+                else if (i > enabled.begin())
                 {
                     --i;
                 }
@@ -490,11 +500,12 @@ namespace ftk
                 takeKeyFocus();
                 const auto enabled = _getEnabled();
                 auto i = std::find(enabled.begin(), enabled.end(), p.current);
-                if (i == enabled.end() && !enabled.empty())
+                if (i == enabled.end())
                 {
+                    // From nothing, the first item.
                     i = enabled.begin();
                 }
-                if (i != enabled.end() && i < enabled.end() - 1)
+                else if (i < enabled.end() - 1)
                 {
                     ++i;
                 }
