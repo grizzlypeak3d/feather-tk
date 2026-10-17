@@ -51,6 +51,7 @@ set(HEADERS
     SplitterTest.h
     ActionGroupTest.h
     FlowLayoutTest.h
+    ToolBarRowTest.h
     StackLayoutTest.h
     StyleTest.h
     TabWidgetTest.h
@@ -114,6 +115,7 @@ set(SOURCE
     SplitterTest.cpp
     ActionGroupTest.cpp
     FlowLayoutTest.cpp
+    ToolBarRowTest.cpp
     StackLayoutTest.cpp
     StyleTest.cpp
     TabWidgetTest.cpp

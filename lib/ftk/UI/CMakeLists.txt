@@ -109,6 +109,7 @@ set(HEADERS
     TextEdit.h
     TextEditModel.h
     ToolBar.h
+    ToolBarRow.h
     ToolButton.h
     Tooltip.h
     TouchGesture.h
@@ -245,6 +246,7 @@ set(SOURCE
     TextEditModel.cpp
     TextEditWidget.cpp
     ToolBar.cpp
+    ToolBarRow.cpp
     ToolButton.cpp
     Tooltip.cpp
     TouchGesture.cpp

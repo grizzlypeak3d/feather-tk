@@ -17,6 +17,7 @@ namespace ftk
         std::shared_ptr<RowLayout> layout;
         SizeRole spacingRole = SizeRole::SpacingTool;
         bool grouped = false;
+        std::vector<std::shared_ptr<Action> > actions;
     };
 
     void ToolBar::_init(
@@ -66,8 +67,19 @@ namespace ftk
         if (auto context = getContext())
         {
             out = ToolButton::create(context, action, p.layout);
+            p.actions.push_back(action);
         }
         return out;
+    }
+
+    void ToolBar::addOverflowAction(const std::shared_ptr<Action>& action)
+    {
+        _p->actions.push_back(action);
+    }
+
+    const std::vector<std::shared_ptr<Action> >& ToolBar::getActions() const
+    {
+        return _p->actions;
     }
 
     void ToolBar::addWidget(const std::shared_ptr<IWidget>& widget)
@@ -83,6 +95,7 @@ namespace ftk
         {
             child->setParent(nullptr);
         }
+        p.actions.clear();
     }
 
     SizeRole ToolBar::getMarginRole() const

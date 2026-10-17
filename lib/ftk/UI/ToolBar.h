@@ -41,6 +41,16 @@ namespace ftk
         //! Add a widget.
         FTK_UI_API void addWidget(const std::shared_ptr<IWidget>&);
 
+        //! Add an action that is not shown as a button of its own, because
+        //! a widget added with addWidget() stands for it: it is listed
+        //! with the others when the tool bar does not fit (see
+        //! ToolBarRow).
+        FTK_UI_API void addOverflowAction(const std::shared_ptr<Action>&);
+
+        //! Get the actions, as buttons and as stood for by widgets, in the
+        //! order they were added.
+        FTK_UI_API const std::vector<std::shared_ptr<Action> >& getActions() const;
+
         //! Clear the tool bar.
         FTK_UI_API void clear();
 
