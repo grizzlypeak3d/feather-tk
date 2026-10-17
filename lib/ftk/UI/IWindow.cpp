@@ -1046,6 +1046,16 @@ namespace ftk
         _scroll(value, modifiers);
     }
 
+    void IWindow::setTouchInput(bool value)
+    {
+        _touch(value);
+    }
+
+    void IWindow::cancelPress()
+    {
+        _mouseCancel();
+    }
+
     void IWindow::gesture(const V2I& pos, const V2F& pan, float zoom)
     {
         _gesture(pos, V2F(), 1.F);
@@ -1214,6 +1224,24 @@ namespace ftk
             }
             const auto focusBefore = p.keyFocus.lock();
             auto widgets = _getUnderCursor(UnderCursor::Hover, p.cursorPos);
+            if (p.touch)
+            {
+                // A finger's press goes first to the innermost widget that
+                // takes it ahead of the widgets inside it; see
+                // IWidget::isTouchHandle().
+                const V2I pos = p.cursorPos;
+                const auto j = std::find_if(
+                    widgets.begin(),
+                    widgets.end(),
+                    [pos](const std::shared_ptr<IWidget>& widget)
+                    {
+                        return widget->isTouchHandle(pos);
+                    });
+                if (j != widgets.end())
+                {
+                    widgets.splice(widgets.begin(), widgets, j);
+                }
+            }
             auto i = widgets.begin();
             for (; i != widgets.end(); ++i)
             {
@@ -1312,10 +1340,26 @@ namespace ftk
                 setDrawUpdate();
             }
 
-            MouseMoveEvent event(
-                p.cursorPos,
-                p.cursorPosPrev);
-            _hoverUpdate(event);
+            if (p.touch)
+            {
+                // A finger has no hover: the cursor stays where it lifted,
+                // and what is there would stay lit -- a splitter handle, a
+                // button -- until the next touch somewhere else. Nothing is
+                // hovered until the mouse moves, as after a gesture.
+                p.hoverSuspended = true;
+                if (auto hover = p.hover.lock())
+                {
+                    p.hover.reset();
+                    hover->mouseLeaveEvent();
+                }
+            }
+            else
+            {
+                MouseMoveEvent event(
+                    p.cursorPos,
+                    p.cursorPosPrev);
+                _hoverUpdate(event);
+            }
         }
     }
 

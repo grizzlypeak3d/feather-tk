@@ -3,6 +3,7 @@
 
 #include <ftk/UITest/SplitterTest.h>
 
+#include <ftk/UI/IMouseWidget.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/Splitter.h>
 #include <ftk/UI/Splitter2D.h>
@@ -10,10 +11,41 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
 
+#include <cmath>
+
 namespace ftk
 {
     namespace ui_test
     {
+        namespace
+        {
+            //! A widget that says whether it is hovered.
+            class HoverProbe : public IMouseWidget
+            {
+            protected:
+                void _init(
+                    const std::shared_ptr<Context>& context,
+                    const std::shared_ptr<IWidget>& parent)
+                {
+                    IMouseWidget::_init(context, "HoverProbe", parent);
+                    _setMouseHoverEnabled(true);
+                    _setMousePressEnabled(true);
+                }
+
+            public:
+                static std::shared_ptr<HoverProbe> create(
+                    const std::shared_ptr<Context>& context,
+                    const std::shared_ptr<IWidget>& parent)
+                {
+                    auto out = std::shared_ptr<HoverProbe>(new HoverProbe);
+                    out->_init(context, parent);
+                    return out;
+                }
+
+                bool isHovered() const { return _isMouseInside(); }
+            };
+        }
+
         SplitterTest::SplitterTest(const std::shared_ptr<Context>& context) :
             ITest(context, "ftk::ui_test::SplitterTest")
         {}
@@ -43,6 +75,25 @@ namespace ftk
                 _test(_context, app, window, Orientation::Horizontal);
                 _test(_context, app, window, Orientation::Vertical);
                 _test2D(_context, app, window);
+
+                // A finger has no hover: what it lifts from is not left lit,
+                // a splitter handle least of all, until the mouse moves.
+                auto probe = HoverProbe::create(_context, window);
+                window->layout(Size2I(400, 300));
+                app->tick();
+                const V2I c = center(probe->getGeometry());
+                window->click(c);
+                app->tick();
+                FTK_CHECK(probe->isHovered());
+                window->setTouchInput(true);
+                window->click(c);
+                app->tick();
+                FTK_CHECK(!probe->isHovered());
+                window->setTouchInput(false);
+                window->hover(V2I(c.x + 1, c.y));
+                app->tick();
+                FTK_CHECK(probe->isHovered());
+                probe->setParent(nullptr);
             }
         }
 
@@ -66,6 +117,44 @@ namespace ftk
             app->tick();
             splitter->setSplit(.5F);
             app->tick();
+
+            // A fingertip takes the handle from beside it, where a mouse
+            // press lands on the widget next to it; the split follows the
+            // finger without jumping under it, and goes back when a second
+            // finger takes the press away.
+            {
+                window->layout(Size2I(400, 300));
+                app->tick();
+                const Box2I& g = splitter->getGeometry();
+                const bool h = Orientation::Horizontal == orientation;
+                const int length = h ? g.w() : g.h();
+                const V2I c = center(g);
+                const V2I beside = h ? V2I(c.x + 15, c.y) : V2I(c.x, c.y + 15);
+                const V2I moved = h ? V2I(beside.x + 40, beside.y) : V2I(beside.x, beside.y + 40);
+                const V2I far = h ? V2I(c.x + 100, c.y) : V2I(c.x, c.y + 100);
+                FTK_CHECK(splitter->isTouchHandle(beside));
+                FTK_CHECK(!splitter->isTouchHandle(far));
+
+                window->drag({ beside, moved });
+                FTK_CHECK(.5F == splitter->getSplit());
+
+                window->setTouchInput(true);
+                window->drag({ beside, moved });
+                const float expected = .5F + 40.F / length;
+                FTK_CHECK(std::abs(splitter->getSplit() - expected) < 2.F / length);
+                const float split = splitter->getSplit();
+                app->tick();
+
+                const V2I beside2 = h ? V2I(beside.x + 40, beside.y) : V2I(beside.x, beside.y + 40);
+                window->press(beside2);
+                window->hover(h ? V2I(beside2.x + 30, beside2.y) : V2I(beside2.x, beside2.y + 30));
+                FTK_CHECK(splitter->getSplit() != split);
+                window->cancelPress();
+                FTK_CHECK(split == splitter->getSplit());
+                window->setTouchInput(false);
+                splitter->setSplit(.5F);
+                app->tick();
+            }
 
             // A split at either end used to put half the handle outside the
             // splitter, where it was drawn over the widget next to it, and

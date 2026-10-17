@@ -235,6 +235,14 @@ namespace ftk
         //! Set whether a finger's press reaches this widget at once.
         FTK_UI_API void setTouchImmediate(bool);
 
+        //! Does a finger's press at this position belong to this widget
+        //! ahead of the widgets inside it? A splitter's handle is thinner
+        //! than a fingertip, and a press that lands just beside it would
+        //! otherwise go to one of the widgets it divides. The window asks
+        //! only for a finger's press, and the innermost widget that says
+        //! yes has the press first.
+        FTK_UI_API virtual bool isTouchHandle(const V2I&) const;
+
         //! Does this widget accept key focus?
         bool acceptsKeyFocus() const;
 

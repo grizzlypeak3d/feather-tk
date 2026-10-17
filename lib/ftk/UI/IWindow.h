@@ -285,6 +285,14 @@ namespace ftk
             bool release = true,
             int holdModifiers = 0);
 
+        //! Make the mouse events that follow a finger's, or a mouse's
+        //! again, for the widgets that treat a fingertip differently.
+        FTK_UI_API void setTouchInput(bool);
+
+        //! Let go of what press() holds, cancelled rather than released,
+        //! the way a second finger landing takes a press away.
+        FTK_UI_API void cancelPress();
+
         //! Move the cursor there and scroll the mouse wheel.
         FTK_UI_API void scroll(
             const V2I& pos,

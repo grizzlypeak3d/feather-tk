@@ -360,6 +360,11 @@ namespace ftk
         }
     }
 
+    bool IWidget::isTouchHandle(const V2I&) const
+    {
+        return false;
+    }
+
     void IWidget::setTouchImmediate(bool value)
     {
         _touchImmediate = value;

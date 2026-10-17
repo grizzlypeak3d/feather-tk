@@ -61,6 +61,7 @@ namespace ftk
         //! Set whether the splitter has a border.
         FTK_UI_API void setBorder(bool);
 
+        FTK_UI_API bool isTouchHandle(const V2I&) const override;
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;

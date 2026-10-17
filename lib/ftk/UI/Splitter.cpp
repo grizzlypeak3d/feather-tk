@@ -5,6 +5,7 @@
 
 #include <ftk/UI/LayoutUtil.h>
 
+#include <algorithm>
 #include <optional>
 
 namespace ftk
@@ -21,9 +22,12 @@ namespace ftk
             bool init = true;
             int handle = 0;
             int border = 0;
+            int reach = 0;
             Box2I g = Box2I(0, 0, -1, -1);
             Box2I g2;
             Box2I g3;
+            Box2I grip;
+            Box2I touch = Box2I(0, 0, -1, -1);
         };
         SizeData size;
 
@@ -31,6 +35,8 @@ namespace ftk
         {
             bool hoverHandle = false;
             bool pressedHandle = false;
+            int offset = 0;
+            float pressSplit = 0.F;
         };
         MouseData mouse;
     };
@@ -143,6 +149,20 @@ namespace ftk
         return out;
     }
 
+    namespace
+    {
+        //! How far either side of the split a fingertip takes the handle,
+        //! at a display scale of one: a band about as wide as a finger, the
+        //! reach the viewport's drawing tools give one too.
+        const int fingerReach = 22;
+    }
+
+    bool Splitter::isTouchHandle(const V2I& pos) const
+    {
+        FTK_P();
+        return p.size.touch.isValid() && contains(p.size.touch, pos);
+    }
+
     int Splitter::_split(int size) const
     {
         FTK_P();
@@ -176,6 +196,7 @@ namespace ftk
 
         std::vector<Box2I> childGeometry;
         p.size.g = Box2I(0, 0, -1, -1);
+        p.size.touch = Box2I(0, 0, -1, -1);
         if (1 == children.size())
         {
             childGeometry.push_back(g);
@@ -212,6 +233,17 @@ namespace ftk
                     p.size.g.min.y,
                     p.size.border,
                     p.size.g.h());
+                const int reach = std::max(p.size.reach, p.size.handle / 2);
+                p.size.touch = intersect(
+                    Box2I(g.min.x + s - reach, g.min.y, reach * 2, g.h()),
+                    g);
+                const int gripW = std::max(1, p.size.handle / 4);
+                const int gripH = std::min(p.size.handle * 3, p.size.g.h());
+                p.size.grip = Box2I(
+                    p.size.g.min.x + (p.size.g.w() - gripW) / 2,
+                    p.size.g.min.y + (p.size.g.h() - gripH) / 2,
+                    gripW,
+                    gripH);
                 break;
             }
             case Orientation::Vertical:
@@ -242,6 +274,17 @@ namespace ftk
                     p.size.g.max.y + 1 - p.size.border,
                     p.size.g.w(),
                     p.size.border);
+                const int reach = std::max(p.size.reach, p.size.handle / 2);
+                p.size.touch = intersect(
+                    Box2I(g.min.x, g.min.y + s - reach, g.w(), reach * 2),
+                    g);
+                const int gripW = std::min(p.size.handle * 3, p.size.g.w());
+                const int gripH = std::max(1, p.size.handle / 4);
+                p.size.grip = Box2I(
+                    p.size.g.min.x + (p.size.g.w() - gripW) / 2,
+                    p.size.g.min.y + (p.size.g.h() - gripH) / 2,
+                    gripW,
+                    gripH);
                 break;
             }
             default: break;
@@ -271,6 +314,7 @@ namespace ftk
             p.size.init = false;
             p.size.handle = event.style->getSizeRole(SizeRole::Handle, event.displayScale);
             p.size.border = event.style->getSizeRole(SizeRole::Border, event.displayScale);
+            p.size.reach = static_cast<int>(fingerReach * event.displayScale);
         }
     }
 
@@ -303,6 +347,12 @@ namespace ftk
                     p.size.g3,
                     event.style->getColorRole(ColorRole::Border));
             }
+            // A grip, so that the handle reads as something to take hold
+            // of: there is no hover to show it under a finger. Flat, in
+            // the button color, a step up from the window's.
+            event.render->drawRect(
+                p.size.grip,
+                event.style->getColorRole(ColorRole::Button));
         }
     }
 
@@ -340,10 +390,10 @@ namespace ftk
             switch (p.orientation)
             {
             case Orientation::Horizontal:
-                p.split = clamp(event.pos.x - g.min.x, 0, w - 1) / static_cast<float>(w);
+                p.split = clamp(event.pos.x - p.mouse.offset - g.min.x, 0, w - 1) / static_cast<float>(w);
                 break;
             case Orientation::Vertical:
-                p.split = clamp(event.pos.y - g.min.y, 0, h - 1) / static_cast<float>(h);
+                p.split = clamp(event.pos.y - p.mouse.offset - g.min.y, 0, h - 1) / static_cast<float>(h);
                 break;
             default: break;
             }
@@ -369,10 +419,26 @@ namespace ftk
     void Splitter::mousePressEvent(MouseClickEvent& event)
     {
         FTK_P();
-        if (contains(p.size.g, event.pos))
+        if (contains(p.size.g, event.pos) ||
+            (event.touch && isTouchHandle(event.pos)))
         {
             event.accept = true;
             p.mouse.pressedHandle = true;
+            p.mouse.pressSplit = p.split;
+            // Where the press is from the split, kept while dragging: a
+            // finger takes the handle from beside it, and the split moves
+            // with the finger rather than jumping under it.
+            const Box2I& g = getGeometry();
+            switch (p.orientation)
+            {
+            case Orientation::Horizontal:
+                p.mouse.offset = event.pos.x - (g.min.x + _split(g.w()));
+                break;
+            case Orientation::Vertical:
+                p.mouse.offset = event.pos.y - (g.min.y + _split(g.h()));
+                break;
+            default: break;
+            }
             setDrawUpdate();
         }
     }
@@ -381,6 +447,16 @@ namespace ftk
     {
         FTK_P();
         event.accept = true;
+        if (event.cancel && p.mouse.pressedHandle && p.split != p.mouse.pressSplit)
+        {
+            // A second finger made it a gesture: the split goes back.
+            p.split = p.mouse.pressSplit;
+            setSizeUpdate();
+            if (p.splitCallback)
+            {
+                p.splitCallback(p.split);
+            }
+        }
         p.mouse.pressedHandle = false;
         setDrawUpdate();
     }

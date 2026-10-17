@@ -105,6 +105,11 @@ namespace ftk
                     nb::arg("release") = true,
                     nb::arg("holdModifiers") = 0)
                 .def(
+                    "setTouchInput",
+                    &IWindow::setTouchInput,
+                    nb::arg("value"))
+                .def("cancelPress", &IWindow::cancelPress)
+                .def(
                     "keyPress",
                     &IWindow::keyPress,
                     nb::arg("key"),
