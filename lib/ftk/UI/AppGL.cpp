@@ -46,8 +46,10 @@
 #endif // FTK_SDL2
 
 #include <algorithm>
+#include <array>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #if defined(__EMSCRIPTEN__)
 #include <emscripten.h>

@@ -16,6 +16,10 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/OS.h>
 
+#include <algorithm>
+#include <array>
+#include <sstream>
+
 namespace ftk
 {
     namespace

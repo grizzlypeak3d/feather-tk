@@ -6,6 +6,8 @@
 #include <ftk/Core/Error.h>
 #include <ftk/Core/String.h>
 
+#include <algorithm>
+#include <array>
 #include <sstream>
 
 namespace ftk

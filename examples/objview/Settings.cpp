@@ -3,6 +3,10 @@
 
 #include "SettingsModel.h"
 
+#include <algorithm>
+#include <array>
+#include <sstream>
+
 using namespace ftk;
 
 namespace objview

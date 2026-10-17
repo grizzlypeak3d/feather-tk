@@ -9,6 +9,8 @@
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/RecentFilesModel.h>
 
+#include <nlohmann/json.hpp>
+
 #include <nanobind/nanobind.h>
 #include <ftk/CorePy/Function.h>
 #include <nanobind/operators.h>

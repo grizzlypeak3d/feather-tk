@@ -11,12 +11,17 @@
 #include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
 
+#include <nlohmann/json.hpp>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
 #include <algorithm>
+#include <array>
+#include <cstring>
 #include <limits>
+#include <sstream>
 #include <ftk_resource/NotoMono-Regular.h>
 #include <ftk_resource/NotoSans-Bold.h>
 #include <ftk_resource/NotoSans-Regular.h>

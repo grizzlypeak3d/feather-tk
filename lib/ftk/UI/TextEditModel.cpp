@@ -9,6 +9,8 @@
 #include <ftk/Core/Command.h>
 #include <ftk/Core/String.h>
 
+#include <nlohmann/json.hpp>
+
 namespace ftk
 {
     namespace

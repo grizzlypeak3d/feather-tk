@@ -9,6 +9,7 @@
 #include <ftk/Core/Math.h>
 #include <ftk/Core/String.h>
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <sstream>

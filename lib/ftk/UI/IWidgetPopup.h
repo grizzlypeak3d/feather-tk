@@ -6,6 +6,8 @@
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IPopup.h>
 
+#include <optional>
+
 namespace ftk
 {
     class IWindow;

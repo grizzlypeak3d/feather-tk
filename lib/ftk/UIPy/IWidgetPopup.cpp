@@ -17,6 +17,8 @@
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/filesystem.h>
 
+#include <optional>
+
 namespace nb = nanobind;
 
 namespace ftk

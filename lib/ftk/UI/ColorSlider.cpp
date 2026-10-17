@@ -8,6 +8,8 @@
 #include <ftk/UI/IntEdit.h>
 #include <ftk/UI/RowLayout.h>
 
+#include <optional>
+
 namespace ftk
 {
     struct ColorIntSlider::Private

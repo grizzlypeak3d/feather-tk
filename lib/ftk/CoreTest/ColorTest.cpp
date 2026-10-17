@@ -7,6 +7,8 @@
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Format.h>
 
+#include <nlohmann/json.hpp>
+
 #include <sstream>
 
 namespace ftk
