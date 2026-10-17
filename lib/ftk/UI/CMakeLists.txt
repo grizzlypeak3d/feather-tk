@@ -108,6 +108,7 @@ set(HEADERS
     TableWidget.h
     TextEdit.h
     TextEditModel.h
+    ChoiceToolButton.h
     ToolBar.h
     ToolBarRow.h
     ToolButton.h
@@ -245,6 +246,7 @@ set(SOURCE
     TextEdit.cpp
     TextEditModel.cpp
     TextEditWidget.cpp
+    ChoiceToolButton.cpp
     ToolBar.cpp
     ToolBarRow.cpp
     ToolButton.cpp

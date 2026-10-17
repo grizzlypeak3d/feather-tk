@@ -52,6 +52,7 @@ set(HEADERS
     ActionGroupTest.h
     FlowLayoutTest.h
     ToolBarRowTest.h
+    ChoiceToolButtonTest.h
     StackLayoutTest.h
     StyleTest.h
     TabWidgetTest.h
@@ -116,6 +117,7 @@ set(SOURCE
     ActionGroupTest.cpp
     FlowLayoutTest.cpp
     ToolBarRowTest.cpp
+    ChoiceToolButtonTest.cpp
     StackLayoutTest.cpp
     StyleTest.cpp
     TabWidgetTest.cpp

@@ -58,6 +58,7 @@
 #include <ftk/UITest/ActionGroupTest.h>
 #include <ftk/UITest/FlowLayoutTest.h>
 #include <ftk/UITest/ToolBarRowTest.h>
+#include <ftk/UITest/ChoiceToolButtonTest.h>
 #include <ftk/UITest/StackLayoutTest.h>
 #include <ftk/UITest/StyleTest.h>
 #include <ftk/UITest/WidgetJsonTest.h>
@@ -266,6 +267,7 @@ namespace ftk
                 p.tests.push_back(ui_test::ActionGroupTest::create(context));
                 p.tests.push_back(ui_test::FlowLayoutTest::create(context));
                 p.tests.push_back(ui_test::ToolBarRowTest::create(context));
+                p.tests.push_back(ui_test::ChoiceToolButtonTest::create(context));
                 p.tests.push_back(ui_test::StackLayoutTest::create(context));
                 p.tests.push_back(ui_test::StyleTest::create(context));
                 p.tests.push_back(ui_test::WidgetJsonTest::create(context));
