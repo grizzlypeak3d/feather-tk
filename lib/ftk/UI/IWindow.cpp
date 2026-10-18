@@ -1113,6 +1113,16 @@ namespace ftk
         p.cursorPosPrev = p.cursorPos;
         p.cursorPos = pos;
         p.hoverSuspended = false;
+        // Every move of a drag, with what made it: a stray position from
+        // a second pointing device shows here as a jump and nowhere else.
+        if (traceEvents() && p.mousePress.lock())
+        {
+            _trace(Format("Mouse move to {0},{1}{2}{3}").
+                arg(pos.x).
+                arg(pos.y).
+                arg(p.penDown ? " (pen)" : "").
+                arg(p.touch ? " (touch)" : ""));
+        }
 
         // The button doing the dragging travels with the move, so a widget
         // does not have to remember it from the press.
