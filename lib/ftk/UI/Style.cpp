@@ -118,7 +118,11 @@ namespace ftk
         out[ColorRole::Overlay] = Color4F(0.F, 0.F, 0.F, .5F);
         out[ColorRole::TooltipWindow] = Color4F(.3F, .3F, .3F);
         out[ColorRole::TooltipText] = Color4F(.95F, .95F, .95F);
-        out[ColorRole::Arrow] = Color4F(0.F, 0.F, 0.F);
+        // A light grey, between the button and the text: black, as in the
+        // light style, all but vanished on the window behind the tool bar
+        // buttons, where an arrow is the only sign that a button opens a
+        // menu, and it stays quieter than the icon beside it.
+        out[ColorRole::Arrow] = Color4F(.65F, .65F, .65F);
 
         out[ColorRole::Red]     = Color4F(.835F, .369F, 0.F);    // Vermillion
         out[ColorRole::Green]   = Color4F(0.F,   .620F, .451F);  // Bluish green
