@@ -6,6 +6,7 @@
 #include <ftk/Core/Export.h>
 
 #include <filesystem>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -90,7 +91,19 @@ namespace ftk
     //! stale build or install. Empty where the file is not known.
     FTK_CORE_API std::string getLibraryInfo(const void* address);
 
+    //! Open a URL with the system: a web page in the browser, a file in
+    //! the application for it. Where the system has no way for this
+    //! library to do it -- iOS, which opens URLs through the user
+    //! interface -- the handler set below does it, and without one this
+    //! throws.
     FTK_CORE_API void openURL(const std::string&);
+
+    //! Set how openURL() opens a URL where this library cannot. The user
+    //! interface library sets it on iOS.
+    FTK_CORE_API void setOpenURLHandler(const std::function<void(const std::string&)>&);
+
+    //! Get the handler set by setOpenURLHandler(), empty if none was.
+    FTK_CORE_API const std::function<void(const std::string&)>& getOpenURLHandler();
 
     //! Name the calling thread, for profilers and debuggers. Linux keeps
     //! fifteen characters of it.

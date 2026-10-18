@@ -264,8 +264,13 @@ namespace ftk
     {
 #if defined(__APPLE__) && !TARGET_OS_OSX
         // Launch Services is macOS only; iOS opens URLs through
-        // UIApplication, from the main thread, which is the application's
-        // business rather than this library's.
+        // UIApplication, from the main thread, which is the user
+        // interface's business: it sets the handler.
+        if (const auto& handler = getOpenURLHandler())
+        {
+            handler(value);
+            return;
+        }
         throw std::runtime_error(Format("Cannot open URL: {0}").arg(value));
 #elif defined(__APPLE__)
         CFURLRef url = CFURLCreateWithBytes(

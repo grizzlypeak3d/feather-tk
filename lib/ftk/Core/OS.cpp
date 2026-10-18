@@ -63,4 +63,23 @@ namespace ftk
         }
         return out;
     }
+
+    namespace
+    {
+        std::function<void(const std::string&)>& openURLHandler()
+        {
+            static std::function<void(const std::string&)> out;
+            return out;
+        }
+    }
+
+    void setOpenURLHandler(const std::function<void(const std::string&)>& value)
+    {
+        openURLHandler() = value;
+    }
+
+    const std::function<void(const std::string&)>& getOpenURLHandler()
+    {
+        return openURLHandler();
+    }
 }

@@ -267,9 +267,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
     # The document picker is the native file dialog there. Automatic
     # reference counting, which the Objective-C++ is written for: without
     # it the objects kept across calls were released under the code.
-    list(APPEND PRIVATE_HEADERS FileBrowserIOSPrivate.h)
-    list(APPEND SOURCE FileBrowserIOS.mm)
-    set_source_files_properties(FileBrowserIOS.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
+    # And the pages among the application's own files -- documentation,
+    # legal notices -- open in a web view over it, since the browser
+    # cannot read them.
+    list(APPEND PRIVATE_HEADERS FileBrowserIOSPrivate.h UIKitPrivate.h)
+    list(APPEND SOURCE FileBrowserIOS.mm URLIOS.mm)
+    set_source_files_properties(FileBrowserIOS.mm URLIOS.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
 endif()
 
 add_library(ftkUI ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
@@ -307,7 +310,7 @@ if(ftk_nfd)
     endif()
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    target_link_libraries(ftkUI PUBLIC "-framework UIKit" "-framework UniformTypeIdentifiers")
+    target_link_libraries(ftkUI PUBLIC "-framework UIKit" "-framework UniformTypeIdentifiers" "-framework WebKit")
 endif()
 
 set_target_properties(ftkUI PROPERTIES FOLDER lib)

@@ -2,6 +2,7 @@
 // Copyright Contributors to the feather-tk project.
 
 #include "FileBrowserIOSPrivate.h"
+#include "UIKitPrivate.h"
 
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
@@ -70,6 +71,44 @@ namespace
         [defaults setObject:list forKey:bookmarksKey];
     }
 
+}
+
+@implementation FTKDocumentPickerDelegate
+
+- (void)documentPicker:(UIDocumentPickerViewController*)controller
+    didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls
+{
+    // Kept for the length of this: the picker holds its delegate weakly,
+    // and letting go of the one strong reference below freed the object
+    // this is running on.
+    FTKDocumentPickerDelegate* keep = self;
+    std::vector<ftk::Path> paths;
+    for (NSURL* url in urls)
+    {
+        access(url);
+        paths.push_back(ftk::Path(std::string([url fileSystemRepresentation])));
+    }
+    remember(urls);
+    const auto callback = keep.callback;
+    if (!paths.empty() && callback)
+    {
+        callback(paths);
+    }
+    keep.picker = nil;
+    delegate = nil;
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller
+{
+    FTKDocumentPickerDelegate* keep = self;
+    keep.picker = nil;
+    delegate = nil;
+}
+
+@end
+
+namespace ftk
+{
     UIViewController* topViewController()
     {
         // The picker goes on the device's own screen, where the fingers
@@ -114,44 +153,7 @@ namespace
         }
         return out;
     }
-}
 
-@implementation FTKDocumentPickerDelegate
-
-- (void)documentPicker:(UIDocumentPickerViewController*)controller
-    didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls
-{
-    // Kept for the length of this: the picker holds its delegate weakly,
-    // and letting go of the one strong reference below freed the object
-    // this is running on.
-    FTKDocumentPickerDelegate* keep = self;
-    std::vector<ftk::Path> paths;
-    for (NSURL* url in urls)
-    {
-        access(url);
-        paths.push_back(ftk::Path(std::string([url fileSystemRepresentation])));
-    }
-    remember(urls);
-    const auto callback = keep.callback;
-    if (!paths.empty() && callback)
-    {
-        callback(paths);
-    }
-    keep.picker = nil;
-    delegate = nil;
-}
-
-- (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller
-{
-    FTKDocumentPickerDelegate* keep = self;
-    keep.picker = nil;
-    delegate = nil;
-}
-
-@end
-
-namespace ftk
-{
     void restoreDocumentAccess()
     {
         // Each bookmark resolved and its grant taken up again; the list is

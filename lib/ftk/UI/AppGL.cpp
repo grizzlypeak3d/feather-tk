@@ -17,6 +17,9 @@
 #include <ftk/UI/Util.h>
 #include <ftk/UI/WidgetDump.h>
 #include <ftk/UI/Window.h>
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+#include "UIKitPrivate.h"
+#endif // TARGET_OS_IPHONE
 
 #include <ftk/GL/Init.h>
 #include <ftk/GL/Mesh.h>
@@ -34,6 +37,7 @@
 #include <ftk/Core/ImageIO.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
+#include <ftk/Core/OS.h>
 #include <ftk/Core/String.h>
 #include <ftk/Core/Time.h>
 #include <ftk/Core/Timer.h>
@@ -209,6 +213,11 @@ namespace ftk
         const AppFiles& appFiles)
     {
         FTK_P();
+
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+        // URLs open through UIKit there; see openURLIOS().
+        setOpenURLHandler(openURLIOS);
+#endif // TARGET_OS_IPHONE
 
         // The defaults are shown in the help, so they are worked out before
         // the command line is parsed and then overridden by it.
