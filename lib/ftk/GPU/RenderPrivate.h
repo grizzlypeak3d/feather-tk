@@ -104,7 +104,7 @@ namespace ftk
             int32_t videoLevels = 0;
             int32_t mirrorX = 0;
             int32_t mirrorY = 0;
-            int32_t pad = 0;
+            float sampleScale = 1.F;
         };
 
         struct TextureScaleUniforms
@@ -122,7 +122,8 @@ namespace ftk
             int32_t videoLevels = 0;
             int32_t mirrorX = 0;
             int32_t scaleTaps = 0;
-            int32_t pad[3] = { 0, 0, 0 };
+            float sampleScale = 1.F;
+            int32_t pad[2] = { 0, 0 };
         };
 
         struct ImageScaleYUniforms

@@ -406,6 +406,7 @@ namespace ftk
                 uniforms.videoLevels = static_cast<int32_t>(videoLevels);
                 uniforms.mirrorX = info.layout.mirror.x;
                 uniforms.scaleTaps = x.taps;
+                uniforms.sampleScale = getSampleScale(info);
                 SDL_GPUTextureSamplerBinding bindings[4] = {};
                 for (size_t i = 0; i < 3; ++i)
                 {
@@ -858,6 +859,7 @@ namespace ftk
             uniforms.videoLevels = static_cast<int32_t>(videoLevels);
             uniforms.mirrorX = info.layout.mirror.x;
             uniforms.mirrorY = info.layout.mirror.y;
+            uniforms.sampleScale = getSampleScale(info);
 
             // All three are bound whatever the image has: the shader
             // declares them, and it is the uniforms that say which are read.

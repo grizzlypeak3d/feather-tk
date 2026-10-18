@@ -139,6 +139,25 @@ namespace ftk
         "Full Range",
         "Legal Range");
 
+    float getSampleScale(const ImageInfo& info)
+    {
+        float out = 1.F;
+        if (info.depth > 0 && info.depth < 16)
+        {
+            switch (info.type)
+            {
+            case ImageType::YUV_420P_U16:
+            case ImageType::YUV_422P_U16:
+            case ImageType::YUV_444P_U16:
+            case ImageType::YUV_420SP_U16:
+                out = 65535.F / static_cast<float>((1 << info.depth) - 1);
+                break;
+            default: break;
+            }
+        }
+        return out;
+    }
+
     size_t ImageInfo::getByteCount() const
     {
         std::size_t out = 0;

@@ -101,6 +101,7 @@ namespace ftk
                 .def_rw("pixelAspectRatio", &ImageInfo::pixelAspectRatio)
                 .def_rw("videoLevels", &ImageInfo::videoLevels)
                 .def_rw("yuvCoefficients", &ImageInfo::yuvCoefficients)
+                .def_rw("depth", &ImageInfo::depth)
                 .def_rw("layout", &ImageInfo::layout)
                 .def_prop_ro("valid", &ImageInfo::isValid)
                 .def_prop_ro("aspect", &ImageInfo::getAspect)

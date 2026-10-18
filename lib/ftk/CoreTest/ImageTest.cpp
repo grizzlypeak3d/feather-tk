@@ -7,6 +7,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Image.h>
 
+#include <cmath>
+
 namespace ftk
 {
     namespace core_test
@@ -64,6 +66,20 @@ namespace ftk
                 b.size.w = 1920;
                 b.size.h = 1080;
                 FTK_CHECK(a != b);                
+            }
+            {
+                // 12-bit video in 16-bit words scales by 65535 / 4095; the
+                // depth means nothing for a type that holds its own.
+                ImageInfo info(Size2I(1920, 1080), ImageType::YUV_420P_U16);
+                FTK_CHECK(1.F == getSampleScale(info));
+                info.depth = 12;
+                FTK_CHECK(std::abs(getSampleScale(info) - 65535.F / 4095.F) < .0001F);
+                info.depth = 10;
+                FTK_CHECK(std::abs(getSampleScale(info) - 65535.F / 1023.F) < .0001F);
+                info.type = ImageType::RGB_U16;
+                FTK_CHECK(1.F == getSampleScale(info));
+                ImageInfo other(Size2I(1920, 1080), ImageType::YUV_420P_U16);
+                FTK_CHECK(info != other);
             }
         }
         

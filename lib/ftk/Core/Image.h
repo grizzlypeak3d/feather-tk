@@ -166,6 +166,11 @@ namespace ftk
         float           pixelAspectRatio = 1.F;
         VideoLevels     videoLevels      = VideoLevels::FullRange;
         YUVCoefficients yuvCoefficients  = YUVCoefficients::REC709;
+        //! The bits in each sample when fewer than the type holds: 10 or
+        //! 12-bit video kept in 16-bit words with its value in the low
+        //! bits, as decoders hand it over. Zero is the type's own depth.
+        //! The renderers scale such samples up; see getSampleScale().
+        int             depth            = 0;
         ImageLayout     layout;
 
         //! Is the information valid?
@@ -179,6 +184,12 @@ namespace ftk
 
         bool operator == (const ImageInfo&) const = default;
     };
+
+    //! Get what a normalized sample of an image is multiplied by to reach
+    //! full scale: one, unless the image keeps fewer bits in its words than
+    //! the type holds (ImageInfo::depth), as 12-bit video in 16-bit words
+    //! does, whose full scale is 4095 of 65535.
+    FTK_CORE_API float getSampleScale(const ImageInfo&);
 
     //! Get an image information label.
     FTK_CORE_API std::string getLabel(const ImageInfo&);

@@ -638,6 +638,7 @@ namespace ftk
                 }
                 shader->setUniform("videoLevels", static_cast<int>(videoLevels));
                 shader->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
+                shader->setUniform("sampleScale", getSampleScale(info));
                 shader->setUniform("mirrorX", info.layout.mirror.x);
                 shader->setUniform("scaleTaps", p.scale.xTaps);
                 _setActiveTextures(shader, info, textures);
@@ -807,6 +808,7 @@ namespace ftk
             }
             shader->setUniform("videoLevels", static_cast<int>(videoLevels));
             shader->setUniform("yuvCoefficients", getYUVCoefficients(info.yuvCoefficients));
+                shader->setUniform("sampleScale", getSampleScale(info));
             shader->setUniform("mirrorX", info.layout.mirror.x);
             shader->setUniform("mirrorY", info.layout.mirror.y);
 
