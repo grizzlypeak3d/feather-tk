@@ -596,6 +596,13 @@ namespace ftk
                 {
                     SDL_CancelGPUCommandBuffer(p.cmd);
                 }
+                for (SDL_GPUFence*& fence : p.frameFences)
+                {
+                    if (fence)
+                    {
+                        SDL_ReleaseGPUFence(p.device, fence);
+                    }
+                }
                 for (const auto& i : p.pipelines)
                 {
                     SDL_ReleaseGPUGraphicsPipeline(p.device, i.second);
@@ -941,7 +948,19 @@ namespace ftk
                     SDL_WaitForGPUIdle(p.device);
                 }
 
-                SDL_SubmitGPUCommandBuffer(p.cmd);
+                {
+                    // Submitted with a fence, and the frame before last is
+                    // waited for: see Private::frameFences.
+                    SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(p.cmd);
+                    SDL_GPUFence*& slot = p.frameFences[p.frameFenceIndex];
+                    if (slot)
+                    {
+                        SDL_WaitForGPUFences(p.device, true, &slot, 1);
+                        SDL_ReleaseGPUFence(p.device, slot);
+                    }
+                    slot = fence;
+                    p.frameFenceIndex = (p.frameFenceIndex + 1) % 2;
+                }
                 p.cmd = nullptr;
             }
 

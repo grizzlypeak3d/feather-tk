@@ -208,17 +208,25 @@ namespace ftk
         {
             std::shared_ptr<System> system;
             ImageInfo info;
-            SDL_GPUTexture* texture = nullptr;
+            //! One texture, or two alternated: see TextureOptions::streaming.
+            //! Whole copies write the one the last copy did not, so the
+            //! device reads one while the other is written, and nothing is
+            //! cycled. Without streaming only the first is made and current
+            //! stays zero.
+            SDL_GPUTexture* textures[2] = { nullptr, nullptr };
             SDL_GPUSampler* sampler = nullptr;
+            int current = 0;
+            bool streaming = false;
             bool counted = false;
             //! Sixteen bit normalized, kept as half float: see hasUNorm16().
             bool half = false;
             //! Thirty-two bit float, kept as half float: see
             //! hasFloatFilter().
             bool halfFloat = false;
-            //! The transfer buffer the copies go through; see prepare().
-            SDL_GPUTransferBuffer* transfer = nullptr;
-            size_t transferByteCount = 0;
+            //! The transfer buffers the copies go through, one per texture;
+            //! see prepare().
+            SDL_GPUTransferBuffer* transfers[2] = { nullptr, nullptr };
+            size_t transferByteCounts[2] = { 0, 0 };
         };
 
         void Texture::_init(
@@ -256,10 +264,19 @@ namespace ftk
             textureInfo.layer_count_or_depth = 1;
             textureInfo.num_levels = 1;
             textureInfo.props = props;
-            p.texture = SDL_CreateGPUTexture(device, &textureInfo);
-            if (!p.texture)
+            p.textures[0] = SDL_CreateGPUTexture(device, &textureInfo);
+            if (!p.textures[0])
             {
                 throw std::runtime_error(Format("Cannot create a texture: {0}").arg(SDL_GetError()));
+            }
+            p.streaming = options.streaming;
+            if (p.streaming)
+            {
+                p.textures[1] = SDL_CreateGPUTexture(device, &textureInfo);
+                if (!p.textures[1])
+                {
+                    throw std::runtime_error(Format("Cannot create a texture: {0}").arg(SDL_GetError()));
+                }
             }
 
             // Nearest or linear: the two pass resample weighs texels itself,
@@ -283,7 +300,7 @@ namespace ftk
                 throw std::runtime_error(Format("Cannot create a sampler: {0}").arg(SDL_GetError()));
             }
             ++objectCount;
-            totalByteCount += getGPUByteCount(p.info);
+            totalByteCount += getGPUByteCount(p.info) * (p.streaming ? 2 : 1);
             p.counted = true;
         }
 
@@ -297,7 +314,7 @@ namespace ftk
             if (p.counted)
             {
                 --objectCount;
-                totalByteCount -= getGPUByteCount(p.info);
+                totalByteCount -= getGPUByteCount(p.info) * (p.streaming ? 2 : 1);
             }
             if (p.system)
             {
@@ -306,13 +323,19 @@ namespace ftk
                 {
                     SDL_ReleaseGPUSampler(device, p.sampler);
                 }
-                if (p.texture)
+                for (SDL_GPUTexture* texture : p.textures)
                 {
-                    SDL_ReleaseGPUTexture(device, p.texture);
+                    if (texture)
+                    {
+                        SDL_ReleaseGPUTexture(device, texture);
+                    }
                 }
-                if (p.transfer)
+                for (SDL_GPUTransferBuffer* transfer : p.transfers)
                 {
-                    SDL_ReleaseGPUTransferBuffer(device, p.transfer);
+                    if (transfer)
+                    {
+                        SDL_ReleaseGPUTransferBuffer(device, transfer);
+                    }
                 }
             }
         }
@@ -355,7 +378,7 @@ namespace ftk
 
         SDL_GPUTexture* Texture::getTexture() const
         {
-            return _p->texture;
+            return _p->textures[_p->current];
         }
 
         SDL_GPUSampler* Texture::getSampler() const
@@ -407,8 +430,13 @@ namespace ftk
             region.h = value.h;
             region.d = 1;
             // A whole texture is cycled: one that a draw already written
-            // is waiting on keeps what that draw was given.
-            SDL_UploadToGPUTexture(pass, &source, &region, value.whole);
+            // is waiting on keeps what that draw was given. Not a streaming
+            // texture: those alternate between two, the one written two
+            // frames ago, which Render::end() has waited for -- and cycling
+            // was never free when it hit, a video frame's worth of memory
+            // every frame, which on Vulkan cost more than the drawing.
+            SDL_UploadToGPUTexture(pass, &source, &region,
+                value.whole && !value.streaming);
             if (value.owned)
             {
                 SDL_ReleaseGPUTransferBuffer(device, value.transfer);
@@ -468,30 +496,40 @@ namespace ftk
             // draws with a texture as it is made ready, and so ends the
             // pass before the next.
             //
+            // A streaming texture steps to its other texture and transfer
+            // buffer first, so the cycling finds neither in flight and the
+            // memory is reused as it is; see TextureOptions::streaming.
+            //
             // A copy of a part, as the glyph atlas makes several of in a
             // pass, has a buffer of its own, let go of once it is sent.
             const size_t byteCount = dstRow * h;
             SDL_GPUTransferBuffer* transfer = nullptr;
             if (whole)
             {
-                if (!p.transfer || byteCount > p.transferByteCount)
+                if (p.streaming)
                 {
-                    if (p.transfer)
+                    p.current ^= 1;
+                }
+                SDL_GPUTransferBuffer*& slot = p.transfers[p.current];
+                size_t& slotByteCount = p.transferByteCounts[p.current];
+                if (!slot || byteCount > slotByteCount)
+                {
+                    if (slot)
                     {
-                        SDL_ReleaseGPUTransferBuffer(device, p.transfer);
-                        p.transfer = nullptr;
+                        SDL_ReleaseGPUTransferBuffer(device, slot);
+                        slot = nullptr;
                     }
                     SDL_GPUTransferBufferCreateInfo transferInfo = {};
                     transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
                     transferInfo.size = static_cast<Uint32>(byteCount);
-                    p.transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
-                    if (!p.transfer)
+                    slot = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+                    if (!slot)
                     {
                         throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
                     }
-                    p.transferByteCount = byteCount;
+                    slotByteCount = byteCount;
                 }
-                transfer = p.transfer;
+                transfer = slot;
             }
             else
             {
@@ -505,7 +543,10 @@ namespace ftk
                 }
                 out.owned = true;
             }
-            uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(device, transfer, true));
+            // Mapped without cycling for a streaming texture, whose two
+            // transfer buffers alternate; see send().
+            uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(
+                device, transfer, !p.streaming));
             if (p.half)
             {
                 // Each value as the half float it is kept as, and one for a
@@ -572,7 +613,8 @@ namespace ftk
             SDL_UnmapGPUTransferBuffer(device, transfer);
 
             out.transfer = transfer;
-            out.texture = p.texture;
+            out.texture = p.textures[p.current];
+            out.streaming = p.streaming;
             out.x = x;
             out.y = y;
             out.w = w;

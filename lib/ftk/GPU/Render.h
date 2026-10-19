@@ -246,7 +246,8 @@ namespace ftk
                 const ImageFilters&);
             std::vector<std::shared_ptr<Texture> > _getTextures(
                 const ImageInfo&,
-                const ImageFilters&);
+                const ImageFilters&,
+                bool streaming = false);
             void _copyTextures(
                 const std::shared_ptr<Image>&,
                 const std::vector<std::shared_ptr<Texture> >&);

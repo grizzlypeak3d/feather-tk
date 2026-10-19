@@ -47,6 +47,14 @@ namespace ftk
         {
             ImageFilters filters;
 
+            //! Whether the whole texture is copied into over and over, as a
+            //! video's frames are. Two textures and two transfer buffers
+            //! alternate, so what is written is never what the device is
+            //! still reading: without this each copy cycles the texture and
+            //! the transfer buffer, and on Vulkan cycling a video frame's
+            //! worth of memory every frame cost more than the drawing.
+            bool streaming = false;
+
             bool operator == (const TextureOptions&) const = default;
         };
 
@@ -127,6 +135,8 @@ namespace ftk
                 //! of once sent, rather than the texture's, which is kept
                 //! for the next copy of the whole texture.
                 bool owned = false;
+                //! See TextureOptions::streaming.
+                bool streaming = false;
             };
 
             //! Make a copy of an image to the whole texture ready. Nothing

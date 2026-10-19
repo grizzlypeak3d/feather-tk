@@ -682,12 +682,14 @@ namespace ftk
 
         std::vector<std::shared_ptr<Texture> > Render::_getTextures(
             const ImageInfo& info,
-            const ImageFilters& imageFilters)
+            const ImageFilters& imageFilters,
+            bool streaming)
         {
             FTK_P();
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
             options.filters = imageFilters;
+            options.streaming = streaming;
             // The two pass path weighs the texels itself, so it wants them as
             // they are rather than blended in pairs first.
             if (ImageFilter::HighQuality == options.filters.minify)
@@ -804,7 +806,10 @@ namespace ftk
                 bool fresh = false;
                 if (!p.texturePool.get(texturePoolKey, textures))
                 {
-                    textures = _getTextures(info, imageOptions.imageFilters);
+                    // Uncached images are a video's frames: a new picture
+                    // into the same textures every frame, which is what
+                    // streaming textures are for.
+                    textures = _getTextures(info, imageOptions.imageFilters, true);
                     p.texturePool.add(texturePoolKey, textures, image->getByteCount());
                     fresh = true;
                 }
