@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include <thread>
 #include <vector>
 
 namespace ftk
@@ -547,68 +548,108 @@ namespace ftk
             // transfer buffers alternate; see send().
             uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(
                 device, transfer, !p.streaming));
-            if (p.half)
+            // The rows from one to another, in whichever form the texture
+            // keeps them.
+            const auto rows = [&](int row0, int row1)
             {
-                // Each value as the half float it is kept as, and one for a
-                // fourth channel that was not there.
-                const std::vector<uint16_t>& table = getHalfTable();
-                const size_t dstChannels = 3 == channels ? 4 : channels;
-                for (int row = 0; row < h; ++row)
+                if (p.half)
                 {
-                    const uint16_t* s = reinterpret_cast<const uint16_t*>(data + row * srcRow);
-                    uint16_t* d = reinterpret_cast<uint16_t*>(dst + row * dstRow);
-                    for (int i = 0; i < w; ++i, s += channels, d += dstChannels)
+                    // Each value as the half float it is kept as, and one
+                    // for a fourth channel that was not there.
+                    const std::vector<uint16_t>& table = getHalfTable();
+                    const size_t dstChannels = 3 == channels ? 4 : channels;
+                    for (int row = row0; row < row1; ++row)
                     {
-                        for (int c = 0; c < channels; ++c)
+                        const uint16_t* s = reinterpret_cast<const uint16_t*>(data + row * srcRow);
+                        uint16_t* d = reinterpret_cast<uint16_t*>(dst + row * dstRow);
+                        for (int i = 0; i < w; ++i, s += channels, d += dstChannels)
                         {
-                            d[c] = table[s[c]];
-                        }
-                        if (3 == channels)
-                        {
-                            d[3] = 0x3C00;
+                            for (int c = 0; c < channels; ++c)
+                            {
+                                d[c] = table[s[c]];
+                            }
+                            if (3 == channels)
+                            {
+                                d[3] = 0x3C00;
+                            }
                         }
                     }
                 }
-            }
-            else if (p.halfFloat)
-            {
-                // Each float as the half float it is kept as, and one for
-                // a fourth channel that was not there.
-                const size_t dstChannels = 3 == channels ? 4 : channels;
-                for (int row = 0; row < h; ++row)
+                else if (p.halfFloat)
                 {
-                    const float* s = reinterpret_cast<const float*>(data + row * srcRow);
-                    uint16_t* d = reinterpret_cast<uint16_t*>(dst + row * dstRow);
-                    for (int i = 0; i < w; ++i, s += channels, d += dstChannels)
+                    // Each float as the half float it is kept as, and one
+                    // for a fourth channel that was not there.
+                    const size_t dstChannels = 3 == channels ? 4 : channels;
+                    for (int row = row0; row < row1; ++row)
                     {
-                        floatToHalf(s, d, channels);
-                        if (3 == channels)
+                        const float* s = reinterpret_cast<const float*>(data + row * srcRow);
+                        uint16_t* d = reinterpret_cast<uint16_t*>(dst + row * dstRow);
+                        for (int i = 0; i < w; ++i, s += channels, d += dstChannels)
                         {
-                            d[3] = 0x3C00;
+                            floatToHalf(s, d, channels);
+                            if (3 == channels)
+                            {
+                                d[3] = 0x3C00;
+                            }
                         }
                     }
                 }
-            }
-            else if (3 == channels)
-            {
-                // A pixel at a time rather than a byte at a time: the loop
-                // that copied three bytes and wrote a fourth ran a 6K frame
-                // at a third of the speed of a copy.
-                for (int row = 0; row < h; ++row)
+                else if (3 == channels)
                 {
-                    widenRGB(info.type, data + row * srcRow, dst + row * dstRow, w);
+                    // A pixel at a time rather than a byte at a time: the
+                    // loop that copied three bytes and wrote a fourth ran a
+                    // 6K frame at a third of the speed of a copy.
+                    for (int row = row0; row < row1; ++row)
+                    {
+                        widenRGB(info.type, data + row * srcRow, dst + row * dstRow, w);
+                    }
                 }
-            }
-            else if (srcRow == dstRow)
+                else if (srcRow == dstRow)
+                {
+                    std::memcpy(dst + row0 * dstRow, data + row0 * srcRow, dstRow * (row1 - row0));
+                }
+                else
+                {
+                    for (int row = row0; row < row1; ++row)
+                    {
+                        std::memcpy(dst + row * dstRow, data + row * srcRow, dstRow);
+                    }
+                }
+            };
+            // The rows shared out among a few cores when the memory wants
+            // it: Vulkan's and Direct3D's upload memory is write-combined,
+            // where one core's writes crawl -- an 8K frame, 190 MB, took a
+            // Ryzen twenty milliseconds of the drawing thread's time, and
+            // with the transfer across PCIe 3 another twenty, that was 16
+            // frames a second of 24 on a Radeon RX 580. Metal's shared
+            // buffers are cached memory, where the same copy takes two
+            // milliseconds and threads only cost: starting them, and the
+            // cores the decoder had, which showed as frames dropped. A
+            // thread for every 16 MB and no more than four, so that a
+            // 1080p frame is copied here without starting any.
+            const bool threaded = p.system->getDriver() != "metal";
+            const int threadCount = !threaded ? 1 : std::max(1, std::min({
+                4,
+                static_cast<int>(std::thread::hardware_concurrency()),
+                static_cast<int>(byteCount / (16 * 1024 * 1024)) }));
+            if (threadCount > 1)
             {
-                std::memcpy(dst, data, dstRow * h);
+                const int chunk = (h + threadCount - 1) / threadCount;
+                std::vector<std::thread> threads;
+                for (int row0 = chunk; row0 < h; row0 += chunk)
+                {
+                    threads.emplace_back(rows, row0, std::min(h, row0 + chunk));
+                }
+                // This thread takes the first chunk rather than only waiting.
+                rows(0, std::min(h, chunk));
+                for (auto& t : threads)
+                {
+                    t.join();
+                }
             }
             else
             {
-                for (int row = 0; row < h; ++row)
-                {
-                    std::memcpy(dst + row * dstRow, data + row * srcRow, dstRow);
-                }
+                rows(0, h);
             }
             SDL_UnmapGPUTransferBuffer(device, transfer);
 
