@@ -16,7 +16,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
-#include <thread>
 #include <vector>
 
 namespace ftk
@@ -616,41 +615,20 @@ namespace ftk
                     }
                 }
             };
-            // The rows shared out among a few cores when the memory wants
-            // it: Vulkan's and Direct3D's upload memory is write-combined,
-            // where one core's writes crawl -- an 8K frame, 190 MB, took a
-            // Ryzen twenty milliseconds of the drawing thread's time, and
-            // with the transfer across PCIe 3 another twenty, that was 16
-            // frames a second of 24 on a Radeon RX 580. Metal's shared
-            // buffers are cached memory, where the same copy takes two
-            // milliseconds and threads only cost: starting them, and the
-            // cores the decoder had, which showed as frames dropped. A
-            // thread for every 16 MB and no more than four, so that a
-            // 1080p frame is copied here without starting any.
-            const bool threaded = p.system->getDriver() != "metal";
-            const int threadCount = !threaded ? 1 : std::max(1, std::min({
-                4,
-                static_cast<int>(std::thread::hardware_concurrency()),
-                static_cast<int>(byteCount / (16 * 1024 * 1024)) }));
-            if (threadCount > 1)
-            {
-                const int chunk = (h + threadCount - 1) / threadCount;
-                std::vector<std::thread> threads;
-                for (int row0 = chunk; row0 < h; row0 += chunk)
-                {
-                    threads.emplace_back(rows, row0, std::min(h, row0 + chunk));
-                }
-                // This thread takes the first chunk rather than only waiting.
-                rows(0, std::min(h, chunk));
-                for (auto& t : threads)
-                {
-                    t.join();
-                }
-            }
-            else
-            {
-                rows(0, h);
-            }
+            // On one thread, the drawing thread's. The copy across threads
+            // was tried (2026-10-19) and lost on both machines it was tried
+            // on: on Metal the shared buffers are cached memory, where an
+            // 8K frame copies in two milliseconds and the threads only cost
+            // -- starting them, and the cores the decoder had, seen as
+            // frames dropped; on Vulkan, where the upload memory is
+            // write-combined and the same copy takes a Ryzen twenty
+            // milliseconds, the threads copied in seventeen with cores to
+            // spare but fought the decoder for them otherwise, and the
+            // frame rate fell from 16.5 to 14. What a discrete card needs
+            // is the copy off this thread altogether -- the reader writing
+            // the frame into the transfer buffer as it decodes -- which is
+            // the frames-in-video-memory design, not a thread count.
+            rows(0, h);
             SDL_UnmapGPUTransferBuffer(device, transfer);
 
             out.transfer = transfer;
