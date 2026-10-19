@@ -2396,7 +2396,7 @@ namespace ftk
                 p.touchPress.longPressed = true;
                 if (auto window = p.touchPress.window.lock())
                 {
-                    window->_mouseCancel();
+                    window->_mouseCancel(true);
                     window->_mouseButton(MouseButton::Right, true, 0);
                     window->_mouseButton(MouseButton::Right, false, 0);
                 }

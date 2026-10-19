@@ -432,7 +432,7 @@ namespace ftk
         //! Let go of whatever the mouse pressed, cancelled rather than
         //! released: a button under it does not click. A drag and drop in
         //! flight is dropped nowhere.
-        FTK_UI_API void _mouseCancel();
+        FTK_UI_API void _mouseCancel(bool longPress = false);
         void _scroll(const V2F&, int modifiers);
         FTK_UI_API void _gesture(const V2I& pos, const V2F& pan, float zoom);
         FTK_UI_API void _gestureEnd();

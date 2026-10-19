@@ -1409,7 +1409,7 @@ namespace ftk
         }
     }
 
-    void IWindow::_mouseCancel()
+    void IWindow::_mouseCancel(bool longPress)
     {
         FTK_P();
         if (auto pressed = p.mousePress.lock())
@@ -1429,8 +1429,10 @@ namespace ftk
                 p.mouseClickEvent.pos = p.cursorPos;
                 p.mouseClickEvent.accept = false;
                 p.mouseClickEvent.cancel = true;
+                p.mouseClickEvent.longPress = longPress;
                 pressed->mouseReleaseEvent(p.mouseClickEvent);
                 p.mouseClickEvent.cancel = false;
+                p.mouseClickEvent.longPress = false;
             }
             p.dragDropData.reset();
             p.dragDropCursor.reset();

@@ -1012,10 +1012,11 @@ namespace ftk
         const Box2I& g = getGeometry();
         if (p.mouse.pressed != -1)
         {
-            if (event.cancel)
+            if (event.cancel && !event.longPress)
             {
                 // A touch gesture took the press: the first finger was not
-                // choosing anything.
+                // choosing anything. (A long press chose: the item stays
+                // for the context menu.)
                 p.anchor = p.mouse.anchorPrev;
                 _selectionUpdate(
                     p.mouse.selectionPrev,

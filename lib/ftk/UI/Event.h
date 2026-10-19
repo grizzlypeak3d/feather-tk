@@ -211,9 +211,16 @@ namespace ftk
         bool        accept    = false;
 
         //! The press was taken away before it was released: a touch
-        //! gesture started. The release ends it without acting on it, so
-        //! a button under the first finger does not click.
+        //! gesture started, or a finger rested long enough to be the
+        //! right button (longPress). The release ends it without acting
+        //! on it, so a button under the first finger does not click.
         bool        cancel    = false;
+        //! The press became a long press: cancelled, as above, but what
+        //! the press did stands -- the frame it went to, the item it
+        //! chose -- since the context menu that follows is about where
+        //! the finger rests. A gesture undoes it instead: the first finger
+        //! was not choosing anything.
+        bool        longPress = false;
     };
 
     //! Scroll event (mouse wheel or touch pad).
