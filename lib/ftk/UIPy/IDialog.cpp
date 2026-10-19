@@ -3,6 +3,8 @@
 
 #include <ftk/UIPy/Bindings.h>
 
+#include <ftk/CorePy/Bindings.h>
+
 #include <ftk/UI/IDialog.h>
 #include <ftk/UI/Window.h>
 
@@ -25,10 +27,17 @@ namespace ftk
     {
         void iDialog(nb::module_& m)
         {
+            FTK_ENUM_PY(m, DialogSize);
+            FTK_ENUM_BIND(m, DialogSize);
+
             nb::class_<IDialog, IPopup>(m, "IDialog")
                 .def("open", &IDialog::open)
                 .def("isOpen", &IDialog::isOpen)
-                .def("setCloseCallback", &IDialog::setCloseCallback);
+                .def("setCloseCallback", &IDialog::setCloseCallback)
+                .def_prop_ro("dialogSize", &IDialog::getDialogSize)
+                .def_prop_ro("textWidth", &IDialog::getTextWidth)
+                .def("setDialogSize", &IDialog::setDialogSize,
+                    nb::arg("size"), nb::arg("textWidth") = 100);
         }
     }
 }

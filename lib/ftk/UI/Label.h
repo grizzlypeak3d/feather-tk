@@ -150,6 +150,16 @@ namespace ftk
     private:
         FTK_PRIVATE();
     };
+
+    //! The width of that many characters of ordinary text in a font: what
+    //! a label's wrap width is, and how wide a dialog sized for text is.
+    //! Characters as wide as they come in a sentence, spaces included,
+    //! rather than any one letter, so the width follows the font and the
+    //! display scale.
+    FTK_UI_API int getCharsWidth(
+        const std::shared_ptr<FontSystem>&,
+        const FontInfo&,
+        int chars);
         
     ///@}
 }

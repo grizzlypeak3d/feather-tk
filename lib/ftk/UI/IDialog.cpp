@@ -10,14 +10,27 @@
 #include <ftk/UI/IWindow.h>
 #include <ftk/UI/Label.h>
 
+#include <ftk/Core/Error.h>
+#include <ftk/Core/String.h>
+
 #include <algorithm>
+#include <array>
 #include <optional>
+#include <sstream>
 
 namespace ftk
 {
+    FTK_ENUM_IMPL(
+        DialogSize,
+        "Fit",
+        "Text",
+        "Full");
+
     struct IDialog::Private
     {
         bool open = false;
+        DialogSize dialogSize = DialogSize::Fit;
+        int textWidth = 100;
         std::function<void(void)> closeCallback;
         std::weak_ptr<IWidget> restoreFocus;
 
@@ -38,6 +51,8 @@ namespace ftk
             int shadow = 0;
             int cornerRadius = 0;
             int inset = 0;
+            // The text width in pixels, for DialogSize::Text.
+            int textWidth = 0;
         };
         SizeData size;
 
@@ -142,6 +157,29 @@ namespace ftk
         _p->closeCallback = value;
     }
 
+    DialogSize IDialog::getDialogSize() const
+    {
+        return _p->dialogSize;
+    }
+
+    int IDialog::getTextWidth() const
+    {
+        return _p->textWidth;
+    }
+
+    void IDialog::setDialogSize(DialogSize size, int textWidth)
+    {
+        FTK_P();
+        const int tmp = std::max(textWidth, 1);
+        if (size == p.dialogSize && tmp == p.textWidth)
+            return;
+        p.dialogSize = size;
+        p.textWidth = tmp;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     std::shared_ptr<IWidget> IDialog::getKeyFocus() const
     {
         return nullptr;
@@ -203,24 +241,38 @@ namespace ftk
         if (content)
         {
             const Size2I sizeHint = content->getSizeHint();
-            switch (content->getHStretch())
+            switch (p.dialogSize)
             {
-            case Stretch::Expanding:
-                size.w = gc.w();
-                break;
-            case Stretch::Fixed:
-            default:
-                size.w = sizeHint.w;
-                break;
-            }
-            switch (content->getVStretch())
-            {
-            case Stretch::Expanding:
+            case DialogSize::Text:
+                size.w = std::max(sizeHint.w, p.size.textWidth);
                 size.h = gc.h() - titleH;
                 break;
-            case Stretch::Fixed:
+            case DialogSize::Full:
+                size.w = gc.w();
+                size.h = gc.h() - titleH;
+                break;
+            case DialogSize::Fit:
             default:
-                size.h = sizeHint.h;
+                switch (content->getHStretch())
+                {
+                case Stretch::Expanding:
+                    size.w = gc.w();
+                    break;
+                case Stretch::Fixed:
+                default:
+                    size.w = sizeHint.w;
+                    break;
+                }
+                switch (content->getVStretch())
+                {
+                case Stretch::Expanding:
+                    size.h = gc.h() - titleH;
+                    break;
+                case Stretch::Fixed:
+                default:
+                    size.h = sizeHint.h;
+                    break;
+                }
                 break;
             }
         }
@@ -290,6 +342,10 @@ namespace ftk
             p.size.shadow = event.style->getSizeRole(SizeRole::Shadow, event.displayScale);
             p.size.cornerRadius = event.style->getSizeRole(SizeRole::CornerRadius, event.displayScale);
             p.size.inset = event.style->getSizeRole(SizeRole::MarginInside, event.displayScale);
+            p.size.textWidth = getCharsWidth(
+                event.fontSystem,
+                event.style->getFont(FontType::Regular, event.displayScale),
+                p.textWidth);
             p.draw.reset();
         }
     }

@@ -13,6 +13,30 @@ namespace ftk
     //! \name Dialogs
     ///@{
 
+    //! How a dialog is sized in the window it opens in. Never larger than
+    //! the window, whichever it is.
+    enum class FTK_UI_API_TYPE DialogSize
+    {
+        //! As big as its content asks for, or across the window in a
+        //! direction the content's stretch expands in. For messages,
+        //! questions and settings.
+        Fit,
+
+        //! A column of text: as wide as the text width, or as the content
+        //! if that is wider, and the height of the window. For agreements,
+        //! notes and help, which are read rather than glanced at, and whose
+        //! lines are hard to follow when they run across a wide window.
+        Text,
+
+        //! The window, less the dialog margin. For lists and reports, which
+        //! use whatever room there is.
+        Full,
+
+        Count,
+        First = Fit
+    };
+    FTK_ENUM(FTK_UI_API, DialogSize);
+
     //! Base class for dialog widgets.
     class FTK_UI_API_TYPE IDialog : public IPopup
     {
@@ -46,6 +70,20 @@ namespace ftk
 
         //! Set the close callback.
         FTK_UI_API void setCloseCallback(const std::function<void(void)>&);
+
+        //! Get how the dialog is sized.
+        FTK_UI_API DialogSize getDialogSize() const;
+
+        //! Get the width of a DialogSize::Text dialog, in characters.
+        FTK_UI_API int getTextWidth() const;
+
+        //! Set how the dialog is sized, and for DialogSize::Text, how many
+        //! characters wide it is, measured as a label's wrap width is. Fit,
+        //! the default, is what the content's stretch says. Text and Full
+        //! decide the size themselves, whatever the content's stretch, so
+        //! their content should fill the room it is given: labels in it
+        //! wrapping to fit, a scroll widget expanding.
+        FTK_UI_API void setDialogSize(DialogSize, int textWidth = 100);
 
         //! Get the key focus widget.
         FTK_UI_API virtual std::shared_ptr<IWidget> getKeyFocus() const;

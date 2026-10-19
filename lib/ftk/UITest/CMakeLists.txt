@@ -24,6 +24,7 @@ set(HEADERS
     FloatSliderTest.h
     GridLayoutTest.h
     GroupBoxTest.h
+    IDialogTest.h
     IWidgetTest.h
     IconTest.h
     IntEditSliderTest.h
@@ -87,6 +88,7 @@ set(SOURCE
     FloatSliderTest.cpp
     GridLayoutTest.cpp
     GroupBoxTest.cpp
+    IDialogTest.cpp
     IWidgetTest.cpp
     IconTest.cpp
     IntEditSliderTest.cpp

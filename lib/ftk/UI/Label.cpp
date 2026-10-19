@@ -155,6 +155,18 @@ namespace ftk
         }
     }
 
+    int getCharsWidth(
+        const std::shared_ptr<FontSystem>& fontSystem,
+        const FontInfo& fontInfo,
+        int chars)
+    {
+        // A sentence is measured: any one letter is wider or narrower than
+        // text is on average, spaces included.
+        const std::string sample = "the quick brown fox jumps over the lazy dog ";
+        return fontSystem->getSize(sample, fontInfo).w *
+            chars / static_cast<int>(sample.size());
+    }
+
     struct Label::Private
     {
         std::string text;
@@ -516,16 +528,12 @@ namespace ftk
             int wrapWidth = 0;
             if (p.wrap > 0 && !p.elide)
             {
-                // That many characters as wide as they come in ordinary
-                // text, rather than a number of pixels, so the width
-                // follows the font and the display scale. A sentence is
-                // measured for it: any one letter is wider or narrower
-                // than text is on average, spaces included.
-                const std::string sample =
-                    "the quick brown fox jumps over the lazy dog ";
-                wrapWidth =
-                    event.fontSystem->getSize(sample, p.size.fontInfo).w *
-                    p.wrap / static_cast<int>(sample.size());
+                // That many characters rather than a number of pixels, so
+                // the width follows the font and the display scale.
+                wrapWidth = getCharsWidth(
+                    event.fontSystem,
+                    p.size.fontInfo,
+                    p.wrap);
                 p.size.text = wrapToWidth(
                     event.fontSystem,
                     p.text,
