@@ -264,6 +264,13 @@ namespace ftk
             // is fifty megabytes, and copying it sixty times a second took
             // most of a core.
             std::map<std::string, std::weak_ptr<Image> > texturePoolImage;
+            // The pool entries drawn with so far this frame. A streaming
+            // texture holds two pictures, the one being drawn and the one
+            // being written, so a second uncached image of the same size in
+            // one frame -- a comparison, a dissolve -- takes an entry of its
+            // own; see drawImage(). Cycling used to give every copy fresh
+            // memory.
+            std::set<std::string> texturePoolUsed;
             LRUCache<
                 std::shared_ptr<Image>,
                 std::vector<std::shared_ptr<Texture> > > textureCache;

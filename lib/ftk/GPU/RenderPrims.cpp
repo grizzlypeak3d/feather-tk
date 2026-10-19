@@ -802,7 +802,17 @@ namespace ftk
             }
             else if (!imageOptions.cache)
             {
-                const std::string texturePoolKey = getTexturePoolKey(info);
+                // The first entry for this size not yet drawn with this
+                // frame: see Private::texturePoolUsed.
+                std::string texturePoolKey;
+                for (int i = 0; ; ++i)
+                {
+                    texturePoolKey = getTexturePoolKey(info) + " " + std::to_string(i);
+                    if (p.texturePoolUsed.insert(texturePoolKey).second)
+                    {
+                        break;
+                    }
+                }
                 bool fresh = false;
                 if (!p.texturePool.get(texturePoolKey, textures))
                 {

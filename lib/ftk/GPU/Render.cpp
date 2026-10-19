@@ -861,6 +861,7 @@ namespace ftk
             p.options = options;
             p.texturePool.setMax(options.texturePoolByteCount);
             p.textureCache.setMax(options.textureCacheByteCount);
+            p.texturePoolUsed.clear();
 
             const int glyphAtlasSize = options.glyphAtlasSize > 0 ? options.glyphAtlasSize : 4096;
             if (!p.glyphTexture || glyphAtlasSize != p.glyphAtlasSize)
