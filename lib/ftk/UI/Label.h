@@ -127,6 +127,19 @@ namespace ftk
         //! size of the wrapped text. Not for use with eliding.
         FTK_UI_API void setWrap(int);
 
+        //! Get whether the text is wrapped to the width the label is given.
+        FTK_UI_API bool getWrapToFit() const;
+
+        //! Set whether the text is wrapped to the width the label is given
+        //! rather than to the wrap width, which is then only the width the
+        //! label asks for: a paragraph fills the room a layout gives it, and
+        //! still fits when a small window gives it less. The height follows
+        //! the width, so the label asks to be measured again when the width
+        //! changes. Turning it on sets the horizontal alignment to fill, as
+        //! eliding does, and turning it off sets it back to left. Needs a
+        //! wrap width.
+        FTK_UI_API void setWrapToFit(bool);
+
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;

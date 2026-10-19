@@ -110,6 +110,44 @@ namespace ftk
                 // break in the text is kept.
                 label->setText("supercalifragilisticexpialidocious\nb");
                 app->tick();
+
+                // Wrapping to fit: across the room the label is given, which
+                // is wider here than twenty characters, so fewer lines; the
+                // size hint stays as narrow as the wrap width.
+                label->setText("one two three four five six seven eight nine ten eleven twelve");
+                app->tick();
+                const Size2I wrapped = label->getSizeHint();
+                label->setWrapToFit(true);
+                label->setWrapToFit(true);
+                FTK_CHECK(label->getWrapToFit());
+                FTK_CHECK(HAlign::Fill == label->getHAlign());
+                app->tick();
+                app->tick();
+                FTK_CHECK(label->getGeometry().w() > wrapped.w);
+                FTK_CHECK(label->getSizeHint().w <= wrapped.w);
+                FTK_CHECK(label->getSizeHint().h < wrapped.h);
+                // And narrower than the wrap width when there is less room:
+                // a width no window here is as wide as still fits.
+                std::string longText;
+                for (int i = 0; i < 20; ++i)
+                {
+                    longText += "one two three four five six seven eight nine ten ";
+                }
+                label->setText(longText);
+                label->setWrap(1000);
+                app->tick();
+                app->tick();
+                FTK_CHECK(label->getSizeHint().h > unwrapped.h);
+                label->setText("one two three four five six seven eight nine ten eleven twelve");
+                label->setWrap(20);
+                app->tick();
+                app->tick();
+                label->setWrapToFit(false);
+                FTK_CHECK(!label->getWrapToFit());
+                FTK_CHECK(HAlign::Left == label->getHAlign());
+                app->tick();
+                FTK_CHECK(label->getSizeHint() == wrapped);
+
                 label->setWrap(-1);
                 FTK_CHECK(0 == label->getWrap());
                 label->setText("one two three four five six seven eight nine ten eleven twelve");
