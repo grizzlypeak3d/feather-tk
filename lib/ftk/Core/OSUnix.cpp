@@ -7,6 +7,13 @@
 #include <ftk/Core/Memory.h>
 #include <ftk/Core/Path.h>
 
+#if defined(__linux__)
+#include <sys/vfs.h>
+#else // __linux__
+#include <sys/mount.h>
+#include <sys/param.h>
+#endif // __linux__
+
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
 #include <mach-o/dyld.h>
@@ -210,6 +217,33 @@ namespace ftk
     bool delEnv(const std::string& name)
     {
         return ::unsetenv(name.c_str()) == 0;
+    }
+
+    bool isNetworkVolume(const std::filesystem::path& path)
+    {
+        bool out = false;
+        struct statfs st;
+        if (0 == statfs(path.string().c_str(), &st))
+        {
+#if defined(__APPLE__) || defined(__FreeBSD__)
+            out = !(st.f_flags & MNT_LOCAL);
+#elif defined(__linux__)
+            // The file system types that are shares: NFS, SMB and CIFS,
+            // and the FUSE mounts, which cannot be told apart.
+            switch (st.f_type)
+            {
+            case 0x6969:     // NFS_SUPER_MAGIC
+            case 0xFF534D42: // CIFS_SUPER_MAGIC
+            case 0xFE534D42: // SMB2_SUPER_MAGIC
+            case 0x517B:     // SMB_SUPER_MAGIC
+            case 0x65735546: // FUSE_SUPER_MAGIC
+                out = true;
+                break;
+            default: break;
+            }
+#endif // __APPLE__
+        }
+        return out;
     }
 
     std::filesystem::path getExePath()

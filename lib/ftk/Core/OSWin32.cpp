@@ -199,6 +199,18 @@ namespace ftk
         return _wputenv_s(utf16.from_bytes(name).c_str(), utf16.from_bytes(std::string()).c_str()) == 0;
     }
 
+    bool isNetworkVolume(const std::filesystem::path& path)
+    {
+        // A UNC path, or a drive letter mapped to a share.
+        const std::wstring s = path.wstring();
+        if (s.size() >= 2 && L'\\' == s[0] && L'\\' == s[1])
+        {
+            return true;
+        }
+        const std::filesystem::path root = path.root_path();
+        return !root.empty() && DRIVE_REMOTE == GetDriveTypeW(root.wstring().c_str());
+    }
+
     std::filesystem::path getExePath()
     {
         std::filesystem::path out;

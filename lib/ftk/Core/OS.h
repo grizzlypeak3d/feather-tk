@@ -80,6 +80,14 @@ namespace ftk
     //! installed beside it from.
     FTK_CORE_API std::filesystem::path getExePath();
 
+    //! Whether a path is on a network volume: a share, rather than a disk
+    //! in or on the machine. A file there is not to be memory mapped: the
+    //! mapping can succeed and a page still fail to come in later -- the
+    //! connection, or the memory to bring it into -- which is a bus error
+    //! wherever the pointer is next read, and nothing can catch it. False
+    //! where the system does not say.
+    FTK_CORE_API bool isNetworkVolume(const std::filesystem::path&);
+
     //! Get the file the code at an address was loaded from: a shared
     //! library, or the executable in a static build. Pass the address of a
     //! function in the library.
