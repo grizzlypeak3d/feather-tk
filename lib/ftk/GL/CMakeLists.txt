@@ -78,7 +78,11 @@ if(APPLE)
     target_link_libraries(ftkGL PRIVATE "-framework Foundation")
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    target_link_libraries(ftkGL PRIVATE "-framework OpenGLES")
+    # No OpenGL ES framework: the functions are reached through SDL's
+    # loader (gladLoadGLES2 in Init.cpp), never linked, and on iOS the
+    # application draws through Metal with this library unused. The
+    # framework is deprecated there and its presence in the binary is
+    # what App Store review would notice.
 elseif(NOT EMSCRIPTEN)
     target_link_libraries(ftkGL PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
 endif()
