@@ -155,6 +155,18 @@ namespace ftk
         }
     }
 
+    int getCharsWidth(
+        const std::shared_ptr<FontSystem>& fontSystem,
+        const FontInfo& fontInfo,
+        int chars)
+    {
+        // A sentence is measured: any one letter is wider or narrower than
+        // text is on average, spaces included.
+        const std::string sample = "the quick brown fox jumps over the lazy dog ";
+        return fontSystem->getSize(sample, fontInfo).w *
+            chars / static_cast<int>(sample.size());
+    }
+
     struct Label::Private
     {
         std::string text;
@@ -168,6 +180,9 @@ namespace ftk
         bool elide = false;
         ElideMode elideMode = ElideMode::Right;
         int wrap = 0;
+        bool wrapToFit = false;
+        // The width the text was last given to wrap to, less the margins.
+        int fitWidth = 0;
 
         struct SizeData
         {
@@ -433,6 +448,34 @@ namespace ftk
         setDrawUpdate();
     }
 
+    bool Label::getWrapToFit() const
+    {
+        return _p->wrapToFit;
+    }
+
+    void Label::setWrapToFit(bool value)
+    {
+        FTK_P();
+        if (value == p.wrapToFit)
+            return;
+        // Filling for the same reason as eliding: a left aligned widget is
+        // laid out at its size hint, which here is only the narrowest the
+        // text may be.
+        if (value)
+        {
+            setHAlign(HAlign::Fill);
+        }
+        else if (HAlign::Fill == getHAlign())
+        {
+            setHAlign(HAlign::Left);
+        }
+        p.wrapToFit = value;
+        p.fitWidth = 0;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     Size2I Label::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -440,11 +483,25 @@ namespace ftk
 
     void Label::setGeometry(const Box2I& value)
     {
+        FTK_P();
         if (value != getGeometry())
         {
-            _p->draw.reset();
+            p.draw.reset();
         }
         IWidget::setGeometry(value);
+        if (p.wrapToFit && p.wrap > 0 && !p.elide)
+        {
+            // The height of the text only becomes knowable here, where the
+            // width is. Ask to be measured again with it; the second pass
+            // agrees, because the width does not depend on the height.
+            const int width = value.w() - p.size.hMargin * 2;
+            if (width != p.fitWidth)
+            {
+                p.fitWidth = width;
+                p.size.init = true;
+                setSizeUpdate();
+            }
+        }
     }
 
     void Label::styleEvent(const StyleEvent& event)
@@ -468,27 +525,32 @@ namespace ftk
             p.size.fontInfo = event.style->getFont(p.font, p.fontSize, event.displayScale);
             p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             p.size.text = p.text;
+            int wrapWidth = 0;
             if (p.wrap > 0 && !p.elide)
             {
-                // That many characters as wide as they come in ordinary
-                // text, rather than a number of pixels, so the width
-                // follows the font and the display scale. A sentence is
-                // measured for it: any one letter is wider or narrower
-                // than text is on average, spaces included.
-                const std::string sample =
-                    "the quick brown fox jumps over the lazy dog ";
-                const int wrapWidth =
-                    event.fontSystem->getSize(sample, p.size.fontInfo).w *
-                    p.wrap / static_cast<int>(sample.size());
+                // That many characters rather than a number of pixels, so
+                // the width follows the font and the display scale.
+                wrapWidth = getCharsWidth(
+                    event.fontSystem,
+                    p.size.fontInfo,
+                    p.wrap);
                 p.size.text = wrapToWidth(
                     event.fontSystem,
                     p.text,
                     p.size.fontInfo,
-                    wrapWidth);
+                    p.wrapToFit && p.fitWidth > 0 ? p.fitWidth : wrapWidth);
             }
             p.size.textSize = event.fontSystem->getSize(p.size.text, p.size.fontInfo);
 
             Size2I size = p.size.textSize;
+            if (p.wrapToFit && wrapWidth > 0)
+            {
+                // As wide as the wrap width, whatever width the text was
+                // last wrapped to, so the label can be given less room or
+                // more again; as tall as the text is at the width it was
+                // given.
+                size.w = std::min(size.w, wrapWidth);
+            }
             if (p.elide)
             {
                 // No wider than what is left when nothing fits, so the

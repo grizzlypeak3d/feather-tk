@@ -69,6 +69,7 @@ namespace ftk
         FTK_P();
 
         setTitle(title);
+        setDialogSize(DialogSize::Full);
 
         p.widget = FileBrowserWidget::create(
             context,

@@ -30,6 +30,7 @@
 #include <ftk/UITest/FloatModelTest.h>
 #include <ftk/UITest/GridLayoutTest.h>
 #include <ftk/UITest/GroupBoxTest.h>
+#include <ftk/UITest/IDialogTest.h>
 #include <ftk/UITest/IWidgetTest.h>
 #include <ftk/UITest/IconTest.h>
 #include <ftk/UITest/IntEditTest.h>
@@ -239,6 +240,7 @@ namespace ftk
                 p.tests.push_back(ui_test::FloatModelTest::create(context));
                 p.tests.push_back(ui_test::GridLayoutTest::create(context));
                 p.tests.push_back(ui_test::GroupBoxTest::create(context));
+                p.tests.push_back(ui_test::IDialogTest::create(context));
                 p.tests.push_back(ui_test::IWidgetTest::create(context));
                 p.tests.push_back(ui_test::IconTest::create(context));
                 p.tests.push_back(ui_test::IntEditTest::create(context));
