@@ -4,9 +4,9 @@
 #pragma once
 
 #define FTK_VERSION_MAJOR 0
-#define FTK_VERSION_MINOR 19
-#define FTK_VERSION_PATCH 0
-#define FTK_VERSION_DEV "-dev"
+#define FTK_VERSION_MINOR 18
+#define FTK_VERSION_PATCH 1
+#define FTK_VERSION_DEV ""
 
 #define FTK_VERSION_STR_(x) #x
 #define FTK_VERSION_STR(x) FTK_VERSION_STR_(x)
