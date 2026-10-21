@@ -5,6 +5,11 @@ import feather_tk as ftk
 
 import unittest
 
+try:
+    import numpy
+except ImportError:
+    numpy = None
+
 class ImageTest(unittest.TestCase):
 
     def test_image_type_enum(self):
@@ -80,6 +85,84 @@ class ImageTest(unittest.TestCase):
         img = ftk.Image(4, 4, ftk.ImageType.L_U8)
         img.tags = { "foo": "bar" }
         self.assertEqual(img.tags, { "foo": "bar" })
+
+    def test_image_data(self):
+        # Through the buffer protocol: nothing beyond Python needed.
+        img = ftk.Image(4, 2, ftk.ImageType.RGBA_U8)
+        img.zero()
+        view = img.data
+        self.assertEqual(view.shape, (2, 4, 4))
+        self.assertEqual(view.nbytes, img.byteCount)
+        self.assertFalse(view.readonly)
+        view[1, 3, 0] = 255
+        self.assertEqual(img.data[1, 3, 0], 255)
+        self.assertEqual(img.data[0, 0, 0], 0)
+
+    def test_image_data_refused(self):
+        # Packed and planar types have no array of this shape.
+        for t in (ftk.ImageType.RGB_U10, ftk.ImageType.YUV_420P_U8):
+            img = ftk.Image(4, 2, t)
+            with self.assertRaises(RuntimeError):
+                img.data
+
+    @unittest.skipIf(numpy is None, "numpy is not installed")
+    def test_image_numpy(self):
+        for t, dtype, channels in (
+            (ftk.ImageType.L_U8, numpy.uint8, 1),
+            (ftk.ImageType.LA_U16, numpy.uint16, 2),
+            (ftk.ImageType.RGB_U32, numpy.uint32, 3),
+            (ftk.ImageType.RGBA_F16, numpy.float16, 4),
+            (ftk.ImageType.RGBA_F32, numpy.float32, 4)):
+            a = numpy.asarray(ftk.Image(ftk.Size2I(4, 2), t))
+            self.assertEqual(a.shape, (2, 4, channels))
+            self.assertEqual(a.dtype, dtype)
+
+        # The image's own memory: written through one view, read in another,
+        # and kept alive by the array.
+        img = ftk.Image(4, 2, ftk.ImageType.RGBA_F32)
+        a = numpy.asarray(img)
+        a[:] = 0.0
+        a[1, 3] = (0.25, 0.5, 0.75, 1.0)
+        b = numpy.asarray(img)
+        self.assertEqual(b[1, 3].tolist(), [0.25, 0.5, 0.75, 1.0])
+        self.assertEqual(b[0, 0].tolist(), [0.0, 0.0, 0.0, 0.0])
+        del img, b
+        self.assertEqual(a[1, 3, 2], 0.75)
+
+        # Padded rows: a three byte pixel in rows aligned to four bytes,
+        # bottom up as an image is unless it says otherwise.
+        info = ftk.ImageInfo(3, 2, ftk.ImageType.RGB_U8)
+        info.layout = ftk.ImageLayout(ftk.ImageMirror(), 4, ftk.getEndian())
+        a = numpy.asarray(ftk.Image(info))
+        self.assertEqual(a.shape, (2, 3, 3))
+        self.assertEqual(a.strides, (-12, 3, 1))
+
+        # The view is the right way up either way: an image's rows are
+        # stored bottom up, as OpenGL has them, so the first row of the view
+        # is the last in memory; one marked mirror.y is stored top down, as
+        # a file reader gives it, and is seen as it is.
+        img = ftk.Image(2, 3, ftk.ImageType.L_U8)
+        img.zero()
+        a = numpy.asarray(img)
+        a[0, 1, 0] = 9
+        self.assertEqual(a.strides, (-2, 1, 1))
+        self.assertEqual(a[2].ctypes.data + 4, a[0].ctypes.data)
+        self.assertEqual(numpy.asarray(img)[0, 1, 0], 9)
+        info = ftk.ImageInfo(2, 3, ftk.ImageType.L_U8)
+        info.layout = ftk.ImageLayout(ftk.ImageMirror(False, True), 1, ftk.getEndian())
+        a = numpy.asarray(ftk.Image(info))
+        self.assertEqual(a.strides, (2, 1, 1))
+        self.assertEqual(a[0].ctypes.data + 4, a[2].ctypes.data)
+
+        # numpy's dtype and copy arguments.
+        img = ftk.Image(2, 2, ftk.ImageType.L_U8)
+        img.zero()
+        self.assertEqual(numpy.asarray(img, dtype=numpy.float32).dtype, numpy.float32)
+        c = numpy.array(img, copy=True)
+        c[0, 0] = 7
+        self.assertEqual(numpy.asarray(img)[0, 0, 0], 0)
+        with self.assertRaises(ValueError):
+            numpy.asarray(img, dtype=numpy.float32, copy=False)
 
 if __name__ == '__main__':
     unittest.main()
