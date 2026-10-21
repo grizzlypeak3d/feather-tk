@@ -3,9 +3,12 @@
 
 #include <ftk/CorePy/Bindings.h>
 
+#include <ftk/Core/Format.h>
 #include <ftk/Core/Image.h>
+#include <ftk/Core/Memory.h>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
 #include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
@@ -22,6 +25,129 @@ namespace ftk
 {
     namespace python
     {
+        namespace
+        {
+            //! The pixels in place: an array of (height, width, channels)
+            //! over the image's own memory, which keeps the image alive for
+            //! as long as the array is. Writing to it writes the image.
+            //!
+            //! As the image is seen, whatever its layout: row zero is the
+            //! top and column zero the left. A mirrored image -- a reader
+            //! that stores rows bottom up, as OpenGL does -- is walked
+            //! backwards with negative strides rather than shown the wrong
+            //! way up, which a script comparing pixels would not notice.
+            //!
+            //! Refused rather than approximated for what has no such shape:
+            //! RGB_U10 packs three channels into 32 bits, the YUV types are
+            //! planes of different sizes, and a texture image's pixels are
+            //! on the GPU. An array that looked right for those would be
+            //! wrong without saying so.
+            template<typename... Ts>
+            nb::ndarray<Ts...> getPixels(nb::handle self)
+            {
+                Image& image = nb::cast<Image&>(self);
+                const ImageInfo& info = image.getInfo();
+                if (!image.isValid() || !image.getData())
+                {
+                    throw std::runtime_error(
+                        "The image has no pixels in memory: it is empty, or "
+                        "its pixels are a texture.");
+                }
+                size_t bytes = 0;
+                bool isFloat = false;
+                switch (info.type)
+                {
+                case ImageType::L_U8:
+                case ImageType::LA_U8:
+                case ImageType::RGB_U8:
+                case ImageType::RGBA_U8:
+                    bytes = 1;
+                    break;
+                case ImageType::L_U16:
+                case ImageType::LA_U16:
+                case ImageType::RGB_U16:
+                case ImageType::RGBA_U16:
+                    bytes = 2;
+                    break;
+                case ImageType::L_U32:
+                case ImageType::LA_U32:
+                case ImageType::RGB_U32:
+                case ImageType::RGBA_U32:
+                    bytes = 4;
+                    break;
+                case ImageType::L_F16:
+                case ImageType::LA_F16:
+                case ImageType::RGB_F16:
+                case ImageType::RGBA_F16:
+                    bytes = 2;
+                    isFloat = true;
+                    break;
+                case ImageType::L_F32:
+                case ImageType::LA_F32:
+                case ImageType::RGB_F32:
+                case ImageType::RGBA_F32:
+                    bytes = 4;
+                    isFloat = true;
+                    break;
+                default:
+                    throw std::runtime_error(Format(
+                        "{0} images have no pixel array: their channels are "
+                        "packed or in planes.").arg(to_string(info.type)));
+                }
+                if (bytes > 1 && info.layout.endian != getEndian())
+                {
+                    throw std::runtime_error(
+                        "The image's bytes are in the other endian order.");
+                }
+                const size_t channels = getChannelCount(info.type);
+                const size_t rowBytes = getAlignedByteCount(
+                    info.size.w * channels * bytes,
+                    info.layout.alignment);
+                if (rowBytes % bytes != 0)
+                {
+                    throw std::runtime_error(
+                        "The image's rows are not a whole number of channels apart.");
+                }
+                const size_t shape[3] =
+                {
+                    static_cast<size_t>(info.size.h),
+                    static_cast<size_t>(info.size.w),
+                    channels
+                };
+                // In elements, not bytes.
+                int64_t strides[3] =
+                {
+                    static_cast<int64_t>(rowBytes / bytes),
+                    static_cast<int64_t>(channels),
+                    1
+                };
+                uint8_t* data = image.getData();
+                if (info.layout.mirror.y && info.size.h > 0)
+                {
+                    data += (info.size.h - 1) * rowBytes;
+                    strides[0] = -strides[0];
+                }
+                if (info.layout.mirror.x && info.size.w > 0)
+                {
+                    data += (info.size.w - 1) * channels * bytes;
+                    strides[1] = -strides[1];
+                }
+                nb::dlpack::dtype dtype;
+                dtype.code = static_cast<uint8_t>(isFloat ?
+                    nb::dlpack::dtype_code::Float :
+                    nb::dlpack::dtype_code::UInt);
+                dtype.bits = static_cast<uint8_t>(bytes * 8);
+                dtype.lanes = 1;
+                return nb::ndarray<Ts...>(
+                    data,
+                    3,
+                    shape,
+                    self,
+                    strides,
+                    dtype);
+            }
+        }
+
         void image(nb::module_& m)
         {
             // Hand-written rather than FTK_ENUM_PY: the structured enumerator
@@ -122,7 +248,42 @@ namespace ftk
                 .def_prop_ro("valid", &Image::isValid)
                 .def_prop_rw("tags", &Image::getTags, &Image::setTags, nb::rv_policy::copy)
                 .def_prop_ro("byteCount", &Image::getByteCount)
-                .def("zero", &Image::zero);
+                .def("zero", &Image::zero)
+                // A memoryview, so nothing beyond Python is needed to read
+                // it, and anything taking the buffer protocol can.
+                .def_prop_ro(
+                    "data",
+                    [](nb::handle self) { return getPixels<nb::memview>(self); },
+                    "The pixels as a memoryview of (height, width, channels) "
+                    "over the image's own memory, row zero at the top whatever "
+                    "the layout's mirror. Writing to it writes the image.")
+                // What numpy.asarray(image) asks for; numpy is only imported
+                // when numpy is the one asking.
+                .def(
+                    "__array__",
+                    [](nb::handle self, nb::handle dtype, nb::handle copy)
+                    {
+                        nb::object out = nb::cast(getPixels<nb::numpy>(self));
+                        // As numpy's protocol asks: a dtype is converted to,
+                        // which copies, and copy=False forbids the copy.
+                        if (!dtype.is_none() && !out.attr("dtype").equal(dtype))
+                        {
+                            if (!copy.is_none() && !nb::cast<bool>(copy))
+                            {
+                                throw nb::value_error(
+                                    "Converting the image's pixels to another "
+                                    "dtype needs a copy.");
+                            }
+                            return out.attr("astype")(dtype);
+                        }
+                        if (!copy.is_none() && nb::cast<bool>(copy))
+                        {
+                            return out.attr("copy")();
+                        }
+                        return out;
+                    },
+                    nb::arg("dtype") = nb::none(),
+                    nb::arg("copy") = nb::none());
         }
     }
 }
