@@ -32,10 +32,13 @@ namespace ftk
             //! as long as the array is. Writing to it writes the image.
             //!
             //! As the image is seen, whatever its layout: row zero is the
-            //! top and column zero the left. A mirrored image -- a reader
-            //! that stores rows bottom up, as OpenGL does -- is walked
-            //! backwards with negative strides rather than shown the wrong
-            //! way up, which a script comparing pixels would not notice.
+            //! top and column zero the left. An image's rows are stored
+            //! bottom up unless its layout says otherwise, as OpenGL has
+            //! them and as a render reads back; mirror.y marks rows stored
+            //! top down, as a file reader gives them. The bottom up ones are
+            //! walked backwards with negative strides rather than shown the
+            //! wrong way up, which a script comparing pixels would not
+            //! notice.
             //!
             //! Refused rather than approximated for what has no such shape:
             //! RGB_U10 packs three channels into 32 bits, the YUV types are
@@ -122,7 +125,7 @@ namespace ftk
                     1
                 };
                 uint8_t* data = image.getData();
-                if (info.layout.mirror.y && info.size.h > 0)
+                if (!info.layout.mirror.y && info.size.h > 0)
                 {
                     data += (info.size.h - 1) * rowBytes;
                     strides[0] = -strides[0];

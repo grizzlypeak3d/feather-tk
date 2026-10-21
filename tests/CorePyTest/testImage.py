@@ -129,24 +129,30 @@ class ImageTest(unittest.TestCase):
         del img, b
         self.assertEqual(a[1, 3, 2], 0.75)
 
-        # Padded rows: a three byte pixel in rows aligned to four bytes.
+        # Padded rows: a three byte pixel in rows aligned to four bytes,
+        # bottom up as an image is unless it says otherwise.
         info = ftk.ImageInfo(3, 2, ftk.ImageType.RGB_U8)
         info.layout = ftk.ImageLayout(ftk.ImageMirror(), 4, ftk.getEndian())
         a = numpy.asarray(ftk.Image(info))
         self.assertEqual(a.shape, (2, 3, 3))
-        self.assertEqual(a.strides, (12, 3, 1))
+        self.assertEqual(a.strides, (-12, 3, 1))
 
-        # A mirrored layout is seen the right way up: the first row of the
-        # view is the last in memory.
-        info = ftk.ImageInfo(2, 3, ftk.ImageType.L_U8)
-        info.layout = ftk.ImageLayout(ftk.ImageMirror(False, True), 1, ftk.getEndian())
-        img = ftk.Image(info)
+        # The view is the right way up either way: an image's rows are
+        # stored bottom up, as OpenGL has them, so the first row of the view
+        # is the last in memory; one marked mirror.y is stored top down, as
+        # a file reader gives it, and is seen as it is.
+        img = ftk.Image(2, 3, ftk.ImageType.L_U8)
         img.zero()
         a = numpy.asarray(img)
         a[0, 1, 0] = 9
         self.assertEqual(a.strides, (-2, 1, 1))
         self.assertEqual(a[2].ctypes.data + 4, a[0].ctypes.data)
         self.assertEqual(numpy.asarray(img)[0, 1, 0], 9)
+        info = ftk.ImageInfo(2, 3, ftk.ImageType.L_U8)
+        info.layout = ftk.ImageLayout(ftk.ImageMirror(False, True), 1, ftk.getEndian())
+        a = numpy.asarray(ftk.Image(info))
+        self.assertEqual(a.strides, (2, 1, 1))
+        self.assertEqual(a[0].ctypes.data + 4, a[2].ctypes.data)
 
         # numpy's dtype and copy arguments.
         img = ftk.Image(2, 2, ftk.ImageType.L_U8)
