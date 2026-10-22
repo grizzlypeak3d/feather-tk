@@ -24,6 +24,12 @@ namespace ftk
         //! question: the extensions are the driver's, not the context's.
         FTK_GL_API bool hasExtension(const std::string&);
 
+        //! Get whether the current context is rendered in software: Mesa's
+        //! llvmpipe or softpipe. Some paths that a GPU driver makes free are
+        //! serial copies on the CPU there, and are done another way. The
+        //! answer is kept after the first question, as with hasExtension().
+        FTK_GL_API bool isSoftwareRenderer();
+
         //! Get the glReadPixels format.
         FTK_GL_API unsigned int getReadPixelsFormat(ImageType);
 

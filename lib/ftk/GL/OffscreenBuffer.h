@@ -143,7 +143,16 @@ namespace ftk
             //! how rows are aligned and the byte order. The first row is
             //! the bottom one, as OpenGL has it, which the image says of
             //! itself. Nothing comes back for a type that cannot be read.
+            //!
+            //! The image is one of the last few read, when nothing else
+            //! holds it any more, rather than a new one each time: a large
+            //! image is fresh memory from the system, paged in as it is
+            //! written, and that costs more than the read itself.
             FTK_GL_API std::shared_ptr<Image> read(const ImageInfo&);
+
+            //! Read the buffer back into an image, as above. Returns
+            //! whether the image was read.
+            FTK_GL_API bool read(const std::shared_ptr<Image>&);
 
             //! Get whether the buffer can be read back as a type of image.
             FTK_GL_API static bool canRead(ImageType);
