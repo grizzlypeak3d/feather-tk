@@ -848,15 +848,7 @@ namespace ftk
                 if (!p.textureCache.get(image, textures))
                 {
                     TextureOptions options;
-                    options.filters = imageOptions.imageFilters;
-                    if (ImageFilter::HighQuality == options.filters.minify)
-                    {
-                        options.filters.minify = ImageFilter::Nearest;
-                    }
-                    if (ImageFilter::HighQuality == options.filters.magnify)
-                    {
-                        options.filters.magnify = ImageFilter::Nearest;
-                    }
+                    options.filters = getTextureFilters(imageOptions.imageFilters);
                     textures.push_back(Texture::wrap(
                         info, static_cast<unsigned int>(handle), options));
                     p.textureCache.add(image, textures, image->getByteCount());
@@ -877,6 +869,12 @@ namespace ftk
                 textures = _getTextures(info, imageOptions.imageFilters);
                 _copyTextures(image, textures);
                 p.textureCache.add(image, textures, image->getByteCount());
+            }
+            // Textures used again keep the filters they were made with.
+            const ImageFilters textureFilters = getTextureFilters(imageOptions.imageFilters);
+            for (const auto& texture : textures)
+            {
+                texture->setFilters(textureFilters);
             }
             p.diag.textures += textures.size();
 

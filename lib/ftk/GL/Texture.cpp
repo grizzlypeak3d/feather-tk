@@ -427,6 +427,7 @@ namespace ftk
             ImageInfo imageInfo;
             GLuint pbo = 0;
             GLuint id = 0;
+            ImageFilters filters;
             //! Whether the texture is deleted with this object.
             bool owned = true;
             //! Whether three channel images are widened to four as they are
@@ -498,6 +499,7 @@ namespace ftk
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getTextureFilter(options.filters.minify));
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getTextureFilter(options.filters.magnify));
+            p.filters = options.filters;
             glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
@@ -538,6 +540,7 @@ namespace ftk
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getTextureFilter(options.filters.minify));
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getTextureFilter(options.filters.magnify));
+            p.filters = options.filters;
         }
 
         Texture::~Texture()
@@ -815,6 +818,18 @@ namespace ftk
                     data);
             }
             return true;
+        }
+
+        void Texture::setFilters(const ImageFilters& value)
+        {
+            FTK_P();
+            if (value == p.filters)
+                return;
+            p.filters = value;
+            const UploadUnit uploadUnit;
+            glBindTexture(GL_TEXTURE_2D, p.id);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getTextureFilter(value.minify));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getTextureFilter(value.magnify));
         }
 
         void Texture::bind()

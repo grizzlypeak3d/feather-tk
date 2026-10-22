@@ -33,6 +33,11 @@ namespace ftk
         std::string imageScaleXFragmentSource();
         std::string imageScaleYFragmentSource();
 
+        //! The filters an image's textures are made with: the two pass
+        //! path weighs the texels itself, so it wants them as they are
+        //! rather than blended in pairs first.
+        ImageFilters getTextureFilters(const ImageFilters&);
+
         struct Render::Private
         {
             Size2I size;

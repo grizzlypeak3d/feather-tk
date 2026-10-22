@@ -188,6 +188,13 @@ namespace ftk
                 p.texturePool.getCount());
         }
 
+        void Render::clearTextureCache()
+        {
+            FTK_P();
+            p.textureCache.clear();
+            _cacheTotalsUpdate();
+        }
+
         size_t Render::getTextureCacheByteCount()
         {
             return textureCacheByteCount;
@@ -333,6 +340,20 @@ namespace ftk
             return _p->diag;
         }
 
+        ImageFilters getTextureFilters(const ImageFilters& value)
+        {
+            ImageFilters out = value;
+            if (ImageFilter::HighQuality == out.minify)
+            {
+                out.minify = ImageFilter::Nearest;
+            }
+            if (ImageFilter::HighQuality == out.magnify)
+            {
+                out.magnify = ImageFilter::Nearest;
+            }
+            return out;
+        }
+
         std::vector<std::shared_ptr<Texture> > Render::_getTextures(
             const ImageInfo& info,
             const ImageFilters& imageFilters,
@@ -340,17 +361,7 @@ namespace ftk
         {
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
-            options.filters = imageFilters;
-            // The two pass path weighs the texels itself, so it wants them as
-            // they are rather than blended in pairs first.
-            if (ImageFilter::HighQuality == options.filters.minify)
-            {
-                options.filters.minify = ImageFilter::Nearest;
-            }
-            if (ImageFilter::HighQuality == options.filters.magnify)
-            {
-                options.filters.magnify = ImageFilter::Nearest;
-            }
+            options.filters = getTextureFilters(imageFilters);
             options.pbo = info.size.w >= pboSizeMin || info.size.h >= pboSizeMin;
             switch (info.type)
             {
