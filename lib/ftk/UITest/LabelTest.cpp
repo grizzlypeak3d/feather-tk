@@ -83,6 +83,16 @@ namespace ftk
                 FTK_CHECK(label->getSizeHint().w < textWidth);
                 // Laid out across the room it is given, not at its hint.
                 FTK_CHECK(label->getGeometry().w() > label->getSizeHint().w);
+                // Asking for the whole text's width, and eliding only when
+                // given less.
+                label->setElideFullWidth(true);
+                label->setElideFullWidth(true);
+                FTK_CHECK(label->getElideFullWidth());
+                app->tick();
+                FTK_CHECK(textWidth == label->getSizeHint().w);
+                label->setElideFullWidth(false);
+                app->tick();
+                FTK_CHECK(label->getSizeHint().w < textWidth);
                 label->setElide(true, ElideMode::Left);
                 FTK_CHECK(ElideMode::Left == label->getElideMode());
                 app->tick();

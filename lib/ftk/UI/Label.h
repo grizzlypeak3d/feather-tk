@@ -114,6 +114,16 @@ namespace ftk
         //! never split.
         FTK_UI_API void setElide(bool, ElideMode = ElideMode::Right);
 
+        //! Get whether an eliding label asks for the whole text's width.
+        FTK_UI_API bool getElideFullWidth() const;
+
+        //! Set whether an eliding label asks for the whole text's width
+        //! rather than the ellipsis's: it then takes the room the text
+        //! needs where there is room, and elides only when it is given
+        //! less. For a label beside others whose layout shares out what
+        //! space there is, rather than one that would widen its parent.
+        FTK_UI_API void setElideFullWidth(bool);
+
         //! Get the width the text is wrapped to, in characters.
         FTK_UI_API int getWrap() const;
 

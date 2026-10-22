@@ -179,6 +179,7 @@ namespace ftk
         bool clipText = false;
         bool elide = false;
         ElideMode elideMode = ElideMode::Right;
+        bool elideFullWidth = false;
         int wrap = 0;
         bool wrapToFit = false;
         // The width the text was last given to wrap to, less the margins.
@@ -403,6 +404,22 @@ namespace ftk
         return _p->elideMode;
     }
 
+    bool Label::getElideFullWidth() const
+    {
+        return _p->elideFullWidth;
+    }
+
+    void Label::setElideFullWidth(bool value)
+    {
+        FTK_P();
+        if (value == p.elideFullWidth)
+            return;
+        p.elideFullWidth = value;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
     void Label::setElide(bool value, ElideMode mode)
     {
         FTK_P();
@@ -551,7 +568,7 @@ namespace ftk
                 // given.
                 size.w = std::min(size.w, wrapWidth);
             }
-            if (p.elide)
+            if (p.elide && !p.elideFullWidth)
             {
                 // No wider than what is left when nothing fits, so the
                 // text never decides how wide the label's parent is.
