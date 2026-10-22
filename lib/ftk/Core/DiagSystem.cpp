@@ -58,6 +58,13 @@ namespace ftk
         addSampler(
             "Memory/Image pool: {0}MB",
             [] { return Image::getBufferPoolByteCount() / megabyte; });
+        // What the images and the pool are kept within together, which a
+        // player sets to its video cache size: a pool that is large while
+        // the images are small is the room a drained cache gave up, and
+        // reads as a leak without the limit beside it.
+        addSampler(
+            "Memory/Image limit: {0}MB",
+            [] { return Image::getBufferPoolMax() / megabyte; });
 
         addSampler(
             "Objects/Images: {0}",
