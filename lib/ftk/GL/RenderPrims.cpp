@@ -768,10 +768,11 @@ namespace ftk
                     p.texturePool.add(texturePoolKey, textures, getByteCount(textures));
                     fresh = true;
                 }
-                // The same image drawn again is not copied again; see the
-                // GPU renderer.
+                // The same image drawn again is not copied again when the
+                // options allow it (ImageOptions::reuse); see the GPU
+                // renderer.
                 auto& uploaded = p.texturePoolImage[texturePoolKey];
-                if (fresh || uploaded.lock() != image)
+                if (fresh || !imageOptions.reuse || uploaded.lock() != image)
                 {
                     _copyTextures(image, textures);
                     uploaded = image;

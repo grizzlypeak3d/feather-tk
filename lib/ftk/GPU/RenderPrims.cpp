@@ -824,7 +824,7 @@ namespace ftk
                     fresh = true;
                 }
                 auto& uploaded = p.texturePoolImage[texturePoolKey];
-                if (fresh || uploaded.lock() != image)
+                if (fresh || !imageOptions.reuse || uploaded.lock() != image)
                 {
                     _copyTextures(image, textures);
                     uploaded = image;

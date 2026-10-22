@@ -125,6 +125,15 @@ namespace ftk
         ImageFilters     imageFilters;
         bool             cache          = true;
 
+        //! Whether the same image drawn again, with the cache off, is
+        //! copied to its textures again. Off, the default, it is: pixels
+        //! changed in place are drawn as they are. On, it is not: for a
+        //! video's frame, which is not changed in place and is drawn at
+        //! the display's rate against the movie's -- a 4K 16-bit frame is
+        //! fifty megabytes, and copying it sixty times a second took most
+        //! of a core.
+        bool             reuse          = false;
+
         bool operator == (const ImageOptions&) const = default;
     };
         
