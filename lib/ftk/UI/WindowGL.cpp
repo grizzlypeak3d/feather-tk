@@ -26,6 +26,8 @@
 #include <SDL3/SDL.h>
 #endif // FTK_SDL2
 
+#include <algorithm>
+#include <functional>
 #include <map>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
@@ -33,6 +35,15 @@
 
 namespace ftk
 {
+    namespace
+    {
+        // The windows the frame samplers read. The samplers are added once,
+        // by the first window, so they read every window rather than that
+        // one: a presentation window is where the work is, and the first
+        // window may be closed before the others.
+        std::vector<std::weak_ptr<Window> > diagWindows;
+    }
+
     struct Window::Private
     {
         std::weak_ptr<Context> context;
@@ -92,48 +103,52 @@ namespace ftk
             context->getLogSystem(),
             context->getSystem<FontSystem>());
 
-        auto diagSystem = context->getSystem<DiagSystem>();
-        std::weak_ptr<Window> windowWeak(std::dynamic_pointer_cast<Window>(shared_from_this()));
-        diagSystem->addSampler(
-            "ftk Frame/Time: {0}ms",
-            [windowWeak]
+        diagWindows.push_back(std::dynamic_pointer_cast<Window>(shared_from_this()));
+        // The largest value over the windows that are showing: the slowest
+        // window is the one that holds playback back.
+        const auto diagMax = [](const std::function<int64_t(const RenderDiag&)>& value)
+        {
+            int64_t out = 0;
+            for (auto i = diagWindows.begin(); i != diagWindows.end();)
             {
-                auto window = windowWeak.lock();
-                return window ? window->_p->render->getDiag().time : 0;
-            },
+                if (auto window = i->lock())
+                {
+                    if (window->isVisible(false) && window->_p->render)
+                    {
+                        out = std::max(out, value(window->_p->render->getDiag()));
+                    }
+                    ++i;
+                }
+                else
+                {
+                    i = diagWindows.erase(i);
+                }
+            }
+            return out;
+        };
+        auto diagSystem = context->getSystem<DiagSystem>();
+        diagSystem->addSampler(
+            "Frame/Time: {0}ms",
+            [diagMax] { return diagMax([](const RenderDiag& diag) { return diag.time; }); },
             // Sampled in microseconds so the graph keeps its detail, read in
             // milliseconds because that is the unit a frame is thought about
             // in.
             DiagFormat{ 1000.0, 1 });
         diagSystem->addSampler(
-            "ftk Frame/Peak: {0}ms",
-            [windowWeak]
-            {
-                auto window = windowWeak.lock();
-                return window ? window->_p->render->getDiag().timePeak : 0;
-            },
+            "Frame/Peak: {0}ms",
+            [diagMax] { return diagMax([](const RenderDiag& diag) { return diag.timePeak; }); },
             DiagFormat{ 1000.0, 1 });
         diagSystem->addSampler(
-            "ftk Frame/Triangles: {0}",
-            [windowWeak]
-            {
-                auto window = windowWeak.lock();
-                return window ? window->_p->render->getDiag().triangles : 0;
-            });
+            "Draw/Triangles: {0}",
+            [diagMax] { return diagMax([](const RenderDiag& diag) { return diag.triangles; }); });
+        // Textures drawn from in a frame, not textures alive; those are
+        // "GPU objects/Textures".
         diagSystem->addSampler(
-            "ftk Frame/Textures: {0}",
-            [windowWeak]
-            {
-                auto window = windowWeak.lock();
-                return window ? window->_p->render->getDiag().textures : 0;
-            });
+            "Draw/Image textures: {0}",
+            [diagMax] { return diagMax([](const RenderDiag& diag) { return diag.textures; }); });
         diagSystem->addSampler(
-            "ftk Frame/Glyphs: {0}",
-            [windowWeak]
-            {
-                auto window = windowWeak.lock();
-                return window ? window->_p->render->getDiag().glyphs : 0;
-            });
+            "Draw/Glyphs: {0}",
+            [diagMax] { return diagMax([](const RenderDiag& diag) { return diag.glyphs; }); });
 
         setVisible(false);
     }

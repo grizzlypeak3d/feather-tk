@@ -11,7 +11,9 @@
 
 #include <ftk/Core/Format.h>
 
+#include <algorithm>
 #include <list>
+#include <map>
 #include <optional>
 
 namespace ftk
@@ -139,7 +141,10 @@ namespace ftk
             void _samplesUpdate();
 
             std::map<ColorRole, std::list<int64_t> > _samples;
-            int64_t _samplesMax = 0;
+            // Each line has a scale of its own: a graph's lines are seldom in
+            // the same units, and on a shared scale the small ones lie flat
+            // along the bottom. The readouts give the values.
+            std::map<ColorRole, int64_t> _samplesMax;
 
             struct SizeData
             {
@@ -245,14 +250,18 @@ namespace ftk
             for (const auto& i : _samples)
             {
                 const std::vector<int64_t> samples(i.second.begin(), i.second.end());
+                const auto j = _samplesMax.find(i.first);
+                const float max = j != _samplesMax.end() && j->second > 0 ?
+                    static_cast<float>(j->second) :
+                    1.F;
                 std::vector<std::pair<ftk::V2I, ftk::V2I> > lines;
                 int x = g2.min.x;
                 int y = g2.min.y;
                 int h = g2.h();
                 for (int i = 1; i < static_cast<int>(samples.size()); ++i, x += _size.sampleSize)
                 {
-                    const float v0 = samples[i - 1] / static_cast<float>(_samplesMax);
-                    const float v1 = samples[i] / static_cast<float>(_samplesMax);
+                    const float v0 = samples[i - 1] / max;
+                    const float v1 = samples[i] / max;
                     lines.push_back(std::make_pair(
                         ftk::V2I(x, y + h - 1 - v0 * h),
                         ftk::V2I(x + _size.sampleSize, y + h - 1 - v1 * h)));
@@ -268,31 +277,19 @@ namespace ftk
 
         void GraphSubWidget::_samplesUpdate()
         {
-            int64_t max = 0;
-            bool maxInit = true;
-            bool changed = false;
+            std::map<ColorRole, int64_t> max;
             for (const auto& i : _samples)
             {
+                int64_t value = 0;
                 for (auto j : i.second)
                 {
-                    if (maxInit)
-                    {
-                        max = j;
-                        maxInit = false;
-                    }
-                    else
-                    {
-                        max = std::max(max, j);
-                    }
+                    value = std::max(value, j);
                 }
+                max[i.first] = value;
             }
             if (max != _samplesMax)
             {
                 _samplesMax = max;
-                changed = true;
-            }
-            if (changed)
-            {
                 setDrawUpdate();
             }
         }

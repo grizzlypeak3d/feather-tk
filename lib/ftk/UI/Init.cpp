@@ -22,7 +22,7 @@ namespace ftk
 
         auto diagSystem = context->getSystem<DiagSystem>();
         diagSystem->addSampler(
-            "ftk Objects/IWidgets: {0}",
+            "Objects/Widgets: {0}",
             [] { return IWidget::getObjectCount(); });
 
         if (!context->getSystem<ClipboardSystem>())

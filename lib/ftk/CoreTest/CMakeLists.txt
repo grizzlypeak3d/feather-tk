@@ -5,6 +5,7 @@ set(HEADERS
     ColorTest.h
     CommandTest.h
     CmdLineTest.h
+    DiagSystemTest.h
     ErrorTest.h
     FileIOTest.h
     FontSystemTest.h
@@ -40,6 +41,7 @@ set(SOURCE
     CmdLineTest.cpp
     ColorTest.cpp
     CommandTest.cpp
+    DiagSystemTest.cpp
     ErrorTest.cpp
     FileIOTest.cpp
     FontSystemTest.cpp

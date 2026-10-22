@@ -379,6 +379,18 @@ namespace ftk
 
         namespace
         {
+            // What the textures hold, which is not what the image does: three
+            // channels are uploaded as four.
+            size_t getByteCount(const std::vector<std::shared_ptr<Texture> >& textures)
+            {
+                size_t out = 0;
+                for (const auto& texture : textures)
+                {
+                    out += texture->getInfo().getByteCount();
+                }
+                return out;
+            }
+
             std::string getTexturePoolKey(const ImageInfo& value)
             {
                 std::stringstream ss;
@@ -851,7 +863,7 @@ namespace ftk
                     options.filters = getTextureFilters(imageOptions.imageFilters);
                     textures.push_back(Texture::wrap(
                         info, static_cast<unsigned int>(handle), options));
-                    p.textureCache.add(image, textures, image->getByteCount());
+                    p.textureCache.add(image, textures, getByteCount(textures));
                 }
             }
             else if (!imageOptions.cache)
@@ -860,7 +872,7 @@ namespace ftk
                 if (!p.texturePool.get(texturePoolKey, textures))
                 {
                     textures = _getTextures(info, imageOptions.imageFilters);
-                    p.texturePool.add(texturePoolKey, textures, image->getByteCount());
+                    p.texturePool.add(texturePoolKey, textures, getByteCount(textures));
                 }
                 _copyTextures(image, textures);
             }
@@ -868,7 +880,7 @@ namespace ftk
             {
                 textures = _getTextures(info, imageOptions.imageFilters);
                 _copyTextures(image, textures);
-                p.textureCache.add(image, textures, image->getByteCount());
+                p.textureCache.add(image, textures, getByteCount(textures));
             }
             // Textures used again keep the filters they were made with.
             const ImageFilters textureFilters = getTextureFilters(imageOptions.imageFilters);

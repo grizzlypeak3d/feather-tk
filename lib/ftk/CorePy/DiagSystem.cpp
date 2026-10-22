@@ -49,7 +49,16 @@ namespace ftk
                     nb::arg("sampler"),
                     nb::arg("format") = DiagFormat())
                 .def("getFormat", &DiagSystem::getFormat, nb::arg("id"))
-                .def_prop_ro("groups", &DiagSystem::getGroups)
+                .def_prop_ro(
+                    "groups",
+                    &DiagSystem::getGroups,
+                    "The sampler groups, in the order they are shown.")
+                .def_prop_rw(
+                    "groupOrder",
+                    &DiagSystem::getGroupOrder,
+                    &DiagSystem::setGroupOrder,
+                    "The groups shown first, in order; the rest follow in "
+                    "the order they were added.")
                 .def("getNames", &DiagSystem::getNames, nb::arg("group"))
                 .def("hasSampler", &DiagSystem::hasSampler, nb::arg("id"))
                 .def_prop_rw(
