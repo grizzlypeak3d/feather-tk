@@ -146,6 +146,10 @@ namespace ftk
             //! Get the OpenGL texture ID.
             FTK_GL_API unsigned int getID() const;
 
+            //! Set the filters. A texture used again, from a cache or a
+            //! pool, keeps the filters it was made with otherwise.
+            FTK_GL_API void setFilters(const ImageFilters&);
+
             //! \name Copy
             //! Copy image data to the texture.
             ///@{

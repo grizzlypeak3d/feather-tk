@@ -86,6 +86,7 @@
 #include <ftk/CoreTest/CmdLineTest.h>
 #include <ftk/CoreTest/ColorTest.h>
 #include <ftk/CoreTest/CommandTest.h>
+#include <ftk/CoreTest/DiagSystemTest.h>
 #include <ftk/CoreTest/ErrorTest.h>
 #include <ftk/CoreTest/FileIOTest.h>
 #include <ftk/CoreTest/FontSystemTest.h>
@@ -172,6 +173,7 @@ namespace ftk
             p.tests.push_back(core_test::CmdLineTest::create(context));
             p.tests.push_back(core_test::ColorTest::create(context));
             p.tests.push_back(core_test::CommandTest::create(context));
+            p.tests.push_back(core_test::DiagSystemTest::create(context));
             p.tests.push_back(core_test::ErrorTest::create(context));
             p.tests.push_back(core_test::FileIOTest::create(context));
             p.tests.push_back(core_test::FontSystemTest::create(context));

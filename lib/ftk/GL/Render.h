@@ -54,6 +54,11 @@ namespace ftk
             FTK_GL_API static size_t getTexturePoolByteCount();
             FTK_GL_API static size_t getTexturePoolCount();
 
+            //! Clear this renderer's texture cache, so that images drawn
+            //! again are copied in again: for images whose pixels have
+            //! been changed in place since they were drawn.
+            FTK_GL_API void clearTextureCache();
+
             ///@}
 
             FTK_GL_API void begin(

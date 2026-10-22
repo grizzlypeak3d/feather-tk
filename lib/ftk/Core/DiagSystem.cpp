@@ -22,6 +22,8 @@ namespace ftk
     {
         std::vector<std::pair<std::string, std::function<int64_t(void)> > > samplers;
         std::vector<std::string> groups;
+        std::vector<std::string> groupOrder;
+        std::vector<std::string> groupsOrdered;
         std::map<std::string, std::vector<std::string> > names;
         std::map<std::string, DiagFormat> formats;
         std::shared_ptr<Observable<size_t> > samplesMax;
@@ -42,20 +44,33 @@ namespace ftk
         p.samples = ObservableMap<std::string, std::vector<int64_t> >::create();
         p.samplesInc = ObservableMap<std::string, int64_t>::create();
 
+        setGroupOrder({
+            "Frame",
+            "Memory",
+            "GPU memory",
+            "Draw",
+            "Objects",
+            "GPU objects" });
+
         addSampler(
-            "ftk Memory/Images: {0}MB",
+            "Memory/Images: {0}MB",
             [] { return Image::getTotalByteCount() / megabyte; });
-
         addSampler(
-            "ftk Memory/Image buffer pool: {0}MB",
+            "Memory/Image pool: {0}MB",
             [] { return Image::getBufferPoolByteCount() / megabyte; });
+        // What the images and the pool are kept within together, which a
+        // player sets to its video cache size: a pool that is large while
+        // the images are small is the room a drained cache gave up, and
+        // reads as a leak without the limit beside it.
+        addSampler(
+            "Memory/Image limit: {0}MB",
+            [] { return Image::getBufferPoolMax() / megabyte; });
 
         addSampler(
-            "ftk Objects/Images: {0}",
+            "Objects/Images: {0}",
             [] { return Image::getObjectCount(); });
-
         addSampler(
-            "ftk Objects/File I/O: {0}",
+            "Objects/File I/O: {0}",
             [] { return FileIO::getObjectCount(); });
 
         p.logTimer = Timer::create(context);
@@ -89,6 +104,7 @@ namespace ftk
             if (i == p.groups.end())
             {
                 p.groups.push_back(group);
+                _groupsUpdate();
             }
             p.names[group].push_back(name);
         }
@@ -96,7 +112,40 @@ namespace ftk
 
     const std::vector<std::string>& DiagSystem::getGroups() const
     {
-        return _p->groups;
+        return _p->groupsOrdered;
+    }
+
+    const std::vector<std::string>& DiagSystem::getGroupOrder() const
+    {
+        return _p->groupOrder;
+    }
+
+    void DiagSystem::setGroupOrder(const std::vector<std::string>& value)
+    {
+        FTK_P();
+        p.groupOrder = value;
+        _groupsUpdate();
+    }
+
+    void DiagSystem::_groupsUpdate()
+    {
+        FTK_P();
+        p.groupsOrdered.clear();
+        for (const auto& group : p.groupOrder)
+        {
+            if (std::find(p.groups.begin(), p.groups.end(), group) != p.groups.end() &&
+                std::find(p.groupsOrdered.begin(), p.groupsOrdered.end(), group) == p.groupsOrdered.end())
+            {
+                p.groupsOrdered.push_back(group);
+            }
+        }
+        for (const auto& group : p.groups)
+        {
+            if (std::find(p.groupsOrdered.begin(), p.groupsOrdered.end(), group) == p.groupsOrdered.end())
+            {
+                p.groupsOrdered.push_back(group);
+            }
+        }
     }
 
     std::vector<std::string> DiagSystem::getNames(const std::string& group) const
@@ -135,7 +184,7 @@ namespace ftk
         if (p.samplesMax->setIfChanged(value))
         {
             auto samples = p.samples->get();
-            for (auto i : samples)
+            for (auto& i : samples)
             {
                 if (i.second.size() > value)
                 {
@@ -186,7 +235,8 @@ namespace ftk
             samples[i.first].push_back(i.second);
         }
         const size_t max = p.samplesMax->get();
-        for (auto i : samples)
+        // By reference: trimming a copy left every sample ever taken.
+        for (auto& i : samples)
         {
             if (i.second.size() > max)
             {
@@ -234,7 +284,7 @@ namespace ftk
         const auto samples = p.samples->get();
         std::vector<std::string> lines;
         lines.push_back(std::string());
-        for (const auto& group : p.groups)
+        for (const auto& group : p.groupsOrdered)
         {
             lines.push_back(Format("    {0}:").arg(group));
             for (const auto& name : p.names[group])

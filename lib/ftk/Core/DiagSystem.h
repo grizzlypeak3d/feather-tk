@@ -51,7 +51,9 @@ namespace ftk
         //! Create a new system.
         FTK_CORE_API static std::shared_ptr<DiagSystem> create(const std::shared_ptr<Context>&);
 
-        //! Add a sampler function.
+        //! Add a sampler function. The id is the group and then the name,
+        //! "Group/Name: {0}", the name being the format string for the
+        //! readout. An id already added is left as it is.
         FTK_CORE_API void addSampler(
             const std::string&,
             const std::function<int64_t(void)>&,
@@ -60,8 +62,18 @@ namespace ftk
         //! Get how a sampler's value should be formatted.
         FTK_CORE_API DiagFormat getFormat(const std::string& id) const;
 
-        //! Get the sampler groups.
+        //! Get the sampler groups, in the order they are shown.
         FTK_CORE_API const std::vector<std::string>& getGroups() const;
+
+        //! Get the group order.
+        FTK_CORE_API const std::vector<std::string>& getGroupOrder() const;
+
+        //! Set the group order: the groups named come first, in that order,
+        //! and the rest follow in the order they were added. The default
+        //! puts what the application is doing -- its frames and memory --
+        //! ahead of the object counts a leak is hunted with; an application
+        //! puts its own groups in front of it.
+        FTK_CORE_API void setGroupOrder(const std::vector<std::string>&);
 
         //! Get the sampler names in a group.
         FTK_CORE_API std::vector<std::string> getNames(const std::string& group) const;
@@ -100,6 +112,7 @@ namespace ftk
         FTK_CORE_API std::chrono::milliseconds getTickTime() const override;
 
     private:
+        void _groupsUpdate();
         void _log();
 
         FTK_PRIVATE();

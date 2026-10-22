@@ -265,6 +265,55 @@ namespace ftk
                 FTK_CHECK(2 == released);
                 FTK_CHECK(texture->copy(pixels));
             }
+            {
+                // Textures used again, from the pool or the cache, take the
+                // filters they are drawn with: a black and a white texel
+                // magnified, with a hard edge between them and then a ramp.
+                auto window = createWindow(_context);
+                const Size2I size(16, 16);
+                auto buffer = OffscreenBuffer::create(size);
+                OffscreenBufferBinding bufferBinding(buffer);
+                auto render = Render::create(logSystem, fontSystem);
+
+                auto image = Image::create(2, 1, ImageType::L_U8);
+                image->getData()[0] = 0;
+                image->getData()[1] = 255;
+                const auto draw = [&](ImageFilter filter, bool cache)
+                {
+                    render->begin(size);
+                    render->clearViewport(Color4F(0.F, 0.F, 0.F, 1.F));
+                    ImageOptions imageOptions;
+                    imageOptions.imageFilters.minify = filter;
+                    imageOptions.imageFilters.magnify = filter;
+                    imageOptions.cache = cache;
+                    render->drawImage(
+                        image,
+                        Box2F(0.F, 0.F, 16.F, 16.F),
+                        Color4F(1.F, 1.F, 1.F, 1.F),
+                        imageOptions);
+                    render->end();
+                    auto out = buffer->read(ImageInfo(size, ImageType::RGBA_U8));
+                    return out->getData()[(8 * 16 + 7) * 4];
+                };
+                for (bool cache : { false, true })
+                {
+                    FTK_CHECK(0 == draw(ImageFilter::Nearest, cache));
+                    const uint8_t linear = draw(ImageFilter::Linear, cache);
+                    FTK_CHECK(linear > 0 && linear < 255);
+                    FTK_CHECK(0 == draw(ImageFilter::Nearest, cache));
+                }
+
+                // The cache copies an image in once: pixels changed in place
+                // are drawn when the cache is cleared.
+                const size_t count = Render::getTextureCacheCount();
+                image->getData()[0] = 255;
+                FTK_CHECK(0 == draw(ImageFilter::Nearest, true));
+                FTK_CHECK(count == Render::getTextureCacheCount());
+                render->clearTextureCache();
+                FTK_CHECK(count - 1 == Render::getTextureCacheCount());
+                FTK_CHECK(255 == draw(ImageFilter::Nearest, true));
+                FTK_CHECK(255 == draw(ImageFilter::Nearest, false));
+            }
         }
     }
 }

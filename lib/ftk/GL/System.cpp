@@ -164,41 +164,35 @@ namespace ftk
             // Diagnostics.
             auto diagSystem = context->getSystem<DiagSystem>();
             diagSystem->addSampler(
-                "ftk GL Memory/Buffers: {0}MB",
-                [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GL Memory/Meshes: {0}MB",
-                [] { return gl::VBO::getTotalByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GL Memory/Textures: {0}MB",
+                "GPU memory/Textures: {0}MB",
                 [] { return gl::Texture::getTotalByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GL Memory/Texture cache: {0}MB",
-                [] { return gl::Render::getTextureCacheByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GL Memory/Texture pool: {0}MB",
-                [] { return gl::Render::getTexturePoolByteCount() / megabyte; });
-
-            diagSystem->addSampler(
-                "ftk GL Objects/Buffers: {0}",
-                [] { return gl::OffscreenBuffer::getObjectCount(); });
-            diagSystem->addSampler(
-                "ftk GL Objects/Meshes: {0}",
-                [] { return gl::VBO::getObjectCount(); });
-            diagSystem->addSampler(
-                "ftk GL Objects/Shaders: {0}",
-                [] { return gl::Shader::getObjectCount(); });
-            diagSystem->addSampler(
-                "ftk GL Objects/Textures: {0}",
-                [] { return gl::Texture::getObjectCount(); });
             // The two caches the textures are held in, apart: the total on
             // its own cannot say which of them is growing.
             diagSystem->addSampler(
-                "ftk GL Objects/Texture cache: {0}",
-                [] { return gl::Render::getTextureCacheCount(); });
+                "GPU memory/Texture cache: {0}MB",
+                [] { return gl::Render::getTextureCacheByteCount() / megabyte; });
             diagSystem->addSampler(
-                "ftk GL Objects/Texture pool: {0}",
-                [] { return gl::Render::getTexturePoolCount(); });
+                "GPU memory/Texture pool: {0}MB",
+                [] { return gl::Render::getTexturePoolByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "GPU memory/Buffers: {0}MB",
+                [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
+            diagSystem->addSampler(
+                "GPU memory/Meshes: {0}MB",
+                [] { return gl::VBO::getTotalByteCount() / megabyte; });
+
+            diagSystem->addSampler(
+                "GPU objects/Textures: {0}",
+                [] { return gl::Texture::getObjectCount(); });
+            diagSystem->addSampler(
+                "GPU objects/Buffers: {0}",
+                [] { return gl::OffscreenBuffer::getObjectCount(); });
+            diagSystem->addSampler(
+                "GPU objects/Meshes: {0}",
+                [] { return gl::VBO::getObjectCount(); });
+            diagSystem->addSampler(
+                "GPU objects/Shaders: {0}",
+                [] { return gl::Shader::getObjectCount(); });
         }
 
         System::~System()

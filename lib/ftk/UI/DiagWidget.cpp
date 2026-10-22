@@ -9,6 +9,8 @@
 #include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     struct DiagWidget::Private
@@ -46,25 +48,34 @@ namespace ftk
         // than with empty boxes and unlabelled colors until the next tick,
         // which is seconds away and reads as the tool being broken.
         system->tick();
-        const auto& groups = system->getGroups();
-        for (auto i = groups.rbegin(); i != groups.rend(); ++i)
+        // In the system's order, which puts what the application is doing
+        // ahead of the object counts. A graph tells its lines apart by
+        // color, so a group with more lines than colors goes on in a second
+        // graph rather than losing the rest.
+        for (const auto& group : system->getGroups())
         {
-            const auto& group = *i;
-            std::vector<GraphLabel> labels;
             const auto& names = system->getNames(group);
-            for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
+            for (size_t first = 0; first < names.size(); first += colors.size())
             {
-                labels.push_back(GraphLabel{
-                    colors[j],
-                    names[j],
-                    system->getFormat(group + "/" + names[j])});
+                const size_t last = std::min(first + colors.size(), names.size());
+                std::vector<GraphLabel> labels;
+                for (size_t j = first; j < last; ++j)
+                {
+                    labels.push_back(GraphLabel{
+                        colors[j - first],
+                        names[j],
+                        system->getFormat(group + "/" + names[j])});
+                }
+                const std::string title = 0 == first ?
+                    group :
+                    Format("{0} ({1})").arg(group).arg(first / colors.size() + 1).str();
+                auto graph = GraphWidget::create(context, title, labels, p.layout);
+                for (size_t j = first; j < last; ++j)
+                {
+                    p.samples[group + "/" + names[j]] = std::make_pair(graph, colors[j - first]);
+                }
+                p.graphs[title] = graph;
             }
-            auto graph = GraphWidget::create(context, group, labels, p.layout);
-            for (size_t j = 0; j < names.size() && j < colors.size(); ++j)
-            {
-                p.samples[group + "/" + names[j]] = std::make_pair(graph, colors[j]);
-            }
-            p.graphs[group] = graph;
         }
 
         const auto& samples = system->getSamples();
