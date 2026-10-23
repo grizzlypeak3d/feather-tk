@@ -30,8 +30,11 @@ namespace
     // The files chosen lately, as bookmarks that survive the run: the
     // grant for a file picked in place ends with the application, and
     // a bookmark is what gets it back, so that the file can be opened
-    // again from the recent files without the picker.
+    // again from the recent files without the picker. Folders are kept
+    // in a list of their own: a project's folder grants everything in
+    // it, and is not to be pushed out by the files picked since.
     NSString* const bookmarksKey = @"ftk.FileBrowser.Bookmarks";
+    NSString* const folderBookmarksKey = @"ftk.FileBrowser.FolderBookmarks";
     const NSUInteger bookmarksMax = 20;
 
     void access(NSURL* url)
@@ -46,13 +49,29 @@ namespace
         }
     }
 
+    bool isFolder(NSURL* url)
+    {
+        NSNumber* directory = nil;
+        if ([url getResourceValue:&directory forKey:NSURLIsDirectoryKey error:nil] &&
+            directory)
+        {
+            return directory.boolValue;
+        }
+        return url.hasDirectoryPath;
+    }
+
     void remember(NSArray<NSURL*>* urls)
     {
         NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
-        NSMutableArray* list = [[defaults arrayForKey:bookmarksKey] mutableCopy];
-        if (!list)
+        NSMutableArray* files = [[defaults arrayForKey:bookmarksKey] mutableCopy];
+        NSMutableArray* folders = [[defaults arrayForKey:folderBookmarksKey] mutableCopy];
+        if (!files)
         {
-            list = [NSMutableArray array];
+            files = [NSMutableArray array];
+        }
+        if (!folders)
+        {
+            folders = [NSMutableArray array];
         }
         for (NSURL* url in urls)
         {
@@ -62,14 +81,19 @@ namespace
                 relativeToURL:nil
                 error:nil])
             {
-                [list insertObject:data atIndex:0];
+                [isFolder(url) ? folders : files insertObject:data atIndex:0];
             }
         }
-        while (list.count > bookmarksMax)
+        while (files.count > bookmarksMax)
         {
-            [list removeLastObject];
+            [files removeLastObject];
         }
-        [defaults setObject:list forKey:bookmarksKey];
+        while (folders.count > bookmarksMax)
+        {
+            [folders removeLastObject];
+        }
+        [defaults setObject:files forKey:bookmarksKey];
+        [defaults setObject:folders forKey:folderBookmarksKey];
     }
 
 }
@@ -162,8 +186,8 @@ namespace ftk
 
     void restoreDocumentAccess()
     {
-        // Each bookmark resolved and its grant taken up again; the list is
-        // written back without the ones that no longer resolve, and
+        // Each bookmark resolved and its grant taken up again; the lists
+        // are written back without the ones that no longer resolve, and
         // without a file listed twice.
         //
         // Resolved off the main thread: a bookmark into a share the Files
@@ -174,50 +198,57 @@ namespace ftk
         // as a picker's are; a recent file on such a share is not opened
         // until then, which is the wait it would have been anyway.
         NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
-        NSArray* list = [defaults arrayForKey:bookmarksKey];
-        if (!list)
+        NSArray* keys = @[ folderBookmarksKey, bookmarksKey ];
+        NSMutableArray* lists = [NSMutableArray array];
+        for (NSString* key in keys)
         {
-            return;
+            NSArray* list = [defaults arrayForKey:key];
+            [lists addObject:list ? list : @[]];
         }
         dispatch_async(
             dispatch_get_global_queue(QOS_CLASS_UTILITY, 0),
             ^{
-                NSMutableArray* kept = [NSMutableArray array];
+                NSMutableArray* keptLists = [NSMutableArray array];
                 NSMutableArray<NSURL*>* urls = [NSMutableArray array];
                 NSMutableSet<NSString*>* seen = [NSMutableSet set];
-                for (id item in list)
+                for (NSArray* list in lists)
                 {
-                    // Only what was written: a list from an earlier
-                    // version, or a damaged one, is not trusted with a
-                    // message.
-                    if (![item isKindOfClass:[NSData class]])
+                    NSMutableArray* kept = [NSMutableArray array];
+                    for (id item in list)
                     {
-                        continue;
+                        // Only what was written: a list from an earlier
+                        // version, or a damaged one, is not trusted with a
+                        // message.
+                        if (![item isKindOfClass:[NSData class]])
+                        {
+                            continue;
+                        }
+                        NSURL* url = nil;
+                        @try
+                        {
+                            BOOL stale = NO;
+                            url = [NSURL
+                                URLByResolvingBookmarkData:(NSData*)item
+                                options:NSURLBookmarkResolutionWithoutUI |
+                                    NSURLBookmarkResolutionWithoutMounting
+                                relativeToURL:nil
+                                bookmarkDataIsStale:&stale
+                                error:nil];
+                        }
+                        @catch (NSException*)
+                        {
+                            url = nil;
+                        }
+                        NSString* path = url ? url.path : nil;
+                        if (!path || [seen containsObject:path])
+                        {
+                            continue;
+                        }
+                        [seen addObject:path];
+                        [urls addObject:url];
+                        [kept addObject:item];
                     }
-                    NSURL* url = nil;
-                    @try
-                    {
-                        BOOL stale = NO;
-                        url = [NSURL
-                            URLByResolvingBookmarkData:(NSData*)item
-                            options:NSURLBookmarkResolutionWithoutUI |
-                                NSURLBookmarkResolutionWithoutMounting
-                            relativeToURL:nil
-                            bookmarkDataIsStale:&stale
-                            error:nil];
-                    }
-                    @catch (NSException*)
-                    {
-                        url = nil;
-                    }
-                    NSString* path = url ? url.path : nil;
-                    if (!path || [seen containsObject:path])
-                    {
-                        continue;
-                    }
-                    [seen addObject:path];
-                    [urls addObject:url];
-                    [kept addObject:item];
+                    [keptLists addObject:kept];
                 }
                 dispatch_async(
                     dispatch_get_main_queue(),
@@ -226,7 +257,10 @@ namespace ftk
                         {
                             access(url);
                         }
-                        [defaults setObject:kept forKey:bookmarksKey];
+                        for (NSUInteger i = 0; i < keys.count; ++i)
+                        {
+                            [defaults setObject:keptLists[i] forKey:keys[i]];
+                        }
                     });
             });
     }
