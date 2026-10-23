@@ -14,6 +14,7 @@
 // it is up, since the picker holds its delegate only weakly.
 @interface FTKDocumentPickerDelegate : NSObject <UIDocumentPickerDelegate>
 @property (nonatomic, assign) std::function<void(const std::vector<ftk::Path>&)> callback;
+@property (nonatomic, assign) std::function<void(void)> cancelled;
 @property (nonatomic, strong) UIDocumentPickerViewController* picker;
 @end
 
@@ -101,8 +102,13 @@ namespace
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller
 {
     FTKDocumentPickerDelegate* keep = self;
+    const auto cancelled = keep.cancelled;
     keep.picker = nil;
     delegate = nil;
+    if (cancelled)
+    {
+        cancelled();
+    }
 }
 
 @end
@@ -262,6 +268,32 @@ namespace ftk
         }
         delegate = [FTKDocumentPickerDelegate new];
         delegate.callback = callback;
+        delegate.picker = picker;
+        picker.delegate = delegate;
+        [topViewController() presentViewController:picker animated:YES completion:nil];
+    }
+
+    void exportDocument(
+        const Path& file,
+        const std::function<void(const std::vector<Path>&)>& callback,
+        const std::function<void(void)>& cancelled)
+    {
+        if (delegate)
+        {
+            return;
+        }
+        NSURL* url = [NSURL fileURLWithPath:
+            [NSString stringWithUTF8String:file.get().c_str()]];
+        // Moved rather than copied: the file was written for this, and a
+        // copy left behind in the application's files would be a second
+        // one to find.
+        UIDocumentPickerViewController* picker =
+            [[UIDocumentPickerViewController alloc]
+                initForExportingURLs:@[ url ]
+                asCopy:NO];
+        delegate = [FTKDocumentPickerDelegate new];
+        delegate.callback = callback;
+        delegate.cancelled = cancelled;
         delegate.picker = picker;
         picker.delegate = delegate;
         [topViewController() presentViewController:picker animated:YES completion:nil];

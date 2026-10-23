@@ -223,9 +223,48 @@ namespace ftk
         }
 #elif defined(__APPLE__) && TARGET_OS_IPHONE
         // The system's document picker, which answers later rather than
-        // here: the application runs on under it. Saving has no picker,
-        // and goes to the built-in browser.
-        if (native && FileBrowserMode::Save != options.mode)
+        // here: the application runs on under it. Saving is in two steps,
+        // since the picker can only move a file that is there: the file
+        // is written to the application's own temporary files first, at
+        // the path the callback is given, and the picker then moves it to
+        // where the user chooses and says where through options.saved.
+        if (native && FileBrowserMode::Save == options.mode)
+        {
+            std::error_code ec;
+            const std::filesystem::path dir = std::filesystem::temp_directory_path(ec);
+            const std::string name = options.fileName.empty() ? "Untitled" : options.fileName;
+            const Path file(fromFileSystem(dir / name));
+            std::filesystem::remove(dir / name, ec);
+            callback({ file });
+            if (std::filesystem::exists(dir / name, ec))
+            {
+                const auto saved = options.saved;
+                exportDocument(
+                    file,
+                    [saved](const std::vector<Path>& paths)
+                    {
+                        if (saved)
+                        {
+                            saved(!paths.empty() ? paths.front() : Path());
+                        }
+                    },
+                    [saved, dir, name]
+                    {
+                        std::error_code ec;
+                        std::filesystem::remove(dir / name, ec);
+                        if (saved)
+                        {
+                            saved(Path());
+                        }
+                    });
+            }
+            else if (options.saved)
+            {
+                options.saved(Path());
+            }
+            return;
+        }
+        if (native)
         {
             const FileBrowserMode mode = options.mode;
             openDocumentPicker(

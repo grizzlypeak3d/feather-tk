@@ -1252,16 +1252,25 @@ namespace ftk
             {
                 // A finger's press goes first to the innermost widget that
                 // takes it ahead of the widgets inside it; see
-                // IWidget::isTouchHandle().
+                // IWidget::isTouchHandle(). Not to one behind an open popup:
+                // a menu over a splitter would otherwise lose the taps on
+                // its items to the split.
                 const V2I pos = p.cursorPos;
-                const auto j = std::find_if(
+                const auto end = std::find_if(
                     widgets.begin(),
                     widgets.end(),
+                    [](const std::shared_ptr<IWidget>& widget)
+                    {
+                        return std::dynamic_pointer_cast<IPopup>(widget).get();
+                    });
+                const auto j = std::find_if(
+                    widgets.begin(),
+                    end,
                     [pos](const std::shared_ptr<IWidget>& widget)
                     {
                         return widget->isTouchHandle(pos);
                     });
-                if (j != widgets.end())
+                if (j != end)
                 {
                     widgets.splice(widgets.begin(), widgets, j);
                 }

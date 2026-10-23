@@ -419,6 +419,15 @@ namespace ftk
         //! choice the system's dialog cannot offer, such as an image
         //! sequence as one entry.
         bool                  builtIn = false;
+
+        //! Where a saved file was put, where saving takes two steps: on
+        //! iOS the file is written to the path the callback is given, in
+        //! the application's own files, and the system's picker then moves
+        //! it to the place the user chooses and answers here with that
+        //! place. Empty when the picker is cancelled, and the file written
+        //! is removed. Not called on the desktop, whose save dialog gives
+        //! the final path in one go.
+        std::function<void(const Path&)> saved;
     };
 
     //! File browser system.

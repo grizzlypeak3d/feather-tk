@@ -13,12 +13,20 @@ namespace ftk
     //! while the application keeps running underneath. The files chosen
     //! are opened in place, wherever they are -- another application's
     //! documents, iCloud, a share -- and stay readable for as long as the
-    //! application runs. Picking a directory is the picker for folders;
-    //! there is no picker for saving, which the built-in browser does in
-    //! the application's own documents.
+    //! application runs. Picking a directory is the picker for folders.
     void openDocumentPicker(
         const FileBrowserOpenOptions&,
         const std::function<void(const std::vector<Path>&)>&);
+
+    //! The picker for saving, which is the picker for exporting: a file
+    //! written already is moved to the place the user chooses, and the
+    //! callback is given that place, with the access to write it again.
+    //! Cancelled, the file is left where it was and the second callback
+    //! runs instead.
+    void exportDocument(
+        const Path& file,
+        const std::function<void(const std::vector<Path>&)>& callback,
+        const std::function<void(void)>& cancelled);
 
     //! Take up again the access to the files chosen in earlier runs: the
     //! grant for a file picked in place ends with the application, and

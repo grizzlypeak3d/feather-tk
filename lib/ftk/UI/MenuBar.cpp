@@ -93,11 +93,24 @@ namespace ftk
                 {
                     if (value)
                     {
-                        if (_getOpenMenu() || hasKeyFocus())
+                        if (auto openMenu = _getOpenMenu(); openMenu || hasKeyFocus())
                         {
-                            const bool wasOpen = _getOpenMenu() != nullptr;
-                            _setCurrent(_getIndex(buttonWeak.lock()));
-                            if (wasOpen)
+                            // The time is kept only when the hover moved
+                            // the open menu to this button: a press that
+                            // follows within a moment is then not taken as
+                            // a click to close it. The button of the menu
+                            // already open records nothing -- a finger's
+                            // hover arrives with each tap, a moment before
+                            // its press, and recording it there kept the
+                            // menu open through every tap meant to close it.
+                            const int index = _getIndex(buttonWeak.lock());
+                            const bool switched =
+                                openMenu &&
+                                index >= 0 &&
+                                index < static_cast<int>(_p->menus.size()) &&
+                                openMenu != _p->menus[index];
+                            _setCurrent(index);
+                            if (switched)
                             {
                                 _p->hoverOpenTime = std::chrono::steady_clock::now();
                             }
