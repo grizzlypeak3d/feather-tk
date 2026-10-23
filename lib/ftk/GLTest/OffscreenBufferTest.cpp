@@ -243,8 +243,9 @@ namespace ftk
                 auto third = buffer->read(info);
                 FTK_CHECK(third.get() == ptr);
                 FTK_CHECK(third != second);
-                // Another description is not given one of these.
-                auto other = buffer->read(ImageInfo(Size2I(4, 4), ImageType::RGBA_F32));
+                // Another description is not given one of these. (A size,
+                // since not every type reads back on OpenGL ES.)
+                auto other = buffer->read(ImageInfo(Size2I(2, 2), ImageType::RGBA_U8));
                 FTK_CHECK(other && other != second && other != third);
             }
 
