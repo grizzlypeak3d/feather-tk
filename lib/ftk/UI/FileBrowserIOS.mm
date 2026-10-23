@@ -159,43 +159,70 @@ namespace ftk
         // Each bookmark resolved and its grant taken up again; the list is
         // written back without the ones that no longer resolve, and
         // without a file listed twice.
+        //
+        // Resolved off the main thread: a bookmark into a share the Files
+        // app mounts is resolved by the file provider, which blocked for
+        // half a minute when the share was away, and an application that
+        // does not draw for that long is killed by the watchdog. The
+        // grants are taken on the main thread once the resolving is done,
+        // as a picker's are; a recent file on such a share is not opened
+        // until then, which is the wait it would have been anyway.
         NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
-        NSMutableArray* kept = [NSMutableArray array];
-        NSMutableSet<NSString*>* seen = [NSMutableSet set];
         NSArray* list = [defaults arrayForKey:bookmarksKey];
-        for (id item in list)
+        if (!list)
         {
-            // Only what was written: a list from an earlier version, or a
-            // damaged one, is not trusted with a message.
-            if (![item isKindOfClass:[NSData class]])
-            {
-                continue;
-            }
-            NSURL* url = nil;
-            @try
-            {
-                BOOL stale = NO;
-                url = [NSURL
-                    URLByResolvingBookmarkData:(NSData*)item
-                    options:NSURLBookmarkResolutionWithoutUI
-                    relativeToURL:nil
-                    bookmarkDataIsStale:&stale
-                    error:nil];
-            }
-            @catch (NSException*)
-            {
-                url = nil;
-            }
-            NSString* path = url ? url.path : nil;
-            if (!path || [seen containsObject:path])
-            {
-                continue;
-            }
-            [seen addObject:path];
-            access(url);
-            [kept addObject:item];
+            return;
         }
-        [defaults setObject:kept forKey:bookmarksKey];
+        dispatch_async(
+            dispatch_get_global_queue(QOS_CLASS_UTILITY, 0),
+            ^{
+                NSMutableArray* kept = [NSMutableArray array];
+                NSMutableArray<NSURL*>* urls = [NSMutableArray array];
+                NSMutableSet<NSString*>* seen = [NSMutableSet set];
+                for (id item in list)
+                {
+                    // Only what was written: a list from an earlier
+                    // version, or a damaged one, is not trusted with a
+                    // message.
+                    if (![item isKindOfClass:[NSData class]])
+                    {
+                        continue;
+                    }
+                    NSURL* url = nil;
+                    @try
+                    {
+                        BOOL stale = NO;
+                        url = [NSURL
+                            URLByResolvingBookmarkData:(NSData*)item
+                            options:NSURLBookmarkResolutionWithoutUI |
+                                NSURLBookmarkResolutionWithoutMounting
+                            relativeToURL:nil
+                            bookmarkDataIsStale:&stale
+                            error:nil];
+                    }
+                    @catch (NSException*)
+                    {
+                        url = nil;
+                    }
+                    NSString* path = url ? url.path : nil;
+                    if (!path || [seen containsObject:path])
+                    {
+                        continue;
+                    }
+                    [seen addObject:path];
+                    [urls addObject:url];
+                    [kept addObject:item];
+                }
+                dispatch_async(
+                    dispatch_get_main_queue(),
+                    ^{
+                        for (NSURL* url in urls)
+                        {
+                            access(url);
+                        }
+                        [defaults setObject:kept forKey:bookmarksKey];
+                    });
+            });
     }
 
     void openDocumentPicker(
