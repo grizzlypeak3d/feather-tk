@@ -547,6 +547,17 @@ namespace ftk
             // transfer buffers alternate; see send().
             uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(
                 device, transfer, !p.streaming));
+            if (!dst)
+            {
+                // Cycling needed memory the device could not give, which an
+                // iPad short of it was seen to refuse: this copy fails, and
+                // the texture keeps what it had.
+                if (out.owned)
+                {
+                    SDL_ReleaseGPUTransferBuffer(device, transfer);
+                }
+                throw std::runtime_error(Format("Cannot map a transfer buffer: {0}").arg(SDL_GetError()));
+            }
             // The rows from one to another, in whichever form the texture
             // keeps them.
             const auto rows = [&](int row0, int row1)

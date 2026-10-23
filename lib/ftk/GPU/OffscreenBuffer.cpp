@@ -389,6 +389,10 @@ namespace ftk
             auto out = Image::create(info);
             const uint8_t* read = static_cast<const uint8_t*>(
                 SDL_MapGPUTransferBuffer(device, p.readTransfer, false));
+            if (!read)
+            {
+                throw std::runtime_error(Format("Cannot map a transfer buffer: {0}").arg(SDL_GetError()));
+            }
             const size_t outStride = out->getByteCount() / h;
             const bool swap = info.layout.endian != getEndian();
             const bool same = getChannelCount(info.type) == static_cast<int>(readChannels);
@@ -535,6 +539,11 @@ namespace ftk
             transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
             transferInfo.size = static_cast<Uint32>(out->getByteCount());
             SDL_GPUTransferBuffer* transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+            if (!transfer)
+            {
+                SDL_CancelGPUCommandBuffer(cmd);
+                throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
+            }
             SDL_GPUCopyPass* pass = SDL_BeginGPUCopyPass(cmd);
             SDL_GPUTextureRegion region = {};
             region.texture = p.texture;
@@ -550,10 +559,13 @@ namespace ftk
             SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(cmd);
             SDL_WaitForGPUFences(device, true, &fence, 1);
             SDL_ReleaseGPUFence(device, fence);
-            std::memcpy(
-                out->getData(),
-                SDL_MapGPUTransferBuffer(device, transfer, false),
-                out->getByteCount());
+            const void* read = SDL_MapGPUTransferBuffer(device, transfer, false);
+            if (!read)
+            {
+                SDL_ReleaseGPUTransferBuffer(device, transfer);
+                throw std::runtime_error(Format("Cannot map a transfer buffer: {0}").arg(SDL_GetError()));
+            }
+            std::memcpy(out->getData(), read, out->getByteCount());
             SDL_UnmapGPUTransferBuffer(device, transfer);
             SDL_ReleaseGPUTransferBuffer(device, transfer);
             return out;

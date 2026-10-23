@@ -64,6 +64,31 @@ namespace ftk
 {
     namespace
     {
+#if defined(__EMSCRIPTEN__) || (defined(__APPLE__) && TARGET_OS_IPHONE)
+        //! An exception out of an iteration, where the system owns the loop
+        //! and there is no main() to report it. Into the log as well as to
+        //! the console, which nobody sees on a tablet: the iteration it left
+        //! is abandoned part drawn, and one that fails every frame reads
+        //! from outside as an application that has frozen. Logged once
+        //! until the message changes, not once a frame.
+        void reportException(App* app, const std::string& message)
+        {
+            printf("Unhandled exception: %s\n", message.c_str());
+            static std::string last;
+            if (message != last)
+            {
+                last = message;
+                if (const auto& context = app->getContext())
+                {
+                    context->log(
+                        "ftk::App",
+                        Format("Unhandled exception: {0}").arg(message),
+                        LogType::Error);
+                }
+            }
+        }
+#endif // __EMSCRIPTEN__ || TARGET_OS_IPHONE
+
         const std::chrono::milliseconds timeout(5);
         // An iteration that handled no event and drew nothing: the next
         // sleep is this long rather than the timeout above, so that an
@@ -231,6 +256,12 @@ namespace ftk
                 baseName;
             p.settingsPath = ::ftk::getSettingsPath(appFiles.dirName, stem + ".json");
             p.logFilePath = ::ftk::getSettingsPath(appFiles.dirName, stem + ".log");
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+            // On a tablet the log goes where the Files app shows it, in the
+            // application's documents: the settings directory is out of
+            // reach there, and the log of a crash is for someone to send.
+            p.logFilePath = getUserPath(UserPath::Documents) / "Logs" / (stem + ".log");
+#endif // TARGET_OS_IPHONE
         }
 
         std::vector<std::shared_ptr<ICmdLineOption> > cmdLineOptionsTmp = cmdLineOptions;
@@ -396,6 +427,10 @@ namespace ftk
             // replaced each run: nothing is searched for and nothing is
             // deleted. A log worth more than that should be copied out of the
             // application.
+            {
+                std::error_code ec;
+                std::filesystem::create_directories(p.logFilePath.parent_path(), ec);
+            }
             if (std::filesystem::exists(p.logFilePath))
             {
                 std::filesystem::path previous = p.logFilePath;
@@ -1339,11 +1374,11 @@ namespace ftk
                 }
                 catch (const std::exception& e)
                 {
-                    printf("Unhandled exception: %s\n", e.what());
+                    reportException(static_cast<App*>(app), e.what());
                 }
                 catch (...)
                 {
-                    printf("Unhandled exception (unknown)\n");
+                    reportException(static_cast<App*>(app), "(unknown)");
                 }
             },
             this,
@@ -1390,11 +1425,11 @@ namespace ftk
                         }
                         catch (const std::exception& e)
                         {
-                            printf("Unhandled exception: %s\n", e.what());
+                            reportException(static_cast<App*>(app), e.what());
                         }
                         catch (...)
                         {
-                            printf("Unhandled exception (unknown)\n");
+                            reportException(static_cast<App*>(app), "(unknown)");
                         }
                     },
                     this);

@@ -1,0 +1,76 @@
+diff --git a/src/gpu/metal/SDL_gpu_metal.m b/src/gpu/metal/SDL_gpu_metal.m
+--- a/src/gpu/metal/SDL_gpu_metal.m
++++ b/src/gpu/metal/SDL_gpu_metal.m
+@@ -1677,6 +1677,14 @@
+         size,
+         resourceOptions,
+         debugName);
++    if (container->buffers[0] == NULL) {
++        // Not a container with no buffer in it, which every use of it
++        // would dereference.
++        SDL_free(container->debugName);
++        SDL_free(container->buffers);
++        SDL_free(container);
++        return NULL;
++    }
+ 
+     container->activeBuffer = container->buffers[0];
+ 
+@@ -1772,14 +1780,22 @@
+             }
+         }
+ 
+-        container->buffers[container->bufferCount] = METAL_INTERNAL_CreateBuffer(
++        MetalBuffer *buffer = METAL_INTERNAL_CreateBuffer(
+             renderer,
+             container->size,
+             resourceOptions,
+             container->debugName);
++        if (buffer == NULL) {
++            // Not counted among the container's buffers, which are all
++            // dereferenced when the next write looks for a free one, and
++            // the active buffer left as it was: the caller fails this
++            // write rather than the container every write after it.
++            return NULL;
++        }
++        container->buffers[container->bufferCount] = buffer;
+         container->bufferCount += 1;
+ 
+-        container->activeBuffer = container->buffers[container->bufferCount - 1];
++        container->activeBuffer = buffer;
+     }
+ 
+     return container->activeBuffer;
+@@ -1796,6 +1812,10 @@
+         MetalRenderer *renderer = (MetalRenderer *)driverData;
+         MetalBufferContainer *container = (MetalBufferContainer *)transferBuffer;
+         MetalBuffer *buffer = METAL_INTERNAL_PrepareBufferForWrite(renderer, container, cycle);
++        if (buffer == NULL) {
++            SDL_SetError("Could not create buffer");
++            return NULL;
++        }
+         return [buffer->handle contents];
+     }
+ }
+@@ -1874,6 +1894,10 @@
+             renderer,
+             bufferContainer,
+             cycle);
++        if (metalBuffer == NULL) {
++            SDL_SetError("Could not create buffer");
++            return;
++        }
+ 
+         [metalCommandBuffer->blitEncoder
+                copyFromBuffer:transferContainer->activeBuffer->handle
+@@ -1942,6 +1966,10 @@
+             renderer,
+             dstContainer,
+             cycle);
++        if (dstBuffer == NULL) {
++            SDL_SetError("Could not create buffer");
++            return;
++        }
+ 
+         [metalCommandBuffer->blitEncoder
+                copyFromBuffer:srcBuffer->handle

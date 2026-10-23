@@ -86,6 +86,13 @@ namespace ftk
                         // was there before, and is not sent.
                         uint8_t* data = static_cast<uint8_t*>(
                             SDL_MapGPUTransferBuffer(device, i.transfer, true));
+                        if (!data)
+                        {
+                            // No memory for the cycled buffer: left unsent,
+                            // and tried again with the next pass. What this
+                            // pass draws from the chunk is what was there.
+                            continue;
+                        }
                         std::memcpy(data + i.sent, i.data.data() + i.sent, i.used - i.sent);
                         SDL_UnmapGPUTransferBuffer(device, i.transfer);
                         SDL_GPUTransferBufferLocation source = {};
