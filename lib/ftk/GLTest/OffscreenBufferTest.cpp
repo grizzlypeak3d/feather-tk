@@ -213,6 +213,62 @@ namespace ftk
                     FTK_CHECK(255 == d[i * 4 + 3]);
                 }
             }
+            // Read as half floats, the value past one is kept.
+            if (OffscreenBuffer::canRead(ImageType::RGBA_F16))
+            {
+                auto half = buffer->read(ImageInfo(Size2I(4, 4), ImageType::RGBA_F16));
+                FTK_CHECK(half.get());
+                if (half)
+                {
+                    const uint16_t* d = reinterpret_cast<const uint16_t*>(half->getData());
+                    for (int i = 0; i < 4 * 4; ++i)
+                    {
+                        FTK_CHECK(0x3400 == d[i * 4 + 0]); // .25
+                        FTK_CHECK(0x3800 == d[i * 4 + 1]); // .5
+                        FTK_CHECK(0x3E00 == d[i * 4 + 2]); // 1.5
+                        FTK_CHECK(0x3C00 == d[i * 4 + 3]); // 1
+                    }
+                }
+            }
+
+            // An image is given out again once nothing else holds it, and
+            // not while something does.
+            {
+                const ImageInfo info(Size2I(4, 4), ImageType::RGBA_U8);
+                auto first = buffer->read(info);
+                auto second = buffer->read(info);
+                FTK_CHECK(first && second && first != second);
+                const Image* ptr = first.get();
+                first.reset();
+                auto third = buffer->read(info);
+                FTK_CHECK(third.get() == ptr);
+                FTK_CHECK(third != second);
+                // Another description is not given one of these. (A size,
+                // since not every type reads back on OpenGL ES.)
+                auto other = buffer->read(ImageInfo(Size2I(2, 2), ImageType::RGBA_U8));
+                FTK_CHECK(other && other != second && other != third);
+            }
+
+            // Read into an image of one's own.
+            {
+                auto own = Image::create(Size2I(4, 4), ImageType::RGBA_U8);
+                FTK_CHECK(buffer->read(own));
+                const uint8_t* d = own->getData();
+                FTK_CHECK(std::abs(static_cast<int>(d[0]) - 64) <= 1);
+                FTK_CHECK(std::abs(static_cast<int>(d[1]) - 128) <= 1);
+                FTK_CHECK(255 == d[2]);
+                FTK_CHECK(255 == d[3]);
+                FTK_CHECK(!buffer->read(std::shared_ptr<Image>()));
+                FTK_CHECK(!buffer->read(Image::create(Size2I(4, 4), ImageType::YUV_420P_U8)));
+            }
+
+            // The frame buffer binding is as it was.
+            {
+                GLint fbo = -1;
+                glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
+                FTK_CHECK(0 == fbo);
+            }
+
             // A type that cannot be read gives nothing.
             FTK_CHECK(!OffscreenBuffer::canRead(ImageType::YUV_420P_U8));
             FTK_CHECK(!buffer->read(ImageInfo(Size2I(4, 4), ImageType::YUV_420P_U8)));

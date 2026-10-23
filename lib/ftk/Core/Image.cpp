@@ -12,9 +12,11 @@
 #include <algorithm>
 #include <atomic>
 #include <array>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <mutex>
+#include <new>
 #include <sstream>
 #include <vector>
 
@@ -272,6 +274,43 @@ namespace ftk
         // Only buffers this big: small images are cheap to allocate.
         constexpr size_t bufferPoolMin = 1024 * 1024;
 
+        // Large buffers start on a page, small ones on a cache line. A
+        // buffer from the system's allocator starts sixteen bytes into a
+        // page, and a copy from a page-aligned source into it -- a GPU
+        // driver reading a frame back through its staging memory -- runs at
+        // half speed: the loads and stores land on the same offsets within
+        // a page and the processor waits on false dependencies between
+        // them (4K aliasing). Starting the buffer on a page puts the copy
+        // back in step.
+        uint8_t* allocateBuffer(size_t size)
+        {
+            const size_t alignment = size >= bufferPoolMin ? 4096 : 64;
+            const size_t rounded = (size + alignment - 1) / alignment * alignment;
+#if defined(_WINDOWS)
+            void* out = _aligned_malloc(rounded, alignment);
+#else
+            void* out = nullptr;
+            if (0 != posix_memalign(&out, alignment, rounded))
+            {
+                out = nullptr;
+            }
+#endif
+            if (!out)
+            {
+                throw std::bad_alloc();
+            }
+            return static_cast<uint8_t*>(out);
+        }
+
+        void freeBuffer(uint8_t* data)
+        {
+#if defined(_WINDOWS)
+            _aligned_free(data);
+#else
+            std::free(data);
+#endif
+        }
+
         BufferPool& getBufferPool()
         {
             // Never destroyed, so an image outliving the static objects still
@@ -291,7 +330,7 @@ namespace ftk
                 while (!i->second.empty() &&
                     totalByteCount + pool.byteCount > pool.maxByteCount)
                 {
-                    delete[] i->second.back();
+                    freeBuffer(i->second.back());
                     i->second.pop_back();
                     pool.byteCount -= i->first;
                 }
@@ -318,7 +357,7 @@ namespace ftk
                 // room for this one, which counts as alive already.
                 trimBufferPool(pool);
             }
-            return new uint8_t[size];
+            return allocateBuffer(size);
         }
 
         // Called with the image no longer counted as alive.
@@ -335,7 +374,7 @@ namespace ftk
                     return;
                 }
             }
-            delete[] data;
+            freeBuffer(data);
         }
     }
 
@@ -473,7 +512,7 @@ namespace ftk
         {
             for (auto* data : i.second)
             {
-                delete[] data;
+                freeBuffer(data);
             }
         }
         pool.buffers.clear();

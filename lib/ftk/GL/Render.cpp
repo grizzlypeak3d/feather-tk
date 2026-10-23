@@ -4,6 +4,7 @@
 #include <ftk/GL/RenderPrivate.h>
 
 #include <ftk/GL/Init.h>
+#include <ftk/GL/Util.h>
 
 #include <atomic>
 
@@ -362,7 +363,12 @@ namespace ftk
             std::vector<std::shared_ptr<Texture> > out;
             TextureOptions options;
             options.filters = getTextureFilters(imageFilters);
-            options.pbo = info.size.w >= pboSizeMin || info.size.h >= pboSizeMin;
+            // Not on a software renderer: there the buffer is a second copy
+            // of the frame on the CPU, and a fresh allocation each upload
+            // besides, which together cost more than the upload they stage.
+            options.pbo =
+                (info.size.w >= pboSizeMin || info.size.h >= pboSizeMin) &&
+                !isSoftwareRenderer();
             switch (info.type)
             {
             case ImageType::YUV_420P_U8:

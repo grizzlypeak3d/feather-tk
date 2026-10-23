@@ -201,7 +201,39 @@ namespace ftk
             GLuint id = 0;
             GLuint colorID = 0;
             GLuint depthStencilID = 0;
+
+            // For reading back as another type on a software renderer; see
+            // read().
+            std::shared_ptr<OffscreenBuffer> readBuffer;
+
+            // The images of the last reads, given out again when free.
+            std::vector<std::shared_ptr<Image> > readImages;
         };
+
+        namespace
+        {
+            // Enough for the usual loop, which holds the last image while
+            // the next is read.
+            const size_t readImagesMax = 2;
+
+            // The types a buffer can be read back through on a software
+            // renderer: four channels, in the formats OpenGL renders to.
+            bool isReadBufferType(TextureType value)
+            {
+                bool out = false;
+                switch (value)
+                {
+                case TextureType::RGBA_U8:
+                case TextureType::RGBA_U16:
+                case TextureType::RGBA_F16:
+                case TextureType::RGBA_F32:
+                    out = true;
+                    break;
+                default: break;
+                }
+                return out;
+            }
+        }
 
         namespace
         {
@@ -512,13 +544,98 @@ namespace ftk
         {
             FTK_P();
             std::shared_ptr<Image> out;
+            if (GL_NONE == getReadPixelsFormat(info.type) ||
+                GL_NONE == getReadPixelsType(info.type) ||
+                !info.isValid())
+            {
+                return out;
+            }
+            // An image from the last reads that nothing else holds.
+            for (const auto& image : p.readImages)
+            {
+                if (1 == image.use_count() && image->getInfo() == info)
+                {
+                    out = image;
+                    break;
+                }
+            }
+            if (!out)
+            {
+                // Free images of some other description are let go of first:
+                // they would not be given out again.
+                auto i = p.readImages.begin();
+                while (i != p.readImages.end())
+                {
+                    i = (1 == i->use_count()) ? p.readImages.erase(i) : i + 1;
+                }
+                out = Image::create(info);
+                p.readImages.push_back(out);
+                while (p.readImages.size() > readImagesMax)
+                {
+                    p.readImages.erase(p.readImages.begin());
+                }
+            }
+            if (!read(out))
+            {
+                out.reset();
+            }
+            return out;
+        }
+
+        bool OffscreenBuffer::read(const std::shared_ptr<Image>& out)
+        {
+            FTK_P();
+            if (!out)
+            {
+                return false;
+            }
+            const ImageInfo& info = out->getInfo();
             const unsigned int format = getReadPixelsFormat(info.type);
             const unsigned int type = getReadPixelsType(info.type);
             if (GL_NONE == format || GL_NONE == type || !info.isValid())
             {
-                return out;
+                return false;
             }
-            out = Image::create(info);
+
+            // A software renderer converts between the buffer's type and
+            // the image's one pixel at a time on the CPU, on one thread,
+            // which for a large frame takes longer than drawing it. The
+            // buffer is instead blitted into one of the image's type, where
+            // the conversion is the rasterizer's and runs on every thread,
+            // and read from there as it is. A GPU driver does the same
+            // inside glReadPixels already, and is left to it; OpenGL ES does
+            // not blit floating point to fixed, and is handled below.
+            if (!isGLES() &&
+                p.colorID &&
+                OffscreenSampling::None == p.options.sampling &&
+                isSoftwareRenderer())
+            {
+                const TextureType readType = getTextureType(info.type);
+                if (readType != p.info.type && isReadBufferType(readType))
+                {
+                    if (doCreate(p.readBuffer, info.size, readType))
+                    {
+                        p.readBuffer = OffscreenBuffer::create(info.size, readType);
+                    }
+                    const int w = std::min(info.size.w, p.info.size.w);
+                    const int h = std::min(info.size.h, p.info.size.h);
+                    GLint read = 0;
+                    GLint draw = 0;
+                    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read);
+                    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw);
+                    {
+                        // The scissor applies to a blit, and would clip it.
+                        const SetAndRestore scissor(GL_SCISSOR_TEST, false);
+                        glBindFramebuffer(GL_READ_FRAMEBUFFER, p.id);
+                        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, p.readBuffer->getID());
+                        glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                    }
+                    glBindFramebuffer(GL_READ_FRAMEBUFFER, read);
+                    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw);
+                    return p.readBuffer->read(out);
+                }
+            }
+
             OffscreenBufferBinding binding(shared_from_this());
             glPixelStorei(GL_PACK_ALIGNMENT, info.layout.alignment);
             if (isGLES() &&
@@ -543,7 +660,7 @@ namespace ftk
                 {
                     convertRows<uint16_t>(rgba.data(), out, channels, rowBytes);
                 }
-                return out;
+                return true;
             }
             if (!isGLES())
             {
@@ -557,7 +674,7 @@ namespace ftk
                 format,
                 type,
                 out->getData());
-            return out;
+            return true;
         }
 
         bool OffscreenBuffer::canRead(ImageType type)

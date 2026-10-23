@@ -39,6 +39,27 @@ namespace ftk
             return out;
         }
 
+        bool isSoftwareRenderer()
+        {
+            static std::mutex mutex;
+            static bool cached = false;
+            static bool cache = false;
+            std::lock_guard<std::mutex> lock(mutex);
+            if (!cached)
+            {
+                // Nothing to ask without a context; asked again next time.
+                if (const GLubyte* s = glGetString(GL_RENDERER))
+                {
+                    const std::string renderer(reinterpret_cast<const char*>(s));
+                    cache =
+                        renderer.find("llvmpipe") != std::string::npos ||
+                        renderer.find("softpipe") != std::string::npos;
+                    cached = true;
+                }
+            }
+            return cache;
+        }
+
         int getMajorVersion(const std::string& version)
         {
             int out = 0;
