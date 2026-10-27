@@ -83,7 +83,8 @@ namespace ftk
             //! Get the number of buffers that exist.
             FTK_GPU_API static size_t getObjectCount();
 
-            //! Get the bytes the buffers that exist take.
+            //! Get the bytes the buffers that exist take, with what they keep
+            //! for reading back.
             FTK_GPU_API static size_t getTotalByteCount();
 
             //! Read one pixel back, counted from the top left, as it is:

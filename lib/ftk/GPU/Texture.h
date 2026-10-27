@@ -132,8 +132,8 @@ namespace ftk
                 //! The whole texture, whose old contents are not kept.
                 bool whole = false;
                 //! Whether the transfer buffer is this copy's own, let go
-                //! of once sent, rather than the texture's, which is kept
-                //! for the next copy of the whole texture.
+                //! of once sent, rather than a streaming texture's, which
+                //! is kept for the next copy.
                 bool owned = false;
                 //! See TextureOptions::streaming.
                 bool streaming = false;
@@ -142,13 +142,11 @@ namespace ftk
             //! Make a copy of an image to the whole texture ready. Nothing
             //! is made where the image is not one the texture can hold.
             //!
-            //! The data goes through a transfer buffer the texture keeps
-            //! from one copy to the next, rather than one made each time:
-            //! a picture playing sent three planes a frame, each through a
-            //! buffer made and let go of for it. A copy the device has not
-            //! finished with keeps the memory it was given; the next is
-            //! given other memory. Draw with the texture before making the
-            //! next copy ready.
+            //! A streaming texture's data goes through a transfer buffer
+            //! it keeps from one copy to the next, rather than one made
+            //! each time: a picture playing sends its planes every frame.
+            //! Any other copy has a buffer of its own. Draw with the
+            //! texture before making the next copy ready.
             FTK_GPU_API Upload prepare(const std::shared_ptr<Image>&);
 
             //! Make a copy of image data to the whole texture ready.
@@ -167,8 +165,14 @@ namespace ftk
             //! Get the number of textures that exist.
             FTK_GPU_API static size_t getObjectCount();
 
-            //! Get the bytes the textures that exist take, on the GPU.
+            //! Get the bytes the textures that exist take, on the GPU,
+            //! with the transfer buffers streaming textures keep.
             FTK_GPU_API static size_t getTotalByteCount();
+
+            //! Get the bytes this texture takes on the GPU once it is in
+            //! use: a streaming texture is two textures and two transfer
+            //! buffers.
+            FTK_GPU_API size_t getByteCount() const;
 
         private:
             Upload _prepare(const uint8_t*, const ImageInfo&, int x, int y, bool whole);

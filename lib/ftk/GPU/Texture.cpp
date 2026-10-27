@@ -189,13 +189,15 @@ namespace ftk
             std::atomic<size_t> totalByteCount = 0;
 
             // What a texture takes on the GPU, where three channels are
-            // kept as four.
-            size_t getGPUByteCount(const ImageInfo& info)
+            // kept as four and thirty-two bit floats may be kept as half
+            // floats. A copy of the whole texture takes as much in its
+            // transfer buffer.
+            size_t getGPUByteCount(const ImageInfo& info, bool halfFloat)
             {
                 const int channels = getChannelCount(info.type);
                 return static_cast<size_t>(info.size.w) * info.size.h *
                     (3 == channels ? 4 : channels) *
-                    getChannelByteCount(info.type);
+                    (halfFloat ? sizeof(uint16_t) : getChannelByteCount(info.type));
             }
         }
 
@@ -223,8 +225,10 @@ namespace ftk
             //! Thirty-two bit float, kept as half float: see
             //! hasFloatFilter().
             bool halfFloat = false;
-            //! The transfer buffers the copies go through, one per texture;
-            //! see prepare().
+            //! What one texture takes on the GPU.
+            size_t byteCount = 0;
+            //! The transfer buffers a streaming texture's copies go
+            //! through, one per texture; see prepare().
             SDL_GPUTransferBuffer* transfers[2] = { nullptr, nullptr };
             size_t transferByteCounts[2] = { 0, 0 };
         };
@@ -299,8 +303,9 @@ namespace ftk
             {
                 throw std::runtime_error(Format("Cannot create a sampler: {0}").arg(SDL_GetError()));
             }
+            p.byteCount = getGPUByteCount(p.info, p.halfFloat);
             ++objectCount;
-            totalByteCount += getGPUByteCount(p.info) * (p.streaming ? 2 : 1);
+            totalByteCount += p.byteCount * (p.streaming ? 2 : 1);
             p.counted = true;
         }
 
@@ -314,7 +319,7 @@ namespace ftk
             if (p.counted)
             {
                 --objectCount;
-                totalByteCount -= getGPUByteCount(p.info) * (p.streaming ? 2 : 1);
+                totalByteCount -= p.byteCount * (p.streaming ? 2 : 1);
             }
             if (p.system)
             {
@@ -330,11 +335,12 @@ namespace ftk
                         SDL_ReleaseGPUTexture(device, texture);
                     }
                 }
-                for (SDL_GPUTransferBuffer* transfer : p.transfers)
+                for (int i = 0; i < 2; ++i)
                 {
-                    if (transfer)
+                    if (p.transfers[i])
                     {
-                        SDL_ReleaseGPUTransferBuffer(device, transfer);
+                        SDL_ReleaseGPUTransferBuffer(device, p.transfers[i]);
+                        totalByteCount -= p.transferByteCounts[i];
                     }
                 }
             }
@@ -369,6 +375,12 @@ namespace ftk
         size_t Texture::getTotalByteCount()
         {
             return totalByteCount;
+        }
+
+        size_t Texture::getByteCount() const
+        {
+            FTK_P();
+            return p.byteCount * (p.streaming ? 4 : 1);
         }
 
         const ImageInfo& Texture::getInfo() const
@@ -486,30 +498,25 @@ namespace ftk
                 (p.halfFloat ? sizeof(uint16_t) : channelBytes);
             const size_t dstRow = w * dstPixel;
 
-            // A copy of the whole texture goes through the texture's own
-            // transfer buffer, made the first time and again where a copy
-            // wants a larger one; the one before is let go of, which the
-            // device does once it is done with it. It is mapped cycled: a
-            // copy the device has not finished with keeps its memory. Two
-            // copies of the whole texture made ready in one pass, with
-            // nothing drawn between, would share the memory; a renderer
-            // draws with a texture as it is made ready, and so ends the
-            // pass before the next.
-            //
-            // A streaming texture steps to its other texture and transfer
-            // buffer first, so the cycling finds neither in flight and the
+            // A copy of the whole of a streaming texture steps to its other
+            // texture and goes through that texture's own transfer buffer,
+            // made the first time and again where a copy wants a larger
+            // one; the one before is let go of, which the device does once
+            // it is done with it. Neither is in flight by then, so the
             // memory is reused as it is; see TextureOptions::streaming.
+            // The buffers are counted with the textures, as the OpenGL
+            // renderer counts its pixel buffers.
             //
-            // A copy of a part, as the glyph atlas makes several of in a
-            // pass, has a buffer of its own, let go of once it is sent.
+            // Any other copy -- a picture copied once into the texture
+            // cache, a part of the glyph atlas -- has a buffer of its own,
+            // let go of once it is sent. A texture used to keep the buffer
+            // for the next copy of the whole of it, which for a cached
+            // picture was never made: the cache held twice what it said.
             const size_t byteCount = dstRow * h;
             SDL_GPUTransferBuffer* transfer = nullptr;
-            if (whole)
+            if (whole && p.streaming)
             {
-                if (p.streaming)
-                {
-                    p.current ^= 1;
-                }
+                p.current ^= 1;
                 SDL_GPUTransferBuffer*& slot = p.transfers[p.current];
                 size_t& slotByteCount = p.transferByteCounts[p.current];
                 if (!slot || byteCount > slotByteCount)
@@ -517,7 +524,9 @@ namespace ftk
                     if (slot)
                     {
                         SDL_ReleaseGPUTransferBuffer(device, slot);
+                        totalByteCount -= slotByteCount;
                         slot = nullptr;
+                        slotByteCount = 0;
                     }
                     SDL_GPUTransferBufferCreateInfo transferInfo = {};
                     transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
@@ -528,6 +537,7 @@ namespace ftk
                         throw std::runtime_error(Format("Cannot create a transfer buffer: {0}").arg(SDL_GetError()));
                     }
                     slotByteCount = byteCount;
+                    totalByteCount += slotByteCount;
                 }
                 transfer = slot;
             }
@@ -543,15 +553,15 @@ namespace ftk
                 }
                 out.owned = true;
             }
-            // Mapped without cycling for a streaming texture, whose two
-            // transfer buffers alternate; see send().
+            // Mapped without cycling: a buffer of its own is new, and a
+            // streaming texture's two alternate; see send().
             uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(
-                device, transfer, !p.streaming));
+                device, transfer, false));
             if (!dst)
             {
-                // Cycling needed memory the device could not give, which an
-                // iPad short of it was seen to refuse: this copy fails, and
-                // the texture keeps what it had.
+                // The buffer has no memory, which an iPad short of it was
+                // seen to give: this copy fails, and the texture keeps
+                // what it had.
                 if (out.owned)
                 {
                     SDL_ReleaseGPUTransferBuffer(device, transfer);

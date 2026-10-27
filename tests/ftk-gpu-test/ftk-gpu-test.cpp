@@ -12,6 +12,7 @@
 #include <ftk/GPU/Render.h>
 #include <ftk/GPU/Shader.h>
 #include <ftk/GPU/System.h>
+#include <ftk/GPU/Texture.h>
 
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Init.h>
@@ -687,6 +688,74 @@ namespace
         return out;
     }
 
+    // The texture pool counts an entry by all it takes on the GPU -- a
+    // video frame's is two textures and two transfer buffers -- and keeps
+    // what a frame draws with even when that is over its limit, letting go
+    // of the sizes that frame did not draw. The transfer buffers are
+    // counted with the textures.
+    bool pool(const std::shared_ptr<gpu::System>& system)
+    {
+        const int size = 64;
+        const size_t byteCount = size * size * 4;
+        auto buffer = gpu::OffscreenBuffer::create(system, Size2I(size, size), gpu::BufferType::RGBA_U8);
+        auto render = gpu::Render::create(system, nullptr, nullptr);
+        render->setTarget(buffer);
+        RenderOptions options;
+        options.texturePoolByteCount = 1;
+        ImageOptions imageOptions;
+        imageOptions.cache = false;
+        std::vector<size_t> poolCounts;
+        std::vector<size_t> poolByteCounts;
+        std::vector<size_t> textureByteCounts;
+        const auto frame = [&](int w, uint8_t value)
+        {
+            auto image = Image::create(w, size, ImageType::RGBA_U8);
+            uint8_t* data = image->getData();
+            for (size_t i = 0; i < image->getByteCount(); i += 4)
+            {
+                data[i] = data[i + 1] = data[i + 2] = value;
+                data[i + 3] = 255;
+            }
+            render->begin(buffer->getSize(), options);
+            render->drawImage(image, Box2F(0, 0, size, size), Color4F(1.F, 1.F, 1.F), imageOptions);
+            render->end();
+            poolCounts.push_back(gpu::Render::getTexturePoolCount());
+            poolByteCounts.push_back(gpu::Render::getTexturePoolByteCount());
+            textureByteCounts.push_back(gpu::Texture::getTotalByteCount());
+        };
+        const size_t poolCount = gpu::Render::getTexturePoolCount();
+        const size_t poolByteCount = gpu::Render::getTexturePoolByteCount();
+        frame(size, 64);
+        frame(size, 128);
+        frame(size, 192);
+        const Color4F color = buffer->getPixel(V2I(size / 2, size / 2));
+        frame(size / 2, 255);
+        const bool out =
+            // The entry stays, counted by its two textures and two
+            // transfer buffers, though the limit is less than one.
+            poolCount + 1 == poolCounts[0] &&
+            poolCount + 1 == poolCounts[2] &&
+            poolByteCount + byteCount * 4 == poolByteCounts[2] &&
+            // The first copy makes one transfer buffer, the second the
+            // other, and after that there are no more.
+            textureByteCounts[1] == textureByteCounts[0] + byteCount &&
+            textureByteCounts[2] == textureByteCounts[1] &&
+            std::abs(static_cast<int>(color.r * 255.F + .5F) - 192) <= 1 &&
+            // Another size takes the place of the one not drawn.
+            poolCount + 1 == poolCounts[3] &&
+            poolByteCount + byteCount * 2 == poolByteCounts[3];
+        std::cout << "Texture pool: " << (out ? "counted and kept" : "wrong") << std::endl;
+        if (!out)
+        {
+            for (size_t i = 0; i < poolCounts.size(); ++i)
+            {
+                std::cout << "    frame " << i << ": " << poolCounts[i] << " entries, " <<
+                    poolByteCounts[i] << " bytes; textures " << textureByteCounts[i] << " bytes" << std::endl;
+            }
+        }
+        return out;
+    }
+
     // A buffer read back as each type of image a file is written from, in
     // each layout: what OpenGL's glReadPixels gives the writers. The buffer
     // is one color with a row of another along the top, an odd width so
@@ -981,6 +1050,7 @@ int main(int argc, char** argv)
             glsl() &&
             invalid(context->getSystem<gpu::System>()) &&
             eviction(context->getSystem<gpu::System>()) &&
+            pool(context->getSystem<gpu::System>()) &&
             readback(context->getSystem<gpu::System>()) &&
             present(context->getSystem<gpu::System>()) &&
             swapchain(context->getSystem<gpu::System>());

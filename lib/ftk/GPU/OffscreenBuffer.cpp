@@ -72,6 +72,7 @@ namespace ftk
             // good part of what a read cost.
             SDL_GPUTexture* readTexture = nullptr;
             SDL_GPUTextureFormat readTextureFormat = SDL_GPU_TEXTUREFORMAT_INVALID;
+            size_t readTextureByteCount = 0;
             SDL_GPUTransferBuffer* readTransfer = nullptr;
             size_t readTransferByteCount = 0;
         };
@@ -124,10 +125,12 @@ namespace ftk
             if (p.system && p.readTexture)
             {
                 SDL_ReleaseGPUTexture(p.system->getDevice(), p.readTexture);
+                totalByteCount -= p.readTextureByteCount;
             }
             if (p.system && p.readTransfer)
             {
                 SDL_ReleaseGPUTransferBuffer(p.system->getDevice(), p.readTransfer);
+                totalByteCount -= p.readTransferByteCount;
             }
         }
 
@@ -306,7 +309,9 @@ namespace ftk
                 if (p.readTexture && p.readTextureFormat != readFormat.format)
                 {
                     SDL_ReleaseGPUTexture(device, p.readTexture);
+                    totalByteCount -= p.readTextureByteCount;
                     p.readTexture = nullptr;
+                    p.readTextureByteCount = 0;
                 }
                 if (!p.readTexture)
                 {
@@ -326,6 +331,12 @@ namespace ftk
                         SDL_CreateGPUTexture(device, &textureInfo) :
                         nullptr;
                     p.readTextureFormat = readFormat.format;
+                    if (p.readTexture)
+                    {
+                        p.readTextureByteCount = SDL_CalculateGPUTextureFormatSize(
+                            readFormat.format, p.size.w, p.size.h, 1);
+                        totalByteCount += p.readTextureByteCount;
+                    }
                 }
                 if (!p.readTexture)
                 {
@@ -354,7 +365,9 @@ namespace ftk
             if (p.readTransfer && p.readTransferByteCount != readByteCount)
             {
                 SDL_ReleaseGPUTransferBuffer(device, p.readTransfer);
+                totalByteCount -= p.readTransferByteCount;
                 p.readTransfer = nullptr;
+                p.readTransferByteCount = 0;
             }
             if (!p.readTransfer)
             {
@@ -362,7 +375,11 @@ namespace ftk
                 transferInfo.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
                 transferInfo.size = static_cast<Uint32>(readByteCount);
                 p.readTransfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
-                p.readTransferByteCount = readByteCount;
+                if (p.readTransfer)
+                {
+                    p.readTransferByteCount = readByteCount;
+                    totalByteCount += p.readTransferByteCount;
+                }
             }
             if (!p.readTransfer)
             {

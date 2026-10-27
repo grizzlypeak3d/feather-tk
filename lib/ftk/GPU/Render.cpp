@@ -10,6 +10,7 @@
 #include <atomic>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <map>
 #include <stdexcept>
 
@@ -457,7 +458,8 @@ namespace ftk
                 {
                     throw std::runtime_error(Format("Cannot create a vertex buffer: {0}").arg(SDL_GetError()));
                 }
-                vertexByteCount += c.data.size();
+                // The buffer and the transfer buffer it is sent through.
+                vertexByteCount += c.data.size() * 2;
                 chunks.push_back(c);
                 chunk = chunks.size() - 1;
             }
@@ -624,7 +626,7 @@ namespace ftk
                 {
                     SDL_ReleaseGPUBuffer(p.device, i.buffer);
                     SDL_ReleaseGPUTransferBuffer(p.device, i.transfer);
-                    vertexByteCount -= i.data.size();
+                    vertexByteCount -= i.data.size() * 2;
                 }
                 textureCacheByteCount -= p.cacheTotals.cacheByteCount;
                 textureCacheCount -= p.cacheTotals.cacheCount;
@@ -866,7 +868,9 @@ namespace ftk
 
             p.size = size;
             p.options = options;
-            p.texturePool.setMax(options.texturePoolByteCount);
+            // The pool is held to its limit at the end of the frame, by
+            // what was not drawn with; see end().
+            p.texturePool.setMax(std::numeric_limits<size_t>::max());
             p.textureCache.setMax(options.textureCacheByteCount);
             p.texturePoolUsed.clear();
 
@@ -970,6 +974,28 @@ namespace ftk
                     p.frameFenceIndex = (p.frameFenceIndex + 1) % 2;
                 }
                 p.cmd = nullptr;
+            }
+
+            // The pool keeps what this frame drew with, however large, and
+            // lets go of the entries for sizes not drawn, oldest first,
+            // until it is within its limit. An entry is counted by all it
+            // takes -- a 4K 16-bit video frame's is over half a gigabyte,
+            // more than the default limit by itself -- and a limit applied
+            // as entries were added would have let go of the one being
+            // drawn with, to be made again the next frame.
+            if (p.texturePool.getSize() > p.options.texturePoolByteCount)
+            {
+                const std::vector<std::string> keys = p.texturePool.getKeys();
+                for (auto i = keys.rbegin();
+                    i != keys.rend() && p.texturePool.getSize() > p.options.texturePoolByteCount;
+                    ++i)
+                {
+                    if (!p.texturePoolUsed.contains(*i))
+                    {
+                        p.texturePool.remove(*i);
+                        p.texturePoolImage.erase(*i);
+                    }
+                }
             }
 
             {

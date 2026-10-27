@@ -46,6 +46,18 @@ namespace ftk
                 ss << value.size << " " << value.type;
                 return ss.str();
             }
+
+            // What a pool or cache entry takes on the GPU: for a streaming
+            // entry, four times the picture.
+            size_t getByteCount(const std::vector<std::shared_ptr<Texture> >& textures)
+            {
+                size_t out = 0;
+                for (const auto& texture : textures)
+                {
+                    out += texture->getByteCount();
+                }
+                return out;
+            }
         }
 
         void Render::drawRect(
@@ -820,7 +832,7 @@ namespace ftk
                     // into the same textures every frame, which is what
                     // streaming textures are for.
                     textures = _getTextures(info, imageOptions.imageFilters, true);
-                    p.texturePool.add(texturePoolKey, textures, image->getByteCount());
+                    p.texturePool.add(texturePoolKey, textures, getByteCount(textures));
                     fresh = true;
                 }
                 auto& uploaded = p.texturePoolImage[texturePoolKey];
@@ -834,7 +846,7 @@ namespace ftk
             {
                 textures = _getTextures(info, imageOptions.imageFilters);
                 _copyTextures(image, textures);
-                p.textureCache.add(image, textures, image->getByteCount());
+                p.textureCache.add(image, textures, getByteCount(textures));
             }
             if (textures.empty())
                 return;
