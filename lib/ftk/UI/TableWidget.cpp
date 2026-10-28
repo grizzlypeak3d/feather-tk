@@ -52,6 +52,7 @@ namespace ftk
         ColorRole headingRole = ColorRole::Base;
         bool headingLine = false;
         bool columnLines = false;
+        bool rowLines = false;
 
         struct SizeData
         {
@@ -290,6 +291,20 @@ namespace ftk
         setDrawUpdate();
     }
 
+    bool TableWidget::hasRowLines() const
+    {
+        return _p->rowLines;
+    }
+
+    void TableWidget::setRowLines(bool value)
+    {
+        FTK_P();
+        if (value == p.rowLines)
+            return;
+        p.rowLines = value;
+        setDrawUpdate();
+    }
+
     ColorRole TableWidget::getHeadingRole() const
     {
         return _p->headingRole;
@@ -496,6 +511,18 @@ namespace ftk
                 event.render->drawRect(
                     rowRect,
                     event.style->getColorRole(p.headingRole));
+            }
+            // Beneath each row that is not a heading, the heading line
+            // being drawn for those.
+            if (!row.heading && p.rowLines)
+            {
+                event.render->drawRect(
+                    Box2I(
+                        rowRect.min.x,
+                        rowRect.max.y + 1 - p.size.border,
+                        rowRect.w(),
+                        p.size.border),
+                    event.style->getColorRole(ColorRole::Border));
             }
             if (row.heading && p.headingLine)
             {

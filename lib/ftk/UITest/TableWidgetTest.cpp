@@ -81,6 +81,10 @@ namespace ftk
                 table->setColumnLines(true);
                 table->setColumnLines(true);
                 FTK_CHECK(table->hasColumnLines());
+                FTK_CHECK(!table->hasRowLines());
+                table->setRowLines(true);
+                table->setRowLines(true);
+                FTK_CHECK(table->hasRowLines());
                 FTK_CHECK(!table->hasHeadingLine());
                 table->setHeadingLine(true);
                 table->setHeadingLine(true);
