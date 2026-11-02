@@ -580,8 +580,13 @@ namespace ftk
         // the status bar along the top, and the home indicator along the
         // bottom. SDL says where that leaves the window's own area, in the
         // window's coordinates, which are the pixels scaled by the density.
+        //
+        // Not for an offscreen window, which is on no screen: it is laid
+        // out at a size of its own, and the hidden window behind it has
+        // the platform's default size, whose safe area cut a test's
+        // 1920x1080 layout down to 1024x768 on Linux.
         SDL_Rect safe;
-        SDL_Window* sdlWindow = p.window ? p.window->getSDLWindow() : nullptr;
+        SDL_Window* sdlWindow = p.window && !isOffscreen() ? p.window->getSDLWindow() : nullptr;
         if (sdlWindow && SDL_GetWindowSafeArea(sdlWindow, &safe))
         {
             int w = 0;
