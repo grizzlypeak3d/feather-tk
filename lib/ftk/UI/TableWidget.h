@@ -161,6 +161,14 @@ namespace ftk
         //! Set whether lines are drawn between the columns.
         FTK_UI_API void setColumnLines(bool);
 
+        //! Get whether lines are drawn between the rows.
+        FTK_UI_API bool hasRowLines() const;
+
+        //! Set whether lines are drawn between the rows. With the column
+        //! lines the cells read as a grid, which says they can be edited
+        //! more plainly than text alone.
+        FTK_UI_API void setRowLines(bool);
+
         //! Get the color role of the heading rows.
         FTK_UI_API ColorRole getHeadingRole() const;
 
