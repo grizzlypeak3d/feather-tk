@@ -67,7 +67,11 @@ set(SDL3_ARGS
 # pad, which has no minus sign and no colon; and a window is made in the
 # scene of the display it is for, since with an external display attached
 # the system has a foreground scene for that too, and taking any
-# foreground scene put the main window on the television. The last is
+# foreground scene put the main window on the television; and a window
+# made in a scene is on that scene's display, rather than wherever its
+# position puts it, and an external display's window leaves the keyboard
+# with the device's, so that an application can draw on a television
+# while the iPad turns. The last is
 # ours for Metal: a buffer Metal cannot make is a failure the caller
 # sees, rather than a buffer with nothing in it that the next map or copy
 # dereferences, which crashed on an iPad that had run out of memory.

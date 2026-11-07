@@ -1,8 +1,110 @@
+diff --git a/src/video/uikit/SDL_uikitvideo.m b/src/video/uikit/SDL_uikitvideo.m
+index 97aeb9443..7ba99d62b 100644
+--- a/src/video/uikit/SDL_uikitvideo.m
++++ b/src/video/uikit/SDL_uikitvideo.m
+@@ -87,6 +87,9 @@ static void UIKit_DeleteDevice(SDL_VideoDevice *device)
+         device->PumpEvents = UIKit_PumpEvents;
+         device->SuspendScreenSaver = UIKit_SuspendScreenSaver;
+         device->CreateSDLWindow = UIKit_CreateWindow;
++#ifndef SDL_PLATFORM_VISIONOS
++        device->GetDisplayForWindow = UIKit_GetDisplayForWindow;
++#endif
+         device->SetWindowTitle = UIKit_SetWindowTitle;
+         device->SetWindowSize = UIKit_SetWindowSize;
+         device->ShowWindow = UIKit_ShowWindow;
+diff --git a/src/video/uikit/SDL_uikitwindow.h b/src/video/uikit/SDL_uikitwindow.h
+index 79b969c05..ab7dda5e9 100644
+--- a/src/video/uikit/SDL_uikitwindow.h
++++ b/src/video/uikit/SDL_uikitwindow.h
+@@ -26,6 +26,9 @@
+ #import "SDL_uikitview.h"
+ #import "SDL_uikitviewcontroller.h"
+ 
++#ifndef SDL_PLATFORM_VISIONOS
++extern SDL_DisplayID UIKit_GetDisplayForWindow(SDL_VideoDevice *_this, SDL_Window *window);
++#endif
+ extern bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_PropertiesID create_props);
+ extern void UIKit_SetWindowTitle(SDL_VideoDevice *_this, SDL_Window *window);
+ extern void UIKit_SetWindowSize(SDL_VideoDevice *_this, SDL_Window *window);
 diff --git a/src/video/uikit/SDL_uikitwindow.m b/src/video/uikit/SDL_uikitwindow.m
-index 0ee736446..de9ca3877 100644
+index 0ee736446..4585e7a52 100644
 --- a/src/video/uikit/SDL_uikitwindow.m
 +++ b/src/video/uikit/SDL_uikitwindow.m
-@@ -174,6 +174,19 @@ bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_Properti
+@@ -126,6 +126,44 @@ static bool SetupWindowData(SDL_VideoDevice *_this, SDL_Window *window, UIWindow
+     return true;
+ }
+ 
++#ifndef SDL_PLATFORM_VISIONOS
++/* The display of a screen. */
++static SDL_VideoDisplay *UIKit_GetDisplayForScreen(SDL_VideoDevice *_this, UIScreen *uiscreen)
++{
++    for (int i = 0; i < _this->num_displays; ++i) {
++        SDL_VideoDisplay *display = _this->displays[i];
++        SDL_UIKitDisplayData *displaydata = (__bridge SDL_UIKitDisplayData *)display->internal;
++        if (displaydata && displaydata.uiscreen == uiscreen) {
++            return display;
++        }
++    }
++    return NULL;
++}
++
++/* A window is on the display of its screen, wherever its position would
++   put it: the displays are only laid out left to right, and a window's
++   position on them depends on the device's orientation. */
++SDL_DisplayID UIKit_GetDisplayForWindow(SDL_VideoDevice *_this, SDL_Window *window)
++{
++    @autoreleasepool {
++        if (window->internal) {
++            SDL_UIKitWindowData *data = (__bridge SDL_UIKitWindowData *)window->internal;
++            UIScreen *uiscreen = data.uiwindow.screen;
++            if (@available(iOS 13.0, tvOS 13.0, *)) {
++                if (data.uiwindow.windowScene) {
++                    uiscreen = data.uiwindow.windowScene.screen;
++                }
++            }
++            SDL_VideoDisplay *display = UIKit_GetDisplayForScreen(_this, uiscreen);
++            if (display) {
++                return display->id;
++            }
++        }
++        return 0;
++    }
++}
++#endif
++
+ bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_PropertiesID create_props)
+ {
+     @autoreleasepool {
+@@ -133,6 +171,28 @@ bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_Properti
+         SDL_UIKitDisplayData *data = (__bridge SDL_UIKitDisplayData *)display->internal;
+         SDL_Window *other;
+ 
++#ifndef SDL_PLATFORM_VISIONOS
++        /* A window made in a scene goes on the scene's display: an external
++           display's scene is not where the window's position puts it. */
++        if (@available(iOS 13.0, tvOS 13.0, *)) {
++            UIWindowScene *scene = (__bridge UIWindowScene *)SDL_GetPointerProperty(create_props, SDL_PROP_WINDOW_CREATE_WINDOWSCENE_POINTER, NULL);
++            SDL_VideoDisplay *scene_display = scene ? UIKit_GetDisplayForScreen(_this, scene.screen) : NULL;
++            if (scene_display && scene_display != display) {
++                SDL_Rect bounds;
++                if (SDL_GetDisplayBounds(scene_display->id, &bounds)) {
++                    window->x = bounds.x;
++                    window->y = bounds.y;
++                    window->w = bounds.w;
++                    window->h = bounds.h;
++                }
++                window->displayID = scene_display->id;
++                display = scene_display;
++                data = (__bridge SDL_UIKitDisplayData *)display->internal;
++                SDL_SetWindowHDRProperties(window, &display->HDR, false);
++            }
++        }
++#endif
++
+         // We currently only handle a single window per display on iOS
+         for (other = _this->windows; other; other = other->next) {
+             if (other != window && SDL_GetVideoDisplayForWindow(other) == display) {
+@@ -174,6 +234,19 @@ bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_Properti
          UIWindow *uiwindow = nil;
          if (@available(iOS 13.0, tvOS 13.0, *)) {
              UIWindowScene *scene = (__bridge UIWindowScene *)SDL_GetPointerProperty(create_props, SDL_PROP_WINDOW_CREATE_WINDOWSCENE_POINTER, NULL);
@@ -22,3 +124,35 @@ index 0ee736446..de9ca3877 100644
              if (!scene) {
                  scene = UIKit_GetActiveWindowScene();
              }
+@@ -192,7 +265,7 @@ bool UIKit_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_Properti
+ 
+         // put the window on an external display if appropriate.
+ #ifndef SDL_PLATFORM_VISIONOS
+-        if (data.uiscreen != [UIScreen mainScreen]) {
++        if (data.uiscreen != [UIScreen mainScreen] && !uiwindow.windowScene) {
+             [uiwindow setScreen:data.uiscreen];
+         }
+ #endif
+@@ -236,15 +309,18 @@ void UIKit_ShowWindow(SDL_VideoDevice *_this, SDL_Window *window)
+ {
+     @autoreleasepool {
+         SDL_UIKitWindowData *data = (__bridge SDL_UIKitWindowData *)window->internal;
+-        [data.uiwindow makeKeyAndVisible];
+-
+-        // Make this window the current mouse focus for touch input
+         SDL_VideoDisplay *display = SDL_GetVideoDisplayForWindow(window);
+         SDL_UIKitDisplayData *displaydata = (__bridge SDL_UIKitDisplayData *)display->internal;
+ #ifndef SDL_PLATFORM_VISIONOS
+-        if (displaydata.uiscreen == [UIScreen mainScreen])
++        if (displaydata.uiscreen != [UIScreen mainScreen]) {
++            // Shown, but the device's window keeps the keyboard.
++            data.uiwindow.hidden = NO;
++        } else
+ #endif
+         {
++            [data.uiwindow makeKeyAndVisible];
++
++            // Make this window the current mouse focus for touch input
+             SDL_SetMouseFocus(window);
+             SDL_SetKeyboardFocus(window);
+         }
