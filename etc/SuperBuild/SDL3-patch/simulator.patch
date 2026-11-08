@@ -1,0 +1,14 @@
+diff --git a/src/gpu/metal/SDL_gpu_metal.m b/src/gpu/metal/SDL_gpu_metal.m
+--- a/src/gpu/metal/SDL_gpu_metal.m
++++ b/src/gpu/metal/SDL_gpu_metal.m
+@@ -4618,6 +4618,10 @@
+                 [device supportsFeatureSet:MTLFeatureSet_macOS_GPUFamily2_v1];
+         }
+ #elif defined(SDL_PLATFORM_VISIONOS)
++        hasHardwareSupport = true;
++#elif TARGET_OS_SIMULATOR
++        // The simulator's device reports an older family whatever the
++        // Mac's GPU is, and draws with the Mac's GPU all the same.
+         hasHardwareSupport = true;
+ #else
+         if (@available(iOS 13.0, tvOS 13.0, *)) {

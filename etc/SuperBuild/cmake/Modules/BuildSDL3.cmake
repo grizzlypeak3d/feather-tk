@@ -59,7 +59,7 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# Four patches. One from upstream pull request #14157 (open): the Metal
+# Five patches. One from upstream pull request #14157 (open): the Metal
 # GPU driver makes a texture over an existing CVPixelBuffer's surface,
 # which is how a frame the hardware decoded is drawn without a copy. Drop
 # it when a release carries the change. Two are ours, for iOS: a number
@@ -74,7 +74,10 @@ set(SDL3_ARGS
 # while the iPad turns. The last is
 # ours for Metal: a buffer Metal cannot make is a failure the caller
 # sees, rather than a buffer with nothing in it that the next map or copy
-# dereferences, which crashed on an iPad that had run out of memory.
+# dereferences, which crashed on an iPad that had run out of memory. And
+# one for the iOS simulator: its Metal device reports an older GPU family
+# than the GPU driver asks for, whatever the Mac's GPU is, and draws with
+# the Mac's GPU all the same.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -99,6 +102,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/buffer.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/simulator.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})
