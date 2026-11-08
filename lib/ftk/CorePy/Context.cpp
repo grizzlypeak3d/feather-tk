@@ -41,7 +41,10 @@ namespace ftk
                     "observers are called. Nothing changes between calls, so "
                     "a script without an application's event loop calls this "
                     "in its own loop, for as long as it is waiting for "
-                    "something.");
+                    "something. It does not wait itself: it takes in only "
+                    "what has finished, so sleep a few milliseconds between "
+                    "calls. A loop of bare calls can run a thousand times "
+                    "before the first frame is decoded.");
         }
     }
 }
