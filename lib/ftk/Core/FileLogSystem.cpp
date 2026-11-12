@@ -37,6 +37,9 @@ namespace ftk
         {
             std::thread thread;
             std::atomic<bool> running;
+            //! Items are waiting to be written. Set under stopMutex, so
+            //! the thread cannot miss it between its test and its wait.
+            bool pending = false;
             std::condition_variable stop;
             std::mutex stopMutex;
         };
@@ -78,11 +81,23 @@ namespace ftk
             context->getLogSystem()->observeLogItems(),
             [this](const std::vector<LogItem>& value)
             {
-                std::unique_lock<std::mutex> lock(_p->mutex.mutex);
-                _p->mutex.items.insert(
-                    _p->mutex.items.end(),
-                    value.begin(),
-                    value.end());
+                if (value.empty())
+                    return;
+                {
+                    std::unique_lock<std::mutex> lock(_p->mutex.mutex);
+                    _p->mutex.items.insert(
+                        _p->mutex.items.end(),
+                        value.begin(),
+                        value.end());
+                }
+                // Written as they arrive rather than at the next tick: the
+                // last messages before a crash are the ones that say what
+                // happened, and a tick's worth was lost with the process.
+                {
+                    std::unique_lock<std::mutex> lock(_p->thread.stopMutex);
+                    _p->thread.pending = true;
+                }
+                _p->thread.stop.notify_one();
             });
             
         p.thread.running = true;
@@ -142,6 +157,10 @@ namespace ftk
                 {
                     const auto t0 = std::chrono::steady_clock::now();
 
+                    {
+                        std::unique_lock<std::mutex> lock(p.thread.stopMutex);
+                        p.thread.pending = false;
+                    }
                     std::vector<LogItem> items;
                     {
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
@@ -149,9 +168,10 @@ namespace ftk
                     }
                     write(items);
 
-                    // Wait out the rest of the tick, but wake as soon as the
-                    // destructor clears the flag. Sleeping instead would make
-                    // shutdown wait for the current tick to expire.
+                    // Wait out the rest of the tick, but wake as soon as
+                    // items arrive or the destructor clears the flag.
+                    // Sleeping instead would make shutdown wait for the
+                    // current tick to expire.
                     const auto t1 = std::chrono::steady_clock::now();
                     const auto period =
                         std::chrono::duration_cast<std::chrono::microseconds>(timeout);
@@ -161,7 +181,7 @@ namespace ftk
                     p.thread.stop.wait_for(
                         lock,
                         period > elapsed ? period - elapsed : std::chrono::microseconds(0),
-                        [&p] { return !p.thread.running; });
+                        [&p] { return !p.thread.running || p.thread.pending; });
                 }
                 std::vector<LogItem> items;
                 {
