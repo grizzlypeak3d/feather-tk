@@ -43,6 +43,7 @@
 #elif defined(__FreeBSD__)
 #include <sys/sysctl.h>
 #elif defined(__EMSCRIPTEN__)
+#include <emscripten/threading.h>
 #else // __APPLE__
 #include <sys/sysinfo.h>
 #endif // __APPLE__
@@ -292,6 +293,9 @@ namespace ftk
         pthread_setname_np(value.c_str());
 #elif defined(__FreeBSD__)
         pthread_set_name_np(pthread_self(), value.c_str());
+#elif defined(__EMSCRIPTEN__)
+        // Declared by Emscripten but not defined: the link fails.
+        emscripten_set_thread_name(pthread_self(), value.c_str());
 #else // __APPLE__
         pthread_setname_np(pthread_self(), value.substr(0, 15).c_str());
 #endif // __APPLE__
