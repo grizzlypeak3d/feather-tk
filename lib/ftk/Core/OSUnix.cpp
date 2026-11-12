@@ -9,7 +9,7 @@
 
 #if defined(__linux__)
 #include <sys/vfs.h>
-#else // __linux__
+#elif !defined(__EMSCRIPTEN__)
 #include <sys/mount.h>
 #include <sys/param.h>
 #endif // __linux__
@@ -222,6 +222,8 @@ namespace ftk
     bool isNetworkVolume(const std::filesystem::path& path)
     {
         bool out = false;
+        // In the browser every file is in memory or in the page's storage.
+#if !defined(__EMSCRIPTEN__)
         struct statfs st;
         if (0 == statfs(path.string().c_str(), &st))
         {
@@ -243,6 +245,7 @@ namespace ftk
             }
 #endif // __APPLE__
         }
+#endif // __EMSCRIPTEN__
         return out;
     }
 
