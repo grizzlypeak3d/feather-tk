@@ -17,6 +17,7 @@
 #include <sstream>
 #include <vector>
 #include <atomic>
+#include <cstdlib>
 #include <cstring>
 #include <stdexcept>
 
@@ -445,9 +446,20 @@ namespace ftk
             //! upload -- on macOS a 6K RGB sequence played at 15 frames a
             //! second where the same frames as RGBA played at 24. Widening
             //! in the copy made anyway costs nothing more.
+            //!
+            //! FTK_GL_WIDEN_RGB=0 uploads them as three, for measuring the
+            //! drivers that may take three channels cheaply (NVIDIA, by
+            //! OpenUTV's numbers). Read once.
             TextureType getUploadType(TextureType value)
             {
+                static const bool widen = []
+                    {
+                        const char* env = std::getenv("FTK_GL_WIDEN_RGB");
+                        return !(env && std::string(env) == "0");
+                    }();
                 TextureType out = value;
+                if (!widen)
+                    return out;
                 switch (value)
                 {
                 case TextureType::RGB_U8: out = TextureType::RGBA_U8; break;
