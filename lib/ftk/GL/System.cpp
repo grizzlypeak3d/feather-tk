@@ -160,39 +160,6 @@ namespace ftk
 
             // Create default render factory.
             p.renderFactory = std::make_shared<RenderFactory>();
-
-            // Diagnostics.
-            auto diagSystem = context->getSystem<DiagSystem>();
-            diagSystem->addSampler(
-                "GPU memory/Textures: {0}MB",
-                [] { return gl::Texture::getTotalByteCount() / megabyte; });
-            // The two caches the textures are held in, apart: the total on
-            // its own cannot say which of them is growing.
-            diagSystem->addSampler(
-                "GPU memory/Texture cache: {0}MB",
-                [] { return gl::Render::getTextureCacheByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "GPU memory/Texture pool: {0}MB",
-                [] { return gl::Render::getTexturePoolByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "GPU memory/Buffers: {0}MB",
-                [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "GPU memory/Meshes: {0}MB",
-                [] { return gl::VBO::getTotalByteCount() / megabyte; });
-
-            diagSystem->addSampler(
-                "GPU objects/Textures: {0}",
-                [] { return gl::Texture::getObjectCount(); });
-            diagSystem->addSampler(
-                "GPU objects/Buffers: {0}",
-                [] { return gl::OffscreenBuffer::getObjectCount(); });
-            diagSystem->addSampler(
-                "GPU objects/Meshes: {0}",
-                [] { return gl::VBO::getObjectCount(); });
-            diagSystem->addSampler(
-                "GPU objects/Shaders: {0}",
-                [] { return gl::Shader::getObjectCount(); });
         }
 
         System::~System()
@@ -324,6 +291,45 @@ namespace ftk
             }
             p.initGL = true;
             init();
+
+            // Diagnostics, of what OpenGL holds: only where OpenGL is
+            // what draws, since with the GPU renderer these would read zero
+            // beside its own rows of the same names.
+            if (auto context = getContext())
+            {
+                auto diagSystem = context->getSystem<DiagSystem>();
+                diagSystem->addSampler(
+                    "GPU memory/Textures: {0}MB",
+                    [] { return gl::Texture::getTotalByteCount() / megabyte; });
+                // The two caches the textures are held in, apart: the total on
+                // its own cannot say which of them is growing.
+                diagSystem->addSampler(
+                    "GPU memory/Texture cache: {0}MB",
+                    [] { return gl::Render::getTextureCacheByteCount() / megabyte; });
+                diagSystem->addSampler(
+                    "GPU memory/Texture pool: {0}MB",
+                    [] { return gl::Render::getTexturePoolByteCount() / megabyte; });
+                diagSystem->addSampler(
+                    "GPU memory/Buffers: {0}MB",
+                    [] { return gl::OffscreenBuffer::getTotalByteCount() / megabyte; });
+                diagSystem->addSampler(
+                    "GPU memory/Meshes: {0}MB",
+                    [] { return gl::VBO::getTotalByteCount() / megabyte; });
+
+                diagSystem->addSampler(
+                    "GPU objects/Textures: {0}",
+                    [] { return gl::Texture::getObjectCount(); });
+                diagSystem->addSampler(
+                    "GPU objects/Buffers: {0}",
+                    [] { return gl::OffscreenBuffer::getObjectCount(); });
+                diagSystem->addSampler(
+                    "GPU objects/Meshes: {0}",
+                    [] { return gl::VBO::getObjectCount(); });
+                diagSystem->addSampler(
+                    "GPU objects/Shaders: {0}",
+                    [] { return gl::Shader::getObjectCount(); });
+            }
+
             auto logSystem = p.logSystem.lock();
 
             // Which graphics API this run uses: the first of those to try

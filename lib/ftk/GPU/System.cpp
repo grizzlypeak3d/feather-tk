@@ -46,41 +46,6 @@ namespace ftk
             {
                 context->getLogSystem()->print("ftk::gpu::System", libraryInfo);
             }
-
-            // What the OpenGL system reports of its own, for this renderer.
-            // All zero while the windows are drawn with OpenGL.
-            auto diagSystem = context->getSystem<DiagSystem>();
-            diagSystem->addSampler(
-                "ftk GPU Memory/Buffers: {0}MB",
-                [] { return OffscreenBuffer::getTotalByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GPU Memory/Vertices: {0}MB",
-                [] { return Render::getVertexByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GPU Memory/Textures: {0}MB",
-                [] { return Texture::getTotalByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GPU Memory/Texture cache: {0}MB",
-                [] { return Render::getTextureCacheByteCount() / megabyte; });
-            diagSystem->addSampler(
-                "ftk GPU Memory/Texture pool: {0}MB",
-                [] { return Render::getTexturePoolByteCount() / megabyte; });
-
-            diagSystem->addSampler(
-                "ftk GPU Objects/Buffers: {0}",
-                [] { return OffscreenBuffer::getObjectCount(); });
-            diagSystem->addSampler(
-                "ftk GPU Objects/Shaders: {0}",
-                [] { return Render::getShaderCount(); });
-            diagSystem->addSampler(
-                "ftk GPU Objects/Textures: {0}",
-                [] { return Texture::getObjectCount(); });
-            diagSystem->addSampler(
-                "ftk GPU Objects/Texture cache: {0}",
-                [] { return Render::getTextureCacheCount(); });
-            diagSystem->addSampler(
-                "ftk GPU Objects/Texture pool: {0}",
-                [] { return Render::getTexturePoolCount(); });
         }
 
         System::~System()
@@ -333,6 +298,43 @@ namespace ftk
                     auto system = context->getSystem<System>();
                     system->getDevice();
                     enabled = true;
+
+                    // What it holds, under the names OpenGL's are given:
+                    // only one of the two draws, and only its rows are
+                    // added (gl::System::initGL()).
+                    auto diagSystem = context->getSystem<DiagSystem>();
+                    diagSystem->addSampler(
+                        "GPU memory/Textures: {0}MB",
+                        [] { return Texture::getTotalByteCount() / megabyte; });
+                    diagSystem->addSampler(
+                        "GPU memory/Texture cache: {0}MB",
+                        [] { return Render::getTextureCacheByteCount() / megabyte; });
+                    diagSystem->addSampler(
+                        "GPU memory/Texture pool: {0}MB",
+                        [] { return Render::getTexturePoolByteCount() / megabyte; });
+                    diagSystem->addSampler(
+                        "GPU memory/Buffers: {0}MB",
+                        [] { return OffscreenBuffer::getTotalByteCount() / megabyte; });
+                    diagSystem->addSampler(
+                        "GPU memory/Vertices: {0}MB",
+                        [] { return Render::getVertexByteCount() / megabyte; });
+
+                    diagSystem->addSampler(
+                        "GPU objects/Textures: {0}",
+                        [] { return Texture::getObjectCount(); });
+                    diagSystem->addSampler(
+                        "GPU objects/Texture cache: {0}",
+                        [] { return Render::getTextureCacheCount(); });
+                    diagSystem->addSampler(
+                        "GPU objects/Texture pool: {0}",
+                        [] { return Render::getTexturePoolCount(); });
+                    diagSystem->addSampler(
+                        "GPU objects/Buffers: {0}",
+                        [] { return OffscreenBuffer::getObjectCount(); });
+                    diagSystem->addSampler(
+                        "GPU objects/Shaders: {0}",
+                        [] { return Render::getShaderCount(); });
+
                     // Beside the texture formats the device says it has:
                     // what it says nothing of, and is tried.
                     context->getSystem<LogSystem>()->print(

@@ -195,8 +195,9 @@ Any application can be compared with itself:
     app -renderer GPU -screenshot gpu.png
     ftk-gpu-test -compare gl.png gpu.png [difference.png]
 
-The Diagnostics has `ftk GPU Objects` and `ftk GPU Memory` beside the OpenGL
-ones, which read zero while this renderer draws.
+The Diagnostics' `GPU memory` and `GPU objects` rows are this renderer's
+while it draws, and OpenGL's while that does: each is added only by the
+renderer that started.
 
 ## Known differences from OpenGL
 
