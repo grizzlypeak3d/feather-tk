@@ -65,6 +65,8 @@ namespace ftk
                 menu->setChecked(action, true);
                 menu->setEnabled(action, false);
                 auto subMenu = menu->addSubMenu("Sub Menu");
+                FTK_CHECK("Sub Menu" == menu->getSubMenuText(subMenu));
+                FTK_CHECK(menu->getSubMenuText(nullptr).empty());
                 bool action3 = false;
                 subMenu->addAction(Action::create(
                     "Action 3",

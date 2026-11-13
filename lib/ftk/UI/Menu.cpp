@@ -153,6 +153,13 @@ namespace ftk
         return _p->subMenus;
     }
 
+    std::string Menu::getSubMenuText(const std::shared_ptr<Menu>& menu) const
+    {
+        FTK_P();
+        const auto i = p.subMenuToButton.find(menu);
+        return i != p.subMenuToButton.end() ? i->second->getText() : std::string();
+    }
+
     std::shared_ptr<Menu> Menu::addSubMenu(const std::string& text)
     {
         FTK_P();

@@ -58,6 +58,9 @@ namespace ftk
         //! Add a sub menu.
         FTK_UI_API std::shared_ptr<Menu> addSubMenu(const std::string&);
 
+        //! Get a sub menu's text, as its item in this menu shows it.
+        FTK_UI_API std::string getSubMenuText(const std::shared_ptr<Menu>&) const;
+
         //! Set whether a sub menu is enabled.
         FTK_UI_API void setSubMenuEnabled(const std::shared_ptr<Menu>&, bool);
 
