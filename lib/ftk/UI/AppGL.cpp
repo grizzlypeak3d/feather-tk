@@ -785,13 +785,28 @@ namespace ftk
         _displayScaleUpdate(displayScale);
     }
 
+    float App::getWindowDisplayScale(const IWindow& window) const
+    {
+        FTK_P();
+        float out = p.displayScale->get();
+        if (p.displayScaleAuto && !p.cmdLine.displayScale->hasValue())
+        {
+            const float system = window.getSystemDisplayScale();
+            if (system > 0.F)
+            {
+                out = system;
+            }
+        }
+        return out;
+    }
+
     void App::_displayScaleUpdate(float value)
     {
         FTK_P();
         p.displayScale->setIfChanged(value);
         for (const auto& window : p.windows)
         {
-            window->setDisplayScale(value);
+            window->setDisplayScale(getWindowDisplayScale(*window));
         }
     }
 
@@ -2017,6 +2032,20 @@ namespace ftk
                     {
                         _windowResized(window, event.window.windowID);
                         window->_geometryFromEvent();
+                    }
+                    break;
+                case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
+                    // A window dragged to a display of another scale: on
+                    // Auto it draws for that display, and the main window's
+                    // is the application's (DJV #732). It was read once,
+                    // when the window was made.
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        if (!p.windows.empty() && window == p.windows.front())
+                        {
+                            setDisplayScaleFromWindow(window->getSystemDisplayScale());
+                        }
+                        window->setDisplayScale(getWindowDisplayScale(*window));
                     }
                     break;
                 case SDL_EVENT_WINDOW_MOVED:

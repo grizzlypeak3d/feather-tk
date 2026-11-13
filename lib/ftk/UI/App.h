@@ -218,6 +218,11 @@ namespace ftk
         //! is used as given and the window does not correct it.
         FTK_UI_API void setDisplayScale(float);
 
+        //! Get the display scale a window draws at: on Auto, the scale of
+        //! the display it is on, so a window on a display of another scale
+        //! draws for that one; otherwise the scale set.
+        FTK_UI_API float getWindowDisplayScale(const IWindow&) const;
+
         //! Update the display scale from what the system reports for a
         //! window; zero means the platform had no answer. The command
         //! line option still wins.

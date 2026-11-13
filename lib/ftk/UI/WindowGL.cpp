@@ -165,8 +165,14 @@ namespace ftk
         // Now that the platform window exists it can say what display
         // scale it really has; _addWindow ran before it existed and could
         // not.
-        app->setDisplayScaleFromWindow(p.window->getDisplayScale());
-        setDisplayScale(app->observeDisplayScale()->get());
+        // The main window's is the application's; another window, a second
+        // one on a TV, draws for its own display without changing it.
+        const auto& windows = app->getWindows();
+        if (!windows.empty() && windows.front().get() == this)
+        {
+            app->setDisplayScaleFromWindow(p.window->getDisplayScale());
+        }
+        setDisplayScale(app->getWindowDisplayScale(*this));
 
         // The initial sizes, asked for rather than waited for: a window
         // that is never shown -- an offscreen screenshot run -- gets no
