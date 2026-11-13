@@ -36,6 +36,7 @@ namespace ftk
 
         FTK_UI_API uint32_t getID() const override;
         FTK_UI_API float getSystemDisplayScale() const override;
+        FTK_UI_API float getPixelDensity() const override;
         FTK_UI_API int getScreen() const override;
         FTK_UI_API void setTitle(const std::string&) override;
         FTK_UI_API void setSize(const Size2I&) override;

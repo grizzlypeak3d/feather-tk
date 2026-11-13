@@ -328,10 +328,24 @@ namespace ftk
         if (p.shot.contains("window"))
         {
             const auto& w = p.shot.at("window");
-            if (w.contains("w") && w.contains("h"))
-                window->setSize(Size2I(w.at("w").get<int>(), w.at("h").get<int>()));
             if (w.contains("scale"))
                 app->setDisplayScale(w.at("scale").get<float>());
+            if (w.contains("w") && w.contains("h"))
+            {
+                // The size is in display-scale units, so a shot lays out
+                // the same wherever it runs. SDL sizes a window in points
+                // on macOS, where this factor is one, but in pixels on
+                // Windows: on a 200% display an unscaled window held half
+                // the layout, and the shots' clicks landed on widgets that
+                // were not on screen (DJV capture tests at 200% scale).
+                const float scale = app->getDisplayScale();
+                const float density = window->getPixelDensity();
+                const float k = scale > 0.F && density > 0.F ?
+                    scale / density : 1.F;
+                window->setSize(Size2I(
+                    static_cast<int>(w.at("w").get<int>() * k + .5F),
+                    static_cast<int>(w.at("h").get<int>() * k + .5F)));
+            }
             _setupWindow(w);
         }
         // Nobody is watching a capture run, and a window on screen can be

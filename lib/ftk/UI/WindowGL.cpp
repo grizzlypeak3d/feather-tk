@@ -306,6 +306,22 @@ namespace ftk
         return p.window ? p.window->getDisplayScale() : 0.F;
     }
 
+    float Window::getPixelDensity() const
+    {
+        FTK_P();
+        float out = 1.F;
+        if (p.window)
+        {
+            const Size2I size = p.window->getSize();
+            const Size2I buffer = p.window->getFrameBufferSize();
+            if (size.w > 0 && buffer.w > 0)
+            {
+                out = buffer.w / static_cast<float>(size.w);
+            }
+        }
+        return out;
+    }
+
     int Window::getScreen() const
     {
         return _p->window->getScreen();

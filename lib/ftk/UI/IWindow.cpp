@@ -164,6 +164,11 @@ namespace ftk
         return 0.F;
     }
 
+    float IWindow::getPixelDensity() const
+    {
+        return 1.F;
+    }
+
     std::shared_ptr<App> IWindow::getApp() const
     {
         return _p->app.lock();

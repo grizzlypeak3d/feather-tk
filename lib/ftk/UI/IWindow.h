@@ -94,6 +94,11 @@ namespace ftk
         //! zero where the platform has no answer.
         FTK_UI_API virtual float getSystemDisplayScale() const;
 
+        //! Get the ratio of framebuffer pixels to window size units: one
+        //! where a window is sized in pixels (Windows, X11), the pixel
+        //! density where it is sized in points (macOS).
+        FTK_UI_API virtual float getPixelDensity() const;
+
         //! Window Title
         ///@{
 
