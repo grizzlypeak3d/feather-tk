@@ -88,8 +88,15 @@ jobs:
         done
         cp ftk/etc/Web/gallery.html site/index.html
 
-    - uses: actions/upload-pages-artifact@v3
+    - uses: actions/upload-pages-artifact@v5
       with:
         path: site
 
-    - uses: actions/deploy-pages@v4
+  # A job of its own, as GitHub's example has it: deployed from the build
+  # job straight after the upload, the deployment sometimes could not find
+  # the artifact yet, and a re-run added a second one, which fails too.
+  web-deploy:
+    needs: web-build
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/deploy-pages@v5
