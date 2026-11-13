@@ -9,6 +9,7 @@
 #include <ftk/Core/String.h>
 
 #include <cctype>
+#include <cstdlib>
 #include <map>
 #include <mutex>
 #include <sstream>
@@ -54,6 +55,37 @@ namespace ftk
                     cache =
                         renderer.find("llvmpipe") != std::string::npos ||
                         renderer.find("softpipe") != std::string::npos;
+                    cached = true;
+                }
+            }
+            return cache;
+        }
+
+        bool isRGBWidened()
+        {
+            static std::mutex mutex;
+            static bool cached = false;
+            static bool cache = true;
+            std::lock_guard<std::mutex> lock(mutex);
+            if (!cached)
+            {
+                if (const char* env = std::getenv("FTK_GL_WIDEN_RGB"))
+                {
+                    const std::string value(env);
+                    if ("0" == value || "1" == value)
+                    {
+                        cache = "1" == value;
+                        cached = true;
+                    }
+                }
+            }
+            if (!cached)
+            {
+                // Nothing to ask without a context; asked again next time.
+                if (const GLubyte* s = glGetString(GL_VENDOR))
+                {
+                    const std::string vendor(reinterpret_cast<const char*>(s));
+                    cache = vendor.find("NVIDIA") == std::string::npos;
                     cached = true;
                 }
             }

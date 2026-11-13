@@ -17,7 +17,6 @@
 #include <sstream>
 #include <vector>
 #include <atomic>
-#include <cstdlib>
 #include <cstring>
 #include <stdexcept>
 
@@ -440,25 +439,15 @@ namespace ftk
 
         namespace
         {
-            //! The type a three channel image is uploaded as: four channels.
-            //! The GPU keeps three as four anyway, and a driver given three
-            //! widens them itself, on the CPU, in passes of its own on every
-            //! upload -- on macOS a 6K RGB sequence played at 15 frames a
-            //! second where the same frames as RGBA played at 24. Widening
-            //! in the copy made anyway costs nothing more.
-            //!
-            //! FTK_GL_WIDEN_RGB=0 uploads them as three, for measuring the
-            //! drivers that may take three channels cheaply (NVIDIA, by
-            //! OpenUTV's numbers). Read once.
+            //! The type a three channel image is uploaded as: four channels
+            //! where isRGBWidened() says so. The GPU keeps three as four
+            //! anyway, and some drivers given three widen them themselves,
+            //! slowly, on every upload; widening in the copy made anyway
+            //! costs nothing more there. Others take three cheaply.
             TextureType getUploadType(TextureType value)
             {
-                static const bool widen = []
-                    {
-                        const char* env = std::getenv("FTK_GL_WIDEN_RGB");
-                        return !(env && std::string(env) == "0");
-                    }();
                 TextureType out = value;
-                if (!widen)
+                if (!isRGBWidened())
                     return out;
                 switch (value)
                 {

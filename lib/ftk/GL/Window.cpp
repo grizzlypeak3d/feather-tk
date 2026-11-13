@@ -412,10 +412,12 @@ namespace ftk
                         "\n"
                         "    * OpenGL vendor: {0}\n"
                         "    * OpenGL renderer: {1}\n"
-                        "    * OpenGL version: {2}").
+                        "    * OpenGL version: {2}\n"
+                        "    * RGB uploads: {3}").
                         arg(p.glInfo.vendor).
                         arg(p.glInfo.renderer).
-                        arg(p.glInfo.version);
+                        arg(p.glInfo.version).
+                        arg(isRGBWidened() ? "widened to RGBA" : "as RGB");
                 }
                 logSystem->print("ftk::gl::Window", message);
             }

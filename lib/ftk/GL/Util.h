@@ -30,6 +30,20 @@ namespace ftk
         //! answer is kept after the first question, as with hasExtension().
         FTK_GL_API bool isSoftwareRenderer();
 
+        //! Get whether three channel images are uploaded as four channel
+        //! textures, widened as they are copied in, rather than handed to
+        //! the driver as three.
+        //!
+        //! Which is faster depends on the driver. Apple's widens three
+        //! channels itself, slowly, on the CPU: a 6K RGB PNG sequence played
+        //! at 33 frames a second widened and 15 not (M1 Max). NVIDIA's takes
+        //! three channels cheaply and widening only adds a pass: 37 widened
+        //! and 91 not (RTX A4000, Windows), as OpenUTV found on an RTX 4090.
+        //! So everything but NVIDIA widens; AMD and Intel have not been
+        //! measured. FTK_GL_WIDEN_RGB=0 or 1 decides instead. The answer is
+        //! kept after the first question, as with isSoftwareRenderer().
+        FTK_GL_API bool isRGBWidened();
+
         //! Get the glReadPixels format.
         FTK_GL_API unsigned int getReadPixelsFormat(ImageType);
 
