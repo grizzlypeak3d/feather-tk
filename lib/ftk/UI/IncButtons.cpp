@@ -170,4 +170,10 @@ namespace ftk
     {
         _decButton->setClickedCallback(value);
     }
+
+    void IncButtons::setPressedCallback(const std::function<void(void)>& value)
+    {
+        _incButton->setPressedCallback(value);
+        _decButton->setPressedCallback(value);
+    }
 }
