@@ -31,6 +31,7 @@ namespace ftk
         bool selectAllOnFocus = false;
         std::function<void(const std::string&)> textChangedCallback;
         std::string format = std::string(20, '#');
+        std::string placeholder;
         std::function<void(bool)> focusCallback;
         std::function<void(void)> escapeCallback;
         TextInputType textInputType = TextInputType::Text;
@@ -89,6 +90,7 @@ namespace ftk
             TriMesh2F border;
             TriMesh2F keyFocus;
             std::vector<std::shared_ptr<Glyph> > glyphs;
+            std::vector<std::shared_ptr<Glyph> > placeholderGlyphs;
         };
         std::optional<DrawData> draw;
     };
@@ -229,6 +231,24 @@ namespace ftk
         p.format = value;
         p.size.init = true;
         setSizeUpdate();
+        setDrawUpdate();
+    }
+
+    const std::string& LineEdit::getPlaceholder() const
+    {
+        return _p->placeholder;
+    }
+
+    void LineEdit::setPlaceholder(const std::string& value)
+    {
+        FTK_P();
+        if (value == p.placeholder)
+            return;
+        p.placeholder = value;
+        if (p.draw)
+        {
+            p.draw->placeholderGlyphs.clear();
+        }
         setDrawUpdate();
     }
 
@@ -551,6 +571,19 @@ namespace ftk
             p.size.fontMetrics,
             pos,
             event.style->getColorRole(ColorRole::Text, enabled));
+        if (text.empty() && !p.placeholder.empty())
+        {
+            if (p.draw->placeholderGlyphs.empty())
+            {
+                p.draw->placeholderGlyphs = event.fontSystem->getGlyphs(
+                    p.placeholder, p.size.fontInfo);
+            }
+            event.render->drawText(
+                p.draw->placeholderGlyphs,
+                p.size.fontMetrics,
+                V2I(p.draw->g3.x(), pos.y),
+                event.style->getColorRole(ColorRole::TextDisabled, enabled));
+        }
 
         // Underline the composition.
         if (!p.preedit.empty())

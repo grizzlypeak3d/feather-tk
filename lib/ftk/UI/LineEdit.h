@@ -72,6 +72,13 @@ namespace ftk
         //! Set the formatting text.
         FTK_UI_API void setFormat(const std::string&);
 
+        //! Get the placeholder text.
+        FTK_UI_API const std::string& getPlaceholder() const;
+
+        //! Set the placeholder text: what the edit is for, shown dimmed
+        //! while it is empty, for a field with no label beside it.
+        FTK_UI_API void setPlaceholder(const std::string&);
+
         //! Set the focus callback.
         FTK_UI_API void setFocusCallback(const std::function<void(bool)>&);
 

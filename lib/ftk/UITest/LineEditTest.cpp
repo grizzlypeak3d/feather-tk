@@ -67,6 +67,15 @@ namespace ftk
                 edit->setFormat("00.00");
                 FTK_CHECK("00.00" == edit->getFormat());
                 edit->setFormat("");
+                edit->setPlaceholder("Name");
+                edit->setPlaceholder("Name");
+                FTK_CHECK("Name" == edit->getPlaceholder());
+                app->tick();
+                edit->setText("Test");
+                app->tick();
+                edit->clearText();
+                edit->setPlaceholder("");
+                FTK_CHECK(edit->getPlaceholder().empty());
                 edit->setFont(FontType::Mono);
                 edit->setFont(FontType::Mono);
                 FTK_CHECK(FontType::Mono == edit->getFont());
