@@ -175,7 +175,9 @@ namespace ftk
         }
 
         // Draw the mouse state.
-        if (_isMousePressed())
+        if (!_mouseHighlight)
+        {}
+        else if (_isMousePressed())
         {
             event.render->drawRect(
                 p.draw->bg,

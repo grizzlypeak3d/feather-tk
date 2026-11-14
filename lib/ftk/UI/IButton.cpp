@@ -218,6 +218,19 @@ namespace ftk
         _hoveredCallback = value;
     }
 
+    bool IButton::hasMouseHighlight() const
+    {
+        return _mouseHighlight;
+    }
+
+    void IButton::setMouseHighlight(bool value)
+    {
+        if (value == _mouseHighlight)
+            return;
+        _mouseHighlight = value;
+        setDrawUpdate();
+    }
+
     void IButton::setPressedCallback(const std::function<void(void)>& value)
     {
         _pressedCallback = value;

@@ -16,7 +16,6 @@ namespace ftk
         Size2I sizeHint;
         int keyFocus = 0;
         int dragLength = 0;
-        bool mouseHighlight = true;
         SizeRole cornerRadiusRole = SizeRole::None;
         int cornerRadius = 0;
         std::function<void(bool)> focusCallback;
@@ -127,7 +126,7 @@ namespace ftk
         }
 
         // Draw the mouse state.
-        if (!p.mouseHighlight)
+        if (!_mouseHighlight)
         {}
         else if (_isMousePressed())
         {
@@ -154,14 +153,6 @@ namespace ftk
         _p->focusCallback = value;
     }
 
-    void ItemButton::setMouseHighlight(bool value)
-    {
-        FTK_P();
-        if (value == p.mouseHighlight)
-            return;
-        p.mouseHighlight = value;
-        setDrawUpdate();
-    }
 
     SizeRole ItemButton::getCornerRadiusRole() const
     {

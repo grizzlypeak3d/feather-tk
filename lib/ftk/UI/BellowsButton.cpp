@@ -24,6 +24,8 @@ namespace ftk
         };
         SizeData size;
         int textIndent = 0;
+        bool indentHovered = false;
+        std::function<void(void)> spaceCallback;
 
         struct DrawData
         {
@@ -73,6 +75,20 @@ namespace ftk
         p.size.init = true;
         setSizeUpdate();
         setDrawUpdate();
+    }
+
+    void BellowsButton::setIndentHovered(bool value)
+    {
+        FTK_P();
+        if (value == p.indentHovered)
+            return;
+        p.indentHovered = value;
+        setDrawUpdate();
+    }
+
+    void BellowsButton::setSpaceCallback(const std::function<void(void)>& value)
+    {
+        _p->spaceCallback = value;
     }
 
     int BellowsButton::getIndentX() const
@@ -188,7 +204,7 @@ namespace ftk
                 p.draw->g,
                 event.style->getColorRole(ColorRole::Pressed));
         }
-        else if (_isMouseInside())
+        else if (_isMouseInside() || p.indentHovered)
         {
             event.render->drawRect(
                 p.draw->g,
@@ -246,6 +262,13 @@ namespace ftk
             case Key::Return:
                 event.accept = true;
                 click();
+                break;
+            case Key::Space:
+                if (p.spaceCallback)
+                {
+                    event.accept = true;
+                    p.spaceCallback();
+                }
                 break;
             case Key::Escape:
                 if (hasKeyFocus() && showKeyFocus())

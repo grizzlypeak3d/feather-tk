@@ -72,8 +72,14 @@ namespace ftk
                 FTK_CHECK(checkBox->getGeometry().x() < tool->getGeometry().x());
                 FTK_CHECK(checkBox->getGeometry().x() < headerBox.x() + headerBox.w() / 2);
                 FTK_CHECK(tool->getGeometry().max.x == headerBox.max.x);
+                // The header is the one tab stop; the box keeps no focus of
+                // its own there, and has it back when it leaves.
+                FTK_CHECK(!checkBox->acceptsKeyFocus());
+                FTK_CHECK(!checkBox->hasMouseHighlight());
                 bellows->setCheckWidget(nullptr);
                 FTK_CHECK(!bellows->getCheckWidget());
+                FTK_CHECK(checkBox->acceptsKeyFocus());
+                FTK_CHECK(checkBox->hasMouseHighlight());
                 bellows->setToolWidget(nullptr);
                 app->tick();
 

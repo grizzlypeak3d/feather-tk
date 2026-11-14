@@ -48,14 +48,56 @@ namespace ftk
                     return;
                 if (_checkWidget)
                 {
+                    if (auto button = std::dynamic_pointer_cast<IButton>(_checkWidget))
+                    {
+                        button->setMouseHighlight(true);
+                        button->setHoveredCallback(nullptr);
+                        button->setAcceptsKeyFocus(_checkAcceptsKeyFocus);
+                    }
+                    _button->setSpaceCallback(nullptr);
                     _checkWidget->setParent(nullptr);
                 }
                 _checkWidget = value;
+                _button->setIndentHovered(false);
                 if (_checkWidget)
                 {
                     // After the button, so it is drawn over it and takes
                     // its own clicks.
                     _checkWidget->setParent(shared_from_this());
+                    // One highlight for the whole header: the box's own
+                    // inside it, appearing as the header's went out, read
+                    // as a widget within a widget.
+                    if (auto button = std::dynamic_pointer_cast<IButton>(_checkWidget))
+                    {
+                        button->setMouseHighlight(false);
+                        // One tab stop for the header too, rather than a
+                        // focus ring inside the header's: Return opens and
+                        // closes it, and Space checks the box, as Space
+                        // does a focused check box.
+                        _checkAcceptsKeyFocus = button->acceptsKeyFocus();
+                        button->setAcceptsKeyFocus(false);
+                        std::weak_ptr<IButton> checkWeak(button);
+                        _button->setSpaceCallback(
+                            [checkWeak]
+                            {
+                                if (auto check = checkWeak.lock())
+                                {
+                                    if (check->isEnabled())
+                                    {
+                                        check->click();
+                                    }
+                                }
+                            });
+                        std::weak_ptr<BellowsButton> weak(_button);
+                        button->setHoveredCallback(
+                            [weak](bool value)
+                            {
+                                if (auto header = weak.lock())
+                                {
+                                    header->setIndentHovered(value);
+                                }
+                            });
+                    }
                 }
                 setSizeUpdate();
                 setDrawUpdate();
@@ -121,6 +163,7 @@ namespace ftk
             std::shared_ptr<IWidget> _checkWidget;
             std::shared_ptr<IWidget> _toolWidget;
             Size2I _sizeHint;
+            bool _checkAcceptsKeyFocus = true;
         };
     }
 

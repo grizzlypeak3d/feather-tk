@@ -33,6 +33,14 @@ namespace ftk
         //! Get where the room between the arrow and the text starts.
         FTK_UI_API int getIndentX() const;
 
+        //! Set whether the mouse is over the widget in that room, which
+        //! highlights the header as the button's own hover does.
+        FTK_UI_API void setIndentHovered(bool);
+
+        //! Set what Space does with the header focused: toggling the check
+        //! widget, which then needs no key focus of its own.
+        FTK_UI_API void setSpaceCallback(const std::function<void(void)>&);
+
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;

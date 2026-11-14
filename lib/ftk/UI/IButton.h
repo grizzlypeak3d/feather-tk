@@ -82,6 +82,16 @@ namespace ftk
         //! Set the hovered callback.
         FTK_UI_API void setHoveredCallback(const std::function<void(bool)>&);
 
+        //! Get whether hovering and pressing the button highlight it.
+        FTK_UI_API bool hasMouseHighlight() const;
+
+        //! Set whether hovering and pressing the button highlight it: off
+        //! for a button inside something that highlights for both, as a
+        //! check box in a bellows header or an item holding fields of its
+        //! own, where a second highlight inside the first flickers as the
+        //! mouse crosses it. Drawn by the item buttons and check boxes.
+        FTK_UI_API void setMouseHighlight(bool);
+
         //! Set the pressed callback.
         FTK_UI_API void setPressedCallback(const std::function<void(void)>&);
 
@@ -140,6 +150,7 @@ namespace ftk
         ColorRole _checkedRole = ColorRole::Checked;
         ColorRole _textRole = ColorRole::Text;
         bool _checked = false;
+        bool _mouseHighlight = true;
 
         std::function<void(bool)> _hoveredCallback;
         std::function<void(void)> _pressedCallback;
