@@ -23,6 +23,7 @@ namespace ftk
             Size2I sizeHint;
         };
         SizeData size;
+        int textIndent = 0;
 
         struct DrawData
         {
@@ -63,6 +64,28 @@ namespace ftk
         return out;
     }
     
+    void BellowsButton::setTextIndent(int value)
+    {
+        FTK_P();
+        if (value == p.textIndent)
+            return;
+        p.textIndent = value;
+        p.size.init = true;
+        setSizeUpdate();
+        setDrawUpdate();
+    }
+
+    int BellowsButton::getIndentX() const
+    {
+        FTK_P();
+        int out = getGeometry().x() + p.size.margin + p.size.keyFocus;
+        if (_iconImage)
+        {
+            out += _iconImage->getWidth();
+        }
+        return out + p.size.pad;
+    }
+
     Size2I BellowsButton::getSizeHint() const
     {
         return _p->size.sizeHint;
@@ -110,7 +133,7 @@ namespace ftk
             p.size.sizeHint = Size2I();
             if (!_text.empty())
             {
-                p.size.sizeHint.w = p.size.textSize.w + p.size.pad * 2;
+                p.size.sizeHint.w = p.textIndent + p.size.textSize.w + p.size.pad * 2;
                 p.size.sizeHint.h = p.size.fontMetrics.lineHeight;
             }
             if (_iconImage)
@@ -207,7 +230,7 @@ namespace ftk
             event.render->drawText(
                 p.draw->glyphs,
                 p.size.fontMetrics,
-                V2I(x + p.size.pad,
+                V2I(x + p.textIndent + p.size.pad,
                     p.draw->g2.y() + p.draw->g2.h() / 2 - p.size.textSize.h / 2),
                 event.style->getColorRole(_textRole, isEnabled()));
         }

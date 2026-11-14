@@ -57,10 +57,21 @@ namespace ftk
         //! Set the open callback.
         FTK_UI_API void setOpenCallback(const std::function<void(bool)>&);
 
+        //! Get the check widget.
+        FTK_UI_API const std::shared_ptr<IWidget>& getCheckWidget() const;
+
+        //! Set the check widget: a check box that turns on and off what the
+        //! bellows holds, between the arrow and the title, where it reads
+        //! with the title and a wide header does not push it out of sight.
+        //! Clicking it only checks it; the rest of the header opens and
+        //! closes the bellows.
+        FTK_UI_API void setCheckWidget(const std::shared_ptr<IWidget>&);
+
         //! Get the tool widget.
         FTK_UI_API const std::shared_ptr<IWidget>& getToolWidget() const;
 
-        //! Set the tool widget.
+        //! Set the tool widget: buttons that act on what the bellows holds,
+        //! at the right of the header.
         FTK_UI_API void setToolWidget(const std::shared_ptr<IWidget>&);
 
 

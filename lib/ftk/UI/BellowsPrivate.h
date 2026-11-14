@@ -26,6 +26,13 @@ namespace ftk
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
+        //! Set the room left between the arrow and the text, for a widget
+        //! the bellows puts there.
+        FTK_UI_API void setTextIndent(int);
+
+        //! Get where the room between the arrow and the text starts.
+        FTK_UI_API int getIndentX() const;
+
         FTK_UI_API Size2I getSizeHint() const override;
         FTK_UI_API void setGeometry(const Box2I&) override;
         FTK_UI_API void styleEvent(const StyleEvent&) override;

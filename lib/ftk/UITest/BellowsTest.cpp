@@ -5,6 +5,7 @@
 
 #include <ftk/UI/App.h>
 #include <ftk/UI/Bellows.h>
+#include <ftk/UI/CheckBox.h>
 #include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Window.h>
@@ -56,6 +57,25 @@ namespace ftk
                 bellows->setOpen(true);
                 FTK_CHECK(bellows->isOpen());
                 bellows->setOpen(false);
+
+                // A check widget between the arrow and the title, and a tool
+                // widget at the right.
+                auto checkBox = CheckBox::create(_context);
+                bellows->setCheckWidget(checkBox);
+                bellows->setCheckWidget(checkBox);
+                FTK_CHECK(checkBox == bellows->getCheckWidget());
+                auto tool = Label::create(_context, "Tool");
+                bellows->setToolWidget(tool);
+                FTK_CHECK(tool == bellows->getToolWidget());
+                app->tick();
+                const Box2I headerBox = checkBox->getParent()->getGeometry();
+                FTK_CHECK(checkBox->getGeometry().x() < tool->getGeometry().x());
+                FTK_CHECK(checkBox->getGeometry().x() < headerBox.x() + headerBox.w() / 2);
+                FTK_CHECK(tool->getGeometry().max.x == headerBox.max.x);
+                bellows->setCheckWidget(nullptr);
+                FTK_CHECK(!bellows->getCheckWidget());
+                bellows->setToolWidget(nullptr);
+                app->tick();
 
                 bellows->hide();
                 app->tick();

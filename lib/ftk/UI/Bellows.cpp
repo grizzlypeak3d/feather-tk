@@ -5,14 +5,130 @@
 
 #include <ftk/UI/RowLayout.h>
 
+#include <algorithm>
+
 namespace ftk
 {
+    namespace
+    {
+        //! The header: the title button across it, a check widget over the
+        //! room the button leaves between its arrow and its text, and a
+        //! tool widget at the right.
+        class BellowsHeader : public IWidget
+        {
+        protected:
+            void _init(
+                const std::shared_ptr<Context>& context,
+                const std::shared_ptr<BellowsButton>& button)
+            {
+                IWidget::_init(context, "ftk::BellowsHeader", nullptr);
+                // The title button only paints its own geometry, so without
+                // this a tool widget sits on a hole in the header.
+                setBackgroundRole(ColorRole::Header);
+                _button = button;
+                _button->setParent(shared_from_this());
+            }
+
+        public:
+            static std::shared_ptr<BellowsHeader> create(
+                const std::shared_ptr<Context>& context,
+                const std::shared_ptr<BellowsButton>& button)
+            {
+                auto out = std::shared_ptr<BellowsHeader>(new BellowsHeader);
+                out->_init(context, button);
+                return out;
+            }
+
+            const std::shared_ptr<IWidget>& getCheckWidget() const { return _checkWidget; }
+            const std::shared_ptr<IWidget>& getToolWidget() const { return _toolWidget; }
+
+            void setCheckWidget(const std::shared_ptr<IWidget>& value)
+            {
+                if (value == _checkWidget)
+                    return;
+                if (_checkWidget)
+                {
+                    _checkWidget->setParent(nullptr);
+                }
+                _checkWidget = value;
+                if (_checkWidget)
+                {
+                    // After the button, so it is drawn over it and takes
+                    // its own clicks.
+                    _checkWidget->setParent(shared_from_this());
+                }
+                setSizeUpdate();
+                setDrawUpdate();
+            }
+
+            void setToolWidget(const std::shared_ptr<IWidget>& value)
+            {
+                if (value == _toolWidget)
+                    return;
+                if (_toolWidget)
+                {
+                    _toolWidget->setParent(nullptr);
+                }
+                _toolWidget = value;
+                if (_toolWidget)
+                {
+                    _toolWidget->setParent(shared_from_this());
+                }
+                setSizeUpdate();
+                setDrawUpdate();
+            }
+
+            void sizeHintEvent(const SizeHintEvent& event) override
+            {
+                IWidget::sizeHintEvent(event);
+                const int pad = event.style->getSizeRole(SizeRole::LabelPad, event.displayScale);
+                const Size2I checkHint = _checkWidget ? _checkWidget->getSizeHint() : Size2I();
+                _button->setTextIndent(_checkWidget ? checkHint.w + pad : 0);
+                const Size2I buttonHint = _button->getSizeHint();
+                const Size2I toolHint = _toolWidget ? _toolWidget->getSizeHint() : Size2I();
+                _sizeHint = Size2I(
+                    buttonHint.w + toolHint.w,
+                    std::max(std::max(buttonHint.h, toolHint.h), checkHint.h));
+            }
+
+            Size2I getSizeHint() const override
+            {
+                return _sizeHint;
+            }
+
+            void setGeometry(const Box2I& value) override
+            {
+                IWidget::setGeometry(value);
+                const int toolW = _toolWidget ? _toolWidget->getSizeHint().w : 0;
+                _button->setGeometry(Box2I(value.x(), value.y(), value.w() - toolW, value.h()));
+                if (_toolWidget)
+                {
+                    _toolWidget->setGeometry(Box2I(value.x() + value.w() - toolW, value.y(), toolW, value.h()));
+                }
+                if (_checkWidget)
+                {
+                    const Size2I hint = _checkWidget->getSizeHint();
+                    _checkWidget->setGeometry(Box2I(
+                        _button->getIndentX(),
+                        value.y() + (value.h() - hint.h) / 2,
+                        hint.w,
+                        hint.h));
+                }
+            }
+
+        private:
+            std::shared_ptr<BellowsButton> _button;
+            std::shared_ptr<IWidget> _checkWidget;
+            std::shared_ptr<IWidget> _toolWidget;
+            Size2I _sizeHint;
+        };
+    }
+
     struct Bellows::Private
     {
         std::shared_ptr<BellowsButton> button;
         std::shared_ptr<IWidget> widget;
-        std::shared_ptr<IWidget> toolWidget;
-        std::shared_ptr<HorizontalLayout> buttonLayout;
+        std::shared_ptr<BellowsHeader> header;
         std::shared_ptr<VerticalLayout> layout;
         std::function<void(bool)> openCallback;
     };
@@ -30,17 +146,12 @@ namespace ftk
         p.button->setCheckedIcon("BellowsOpen");
         p.button->setHStretch(Stretch::Expanding);
 
-        p.buttonLayout = HorizontalLayout::create(context);
-        p.buttonLayout->setSpacingRole(SizeRole::None);
-        // The title button only paints its own geometry, so without this a
-        // tool widget sits on a hole in the header.
-        p.buttonLayout->setBackgroundRole(ColorRole::Header);
-        p.button->setParent(p.buttonLayout);
+        p.header = BellowsHeader::create(context, p.button);
 
         p.layout = VerticalLayout::create(context);
         _setWidget(p.layout);
         p.layout->setSpacingRole(SizeRole::None);
-        p.buttonLayout->setParent(p.layout);
+        p.header->setParent(p.layout);
 
         p.button->setCheckedCallback(
             [this](bool value)
@@ -130,20 +241,24 @@ namespace ftk
         _p->openCallback = value;
     }
 
+    const std::shared_ptr<IWidget>& Bellows::getCheckWidget() const
+    {
+        return _p->header->getCheckWidget();
+    }
+
+    void Bellows::setCheckWidget(const std::shared_ptr<IWidget>& value)
+    {
+        _p->header->setCheckWidget(value);
+    }
+
     const std::shared_ptr<IWidget>& Bellows::getToolWidget() const
     {
-        return _p->toolWidget;
+        return _p->header->getToolWidget();
     }
 
     void Bellows::setToolWidget(const std::shared_ptr<IWidget>& value)
     {
-        FTK_P();
-        releaseChild(p.buttonLayout, p.toolWidget);
-        p.toolWidget = value;
-        if (p.toolWidget)
-        {
-            p.toolWidget->setParent(p.buttonLayout);
-        }
+        _p->header->setToolWidget(value);
     }
     
     

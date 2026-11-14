@@ -42,6 +42,7 @@ namespace ftk
                 .def_prop_rw("text", &Bellows::getText, &Bellows::setText)
                 .def_prop_rw("widget", &Bellows::getWidget, &Bellows::setWidget)
                 .def_prop_rw("open", &Bellows::isOpen, &Bellows::setOpen)
+                .def_prop_rw("checkWidget", &Bellows::getCheckWidget, &Bellows::setCheckWidget)
                 .def_prop_rw("toolWidget", &Bellows::getToolWidget, &Bellows::setToolWidget)
                 .def("setOpenCallback", &Bellows::setOpenCallback);
         }
