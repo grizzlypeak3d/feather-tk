@@ -16,6 +16,7 @@ namespace ftk
         Size2I sizeHint;
         int keyFocus = 0;
         int dragLength = 0;
+        bool mouseHighlight = true;
         std::function<void(bool)> focusCallback;
         std::function<std::shared_ptr<IDragDropData>(void)> dragDropDataCallback;
         std::function<std::shared_ptr<Image>(void)> dragDropCursorCallback;
@@ -113,7 +114,9 @@ namespace ftk
         }
 
         // Draw the mouse state.
-        if (_isMousePressed())
+        if (!_p->mouseHighlight)
+        {}
+        else if (_isMousePressed())
         {
             event.render->drawRect(
                 g,
@@ -140,6 +143,15 @@ namespace ftk
     void ItemButton::setFocusCallback(const std::function<void(bool)>& value)
     {
         _p->focusCallback = value;
+    }
+
+    void ItemButton::setMouseHighlight(bool value)
+    {
+        FTK_P();
+        if (value == p.mouseHighlight)
+            return;
+        p.mouseHighlight = value;
+        setDrawUpdate();
     }
 
     void ItemButton::setDragDropDataCallback(

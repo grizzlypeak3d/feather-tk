@@ -51,6 +51,9 @@ namespace ftk
                 auto item = ItemButton::create(_context, list);
                 item->setAcceptsKeyFocus(false);
                 item->setWidget(Label::create(_context, "Row"));
+                item->setMouseHighlight(false);
+                item->setMouseHighlight(false);
+                item->setMouseHighlight(true);
             }
             int current = -1;
             int doubleClick = -1;

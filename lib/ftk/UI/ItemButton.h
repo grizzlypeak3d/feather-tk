@@ -40,6 +40,11 @@ namespace ftk
         //! Set a callback for when the item gains or loses the key focus.
         FTK_UI_API void setFocusCallback(const std::function<void(bool)>&);
 
+        //! Set whether hovering and pressing the item highlight it: off
+        //! for an item holding fields of its own, as one being edited in
+        //! place, which would flash as the mouse goes from field to field.
+        FTK_UI_API void setMouseHighlight(bool);
+
         //! Set the drag and drop data the item offers. Setting it makes
         //! the item draggable: a press that moves past the drag length
         //! starts a drag instead of a click.
