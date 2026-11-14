@@ -196,10 +196,15 @@ namespace ftk
             const auto items = getItems();
             if (p.current < static_cast<int>(items.size()))
             {
+                // Following the item's corners, when it has them.
+                const auto& item = items[p.current];
                 event.render->drawMesh(
                     border(
-                        items[p.current]->getGeometry(),
-                        p.size.keyFocus),
+                        item->getGeometry(),
+                        p.size.keyFocus,
+                        event.style->getSizeRole(
+                            item->getCornerRadiusRole(),
+                            event.displayScale)),
                     event.style->getColorRole(ColorRole::KeyFocus));
             }
         }
