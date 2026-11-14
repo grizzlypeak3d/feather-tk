@@ -155,7 +155,10 @@ namespace ftk
             std::string();
         if (count && isPartialSeq())
         {
-            out += " (" + std::to_string(getSeqSize()) + ")";
+            const size_t missing = getMissingCount(_seq);
+            out += missing > 0 ?
+                " (" + std::to_string(missing) + " missing)" :
+                " (step " + std::to_string(getStep(_seq)) + ")";
         }
         return out;
     }

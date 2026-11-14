@@ -146,6 +146,20 @@ namespace ftk
     //! Get the range spanned by a list of frame sequences.
     FTK_CORE_API std::optional<RangeI64> getRange(const std::vector<FrameSeq>&);
 
+    //! Get the step of a list of frame sequences: the smallest spacing
+    //! between its frames, which is one for a sequence of every frame and
+    //! two for one rendered on twos. One for a single frame or none.
+    FTK_CORE_API int64_t getStep(const std::vector<FrameSeq>&);
+
+    //! Get how many frames are missing from a list of frame sequences: the
+    //! frames at its step, between its first and last, that it does not
+    //! have. Frames 1, 3, 7 and 9 are missing one, frame 5.
+    FTK_CORE_API size_t getMissingCount(const std::vector<FrameSeq>&);
+
+    //! Get the frames missing from a list of frame sequences, as
+    //! getMissingCount() counts them: for frames 1, 3, 7 and 9, frame 5.
+    FTK_CORE_API std::vector<FrameSeq> getMissing(const std::vector<FrameSeq>&);
+
     //! Convert a frame sequence to a label.
     FTK_CORE_API std::string getLabel(const FrameSeq&, int pad = 0);
 
@@ -249,8 +263,11 @@ namespace ftk
         //! Get a file name with the given frame number.
         std::string getFrame(int64_t frame, bool dir = false) const;
 
-        //! Get the frame range string. When count is true a partial
-        //! sequence appends the number of frames, e.g. "0001-0020 (12)".
+        //! Get the frame range string. When count is true a sequence that
+        //! is missing frames says how many, e.g. "0001-0020 (8 missing)",
+        //! and one on a step with none missing says the step, e.g.
+        //! "0001-0019 (step 2)" -- what a file browser shows, so that a
+        //! broken render is seen before it is opened.
         std::string getFrameRange(bool count = false) const;
 
         //! Get whether a path is part of this sequence.

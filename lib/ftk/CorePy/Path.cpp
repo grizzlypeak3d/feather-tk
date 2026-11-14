@@ -86,6 +86,9 @@ namespace ftk
                 nb::overload_cast<const std::vector<FrameSeq>&>(&getFrameCount),
                 nb::arg("seq"));
             m.def("getRange", &getRange, nb::arg("seq"));
+            m.def("getStep", &getStep, nb::arg("seq"));
+            m.def("getMissingCount", &getMissingCount, nb::arg("seq"));
+            m.def("getMissing", &getMissing, nb::arg("seq"));
             m.def(
                 "getLabel",
                 nb::overload_cast<const std::vector<FrameSeq>&, int>(&getLabel),

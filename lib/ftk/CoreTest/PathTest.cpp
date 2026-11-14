@@ -721,9 +721,42 @@ namespace ftk
                 FTK_CHECK("0001-0020" == path.getFrameRange());
                 FTK_CHECK("render.0001.exr" == path.getFileName());
                 FTK_CHECK("1-5,10-12,20" == getLabel(path.getSeq()));
+
+                // What a file browser says of it: how many are missing,
+                // rather than how many are there.
+                FTK_CHECK(1 == getStep(path.getSeq()));
+                FTK_CHECK(11 == getMissingCount(path.getSeq()));
+                FTK_CHECK("0001-0020 (11 missing)" == path.getFrameRange(true));
+                FTK_CHECK("6-9,13-19" == getLabel(getMissing(path.getSeq())));
                 FTK_CHECK(
                     std::vector<int64_t>(frames.begin(), frames.end()) ==
                     toFrames(path.getSeq()));
+            }
+            {
+                // A sequence on a step is missing nothing at that step, and
+                // one missing a frame at it is missing one, not half.
+                const auto twos = toFrameSeq({ 1, 3, 5, 7, 9 });
+                FTK_CHECK(2 == getStep(twos));
+                FTK_CHECK(0 == getMissingCount(twos));
+                const auto twosHole = toFrameSeq({ 1, 3, 7, 9 });
+                FTK_CHECK(2 == getStep(twosHole));
+                FTK_CHECK(1 == getMissingCount(twosHole));
+                FTK_CHECK(toFrameSeq({ 5 }) == getMissing(twosHole));
+                FTK_CHECK(getMissing(twos).empty());
+                const auto mixed = toFrameSeq({ 1, 2, 3, 5, 7, 9 });
+                FTK_CHECK(1 == getStep(mixed));
+                FTK_CHECK(3 == getMissingCount(mixed));
+                FTK_CHECK(1 == getStep({}));
+                FTK_CHECK(0 == getMissingCount({}));
+                FTK_CHECK(0 == getMissingCount(toFrameSeq({ 7 })));
+
+                Path path("render.0001.exr");
+                path.setSeq(twos);
+                FTK_CHECK("0001-0009 (step 2)" == path.getFrameRange(true));
+                path.setSeq(twosHole);
+                FTK_CHECK("0001-0009 (1 missing)" == path.getFrameRange(true));
+                path.setSeq(toFrameSeq({ 1, 2, 3 }));
+                FTK_CHECK("0001-0003" == path.getFrameRange(true));
             }
             {
                 // Filters and depth.

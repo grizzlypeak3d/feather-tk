@@ -364,6 +364,66 @@ namespace ftk
         return out;
     }
 
+    int64_t getStep(const std::vector<FrameSeq>& value)
+    {
+        int64_t out = 0;
+        const auto smallest = [&out](int64_t step)
+            {
+                if (step > 0 && (0 == out || step < out))
+                {
+                    out = step;
+                }
+            };
+        for (size_t i = 0; i < value.size(); ++i)
+        {
+            if (!value[i].range.equal())
+            {
+                smallest(value[i].inc);
+            }
+            if (i > 0)
+            {
+                smallest(value[i].range.min() - value[i - 1].range.max());
+            }
+        }
+        return out > 0 ? out : 1;
+    }
+
+    size_t getMissingCount(const std::vector<FrameSeq>& value)
+    {
+        size_t out = 0;
+        if (const auto range = getRange(value))
+        {
+            const int64_t step = getStep(value);
+            const int64_t expected = (range->max() - range->min()) / step + 1;
+            const int64_t count = static_cast<int64_t>(getFrameCount(value));
+            out = expected > count ? static_cast<size_t>(expected - count) : 0;
+        }
+        return out;
+    }
+
+    std::vector<FrameSeq> getMissing(const std::vector<FrameSeq>& value)
+    {
+        std::vector<FrameSeq> out;
+        if (const auto range = getRange(value))
+        {
+            const int64_t step = getStep(value);
+            const std::vector<int64_t> have = toFrames(value);
+            size_t i = 0;
+            for (int64_t frame = range->min(); frame <= range->max(); frame += step)
+            {
+                while (i < have.size() && have[i] < frame)
+                {
+                    ++i;
+                }
+                if (i >= have.size() || have[i] != frame)
+                {
+                    addFrame(out, frame);
+                }
+            }
+        }
+        return out;
+    }
+
     std::string getLabel(const FrameSeq& value, int pad)
     {
         std::stringstream ss;
