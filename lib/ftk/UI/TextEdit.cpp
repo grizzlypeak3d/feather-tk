@@ -35,6 +35,7 @@ namespace ftk
 
         struct DrawData
         {
+            TriMesh2F bg;
             TriMesh2F border;
             TriMesh2F keyFocus;
         };
@@ -261,14 +262,20 @@ namespace ftk
         if (!p.draw.has_value())
         {
             p.draw = Private::DrawData();
-            const Box2I& g = getGeometry();
-            p.draw->border = border(
-                margin(g, -(p.size.margin + std::max(p.size.border, p.size.keyFocus)) + p.size.border),
-                p.size.border);
-            p.draw->keyFocus = border(
-                margin(g, -(p.size.margin + std::max(p.size.border, p.size.keyFocus)) + p.size.keyFocus),
-                p.size.keyFocus);
+            // The well, the border and the focus all at the edge, as a
+            // line edit draws them, so the two line up beside each other
+            // with or without the focus. The text sits inside the wider of
+            // the border and the focus, which is not drawn over it.
+            const Box2I box = margin(getGeometry(), -p.size.margin);
+            p.draw->bg = rect(box);
+            p.draw->border = border(box, p.size.border);
+            p.draw->keyFocus = border(box, p.size.keyFocus);
         }
+
+        // Draw the well under the gap between the border and the text.
+        event.render->drawMesh(
+            p.draw->bg,
+            event.style->getColorRole(ColorRole::Well));
 
         // Draw the focus and border.
         const bool keyFocus = p.widget->hasKeyFocus();
