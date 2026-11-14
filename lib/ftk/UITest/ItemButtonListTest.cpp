@@ -54,6 +54,10 @@ namespace ftk
                 item->setMouseHighlight(false);
                 item->setMouseHighlight(false);
                 item->setMouseHighlight(true);
+                item->setCornerRadiusRole(SizeRole::CornerRadius);
+                item->setCornerRadiusRole(SizeRole::CornerRadius);
+                FTK_CHECK(SizeRole::CornerRadius == item->getCornerRadiusRole());
+                item->setCornerRadiusRole(SizeRole::None);
             }
             int current = -1;
             int doubleClick = -1;

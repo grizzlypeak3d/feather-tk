@@ -17,6 +17,8 @@ namespace ftk
         int keyFocus = 0;
         int dragLength = 0;
         bool mouseHighlight = true;
+        SizeRole cornerRadiusRole = SizeRole::None;
+        int cornerRadius = 0;
         std::function<void(bool)> focusCallback;
         std::function<std::shared_ptr<IDragDropData>(void)> dragDropDataCallback;
         std::function<std::shared_ptr<Image>(void)> dragDropCursorCallback;
@@ -92,6 +94,7 @@ namespace ftk
         IButton::sizeHintEvent(event);
         FTK_P();
         p.keyFocus = event.style->getSizeRole(SizeRole::KeyFocus, event.displayScale);
+        p.cornerRadius = event.style->getSizeRole(p.cornerRadiusRole, event.displayScale);
         p.dragLength = event.style->getSizeRole(SizeRole::DragLength, event.displayScale);
         p.sizeHint = p.widget ? p.widget->getSizeHint() : Size2I();
     }
@@ -99,34 +102,40 @@ namespace ftk
     void ItemButton::drawEvent(const Box2I& drawRect, const DrawEvent& event)
     {
         IButton::drawEvent(drawRect, event);
+        FTK_P();
         const Box2I& g = getGeometry();
+        auto fill = [&event, &g, &p](const Color4F& color)
+        {
+            if (p.cornerRadius > 0)
+            {
+                event.render->drawMesh(rect(g, p.cornerRadius), color);
+            }
+            else
+            {
+                event.render->drawRect(g, color);
+            }
+        };
 
         // Draw the background, with the checked tint over it.
         if (_buttonRole != ColorRole::None)
         {
-            event.render->drawRect(
-                g,
-                event.style->getColorRole(_buttonRole));
+            fill(event.style->getColorRole(_buttonRole));
         }
         if (_checked && _checkedRole != ColorRole::None)
         {
-            event.render->drawRect(g, _getCheckedTint(event));
+            fill(_getCheckedTint(event));
         }
 
         // Draw the mouse state.
-        if (!_p->mouseHighlight)
+        if (!p.mouseHighlight)
         {}
         else if (_isMousePressed())
         {
-            event.render->drawRect(
-                g,
-                event.style->getColorRole(ColorRole::Pressed));
+            fill(event.style->getColorRole(ColorRole::Pressed));
         }
         else if (_isMouseInside())
         {
-            event.render->drawRect(
-                g,
-                event.style->getColorRole(ColorRole::Hover));
+            fill(event.style->getColorRole(ColorRole::Hover));
         }
 
         // Draw the key focus. Inside the geometry rather than around it:
@@ -135,7 +144,7 @@ namespace ftk
         if (showKeyFocus())
         {
             event.render->drawMesh(
-                border(g, _p->keyFocus),
+                border(g, p.keyFocus, p.cornerRadius),
                 event.style->getColorRole(ColorRole::KeyFocus));
         }
     }
@@ -151,6 +160,21 @@ namespace ftk
         if (value == p.mouseHighlight)
             return;
         p.mouseHighlight = value;
+        setDrawUpdate();
+    }
+
+    SizeRole ItemButton::getCornerRadiusRole() const
+    {
+        return _p->cornerRadiusRole;
+    }
+
+    void ItemButton::setCornerRadiusRole(SizeRole value)
+    {
+        FTK_P();
+        if (value == p.cornerRadiusRole)
+            return;
+        p.cornerRadiusRole = value;
+        setSizeUpdate();
         setDrawUpdate();
     }
 

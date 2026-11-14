@@ -45,6 +45,13 @@ namespace ftk
         //! place, which would flash as the mouse goes from field to field.
         FTK_UI_API void setMouseHighlight(bool);
 
+        //! Get the corner radius role.
+        FTK_UI_API SizeRole getCornerRadiusRole() const;
+
+        //! Set the corner radius role: none, the default, for a row in a
+        //! list; rounded for an item that stands on its own, as a card.
+        FTK_UI_API void setCornerRadiusRole(SizeRole);
+
         //! Set the drag and drop data the item offers. Setting it makes
         //! the item draggable: a press that moves past the drag length
         //! starts a drag instead of a click.
