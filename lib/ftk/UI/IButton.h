@@ -15,12 +15,12 @@ namespace ftk
     class FTK_UI_API_TYPE IButton : public IMouseWidget
     {
     protected:
-        void _init(
+        FTK_UI_API void _init(
             const std::shared_ptr<Context>&,
             const std::string& objectName,
             const std::shared_ptr<IWidget>& parent = nullptr);
 
-        IButton();
+        FTK_UI_API IButton();
 
     public:
         FTK_UI_API virtual ~IButton();
