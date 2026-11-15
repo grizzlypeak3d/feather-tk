@@ -24,6 +24,10 @@ namespace ftk
         std::function<void(int)> neighborCallback;
         std::shared_ptr<Action> announced;
         V2I tickCursorPos;
+
+        //! Lives as long as the menu: what the work after an action's
+        //! callback checks before it reads the menu again.
+        std::shared_ptr<bool> alive = std::make_shared<bool>(true);
     };
 
     void Menu::_init(
@@ -83,20 +87,24 @@ namespace ftk
                         _setCurrent(buttonWeak.lock());
                     }
                 });
-            // The button stands in for the menu in the work that happens
-            // after an action's callback: the menu's layout owns it, so the
-            // button surviving the callback proves the menu did too. An
-            // action that rebuilds the menu bar it lives in is an ordinary
-            // thing to write, and this menu cannot be read after that. A
-            // weak_ptr to the menu itself would say the same thing less
-            // reliably -- a menu owned from Python only has a control block
-            // while one of its bound calls is on the stack.
+            // The work after an action's callback reads the menu again, and
+            // the callback may have destroyed it: an action that rebuilds
+            // the menu bar it lives in, or that closes a menu whose owner
+            // lets go of it on close, is an ordinary thing to write. The
+            // token in the menu's private data says whether it is still
+            // there. The button surviving does not: whoever is clicking it
+            // holds it (the window a pressed widget, a key press the
+            // current item), which is how a menu was read after it was
+            // freed. A weak_ptr to the menu itself would not do either --
+            // a menu owned from Python only has a control block while one
+            // of its bound calls is on the stack.
+            auto aliveWeak = std::weak_ptr<bool>(p.alive);
             button->setClickedCallback(
-                [this, action, buttonWeak]
+                [this, action, buttonWeak, aliveWeak]
                 {
                     _setCurrent(buttonWeak.lock());
                     action->doCallback();
-                    if (buttonWeak.lock())
+                    if (aliveWeak.lock())
                     {
                         if (!action->isCheckable())
                         {
@@ -105,12 +113,12 @@ namespace ftk
                     }
                 });
             button->setCheckedCallback(
-                [this, action, buttonWeak](bool value)
+                [this, action, buttonWeak, aliveWeak](bool value)
                 {
                     _setCurrent(buttonWeak.lock());
                     action->setChecked(value);
                     action->doCheckedCallback(value);
-                    if (buttonWeak.lock())
+                    if (aliveWeak.lock())
                     {
                         _accept();
                     }
