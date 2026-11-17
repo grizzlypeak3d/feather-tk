@@ -832,13 +832,13 @@ namespace ftk
         {
 #if defined(FTK_SDL3)
             FTK_P();
-            // GNOME's mutter, given full screen on an output before the
-            // window is first mapped, sizes the window for that output but
-            // maps it where it places new windows, the display with the
-            // focus, and then fits it to that display: the one request is
-            // honored only in part. Once mapped, the same request moves it.
-            // So when the window turns up full screen elsewhere, it is
-            // asked for again. Twice: mutter settles a new window over its
+            // GNOME's mutter places a new window whose first buffer acks a
+            // floating configure on the monitor with the pointer, and then
+            // fits a full screen window to that monitor, whatever output
+            // full screen named. SDL, as patched, asks for full screen
+            // before the first commit so that this does not happen; should
+            // the window turn up full screen elsewhere all the same, it is
+            // asked for again, which mutter honors once it is mapped. Twice: mutter settles a new window over its
             // first frames, briefly on the output asked for and then back
             // on its own choice, and the first request again lands before
             // that and is undone; the second, after, holds. No more, so as

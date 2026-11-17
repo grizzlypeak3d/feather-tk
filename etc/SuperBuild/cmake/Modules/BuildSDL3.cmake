@@ -59,7 +59,7 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# Five patches. One from upstream pull request #14157 (open): the Metal
+# Six patches. One from upstream pull request #14157 (open): the Metal
 # GPU driver makes a texture over an existing CVPixelBuffer's surface,
 # which is how a frame the hardware decoded is drawn without a copy. Drop
 # it when a release carries the change. Two are ours, for iOS: a number
@@ -77,7 +77,10 @@ set(SDL3_ARGS
 # dereferences, which crashed on an iPad that had run out of memory. And
 # one for the iOS simulator: its Metal device reports an older GPU family
 # than the GPU driver asks for, whatever the Mac's GPU is, and draws with
-# the Mac's GPU all the same.
+# the Mac's GPU all the same. And one for Wayland: a window made full
+# screen on a display before it is shown asks for it before its first
+# commit, so that mutter does not place it on the monitor with the pointer
+# first (DJV's secondary window flashed on the laptop before the TV).
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -107,6 +110,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/simulator.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/wayland-fullscreen.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})
