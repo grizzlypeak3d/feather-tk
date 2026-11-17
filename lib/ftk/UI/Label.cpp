@@ -16,11 +16,11 @@ namespace ftk
     {
         const std::string ellipsis = "...";
 
-        //! The longest elision of the text that fits the width: the most
+        //! The longest elision of a line that fits the width: the most
         //! characters kept, from whichever end the mode says, around an
         //! ellipsis. Measured in the font, since characters are not all as
         //! wide, and cut on code point boundaries so none is split.
-        std::string elideToWidth(
+        std::string elideLineToWidth(
             const std::shared_ptr<FontSystem>& fontSystem,
             const std::string& text,
             const FontInfo& fontInfo,
@@ -84,6 +84,37 @@ namespace ftk
                     }
                     hi = mid - 1;
                 }
+            }
+            return out;
+        }
+
+        //! Each line of the text that does not fit the width, elided on its
+        //! own: elided as one, a text of two lines lost the break between
+        //! them along with the middle.
+        std::string elideToWidth(
+            const std::shared_ptr<FontSystem>& fontSystem,
+            const std::string& text,
+            const FontInfo& fontInfo,
+            int width,
+            ElideMode mode)
+        {
+            std::string out;
+            size_t begin = 0;
+            while (true)
+            {
+                size_t end = text.find('\n', begin);
+                const std::string line = text.substr(
+                    begin,
+                    std::string::npos == end ? std::string::npos : end - begin);
+                out += fontSystem->getSize(line, fontInfo).w > width ?
+                    elideLineToWidth(fontSystem, line, fontInfo, width, mode) :
+                    line;
+                if (std::string::npos == end)
+                {
+                    break;
+                }
+                out += '\n';
+                begin = end + 1;
             }
             return out;
         }
