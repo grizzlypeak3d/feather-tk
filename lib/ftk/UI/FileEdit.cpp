@@ -14,6 +14,23 @@
 
 namespace ftk
 {
+    namespace
+    {
+        //! The last component of a path: a directory's name whether or not
+        //! it ends in a separator, and the whole path when there is no name
+        //! to show, as for the root.
+        std::string getName(const Path& path)
+        {
+            std::string s = path.get();
+            while (s.size() > 1 && ('/' == s.back() || '\\' == s.back()))
+            {
+                s.pop_back();
+            }
+            const std::string out = Path(s).getFileName();
+            return out.empty() ? path.get() : out;
+        }
+    }
+
     struct FileEdit::Private
     {
         FileBrowserMode mode = FileBrowserMode::Open;
@@ -39,7 +56,11 @@ namespace ftk
         p.mode = mode;
 
         p.lineEdit = LineEdit::create(context);
-        p.lineEdit->setFormat(std::string(30, '#'));
+        // Room for a name, in characters of an average width: the field
+        // shows a name until it is being edited, and thirty of the widest
+        // character made every form holding one wider than its other
+        // fields asked for.
+        p.lineEdit->setFormat(std::string(20, '0'));
         p.lineEdit->setHStretch(Stretch::Expanding);
 
         p.browseButton = ToolButton::create(context);
@@ -194,14 +215,15 @@ namespace ftk
     void FileEdit::_widgetUpdate()
     {
         FTK_P();
-        // A file is recognizable by its name alone, so the name is all that is
-        // shown until the field is being edited. A directory is not: its last
-        // component says nothing about where it is, and for somewhere output is
-        // written that is the whole question.
-        const bool fileName =
-            FileBrowserMode::Dir != p.mode &&
-            !p.lineEdit->hasKeyFocus();
-        p.lineEdit->setText(fileName ? p.path.getFileName() : p.path.get());
+        // The name until the field is being edited, then the whole path to
+        // edit; the tooltip has the whole path throughout. A directory too:
+        // its last component does not say where it is, but neither does any
+        // part of a path short of the whole of it, which is a hover or a
+        // click away. (Directories showed the whole path from 2026-08-07,
+        // which made the field as wide as the longest path it might hold.)
+        p.lineEdit->setText(p.lineEdit->hasKeyFocus() ?
+            p.path.get() :
+            getName(p.path));
         p.lineEdit->setTooltip(p.path.get());
     }
 }

@@ -13,6 +13,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
 
+#include <tuple>
+
 namespace ftk
 {
     namespace ui_test
@@ -56,6 +58,29 @@ namespace ftk
                     {
                         path = value;
                     });
+
+                // The name until the field is edited, then the whole path; the
+                // whole path in the tooltip throughout. A directory as well
+                // as a file.
+                for (const auto& [mode, value, name] : {
+                    std::make_tuple(FileBrowserMode::Open, "/tmp/renders/shot010.exr", "shot010.exr"),
+                    std::make_tuple(FileBrowserMode::Dir, "/tmp/renders", "renders"),
+                    std::make_tuple(FileBrowserMode::Dir, "/tmp/renders/", "renders"),
+                    std::make_tuple(FileBrowserMode::Dir, "/", "/") })
+                {
+                    auto edit2 = FileEdit::create(_context, mode, layout);
+                    const Path path2(value);
+                    edit2->setPath(path2);
+                    app->tick();
+                    FTK_CHECK(std::string(name) == edit2->getLineEdit()->getText());
+                    FTK_CHECK(path2.get() == edit2->getLineEdit()->getTooltip());
+                    edit2->getLineEdit()->takeKeyFocus();
+                    app->tick();
+                    FTK_CHECK(path2.get() == edit2->getLineEdit()->getText());
+                    edit2->getLineEdit()->releaseKeyFocus();
+                    app->tick();
+                    FTK_CHECK(std::string(name) == edit2->getLineEdit()->getText());
+                }
 
                 auto system = _context->getSystem<FileBrowserSystem>();
                 system->setNativeFileDialog(false);
