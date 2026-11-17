@@ -401,6 +401,10 @@ namespace ftk
         //! default does nothing.
         FTK_UI_API virtual void _geometryFromEvent(bool maximized = false);
 
+        //! The platform reported the window is on another display, given
+        //! by the platform's ID for it. The default does nothing.
+        FTK_UI_API virtual void _displayFromEvent(uint32_t);
+
         //! Get the part of the buffer the widgets are laid out in: the
         //! whole of it, unless the system draws over some of the window,
         //! as a tablet does along its edges. The window is given this as

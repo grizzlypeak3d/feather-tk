@@ -134,6 +134,9 @@ namespace ftk
             //! The display the window was made for, if one was asked for:
             //! see setFullScreen().
             SDL_DisplayID screenID = 0;
+            //! How many more times full screen is asked for again on that
+            //! display: see displayChanged().
+            int fullScreenRetries = 0;
 #endif // FTK_SDL3
             // The geometry when neither maximized nor full screen, what it
             // was before it was last noted, and when that was.
@@ -801,12 +804,16 @@ namespace ftk
                             SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID),
                             SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID));
                     }
+                    p.fullScreenRetries = 2;
                 }
                 SDL_SetWindowFullscreen(p.sdlWindow, 1);
 #endif // FTK_SDL2
             }
             else
             {
+#if defined(FTK_SDL3)
+                p.fullScreenRetries = 0;
+#endif // FTK_SDL3
                 SDL_SetWindowFullscreen(p.sdlWindow, 0);
 #if defined(FTK_SDL3)
                 // Back to the desktop's full screen for the next time,
@@ -819,6 +826,38 @@ namespace ftk
                 SDL_SetWindowPosition(p.sdlWindow, p.pos.x, p.pos.y);
                 SDL_SetWindowSize(p.sdlWindow, p.restoreSize.w, p.restoreSize.h);
             }
+        }
+
+        void Window::displayChanged(uint32_t displayID)
+        {
+#if defined(FTK_SDL3)
+            FTK_P();
+            // GNOME's mutter, given full screen on an output before the
+            // window is first mapped, sizes the window for that output but
+            // maps it where it places new windows, the display with the
+            // focus, and then fits it to that display: the one request is
+            // honored only in part. Once mapped, the same request moves it.
+            // So when the window turns up full screen elsewhere, it is
+            // asked for again. Twice: mutter settles a new window over its
+            // first frames, briefly on the output asked for and then back
+            // on its own choice, and the first request again lands before
+            // that and is undone; the second, after, holds. No more, so as
+            // not to fight a user moving it, or a compositor that will not.
+            if (p.fullScreen &&
+                p.fullScreenRetries > 0 &&
+                p.screenID &&
+                displayID != p.screenID &&
+                isWayland())
+            {
+                if (const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(p.screenID))
+                {
+                    --p.fullScreenRetries;
+                    SDL_SetWindowFullscreenMode(p.sdlWindow, mode);
+                }
+            }
+#else // FTK_SDL3
+            (void)displayID;
+#endif // FTK_SDL3
         }
 
         bool Window::isFloatOnTop() const

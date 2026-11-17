@@ -386,6 +386,11 @@ namespace ftk
         _p->window->geometryChanged(maximized);
     }
 
+    void Window::_displayFromEvent(uint32_t displayID)
+    {
+        _p->window->displayChanged(displayID);
+    }
+
     void Window::setFloatOnTop(bool value)
     {
         IWindow::setFloatOnTop(value);

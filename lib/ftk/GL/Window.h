@@ -128,6 +128,10 @@ namespace ftk
             //! when it has said the window was maximized.
             FTK_GL_API void geometryChanged(bool maximized = false);
 
+            //! The platform reported the window is on another display,
+            //! given by the platform's ID for it.
+            FTK_GL_API void displayChanged(uint32_t);
+
             //! Get the window minimum size.
             FTK_GL_API Size2I getMinSize() const;
 

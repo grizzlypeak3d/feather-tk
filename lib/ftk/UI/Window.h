@@ -82,6 +82,7 @@ namespace ftk
         FTK_UI_API void drawEvent(const Box2I&, const DrawEvent&) override;
 
         FTK_UI_API void _geometryFromEvent(bool maximized = false) override;
+        FTK_UI_API void _displayFromEvent(uint32_t) override;
 
     protected:
         FTK_UI_API void _makeCurrent();

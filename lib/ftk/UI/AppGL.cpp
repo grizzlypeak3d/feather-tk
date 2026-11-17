@@ -2057,6 +2057,12 @@ namespace ftk
                             SDL_EVENT_WINDOW_MAXIMIZED == event.type);
                     }
                     break;
+                case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
+                    if (auto window = _getWindow(event.window.windowID))
+                    {
+                        window->_displayFromEvent(event.window.data1);
+                    }
+                    break;
                 case SDL_EVENT_WINDOW_MOUSE_ENTER:
                     if (auto window = _getWindow(event.window.windowID))
                     {

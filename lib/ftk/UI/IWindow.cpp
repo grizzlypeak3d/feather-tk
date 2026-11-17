@@ -565,6 +565,9 @@ namespace ftk
     void IWindow::_geometryFromEvent(bool)
     {}
 
+    void IWindow::_displayFromEvent(uint32_t)
+    {}
+
     void IWindow::_fullScreenFromEvent(bool value)
     {
         FTK_P();
