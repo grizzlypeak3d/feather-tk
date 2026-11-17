@@ -838,11 +838,12 @@ namespace ftk
             // full screen named. SDL, as patched, asks for full screen
             // before the first commit so that this does not happen; should
             // the window turn up full screen elsewhere all the same, it is
-            // asked for again, which mutter honors once it is mapped. Twice: mutter settles a new window over its
-            // first frames, briefly on the output asked for and then back
-            // on its own choice, and the first request again lands before
-            // that and is undone; the second, after, holds. No more, so as
-            // not to fight a user moving it, or a compositor that will not.
+            // asked for again, which mutter honors once it is mapped.
+            // Twice: mutter settles a new window over its first frames,
+            // briefly on the output asked for and then back on its own
+            // choice, and the first request again lands before that and is
+            // undone; the second, after, holds. No more, so as not to fight
+            // a user moving it, or a compositor that will not.
             if (p.fullScreen &&
                 p.fullScreenRetries > 0 &&
                 p.screenID &&
