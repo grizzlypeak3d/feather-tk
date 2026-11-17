@@ -139,6 +139,28 @@ namespace ftk
                     FTK_CHECK(before == checkedCount);
                 }
 
+                // One key does one thing: of the actions given the same
+                // shortcut, the first enabled one in the menu's order.
+                {
+                    auto dupMenu = Menu::create(_context);
+                    int first = 0;
+                    int second = 0;
+                    int third = 0;
+                    auto a = Action::create("Dup 1", KeyShortcut(Key::F9), [&first] { ++first; });
+                    auto b = Action::create("Dup 2", KeyShortcut(Key::F9), [&second] { ++second; });
+                    auto c = Action::create("Dup 3", KeyShortcut(Key::F9), [&third] { ++third; });
+                    dupMenu->addAction(a);
+                    dupMenu->addAction(b);
+                    dupMenu->addAction(c);
+                    a->setEnabled(false);
+                    // On its own rather than in the menu bar, whose menus
+                    // the arrow keys are tested against below.
+                    FTK_CHECK(dupMenu->shortcut(Key::F9, 0));
+                    FTK_CHECK(0 == first);
+                    FTK_CHECK(1 == second);
+                    FTK_CHECK(0 == third);
+                }
+
                 menuBar->shortcut(Key::_4, static_cast<int>(KeyModifier::Control));
                 FTK_CHECK(action4);
                 menuBar->shortcut(Key::_5, static_cast<int>(KeyModifier::Control));
