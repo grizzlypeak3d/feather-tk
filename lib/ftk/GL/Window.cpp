@@ -130,6 +130,11 @@ namespace ftk
             std::vector<std::shared_ptr<Image> > icons;
             bool fullScreen = false;
             Size2I restoreSize;
+#if defined(FTK_SDL3)
+            //! The display the window was made for, if one was asked for:
+            //! see setFullScreen().
+            SDL_DisplayID screenID = 0;
+#endif // FTK_SDL3
             // The geometry when neither maximized nor full screen, what it
             // was before it was last noted, and when that was.
             Box2I normalGeometry;
@@ -270,6 +275,10 @@ namespace ftk
                 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, sdlWindowFlags);
                 p.sdlWindow = SDL_CreateWindowWithProperties(props);
                 SDL_DestroyProperties(props);
+                if (screen >= 0)
+                {
+                    p.screenID = screenID;
+                }
             }
             else
 #endif // FTK_SDL3
@@ -760,6 +769,23 @@ namespace ftk
 #if defined(FTK_SDL2)
                 SDL_SetWindowFullscreen(p.sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 #elif defined(FTK_SDL3)
+                // Wayland does not say where a window is, so SDL takes the
+                // display for full screen from the window's position, which
+                // it does not know, and a window made for a second display
+                // filled the first. A position asked for just before is the
+                // display SDL uses: the pattern SDL documents for this.
+                // Elsewhere the window is on its display already.
+                SDL_Rect bounds;
+                const char* driver = SDL_GetCurrentVideoDriver();
+                if (p.screenID &&
+                    SDL_GetDisplayBounds(p.screenID, &bounds) &&
+                    driver && 0 == std::strcmp(driver, "wayland"))
+                {
+                    SDL_SetWindowPosition(
+                        p.sdlWindow,
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID),
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID));
+                }
                 SDL_SetWindowFullscreen(p.sdlWindow, 1);
 #endif // FTK_SDL2
             }
