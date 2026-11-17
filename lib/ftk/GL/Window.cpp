@@ -756,6 +756,17 @@ namespace ftk
             return _p->fullScreen;
         }
 
+#if defined(FTK_SDL3)
+        namespace
+        {
+            bool isWayland()
+            {
+                const char* driver = SDL_GetCurrentVideoDriver();
+                return driver && 0 == std::strcmp(driver, "wayland");
+            }
+        }
+#endif // FTK_SDL3
+
         void Window::setFullScreen(bool value)
         {
             FTK_P();
@@ -772,19 +783,24 @@ namespace ftk
                 // Wayland does not say where a window is, so SDL takes the
                 // display for full screen from the window's position, which
                 // it does not know, and a window made for a second display
-                // filled the first. A position asked for just before is the
-                // display SDL uses: the pattern SDL documents for this.
-                // Elsewhere the window is on its display already.
+                // filled the first. The display is given explicitly, as the
+                // full screen mode: the desktop's mode of the display asked
+                // for, which SDL keeps whatever the compositor reports. A
+                // position asked for just before is the fallback, the
+                // pattern SDL documents, though the compositor's next
+                // placement clears it. Elsewhere the window is on its
+                // display already.
                 SDL_Rect bounds;
-                const char* driver = SDL_GetCurrentVideoDriver();
-                if (p.screenID &&
-                    SDL_GetDisplayBounds(p.screenID, &bounds) &&
-                    driver && 0 == std::strcmp(driver, "wayland"))
+                if (isWayland() && p.screenID && SDL_GetDisplayBounds(p.screenID, &bounds))
                 {
-                    SDL_SetWindowPosition(
-                        p.sdlWindow,
-                        SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID),
-                        SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID));
+                    const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(p.screenID);
+                    if (!mode || !SDL_SetWindowFullscreenMode(p.sdlWindow, mode))
+                    {
+                        SDL_SetWindowPosition(
+                            p.sdlWindow,
+                            SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID),
+                            SDL_WINDOWPOS_CENTERED_DISPLAY(p.screenID));
+                    }
                 }
                 SDL_SetWindowFullscreen(p.sdlWindow, 1);
 #endif // FTK_SDL2
@@ -792,6 +808,14 @@ namespace ftk
             else
             {
                 SDL_SetWindowFullscreen(p.sdlWindow, 0);
+#if defined(FTK_SDL3)
+                // Back to the desktop's full screen for the next time,
+                // rather than the display's mode set above.
+                if (isWayland())
+                {
+                    SDL_SetWindowFullscreenMode(p.sdlWindow, nullptr);
+                }
+#endif // FTK_SDL3
                 SDL_SetWindowPosition(p.sdlWindow, p.pos.x, p.pos.y);
                 SDL_SetWindowSize(p.sdlWindow, p.restoreSize.w, p.restoreSize.h);
             }
