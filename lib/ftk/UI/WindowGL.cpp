@@ -297,7 +297,12 @@ namespace ftk
 
     uint32_t Window::getID() const
     {
-        return _p->window->getID();
+        // Zero, which SDL gives no window, until the platform window
+        // exists: the window is in the application's list from
+        // IWindow::_init, and creating the platform window can resize it
+        // (fitToDisplay), which on Windows arrives at once in the live
+        // resize handler, looking the window up by its ID.
+        return _p->window ? _p->window->getID() : 0;
     }
 
     float Window::getSystemDisplayScale() const
