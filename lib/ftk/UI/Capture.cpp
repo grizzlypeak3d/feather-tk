@@ -122,19 +122,21 @@ namespace ftk
             return join(out, " ");
         }
 
-        std::shared_ptr<TabWidget> findTabWidget(
+        //! The tab bar with a tab of the given name: a tab widget's, or
+        //! one used on its own.
+        std::shared_ptr<TabBar> findTabBar(
             const std::shared_ptr<IWidget>& widget,
             const std::string& tab)
         {
-            if (auto tabWidget = std::dynamic_pointer_cast<TabWidget>(widget))
+            if (auto tabBar = std::dynamic_pointer_cast<TabBar>(widget))
             {
-                const auto& tabs = tabWidget->getTabs();
+                const auto& tabs = tabBar->getTabs();
                 if (std::find(tabs.begin(), tabs.end(), tab) != tabs.end())
-                    return tabWidget;
+                    return tabBar;
             }
             for (const auto& child : widget->getChildren())
             {
-                if (auto found = findTabWidget(child, tab))
+                if (auto found = findTabBar(child, tab))
                     return found;
             }
             return nullptr;
@@ -438,16 +440,17 @@ namespace ftk
         if (step.contains("tab"))
         {
             // Select a tab by name, e.g. { "tab": "Movie" }. Searches the
-            // window for a tab widget containing the given tab name.
+            // window for a tab bar with the given tab name, a tab widget's
+            // or one on its own.
             // Deferred to the late phase so the tool from a preceding step
             // has been created (see _applyRest).
             const std::string name = step.at("tab").get<std::string>();
-            std::shared_ptr<TabWidget> tabWidget;
+            std::shared_ptr<TabBar> tabBar;
             if (window)
             {
-                tabWidget = findTabWidget(window, name);
+                tabBar = findTabBar(window, name);
             }
-            if (tabWidget)
+            if (tabBar)
             {
                 // Through a click on the tab's button, the way a person
                 // selects it, so that whatever the application does when
@@ -471,7 +474,7 @@ namespace ftk
                             find(child);
                         }
                     };
-                find(tabWidget->getTabBar());
+                find(tabBar);
                 const Box2I g = button ? button->getGeometry() : Box2I();
                 if (button && button->isVisible(true) && g.isValid())
                 {
@@ -479,9 +482,24 @@ namespace ftk
                 }
                 else
                 {
-                    const auto& tabs = tabWidget->getTabs();
-                    const auto i = std::find(tabs.begin(), tabs.end(), name);
-                    tabWidget->setCurrent(i - tabs.begin());
+                    // Through the tab widget when there is one, which
+                    // shows the page as well.
+                    const auto& tabs = tabBar->getTabs();
+                    const int index = std::find(tabs.begin(), tabs.end(), name) - tabs.begin();
+                    std::shared_ptr<TabWidget> tabWidget;
+                    for (auto parent = tabBar->getParent(); parent && !tabWidget;
+                        parent = parent->getParent())
+                    {
+                        tabWidget = std::dynamic_pointer_cast<TabWidget>(parent);
+                    }
+                    if (tabWidget)
+                    {
+                        tabWidget->setCurrent(index);
+                    }
+                    else
+                    {
+                        tabBar->setCurrent(index);
+                    }
                 }
             }
             else
