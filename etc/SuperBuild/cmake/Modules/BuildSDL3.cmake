@@ -59,7 +59,7 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# Six patches. One from upstream pull request #14157 (open): the Metal
+# Seven patches. One from upstream pull request #14157 (open): the Metal
 # GPU driver makes a texture over an existing CVPixelBuffer's surface,
 # which is how a frame the hardware decoded is drawn without a copy. Drop
 # it when a release carries the change. Two are ours, for iOS: a number
@@ -81,6 +81,10 @@ set(SDL3_ARGS
 # screen on a display before it is shown asks for it before its first
 # commit, so that mutter does not place it on the monitor with the pointer
 # first (DJV's secondary window flashed on the laptop before the TV).
+# And one for CMake 4.5: SDL takes a file to be in its source directory
+# when the path merely starts with it, so the generated SDL_revision.h in
+# the build directory beside it, "SDL3-build", passes for "SDL3", and
+# source_group(TREE), which CMake 4.5 checks by path, stops the configure.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -115,6 +119,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/wayland-fullscreen.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/source-group.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})
