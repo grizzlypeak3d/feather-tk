@@ -59,7 +59,7 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# Seven patches. One from upstream pull request #14157 (open): the Metal
+# Eight patches. One from upstream pull request #14157 (open): the Metal
 # GPU driver makes a texture over an existing CVPixelBuffer's surface,
 # which is how a frame the hardware decoded is drawn without a copy. Drop
 # it when a release carries the change. Two are ours, for iOS: a number
@@ -85,6 +85,9 @@ set(SDL3_ARGS
 # when the path merely starts with it, so the generated SDL_revision.h in
 # the build directory beside it, "SDL3-build", passes for "SDL3", and
 # source_group(TREE), which CMake 4.5 checks by path, stops the configure.
+# And one more for Wayland: leaving full screen after the display it was
+# on is unplugged reaches the compositor, where it was dropped for want of
+# that display, and the window stayed full screen on the other one.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -124,6 +127,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/source-group.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/wayland-unplug.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})

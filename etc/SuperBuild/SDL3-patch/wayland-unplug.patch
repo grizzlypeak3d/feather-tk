@@ -1,0 +1,20 @@
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index ce942bfd4..58f866b2b 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -2089,6 +2089,15 @@ bool SDL_UpdateFullscreenMode(SDL_Window *window, SDL_FullscreenOp fullscreen, b
+             SDL_FullscreenResult ret = SDL_FULLSCREEN_SUCCEEDED;
+             if (_this->SetWindowFullscreen) {
+                 SDL_VideoDisplay *full_screen_display = display ? display : SDL_GetVideoDisplayForFullscreenWindow(window);
++                /* The display the window was fullscreen on may be gone (unplugged),
++                 * and then no display is found and the leave never reaches the
++                 * backend: the window stays fullscreen on whichever output the
++                 * compositor moved it to, while it is no longer flagged so. Wayland
++                 * leaves fullscreen without an output, so any display will do.
++                 */
++                if (!full_screen_display && SDL_strcmp(_this->name, "wayland") == 0) {
++                    full_screen_display = SDL_GetVideoDisplay(SDL_GetPrimaryDisplay());
++                }
+                 if (full_screen_display) {
+                     ret = _this->SetWindowFullscreen(_this, window, full_screen_display, SDL_FULLSCREEN_OP_LEAVE);
+                 }
