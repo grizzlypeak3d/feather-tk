@@ -70,11 +70,27 @@ namespace ftk
             // of it out of reach.
             void fitToDisplay(SDL_Window* sdlWindow)
             {
+                V2I pos;
+                SDL_GetWindowPosition(sdlWindow, &pos.x, &pos.y);
+                Size2I size;
+                SDL_GetWindowSize(sdlWindow, &size.w, &size.h);
+
                 Box2I bounds;
 #if defined(FTK_SDL2)
                 const int display = SDL_GetWindowDisplayIndex(sdlWindow);
 #elif defined(FTK_SDL3)
-                const SDL_DisplayID display = SDL_GetDisplayForWindow(sdlWindow);
+                // The display under the position just asked for. On X11 a
+                // window not shown yet only notes a new position, which
+                // SDL_GetWindowPosition() gives back, while
+                // SDL_GetDisplayForWindow() still goes by where the window
+                // was made, the primary display: a window saved on another
+                // display was fitted back onto the primary one.
+                const SDL_Rect rect = { pos.x, pos.y, size.w, size.h };
+                SDL_DisplayID display = SDL_GetDisplayForRect(&rect);
+                if (!display)
+                {
+                    display = SDL_GetDisplayForWindow(sdlWindow);
+                }
 #endif // FTK_SDL2
                 if (!getUsableBounds(display, bounds))
                 {
@@ -89,8 +105,6 @@ namespace ftk
                 int right = 0;
                 SDL_GetWindowBordersSize(sdlWindow, &top, &left, &bottom, &right);
 
-                Size2I size;
-                SDL_GetWindowSize(sdlWindow, &size.w, &size.h);
                 const Size2I maxSize(
                     std::max(bounds.w() - left - right, 1),
                     std::max(bounds.h() - top - bottom, 1));
@@ -101,8 +115,6 @@ namespace ftk
                     SDL_SetWindowSize(sdlWindow, size.w, size.h);
                 }
 
-                V2I pos;
-                SDL_GetWindowPosition(sdlWindow, &pos.x, &pos.y);
                 const V2I fitted(
                     std::clamp(
                         pos.x,
