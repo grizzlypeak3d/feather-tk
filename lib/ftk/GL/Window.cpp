@@ -38,6 +38,17 @@ namespace ftk
 {
     namespace gl
     {
+#if defined(FTK_SDL3)
+        namespace
+        {
+            bool isWayland()
+            {
+                const char* driver = SDL_GetCurrentVideoDriver();
+                return driver && 0 == std::strcmp(driver, "wayland");
+            }
+        }
+#endif // FTK_SDL3
+
 #if !defined(__EMSCRIPTEN__)
         namespace
         {
@@ -79,14 +90,19 @@ namespace ftk
 #if defined(FTK_SDL2)
                 const int display = SDL_GetWindowDisplayIndex(sdlWindow);
 #elif defined(FTK_SDL3)
-                // The display under the position just asked for. On X11 a
-                // window not shown yet only notes a new position, which
-                // SDL_GetWindowPosition() gives back, while
+                // A window not shown yet: the display under the position
+                // just asked for. On X11 such a window only notes a new
+                // position, which SDL_GetWindowPosition() gives back, while
                 // SDL_GetDisplayForWindow() still goes by where the window
                 // was made, the primary display: a window saved on another
-                // display was fitted back onto the primary one.
-                const SDL_Rect rect = { pos.x, pos.y, size.w, size.h };
-                SDL_DisplayID display = SDL_GetDisplayForRect(&rect);
+                // display was fitted back onto the primary one. Not on
+                // Wayland, where positions mean nothing.
+                SDL_DisplayID display = 0;
+                if ((SDL_GetWindowFlags(sdlWindow) & SDL_WINDOW_HIDDEN) && !isWayland())
+                {
+                    const SDL_Rect rect = { pos.x, pos.y, size.w, size.h };
+                    display = SDL_GetDisplayForRect(&rect);
+                }
                 if (!display)
                 {
                     display = SDL_GetDisplayForWindow(sdlWindow);
@@ -770,17 +786,6 @@ namespace ftk
         {
             return _p->fullScreen;
         }
-
-#if defined(FTK_SDL3)
-        namespace
-        {
-            bool isWayland()
-            {
-                const char* driver = SDL_GetCurrentVideoDriver();
-                return driver && 0 == std::strcmp(driver, "wayland");
-            }
-        }
-#endif // FTK_SDL3
 
         void Window::setFullScreen(bool value)
         {
