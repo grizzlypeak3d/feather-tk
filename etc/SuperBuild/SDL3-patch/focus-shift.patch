@@ -1,0 +1,23 @@
+--- a/src/video/windows/SDL_windowsevents.c
++++ b/src/video/windows/SDL_windowsevents.c
+@@ -378,6 +378,20 @@
+         /*
+          * FIXME: Update keyboard state
+          */
++        /* A Shift held down before the window had the focus was pressed in
++           another window, so the press never came here, and a Shift+drag
++           that is the window's first click would be a plain drag. The pump
++           already lets go of a Shift that Windows says is up, so one taken
++           up here does not stick. */
++        {
++            const bool *keystate = SDL_GetKeyboardState(NULL);
++            if (!keystate[SDL_SCANCODE_LSHIFT] && (GetAsyncKeyState(VK_LSHIFT) & 0x8000)) {
++                SDL_SendKeyboardKey(0, SDL_GLOBAL_KEYBOARD_ID, 0, SDL_SCANCODE_LSHIFT, true);
++            }
++            if (!keystate[SDL_SCANCODE_RSHIFT] && (GetAsyncKeyState(VK_RSHIFT) & 0x8000)) {
++                SDL_SendKeyboardKey(0, SDL_GLOBAL_KEYBOARD_ID, 0, SDL_SCANCODE_RSHIFT, true);
++            }
++        }
+         WIN_CheckClipboardUpdate(data->videodata);
+ 
+         SDL_ToggleModState(SDL_KMOD_CAPS, (GetKeyState(VK_CAPITAL) & 0x0001) ? true : false);

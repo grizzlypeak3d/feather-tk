@@ -59,7 +59,7 @@ set(SDL3_ARGS
     -DSDL_TESTS=OFF
     -DSDL_EXAMPLES=OFF)
 
-# Eight patches. One from upstream pull request #14157 (open): the Metal
+# Nine patches. One from upstream pull request #14157 (open): the Metal
 # GPU driver makes a texture over an existing CVPixelBuffer's surface,
 # which is how a frame the hardware decoded is drawn without a copy. Drop
 # it when a release carries the change. Two are ours, for iOS: a number
@@ -88,6 +88,9 @@ set(SDL3_ARGS
 # And one more for Wayland: leaving full screen after the display it was
 # on is unplugged reaches the compositor, where it was dropped for want of
 # that display, and the window stayed full screen on the other one.
+# And one for Windows: a Shift held down in another window is pressed in
+# SDL's keyboard state when the window gains the focus, as X11 does, so
+# that a Shift+drag that is the window's first click is one (DJV #973).
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
@@ -132,6 +135,11 @@ ExternalProject_Add(
         -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
         -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
         -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/wayland-unplug.patch
+        -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DPATCH_SOURCE_DIR=${CMAKE_CURRENT_BINARY_DIR}/SDL3/src/SDL3
+        -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/SDL3-patch/focus-shift.patch
         -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
     LIST_SEPARATOR |
     CMAKE_ARGS ${SDL3_ARGS})
