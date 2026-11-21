@@ -1,6 +1,62 @@
+diff --git a/src/video/cocoa/SDL_cocoakeyboard.h b/src/video/cocoa/SDL_cocoakeyboard.h
+index 3674c1180..f5912a335 100644
+--- a/src/video/cocoa/SDL_cocoakeyboard.h
++++ b/src/video/cocoa/SDL_cocoakeyboard.h
+@@ -25,6 +25,7 @@
+ 
+ extern void Cocoa_InitKeyboard(SDL_VideoDevice *_this);
+ extern void Cocoa_HandleKeyEvent(SDL_VideoDevice *_this, NSEvent *event);
++extern void Cocoa_SyncShift(NSEvent *event);
+ extern void Cocoa_QuitKeyboard(SDL_VideoDevice *_this);
+ 
+ extern bool Cocoa_StartTextInput(SDL_VideoDevice *_this, SDL_Window *window, SDL_PropertiesID props);
+diff --git a/src/video/cocoa/SDL_cocoakeyboard.m b/src/video/cocoa/SDL_cocoakeyboard.m
+index dfec20fe7..05ea57523 100644
+--- a/src/video/cocoa/SDL_cocoakeyboard.m
++++ b/src/video/cocoa/SDL_cocoakeyboard.m
+@@ -287,6 +287,25 @@ static void HandleModifiers(SDL_VideoDevice *_this, SDL_Scancode code, unsigned
+     }
+ }
+ 
++/* A Shift held down while another application was in front was pressed
++   there, so the press never came here, and a Shift+drag that is the
++   window's first click would be a plain drag. A mouse event carries the
++   modifiers as they are, whichever window had them. The release comes
++   here as a change of flags, the window being in front by then. */
++void Cocoa_SyncShift(NSEvent *event)
++{
++    const unsigned int flags = (unsigned int)[event modifierFlags];
++    const bool *keystate = SDL_GetKeyboardState(NULL);
++    if (!keystate[SDL_SCANCODE_LSHIFT] &&
++        IsModifierKeyPressed(flags, NX_DEVICELSHIFTKEYMASK, NX_DEVICERSHIFTKEYMASK, NX_SHIFTMASK)) {
++        SDL_SendKeyboardKey(0, SDL_DEFAULT_KEYBOARD_ID, 0, SDL_SCANCODE_LSHIFT, true);
++    }
++    if (!keystate[SDL_SCANCODE_RSHIFT] &&
++        IsModifierKeyPressed(flags, NX_DEVICERSHIFTKEYMASK, NX_DEVICELSHIFTKEYMASK, NX_SHIFTMASK)) {
++        SDL_SendKeyboardKey(0, SDL_DEFAULT_KEYBOARD_ID, 0, SDL_SCANCODE_RSHIFT, true);
++    }
++}
++
+ static void UpdateKeymap(SDL_CocoaVideoData *data, bool send_event)
+ {
+     TISInputSourceRef key_layout;
+diff --git a/src/video/cocoa/SDL_cocoawindow.m b/src/video/cocoa/SDL_cocoawindow.m
+index 51eda933a..f449ab5f5 100644
+--- a/src/video/cocoa/SDL_cocoawindow.m
++++ b/src/video/cocoa/SDL_cocoawindow.m
+@@ -1798,6 +1798,7 @@ - (void)mouseDown:(NSEvent *)theEvent
+         return; // dragging, drop event.
+     }
+ 
++    Cocoa_SyncShift(theEvent);
+     Cocoa_SendMouseButtonClicks(mouse, theEvent, _data.window, button, true);
+ }
+ 
+diff --git a/src/video/windows/SDL_windowsevents.c b/src/video/windows/SDL_windowsevents.c
+index ae69f98ed..44023a3b1 100644
 --- a/src/video/windows/SDL_windowsevents.c
 +++ b/src/video/windows/SDL_windowsevents.c
-@@ -378,6 +378,20 @@
+@@ -378,6 +378,20 @@ static void WIN_UpdateFocus(SDL_Window *window, bool expect_focus, LPPOINT pos)
          /*
           * FIXME: Update keyboard state
           */
