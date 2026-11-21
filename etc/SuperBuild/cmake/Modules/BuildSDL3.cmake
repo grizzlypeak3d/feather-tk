@@ -92,7 +92,10 @@ set(SDL3_ARGS
 # that is the window's first click is one (DJV #973): Windows presses it in
 # SDL's keyboard state when the window gains the focus, macOS from the
 # first click's own modifiers, and X11 reconciles the keyboard on a click
-# that comes before the focus, as it otherwise does only on the focus.
+# that comes before the focus, as it otherwise does only on the focus. Its
+# X11 reconcile also has SDL 3.4.20's fix: the KeymapNotify after a FocusIn
+# reconciled a second time and dropped a held Shift from the modifiers.
+# Drop that part, and check the rest, with 3.4.20.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3

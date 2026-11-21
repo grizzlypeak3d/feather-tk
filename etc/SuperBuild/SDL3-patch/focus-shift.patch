@@ -78,10 +78,45 @@ index ae69f98ed..44023a3b1 100644
  
          SDL_ToggleModState(SDL_KMOD_CAPS, (GetKeyState(VK_CAPITAL) & 0x0001) ? true : false);
 diff --git a/src/video/x11/SDL_x11events.c b/src/video/x11/SDL_x11events.c
-index dd44207f6..3f79a0c0f 100644
+index dd44207f6..f2c2eb229 100644
 --- a/src/video/x11/SDL_x11events.c
 +++ b/src/video/x11/SDL_x11events.c
-@@ -1149,6 +1149,14 @@ void X11_HandleButtonPress(SDL_VideoDevice *_this, SDL_WindowData *windowdata, S
+@@ -562,7 +562,11 @@ void X11_ReconcileKeyboardState(SDL_VideoDevice *_this)
+         const bool x11KeyPressed = (keys[keycode / 8] & (1 << (keycode % 8))) != 0;
+         const bool sdlKeyPressed = keystate[scancode];
+ 
+-        if (x11KeyPressed && !sdlKeyPressed) {
++        /* From SDL 3.4.20: a modifier SDL already has down is counted again,
++           since the state was cleared above. KeymapNotify follows FocusIn and
++           reconciles a second time, which dropped a Shift held down in another
++           window from the modifiers (DJV #973). */
++        if (x11KeyPressed) {
+             // Only update modifier state for keys that are pressed in another application
+             switch (SDL_GetKeyFromScancode(scancode, SDL_KMOD_NONE, false)) {
+             case SDLK_LCTRL:
+@@ -576,14 +580,18 @@ void X11_ReconcileKeyboardState(SDL_VideoDevice *_this)
+             case SDLK_MODE:
+             case SDLK_LEVEL5_SHIFT:
+                 X11_HandleModifierKeys(videodata, scancode, true);
+-                SDL_SendKeyboardKeyIgnoreModifiers(0, SDL_GLOBAL_KEYBOARD_ID, keycode, scancode, true);
++                if (!sdlKeyPressed) {
++                    SDL_SendKeyboardKeyIgnoreModifiers(0, SDL_GLOBAL_KEYBOARD_ID, keycode, scancode, true);
++                }
+                 break;
+             default:
+                 break;
+             }
+-        } else if (!x11KeyPressed && sdlKeyPressed) {
++        } else {
+             X11_HandleModifierKeys(videodata, scancode, false);
+-            SDL_SendKeyboardKeyIgnoreModifiers(0, SDL_GLOBAL_KEYBOARD_ID, keycode, scancode, false);
++            if (sdlKeyPressed) {
++                SDL_SendKeyboardKeyIgnoreModifiers(0, SDL_GLOBAL_KEYBOARD_ID, keycode, scancode, false);
++            }
+         }
+     }
+ 
+@@ -1149,6 +1157,14 @@ void X11_HandleButtonPress(SDL_VideoDevice *_this, SDL_WindowData *windowdata, S
      if (X11_IsWheelEvent(button, &xticks, &yticks)) {
          SDL_SendMouseWheel(timestamp, window, mouseID, (float)-xticks, (float)yticks, SDL_MOUSEWHEEL_NORMAL);
      } else {
