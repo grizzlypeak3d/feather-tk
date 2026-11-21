@@ -48,6 +48,7 @@ namespace ftk
         TableIndex editorIndex;
         bool editorHadFocus = false;
         bool editorClose = false;
+        bool pressFocus = false;
         SizeRole marginRole = SizeRole::None;
         ColorRole headingRole = ColorRole::Base;
         bool headingLine = false;
@@ -624,8 +625,14 @@ namespace ftk
         const TableIndex index = _getCell(event.pos);
         if (index.isValid())
         {
-            takeKeyFocus();
+            // The cell clicked is the current one before the focus comes:
+            // focus with no current cell goes to the first, and scrolls to
+            // it, which in a long table in a scroll area jumped away from
+            // the cell being clicked.
             setCurrent(index);
+            p.pressFocus = true;
+            takeKeyFocus();
+            p.pressFocus = false;
             if (p.callback)
             {
                 p.callback(index);
@@ -637,7 +644,8 @@ namespace ftk
     {
         IMouseWidget::keyFocusEvent(value);
         FTK_P();
-        if (value && !p.current.isValid())
+        // Tabbing in starts at the first cell; a click has said which.
+        if (value && !p.current.isValid() && !p.pressFocus)
         {
             _move(0, 0);
         }
