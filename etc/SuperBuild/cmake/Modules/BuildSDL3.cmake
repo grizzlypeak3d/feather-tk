@@ -88,10 +88,11 @@ set(SDL3_ARGS
 # And one more for Wayland: leaving full screen after the display it was
 # on is unplugged reaches the compositor, where it was dropped for want of
 # that display, and the window stayed full screen on the other one.
-# And one for Windows and macOS: a Shift held down in another window is
-# pressed in SDL's keyboard state, as X11 does -- on Windows when the window
-# gains the focus, on macOS from the first click's own modifiers -- so that
-# a Shift+drag that is the window's first click is one (DJV #973).
+# And one for a Shift held down in another window, so that a Shift+drag
+# that is the window's first click is one (DJV #973): Windows presses it in
+# SDL's keyboard state when the window gains the focus, macOS from the
+# first click's own modifiers, and X11 reconciles the keyboard on a click
+# that comes before the focus, as it otherwise does only on the focus.
 ExternalProject_Add(
     SDL3
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/SDL3
