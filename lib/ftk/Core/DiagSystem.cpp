@@ -11,10 +11,39 @@
 #include <ftk/Core/String.h>
 #include <ftk/Core/Timer.h>
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#include <mach/mach.h>
+#if TARGET_OS_IPHONE
+#include <os/proc.h>
+#endif // TARGET_OS_IPHONE
+#endif // __APPLE__
+
 namespace ftk
 {
     namespace
     {
+#if defined(__APPLE__)
+        // The process's footprint: what the system counts against it, and
+        // what iOS ends an application for when it is too much. It takes in
+        // what the samplers below cannot see, such as the decoders' own
+        // memory.
+        int64_t getFootprint()
+        {
+            task_vm_info_data_t info;
+            mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+            if (KERN_SUCCESS == task_info(
+                mach_task_self(),
+                TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&info),
+                &count))
+            {
+                return static_cast<int64_t>(info.phys_footprint);
+            }
+            return 0;
+        }
+#endif // __APPLE__
+
         const std::chrono::seconds tickTimeDefault = std::chrono::seconds(3);
         const std::chrono::seconds logTickTime = std::chrono::seconds(9);
     }
@@ -65,6 +94,18 @@ namespace ftk
         addSampler(
             "Memory/Image limit: {0}MB",
             [] { return Image::getBufferPoolMax() / megabyte; });
+
+#if defined(__APPLE__)
+        addSampler(
+            "Memory/Process: {0}MB",
+            [] { return getFootprint() / megabyte; });
+#if TARGET_OS_IPHONE
+        // How much more the process can take before iOS ends it.
+        addSampler(
+            "Memory/Process available: {0}MB",
+            [] { return static_cast<int64_t>(os_proc_available_memory()) / megabyte; });
+#endif // TARGET_OS_IPHONE
+#endif // __APPLE__
 
         addSampler(
             "Objects/Images: {0}",
