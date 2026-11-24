@@ -193,6 +193,7 @@ namespace ftk
         //! what is kept with the settings, and where the GPU renderer
         //! cannot draw OpenGL does whatever was asked.
         FTK_UI_API Renderer getRenderer() const;
+        FTK_UI_API std::shared_ptr<IObservable<Renderer> > observeRenderer() const;
 
         //! Set the renderer. It is chosen as the application starts,
         //! before there is a window, so this is for the next time it

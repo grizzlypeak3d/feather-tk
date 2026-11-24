@@ -168,7 +168,8 @@ namespace ftk
         std::shared_ptr<IconSystem> iconSystem;
         std::shared_ptr<Style> style;
         std::shared_ptr<Observable<ColorStyle> > colorStyle;
-        Renderer renderer = Renderer::OpenGL;
+        std::shared_ptr<Observable<Renderer> > renderer =
+            Observable<Renderer>::create(Renderer::OpenGL);
         float defaultDisplayScale = 1.F;
         // The display scale is automatic until the application sets a
         // positive one; the window's correction applies only while it is.
@@ -453,7 +454,11 @@ namespace ftk
             std::string renderer;
             if (p.settings->get("/Renderer", renderer))
             {
-                from_string(renderer, p.renderer);
+                Renderer value = Renderer::OpenGL;
+                if (from_string(renderer, value))
+                {
+                    p.renderer->setIfChanged(value);
+                }
             }
         }
         if (video)
@@ -465,7 +470,7 @@ namespace ftk
             glSystem->init();
             // OpenGL unless the other is asked for: by the command line,
             // and otherwise the environment, and otherwise the setting.
-            Renderer renderer = p.renderer;
+            Renderer renderer = p.renderer->get();
             if (const char* env = std::getenv("FTK_RENDER"))
             {
                 renderer = std::string("gpu") == env ? Renderer::GPU : Renderer::OpenGL;
@@ -662,16 +667,18 @@ namespace ftk
 
     Renderer App::getRenderer() const
     {
+        return _p->renderer->get();
+    }
+
+    std::shared_ptr<IObservable<Renderer> > App::observeRenderer() const
+    {
         return _p->renderer;
     }
 
     void App::setRenderer(Renderer value)
     {
         FTK_P();
-        if (value == p.renderer)
-            return;
-        p.renderer = value;
-        if (p.settings)
+        if (p.renderer->setIfChanged(value) && p.settings)
         {
             p.settings->set("/Renderer", to_string(value));
         }
