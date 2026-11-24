@@ -408,7 +408,19 @@ namespace ftk
                 {
                     std::filesystem::create_directories(
                         p.settingsPath.parent_path(), ec);
+                    // Said in the log: deleting the settings directory
+                    // brings the old file back each time, and without a
+                    // word the settings look as if they came from nowhere.
                     std::filesystem::copy_file(previous, p.settingsPath, ec);
+                    context->getLogSystem()->print(
+                        "ftk::App",
+                        ec ?
+                        Format("Cannot copy the settings from their old location: {0}: {1}").
+                            arg(previous).
+                            arg(ec.message()).str() :
+                        Format("Settings copied from their old location: {0}").
+                            arg(previous).str(),
+                        ec ? LogType::Warning : LogType::Message);
                 }
             }
             if (p.cmdLine.logFile->found())
