@@ -7,6 +7,7 @@
 #include <ftk/UI/Label.h>
 #include <ftk/UI/PushButton.h>
 #include <ftk/UI/RowLayout.h>
+#include <ftk/UI/ScreenshotTag.h>
 #include <ftk/UI/ScrollWidget.h>
 
 namespace ftk
@@ -74,6 +75,9 @@ namespace ftk
 
         _okButton = PushButton::create(context, confirm);
         _cancelButton = PushButton::create(context, cancel);
+        // For the capture shots, which otherwise have no way to answer.
+        setScreenshotTag(_okButton, "ConfirmDialog.OK");
+        setScreenshotTag(_cancelButton, "ConfirmDialog.Cancel");
 
         _layout = VerticalLayout::create(context, shared_from_this());
         _layout->setSpacingRole(SizeRole::None);
