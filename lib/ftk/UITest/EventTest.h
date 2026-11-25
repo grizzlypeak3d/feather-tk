@@ -24,6 +24,7 @@ namespace ftk
 
         private:
             void _enums();
+            void _pen();
         };
     }
 }

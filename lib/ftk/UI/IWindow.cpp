@@ -78,6 +78,7 @@ namespace ftk
         V2I cursorPosPrev;
         bool penDown = false;
         float penPressure = 1.F;
+        bool penEraser = false;
         bool touch = false;
         int keyModifiers = 0;
         std::weak_ptr<IWidget> hover;
@@ -1097,11 +1098,12 @@ namespace ftk
         _textEditing(value, cursor);
     }
 
-    void IWindow::_pen(bool down, float pressure)
+    void IWindow::_pen(bool down, float pressure, bool eraser)
     {
         FTK_P();
         p.penDown = down;
         p.penPressure = pressure;
+        p.penEraser = eraser;
     }
 
     void IWindow::_touch(bool value)
@@ -1128,7 +1130,7 @@ namespace ftk
             _trace(Format("Mouse move to {0},{1}{2}{3}").
                 arg(pos.x).
                 arg(pos.y).
-                arg(p.penDown ? " (pen)" : "").
+                arg(p.penDown ? (p.penEraser ? " (pen eraser)" : " (pen)") : "").
                 arg(p.touch ? " (touch)" : ""));
         }
 
@@ -1142,6 +1144,7 @@ namespace ftk
             widget ? p.mouseClickEvent.modifiers : 0);
         event.pen = p.penDown;
         event.pressure = p.penDown ? p.penPressure : 1.F;
+        event.eraser = p.penDown && p.penEraser;
         event.touch = p.touch;
         event.keyModifiers = p.keyModifiers;
         if (widget)
@@ -1244,6 +1247,7 @@ namespace ftk
         p.mouseClickEvent = MouseClickEvent(button, modifiers, p.cursorPos);
         p.mouseClickEvent.pen = p.penDown;
         p.mouseClickEvent.pressure = p.penDown ? p.penPressure : 1.F;
+        p.mouseClickEvent.eraser = p.penDown && p.penEraser;
         p.mouseClickEvent.touch = p.touch;
         if (press)
         {

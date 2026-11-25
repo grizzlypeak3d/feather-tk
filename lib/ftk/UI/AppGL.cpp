@@ -2179,8 +2179,9 @@ namespace ftk
                 // A pen's movements and presses arrive as the mouse's as
                 // well (SDL's pen mouse events, left on), so the widgets
                 // need nothing new; what the pen adds is how hard it
-                // presses, kept on the window and stamped on those events.
-                // The pressure comes before the movement it belongs to.
+                // presses and which end is down, kept on the window and
+                // stamped on those events. They come before the movement
+                // they belong to.
                 case SDL_EVENT_PEN_DOWN:
                 case SDL_EVENT_PEN_UP:
                     if (auto window = mouseWindow(event.ptouch.windowID))
@@ -2189,7 +2190,10 @@ namespace ftk
                         {
                             p.penPressure = 1.F;
                         }
-                        window->_pen(SDL_EVENT_PEN_DOWN == event.type, p.penPressure);
+                        window->_pen(
+                            SDL_EVENT_PEN_DOWN == event.type,
+                            p.penPressure,
+                            event.ptouch.eraser);
                     }
                     break;
                 case SDL_EVENT_PEN_AXIS:
@@ -2200,7 +2204,8 @@ namespace ftk
                         {
                             window->_pen(
                                 (event.paxis.pen_state & SDL_PEN_INPUT_DOWN) != 0,
-                                p.penPressure);
+                                p.penPressure,
+                                (event.paxis.pen_state & SDL_PEN_INPUT_ERASER_TIP) != 0);
                         }
                     }
                     break;

@@ -430,10 +430,11 @@ namespace ftk
         FTK_UI_API void _cursorEnter(bool enter);
         FTK_UI_API void _cursorPos(const V2I&);
         FTK_UI_API void _mouseButton(MouseButton, bool press, int modifiers);
-        //! The pen on the surface, and how hard it presses: stamped on the
-        //! mouse events that follow, which are the pen's own since the
-        //! system sends a pen's movements as a mouse's.
-        FTK_UI_API void _pen(bool down, float pressure);
+        //! The pen on the surface, how hard it presses, and whether with
+        //! its eraser end: stamped on the mouse events that follow, which
+        //! are the pen's own since the system sends a pen's movements as a
+        //! mouse's.
+        FTK_UI_API void _pen(bool down, float pressure, bool eraser = false);
         //! Whether the mouse events that follow are a finger's.
         FTK_UI_API void _touch(bool);
         //! The keyboard modifiers held now, for the mouse moves that follow.

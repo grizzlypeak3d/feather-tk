@@ -146,6 +146,8 @@ namespace ftk
         //! one. A mouse or a finger is no pen and presses with one.
         bool                           pen = false;
         float                          pressure = 1.F;
+        //! Whether it is the pen's eraser end, turned over to rub out.
+        bool                           eraser = false;
 
         //! Whether a finger on a touch screen made the event: a target
         //! for a fingertip is bigger than one for a pointer.
@@ -206,6 +208,7 @@ namespace ftk
         //! MouseMoveEvent.
         bool        pen       = false;
         float       pressure  = 1.F;
+        bool        eraser    = false;
         //! Whether a finger made the event; see MouseMoveEvent.
         bool        touch     = false;
         bool        accept    = false;
