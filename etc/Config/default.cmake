@@ -77,5 +77,5 @@ if(APPLE)
     # continuous integration runner, which builds a tool and then runs it.
     # Set CMAKE_OSX_ARCHITECTURES in local.cmake, or in a package config where
     # the answer has to be decided rather than discovered.
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "macOS deployment target")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "12" CACHE STRING "macOS deployment target")
 endif()

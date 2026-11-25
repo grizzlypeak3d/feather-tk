@@ -121,4 +121,4 @@ pkg-config --atleast-version=0.3.44 libpipewire-0.3
 repair-wheel-command = "delvewheel repair --ignore-existing --no-mangle-all -w {dest_dir} -v {wheel}"
 
 [tool.cibuildwheel.macos]
-environment = { MACOSX_DEPLOYMENT_TARGET = "10.15" }
+environment = { MACOSX_DEPLOYMENT_TARGET = "12.0" }
