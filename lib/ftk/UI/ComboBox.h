@@ -21,7 +21,9 @@ namespace ftk
             const std::string& text,
             const std::string& icon = std::string());
 
+        //! The text shown for the item.
         std::string text;
+        //! The name of the item's icon; empty for none.
         std::string icon;
 
         bool operator == (const ComboBoxItem&) const = default;

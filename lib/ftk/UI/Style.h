@@ -93,7 +93,10 @@ namespace ftk
     //! Color controls.
     struct FTK_UI_API_TYPE ColorControls
     {
+        //! The brightness the color roles are given, as a multiplier; one
+        //! leaves them as they are.
         float brightness = 1.F;
+        //! The contrast the color roles are given; one leaves them as they are.
         float contrast = 1.F;
 
         //! Alpha multiplier applied by getColorRole(ColorRole, bool enabled)
@@ -135,6 +138,8 @@ namespace ftk
         FTK_UI_API std::shared_ptr<IObservableMap<SizeRole, int> > observeSizeRoles() const;
         FTK_UI_API void setSizeRoles(const std::map<SizeRole, int>&);
 
+        //! Get a size role in pixels at the given display scale; zero for a
+        //! role the style has no size for.
         FTK_UI_API int getSizeRole(SizeRole, float scale) const;
 
         ///@}
@@ -158,6 +163,8 @@ namespace ftk
         //! \name Color Controls
         ///@{
 
+        //! Get the color controls: the brightness and contrast of the color
+        //! roles, and the alpha of disabled widgets.
         FTK_UI_API const ColorControls& getColorControls() const;
         FTK_UI_API std::shared_ptr<IObservable<ColorControls> > observeColorControls() const;
         FTK_UI_API void setColorControls(const ColorControls&);
@@ -167,6 +174,7 @@ namespace ftk
         //! \name Fonts
         ///@{
 
+        //! Get the font names, by font type.
         FTK_UI_API const std::map<FontType, std::string>& getFonts() const;
         FTK_UI_API std::shared_ptr<IObservableMap<FontType, std::string> > observeFonts() const;
         FTK_UI_API void setFonts(const std::map<FontType, std::string>&);

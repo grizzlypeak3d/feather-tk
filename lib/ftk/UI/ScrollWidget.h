@@ -14,8 +14,12 @@ namespace ftk
     //! Scroll widget information.
     struct FTK_UI_API_TYPE ScrollInfo
     {
+        //! The geometry of the area the widget is seen through, in window
+        //! coordinates.
         Box2I  viewport;
+        //! The size of the widget being scrolled, in pixels.
         Size2I scrollSize;
+        //! The scroll position: how far the widget is scrolled, in pixels.
         V2I    scrollPos;
 
         bool operator == (const ScrollInfo&) const = default;
@@ -44,6 +48,7 @@ namespace ftk
         //! \name Scroll Widget
         ///@{
 
+        //! Get the widget that is scrolled.
         FTK_UI_API const std::shared_ptr<IWidget>& getWidget() const;
         FTK_UI_API void setWidget(const std::shared_ptr<IWidget>&);
         
@@ -52,6 +57,7 @@ namespace ftk
         //! \name Scroll Type
         ///@{
 
+        //! Get which ways the widget scrolls.
         FTK_UI_API ScrollType getScrollType() const;
         FTK_UI_API void setScrollType(ScrollType);
         
@@ -60,7 +66,9 @@ namespace ftk
         //! \name Scroll Size
         ///@{
 
+        //! Get the size of the widget being scrolled, in pixels.
         FTK_UI_API const Size2I& getScrollSize() const;
+        //! Set a callback for when the scroll size changes.
         FTK_UI_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
         
         ///@}
@@ -68,8 +76,12 @@ namespace ftk
         //! \name Scroll Position
         ///@{
 
+        //! Get the scroll position, in pixels.
         FTK_UI_API const V2I& getScrollPos() const;
+        //! Set the scroll position. With clamp it is kept between zero and the
+        //! scroll size less the size of the view.
         FTK_UI_API void setScrollPos(const V2I&, bool clamp = true);
+        //! Set a callback for when the scroll position changes.
         FTK_UI_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
 
         //! Scroll to make the given box visible.

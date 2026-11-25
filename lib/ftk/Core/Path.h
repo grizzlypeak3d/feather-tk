@@ -100,7 +100,11 @@ namespace ftk
     //! File path options.
     struct FTK_CORE_API_TYPE PathOptions
     {
+        //! Whether a minus in front of a frame number makes it negative. A minus
+        //! in front of a number padded with zeros is part of the base name.
         bool   seqNegative  = true;
+        //! The most digits a frame number can have. A longer run of digits is
+        //! not taken for a frame number.
         size_t seqMaxDigits = 9;
 
         bool operator == (const PathOptions&) const = default;
@@ -114,7 +118,9 @@ namespace ftk
         FTK_CORE_API FrameSeq(int64_t, int64_t, int inc = 1);
         FTK_CORE_API explicit FrameSeq(int64_t);
 
+        //! The first and last frames.
         RangeI64 range;
+        //! The step between frames: 1 for every frame, 2 for every other one.
         int      inc = 1;
 
         bool operator == (const FrameSeq&) const = default;
@@ -200,23 +206,44 @@ namespace ftk
         //! \name Path Components
         ///@{
 
+        //! Get the path as a string.
         const std::string& get() const;
+        //! Get whether the path is empty.
         bool isEmpty() const;
 
+        //! Get whether the path has a protocol.
         bool hasProtocol() const;
+        //! Get whether the path has a directory.
         bool hasDir() const;
+        //! Get whether the path has a base name.
         bool hasBase() const;
+        //! Get whether the path has a frame number, or a "#" wildcard.
         bool hasNum() const;
+        //! Get whether the path has an extension.
         bool hasExt() const;
+        //! Get whether the path has a request.
         bool hasRequest() const;
 
+        //! Get the protocol, such as "file://".
         std::string getProtocol() const;
+        //! Get the directory, with its trailing separator, such as "/tmp/".
         std::string getDir() const;
+        //! Get the base name: what comes before the frame number and the
+        //! extension, such as "render.".
         std::string getBase() const;
+        //! Get the frame number as it is written, such as "0001", or the "#"
+        //! wildcard.
         std::string getNum() const;
+        //! Get the frame number padding: the number of digits when the number
+        //! starts with a zero or is a wildcard, and zero otherwise.
         int getPad() const;
+        //! Get the extension, with its dot, such as ".exr".
         std::string getExt() const;
+        //! Get the request, with its question mark, such as "?user=foo".
         std::string getRequest() const;
+        //! Get the file name: the base name, frame number and extension, after
+        //! the directory when dir is true. The protocol and the request are
+        //! left out.
         std::string getFileName(bool dir = false) const;
 
         FTK_CORE_API void setProtocol(const std::string&);
@@ -297,7 +324,10 @@ namespace ftk
         //! \name Constants
         ///@{
 
+        //! Get the characters a frame number is made of: the digits and "#".
         FTK_CORE_API static std::string getNumbers();
+        //! Get the characters that separate directories: forward slash and
+        //! backslash.
         FTK_CORE_API static std::string getPathSeparators();
 
         ///@}
@@ -351,7 +381,9 @@ namespace ftk
     //! Directory list options.
     struct FTK_CORE_API_TYPE DirListOptions
     {
+        //! How the entries are sorted. Directories come first whatever the sort.
         DirListSort              sort         = DirListSort::Name;
+        //! Whether the sort is reversed.
         bool                     sortReverse  = false;
 
         //! Case-insensitive match against the file name: a substring, or a
@@ -361,12 +393,25 @@ namespace ftk
         //! level is subject to it like anything else.
         std::string              filter;
 
+        //! Whether to leave the files out, listing only directories.
         bool                     filterFiles  = false;
+        //! The extensions of the files to list, lower case with the dot, such as
+        //! ".exr". Empty lists every file. Directories are not filtered.
         std::vector<std::string> filterExt;
+        //! Whether numbered files are grouped into sequences, each listed as one
+        //! entry.
         bool                     seq          = true;
+        //! The extensions of the files that are grouped into sequences, lower
+        //! case with the dot. Empty groups any file.
         std::vector<std::string> seqExts;
+        //! Whether a minus in front of a frame number makes it negative; see
+        //! PathOptions::seqNegative.
         bool                     seqNegative  = true;
+        //! The most digits a frame number can have; see
+        //! PathOptions::seqMaxDigits.
         size_t                   seqMaxDigits = 9;
+        //! Whether to list the files and directories whose names start with a
+        //! dot.
         bool                     hidden       = false;
 
         //! How many directory levels to list: 1 is the directory alone.
@@ -382,11 +427,18 @@ namespace ftk
     //! Directory list entry.
     struct FTK_CORE_API_TYPE DirEntry
     {
+        //! The path. For a sequence it names the first frame and holds the
+        //! frames found.
         Path                            path;
+        //! Whether the entry is a directory.
         bool                            isDir = false;
         // What std::filesystem::file_size() returns: size_t would narrow
         // it on a 32-bit target, WebAssembly included.
+        //! The size, in bytes: for a sequence the total of its files, and zero
+        //! for a directory.
         std::uintmax_t                  size = 0;
+        //! When the entry was last written. For a sequence, the latest of its
+        //! files.
         std::filesystem::file_time_type time;
 
         bool operator == (const DirEntry&) const = default;

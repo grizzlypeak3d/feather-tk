@@ -29,8 +29,13 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, the minimum and maximum levels, which are kept within
+        //! the range. The default is 0 to 1.
         FTK_UI_API const RangeF& getValue() const;
+        //! Observe the value.
         FTK_UI_API std::shared_ptr<IObservable<RangeF> > observeValue() const;
+        //! Set the value. Its minimum and maximum are each clamped to the
+        //! range.
         FTK_UI_API void setValue(const RangeF&);
 
         ///@}
@@ -38,8 +43,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within. The default is 0 to 1.
         FTK_UI_API const RangeF& getRange() const;
+        //! Observe the range.
         FTK_UI_API std::shared_ptr<IObservable<RangeF> > observeRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeF&);
 
         ///@}
@@ -47,10 +55,14 @@ namespace ftk
         //! \name Increment
         ///@{
 
+        //! Get the step. The default is 0.1.
         FTK_UI_API float getStep() const;
+        //! Set the step.
         FTK_UI_API void setStep(float);
 
+        //! Get the large step. The default is 1.
         FTK_UI_API float getLargeStep() const;
+        //! Set the large step.
         FTK_UI_API void setLargeStep(float);
 
         ///@}
@@ -113,8 +125,16 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, the minimum and maximum levels, which are kept within
+        //! the range. Dragging one handle past the other moves the other with
+        //! it.
         FTK_UI_API const RangeF& getValue() const;
+        //! Set the value. Its minimum and maximum are each clamped to the
+        //! range.
         FTK_UI_API void setValue(const RangeF&);
+        //! Set the callback, called with the value whenever it changes,
+        //! including on every move while a handle is dragged, from setValue(),
+        //! and from other widgets that share the model.
         FTK_UI_API void setCallback(const std::function<void(const RangeF&)>&);
 
         //! Set the value callback with a flag for whether the slider is pressed.
@@ -125,8 +145,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within.
         FTK_UI_API const RangeF& getRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeF&);
+        //! Set the range from its minimum and maximum.
         FTK_UI_API void setRange(float, float);
 
         ///@}
@@ -179,8 +202,16 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, the minimum and maximum levels, which are kept within
+        //! the range. Dragging or typing one past the other moves the other
+        //! with it.
         FTK_UI_API const RangeF& getValue() const;
+        //! Set the value. Its minimum and maximum are each clamped to the
+        //! range.
         FTK_UI_API void setValue(const RangeF&);
+        //! Set the callback, called with the value whenever it changes,
+        //! including from the edits, on every move while a handle is dragged,
+        //! and from setValue().
         FTK_UI_API void setCallback(const std::function<void(const RangeF&)>&);
 
         //! Set the value callback with a flag for whether the slider is pressed.
@@ -191,8 +222,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within.
         FTK_UI_API const RangeF& getRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeF&);
+        //! Set the range from its minimum and maximum.
         FTK_UI_API void setRange(float, float);
 
         ///@}

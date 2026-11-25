@@ -44,8 +44,14 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, which is kept within the range.
         FTK_UI_API int getValue() const;
+        //! Set the value. A value outside the range is clamped to it.
         FTK_UI_API void setValue(int);
+        //! Set the callback, called with the value whenever it changes,
+        //! including from setValue() and from other widgets that share the
+        //! model. Typed text is applied when Enter is pressed or the key focus
+        //! is lost.
         FTK_UI_API void setCallback(const std::function<void(int)>&);
         
         ///@}
@@ -53,8 +59,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within.
         FTK_UI_API const RangeI& getRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeI&);
+        //! Set the range from its minimum and maximum.
         FTK_UI_API void setRange(int, int);
         
         ///@}
@@ -62,10 +71,16 @@ namespace ftk
         //! \name Increment
         ///@{
 
+        //! Get the step: how much the up and down arrow keys, the increment
+        //! buttons, and the scroll wheel change the value by.
         FTK_UI_API int getStep() const;
+        //! Set the step.
         FTK_UI_API void setStep(int);
 
+        //! Get the large step: how much Page Up and Page Down, and the scroll
+        //! wheel with Shift held, change the value by.
         FTK_UI_API int getLargeStep() const;
+        //! Set the large step.
         FTK_UI_API void setLargeStep(int);
         
         ///@}
@@ -73,7 +88,9 @@ namespace ftk
         //! \name Default Value
         ///@{
 
+        //! Get the default value.
         FTK_UI_API int getDefault() const;
+        //! Set the default value.
         FTK_UI_API void setDefault(int);
         
         ///@}
@@ -87,7 +104,9 @@ namespace ftk
         //! Set the formatting text.
         FTK_UI_API void setFormat(const std::string&);
 
+        //! Get the font, the monospace font by default.
         FTK_UI_API FontType getFont() const;
+        //! Set the font.
         FTK_UI_API void setFont(FontType);
 
         ///@}

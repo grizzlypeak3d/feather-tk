@@ -21,7 +21,9 @@ namespace ftk
             const std::string& text,
             const std::string& tooltip = std::string());
 
+        //! The text shown for the item.
         std::string text;
+        //! The item's tooltip, or empty for none.
         std::string tooltip;
 
         bool operator == (const ListItem&) const = default;

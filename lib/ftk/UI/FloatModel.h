@@ -29,8 +29,11 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, which is kept within the range.
         FTK_UI_API float getValue() const;
+        //! Observe the value.
         FTK_UI_API std::shared_ptr<IObservable<float> > observeValue() const;
+        //! Set the value. A value outside the range is clamped to it.
         FTK_UI_API void setValue(float);
 
         //! Set the value, extending a soft range to admit it. This is
@@ -44,8 +47,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within. The default is 0 to 1.
         FTK_UI_API const RangeF& getRange() const;
+        //! Observe the range.
         FTK_UI_API std::shared_ptr<IObservable<RangeF> > observeRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeF&);
 
         //! Get whether the range is soft. A value given to
@@ -61,10 +67,16 @@ namespace ftk
         //! \name Increment
         ///@{
 
+        //! Get the step, the amount a step increments or decrements the value
+        //! by. The default is 0.1.
         FTK_UI_API float getStep() const;
+        //! Set the step.
         FTK_UI_API void setStep(float);
 
+        //! Get the large step, the amount a large step increments or decrements
+        //! the value by. The default is 1.
         FTK_UI_API float getLargeStep() const;
+        //! Set the large step.
         FTK_UI_API void setLargeStep(float);
 
         //! Increment the value by a step.

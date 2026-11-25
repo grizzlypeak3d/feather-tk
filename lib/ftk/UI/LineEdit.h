@@ -48,8 +48,12 @@ namespace ftk
         //! \name Text
         ///@{
 
+        //! Get the text.
         FTK_UI_API const std::string& getText() const;
+        //! Set the text. The cursor moves to the start and the selection is
+        //! cleared. The text changed callback is called; the callback is not.
         FTK_UI_API void setText(const std::string&);
+        //! Clear the text.
         FTK_UI_API void clearText();
 
         //! Set the callback. The callback is triggered when the enter
@@ -87,7 +91,10 @@ namespace ftk
         //! better to do with it, such as closing.
         FTK_UI_API void setEscapeCallback(const std::function<void(void)>&);
 
+        //! Get whether the text is read only. Read only text can still be
+        //! selected and copied.
         FTK_UI_API bool isReadOnly() const;
+        //! Set whether the text is read only.
         FTK_UI_API void setReadOnly(bool);
 
         //! Get what the text is: a touch screen's keyboard takes its
@@ -100,7 +107,9 @@ namespace ftk
         //! \name Selection
         ///@{
 
+        //! Select all of the text.
         FTK_UI_API void selectAll();
+        //! Clear the selection.
         FTK_UI_API void clearSelection();
 
         //! Get whether all of the text is selected when key focus is
@@ -118,7 +127,9 @@ namespace ftk
         //! \name Font
         ///@{
 
+        //! Get the font.
         FTK_UI_API FontType getFont() const;
+        //! Set the font.
         FTK_UI_API void setFont(FontType);
 
         ///@}
@@ -126,7 +137,10 @@ namespace ftk
         //! \name Border
         ///@{
 
+        //! Get the border color role. The key focus color is drawn in its place
+        //! while the edit has the key focus.
         FTK_UI_API ColorRole getBorderRole() const;
+        //! Set the border color role.
         FTK_UI_API void setBorderRole(ColorRole);
 
         ///@}

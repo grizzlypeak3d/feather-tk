@@ -41,8 +41,13 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, which is kept within the range.
         FTK_UI_API float getValue() const;
+        //! Set the value. A value outside the range is clamped to it.
         FTK_UI_API void setValue(float);
+        //! Set the callback, called with the value whenever it changes,
+        //! including from the edit, on every move while the slider is dragged,
+        //! from setValue(), and from other widgets that share the model.
         FTK_UI_API void setCallback(const std::function<void(float)>&);
 
         //! Set the value callback with a flag for whether the slider is pressed.
@@ -53,8 +58,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within.
         FTK_UI_API const RangeF& getRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeF&);
+        //! Set the range from its minimum and maximum.
         FTK_UI_API void setRange(float, float);
         
         ///@}
@@ -62,10 +70,16 @@ namespace ftk
         //! \name Increment
         ///@{
 
+        //! Get the step: how much the arrow keys, the increment buttons, and
+        //! the scroll wheel change the value by.
         FTK_UI_API float getStep() const;
+        //! Set the step.
         FTK_UI_API void setStep(float);
 
+        //! Get the large step: how much Page Up and Page Down, and the scroll
+        //! wheel with Shift held, change the value by.
         FTK_UI_API float getLargeStep() const;
+        //! Set the large step.
         FTK_UI_API void setLargeStep(float);
         
         ///@}
@@ -73,7 +87,10 @@ namespace ftk
         //! \name Default Value
         ///@{
 
+        //! Get the default value.
         FTK_UI_API float getDefault() const;
+        //! Set the default value. A double click on the slider, or Reset in the
+        //! slider's popup, resets the value to it.
         FTK_UI_API void setDefault(float);
         
         ///@}

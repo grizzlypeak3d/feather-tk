@@ -20,6 +20,7 @@ namespace ftk
             bool editable = false,
             ColorRole colorRole = ColorRole::None);
 
+        //! The text shown in the cell.
         std::string text;
 
         //! An editable cell highlights under the mouse, can be made
@@ -40,12 +41,15 @@ namespace ftk
             const std::vector<TableCell>&,
             bool heading = false);
 
+        //! The cells, one for each column.
         std::vector<TableCell> cells;
 
         //! A heading row is drawn in bold with space above it, and over a
         //! band the width of the table, with a line beneath it, or both.
         bool heading = false;
 
+        //! Whether the row is shown. A hidden row takes no space and keeps its
+        //! index.
         bool visible = true;
 
         bool operator == (const TableRow&) const = default;
@@ -57,9 +61,13 @@ namespace ftk
         TableIndex() = default;
         FTK_UI_API TableIndex(int row, int column);
 
+        //! The row, or -1 for none.
         int row = -1;
+        //! The column, or -1 for none.
         int column = -1;
 
+        //! Get whether the index is of a cell: the row and the column are both
+        //! zero or more.
         FTK_UI_API bool isValid() const;
 
         bool operator == (const TableIndex&) const = default;

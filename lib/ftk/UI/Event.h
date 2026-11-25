@@ -22,6 +22,7 @@ namespace ftk
     {
         FTK_UI_API ChildAddEvent(const std::shared_ptr<IWidget>&);
 
+        //! The child that was added, now the last of the parent's children.
         std::shared_ptr<IWidget> child;
     };
 
@@ -30,7 +31,9 @@ namespace ftk
     {
         FTK_UI_API ChildRemoveEvent(const std::shared_ptr<IWidget>&, int index);
 
+        //! The child that was removed.
         std::shared_ptr<IWidget> child;
+        //! The index the child had among the parent's children.
         int index = 0;
     };
 
@@ -45,9 +48,13 @@ namespace ftk
         //! @param changes Set all of the fields to this value.
         FTK_UI_API StyleEvent(bool changes = false);
 
+        //! Whether the display scale has changed.
         bool displayScaleChange = false;
+        //! Whether the style's size roles have changed.
         bool sizeRoleChange     = false;
+        //! Whether the style's color roles have changed.
         bool colorRoleChange    = false;
+        //! Whether the style's fonts have changed.
         bool fontChange         = false;
 
         FTK_UI_API bool hasChanges() const;
@@ -62,9 +69,13 @@ namespace ftk
             float displayScale,
             const std::shared_ptr<Style>&);
 
+        //! The font system, for measuring text.
         std::shared_ptr<FontSystem> fontSystem;
+        //! The icon system, for getting icon images by name.
         std::shared_ptr<IconSystem> iconSystem;
+        //! The display scale to size the widget for.
         float                       displayScale = 1.F;
+        //! The style, for the size roles, color roles and fonts.
         std::shared_ptr<Style>      style;
     };
 
@@ -78,10 +89,15 @@ namespace ftk
             const std::shared_ptr<Style>&,
             const std::shared_ptr<IRender>&);
 
+        //! The font system, for the text to draw.
         std::shared_ptr<FontSystem> fontSystem;
+        //! The icon system, for getting icon images by name.
         std::shared_ptr<IconSystem> iconSystem;
+        //! The display scale to draw the widget at.
         float                       displayScale = 1.F;
+        //! The style, for the size roles, color roles and fonts.
         std::shared_ptr<Style>      style;
+        //! The renderer to draw with.
         std::shared_ptr<IRender>    render;
     };
 
@@ -97,7 +113,12 @@ namespace ftk
     {
         FTK_UI_API MouseEnterEvent(const V2I& pos);
 
+        //! Set by the widget to take the hover: it is then sent the mouse
+        //! moves, and a leave event when the cursor goes. Left unset, the
+        //! widgets it is inside are asked in turn.
         bool accept = false;
+        //! The cursor position, in pixels from the top left of the window: the
+        //! coordinates widget geometry is in.
         V2I  pos;
     };
 
@@ -125,7 +146,10 @@ namespace ftk
             MouseButton button = MouseButton::None,
             int         modifiers = 0);
 
+        //! The cursor position, in pixels from the top left of the window: the
+        //! coordinates widget geometry is in.
         V2I                            pos;
+        //! The cursor position before the move, in the same coordinates.
         V2I                            prev;
 
         //! The button held down during the move, and the modifiers it was
@@ -153,9 +177,20 @@ namespace ftk
         //! for a fingertip is bigger than one for a pointer.
         bool                           touch = false;
 
+        //! Set by a widget that handles the move. The window does not read it:
+        //! a move goes to the pressed widget, or else to the hovered one,
+        //! whatever this says.
         bool                           accept = false;
+        //! Set by the pressed widget, as it is sent a move, to start a drag and
+        //! drop of this data. The widget is then sent a release and a leave,
+        //! and the widgets under the cursor are sent the drag events until the
+        //! button is released.
         std::shared_ptr<IDragDropData> dragDropData;
+        //! An image drawn at the cursor while the drag and drop lasts, set with
+        //! the data.
         std::shared_ptr<Image>         dragDropCursor;
+        //! The point in the cursor image that is put at the cursor, in pixels
+        //! of the image.
         V2I                            dragDropCursorHotspot;
     };
 
@@ -201,8 +236,12 @@ namespace ftk
             int         modifiers,
             const V2I&  pos);
 
+        //! The button pressed or released.
         MouseButton button    = MouseButton::None;
+        //! The keyboard modifiers held, as KeyModifier flags.
         int         modifiers = 0;
+        //! The cursor position, in pixels from the top left of the window: the
+        //! coordinates widget geometry is in.
         V2I         pos;
         //! Whether a pen made the event, and how hard it presses; see
         //! MouseMoveEvent.
@@ -211,6 +250,11 @@ namespace ftk
         bool        eraser    = false;
         //! Whether a finger made the event; see MouseMoveEvent.
         bool        touch     = false;
+        //! Set by a widget to take the press: it becomes the pressed widget,
+        //! which is sent the mouse moves and the release wherever the cursor
+        //! goes. Left unset, the widgets under the cursor are asked in turn,
+        //! deepest first, and if none takes it a right button can open a
+        //! context menu. The release does not read it.
         bool        accept    = false;
 
         //! The press was taken away before it was released: a touch
@@ -234,9 +278,16 @@ namespace ftk
             int        modifiers,
             const V2I& pos);
 
+        //! The amount scrolled, in mouse wheel steps rather than pixels: x
+        //! across and y up and down.
         V2F  value;
+        //! The keyboard modifiers held, as KeyModifier flags.
         int  modifiers = 0;
+        //! The cursor position, in pixels from the top left of the window: the
+        //! coordinates widget geometry is in.
         V2I  pos;
+        //! Set by a widget that takes the scroll. Left unset, the widgets under
+        //! the cursor are asked in turn, deepest first, as far as a dialog.
         bool accept    = false;
     };
 
@@ -258,6 +309,10 @@ namespace ftk
         //! last event, as a ratio.
         float zoom   = 1.F;
 
+        //! Set by a widget to take the gesture as it starts: the rest of it
+        //! goes to that widget, wherever the fingers go. Left unset, the
+        //! widgets under the fingers are asked in turn, deepest first, as far
+        //! as a dialog.
         bool  accept = false;
     };
 
@@ -411,9 +466,18 @@ namespace ftk
             int        modifiers,
             const V2I& pos);
 
+        //! The key.
         Key  key       = Key::Unknown;
+        //! The keyboard modifiers held, as KeyModifier flags.
         int  modifiers = 0;
+        //! The cursor position, in pixels from the top left of the window: the
+        //! coordinates widget geometry is in.
         V2I  pos;
+        //! Set by a widget that takes the key: it is sent the release, and no
+        //! other widget is asked. Left unset, the key focus widget and its
+        //! parents are asked in turn, as far as a dialog, then the widgets
+        //! under the cursor, deepest first; a Tab that none takes moves the key
+        //! focus.
         bool accept    = false;
     };
 
@@ -422,7 +486,10 @@ namespace ftk
     {
         FTK_UI_API TextEvent(const std::string& text);
 
+        //! The text entered, in UTF-8.
         std::string text;
+        //! Set by a widget that takes the text. The text goes to the key focus
+        //! widget and, while this is unset, on to its parents in turn.
         bool        accept = false;
     };
 
@@ -445,6 +512,8 @@ namespace ftk
 
         FTK_UI_API virtual ~DragDropTextData();
 
+        //! Get the text. For files dropped on the application from outside,
+        //! their paths.
         FTK_UI_API const std::vector<std::string>& getText() const;
 
     private:
@@ -459,9 +528,18 @@ namespace ftk
             const V2I&                            prev,
             const std::shared_ptr<IDragDropData>& data);
 
+        //! The cursor position, in pixels from the top left of the window: the
+        //! coordinates widget geometry is in.
         V2I                            pos;
+        //! The previous cursor position, in the same coordinates; for files
+        //! dropped from outside the application, the same as pos.
         V2I                            prev;
+        //! The data being dragged.
         std::shared_ptr<IDragDropData> data;
+        //! Set by a widget, as it is sent the drag enter event, to be the drop
+        //! target: it is then sent the drag moves, the drop and a leave. For
+        //! files dropped from outside the application, set in the drop event to
+        //! stop the widgets further out being asked.
         bool                           accept = false;
     };
         

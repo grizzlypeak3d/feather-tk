@@ -34,14 +34,16 @@ namespace ftk
         //! entry up with when something happened is the whole point of it.
         std::chrono::system_clock::time_point time;
 
+        //! What logged the item, such as "ftk::FontSystem".
         std::string prefix;
+        //! The message.
         std::string message;
+        //! Whether the item is a message, a warning, or an error.
         LogType     type    = LogType::Message;
 
         bool operator == (const LogItem&) const = default;
     };
 
-    //! Get a log item label.
     //! What to include when a log item is formatted.
     enum class FTK_CORE_API_TYPE LogLabel
     {
@@ -57,6 +59,7 @@ namespace ftk
         Message
     };
 
+    //! Get a log item label: what the given label includes of it.
     FTK_CORE_API std::string getLabel(const LogItem&, LogLabel = LogLabel::Full);
         
     //! Log system.

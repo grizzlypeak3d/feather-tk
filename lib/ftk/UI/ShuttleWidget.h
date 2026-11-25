@@ -24,6 +24,7 @@ namespace ftk
     public:
         FTK_UI_API ~ShuttleWidget();
 
+        //! Create a new widget.
         FTK_UI_API static std::shared_ptr<ShuttleWidget> create(
             const std::shared_ptr<Context>&,
             const std::shared_ptr<IWidget>& parent = nullptr);
@@ -33,8 +34,15 @@ namespace ftk
         //! worth.
         FTK_UI_API int getModifiers() const;
 
+        //! Set the callback, called while the shuttle is dragged with the
+        //! number of notches it has moved since it was pressed, negative to the
+        //! left. A notch is a quarter of the widget's height.
         FTK_UI_API void setCallback(const std::function<void(int)>&);
+        //! Set the delta callback, called while the shuttle is dragged with the
+        //! number of notches it has moved since the last call.
         FTK_UI_API void setDeltaCallback(const std::function<void(int)>&);
+        //! Set the active callback, called with true when the shuttle is
+        //! pressed and false when it is released.
         FTK_UI_API void setActiveCallback(const std::function<void(bool)>&);
 
 

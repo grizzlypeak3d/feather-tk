@@ -36,7 +36,9 @@ namespace ftk
         //! \name Documents
         ///@{
 
+        //! Get the documents.
         FTK_UI_API const std::vector<std::shared_ptr<IDocument> >& getList() const;
+        //! Observe the documents.
         FTK_UI_API std::shared_ptr<ftk::IObservableList<std::shared_ptr<IDocument> > > observeList() const;
 
         ///@}
@@ -44,7 +46,9 @@ namespace ftk
         //! \name Add Documents
         ///@{
 
+        //! Add a document. It becomes the current document.
         FTK_UI_API void add(const std::shared_ptr<IDocument>&);
+        //! Observe the documents as they are added.
         FTK_UI_API std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeAdd() const;
 
         ///@}
@@ -52,9 +56,17 @@ namespace ftk
         //! \name Close Documents
         ///@{
 
+        //! Close the document at the given index; an index out of range is
+        //! ignored. Closing the current document makes the next one current, or
+        //! the last one when it was the last.
         FTK_UI_API void close(int);
+        //! Close all of the documents. This sends observeCloseAll(), not
+        //! observeClose() for each.
         FTK_UI_API void closeAll();
+        //! Observe the documents as close() closes them: each one is sent
+        //! before it is removed.
         FTK_UI_API std::shared_ptr<ftk::IObservable<std::weak_ptr<IDocument> > > observeClose() const;
+        //! Observe closeAll(): true is sent each time it is called.
         FTK_UI_API std::shared_ptr<ftk::IObservable<bool> > observeCloseAll() const;
 
         ///@}
@@ -62,9 +74,14 @@ namespace ftk
         //! \name Current Document
         ///@{
 
+        //! Get the current document, or null for none.
         FTK_UI_API std::shared_ptr<IDocument> getCurrent() const;
+        //! Get the index of the current document, or -1 for none. An index set
+        //! is clamped to the documents.
         FTK_UI_API int getCurrentIndex() const;
+        //! Observe the current document.
         FTK_UI_API std::shared_ptr<ftk::IObservable<std::shared_ptr<IDocument> > > observeCurrent() const;
+        //! Observe the index of the current document.
         FTK_UI_API std::shared_ptr<ftk::IObservable<int> > observeCurrentIndex() const;
         FTK_UI_API void setCurrentIndex(int);
 

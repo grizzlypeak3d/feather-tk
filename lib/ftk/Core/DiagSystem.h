@@ -25,6 +25,8 @@ namespace ftk
     //! says milliseconds.
     struct FTK_CORE_API_TYPE DiagFormat
     {
+        //! What a sample is divided by before it is formatted. It is only used
+        //! when the precision is zero or more.
         double divisor = 1.0;
 
         //! Decimal places. Below zero formats the sample as the integer it is.

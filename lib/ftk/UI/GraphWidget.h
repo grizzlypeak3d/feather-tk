@@ -14,12 +14,17 @@ namespace ftk
     //! \name Graph Widgets
     ///@{
 
-    //! One line on a graph: its colour, the format string for its readout,
+    //! One line on a graph: its color, the format string for its readout,
     //! and how the sample is turned into the number that format expects.
     struct FTK_UI_API_TYPE GraphLabel
     {
+        //! The color role the line is drawn in. It also names the line to
+        //! setSamples() and addSample().
         ColorRole colorRole = ColorRole::None;
+        //! The format string for the line's readout, with {0} for the latest
+        //! sample.
         std::string text;
+        //! How the sample is turned into the number the readout shows.
         DiagFormat format;
     };
 

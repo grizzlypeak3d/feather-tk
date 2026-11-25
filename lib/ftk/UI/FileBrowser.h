@@ -73,11 +73,18 @@ namespace ftk
     //! File browser options.
     struct FTK_UI_API_TYPE FileBrowserOptions
     {
+        //! How the directory is listed: the sort order, sequences and hidden
+        //! files.
         DirListOptions              dirList;
         FileBrowserThumbnails       thumbnails   = FileBrowserThumbnails::Medium;
         FileBrowserLayout           layout       = FileBrowserLayout::List;
+        //! Whether the side panel is shown, with the drives, shortcuts, recent
+        //! directories and settings.
         bool                        panel        = true;
+        //! Whether the path is shown as text to edit rather than as a button
+        //! for each directory.
         bool                        pathEditable = false;
+        //! Which sections of the side panel are open, by name.
         std::map<std::string, bool> bellows =
         {
             { "Drives",    true },
@@ -120,16 +127,19 @@ namespace ftk
         virtual void cancelRequests(const std::vector<uint64_t>&) = 0;
     };
 
-    //! File browser model.
     //! A group of file extensions offered as one choice, e.g. "Images".
     struct FTK_UI_API_TYPE FileBrowserExtGroup
     {
+        //! The name the group is offered under, e.g. "Images".
         std::string label;
+        //! The extensions in the group, e.g. ".png".
         std::vector<std::string> exts;
 
         bool operator == (const FileBrowserExtGroup&) const = default;
     };
 
+    //! File browser model: the current path and its history, the options and
+    //! the extensions.
     class FTK_UI_API_TYPE FileBrowserModel : public std::enable_shared_from_this<FileBrowserModel>
     {
     public:
@@ -393,12 +403,14 @@ namespace ftk
     //! File browser open options.
     struct FTK_UI_API_TYPE FileBrowserOpenOptions
     {
+        //! The title of the browser.
         std::string           title = "Open";
 
         //! The directory to open at. Empty stays wherever the browser was
         //! last left.
         std::filesystem::path path;
 
+        //! Whether a file is opened or saved, or a directory chosen.
         FileBrowserMode       mode = FileBrowserMode::Open;
 
         //! A suggested file name for saving.

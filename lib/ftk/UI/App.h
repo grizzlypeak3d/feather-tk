@@ -30,10 +30,17 @@ namespace ftk
     //! Monitor information.
     struct FTK_UI_API_TYPE MonitorInfo
     {
+        //! The monitor's name.
         std::string name;
+        //! The size of the monitor's current display mode.
         Size2I      size;
+        //! The refresh rate of the current display mode, in hertz; zero where
+        //! it is not known.
         int         refreshRate = 0;
+        //! The horizontal and vertical dots per inch. Not set in SDL3 builds,
+        //! where it is zero.
         V2F         dpi;
+        //! The monitor's area of the desktop, in screen coordinates.
         Box2I       bounds;
 
         bool operator == (const MonitorInfo&) const = default;
@@ -177,7 +184,10 @@ namespace ftk
         //! \name Color Style
         ///@{
 
+        //! Get the color style. Dark unless the -colorStyle command line option
+        //! or setColorStyle() says otherwise.
         FTK_UI_API ColorStyle getColorStyle() const;
+        //! Observe the color style.
         FTK_UI_API std::shared_ptr<IObservable<ColorStyle> > observeColorStyle() const;
         FTK_UI_API void setColorStyle(ColorStyle);
 
@@ -193,6 +203,7 @@ namespace ftk
         //! what is kept with the settings, and where the GPU renderer
         //! cannot draw OpenGL does whatever was asked.
         FTK_UI_API Renderer getRenderer() const;
+        //! Observe the renderer that is set.
         FTK_UI_API std::shared_ptr<IObservable<Renderer> > observeRenderer() const;
 
         //! Set the renderer. It is chosen as the application starts,
@@ -207,12 +218,17 @@ namespace ftk
         //! \name Display Scale
         ///@{
 
+        //! Get the display scale found at startup: the first display's, or the
+        //! -displayScale command line option's, and never less than one.
         FTK_UI_API float getDefaultDisplayScale() const;
 
         //! Get the display scale that setDisplayScale(0) gives: the window's
         //! once there is one, else the display's.
         FTK_UI_API float getAutoDisplayScale() const;
+        //! Get the display scale. A window on a display of another scale can
+        //! draw at that one instead; see getWindowDisplayScale().
         FTK_UI_API float getDisplayScale() const;
+        //! Observe the display scale.
         FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
         //! Set the display scale. Zero asks for the display's scale,
         //! corrected by the window's once there is one; a positive value
@@ -236,7 +252,9 @@ namespace ftk
         //! \name Tooltips
         ///@{
 
+        //! Get whether tooltips are shown. On by default, for every window.
         FTK_UI_API bool areTooltipsEnabled() const;
+        //! Observe whether tooltips are shown.
         FTK_UI_API std::shared_ptr<IObservable<bool> > observeTooltipsEnabled() const;
         FTK_UI_API void setTooltipsEnabled(bool);
 

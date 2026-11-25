@@ -72,7 +72,10 @@ namespace ftk
         //! actually is -- there is no need to touch the actions themselves.
         ///@{
 
+        //! Get the index of the checked action, or -1 for none. Only a radio
+        //! group keeps it as the actions are picked.
         FTK_UI_API int getChecked() const;
+        //! Observe the index of the checked action.
         FTK_UI_API std::shared_ptr<IObservable<int> > observeChecked() const;
         FTK_UI_API void setChecked(int);
 

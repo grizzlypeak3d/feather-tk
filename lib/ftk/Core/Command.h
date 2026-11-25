@@ -22,7 +22,10 @@ namespace ftk
     public:
         FTK_CORE_API virtual ~ICommand() = 0;
 
+        //! Execute the command. A command stack calls this when the command is
+        //! pushed, and again when it is redone.
         FTK_CORE_API virtual void exec() = 0;
+        //! Undo the command.
         FTK_CORE_API virtual void undo() = 0;
     };
 

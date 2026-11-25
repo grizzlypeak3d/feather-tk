@@ -76,7 +76,6 @@ namespace ftk
         //! is between columns and the vertical spacing is between rows.
         FTK_UI_API void setSpacingRole(SizeRole horizontal, SizeRole vertical);
 
-        //! Remove all children from the layout.
         //! Get the minimum width of a column, in pixels.
         FTK_UI_API int getColumnMinWidth(int column) const;
 
@@ -85,6 +84,7 @@ namespace ftk
         //! default, is no minimum.
         FTK_UI_API void setColumnMinWidth(int column, int);
 
+        //! Remove the children, and the background roles set for single rows.
         FTK_UI_API void clear();
 
         FTK_UI_API Size2I getSizeHint() const override;

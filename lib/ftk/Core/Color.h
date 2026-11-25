@@ -44,6 +44,7 @@ namespace ftk
         constexpr const T* data() const;
         constexpr T* data();
 
+        //! The luminance.
         T l = T(0);
     };
 
@@ -62,7 +63,9 @@ namespace ftk
         constexpr const T* data() const;
         constexpr T* data();
 
+        //! The luminance.
         T l = T(0);
+        //! The alpha.
         T a = T(0);
     };
 
@@ -80,8 +83,11 @@ namespace ftk
         constexpr const T* data() const;
         constexpr T* data();
 
+        //! The red channel.
         T r = T(0);
+        //! The green channel.
         T g = T(0);
+        //! The blue channel.
         T b = T(0);
     };
 
@@ -100,9 +106,13 @@ namespace ftk
         constexpr const T* data() const;
         constexpr T* data();
 
+        //! The red channel.
         T r = T(0);
+        //! The green channel.
         T g = T(0);
+        //! The blue channel.
         T b = T(0);
+        //! The alpha.
         T a = T(0);
     };
 

@@ -34,7 +34,9 @@ namespace ftk
         //! \name Scroll Size
         ///@{
 
+        //! Get the scroll size, the length of the scrolled contents in pixels.
         FTK_UI_API int getScrollSize() const;
+        //! Set the scroll size.
         FTK_UI_API void setScrollSize(int);
         
         ///@}
@@ -42,8 +44,13 @@ namespace ftk
         //! \name Scroll Position
         ///@{
 
+        //! Get the scroll position, in pixels.
         FTK_UI_API int getScrollPos() const;
+        //! Set the scroll position. It is not clamped, and the scroll position
+        //! callback is not called.
         FTK_UI_API void setScrollPos(int);
+        //! Set a callback for when the scroll position is changed by dragging
+        //! the handle or clicking the bar.
         FTK_UI_API void setScrollPosCallback(const std::function<void(int)>&);
         
         ///@}

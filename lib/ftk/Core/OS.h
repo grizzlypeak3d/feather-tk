@@ -18,10 +18,15 @@ namespace ftk
     //! Operating system information.
     struct FTK_CORE_API_TYPE SysInfo
     {
+        //! The operating system name and version.
         std::string name;
+        //! The CPU name.
         std::string cpu;
+        //! The number of hardware threads, or zero when it is not known.
         size_t      cores = 0;
+        //! The amount of RAM, in bytes.
         size_t      ram   = 0;
+        //! The amount of RAM in gigabytes (1024^3 bytes), rounded up.
         size_t      ramGB = 0;
 
         //! The encoding the platform converts narrow strings through: the
@@ -71,8 +76,6 @@ namespace ftk
     //! Delete an environment variable. Throws std::exception on failure.
     FTK_CORE_API bool delEnv(const std::string& name);
 
-    //! Open the given URL in the default browser. Throws std::exception on
-    //! failure.
     //! Get the path of the running executable.
     //!
     //! Not argv[0], which is however the program was invoked and need not be

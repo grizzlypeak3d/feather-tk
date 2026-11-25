@@ -131,7 +131,12 @@ namespace ftk
         ImageMirror() = default;
         constexpr ImageMirror(bool x, bool y);
 
+        //! Whether the image is mirrored horizontally: each row is stored right
+        //! to left.
         bool x = false;
+        //! Whether the image is mirrored vertically: the rows are stored top
+        //! down. By default they are stored bottom up, the first row in memory
+        //! being the bottom of the image.
         bool y = false;
 
         constexpr bool operator == (const ImageMirror&) const = default;
@@ -146,8 +151,13 @@ namespace ftk
             int                alignment = 1,
             Endian             endian    = getEndian());
 
+        //! How the data is mirrored.
         ImageMirror mirror;
+        //! The row alignment, in bytes: each row of data is padded to a multiple
+        //! of it. The planar YUV types are not padded.
         int         alignment = 1;
+        //! The byte order of samples larger than a byte. The default is the
+        //! machine's own.
         Endian      endian    = getEndian();
 
         constexpr bool operator == (const ImageLayout&) const = default;
@@ -160,17 +170,25 @@ namespace ftk
         ImageInfo(const Size2I&, ImageType);
         ImageInfo(int w, int h, ImageType);
 
+        //! The image name, such as the name of the layer it was read from.
         std::string     name             = "Default";
+        //! The size, in pixels.
         Size2I          size;
+        //! The pixel type. The information is not valid while it is None.
         ImageType       type             = ImageType::None;
+        //! The pixel aspect ratio: the width of a pixel over its height.
         float           pixelAspectRatio = 1.F;
+        //! The range the samples use. The renderers expand legal range to full,
+        //! unless ImageOptions::videoLevels says otherwise.
         VideoLevels     videoLevels      = VideoLevels::FullRange;
+        //! The coefficients the YUV types are converted to RGB with.
         YUVCoefficients yuvCoefficients  = YUVCoefficients::REC709;
         //! The bits in each sample when fewer than the type holds: 10 or
         //! 12-bit video kept in 16-bit words with its value in the low
         //! bits, as decoders hand it over. Zero is the type's own depth.
         //! The renderers scale such samples up; see getSampleScale().
         int             depth            = 0;
+        //! The data layout: mirroring, row alignment, and byte order.
         ImageLayout     layout;
 
         //! Is the information valid?

@@ -48,6 +48,7 @@ namespace ftk
     //! Line drawing options.
     struct FTK_CORE_API_TYPE LineOptions
     {
+        //! The line width, in pixels.
         float width = 1.F;
 
         bool operator == (const LineOptions&) const = default;
@@ -113,7 +114,9 @@ namespace ftk
     //! Image filters.
     struct FTK_CORE_API_TYPE ImageFilters
     {
+        //! The filter for drawing an image smaller than it is.
         ImageFilter minify  = ImageFilter::Linear;
+        //! The filter for drawing an image larger than it is.
         ImageFilter magnify = ImageFilter::Linear;
 
         bool operator == (const ImageFilters&) const = default;
@@ -122,10 +125,19 @@ namespace ftk
     //! Image options.
     struct FTK_CORE_API_TYPE ImageOptions
     {
+        //! Which channels are shown: the color, or one channel alone.
         ChannelDisplay   channelDisplay = ChannelDisplay::Color;
+        //! The video levels the image is taken to have. FromFile uses the
+        //! image's own, ImageInfo::videoLevels.
         InputVideoLevels videoLevels    = InputVideoLevels::FromFile;
+        //! How the image is blended with what is under it. None draws it opaque.
         AlphaBlend       alphaBlend     = AlphaBlend::Straight;
+        //! The filters for drawing the image smaller or larger than it is.
         ImageFilters     imageFilters;
+        //! Whether the image's textures are kept in the texture cache, so that
+        //! drawing the same image again does not copy it again. Off, they come
+        //! from a pool shared by images of the same size and type, and the image
+        //! is copied each time it is drawn unless reuse is on.
         bool             cache          = true;
 
         //! Whether the same image drawn again, with the cache off, is

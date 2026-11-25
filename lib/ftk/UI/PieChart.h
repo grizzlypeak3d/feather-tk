@@ -19,7 +19,10 @@ namespace ftk
             float                percentage,
             const Color4F& color);
 
+        //! The size of the slice, as a percentage of the whole circle. Slices
+        //! follow each other clockwise from the top.
         float         percentage = 0.F;
+        //! The color of the slice.
         Color4F color;
 
         bool operator == (const PieChartData&) const = default;
@@ -49,7 +52,7 @@ namespace ftk
         //! Set the pie chart data.
         FTK_UI_API void setData(const std::vector<PieChartData>&);
 
-        //! Set the size multiplier.
+        //! Get the size multiplier.
         FTK_UI_API int getSizeMult() const;
 
         //! Set the size multiplier.

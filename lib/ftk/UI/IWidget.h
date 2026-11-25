@@ -38,9 +38,13 @@ namespace ftk
         //! Object
         ///@{
 
+        //! Get the object name. Widgets are given their class name when they
+        //! are made, e.g. "ftk::PushButton".
         const std::string& getObjectName() const;
         FTK_UI_API void setObjectName(const std::string&);
 
+        //! Get the object path: the object names of the widget's parents and
+        //! the widget, joined by "/".
         FTK_UI_API std::string getObjectPath() const;
 
         bool hasProperty(const std::string& key) const;

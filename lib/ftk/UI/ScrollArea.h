@@ -47,7 +47,9 @@ namespace ftk
         //! \name Scroll Type
         ///@{
 
+        //! Get the directions the contents scroll in.
         FTK_UI_API ScrollType getScrollType() const;
+        //! Set the directions the contents scroll in.
         FTK_UI_API void setScrollType(ScrollType);
         
         ///@}
@@ -55,7 +57,9 @@ namespace ftk
         //! \name Scroll Size
         ///@{
 
+        //! Get the size of the scrolled contents.
         FTK_UI_API const Size2I& getScrollSize() const;
+        //! Set a callback for when the size of the scrolled contents changes.
         FTK_UI_API void setScrollSizeCallback(const std::function<void(const Size2I&)>&);
 
         ///@}
@@ -63,8 +67,14 @@ namespace ftk
         //! \name Scroll Position
         ///@{
 
+        //! Get the scroll position: how far the contents are scrolled, in
+        //! pixels.
         FTK_UI_API const V2I& getScrollPos() const;
+        //! Set the scroll position. With clamp, it is kept within the
+        //! scrollable range.
         FTK_UI_API void setScrollPos(const V2I&, bool clamp = true);
+        //! Set a callback for when the scroll position changes, including from
+        //! setScrollPos() and scrollTo().
         FTK_UI_API void setScrollPosCallback(const std::function<void(const V2I&)>&);
 
         //! Scroll to make the given box visible.

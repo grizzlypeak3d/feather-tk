@@ -23,9 +23,13 @@ namespace ftk
             SizeRole right,
             SizeRole bottom);
 
+        //! The left margin, as a size role.
         SizeRole left   = SizeRole::None;
+        //! The top margin, as a size role.
         SizeRole top    = SizeRole::None;
+        //! The right margin, as a size role.
         SizeRole right  = SizeRole::None;
+        //! The bottom margin, as a size role.
         SizeRole bottom = SizeRole::None;
 
         bool operator == (const RowMargins&) const = default;

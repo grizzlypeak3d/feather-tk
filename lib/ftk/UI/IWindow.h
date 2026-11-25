@@ -102,6 +102,7 @@ namespace ftk
         //! Window Title
         ///@{
 
+        //! Get the window title.
         FTK_UI_API const std::string& getTitle() const;
         FTK_UI_API virtual void setTitle(const std::string&);
 
@@ -110,9 +111,12 @@ namespace ftk
         //! Window Size
         ///@{
 
+        //! Get the window size, in the units the window system sizes windows
+        //! in, which are not pixels everywhere; see getPixelDensity().
         FTK_UI_API const Size2I& getSize() const;
         FTK_UI_API virtual void setSize(const Size2I&);
 
+        //! Get the minimum window size, in the same units.
         FTK_UI_API Size2I getMinSize() const;
         FTK_UI_API virtual void setMinSize(const Size2I&);
 
@@ -121,7 +125,10 @@ namespace ftk
         //! Fullscreen
         ///@{
 
+        //! Get whether the window has been set to full screen with
+        //! setFullScreen().
         FTK_UI_API bool isFullScreen() const;
+        //! Observe whether the window has been set to full screen.
         FTK_UI_API std::shared_ptr<IObservable<bool> > observeFullScreen() const;
         FTK_UI_API virtual void setFullScreen(bool);
 
@@ -130,7 +137,9 @@ namespace ftk
         //! Float On Top
         ///@{
 
+        //! Get whether the window is set to float on top of the other windows.
         FTK_UI_API bool isFloatOnTop() const;
+        //! Observe whether the window floats on top.
         FTK_UI_API std::shared_ptr<IObservable<bool> > observeFloatOnTop() const;
         FTK_UI_API virtual void setFloatOnTop(bool);
 
@@ -143,9 +152,13 @@ namespace ftk
         //! Buffer
         ///@{
 
+        //! Get the size of the window's buffer, in pixels: what the widgets are
+        //! laid out and drawn in.
         FTK_UI_API const Size2I& getBufferSize() const;
 
+        //! Get the type of the offscreen buffer the window is drawn into.
         FTK_UI_API WindowBufferType getBufferType() const;
+        //! Observe the offscreen buffer type.
         FTK_UI_API std::shared_ptr<IObservable<WindowBufferType> > observeBufferType() const;
         FTK_UI_API void setBufferType(WindowBufferType);
 
@@ -163,10 +176,15 @@ namespace ftk
         //! Display Scale
         ///@{
 
+        //! Get the display scale the window's widgets are sized and drawn at.
+        //! The application sets it; see App::getWindowDisplayScale().
         FTK_UI_API float getDisplayScale() const;
+        //! Observe the display scale.
         FTK_UI_API std::shared_ptr<IObservable<float> > observeDisplayScale() const;
         FTK_UI_API void setDisplayScale(float);
 
+        //! Get the ratio of the buffer size to the window size, or zero before
+        //! the window has a size.
         FTK_UI_API float getContentScale() const;
 
         ///@}
@@ -174,9 +192,17 @@ namespace ftk
         //! Key Focus and Text Input
         ///@{
 
+        //! Get the widget with the key focus, or null for none.
         FTK_UI_API std::shared_ptr<IWidget> getKeyFocus() const;
         FTK_UI_API void setKeyFocus(const std::shared_ptr<IWidget>&);
+        //! Get the widget after the given one in the order Tab moves the key
+        //! focus in: the enabled widgets that accept the focus, in the window's
+        //! last child, the one on top. It wraps around, gives the first widget
+        //! for one not in the order, and null when the order is empty.
         FTK_UI_API std::shared_ptr<IWidget> getNextKeyFocus(const std::shared_ptr<IWidget>&);
+        //! Get the widget before the given one in the key focus order; see
+        //! getNextKeyFocus(). It gives the last widget for one not in the
+        //! order.
         FTK_UI_API std::shared_ptr<IWidget> getPrevKeyFocus(const std::shared_ptr<IWidget>&);
 
         //! Get whether the key focus is shown. The focus follows every
@@ -215,6 +241,7 @@ namespace ftk
         //! Tooltips
         ///@{
 
+        //! Get whether tooltips are shown in the window.
         FTK_UI_API bool getTooltipsEnabled() const;
         FTK_UI_API void setTooltipsEnabled(bool);
 
@@ -256,11 +283,11 @@ namespace ftk
         //! not fail; it passes, having checked nothing.
         FTK_UI_API void layout(const Size2I&);
 
-        //! Move the cursor there, press, release.
         //! Move the cursor to a position without pressing anything,
         //! for driving hover-dependent behavior from tests.
         FTK_UI_API void hover(const V2I& pos);
 
+        //! Move the cursor there, then press and release a mouse button.
         FTK_UI_API void click(
             const V2I&,
             MouseButton = MouseButton::Left,

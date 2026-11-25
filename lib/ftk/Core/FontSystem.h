@@ -39,7 +39,11 @@ namespace ftk
         FontInfo() = default;
         FontInfo(const std::string&, int size);
 
+        //! The font name: a built-in font (see getDefaultFont()) or one added to
+        //! the font system. A name the font system does not have is drawn with
+        //! the default regular font.
         std::string name = getDefaultFont(FontType::Regular);
+        //! The font size, in pixels.
         int         size = 12;
 
         bool operator == (const FontInfo&) const = default;
@@ -49,8 +53,12 @@ namespace ftk
     //! Font metrics.
     struct FTK_CORE_API_TYPE FontMetrics
     {
+        //! The distance from the baseline up to the top of the font, in pixels.
         int ascender   = 0;
+        //! The distance from the baseline to the bottom of the font, in pixels.
+        //! It is below the baseline, so it is usually negative.
         int descender  = 0;
+        //! The distance from one baseline to the next, in pixels.
         int lineHeight = 0;
     };
 
@@ -60,7 +68,9 @@ namespace ftk
         GlyphInfo() = default;
         GlyphInfo(uint32_t code, const FontInfo&);
 
+        //! The Unicode code point.
         uint32_t code     = 0;
+        //! The font.
         FontInfo fontInfo;
 
         bool operator == (const GlyphInfo&) const = default;
@@ -70,11 +80,22 @@ namespace ftk
     //! Font glyph.
     struct FTK_CORE_API_TYPE Glyph
     {
+        //! The code point and font the glyph is for.
         GlyphInfo              info;
+        //! The rendered glyph: one channel of 8-bit coverage. Null when no font
+        //! has the glyph or it cannot be rendered.
         std::shared_ptr<Image> image;
+        //! Where the top left of the image is from the pen position on the
+        //! baseline, in pixels, with y up.
         V2I                    offset;
+        //! How far the pen moves on to the next glyph, in pixels.
         int                    advance  = 0;
+        //! The change hinting made to the left side bearing, in 64ths of a pixel.
+        //! Text layout compares it with the previous glyph's rsbDelta and moves
+        //! the glyph a pixel when they differ by more than about half a pixel.
         int32_t                lsbDelta = 0;
+        //! The change hinting made to the right side bearing, in 64ths of a
+        //! pixel.
         int32_t                rsbDelta = 0;
     };
 
@@ -101,10 +122,16 @@ namespace ftk
         //! \name Fonts
         ///@{
 
+        //! Get the names of the fonts.
         FTK_CORE_API std::vector<std::string> getFonts() const;
+        //! Observe the names of the fonts.
         FTK_CORE_API std::shared_ptr<IObservableList<std::string> > observeFonts() const;
+        //! Add a font from a file, under the given name.
         FTK_CORE_API bool addFont(const std::string& name, const std::string& fileName);
+        //! Add a font from data in memory, which is copied, under the given name.
+        //! Returns whether the font could be read.
         FTK_CORE_API bool addFont(const std::string& name, const uint8_t*, size_t);
+        //! Remove a font.
         FTK_CORE_API void removeFont(const std::string&);
 
         //! Register an already-added font (see addFont) as a fallback for
@@ -118,9 +145,14 @@ namespace ftk
         //! \name Information
         ///@{
 
+        //! Get the number of glyphs in the cache. It is updated once a second.
         FTK_CORE_API size_t getGlyphCacheSize() const;
+        //! Get how full the glyph cache is, as a percentage of its maximum. It is
+        //! updated once a second.
         FTK_CORE_API float getGlyphCachePercentage() const;
+        //! Observe the number of glyphs in the cache.
         FTK_CORE_API std::shared_ptr<IObservable<size_t> > observeGlyphCacheSize() const;
+        //! Observe how full the glyph cache is, as a percentage of its maximum.
         FTK_CORE_API std::shared_ptr<IObservable<float> > observeGlyphCachePercentage() const;
 
         ///@}

@@ -20,7 +20,11 @@ namespace ftk
         FTK_UI_API LineEditSelection(int);
         FTK_UI_API LineEditSelection(int, int);
 
+        //! The end the selection started from, as a byte offset into the text,
+        //! or -1 for none.
         int first = -1;
+        //! The end the selection extends to, as a byte offset into the text, or
+        //! -1 for none.
         int second = -1;
 
         //! Get whether the selection is valid.
@@ -37,7 +41,6 @@ namespace ftk
         
     //! Line edit model.
     //! 
-    //! \todo Implement undo/redo.
     class FTK_UI_API_TYPE LineEditModel : public std::enable_shared_from_this<LineEditModel>
     {
     protected:
@@ -58,17 +61,25 @@ namespace ftk
         //! \name Text
         ///@{
 
+        //! Get the text.
         FTK_UI_API const std::string& getText() const;
+        //! Observe the text.
         FTK_UI_API std::shared_ptr<IObservable<std::string> > observeText() const;
 
         //! Set the text. Setting the text will also set the cursor to the
         //! beginning and clear the selection.
         FTK_UI_API void setText(const std::string&);
 
+        //! Clear the text. Like setting the text, this also clears the undo
+        //! history.
         FTK_UI_API void clearText();
 
+        //! Get whether the text is read only. Read only text can still be
+        //! selected and copied, but not edited.
         FTK_UI_API bool isReadOnly() const;
+        //! Observe whether the text is read only.
         FTK_UI_API std::shared_ptr<IObservable<bool> > observeReadOnly() const;
+        //! Set whether the text is read only.
         FTK_UI_API void setReadOnly(bool);
 
         ///@}
@@ -76,7 +87,9 @@ namespace ftk
         //! \name Cursor
         ///@{
 
+        //! Get the cursor position, as a byte offset into the text.
         FTK_UI_API int getCursor() const;
+        //! Observe the cursor position.
         FTK_UI_API std::shared_ptr<IObservable<int> > observeCursor() const;
 
         //! Set the cursor. Setting the cursor clears the selection.
@@ -87,10 +100,15 @@ namespace ftk
         //! \name Selection
         ///@{
 
+        //! Get the selection.
         FTK_UI_API const LineEditSelection& getSelection() const;
+        //! Observe the selection.
         FTK_UI_API std::shared_ptr<IObservable<LineEditSelection> > observeSelection() const;
+        //! Set the selection. Its ends are clamped to the text.
         FTK_UI_API void setSelection(const LineEditSelection&);
+        //! Select all of the text.
         FTK_UI_API void selectAll();
+        //! Clear the selection.
         FTK_UI_API void clearSelection();
 
         ///@}
@@ -98,7 +116,10 @@ namespace ftk
         //! \name Undo
         ///@{
 
+        //! Undo the last edit. Nothing is done while the text is read only.
         FTK_UI_API void undo();
+        //! Redo the last edit that was undone. Nothing is done while the text
+        //! is read only.
         FTK_UI_API void redo();
 
         //! Observe whether there is a command to undo.
@@ -112,8 +133,14 @@ namespace ftk
         //! \name Clipboard
         ///@{
 
+        //! Copy the selection to the clipboard and remove it. Nothing is done
+        //! while the text is read only.
         FTK_UI_API void cut();
+        //! Copy the selection to the clipboard.
         FTK_UI_API void copy();
+        //! Paste the clipboard's text over the selection, or at the cursor.
+        //! Text that does not match the regular expression is not pasted, and
+        //! nothing is done while the text is read only.
         FTK_UI_API void paste();
 
         ///@}

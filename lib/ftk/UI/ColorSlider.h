@@ -86,8 +86,13 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, which is kept within the range.
         FTK_UI_API int getValue() const;
+        //! Set the value. A value outside the range is clamped to it.
         FTK_UI_API void setValue(int);
+        //! Set the callback, called with the value whenever it changes,
+        //! including from the edit, on every move while the slider is dragged,
+        //! from setValue(), and from other widgets that share the model.
         FTK_UI_API void setCallback(const std::function<void(int)>&);
 
         //! Set the value callback with a flag for whether the slider is pressed.
@@ -98,8 +103,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within.
         FTK_UI_API const RangeI& getRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeI&);
+        //! Set the range from its minimum and maximum.
         FTK_UI_API void setRange(int, int);
 
         ///@}
@@ -182,8 +190,13 @@ namespace ftk
         //! \name Value
         ///@{
 
+        //! Get the value, which is kept within the range.
         FTK_UI_API float getValue() const;
+        //! Set the value. A value outside the range is clamped to it.
         FTK_UI_API void setValue(float);
+        //! Set the callback, called with the value whenever it changes,
+        //! including from the edit, on every move while the slider is dragged,
+        //! from setValue(), and from other widgets that share the model.
         FTK_UI_API void setCallback(const std::function<void(float)>&);
 
         //! Set the value callback with a flag for whether the slider is pressed.
@@ -194,8 +207,11 @@ namespace ftk
         //! \name Range
         ///@{
 
+        //! Get the range the value is kept within.
         FTK_UI_API const RangeF& getRange() const;
+        //! Set the range. The value is clamped to the new range.
         FTK_UI_API void setRange(const RangeF&);
+        //! Set the range from its minimum and maximum.
         FTK_UI_API void setRange(float, float);
 
         ///@}
