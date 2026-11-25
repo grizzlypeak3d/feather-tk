@@ -6,6 +6,12 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FontSystem.h>
+
+#include <ftk_resource/NotoMono-Regular.h>
+
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
 #include <ftk/Core/Format.h>
 
 namespace ftk
@@ -98,6 +104,33 @@ namespace ftk
             {
                 auto fontSystem = _context->getSystem<FontSystem>();
                 FTK_CHECK(!fontSystem->addFont("", nullptr, 0));
+            }
+            {
+                // Added from memory and from a file, added again under the
+                // same name, and removed: each leaves the name once in the
+                // list, and nothing reads a face whose data is gone.
+                auto fontSystem = _context->getSystem<FontSystem>();
+                const auto& data = ftk_resource::NotoMono_Regular;
+                FTK_CHECK(fontSystem->addFont("TestMono", data.data(), data.size()));
+                FTK_CHECK(fontSystem->addFont("TestMono", data.data(), data.size()));
+                const auto fonts = fontSystem->getFonts();
+                FTK_CHECK(1 == std::count(fonts.begin(), fonts.end(), "TestMono"));
+                const FontInfo info("TestMono", 16);
+                FTK_CHECK(fontSystem->getSize("Mono", info).w > 0);
+                fontSystem->removeFont("TestMono");
+                const auto removed = fontSystem->getFonts();
+                FTK_CHECK(0 == std::count(removed.begin(), removed.end(), "TestMono"));
+                FTK_CHECK(fontSystem->getSize("Mono", info).w > 0);
+
+                const std::filesystem::path path =
+                    std::filesystem::temp_directory_path() / "ftk-FontSystemTest.ttf";
+                {
+                    std::ofstream file(path, std::ios::binary);
+                    file.write(reinterpret_cast<const char*>(data.data()), data.size());
+                }
+                FTK_CHECK(fontSystem->addFont("TestMonoFile", path.string()));
+                fontSystem->removeFont("TestMonoFile");
+                std::filesystem::remove(path);
             }
         }
     }

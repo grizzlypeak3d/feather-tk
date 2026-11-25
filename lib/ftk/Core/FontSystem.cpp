@@ -231,7 +231,7 @@ namespace ftk
             auto io = FileIO::create(fileName, FileMode::Read);
             std::vector<uint8_t> data(io->getSize());
             io->read(data.data(), io->getSize());
-            addFont(name, data.data(), data.size());
+            out = addFont(name, data.data(), data.size());
         }
         catch (const std::exception&)
         {}
@@ -241,6 +241,17 @@ namespace ftk
     bool FontSystem::addFont(const std::string& name, const uint8_t* data, size_t size)
     {
         FTK_P();
+        // A font of the same name is replaced, face and all: the new data
+        // would otherwise be copied over the memory the old face reads.
+        bool exists = false;
+        {
+            std::unique_lock<std::mutex> lock(p.mutex);
+            exists = p.fontData.count(name) > 0;
+        }
+        if (exists)
+        {
+            removeFont(name);
+        }
         bool out = false;
         {
             std::unique_lock<std::mutex> lock(p.mutex);
@@ -265,6 +276,14 @@ namespace ftk
         FTK_P();
         {
             std::unique_lock<std::mutex> lock(p.mutex);
+            // The face first: it reads the font data in place, so it does
+            // not outlive it. The glyphs drawn with it go too.
+            if (auto i = p.faces.find(name); i != p.faces.end())
+            {
+                FT_Done_Face(i->second);
+                p.faces.erase(i);
+                p.glyphCache.clear();
+            }
             if (auto i = p.fontData.find(name); i != p.fontData.end())
             {
                 p.fontData.erase(i);
