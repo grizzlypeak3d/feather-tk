@@ -187,7 +187,8 @@ namespace ftk
                 .value("YUV_422P_U16", ImageType::YUV_422P_U16)
                 .value("YUV_444P_U16", ImageType::YUV_444P_U16)
                 .value("YUV_420SP_U8", ImageType::YUV_420SP_U8)
-                .value("YUV_420SP_U16", ImageType::YUV_420SP_U16);
+                .value("YUV_420SP_U16", ImageType::YUV_420SP_U16)
+                .value("RGB_F16_P", ImageType::RGB_F16_P);
             FTK_ENUM_BIND(m, ImageType);
             // A viewport's color buffer is observed as one.
             observable<ImageType>(m, "ImageType");
