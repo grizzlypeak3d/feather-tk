@@ -5,6 +5,8 @@
 
 #include <ftk/Core/Math.h>
 
+#include <algorithm>
+
 namespace ftk
 {
     Box3F bbox(const TriMesh3F& mesh)
@@ -104,10 +106,15 @@ namespace ftk
     {
         TriMesh2F out;
 
+        // At least a pixel each way: a size of zero stepped nowhere, and the
+        // loops below never ended.
+        const int cw = std::max(1, checkerSize.w);
+        const int ch = std::max(1, checkerSize.h);
+
         // X points.
         std::vector<int> xs;
         int x = box.min.x;
-        for (; x < box.max.x; x += checkerSize.w)
+        for (; x < box.max.x; x += cw)
         {
             xs.push_back(x);
         }
@@ -119,7 +126,7 @@ namespace ftk
         // Y points.
         std::vector<int> ys;
         int y = box.min.y;
-        for (; y < box.max.y; y += checkerSize.h)
+        for (; y < box.max.y; y += ch)
         {
             ys.push_back(y);
         }

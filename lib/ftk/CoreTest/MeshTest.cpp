@@ -26,6 +26,29 @@ namespace ftk
         void MeshTest::run()
         {
             _members();
+            _checkers();
+        }
+
+        void MeshTest::_checkers()
+        {
+            // Two by two checkers of ten pixels: four quads.
+            const TriMesh2F mesh = checkers(
+                Box2I(0, 0, 20, 20),
+                Color4F(0.F, 0.F, 0.F),
+                Color4F(1.F, 1.F, 1.F),
+                Size2I(10, 10));
+            FTK_ASSERT(8 == mesh.triangles.size());
+
+            // A size of zero, or less, is a pixel rather than a hang.
+            for (const auto& size : { Size2I(0, 0), Size2I(-5, 10), Size2I(10, 0) })
+            {
+                const TriMesh2F m = checkers(
+                    Box2I(0, 0, 4, 4),
+                    Color4F(0.F, 0.F, 0.F),
+                    Color4F(1.F, 1.F, 1.F),
+                    size);
+                FTK_ASSERT(!m.triangles.empty());
+            }
         }
         
         void MeshTest::_members()
