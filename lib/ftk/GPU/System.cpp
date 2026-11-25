@@ -110,6 +110,20 @@ namespace ftk
                 {
                     throw std::runtime_error(Format("Cannot create a GPU device: {0}").arg(SDL_GetError()));
                 }
+                // FTK_GPU_FRAMES_IN_FLIGHT sets how many frames may be
+                // queued ahead of the display, SDL's default being two:
+                // for finding out whether uneven playback on a slow GPU
+                // comes from frames waiting behind others in the queue.
+                if (const char* env = std::getenv("FTK_GPU_FRAMES_IN_FLIGHT"))
+                {
+                    const int frames = std::atoi(env);
+                    if (frames >= 1 && frames <= 3 &&
+                        !SDL_SetGPUAllowedFramesInFlight(p.device, static_cast<Uint32>(frames)))
+                    {
+                        std::fprintf(stderr, "FTK_GPU_FRAMES_IN_FLIGHT: %s\n", SDL_GetError());
+                    }
+                }
+
                 // A device that takes SPIR-V and a build with nothing to
                 // make it with: glslang was not found when this was built.
                 // Said now, while there is another renderer to draw with,

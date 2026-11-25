@@ -37,6 +37,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <string>
+#include <vector>
 #include <functional>
 #include <map>
 #include <stdexcept>
@@ -986,7 +990,16 @@ namespace ftk
                 x += h * 2.F;
             }
         }
+        // FTK_GPU_TIMING prints, each second, the time between the frames
+        // the window presented, and the longest wait in Render::end() (the
+        // frame before last finishing) and in acquiring the swapchain: for
+        // telling uneven presentation from waiting, where playback judders
+        // on one machine and not another.
+        static const bool timing = gpu::getEnvFlag("FTK_GPU_TIMING");
+        const auto endStart = std::chrono::steady_clock::now();
         render->end();
+        const auto endDone = std::chrono::steady_clock::now();
+        auto acquireDone = endDone;
 
         // To the window, which an offscreen one does not have. The
         // swapchain's texture is the window's for this frame only, and
@@ -998,9 +1011,10 @@ namespace ftk
             SDL_GPUTexture* swapchain = nullptr;
             Uint32 w = 0;
             Uint32 h = 0;
-            if (cmd &&
-                SDL_WaitAndAcquireGPUSwapchainTexture(cmd, p.window->getSDLWindow(), &swapchain, &w, &h) &&
-                swapchain)
+            const bool acquired = cmd &&
+                SDL_WaitAndAcquireGPUSwapchainTexture(cmd, p.window->getSDLWindow(), &swapchain, &w, &h);
+            acquireDone = std::chrono::steady_clock::now();
+            if (acquired && swapchain)
             {
                 // The white level moves with the display the window is on
                 // and with its brightness, so it is asked for each frame.
@@ -1017,6 +1031,49 @@ namespace ftk
             if (cmd)
             {
                 SDL_SubmitGPUCommandBuffer(cmd);
+            }
+        }
+
+        if (timing)
+        {
+            struct Timing
+            {
+                std::chrono::steady_clock::time_point last;
+                std::chrono::steady_clock::time_point second;
+                std::vector<int> intervals;
+                double endMax = 0.0;
+                double acquireMax = 0.0;
+            };
+            static Timing t;
+            const auto now = std::chrono::steady_clock::now();
+            if (t.last.time_since_epoch().count() > 0)
+            {
+                t.intervals.push_back(static_cast<int>(std::lround(
+                    std::chrono::duration<double, std::milli>(now - t.last).count())));
+            }
+            else
+            {
+                t.second = now;
+            }
+            t.last = now;
+            t.endMax = std::max(t.endMax,
+                std::chrono::duration<double, std::milli>(endDone - endStart).count());
+            t.acquireMax = std::max(t.acquireMax,
+                std::chrono::duration<double, std::milli>(acquireDone - endDone).count());
+            if (now - t.second >= std::chrono::seconds(1))
+            {
+                std::string list;
+                for (int i : t.intervals)
+                {
+                    list += " " + std::to_string(i);
+                }
+                std::fprintf(stderr,
+                    "ftk gpu timing: %d frames, ms between:%s; longest end() %.1f ms, acquire %.1f ms\n",
+                    static_cast<int>(t.intervals.size()), list.c_str(), t.endMax, t.acquireMax);
+                t.intervals.clear();
+                t.endMax = 0.0;
+                t.acquireMax = 0.0;
+                t.second = now;
             }
         }
     }
