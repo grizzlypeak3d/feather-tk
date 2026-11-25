@@ -146,6 +146,18 @@ endif()
 if(ftk_SDL2)
     include(BuildSDL2)
 elseif(ftk_SDL3)
+    # On Linux SDL finds Wayland, PipeWire and PulseAudio only through
+    # pkg-config, and without one it is built without them and says
+    # nothing: X11 only, and no audio but ALSA.
+    if(UNIX AND NOT APPLE AND NOT ANDROID)
+        find_program(ftk_PKG_CONFIG_EXECUTABLE NAMES pkg-config pkgconf)
+        if(NOT ftk_PKG_CONFIG_EXECUTABLE)
+            message(WARNING
+                "No pkg-config: SDL will be built without Wayland, PipeWire "
+                "and PulseAudio. Install it (Ubuntu: \"sudo apt-get install "
+                "pkg-config\"; Rocky: \"sudo dnf install pkgconf-pkg-config\").")
+        endif()
+    endif()
     include(BuildSDL3)
 endif()
 if(ftk_glslang)
