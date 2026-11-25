@@ -84,7 +84,18 @@ add_custom_command(
         -m feather_tk._feather_tk
         -i ${CMAKE_BINARY_DIR}/python
         -o ${ftk_PYTHON_STUB}
-    DEPENDS _feather_tk ${ftk_STUBGEN} ${PROJECT_SOURCE_DIR}/etc/Python/make_stub.py
+    # The headers' comments, as the stub's docstrings: the bindings have
+    # almost none of their own. See etc/Python/doc_stub.py.
+    COMMAND ${Python_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/etc/Python/doc_stub.py
+        --headers ${PROJECT_SOURCE_DIR}/lib/ftk
+        --bindings ${PROJECT_SOURCE_DIR}/lib/ftk
+        ${ftk_PYTHON_STUB}
+    DEPENDS
+        _feather_tk
+        ${ftk_STUBGEN}
+        ${PROJECT_SOURCE_DIR}/etc/Python/make_stub.py
+        ${PROJECT_SOURCE_DIR}/etc/Python/doc_stub.py
     COMMENT "Generating _feather_tk.pyi")
 add_custom_target(_feather_tk_stub ALL DEPENDS ${ftk_PYTHON_STUB})
 file(TOUCH ${ftk_PYTHON_PACKAGE_DIR}/py.typed)

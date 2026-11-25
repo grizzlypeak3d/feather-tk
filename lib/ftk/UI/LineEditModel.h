@@ -127,10 +127,10 @@ namespace ftk
         //! Handle key input.
         FTK_UI_API bool key(Key, int modifiers = 0);
 
-        //! Get the regular epression for allowable input.
+        //! Get the regular expression for allowable input.
         FTK_UI_API const std::string& getRegex() const;
 
-        //! Set the regular epression for allowable input.
+        //! Set the regular expression for allowable input.
         FTK_UI_API void setRegex(const std::string&);
 
         ///@}
