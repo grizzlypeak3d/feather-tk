@@ -10,6 +10,7 @@
 #include <ftk/UI/Label.h>
 #include <ftk/UI/LineEdit.h>
 #include <ftk/UI/ScreenshotTag.h>
+#include <ftk/UI/ScrollWidget.h>
 #include <ftk/UI/TabBar.h>
 #include <ftk/UI/TabWidget.h>
 #include <ftk/UI/Tooltip.h>
@@ -202,6 +203,10 @@ namespace ftk
         bool cursorPlaced = false; // a step has moved the cursor; see "key"
         bool done = false;
         bool failed = false;   // a step or expectation failed; see _fail()
+        // A step whose tagged widget was scrolled into view, to be applied
+        // again once the scroll is laid out; see _aim().
+        bool retryStep = false;
+        bool retried = false;
         bool success = false;
 
         // With { "strict": true } an error written to the log fails the
@@ -847,6 +852,39 @@ namespace ftk
                     out = V2I(
                         g.x() + static_cast<int>(g.w() * fraction.x),
                         g.y() + static_cast<int>(g.h() * fraction.y));
+
+                    // A widget scrolled out of its scroll area is still
+                    // visible to the widget tree, and a click at its place
+                    // lands on whatever is drawn there: a button at the
+                    // bottom of a tool panel was missed on a platform whose
+                    // panel came out taller. Scrolled into view, and the
+                    // step applied again once that is laid out.
+                    std::shared_ptr<ScrollWidget> scroll;
+                    for (auto parent = w->getParent(); parent && !scroll; parent = parent->getParent())
+                    {
+                        scroll = std::dynamic_pointer_cast<ScrollWidget>(parent);
+                    }
+                    if (scroll && scroll->getWidget())
+                    {
+                        const Box2I view = scroll->getGeometry();
+                        const V2I& pos = out.value();
+                        const bool inView =
+                            pos.x >= view.min.x && pos.x <= view.max.x &&
+                            pos.y >= view.min.y && pos.y <= view.max.y;
+                        if (!inView)
+                        {
+                            if (_p->retried)
+                            {
+                                _fail(verb + ": \"" + tag + "\" is out of view");
+                            }
+                            else
+                            {
+                                scroll->scrollTo(move(g, -scroll->getWidget()->getGeometry().min));
+                                _p->retryStep = true;
+                            }
+                            return std::nullopt;
+                        }
+                    }
                     break;
                 }
             }
@@ -1027,6 +1065,17 @@ namespace ftk
                     if (!_applyStep(step))
                     {
                         _fail("unknown step: " + step.dump());
+                    }
+                    // Once more after a scroll into view; see _aim().
+                    if (p.retryStep)
+                    {
+                        p.lateSteps.insert(p.lateSteps.begin() + p.lateNext, step);
+                        p.retryStep = false;
+                        p.retried = true;
+                    }
+                    else
+                    {
+                        p.retried = false;
                     }
                     p.settleLeft = std::max(p.settleTicksShot, p.waitTicks);
                     p.waitTicks = 0;
