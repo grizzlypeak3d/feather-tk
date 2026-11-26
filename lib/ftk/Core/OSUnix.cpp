@@ -137,7 +137,9 @@ namespace ftk
             struct sysinfo info;
             if (0 == sysinfo(&info))
             {
-                out = info.totalram;
+                // In units of mem_unit bytes, which is one on most systems
+                // but not all.
+                out = static_cast<size_t>(info.totalram) * info.mem_unit;
             }
 #endif // __APPLE__
             return out;
