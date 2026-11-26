@@ -572,6 +572,9 @@ namespace ftk
     void IWindow::_fullScreenFromEvent(bool value)
     {
         FTK_P();
+        // What the window is, however it got there: the system can change
+        // it too (a title bar button), and the observers have to follow.
+        p.fullScreen->setIfChanged(value);
         if (p.fullScreenCallback)
         {
             p.fullScreenCallback(value);

@@ -36,7 +36,7 @@ namespace ftk
         Size2I      size;
         //! The refresh rate of the current display mode, in hertz; zero where
         //! it is not known.
-        int         refreshRate = 0;
+        float       refreshRate = 0.F;
         //! The horizontal and vertical dots per inch. Not set in SDL3 builds,
         //! where it is zero.
         V2F         dpi;

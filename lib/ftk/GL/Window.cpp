@@ -779,7 +779,35 @@ namespace ftk
 
         int Window::getScreen() const
         {
-            return 0;
+            // The window's display, as an index into the display list, which
+            // is how a screen is named when one is asked for (setFullScreen()).
+            FTK_P();
+            int out = 0;
+#if defined(FTK_SDL2)
+            const int index = SDL_GetWindowDisplayIndex(p.sdlWindow);
+            if (index >= 0)
+            {
+                out = index;
+            }
+#elif defined(FTK_SDL3)
+            if (const SDL_DisplayID display = SDL_GetDisplayForWindow(p.sdlWindow))
+            {
+                int count = 0;
+                if (SDL_DisplayID* displays = SDL_GetDisplays(&count))
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        if (displays[i] == display)
+                        {
+                            out = i;
+                            break;
+                        }
+                    }
+                    SDL_free(displays);
+                }
+            }
+#endif // FTK_SDL3
+            return out;
         }
 
         bool Window::isFullScreen() const

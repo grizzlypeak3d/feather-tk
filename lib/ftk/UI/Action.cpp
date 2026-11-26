@@ -344,21 +344,22 @@ namespace ftk
 
     FTK_UI_API std::string to_string(const KeyShortcut& value)
     {
+        // The key, a space, and the modifiers: what from_string() reads.
         std::stringstream ss;
-        ss << value.key;
-        ss << value.modifiers;
+        ss << value.key << " " << value.modifiers;
         return ss.str();
     }
 
     FTK_UI_API bool from_string(const std::string& s, KeyShortcut& value)
     {
+        // Split at the last space: a key's label can have one in it
+        // ("Page Up").
         bool out = false;
-        const auto pieces = split(s, ' ');
-        if (2 == pieces.size())
+        const size_t i = s.rfind(' ');
+        if (i != std::string::npos && i > 0)
         {
-            from_string(pieces[0], value.key);
-            value.modifiers = std::atoi(pieces[1].c_str());
-            out = true;
+            out = from_string(s.substr(0, i), value.key);
+            value.modifiers = std::atoi(s.substr(i + 1).c_str());
         }
         return out;
     }
