@@ -143,6 +143,7 @@ namespace ftk
         //! player to choose its frame by. See App::setPacedWindow().
         bool paced = false;
         std::weak_ptr<IWindow> pacedWindow;
+        std::optional<std::chrono::steady_clock::time_point> lastFrameTime;
 
         struct CmdLine
         {
@@ -915,10 +916,31 @@ namespace ftk
         }
         if (pacedWindow)
         {
-            // An iteration starts about at a refresh (a present just
-            // returned), and the frame it makes is shown at the one after.
-            frameTime = pacedWindow->_nearestRefresh(std::chrono::steady_clock::now(), 1.0);
+            // Each frame is for the refresh after the last one's: the
+            // window presents once a refresh. Or for the next refresh still
+            // ahead, when the loop has fallen behind. Not read off the
+            // clock as the refresh after the one nearest now: where a
+            // present returns partway through a refresh (the GPU renderer
+            // on Windows, acquiring a swapchain image as one frees up) an
+            // iteration that starts more than half a refresh late chose a
+            // frame a refresh ahead, and the next one the same frame again:
+            // 200 hitches a minute on the Dell's A4000.
+            const auto now = std::chrono::steady_clock::now();
+            const auto ahead = pacedWindow->_nearestRefresh(now, 0.5);
+            const auto next = p.lastFrameTime ?
+                pacedWindow->_nearestRefresh(*p.lastFrameTime, 1.0) :
+                pacedWindow->_nearestRefresh(now, 1.0);
+            if (ahead && next)
+            {
+                // Two refreshes ahead or more is an estimate that moved,
+                // not a frame to wait for.
+                const auto period = *pacedWindow->_nearestRefresh(*ahead, 1.0) - *ahead;
+                frameTime = *next >= *ahead && *next - *ahead < period * 2 / 3 + period ?
+                    *next :
+                    *ahead;
+            }
         }
+        p.lastFrameTime = frameTime;
         _context->setFrameTime(frameTime);
         _context->tick();
         if (_context->isBusy())
