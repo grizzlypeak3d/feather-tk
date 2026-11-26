@@ -917,33 +917,38 @@ namespace ftk
         if (pacedWindow)
         {
             // Each frame is for the refresh after the last one's: the
-            // window presents once a refresh. Or for the next refresh still
-            // ahead, when the loop has fallen behind. Not read off the
-            // clock as the refresh after the one nearest now: where a
-            // present returns partway through a refresh (the GPU renderer
-            // on Windows, acquiring a swapchain image as one frees up) an
-            // iteration that starts more than half a refresh late chose a
-            // frame a refresh ahead, and the next one the same frame again:
-            // 200 hitches a minute on the Dell's A4000.
+            // window presents once a refresh. Not read off the clock alone
+            // as the refresh after the one nearest now: where a present
+            // returns partway through a refresh (the GPU renderer on
+            // Windows, acquiring a swapchain image as one frees up) an
+            // iteration that started more than half a refresh late chose a
+            // frame a refresh ahead, and the next one the same frame again
+            // (200 hitches a minute on the Dell's A4000).
             const auto now = std::chrono::steady_clock::now();
+            // The next refresh, and the one a frame made now can be for at
+            // the latest: the one after the refresh nearest now.
             const auto ahead = pacedWindow->_nearestRefresh(now, 0.5);
-            const auto next = p.lastFrameTime ?
-                pacedWindow->_nearestRefresh(*p.lastFrameTime, 1.0) :
-                pacedWindow->_nearestRefresh(now, 1.0);
-            if (ahead && next)
+            const auto latest = pacedWindow->_nearestRefresh(now, 1.0);
+            if (ahead && latest)
             {
-                // A refresh behind is allowed: with frames in flight an
-                // iteration can start up to a refresh after the one its
-                // frame is for (the GPU renderer on Windows; skipping then
-                // was the A4000's remaining hitches, frames never shown).
-                // Further behind is a loop that fell behind, and skips to
-                // the refresh still ahead. Two refreshes ahead or more is
-                // an estimate that moved, not a frame to wait for.
-                const auto period = *pacedWindow->_nearestRefresh(*ahead, 1.0) - *ahead;
-                const auto half = period / 2;
-                frameTime = *next + period + half > *ahead && *next < *ahead + period + half ?
-                    *next :
-                    *ahead;
+                frameTime = *latest;
+                if (p.lastFrameTime)
+                {
+                    // Each frame for the refresh after the last one's. Not
+                    // later than the latest: the loop can go round twice in
+                    // a refresh (an OpenGL swap on Windows queued rather
+                    // than waited for), and stepping each time ran the
+                    // frames ahead of the clock until they snapped back
+                    // (the A4000 went from no hitches to a hundred a
+                    // minute). And a refresh behind the next one at most:
+                    // with frames in flight an iteration can start up to a
+                    // refresh after the one its frame is for (the GPU
+                    // renderer on Windows), and further behind is a loop
+                    // that fell behind, which skips ahead.
+                    const auto period = *pacedWindow->_nearestRefresh(*ahead, 1.0) - *ahead;
+                    const auto step = *pacedWindow->_nearestRefresh(*p.lastFrameTime, 1.0);
+                    frameTime = std::clamp(step, *ahead - period, *latest);
+                }
             }
         }
         p.lastFrameTime = frameTime;
