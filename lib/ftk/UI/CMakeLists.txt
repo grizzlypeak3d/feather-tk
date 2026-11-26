@@ -127,7 +127,8 @@ set(PRIVATE_HEADERS
     MenuBarPrivate.h
     MenuPrivate.h
     TabBarPrivate.h
-    TextEditPrivate.h)
+    TextEditPrivate.h
+    VBlankPrivate.h)
 
 set(SOURCE
     Action.cpp
@@ -262,6 +263,11 @@ if ("${ftk_API}" STREQUAL "GL_4_1" OR
     list(APPEND SOURCE
         AppGL.cpp
         WindowGL.cpp)
+    if(WIN32 AND ftk_SDL3)
+        list(APPEND SOURCE VBlankWin32.cpp)
+    else()
+        list(APPEND SOURCE VBlank.cpp)
+    endif()
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
     # The document picker is the native file dialog there. Automatic
@@ -303,6 +309,9 @@ if(ftk_GPU AND ftk_SDL3)
     target_link_libraries(ftkUI PUBLIC ftkGPU)
 endif()
 target_link_libraries(ftkUI PUBLIC ftkCore PRIVATE lunasvg::lunasvg)
+if(WIN32 AND ftk_SDL3)
+    target_link_libraries(ftkUI PRIVATE dxgi)
+endif()
 if(ftk_nfd)
     target_link_libraries(ftkUI PRIVATE nfd::nfd)
     if(APPLE)

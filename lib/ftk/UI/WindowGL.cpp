@@ -8,6 +8,7 @@
 #include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Style.h>
 #include <ftk/UI/Util.h>
+#include <ftk/UI/VBlankPrivate.h>
 
 #include <ftk/GL/GL.h>
 #include <ftk/GL/OffscreenBuffer.h>
@@ -75,6 +76,7 @@ namespace ftk
 
         //! Present each refresh, drawn or not; see App.
         bool presentEveryRefresh = false;
+        std::unique_ptr<VBlankWatcher> vblank;
 
         //! For FTK_LOG_PRESENTS.
         std::chrono::steady_clock::time_point glDrawStart;
@@ -1240,26 +1242,49 @@ namespace ftk
             }
 #endif // FTK_SDL3
         }
-        if (!c.valid)
+        // What the estimate is made from: the monitor's vertical blanks
+        // where the system gives them (a watcher is started the first time
+        // the window is paced; see VBlankWatcher), and otherwise when the
+        // presents returned. On Windows a present can return at once, the
+        // driver queueing it, and the earliest returns were nowhere near
+        // the refreshes: the Dell's A4000 played worse paced at 60 fps.
+        if (p.presentEveryRefresh && !p.vblank && !isOffscreen())
         {
-            c.phase = now;
-            c.valid = true;
-            return;
+            p.vblank = std::make_unique<VBlankWatcher>(p.window->getSDLWindow());
         }
-        // How far this return is from the nearest refresh of the estimate.
-        // A present returns after its refresh, never before, so an earlier
-        // return than the estimate moves it there at once, and a later one
-        // only a little, which follows a display whose rate is not quite
-        // the one it gives without being pulled by a return that was held
-        // up. Measured against an average of the returns on the M1 Max:
-        // with the GPU renderer, no hitches in two minutes against a few a
-        // minute; the average is pulled late by the late ones.
-        const double t = std::chrono::duration<double>(now - c.phase).count();
-        const double k = std::round(t / c.period);
-        const double r = t - k * c.period;
-        const double move = r < 0.0 ? r : r * 0.02;
-        c.phase += std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-            std::chrono::duration<double>(k * c.period + move));
+        std::vector<std::chrono::steady_clock::time_point> marks;
+        if (p.vblank && p.vblank->isActive())
+        {
+            marks = p.vblank->take();
+        }
+        else
+        {
+            marks.push_back(now);
+        }
+        for (const auto& mark : marks)
+        {
+            if (!c.valid)
+            {
+                c.phase = mark;
+                c.valid = true;
+                continue;
+            }
+            // How far this mark is from the nearest refresh of the
+            // estimate. A mark comes after its refresh, never before, so an
+            // earlier one than the estimate moves it there at once, and a
+            // later one only a little, which follows a display whose rate
+            // is not quite the one it gives without being pulled by a mark
+            // that was held up. Measured against an average of the marks on
+            // the M1 Max: with the GPU renderer, no hitches in two minutes
+            // against a few a minute; the average is pulled late by the
+            // late ones.
+            const double t = std::chrono::duration<double>(mark - c.phase).count();
+            const double k = std::round(t / c.period);
+            const double r = t - k * c.period;
+            const double move = r < 0.0 ? r : r * 0.02;
+            c.phase += std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+                std::chrono::duration<double>(k * c.period + move));
+        }
     }
 
     std::optional<std::chrono::steady_clock::time_point> Window::_nearestRefresh(
