@@ -22,14 +22,20 @@ namespace ftk
                 &openURL,
                 nb::arg("url"),
                 "Open a URL in an external application.");
-            nb::class_<SysInfo>(m, "SystInfo")
+            nb::class_<SysInfo>(m, "SysInfo")
                 .def_rw("name", &SysInfo::name)
+                .def_rw("cpu", &SysInfo::cpu)
                 .def_rw("cores", &SysInfo::cores)
                 .def_rw("ram", &SysInfo::ram)
                 .def_rw("ramGB", &SysInfo::ramGB)
                 .def_rw("desktop", &SysInfo::desktop);
 
-            m.def("getSystInfo", &getSysInfo, "Get operating system information.");
+            m.def("getSysInfo", &getSysInfo, "Get operating system information.");
+
+            // The names these were first bound under, misspelled, kept for
+            // the scripts that use them.
+            m.attr("SystInfo") = m.attr("SysInfo");
+            m.attr("getSystInfo") = m.attr("getSysInfo");
         }
     }
 }
