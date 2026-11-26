@@ -228,9 +228,20 @@ namespace ftk
             //! What one texture takes on the GPU.
             size_t byteCount = 0;
             //! The transfer buffers a streaming texture's copies go
-            //! through, one per texture; see prepare().
-            SDL_GPUTransferBuffer* transfers[2] = { nullptr, nullptr };
-            size_t transferByteCounts[2] = { 0, 0 };
+            //! through, taken in turn; see _prepare(). Three, where the
+            //! textures are two: the CPU writes a transfer buffer, which
+            //! nothing orders after the device's reading it, and while a
+            //! frame is made only the one three back is known to be done
+            //! (Render::end() waits for the frame before last). Two were
+            //! enough while the window drew twice for each video frame;
+            //! drawing once, the buffer was written while the copy out of
+            //! it was still queued, and a slow GPU showed the top of the
+            //! next frame over the last: tearing. The textures themselves
+            //! the device orders, copy after draw.
+            static const int transferCount = 3;
+            SDL_GPUTransferBuffer* transfers[transferCount] = { nullptr, nullptr, nullptr };
+            size_t transferByteCounts[transferCount] = { 0, 0, 0 };
+            int transferIndex = 0;
         };
 
         void Texture::_init(
@@ -335,7 +346,7 @@ namespace ftk
                         SDL_ReleaseGPUTexture(device, texture);
                     }
                 }
-                for (int i = 0; i < 2; ++i)
+                for (int i = 0; i < Private::transferCount; ++i)
                 {
                     if (p.transfers[i])
                     {
@@ -380,7 +391,7 @@ namespace ftk
         size_t Texture::getByteCount() const
         {
             FTK_P();
-            return p.byteCount * (p.streaming ? 4 : 1);
+            return p.byteCount * (p.streaming ? 2 + Private::transferCount : 1);
         }
 
         const ImageInfo& Texture::getInfo() const
@@ -443,9 +454,9 @@ namespace ftk
             region.d = 1;
             // A whole texture is cycled: one that a draw already written
             // is waiting on keeps what that draw was given. Not a streaming
-            // texture: those alternate between two, the one written two
-            // frames ago, which Render::end() has waited for -- and cycling
-            // was never free when it hit, a video frame's worth of memory
+            // texture: those alternate between two, and the device copies
+            // into one only after the draws before that read it -- and
+            // cycling was never free when it hit, a video frame's worth of memory
             // every frame, which on Vulkan cost more than the drawing.
             SDL_UploadToGPUTexture(pass, &source, &region,
                 value.whole && !value.streaming);
@@ -499,11 +510,11 @@ namespace ftk
             const size_t dstRow = w * dstPixel;
 
             // A copy of the whole of a streaming texture steps to its other
-            // texture and goes through that texture's own transfer buffer,
-            // made the first time and again where a copy wants a larger
-            // one; the one before is let go of, which the device does once
-            // it is done with it. Neither is in flight by then, so the
-            // memory is reused as it is; see TextureOptions::streaming.
+            // texture and to the next of its transfer buffers, made the
+            // first time and again where a copy wants a larger one; the one
+            // before is let go of, which the device does once it is done
+            // with it. Neither is in flight by then, so the memory is
+            // reused as it is; see Private::transfers.
             // The buffers are counted with the textures, as the OpenGL
             // renderer counts its pixel buffers.
             //
@@ -517,8 +528,9 @@ namespace ftk
             if (whole && p.streaming)
             {
                 p.current ^= 1;
-                SDL_GPUTransferBuffer*& slot = p.transfers[p.current];
-                size_t& slotByteCount = p.transferByteCounts[p.current];
+                p.transferIndex = (p.transferIndex + 1) % Private::transferCount;
+                SDL_GPUTransferBuffer*& slot = p.transfers[p.transferIndex];
+                size_t& slotByteCount = p.transferByteCounts[p.transferIndex];
                 if (!slot || byteCount > slotByteCount)
                 {
                     if (slot)
@@ -554,7 +566,8 @@ namespace ftk
                 out.owned = true;
             }
             // Mapped without cycling: a buffer of its own is new, and a
-            // streaming texture's two alternate; see send().
+            // streaming texture's three are taken in turn; see
+            // Private::transfers.
             uint8_t* dst = static_cast<uint8_t*>(SDL_MapGPUTransferBuffer(
                 device, transfer, false));
             if (!dst)

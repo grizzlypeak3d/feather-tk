@@ -162,8 +162,9 @@ namespace ftk
             SDL_GPUCommandBuffer* cmd = nullptr;
             // The fences of the last two frames submitted. end() waits for
             // the older before letting a third frame begin, so at most two
-            // are ever in flight: what makes a streaming texture's two
-            // buffers enough (see TextureOptions::streaming), and keeps a
+            // are ever in flight: what makes a streaming texture's three
+            // transfer buffers enough (see Texture's Private::transfers),
+            // and keeps a
             // runaway caller from queueing frames the device is minutes
             // from drawing.
             SDL_GPUFence* frameFences[2] = { nullptr, nullptr };
