@@ -505,6 +505,8 @@ namespace ftk
     void Path::setNum(const std::string& value)
     {
         _path = getProtocol() + getDir() + getBase() + value + getExt() + getRequest();
+        // The padding is the new number's, as written.
+        _pad = 0;
         // Re-parse without preserving the old frame range: for a numeric value
         // _parse derives the matching range, and for a "####" placeholder (or an
         // empty value) _parse leaves _frames untouched, keeping an existing range.
@@ -544,6 +546,7 @@ namespace ftk
     void Path::setFileName(const std::string& value)
     {
         _path = getProtocol() + getDir() + value + getRequest();
+        _pad = 0;
         const std::vector<FrameSeq> tmp = _seq;
         _parse(_options);
         _setSeq(tmp);
@@ -637,6 +640,17 @@ namespace ftk
 
     void Path::_parse(const PathOptions& options)
     {
+        // The parts are found anew: one the path no longer has would
+        // otherwise be kept from before (an empty directory still had the
+        // old one, an empty extension still counted). The padding stays,
+        // for setPad(); the setters that replace the number reset it.
+        _protocol = _invalid;
+        _dir = _invalid;
+        _base = _invalid;
+        _num = _invalid;
+        _ext = _invalid;
+        _request = _invalid;
+
         // Find the request.
         size_t size = _path.size();
         size_t requestPos = std::string::npos;

@@ -39,6 +39,7 @@ namespace ftk
             _dirList();
             _expandSeq();
             _seqChanges();
+            _setters();
             _serialize();
         }
 
@@ -90,6 +91,47 @@ namespace ftk
                 std::filesystem::remove(frameFile(i));
             }
             FTK_CHECK(findSeq(path).empty());
+        }
+
+        void PathTest::_setters()
+        {
+            // A part set empty is gone, not the part before it moved in,
+            // and a number set anew has its own padding.
+            {
+                Path path("/tmp/a.exr");
+                path.setDir("");
+                FTK_ASSERT("" == path.getDir());
+                FTK_ASSERT("a" == path.getBase());
+                FTK_ASSERT(".exr" == path.getExt());
+            }
+            {
+                Path path("/tmp/a.exr");
+                path.setExt("");
+                FTK_ASSERT(!path.hasExt());
+                FTK_ASSERT("/tmp/a" == path.get());
+            }
+            {
+                Path path("/tmp/a.exr?x=1");
+                path.setRequest("");
+                FTK_ASSERT(!path.hasRequest());
+                FTK_ASSERT("/tmp/a.exr" == path.get());
+            }
+            {
+                Path path("/tmp/a.0001.exr");
+                FTK_ASSERT(4 == path.getPad());
+                path.setNum("1");
+                FTK_ASSERT(0 == path.getPad());
+                FTK_ASSERT("/tmp/a.1.exr" == path.get());
+                path.setNum("");
+                FTK_ASSERT(!path.hasNum());
+            }
+            {
+                // The padding set stays through the other setters.
+                Path path("/tmp/a.1001.exr");
+                path.setPad(4);
+                path.setDir("/other/");
+                FTK_ASSERT(4 == path.getPad());
+            }
         }
 
         void PathTest::_serialize()

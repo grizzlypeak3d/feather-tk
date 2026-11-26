@@ -33,6 +33,7 @@ namespace ftk
             void _dirList();
             void _expandSeq();
             void _seqChanges();
+            void _setters();
             void _serialize();
         };
     }
