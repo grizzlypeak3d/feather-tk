@@ -303,6 +303,11 @@ namespace ftk
         FTK_P();
         const Box2I g = _getSliderGeometry();
         const RangeI& range = p.model->getRange();
+        // An empty range, or a slider with no width, has the one value.
+        if (range.max() == range.min() || g.w() <= 0)
+        {
+            return range.min();
+        }
         const float inc = g.w() / static_cast<float>(range.max() - range.min());
         const float v = (pos + inc / 2 - g.min.x) / static_cast<float>(g.w());
         const int out = range.min() + (range.max() - range.min()) * v;

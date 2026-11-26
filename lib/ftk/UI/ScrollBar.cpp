@@ -270,7 +270,8 @@ namespace ftk
             const int w2 = std::max(
                 static_cast<int>(g.w() / static_cast<float>(p.scrollSize) * g.w()),
                 p.size.handle * 2);
-            const int x = p.scrollPos / static_cast<float>(w) * (g.w() - w2);
+            // Nothing to scroll, the handle at the start: w is zero then.
+            const int x = w > 0 ? p.scrollPos / static_cast<float>(w) * (g.w() - w2) : 0;
             out = Box2I(
                 g.x() + x,
                 g.y(),
@@ -284,7 +285,7 @@ namespace ftk
             const int h2 = std::max(
                 static_cast<int>(g.h() / static_cast<float>(p.scrollSize) * g.h()),
                 p.size.handle * 2);
-            const int y = p.scrollPos / static_cast<float>(h) * (g.h() - h2);
+            const int y = h > 0 ? p.scrollPos / static_cast<float>(h) * (g.h() - h2) : 0;
             out = Box2I(
                 g.x(),
                 g.y() + y,

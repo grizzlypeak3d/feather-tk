@@ -36,7 +36,7 @@ namespace ftk
         const std::shared_ptr<Context>& context,
         const std::shared_ptr<IWidget>& parent)
     {
-        IMouseWidget::_init(context, "tl::ui::ShuttleWidget", parent);
+        IMouseWidget::_init(context, "ftk::ShuttleWidget", parent);
         _setMouseHoverEnabled(true);
         _setMousePressEnabled(true);
 
@@ -185,7 +185,9 @@ namespace ftk
             // taken up part way through a drag takes effect from there.
             p.modifiers = event.modifiers;
             const int d = event.pos.x - _getMousePressPos().x;
-            const int v = d / (g.h() / 4);
+            // A step a quarter of the height, and at least a pixel: under
+            // four pixels tall this divided by zero.
+            const int v = d / std::max(1, g.h() / 4);
             if (v != p.value)
             {
                 const int delta = v - p.value;
