@@ -162,11 +162,9 @@ namespace ftk
             SDL_GPUCommandBuffer* cmd = nullptr;
             // The fences of the last two frames submitted. end() waits for
             // the older before letting a third frame begin, so at most two
-            // are ever in flight: what makes a streaming texture's three
-            // transfer buffers enough (see Texture's Private::transfers),
-            // and keeps a
-            // runaway caller from queueing frames the device is minutes
-            // from drawing.
+            // are ever in flight, which keeps a runaway caller from
+            // queueing frames the device is minutes from drawing; see
+            // also waitForFrameBeforeLast().
             SDL_GPUFence* frameFences[2] = { nullptr, nullptr };
             int frameFenceIndex = 0;
             bool clearPending = false;
@@ -330,6 +328,7 @@ namespace ftk
             void flush();
             void discard();
             void willUpload(const std::vector<std::shared_ptr<Texture> >&);
+            void waitForFrameBeforeLast();
             void upload(const Texture::Upload&);
             void keep(const std::shared_ptr<Texture>&);
             void keep(const std::shared_ptr<OffscreenBuffer>&);

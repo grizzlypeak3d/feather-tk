@@ -749,6 +749,14 @@ namespace ftk
         {
             const auto& info = image->getInfo();
             _p->willUpload(textures);
+            for (const auto& texture : textures)
+            {
+                if (texture->isStreaming())
+                {
+                    _p->waitForFrameBeforeLast();
+                    break;
+                }
+            }
             switch (info.type)
             {
             case ImageType::YUV_420P_U8:

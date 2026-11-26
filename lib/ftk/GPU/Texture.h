@@ -48,9 +48,9 @@ namespace ftk
             ImageFilters filters;
 
             //! Whether the whole texture is copied into over and over, as a
-            //! video's frames are. Two textures and three transfer buffers
-            //! are taken in turn, so what is written is never what the
-            //! device is still reading: without this each copy cycles the texture and
+            //! video's frames are. Two textures and two transfer buffers
+            //! alternate, and Render waits for the frame that read the one
+            //! written, so it is never what the device is still reading: without this each copy cycles the texture and
             //! the transfer buffer, and on Vulkan cycling a video frame's
             //! worth of memory every frame cost more than the drawing.
             bool streaming = false;
@@ -95,6 +95,9 @@ namespace ftk
 
             //! Get the image information.
             FTK_GPU_API const ImageInfo& getInfo() const;
+
+            //! Whether the texture is streaming; see TextureOptions::streaming.
+            FTK_GPU_API bool isStreaming() const;
 
             //! Get the texture.
             FTK_GPU_API SDL_GPUTexture* getTexture() const;
@@ -170,7 +173,7 @@ namespace ftk
             FTK_GPU_API static size_t getTotalByteCount();
 
             //! Get the bytes this texture takes on the GPU once it is in
-            //! use: a streaming texture is two textures and three transfer
+            //! use: a streaming texture is two textures and two transfer
             //! buffers.
             FTK_GPU_API size_t getByteCount() const;
 

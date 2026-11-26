@@ -220,6 +220,26 @@ namespace ftk
             }
         }
 
+        void Render::Private::waitForFrameBeforeLast()
+        {
+            // Before a streaming texture's transfer buffer is written: the
+            // frame before last read the buffer, and only the frame before
+            // that is known to be done (end() waits for it). Nothing orders
+            // the CPU's writing after the device's reading, so a slow GPU
+            // copied a buffer half written with the next frame: tearing,
+            // once the window drew once for each video frame rather than
+            // twice. On a GPU that keeps up the frame is long done and this
+            // costs nothing; the fence is let go of, and end() then has
+            // nothing to wait for in its place.
+            SDL_GPUFence*& slot = frameFences[frameFenceIndex];
+            if (slot)
+            {
+                SDL_WaitForGPUFences(device, true, &slot, 1);
+                SDL_ReleaseGPUFence(device, slot);
+                slot = nullptr;
+            }
+        }
+
         void Render::Private::upload(const Texture::Upload& value)
         {
             if (!value.transfer)
