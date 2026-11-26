@@ -1201,7 +1201,12 @@ namespace ftk
             static std::string line;
             const double interval = std::chrono::duration<double, std::milli>(now - last).count();
             line += std::to_string(static_cast<int>(interval * 10.0 + .5)) + " ";
-            if (!p.gpu && interval > 20.0)
+#if defined(FTK_GPU)
+            const bool gpu = p.gpu;
+#else // FTK_GPU
+            const bool gpu = false;
+#endif // FTK_GPU
+            if (!gpu && interval > 20.0)
             {
                 // A late one: how long its drawing and its swap took.
                 fprintf(stderr, "late present %.1f ms: %s %.1f ms, swap %.1f ms\n",
