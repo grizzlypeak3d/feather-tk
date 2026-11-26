@@ -117,4 +117,16 @@ namespace ftk
             }
         }
     }
+
+    bool Context::isBusy() const
+    {
+        for (const auto& system : _systems)
+        {
+            if (system->isBusy())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

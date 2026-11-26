@@ -25,4 +25,9 @@ namespace ftk
     {
         return std::chrono::milliseconds(0);
     }
+
+    bool IBaseSystem::isBusy() const
+    {
+        return false;
+    }
 }

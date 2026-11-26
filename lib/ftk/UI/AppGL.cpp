@@ -884,6 +884,10 @@ namespace ftk
         FTK_P();
 
         _context->tick();
+        if (_context->isBusy())
+        {
+            p.active = true;
+        }
 
         for (const auto& window : p.windows)
         {

@@ -57,6 +57,9 @@ namespace ftk
         //! Tick the context.
         FTK_CORE_API void tick();
 
+        //! Whether any system is busy; see IBaseSystem::isBusy().
+        FTK_CORE_API bool isBusy() const;
+
         //! Stop the systems' threads.
         //!
         //! Call this from the thread that owns the context, before the last

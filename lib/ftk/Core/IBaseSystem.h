@@ -53,6 +53,13 @@ namespace ftk
         //! Get the system tick time interval.
         FTK_CORE_API virtual std::chrono::milliseconds getTickTime() const;
 
+        //! Whether the system has work coming that the application's loop
+        //! should not idle through, such as a player that is playing. After
+        //! an iteration that drew nothing the loop sleeps longer, which
+        //! between the frames of a movie noticed the next one late. The
+        //! default is false.
+        FTK_CORE_API virtual bool isBusy() const;
+
     protected:
         std::weak_ptr<Context> _context;
         std::string _name;
