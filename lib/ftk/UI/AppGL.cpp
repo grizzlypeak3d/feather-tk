@@ -901,6 +901,7 @@ namespace ftk
         // display, so each iteration starts just after one, and the frame
         // made now is for the next.
         std::optional<std::chrono::steady_clock::time_point> frameTime;
+        double framePeriod = 0.0;
         const bool paced = p.paced && _context->isBusy();
         const auto pacedWindow = paced ? _pacedWindow() : nullptr;
         for (const auto& window : p.windows)
@@ -931,6 +932,8 @@ namespace ftk
             const auto latest = pacedWindow->_nearestRefresh(now, 1.0);
             if (ahead && latest)
             {
+                framePeriod = std::chrono::duration<double>(
+                    *pacedWindow->_nearestRefresh(*ahead, 1.0) - *ahead).count();
                 frameTime = *latest;
                 if (p.lastFrameTime)
                 {
@@ -952,7 +955,7 @@ namespace ftk
             }
         }
         p.lastFrameTime = frameTime;
-        _context->setFrameTime(frameTime);
+        _context->setFrameTime(frameTime, framePeriod);
         _context->tick();
         if (_context->isBusy())
         {

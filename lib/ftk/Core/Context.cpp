@@ -118,9 +118,17 @@ namespace ftk
         }
     }
 
-    void Context::setFrameTime(const std::optional<std::chrono::steady_clock::time_point>& value)
+    void Context::setFrameTime(
+        const std::optional<std::chrono::steady_clock::time_point>& value,
+        double period)
     {
         _frameTime = value;
+        _framePeriod = value ? period : 0.0;
+    }
+
+    double Context::getFramePeriod() const
+    {
+        return _framePeriod;
     }
 
     const std::optional<std::chrono::steady_clock::time_point>& Context::getFrameTime() const

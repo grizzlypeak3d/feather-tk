@@ -66,8 +66,14 @@ namespace ftk
         //! display, for a player to show the picture of that time rather
         //! than of the moment it happened to be asked. Nothing when it is
         //! not known, and the time of asking is the best there is.
-        FTK_CORE_API void setFrameTime(const std::optional<std::chrono::steady_clock::time_point>&);
+        FTK_CORE_API void setFrameTime(
+            const std::optional<std::chrono::steady_clock::time_point>&,
+            double period = 0.0);
         FTK_CORE_API const std::optional<std::chrono::steady_clock::time_point>& getFrameTime() const;
+
+        //! The display's refresh period, in seconds, with the frame time;
+        //! zero when not known.
+        FTK_CORE_API double getFramePeriod() const;
 
         //! Stop the systems' threads.
         //!
@@ -88,6 +94,7 @@ namespace ftk
         std::list<std::shared_ptr<IBaseSystem> > _systems;
         std::map<std::shared_ptr<IBaseSystem>, std::chrono::steady_clock::time_point> _systemTimes;
         std::optional<std::chrono::steady_clock::time_point> _frameTime;
+        double _framePeriod = 0.0;
     };
 }
 
