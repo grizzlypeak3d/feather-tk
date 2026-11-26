@@ -63,6 +63,24 @@ namespace ftk
     {
         std::weak_ptr<Context> context;
 
+        //! See _presented().
+        struct RefreshClock
+        {
+            bool valid = false;
+            std::chrono::steady_clock::time_point phase;
+            double period = 1.0 / 60.0;
+            std::chrono::steady_clock::time_point periodTime;
+        };
+        RefreshClock refreshClock;
+
+        //! Present each refresh, drawn or not; see App.
+        bool presentEveryRefresh = false;
+
+        //! For FTK_LOG_PRESENTS.
+        std::chrono::steady_clock::time_point glDrawStart;
+        std::chrono::steady_clock::time_point glSwapStart;
+        bool glDrew = false;
+
         std::shared_ptr<gl::Window> window;
         Box2I textInputArea;
 
@@ -727,25 +745,31 @@ namespace ftk
 #if defined(FTK_GPU)
         if (p.gpu)
         {
-            if (_hasDrawUpdate(shared_from_this()))
+            const bool draw = _hasDrawUpdate(shared_from_this());
+            if (draw || (p.presentEveryRefresh && p.gpuBuffer && !isOffscreen()))
             {
-                _updateGPU(fontSystem, iconSystem, style);
+                _updateGPU(fontSystem, iconSystem, style, draw);
             }
             return;
         }
 #endif // FTK_GPU
-        if (_hasDrawUpdate(shared_from_this()))
+        // Drawn when something changed; presented as well when the
+        // application asks for every refresh, the buffer as it is.
+        const bool draw = _hasDrawUpdate(shared_from_this());
+        if (draw || (p.presentEveryRefresh && p.buffer && !isOffscreen()))
         {
+            p.glDrawStart = std::chrono::steady_clock::now();
+            p.glDrew = draw;
             p.window->makeCurrent();
 
             const Size2I& bufferSize = getBufferSize();
             const WindowBufferType bufferType = getBufferType();
             const gl::TextureType textureType = getTextureType(bufferType);
-            if (gl::doCreate(p.buffer, bufferSize, textureType))
+            if (draw && gl::doCreate(p.buffer, bufferSize, textureType))
             {
                 p.buffer = gl::OffscreenBuffer::create(bufferSize, textureType);
             }
-            if (p.buffer)
+            if (draw && p.buffer)
             {
                 gl::OffscreenBufferBinding bufferBinding(p.buffer);
                 p.render->begin(bufferSize);
@@ -906,7 +930,9 @@ namespace ftk
             // faster than the monitor's refresh rate.
             if (!isOffscreen())
             {
+                p.glSwapStart = std::chrono::steady_clock::now();
                 p.window->swap();
+                _presented();
             }
         }
     }
@@ -915,11 +941,12 @@ namespace ftk
     void Window::_updateGPU(
         const std::shared_ptr<FontSystem>& fontSystem,
         const std::shared_ptr<IconSystem>& iconSystem,
-        const std::shared_ptr<Style>& style)
+        const std::shared_ptr<Style>& style,
+        bool draw)
     {
         FTK_P();
         static const bool timingDraws = gpu::getEnvFlag("FTK_GPU_TIMING");
-        if (timingDraws)
+        if (timingDraws && draw)
         {
             addDrawnBy(shared_from_this());
         }
@@ -986,51 +1013,57 @@ namespace ftk
         if (!p.gpuBuffer)
             return;
 
-        // The window's renderer may be one built on the GPU renderer; the
-        // target is said to the one that draws.
-        auto gpuRender = gpu::getRender(p.render);
-        if (!gpuRender)
-            return;
-        gpuRender->setTarget(p.gpuBuffer);
-        const auto& render = p.render;
-        render->begin(bufferSize);
-        const Box2I drawRect(V2I(), bufferSize);
-        render->setClipRectEnabled(false);
-        render->setClipRect(drawRect);
-        DrawEvent drawEvent(
-            fontSystem,
-            iconSystem,
-            getDisplayScale(),
-            style,
-            p.render);
-        _drawEventRecursive(
-            shared_from_this(),
-            drawRect,
-            drawEvent);
-        render->setClipRectEnabled(false);
-        if (gpu::getEnvFlag("FTK_GPU_HDR_TEST"))
-        {
-            // Something to look at on an HDR display: patches at one, two,
-            // four and eight times the user interface's white. Display
-            // encoded, as everything drawn here is.
-            const float h = 40.F * getDisplayScale();
-            float x = 0.F;
-            for (const float linear : { 1.F, 2.F, 4.F, 8.F })
-            {
-                const float v = 1.055F * std::pow(linear, 1.F / 2.4F) - .055F;
-                render->drawRect(Box2F(x, 0.F, h * 2.F, h), Color4F(v, v, v));
-                x += h * 2.F;
-            }
-        }
         // FTK_GPU_TIMING prints, each second, the time between the frames
         // the window presented, and the longest wait in Render::end() (the
         // frame before last finishing) and in acquiring the swapchain: for
         // telling uneven presentation from waiting, where playback judders
         // on one machine and not another.
         static const bool timing = gpu::getEnvFlag("FTK_GPU_TIMING");
-        const auto endStart = std::chrono::steady_clock::now();
-        render->end();
-        const auto endDone = std::chrono::steady_clock::now();
+        auto endStart = std::chrono::steady_clock::now();
+        auto endDone = endStart;
+        // Nothing new: the buffer as it was drawn last is presented again.
+        if (draw)
+        {
+            // The window's renderer may be one built on the GPU renderer;
+            // the target is said to the one that draws.
+            auto gpuRender = gpu::getRender(p.render);
+            if (!gpuRender)
+                return;
+            gpuRender->setTarget(p.gpuBuffer);
+            const auto& render = p.render;
+            render->begin(bufferSize);
+            const Box2I drawRect(V2I(), bufferSize);
+            render->setClipRectEnabled(false);
+            render->setClipRect(drawRect);
+            DrawEvent drawEvent(
+                fontSystem,
+                iconSystem,
+                getDisplayScale(),
+                style,
+                p.render);
+            _drawEventRecursive(
+                shared_from_this(),
+                drawRect,
+                drawEvent);
+            render->setClipRectEnabled(false);
+            if (gpu::getEnvFlag("FTK_GPU_HDR_TEST"))
+            {
+                // Something to look at on an HDR display: patches at one, two,
+                // four and eight times the user interface's white. Display
+                // encoded, as everything drawn here is.
+                const float h = 40.F * getDisplayScale();
+                float x = 0.F;
+                for (const float linear : { 1.F, 2.F, 4.F, 8.F })
+                {
+                    const float v = 1.055F * std::pow(linear, 1.F / 2.4F) - .055F;
+                    render->drawRect(Box2F(x, 0.F, h * 2.F, h), Color4F(v, v, v));
+                    x += h * 2.F;
+                }
+            }
+            endStart = std::chrono::steady_clock::now();
+            render->end();
+            endDone = std::chrono::steady_clock::now();
+        }
         auto acquireDone = endDone;
 
         // To the window, which an offscreen one does not have. The
@@ -1046,6 +1079,7 @@ namespace ftk
             const bool acquired = cmd &&
                 SDL_WaitAndAcquireGPUSwapchainTexture(cmd, p.window->getSDLWindow(), &swapchain, &w, &h);
             acquireDone = std::chrono::steady_clock::now();
+            _presented();
             if (acquired && swapchain)
             {
                 // The white level moves with the display the window is on
@@ -1137,5 +1171,111 @@ namespace ftk
         {
             _p->window->clearCurrent();
         }
+    }
+
+    void Window::_setPresentEveryRefresh(bool value)
+    {
+        _p->presentEveryRefresh = value;
+    }
+
+    void Window::_setSwapWait(bool value)
+    {
+        if (_p->window)
+        {
+            _p->window->setSwapWait(value);
+        }
+    }
+
+    void Window::_presented()
+    {
+        FTK_P();
+        auto& c = p.refreshClock;
+        const auto now = std::chrono::steady_clock::now();
+        static const bool logPresents = std::getenv("FTK_LOG_PRESENTS") != nullptr;
+        if (logPresents)
+        {
+            static auto last = now;
+            static int n = 0;
+            static std::string line;
+            const double interval = std::chrono::duration<double, std::milli>(now - last).count();
+            line += std::to_string(static_cast<int>(interval * 10.0 + .5)) + " ";
+            if (!p.gpu && interval > 20.0)
+            {
+                // A late one: how long its drawing and its swap took.
+                fprintf(stderr, "late present %.1f ms: %s %.1f ms, swap %.1f ms\n",
+                    interval,
+                    p.glDrew ? "draw" : "re-present",
+                    std::chrono::duration<double, std::milli>(p.glSwapStart - p.glDrawStart).count(),
+                    std::chrono::duration<double, std::milli>(now - p.glSwapStart).count());
+            }
+            last = now;
+            if (++n % 60 == 0)
+            {
+                fprintf(stderr, "presents (0.1 ms): %s\n", line.c_str());
+                line.clear();
+            }
+        }
+        // The period from the display the window is on, asked again now and
+        // then: the window can be moved to another.
+        if (!c.valid || now - c.periodTime > std::chrono::seconds(1))
+        {
+            c.periodTime = now;
+#if defined(FTK_SDL3)
+            if (SDL_Window* sdlWindow = p.window->getSDLWindow())
+            {
+                if (const SDL_DisplayMode* mode = SDL_GetCurrentDisplayMode(
+                    SDL_GetDisplayForWindow(sdlWindow)))
+                {
+                    if (mode->refresh_rate_numerator > 0 && mode->refresh_rate_denominator > 0)
+                    {
+                        c.period =
+                            static_cast<double>(mode->refresh_rate_denominator) /
+                            mode->refresh_rate_numerator;
+                    }
+                    else if (mode->refresh_rate > 0.F)
+                    {
+                        c.period = 1.0 / mode->refresh_rate;
+                    }
+                }
+            }
+#endif // FTK_SDL3
+        }
+        if (!c.valid)
+        {
+            c.phase = now;
+            c.valid = true;
+            return;
+        }
+        // How far this return is from the nearest refresh of the estimate.
+        // A present returns after its refresh, never before, so an earlier
+        // return than the estimate moves it there at once, and a later one
+        // only a little, which follows a display whose rate is not quite
+        // the one it gives without being pulled by a return that was held
+        // up. Measured against an average of the returns on the M1 Max:
+        // with the GPU renderer, no hitches in two minutes against a few a
+        // minute; the average is pulled late by the late ones.
+        const double t = std::chrono::duration<double>(now - c.phase).count();
+        const double k = std::round(t / c.period);
+        const double r = t - k * c.period;
+        const double move = r < 0.0 ? r : r * 0.02;
+        c.phase += std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+            std::chrono::duration<double>(k * c.period + move));
+    }
+
+    std::optional<std::chrono::steady_clock::time_point> Window::_nearestRefresh(
+        const std::chrono::steady_clock::time_point& time,
+        double periods) const
+    {
+        FTK_P();
+        const auto& c = p.refreshClock;
+        if (!c.valid)
+        {
+            return std::nullopt;
+        }
+        const double t = std::chrono::duration<double>(time - c.phase).count() +
+            periods * c.period;
+        const double k = std::round(t / c.period);
+        return c.phase + std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+            std::chrono::duration<double>(k * c.period));
     }
 }

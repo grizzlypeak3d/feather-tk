@@ -179,6 +179,11 @@ namespace ftk
             bool sync = false;
             bool syncCurrent = false;
             std::chrono::steady_clock::time_point frameTime;
+            // Whether the application wants the swap to wait (see
+            // setSwapWait()), and on Linux whether the window's drawing
+            // was held back.
+            bool swapWait = true;
+            bool heldBack = false;
         };
         
         Window::Window(
@@ -1004,51 +1009,61 @@ namespace ftk
 #endif // FTK_SDL2
         }
 
+        void Window::setSwapWait(bool value)
+        {
+            _p->swapWait = value;
+        }
+
         void Window::swap()
         {
             FTK_P();
             if (!p.sdlGLContext)
                 return;
-#if defined(__linux__)
-            // A window behind another is not shown, and a driver can hold
-            // its drawing back for as long as that lasts: with NVIDIA's on
-            // X11, half a second a frame for a window that is covered. That
-            // is the application's main loop, and so playback, held up by a
-            // window that is not even visible. So a window without the
-            // focus whose frame took that long stops waiting for the
-            // display, until it has the focus again. Only then: a window
-            // that is drawing on time is left as it is, on every other
-            // driver and desktop.
             if (p.sync)
             {
+#if defined(__linux__)
+                // A window behind another is not shown, and a driver can hold
+                // its drawing back for as long as that lasts: with NVIDIA's on
+                // X11, half a second a frame for a window that is covered. That
+                // is the application's main loop, and so playback, held up by a
+                // window that is not even visible. So a window without the
+                // focus whose frame took that long stops waiting for the
+                // display, until it has the focus again. Only then: a window
+                // that is drawing on time is left as it is, on every other
+                // driver and desktop.
                 const bool focus =
                     (SDL_GetWindowFlags(p.sdlWindow) & SDL_WINDOW_INPUT_FOCUS) != 0;
                 const auto frame = std::chrono::steady_clock::now() - p.frameTime;
-                bool sync = p.syncCurrent;
+                bool heldBack = p.heldBack;
                 if (focus)
                 {
-                    sync = true;
+                    heldBack = false;
                 }
                 else if (frame > std::chrono::milliseconds(100))
                 {
-                    sync = false;
+                    heldBack = true;
                 }
-                if (sync != p.syncCurrent)
+                if (heldBack != p.heldBack)
                 {
-                    p.syncCurrent = sync;
-                    SDL_GL_SetSwapInterval(sync ? 1 : 0);
+                    p.heldBack = heldBack;
                     if (auto logSystem = p.logSystem.lock())
                     {
                         logSystem->print(
                             "ftk::gl::Window",
-                            sync ?
-                            "Swap waits for the display" :
+                            heldBack ?
                             "Swap does not wait for the display: the window "
-                            "is behind another and its drawing was held back");
+                            "is behind another and its drawing was held back" :
+                            "Swap waits for the display");
                     }
                 }
-            }
 #endif // __linux__
+                const bool sync = p.swapWait && !p.heldBack;
+                if (sync != p.syncCurrent)
+                {
+                    p.syncCurrent = sync;
+                    SDL_GL_SetSwapInterval(sync ? 1 : 0);
+                }
+            }
             SDL_GL_SwapWindow(p.sdlWindow);
         }
 

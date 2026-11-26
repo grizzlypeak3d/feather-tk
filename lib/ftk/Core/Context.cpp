@@ -118,6 +118,16 @@ namespace ftk
         }
     }
 
+    void Context::setFrameTime(const std::optional<std::chrono::steady_clock::time_point>& value)
+    {
+        _frameTime = value;
+    }
+
+    const std::optional<std::chrono::steady_clock::time_point>& Context::getFrameTime() const
+    {
+        return _frameTime;
+    }
+
     bool Context::isBusy() const
     {
         for (const auto& system : _systems)

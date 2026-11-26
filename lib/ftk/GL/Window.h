@@ -190,6 +190,12 @@ namespace ftk
             FTK_GL_API void raise();
 
             //! Swap the buffers.
+            //! Whether the swap waits for the display (the default). An
+            //! application whose loop is paced to another window's display
+            //! has this one not wait, so that a frame drawn in it does not
+            //! hold the loop up until this display's next refresh as well.
+            FTK_GL_API void setSwapWait(bool);
+
             FTK_GL_API void swap();
 
             //! Get the OpenGL information.

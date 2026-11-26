@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <chrono>
+#include <optional>
+
 #include <ftk/UI/Export.h>
 #include <ftk/UI/IWindow.h>
 
@@ -97,7 +100,31 @@ namespace ftk
         void _updateGPU(
             const std::shared_ptr<FontSystem>&,
             const std::shared_ptr<IconSystem>&,
-            const std::shared_ptr<Style>&);
+            const std::shared_ptr<Style>&,
+            bool draw);
+
+        //! Present each refresh, drawn or not: the buffer as it was drawn
+        //! last when nothing changed. A present waits for the display, so
+        //! the application's loop runs once a refresh, in step with it.
+        void _setPresentEveryRefresh(bool);
+
+        //! Whether a present waits for the display; see
+        //! gl::Window::setSwapWait().
+        void _setSwapWait(bool);
+
+        //! The display's refreshes, as the window's presents mark them: a
+        //! present waits for the display, so it returns just after one.
+        //! The estimate keeps to the earliest returns, which are the ones
+        //! nearest the refresh, and follows the display's rate.
+        void _presented();
+
+        //! The refresh nearest the given time plus a number of refresh
+        //! periods, from the estimate; nothing until a present has marked
+        //! one. Nearest rather than first after, since the returns the
+        //! estimate is made of fall either side of it.
+        std::optional<std::chrono::steady_clock::time_point> _nearestRefresh(
+            const std::chrono::steady_clock::time_point&,
+            double periods) const;
 
         friend class App;
 

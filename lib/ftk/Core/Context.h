@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 
 namespace ftk
 {
@@ -60,6 +61,14 @@ namespace ftk
         //! Whether any system is busy; see IBaseSystem::isBusy().
         FTK_CORE_API bool isBusy() const;
 
+        //! When the frame being made now will be on screen: the refresh it
+        //! will be shown at, when the application's loop is paced to the
+        //! display, for a player to show the picture of that time rather
+        //! than of the moment it happened to be asked. Nothing when it is
+        //! not known, and the time of asking is the best there is.
+        FTK_CORE_API void setFrameTime(const std::optional<std::chrono::steady_clock::time_point>&);
+        FTK_CORE_API const std::optional<std::chrono::steady_clock::time_point>& getFrameTime() const;
+
         //! Stop the systems' threads.
         //!
         //! Call this from the thread that owns the context, before the last
@@ -78,6 +87,7 @@ namespace ftk
         std::shared_ptr<LogSystem> _logSystem;
         std::list<std::shared_ptr<IBaseSystem> > _systems;
         std::map<std::shared_ptr<IBaseSystem>, std::chrono::steady_clock::time_point> _systemTimes;
+        std::optional<std::chrono::steady_clock::time_point> _frameTime;
     };
 }
 

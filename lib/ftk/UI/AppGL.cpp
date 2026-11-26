@@ -135,6 +135,15 @@ namespace ftk
 
     struct App::Private
     {
+        //! FTK_DISPLAY_PACED: while a system is busy (a player playing),
+        //! the window showing the picture presents every refresh, so the
+        //! loop goes round once a refresh in step with its display rather
+        //! than every few milliseconds, and the context is given the time
+        //! of the refresh the frame being made will be shown at, for the
+        //! player to choose its frame by. See App::setPacedWindow().
+        bool paced = false;
+        std::weak_ptr<IWindow> pacedWindow;
+
         struct CmdLine
         {
             std::shared_ptr<CmdLineFlag> exit;
@@ -239,6 +248,10 @@ namespace ftk
         const AppFiles& appFiles)
     {
         FTK_P();
+        if (const char* env = std::getenv("FTK_DISPLAY_PACED"))
+        {
+            p.paced = std::atoi(env) != 0;
+        }
 
 #if defined(__APPLE__) && TARGET_OS_IPHONE
         // URLs open through UIKit there; see openURLIOS().
@@ -883,6 +896,30 @@ namespace ftk
     {
         FTK_P();
 
+        // Paced: the window presents every refresh, which waits for the
+        // display, so each iteration starts just after one, and the frame
+        // made now is for the next.
+        std::optional<std::chrono::steady_clock::time_point> frameTime;
+        const bool paced = p.paced && _context->isBusy();
+        const auto pacedWindow = paced ? _pacedWindow() : nullptr;
+        for (const auto& window : p.windows)
+        {
+            if (auto w = std::dynamic_pointer_cast<Window>(window))
+            {
+                // The others do not wait for their displays: a frame
+                // drawn in one would hold the loop up until its display's
+                // refresh as well, which is not in step with the paced one.
+                w->_setPresentEveryRefresh(w == pacedWindow);
+                w->_setSwapWait(!pacedWindow || w == pacedWindow);
+            }
+        }
+        if (pacedWindow)
+        {
+            // An iteration starts about at a refresh (a present just
+            // returned), and the frame it makes is shown at the one after.
+            frameTime = pacedWindow->_nearestRefresh(std::chrono::steady_clock::now(), 1.0);
+        }
+        _context->setFrameTime(frameTime);
         _context->tick();
         if (_context->isBusy())
         {
@@ -1476,10 +1513,42 @@ namespace ftk
 #else // __EMSCRIPTEN__
         while (p.running && !p.windows.empty())
         {
+            const auto iterationStart = std::chrono::steady_clock::now();
             _runIteration();
 
             auto t1 = std::chrono::steady_clock::now();
-            sleep(p.active ? timeout : idleTimeout, t0, t1);
+            std::shared_ptr<Window> pacedWindow;
+            if (p.paced && _context->isBusy())
+            {
+                pacedWindow = _pacedWindow();
+            }
+            if (pacedWindow)
+            {
+                // The present waited for the display, and the next
+                // iteration is the next refresh's: no sleep. An iteration
+                // that did not wait (nothing presented yet, a present that
+                // went straight through) sleeps until just after the next
+                // refresh instead of going round again at once.
+                if (t1 - iterationStart < std::chrono::milliseconds(2))
+                {
+                    if (auto next = pacedWindow->_nearestRefresh(t1, 0.5))
+                    {
+                        const auto wake = *next + std::chrono::milliseconds(1);
+                        if (wake > t1)
+                        {
+                            ftk::sleep(std::chrono::duration_cast<std::chrono::microseconds>(wake - t1));
+                        }
+                    }
+                    else
+                    {
+                        sleep(timeout, t0, t1);
+                    }
+                }
+            }
+            else
+            {
+                sleep(p.active ? timeout : idleTimeout, t0, t1);
+            }
             t1 = std::chrono::steady_clock::now();
             const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
             p.tickTimes.push_back(diff.count());
@@ -1502,6 +1571,37 @@ namespace ftk
                 arg(p.cmdLine.captureShot->getValue()));
         }
 #endif // __EMSCRIPTEN__
+    }
+
+    void App::setPacedWindow(const std::shared_ptr<IWindow>& value)
+    {
+        _p->pacedWindow = value;
+    }
+
+    std::shared_ptr<Window> App::_pacedWindow() const
+    {
+        FTK_P();
+        if (auto window = p.pacedWindow.lock())
+        {
+            if (window->isVisible(false) && !window->isOffscreen())
+            {
+                if (auto out = std::dynamic_pointer_cast<Window>(window))
+                {
+                    return out;
+                }
+            }
+        }
+        for (const auto& window : p.windows)
+        {
+            if (window->isVisible(false) && !window->isOffscreen())
+            {
+                if (auto out = std::dynamic_pointer_cast<Window>(window))
+                {
+                    return out;
+                }
+            }
+        }
+        return nullptr;
     }
 
     void App::_runIteration()

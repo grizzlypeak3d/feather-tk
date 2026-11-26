@@ -24,6 +24,7 @@ namespace ftk
     class Settings;
     class IWidget;
     class IWindow;
+    class Window;
     class IconSystem;
     struct TickEvent;
 
@@ -308,6 +309,11 @@ namespace ftk
         //! Get the windows.
         FTK_UI_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
+        //! Set the window playback is paced to, with FTK_DISPLAY_PACED: the
+        //! one showing the picture, whose display's refreshes the frames
+        //! are chosen for. Nothing for the first window on screen.
+        FTK_UI_API void setPacedWindow(const std::shared_ptr<IWindow>&);
+
         //! Exit the application.
         FTK_UI_API virtual void exit();
 
@@ -336,6 +342,7 @@ namespace ftk
         void _widgetDumpInit(const std::string& fileName);
 
         std::shared_ptr<IWindow> _getWindow(uint32_t id) const;
+        std::shared_ptr<Window> _pacedWindow() const;
         void _windowResized(const std::shared_ptr<IWindow>&, uint32_t id);
 #if defined(FTK_SDL3)
         void _liveResize(uint32_t id);
