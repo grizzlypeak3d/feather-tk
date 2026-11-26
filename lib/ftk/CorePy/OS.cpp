@@ -31,11 +31,6 @@ namespace ftk
                 .def_rw("desktop", &SysInfo::desktop);
 
             m.def("getSysInfo", &getSysInfo, "Get operating system information.");
-
-            // The names these were first bound under, misspelled, kept for
-            // the scripts that use them.
-            m.attr("SystInfo") = m.attr("SysInfo");
-            m.attr("getSystInfo") = m.attr("getSysInfo");
         }
     }
 }
