@@ -159,16 +159,18 @@ namespace ftk
                 TriMesh2F mesh;
                 const float d = p.data[i].percentage;
                 const float inc = 2.F;
-                for (int i = a; i < a + d; i += inc)
+                // From where the slice before ended, fractions and all: an
+                // integer start made each slice overlap the one before.
+                for (float t = a; t < a + d; t += inc)
                 {
                     const size_t size = mesh.v.size();
                     mesh.v.push_back(V2F(0.F, 0.F));
                     mesh.v.push_back(V2F(
-                        cos(deg2rad(i / 100.F * 360.F - 90.F)) * r,
-                        sin(deg2rad(i / 100.F * 360.F - 90.F)) * r));
+                        cos(deg2rad(t / 100.F * 360.F - 90.F)) * r,
+                        sin(deg2rad(t / 100.F * 360.F - 90.F)) * r));
                     mesh.v.push_back(V2F(
-                        cos(deg2rad(std::min(i + inc, a + d) / 100.F * 360.F - 90.F)) * r,
-                        sin(deg2rad(std::min(i + inc, a + d) / 100.F * 360.F - 90.F)) * r));
+                        cos(deg2rad(std::min(t + inc, a + d) / 100.F * 360.F - 90.F)) * r,
+                        sin(deg2rad(std::min(t + inc, a + d) / 100.F * 360.F - 90.F)) * r));
                     mesh.triangles.push_back({ size + 1, size + 3, size + 2 });
                 }
                 p.draw->meshes.push_back(mesh);

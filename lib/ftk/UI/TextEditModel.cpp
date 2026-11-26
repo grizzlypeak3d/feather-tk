@@ -810,7 +810,9 @@ namespace ftk
                 static_cast<int>(text[max.line].size()) : 0;
             std::vector<std::string> lines = _getSelection(range);
             const int tabSpaces = p.options->get().tabSpaces;
-            int lastSpacesRemoved = 0;
+            // How many spaces came off each line, for moving the cursor and
+            // the selection on that line by its own count.
+            std::vector<int> removed;
             for (auto& line : lines)
             {
                 int j = 0;
@@ -824,13 +826,21 @@ namespace ftk
                 {
                     line.erase(0, j);
                 }
-                lastSpacesRemoved = j;
+                removed.push_back(j);
             }
-            TextEditPos cursorAfter = cursor;
-            cursorAfter.chr = std::max(0, cursor.chr - lastSpacesRemoved);
+            const auto unindent = [&min, &removed](TextEditPos pos)
+            {
+                const int i = pos.line - min.line;
+                if (i >= 0 && i < static_cast<int>(removed.size()))
+                {
+                    pos.chr = std::max(0, pos.chr - removed[i]);
+                }
+                return pos;
+            };
+            const TextEditPos cursorAfter = unindent(cursor);
             TextEditSelection selectionAfter = selection;
-            selectionAfter.first.chr = std::max(0, selection.first.chr - lastSpacesRemoved);
-            selectionAfter.second.chr = std::max(0, selection.second.chr - lastSpacesRemoved);
+            selectionAfter.first = unindent(selection.first);
+            selectionAfter.second = unindent(selection.second);
             _replace(range, lines, cursorAfter, selectionAfter);
         }
         else if (
