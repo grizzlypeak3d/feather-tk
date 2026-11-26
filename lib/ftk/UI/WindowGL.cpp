@@ -676,6 +676,33 @@ namespace ftk
     
     namespace
     {
+        // For FTK_GPU_TIMING: the widgets that asked for a draw, by name,
+        // counted over a second. The walk stops at a widget that asked, as
+        // IWindow::_hasDrawUpdate() does: it is drawn whole.
+        std::map<std::string, int> drawnBy;
+
+        void addDrawnBy(const std::shared_ptr<IWidget>& widget)
+        {
+            if (widget->isClipped())
+            {
+                return;
+            }
+            if (widget->hasDrawUpdate())
+            {
+                std::string name = widget->getObjectName();
+                if (name.empty())
+                {
+                    name = "(unnamed)";
+                }
+                ++drawnBy[name];
+                return;
+            }
+            for (const auto& child : widget->getChildren())
+            {
+                addDrawnBy(child);
+            }
+        }
+
         gl::TextureType getTextureType(WindowBufferType value)
         {
             gl::TextureType out = gl::TextureType::None;
@@ -891,6 +918,11 @@ namespace ftk
         const std::shared_ptr<Style>& style)
     {
         FTK_P();
+        static const bool timingDraws = gpu::getEnvFlag("FTK_GPU_TIMING");
+        if (timingDraws)
+        {
+            addDrawnBy(shared_from_this());
+        }
         // The swapchain follows the display: a window moved to an HDR
         // display, or a display whose HDR is turned on, is given an HDR
         // swapchain, and back again.
@@ -1067,9 +1099,18 @@ namespace ftk
                 {
                     list += " " + std::to_string(i);
                 }
+                // Which widgets asked for the draws: a present that only
+                // a label wanted, between two frames of a movie, can take
+                // the display's refresh from the next frame.
+                std::string by;
+                for (const auto& i : drawnBy)
+                {
+                    by += (by.empty() ? "" : ", ") + i.first + " " + std::to_string(i.second);
+                }
+                drawnBy.clear();
                 std::fprintf(stderr,
-                    "ftk gpu timing: %d frames, ms between:%s; longest end() %.1f ms, acquire %.1f ms\n",
-                    static_cast<int>(t.intervals.size()), list.c_str(), t.endMax, t.acquireMax);
+                    "ftk gpu timing: %d frames, ms between:%s; longest end() %.1f ms, acquire %.1f ms; drawn by: %s\n",
+                    static_cast<int>(t.intervals.size()), list.c_str(), t.endMax, t.acquireMax, by.c_str());
                 t.intervals.clear();
                 t.endMax = 0.0;
                 t.acquireMax = 0.0;
