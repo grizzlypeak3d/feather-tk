@@ -932,10 +932,16 @@ namespace ftk
                 pacedWindow->_nearestRefresh(now, 1.0);
             if (ahead && next)
             {
-                // Two refreshes ahead or more is an estimate that moved,
-                // not a frame to wait for.
+                // A refresh behind is allowed: with frames in flight an
+                // iteration can start up to a refresh after the one its
+                // frame is for (the GPU renderer on Windows; skipping then
+                // was the A4000's remaining hitches, frames never shown).
+                // Further behind is a loop that fell behind, and skips to
+                // the refresh still ahead. Two refreshes ahead or more is
+                // an estimate that moved, not a frame to wait for.
                 const auto period = *pacedWindow->_nearestRefresh(*ahead, 1.0) - *ahead;
-                frameTime = *next >= *ahead && *next - *ahead < period * 2 / 3 + period ?
+                const auto half = period / 2;
+                frameTime = *next + period + half > *ahead && *next < *ahead + period + half ?
                     *next :
                     *ahead;
             }
