@@ -180,21 +180,21 @@ namespace ftk
             {
                 auto image = Image::create(big);
             }
-            FTK_ASSERT(0 == Image::getBufferPoolByteCount());
+            FTK_CHECK(0 == Image::getBufferPoolByteCount());
 
             // A buffer freed is kept and handed out again for the same size.
             Image::setBufferPoolMax(live + 2 * bigBytes + slack);
-            FTK_ASSERT(live + 2 * bigBytes + slack == Image::getBufferPoolMax());
+            FTK_CHECK(live + 2 * bigBytes + slack == Image::getBufferPoolMax());
             const uint8_t* data = nullptr;
             {
                 auto image = Image::create(big);
                 data = image->getData();
             }
-            FTK_ASSERT(Image::getBufferPoolByteCount() > bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() > bigBytes);
             {
                 auto image = Image::create(big);
-                FTK_ASSERT(data == image->getData());
-                FTK_ASSERT(0 == Image::getBufferPoolByteCount());
+                FTK_CHECK(data == image->getData());
+                FTK_CHECK(0 == Image::getBufferPoolByteCount());
             }
 
             // Small images are not kept.
@@ -202,7 +202,7 @@ namespace ftk
             {
                 auto image = Image::create(small);
             }
-            FTK_ASSERT(0 == Image::getBufferPoolByteCount());
+            FTK_CHECK(0 == Image::getBufferPoolByteCount());
 
             // Kept only while the images alive and the buffers kept fit: with
             // room for two, freeing both keeps both, and with room for one
@@ -211,7 +211,7 @@ namespace ftk
                 auto a = Image::create(big);
                 auto b = Image::create(big);
             }
-            FTK_ASSERT(Image::getBufferPoolByteCount() > 2 * bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() > 2 * bigBytes);
             Image::clearBufferPool();
             Image::setBufferPoolMax(live + bigBytes + slack);
             {
@@ -219,10 +219,10 @@ namespace ftk
                 auto b = Image::create(big);
                 b.reset();
                 // One alive and one kept is more than the room for one.
-                FTK_ASSERT(0 == Image::getBufferPoolByteCount());
+                FTK_CHECK(0 == Image::getBufferPoolByteCount());
             }
-            FTK_ASSERT(Image::getBufferPoolByteCount() > bigBytes);
-            FTK_ASSERT(Image::getBufferPoolByteCount() < 2 * bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() > bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() < 2 * bigBytes);
 
             // Lowering the maximum frees what no longer fits.
             Image::clearBufferPool();
@@ -231,25 +231,25 @@ namespace ftk
                 auto a = Image::create(big);
                 auto b = Image::create(big);
             }
-            FTK_ASSERT(Image::getBufferPoolByteCount() > 2 * bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() > 2 * bigBytes);
             Image::setBufferPoolMax(live + bigBytes + slack);
-            FTK_ASSERT(Image::getBufferPoolByteCount() > bigBytes);
-            FTK_ASSERT(Image::getBufferPoolByteCount() < 2 * bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() > bigBytes);
+            FTK_CHECK(Image::getBufferPoolByteCount() < 2 * bigBytes);
 
             // An image of another size makes room for itself: the buffer kept
             // is freed rather than held alongside it.
             {
                 auto image = Image::create(other);
-                FTK_ASSERT(0 == Image::getBufferPoolByteCount());
+                FTK_CHECK(0 == Image::getBufferPoolByteCount());
             }
 
             // Clearing frees everything kept.
             {
                 auto image = Image::create(big);
             }
-            FTK_ASSERT(Image::getBufferPoolByteCount() > 0);
+            FTK_CHECK(Image::getBufferPoolByteCount() > 0);
             Image::clearBufferPool();
-            FTK_ASSERT(0 == Image::getBufferPoolByteCount());
+            FTK_CHECK(0 == Image::getBufferPoolByteCount());
 
             Image::setBufferPoolMax(maxPrev);
         }

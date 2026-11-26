@@ -100,37 +100,37 @@ namespace ftk
             {
                 Path path("/tmp/a.exr");
                 path.setDir("");
-                FTK_ASSERT("" == path.getDir());
-                FTK_ASSERT("a" == path.getBase());
-                FTK_ASSERT(".exr" == path.getExt());
+                FTK_CHECK("" == path.getDir());
+                FTK_CHECK("a" == path.getBase());
+                FTK_CHECK(".exr" == path.getExt());
             }
             {
                 Path path("/tmp/a.exr");
                 path.setExt("");
-                FTK_ASSERT(!path.hasExt());
-                FTK_ASSERT("/tmp/a" == path.get());
+                FTK_CHECK(!path.hasExt());
+                FTK_CHECK("/tmp/a" == path.get());
             }
             {
                 Path path("/tmp/a.exr?x=1");
                 path.setRequest("");
-                FTK_ASSERT(!path.hasRequest());
-                FTK_ASSERT("/tmp/a.exr" == path.get());
+                FTK_CHECK(!path.hasRequest());
+                FTK_CHECK("/tmp/a.exr" == path.get());
             }
             {
                 Path path("/tmp/a.0001.exr");
-                FTK_ASSERT(4 == path.getPad());
+                FTK_CHECK(4 == path.getPad());
                 path.setNum("1");
-                FTK_ASSERT(0 == path.getPad());
-                FTK_ASSERT("/tmp/a.1.exr" == path.get());
+                FTK_CHECK(0 == path.getPad());
+                FTK_CHECK("/tmp/a.1.exr" == path.get());
                 path.setNum("");
-                FTK_ASSERT(!path.hasNum());
+                FTK_CHECK(!path.hasNum());
             }
             {
                 // The padding set stays through the other setters.
                 Path path("/tmp/a.1001.exr");
                 path.setPad(4);
                 path.setDir("/other/");
-                FTK_ASSERT(4 == path.getPad());
+                FTK_CHECK(4 == path.getPad());
             }
         }
 

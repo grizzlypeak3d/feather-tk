@@ -109,28 +109,28 @@ namespace ftk
             window->cursorPos(V2I(10, 10));
             window->pen(true, .5F, true);
             window->button(true);
-            FTK_ASSERT(widget->press.pen);
-            FTK_ASSERT(.5F == widget->press.pressure);
-            FTK_ASSERT(widget->press.eraser);
+            FTK_CHECK(widget->press.pen);
+            FTK_CHECK(.5F == widget->press.pressure);
+            FTK_CHECK(widget->press.eraser);
             window->pen(true, .75F, true);
             window->cursorPos(V2I(20, 20));
-            FTK_ASSERT(widget->move.pen);
-            FTK_ASSERT(.75F == widget->move.pressure);
-            FTK_ASSERT(widget->move.eraser);
+            FTK_CHECK(widget->move.pen);
+            FTK_CHECK(.75F == widget->move.pressure);
+            FTK_CHECK(widget->move.eraser);
             window->pen(false, 1.F, false);
             window->button(false);
 
             window->pen(true, .25F, false);
             window->button(true);
-            FTK_ASSERT(widget->press.pen);
-            FTK_ASSERT(!widget->press.eraser);
+            FTK_CHECK(widget->press.pen);
+            FTK_CHECK(!widget->press.eraser);
             window->pen(false, 1.F, false);
             window->button(false);
 
             window->button(true);
-            FTK_ASSERT(!widget->press.pen);
-            FTK_ASSERT(1.F == widget->press.pressure);
-            FTK_ASSERT(!widget->press.eraser);
+            FTK_CHECK(!widget->press.pen);
+            FTK_CHECK(1.F == widget->press.pressure);
+            FTK_CHECK(!widget->press.eraser);
             window->button(false);
         }
         

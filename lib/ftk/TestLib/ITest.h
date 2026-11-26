@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <ftk/Core/Assert.h>
 #include <ftk/Core/Util.h>
 
 #include <filesystem>
@@ -83,6 +84,13 @@ namespace ftk
         if (!(value)) \
             _checkFailed(#value, __FILE__, __LINE__); \
     } while (0)
+
+//! Not in tests: FTK_ASSERT is compiled out of Release builds, where the
+//! tests run, so a test that used it checked nothing. Assert.h is included
+//! above, so that its include guard keeps it from defining this again.
+#undef FTK_ASSERT
+#define FTK_ASSERT(value) \
+    static_assert(false, "Tests check with FTK_CHECK: FTK_ASSERT does nothing in Release builds")
 
 #define FTK_TEST_ENUM(ENUM) \
     for (auto i : get##ENUM##Enums()) \

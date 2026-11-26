@@ -37,7 +37,7 @@ namespace ftk
                 Color4F(0.F, 0.F, 0.F),
                 Color4F(1.F, 1.F, 1.F),
                 Size2I(10, 10));
-            FTK_ASSERT(8 == mesh.triangles.size());
+            FTK_CHECK(8 == mesh.triangles.size());
 
             // A size of zero, or less, is a pixel rather than a hang.
             for (const auto& size : { Size2I(0, 0), Size2I(-5, 10), Size2I(10, 0) })
@@ -47,7 +47,7 @@ namespace ftk
                     Color4F(0.F, 0.F, 0.F),
                     Color4F(1.F, 1.F, 1.F),
                     size);
-                FTK_ASSERT(!m.triangles.empty());
+                FTK_CHECK(!m.triangles.empty());
             }
         }
         
