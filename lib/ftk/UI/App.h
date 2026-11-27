@@ -318,9 +318,10 @@ namespace ftk
         //! Get the windows.
         FTK_UI_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
-        //! Set the window playback is paced to, with FTK_DISPLAY_PACED: the
-        //! one showing the picture, whose display's refreshes the frames
-        //! are chosen for. Nothing for the first window on screen.
+        //! Set the window playback is paced to (on by default on the
+        //! desktop; FTK_DISPLAY_PACED=0 turns pacing off): the one showing
+        //! the picture, whose display's refreshes the frames are chosen
+        //! for. Nothing for the first window on screen.
         FTK_UI_API void setPacedWindow(const std::shared_ptr<IWindow>&);
 
         //! Exit the application.

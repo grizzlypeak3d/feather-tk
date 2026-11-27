@@ -144,13 +144,23 @@ namespace ftk
 
     struct App::Private
     {
-        //! FTK_DISPLAY_PACED: while a system is busy (a player playing),
-        //! the window showing the picture presents every refresh, so the
-        //! loop goes round once a refresh in step with its display rather
-        //! than every few milliseconds, and the context is given the time
-        //! of the refresh the frame being made will be shown at, for the
-        //! player to choose its frame by. See App::setPacedWindow().
+        //! Paced to the display: while a system is busy (a player
+        //! playing), the window showing the picture presents every
+        //! refresh, so the loop goes round once a refresh in step with its
+        //! display rather than every few milliseconds, and the context is
+        //! given the time of the refresh the frame being made will be shown
+        //! at, for the player to choose its frame by. See
+        //! App::setPacedWindow(). On by default on the desktop, where a
+        //! capture of the display measured it (hitches a minute at 60, 30
+        //! and 24 fps went from as many as 550 to a few or none on macOS,
+        //! Windows and Linux); FTK_DISPLAY_PACED=0 turns it off, and =1 on
+        //! elsewhere. Not on iOS, whose loop is the display link already,
+        //! nor the web, whose loop is the browser's.
+#if defined(__EMSCRIPTEN__) || (defined(__APPLE__) && TARGET_OS_IPHONE)
         bool paced = false;
+#else
+        bool paced = true;
+#endif
         std::weak_ptr<IWindow> pacedWindow;
         std::optional<std::chrono::steady_clock::time_point> lastFrameTime;
 
