@@ -78,10 +78,13 @@ namespace ftk
         bool presentEveryRefresh = false;
         std::unique_ptr<VBlankWatcher> vblank;
 
-        //! For FTK_LOG_PRESENTS.
+        //! For FTK_LOG_PRESENTS, which logs each window on its own.
         std::chrono::steady_clock::time_point glDrawStart;
         std::chrono::steady_clock::time_point glSwapStart;
         bool glDrew = false;
+        std::chrono::steady_clock::time_point logLast;
+        int logCount = 0;
+        std::string logLine;
 
         std::shared_ptr<gl::Window> window;
         Box2I textInputArea;
@@ -1209,11 +1212,13 @@ namespace ftk
         static const bool logPresents = std::getenv("FTK_LOG_PRESENTS") != nullptr;
         if (logPresents)
         {
-            static auto last = now;
-            static int n = 0;
-            static std::string line;
-            const double interval = std::chrono::duration<double, std::milli>(now - last).count();
-            line += std::to_string(static_cast<int>(interval * 10.0 + .5)) + " ";
+            if (0 == p.logCount && p.logLine.empty())
+            {
+                p.logLast = now;
+            }
+            const double interval =
+                std::chrono::duration<double, std::milli>(now - p.logLast).count();
+            p.logLine += std::to_string(static_cast<int>(interval * 10.0 + .5)) + " ";
 #if defined(FTK_GPU)
             const bool gpu = p.gpu;
 #else // FTK_GPU
@@ -1222,17 +1227,19 @@ namespace ftk
             if (!gpu && interval > 20.0)
             {
                 // A late one: how long its drawing and its swap took.
-                fprintf(stderr, "late present %.1f ms: %s %.1f ms, swap %.1f ms\n",
+                fprintf(stderr, "%s: late present %.1f ms: %s %.1f ms, swap %.1f ms\n",
+                    getTitle().c_str(),
                     interval,
                     p.glDrew ? "draw" : "re-present",
                     std::chrono::duration<double, std::milli>(p.glSwapStart - p.glDrawStart).count(),
                     std::chrono::duration<double, std::milli>(now - p.glSwapStart).count());
             }
-            last = now;
-            if (++n % 60 == 0)
+            p.logLast = now;
+            if (++p.logCount % 60 == 0)
             {
-                fprintf(stderr, "presents (0.1 ms): %s\n", line.c_str());
-                line.clear();
+                fprintf(stderr, "%s: presents (0.1 ms): %s\n",
+                    getTitle().c_str(), p.logLine.c_str());
+                p.logLine.clear();
             }
         }
         // The period from the display the window is on, asked again now and
