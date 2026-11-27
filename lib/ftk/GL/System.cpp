@@ -232,6 +232,20 @@ namespace ftk
                 SDL_SetHint(SDL_HINT_MAC_BACKGROUND_APP, "0");
             }
 #endif // __APPLE__
+#if defined(__linux__)
+            // NVIDIA's OpenGL driver spins while it waits for the GPU, as
+            // in the glFinish() after a paced window's swap (see
+            // gl::Window::setSwapFinish): paced playback on the Dell's
+            // A4000 took 1.7 cores against 0.3 unpaced, two of its threads
+            // and the compositor's spinning. Sleeping instead takes 0.25,
+            // with the same cadence. Read when the driver loads, so set
+            // before; one already set is kept. Nothing else reads it.
+            std::string glYield;
+            if (!getEnv("__GL_YIELD", glYield))
+            {
+                setEnv("__GL_YIELD", "USLEEP");
+            }
+#endif // __linux__
 #if defined(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
             // The click that activates a window is delivered to the widget
             // under it, rather than only raising the window. SDL ignores it
