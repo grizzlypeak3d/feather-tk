@@ -121,6 +121,15 @@ namespace ftk
 #endif
     }
 
+    bool getDefaultDisplayPaced()
+    {
+#if defined(__EMSCRIPTEN__) || (defined(__APPLE__) && TARGET_OS_IPHONE) || defined(__linux__)
+        return false;
+#else
+        return true;
+#endif
+    }
+
     std::vector<float> getDisplayScales()
     {
         std::vector<float> out =
@@ -150,17 +159,15 @@ namespace ftk
         //! display rather than every few milliseconds, and the context is
         //! given the time of the refresh the frame being made will be shown
         //! at, for the player to choose its frame by. See
-        //! App::setPacedWindow(). On by default on the desktop, where a
-        //! capture of the display measured it (hitches a minute at 60, 30
-        //! and 24 fps went from as many as 550 to a few or none on macOS,
-        //! Windows and Linux); FTK_DISPLAY_PACED=0 turns it off, and =1 on
-        //! elsewhere. Not on iOS, whose loop is the display link already,
-        //! nor the web, whose loop is the browser's.
-#if defined(__EMSCRIPTEN__) || (defined(__APPLE__) && TARGET_OS_IPHONE)
-        bool paced = false;
-#else
-        bool paced = true;
-#endif
+        //! App::setDisplayPaced() and App::setPacedWindow(). The setting,
+        //! and FTK_DISPLAY_PACED over it.
+        std::shared_ptr<Observable<bool> > displayPaced =
+            Observable<bool>::create(getDefaultDisplayPaced());
+        std::optional<bool> displayPacedEnv;
+        bool isPaced() const
+        {
+            return displayPacedEnv.has_value() ? *displayPacedEnv : displayPaced->get();
+        }
         std::weak_ptr<IWindow> pacedWindow;
         std::optional<std::chrono::steady_clock::time_point> lastFrameTime;
 
@@ -270,7 +277,7 @@ namespace ftk
         FTK_P();
         if (const char* env = std::getenv("FTK_DISPLAY_PACED"))
         {
-            p.paced = std::atoi(env) != 0;
+            p.displayPacedEnv = std::atoi(env) != 0;
         }
 
 #if defined(__APPLE__) && TARGET_OS_IPHONE
@@ -505,6 +512,11 @@ namespace ftk
                     p.renderer->setIfChanged(value);
                 }
             }
+            bool displayPaced = false;
+            if (p.settings->get("/DisplayPaced", displayPaced))
+            {
+                p.displayPaced->setIfChanged(displayPaced);
+            }
         }
         if (video)
         {
@@ -730,6 +742,25 @@ namespace ftk
         }
     }
 
+    bool App::isDisplayPaced() const
+    {
+        return _p->displayPaced->get();
+    }
+
+    std::shared_ptr<IObservable<bool> > App::observeDisplayPaced() const
+    {
+        return _p->displayPaced;
+    }
+
+    void App::setDisplayPaced(bool value)
+    {
+        FTK_P();
+        if (p.displayPaced->setIfChanged(value) && p.settings)
+        {
+            p.settings->set("/DisplayPaced", value);
+        }
+    }
+
     ColorStyle App::getColorStyle() const
     {
         return _p->colorStyle->get();
@@ -922,7 +953,7 @@ namespace ftk
         // made now is for the next.
         std::optional<std::chrono::steady_clock::time_point> frameTime;
         double framePeriod = 0.0;
-        const bool paced = p.paced && _context->isBusy();
+        const bool paced = p.isPaced() && _context->isBusy();
         const auto pacedWindow = paced ? _pacedWindow() : nullptr;
         for (const auto& window : p.windows)
         {
@@ -1574,7 +1605,7 @@ namespace ftk
 
             auto t1 = std::chrono::steady_clock::now();
             std::shared_ptr<Window> pacedWindow;
-            if (p.paced && _context->isBusy())
+            if (p.isPaced() && _context->isBusy())
             {
                 pacedWindow = _pacedWindow();
             }

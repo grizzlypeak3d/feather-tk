@@ -79,6 +79,15 @@ namespace ftk
     //! had none.
     FTK_UI_API Renderer getDefaultRenderer();
 
+    //! Get whether playback is paced to the display when nothing else is
+    //! asked for (see App::setDisplayPaced()): on macOS and Windows, where
+    //! a capture of the display measured it, hitches a minute at 60, 30
+    //! and 24 fps going from as many as 550 to a few or none; not on
+    //! Linux, where Intel's OpenGL on Wayland played far worse paced
+    //! (2300 a minute at 60 fps against 120), nor on iOS, whose loop is the
+    //! display link already, nor the web, whose loop is the browser's.
+    FTK_UI_API bool getDefaultDisplayPaced();
+
     //! Get display scales.
     FTK_UI_API std::vector<float> getDisplayScales();
 
@@ -225,6 +234,26 @@ namespace ftk
 
         ///@}
 
+        //! \name Pacing
+        ///@{
+
+        //! Get whether playback is paced to the display: while a system is
+        //! busy (a player playing), the window showing the picture presents
+        //! every refresh, so the loop goes round once a refresh in step with
+        //! its display, and the frame is chosen for the refresh it will be
+        //! shown at. getDefaultDisplayPaced() unless set; kept with the
+        //! settings. The FTK_DISPLAY_PACED environment variable, 0 or 1,
+        //! overrides it, for testing.
+        FTK_UI_API bool isDisplayPaced() const;
+        //! Observe whether playback is paced to the display.
+        FTK_UI_API std::shared_ptr<IObservable<bool> > observeDisplayPaced() const;
+
+        //! Set whether playback is paced to the display. It takes effect at
+        //! once.
+        FTK_UI_API void setDisplayPaced(bool);
+
+        ///@}
+
         //! \name Display Scale
         ///@{
 
@@ -318,10 +347,9 @@ namespace ftk
         //! Get the windows.
         FTK_UI_API const std::list<std::shared_ptr<IWindow> >& getWindows() const;
 
-        //! Set the window playback is paced to (on by default on the
-        //! desktop; FTK_DISPLAY_PACED=0 turns pacing off): the one showing
-        //! the picture, whose display's refreshes the frames are chosen
-        //! for. Nothing for the first window on screen.
+        //! Set the window playback is paced to (see setDisplayPaced()): the
+        //! one showing the picture, whose display's refreshes the frames
+        //! are chosen for. Nothing for the first window on screen.
         FTK_UI_API void setPacedWindow(const std::shared_ptr<IWindow>&);
 
         //! Exit the application.
