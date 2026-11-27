@@ -184,6 +184,9 @@ namespace ftk
             // was held back.
             bool swapWait = true;
             bool heldBack = false;
+            // Whether the swap returns once it has happened: see
+            // setSwapFinish().
+            bool swapFinish = false;
         };
         
         Window::Window(
@@ -1014,6 +1017,11 @@ namespace ftk
             _p->swapWait = value;
         }
 
+        void Window::setSwapFinish(bool value)
+        {
+            _p->swapFinish = value;
+        }
+
         void Window::swap()
         {
             FTK_P();
@@ -1065,6 +1073,12 @@ namespace ftk
                 }
             }
             SDL_GL_SwapWindow(p.sdlWindow);
+            if (p.swapFinish && p.sync && p.syncCurrent)
+            {
+                // Until the swap is done, which for one that waits is the
+                // refresh it was for.
+                glFinish();
+            }
         }
 
         const GLInfo& Window::getGLInfo() const

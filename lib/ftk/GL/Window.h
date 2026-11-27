@@ -196,6 +196,15 @@ namespace ftk
             //! hold the loop up until this display's next refresh as well.
             FTK_GL_API void setSwapWait(bool);
 
+            //! Whether a swap that waits for the display returns only once
+            //! it has happened (off by default). A driver can queue the
+            //! swap and return at once, NVIDIA's on X11 does, and block a
+            //! later call instead, so that when the swap returned says
+            //! nothing about when the display refreshed. A window whose
+            //! presents are timed for its display's refreshes turns this
+            //! on.
+            FTK_GL_API void setSwapFinish(bool);
+
             FTK_GL_API void swap();
 
             //! Get the OpenGL information.

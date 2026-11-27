@@ -1178,6 +1178,19 @@ namespace ftk
     void Window::_setPresentEveryRefresh(bool value)
     {
         _p->presentEveryRefresh = value;
+#if defined(__linux__)
+        // Linux has no watcher for the vertical blanks, so the refreshes
+        // are estimated from when the presents return, and NVIDIA's on X11
+        // return before the refresh, as much as two milliseconds either
+        // side of it: the estimate followed the application's own
+        // schedule. Waiting for the swap to finish puts the returns on the
+        // refreshes. Rocky 9 on the A4000, OpenGL, paced: 6, 6 and 22
+        // hitches a minute at 60, 30 and 24 fps, none with this.
+        if (_p->window)
+        {
+            _p->window->setSwapFinish(value);
+        }
+#endif // __linux__
     }
 
     void Window::_setSwapWait(bool value)
