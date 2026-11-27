@@ -112,6 +112,15 @@ namespace ftk
         "OpenGL",
         "GPU");
 
+    Renderer getDefaultRenderer()
+    {
+#if defined(__APPLE__) && !TARGET_OS_IPHONE && defined(FTK_GPU)
+        return Renderer::GPU;
+#else
+        return Renderer::OpenGL;
+#endif
+    }
+
     std::vector<float> getDisplayScales()
     {
         std::vector<float> out =
@@ -179,7 +188,7 @@ namespace ftk
         std::shared_ptr<Style> style;
         std::shared_ptr<Observable<ColorStyle> > colorStyle;
         std::shared_ptr<Observable<Renderer> > renderer =
-            Observable<Renderer>::create(Renderer::OpenGL);
+            Observable<Renderer>::create(getDefaultRenderer());
         float defaultDisplayScale = 1.F;
         // The display scale is automatic until the application sets a
         // positive one; the window's correction applies only while it is.
@@ -480,7 +489,7 @@ namespace ftk
             std::string renderer;
             if (p.settings->get("/Renderer", renderer))
             {
-                Renderer value = Renderer::OpenGL;
+                Renderer value = getDefaultRenderer();
                 if (from_string(renderer, value))
                 {
                     p.renderer->setIfChanged(value);
@@ -494,8 +503,9 @@ namespace ftk
             // only where it is the one that draws.
             auto glSystem = context->getSystem<gl::System>();
             glSystem->init();
-            // OpenGL unless the other is asked for: by the command line,
-            // and otherwise the environment, and otherwise the setting.
+            // The default unless the other is asked for: by the command
+            // line, and otherwise the environment, and otherwise the
+            // setting.
             Renderer renderer = p.renderer->get();
             if (const char* env = std::getenv("FTK_RENDER"))
             {

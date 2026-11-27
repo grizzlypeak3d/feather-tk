@@ -71,6 +71,14 @@ namespace ftk
     };
     FTK_ENUM(FTK_UI_API, Renderer);
 
+    //! Get the renderer an application draws with when nothing else is
+    //! asked for: the GPU renderer on macOS, where it is Metal and OpenGL
+    //! is deprecated, and OpenGL elsewhere. On a Mac with little else
+    //! running, OpenGL in full screen had a swap held about once a second
+    //! (30 to 140 hitches a minute playing at 24 and 30 fps), where Metal
+    //! had none.
+    FTK_UI_API Renderer getDefaultRenderer();
+
     //! Get display scales.
     FTK_UI_API std::vector<float> getDisplayScales();
 
@@ -199,8 +207,9 @@ namespace ftk
         //! \name Renderer
         ///@{
 
-        //! Get the renderer that is set, which is OpenGL unless the other
-        //! is asked for. What draws is said by gpu::isEnabled(): this is
+        //! Get the renderer that is set, which is getDefaultRenderer()
+        //! unless the other is asked for. What draws is said by
+        //! gpu::isEnabled(): this is
         //! what is kept with the settings, and where the GPU renderer
         //! cannot draw OpenGL does whatever was asked.
         FTK_UI_API Renderer getRenderer() const;

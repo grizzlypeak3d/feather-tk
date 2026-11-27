@@ -76,9 +76,10 @@ namespace ftk
         FTK_GPU_API bool getEnvFlag(const char* name);
 
         //! Get whether windows are drawn with this renderer rather than
-        //! the OpenGL one. They are only where it is asked for: by an
-        //! application's setting or command line, or by the FTK_RENDER
-        //! environment variable saying "gpu".
+        //! the OpenGL one. They are where it is asked for: by an
+        //! application's setting or command line, by the FTK_RENDER
+        //! environment variable saying "gpu", or by getDefaultRenderer()
+        //! when none of those says otherwise.
         //!
         //! It is decided by start(), and is false before then.
         FTK_GPU_API bool isEnabled();
