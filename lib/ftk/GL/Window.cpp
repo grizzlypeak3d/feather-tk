@@ -1065,10 +1065,23 @@ namespace ftk
                     }
                 }
 #endif // __linux__
+                // The interval is asked for each swap rather than kept:
+                // SDL can hold one for all of the windows (on Wayland it
+                // is the EGL display's), so a window that set its own once
+                // could be swapping with another window's since. Paced on
+                // Ubuntu, the main window on one monitor waited for the
+                // display with the secondary window's interval, and the
+                // loop went at neither monitor's rate.
                 const bool sync = p.swapWait && !p.heldBack;
-                if (sync != p.syncCurrent)
+                p.syncCurrent = sync;
+                int interval = sync ? 1 : 0;
+#if defined(FTK_SDL2)
+                interval = SDL_GL_GetSwapInterval();
+#elif defined(FTK_SDL3)
+                SDL_GL_GetSwapInterval(&interval);
+#endif // FTK_SDL2
+                if (interval != (sync ? 1 : 0))
                 {
-                    p.syncCurrent = sync;
                     SDL_GL_SetSwapInterval(sync ? 1 : 0);
                 }
             }
