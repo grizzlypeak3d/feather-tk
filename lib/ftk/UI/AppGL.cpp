@@ -169,6 +169,7 @@ namespace ftk
             return displayPacedEnv.has_value() ? *displayPacedEnv : displayPaced->get();
         }
         std::weak_ptr<IWindow> pacedWindow;
+        App::FrameTimeSource frameTimeSource;
         std::optional<std::chrono::steady_clock::time_point> lastFrameTime;
 
         struct CmdLine
@@ -1006,6 +1007,19 @@ namespace ftk
             }
         }
         p.lastFrameTime = frameTime;
+        if (p.frameTimeSource && _context->isBusy())
+        {
+            // Another clock the frames are for: the window's steps above
+            // are kept for its own presents, and the frames are chosen
+            // for this one.
+            std::chrono::steady_clock::time_point sourceTime;
+            double sourcePeriod = 0.0;
+            if (p.frameTimeSource(std::chrono::steady_clock::now(), sourceTime, sourcePeriod))
+            {
+                frameTime = sourceTime;
+                framePeriod = sourcePeriod;
+            }
+        }
         _context->setFrameTime(frameTime, framePeriod);
         _context->tick();
         if (_context->isBusy())
@@ -1663,6 +1677,11 @@ namespace ftk
     void App::setPacedWindow(const std::shared_ptr<IWindow>& value)
     {
         _p->pacedWindow = value;
+    }
+
+    void App::setFrameTimeSource(const FrameTimeSource& value)
+    {
+        _p->frameTimeSource = value;
     }
 
     std::shared_ptr<Window> App::_pacedWindow() const

@@ -12,7 +12,9 @@
 #include <ftk/Core/ObservableMap.h>
 #include <ftk/Core/Observable.h>
 
+#include <chrono>
 #include <filesystem>
+#include <functional>
 #include <list>
 
 union SDL_Event;
@@ -351,6 +353,22 @@ namespace ftk
         //! one showing the picture, whose display's refreshes the frames
         //! are chosen for. Nothing for the first window on screen.
         FTK_UI_API void setPacedWindow(const std::shared_ptr<IWindow>&);
+
+        //! A clock the frames are for other than a window's display: a
+        //! video output device, which takes a frame each tick of its own
+        //! clock. Given the time now, it gives the time of the next tick
+        //! and the period in seconds, or false while it has none.
+        using FrameTimeSource = std::function<bool(
+            const std::chrono::steady_clock::time_point& now,
+            std::chrono::steady_clock::time_point& frameTime,
+            double& period)>;
+
+        //! Set the clock the frames are for, while a system is busy (a
+        //! player playing), in place of the paced window's display
+        //! (Context::setFrameTime()); nothing for the window's again. It
+        //! applies whether or not playback is paced to the display: the
+        //! windows show the same frames, chosen for the other clock.
+        FTK_UI_API void setFrameTimeSource(const FrameTimeSource&);
 
         //! Exit the application.
         FTK_UI_API virtual void exit();
